@@ -66,10 +66,6 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
         text: "Review requests",
         unlockedBy: ["reviews_feedback"],
       },
-      {
-        text: "Newsletters or general updates",
-        unlockedBy: ["birthday_anniversary"],
-      },
     ],
     expansions: [
       {
@@ -145,15 +141,13 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
     ],
     notIncluded: [
       {
-        text: "Any non-security messages",
-        unlockedBy: ["account_notifications", "onboarding_welcome"],
-      },
-      { text: "Marketing or promotions" },
-      {
-        text: "Account updates unrelated to verification",
+        text: "Account-related notifications (password resets, security alerts)",
         unlockedBy: ["account_notifications"],
       },
-      { text: "Newsletters" },
+      {
+        text: "Onboarding or welcome messages",
+        unlockedBy: ["onboarding_welcome"],
+      },
     ],
     expansions: [
       {
@@ -188,9 +182,8 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
         text: "Messages not initiated by a support interaction",
         unlockedBy: ["proactive_outreach"],
       },
-      { text: "Cold outreach" },
       {
-        text: "Review requests",
+        text: "Satisfaction surveys or feedback requests",
         unlockedBy: ["satisfaction_surveys"],
       },
     ],
@@ -221,10 +214,7 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "Loyalty and rewards updates",
       "Newsletter-style updates",
     ],
-    notIncluded: [
-      { text: "Messages to people who haven't explicitly opted in to marketing" },
-      { text: "Content from other brands (affiliate marketing)" },
-    ],
+    notIncluded: [],
     expansions: [],
   },
   internal: {
@@ -244,7 +234,6 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
         text: "Messages to customers or external contacts",
         unlockedBy: ["operational_alerts_customers"],
       },
-      { text: "Marketing content" },
       {
         text: "Messages to anyone who isn't a team member",
         unlockedBy: ["contractors_freelancers"],
@@ -279,7 +268,6 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
         text: "Commercial advertising",
         unlockedBy: ["sponsored_partner_content"],
       },
-      { text: "Messages to non-members" },
       {
         text: "Sponsored content from third parties",
         unlockedBy: ["sponsored_partner_content"],
@@ -314,11 +302,11 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
         unlockedBy: ["promotional_offers_past_guests"],
       },
       {
-        text: "Promotional content",
+        text: "Event and availability announcements",
         unlockedBy: ["announce_availability_events"],
       },
       {
-        text: "Messages unrelated to reservations and waitlist",
+        text: "Post-visit review requests",
         unlockedBy: ["reviews_after_visits"],
       },
     ],
