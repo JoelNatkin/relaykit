@@ -1,3 +1,96 @@
+# CLAUDE.md — RelayKit
+
+## Project
+RelayKit — SMS registration service for vibe coders. Handles A2P 10DLC registration so indie developers can send texts from their apps. $199 one-time fee, fully automated pipeline.
+
+## Tech Stack
+- Next.js 14+ (App Router) — uses `src/` directory from Untitled UI starter kit
+- Supabase (Postgres, Auth, Storage)
+- Stripe Checkout
+- Tailwind CSS v4.1 + Untitled UI design system (see component rules below)
+- Cloudflare Workers (background jobs)
+- Cloudflare Pages (compliance site hosting)
+- Twilio API (ISV model — we own the account, customers get credentials)
+
+## Design System Rules
+- Untitled UI React (open-source components)
+- Light mode default, dark mode switcher is nice-to-have for v1
+- ALWAYS use Untitled UI semantic color classes (text-primary, bg-secondary, border-brand, fg-error-primary, etc.)
+- NEVER use raw Tailwind colors (text-gray-900, bg-blue-700, etc.)
+- Icons: @untitledui/icons — import named icons like `import { Calendar, Package } from "@untitledui/icons"`
+- All react-aria-components imports MUST be prefixed with Aria* (see Untitled UI rules below)
+- All files use kebab-case naming (see Untitled UI rules below)
+
+## Architecture Rules
+- All Twilio API calls use fetch() against REST API — NO Twilio SDK
+- Auth is magic link only (Supabase Auth) — no passwords anywhere
+- Template engine uses string interpolation — NO AI/LLM generation for compliance artifacts
+- Compliance sites are static HTML deployed to Cloudflare Pages
+- Sensitive credentials go in environment variables — NEVER in code or committed files
+- Twilio Auth Token must ONLY exist in .env / environment variables
+
+## Twilio Account Info
+- Account SID: see .env file (starts with AC...)
+- Entity: VAULTED PRESS LLC (ISV Reseller)
+- Primary Customer Profile SID: see .env file (starts with BU...)
+- Auth Token: NEVER COMMIT — use TWILIO_AUTH_TOKEN env var
+
+## Code Style
+- TypeScript everywhere
+- Use `src/app/` directory (App Router), not `pages/`
+- Server actions for form submissions where appropriate
+- Prefer server components by default, client components only when needed
+- Use Supabase SSR helpers for auth
+
+## Project Directory Structure
+```
+src/
+  app/                    # Next.js App Router pages
+    start/                # Intake wizard flow
+    dashboard/            # Customer dashboard
+    api/                  # API routes
+  components/
+    base/                 # Untitled UI base components (DO NOT MODIFY)
+    application/          # Untitled UI application components
+    intake/               # Intake wizard components (RelayKit custom)
+    dashboard/            # Dashboard components (RelayKit custom)
+    landing/              # Landing page components (RelayKit custom)
+  lib/
+    intake/               # Intake wizard logic
+    templates/            # Template engine (compliance artifact generation)
+    compliance-site/      # HTML generation + Cloudflare deployment
+    twilio/               # Twilio API integration
+    deliverable/          # MESSAGING_SETUP.md generation
+  hooks/                  # Custom React hooks
+  providers/              # React context providers
+  styles/                 # Global styles and theme (Untitled UI)
+  utils/                  # Utility functions
+supabase/
+  migrations/             # Database migrations
+docs/                     # PRDs (reference only, not deployed)
+```
+
+## Commands
+- `npm run dev` — local dev server
+- `npm run build` — production build
+
+## PRD Reference
+PRDs are in the /docs directory. Read the relevant PRD before building each component:
+- PRD_01: Intake Wizard
+- PRD_02: Template Engine
+- PRD_03: Compliance Site Generator
+- PRD_04: Twilio Submission Engine
+- PRD_05: Deliverable Generator
+- PRD_06: Customer Dashboard
+- PRD_07: Landing Page
+- PRD_08: Compliance Monitoring
+
+---
+# Untitled UI Component Library Reference
+# (Do not modify below — Untitled UI design system rules for AI agents)
+---
+
+
 ## Project Overview
 
 This is an **Untitled UI React** component library project built with:
