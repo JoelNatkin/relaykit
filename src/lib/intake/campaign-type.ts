@@ -33,11 +33,14 @@ export function determineCampaignType(
   return "LOW_VOLUME_MIXED";
 }
 
-export function hasMarketingExpansion(expansions: string[]): boolean {
-  return expansions.some(
-    (e) =>
-      e.includes("promotional") ||
-      e.includes("offers") ||
-      e.includes("reviews"),
+export function isPromoExpansion(id: string): boolean {
+  return (
+    id.includes("promotional") ||
+    id.includes("offers") ||
+    id.includes("reviews")
   );
+}
+
+export function hasMarketingExpansion(expansions: string[]): boolean {
+  return expansions.some(isPromoExpansion);
 }

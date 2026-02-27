@@ -5,19 +5,31 @@ import { useState, Suspense } from "react";
 import { ArrowRight, ArrowLeft } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { Checkbox } from "@/components/base/checkbox/checkbox";
+import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
 import { ScopeSection } from "@/components/intake/scope-section";
 import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
 import {
   determineCampaignType,
   hasMarketingExpansion,
+  isPromoExpansion,
 } from "@/lib/intake/campaign-type";
+
+function getDefaultExpansions(
+  expansions: { id: string }[],
+): string[] {
+  return expansions
+    .filter((e) => !isPromoExpansion(e.id))
+    .map((e) => e.id);
+}
 
 function ScopeContent() {
   const searchParams = useSearchParams();
   const useCaseId = searchParams.get("use_case") as UseCaseId | null;
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 
-  const [selectedExpansions, setSelectedExpansions] = useState<string[]>([]);
+  const [selectedExpansions, setSelectedExpansions] = useState<string[]>(
+    () => (useCase ? getDefaultExpansions(useCase.expansions) : []),
+  );
 
   if (!useCase) {
     return (
@@ -36,10 +48,7 @@ function ScopeContent() {
     useCase.id,
     selectedExpansions,
   );
-  const showPromoNote =
-    selectedExpansions.length > 0 && hasMarketingExpansion(selectedExpansions);
-  const showBroadNote =
-    selectedExpansions.length > 0 && !showPromoNote;
+  const showPromoNote = hasMarketingExpansion(selectedExpansions);
 
   function toggleExpansion(id: string) {
     setSelectedExpansions((prev) =>
@@ -60,14 +69,26 @@ function ScopeContent() {
   return (
     <div className="flex min-h-svh flex-col bg-primary">
       <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-12 sm:px-6 lg:py-16">
+        {/* Use case context */}
+        <div className="mb-6 flex items-center gap-3">
+          <FeaturedIcon
+            icon={useCase.icon}
+            size="md"
+            color="brand"
+            theme="light"
+          />
+          <span className="text-md font-semibold text-primary">
+            {useCase.label}
+          </span>
+        </div>
+
         <div className="mb-8 flex flex-col gap-2">
           <h1 className="text-display-sm font-semibold text-primary sm:text-display-md">
-            Let&apos;s make sure your registration covers everything you need
+            Let&apos;s make sure this covers everything
           </h1>
           <p className="text-lg text-tertiary">
-            Your use case determines what messages carriers will allow you to
-            send. We want to get this right so you don&apos;t hit limitations
-            later.
+            Here&apos;s what your registration allows. Check below if
+            you&apos;ll need more.
           </p>
         </div>
 
@@ -103,25 +124,11 @@ function ScopeContent() {
                 ))}
               </div>
 
-              {/* Advisory notes */}
-              {showBroadNote && (
-                <p className="mt-4 rounded-lg bg-secondary p-3 text-sm text-tertiary">
-                  Got it — we&apos;ll register you for a broader messaging
-                  category that covers both{" "}
-                  {useCase.label.toLowerCase()} and your additional needs.
-                  This may require slightly stricter consent language on your
-                  opt-in form, which we&apos;ll handle automatically.
-                </p>
-              )}
-
               {showPromoNote && (
                 <p className="mt-4 rounded-lg bg-warning-primary p-3 text-sm text-tertiary">
-                  Adding promotional messaging means recipients must give
-                  separate, explicit consent for marketing texts — not just
-                  transactional consent. We&apos;ll add a specific marketing
-                  opt-in to your compliance site. This is stricter than a
-                  transactional-only registration, but it gives you the
-                  flexibility to send both.
+                  This means your users will see a separate marketing consent
+                  checkbox during opt-in. Stricter, but gives you flexibility to
+                  send promos later.
                 </p>
               )}
             </div>

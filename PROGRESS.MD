@@ -3,7 +3,7 @@
 ## Completed
 - [x] Project scaffolding (Untitled UI starter kit + Supabase/Stripe/Twilio deps)
 - [x] Screen 1: Use Case Selection (`/start`) — 8 tiles, single select, Continue button
-- [x] Screen 1b: Use Case Advisory (`/start/scope`) — included/not-included sections, expansion checkboxes, campaign type upgrade logic
+- [x] Screen 1b: Use Case Advisory (`/start/scope`) — included/not-included sections, expansion checkboxes (non-promo pre-checked), campaign type upgrade logic
 
 ## In Progress
 
