@@ -74,6 +74,9 @@ docs/                     # PRDs (reference only, not deployed)
 - `npm run dev` — local dev server
 - `npm run build` — production build
 
+## Build Discipline
+- Update PROGRESS.md after every commit — check off completed items, move "In Progress" forward
+
 ## PRD Reference
 PRDs are in the /docs directory. Read the relevant PRD before building each component:
 - PRD_01: Intake Wizard

@@ -1,70 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Calendar,
-  Package,
-  Shield01,
-  MessageChatCircle,
-  Announcement02,
-  Users01,
-  Globe01,
-  ClipboardCheck,
-  ArrowRight,
-} from "@untitledui/icons";
+import { ArrowRight } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { UseCaseTile } from "@/components/intake/use-case-tile";
-
-const USE_CASES = [
-  {
-    id: "appointments",
-    label: "Appointment reminders",
-    description: "Confirmations, reminders, rescheduling",
-    icon: Calendar,
-  },
-  {
-    id: "orders",
-    label: "Order & delivery updates",
-    description: "Shipping notifications, delivery status",
-    icon: Package,
-  },
-  {
-    id: "verification",
-    label: "Verification codes",
-    description: "OTP, 2FA, login codes",
-    icon: Shield01,
-  },
-  {
-    id: "support",
-    label: "Customer support",
-    description: "Two-way support conversations",
-    icon: MessageChatCircle,
-  },
-  {
-    id: "marketing",
-    label: "Marketing & promos",
-    description: "Offers, promotions, announcements",
-    icon: Announcement02,
-  },
-  {
-    id: "internal",
-    label: "Team & internal alerts",
-    description: "Staff notifications, internal ops",
-    icon: Users01,
-  },
-  {
-    id: "community",
-    label: "Community & groups",
-    description: "Group messaging, community updates",
-    icon: Globe01,
-  },
-  {
-    id: "waitlist",
-    label: "Waitlist & reservations",
-    description: "Booking confirmations, waitlist updates",
-    icon: ClipboardCheck,
-  },
-] as const;
+import { USE_CASE_LIST } from "@/lib/intake/use-case-data";
 
 export default function StartPage() {
   const [selectedUseCase, setSelectedUseCase] = useState<string | null>(null);
@@ -83,7 +23,7 @@ export default function StartPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
-          {USE_CASES.map((useCase) => (
+          {USE_CASE_LIST.map((useCase) => (
             <UseCaseTile
               key={useCase.id}
               id={useCase.id}
