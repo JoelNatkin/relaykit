@@ -6,7 +6,7 @@ import { ArrowRight, ArrowLeft } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { Checkbox } from "@/components/base/checkbox/checkbox";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
-import { ScopeSection } from "@/components/intake/scope-section";
+import { ScopeCard } from "@/components/intake/scope-section";
 import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
 import {
   determineCampaignType,
@@ -92,21 +92,15 @@ function ScopeContent() {
         </div>
 
         <div className="flex flex-col gap-5">
-          {/* Section 1: What's included */}
-          <ScopeSection
-            variant="included"
-            header={`With a ${useCase.label.toLowerCase()} registration, you can send:`}
-            items={useCase.included}
+          {/* Combined scope card */}
+          <ScopeCard
+            header="What your registration covers"
+            includedItems={useCase.included}
+            notIncludedItems={useCase.notIncluded}
+            selectedExpansions={selectedExpansions}
           />
 
-          {/* Section 2: What's not included */}
-          <ScopeSection
-            variant="not-included"
-            header="This registration does NOT cover:"
-            items={useCase.notIncluded}
-          />
-
-          {/* Section 3: Expansion options */}
+          {/* Expansion options */}
           {useCase.expansions.length > 0 && (
             <div className="rounded-xl border border-secondary p-5">
               <h3 className="mb-3 text-sm font-semibold text-primary">

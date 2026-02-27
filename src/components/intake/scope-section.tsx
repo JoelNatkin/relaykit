@@ -1,44 +1,66 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { cx } from "@/utils/cx";
+import type { ScopeItem } from "@/lib/intake/use-case-data";
 
-interface ScopeSectionProps {
-  variant: "included" | "not-included";
+interface ScopeCardProps {
   header: string;
-  items: string[];
+  includedItems: string[];
+  notIncludedItems: ScopeItem[];
+  selectedExpansions: string[];
 }
 
-export const ScopeSection = ({ variant, header, items }: ScopeSectionProps) => {
-  const isIncluded = variant === "included";
-
+export const ScopeCard = ({
+  header,
+  includedItems,
+  notIncludedItems,
+  selectedExpansions,
+}: ScopeCardProps) => {
   return (
-    <div
-      className={cx(
-        "rounded-xl border border-secondary p-5",
-        isIncluded ? "border-l-4 border-l-success-solid" : "border-l-4 border-l-warning-solid",
-      )}
-    >
+    <div className="rounded-xl border border-secondary p-5">
       <h3 className="mb-3 text-sm font-semibold text-primary">{header}</h3>
       <ul className="flex flex-col gap-2">
-        {items.map((item) => (
-          <li key={item} className="flex items-start gap-2 text-sm">
-            {isIncluded ? (
-              <span className="mt-0.5 text-fg-success-secondary">
-                <CheckIcon />
-              </span>
-            ) : (
-              <span className="mt-0.5 text-fg-warning-secondary">
-                <XIcon />
-              </span>
-            )}
-            <span className="text-tertiary">{item}</span>
-          </li>
+        {includedItems.map((item) => (
+          <ScopeListItem key={item} text={item} isIncluded />
         ))}
+        {notIncludedItems.map((item) => {
+          const unlocked =
+            item.unlockedBy !== undefined &&
+            item.unlockedBy.some((id) => selectedExpansions.includes(id));
+          return (
+            <ScopeListItem
+              key={item.text}
+              text={item.text}
+              isIncluded={unlocked}
+            />
+          );
+        })}
       </ul>
     </div>
   );
 };
+
+function ScopeListItem({
+  text,
+  isIncluded,
+}: {
+  text: string;
+  isIncluded: boolean;
+}) {
+  return (
+    <li className="flex items-start gap-2 text-sm">
+      {isIncluded ? (
+        <span className="mt-0.5 text-fg-success-secondary">
+          <CheckIcon />
+        </span>
+      ) : (
+        <span className="mt-0.5 text-fg-warning-secondary">
+          <XIcon />
+        </span>
+      )}
+      <span className="text-tertiary">{text}</span>
+    </li>
+  );
+}
 
 function CheckIcon() {
   return (

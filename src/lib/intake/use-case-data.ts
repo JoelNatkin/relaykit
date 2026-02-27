@@ -25,13 +25,19 @@ export interface ExpansionOption {
   label: string;
 }
 
+export interface ScopeItem {
+  text: string;
+  /** If set, this item flips from "not included" to "included" when any of these expansions are selected */
+  unlockedBy?: string[];
+}
+
 export interface UseCaseDefinition {
   id: UseCaseId;
   label: string;
   description: string;
   icon: FC<{ className?: string }>;
   included: string[];
-  notIncluded: string[];
+  notIncluded: ScopeItem[];
   expansions: ExpansionOption[];
 }
 
@@ -48,10 +54,22 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "Two-way replies (customer can text back to confirm/reschedule)",
     ],
     notIncluded: [
-      "Marketing offers or discount codes",
-      "Promotional announcements",
-      "Review requests",
-      "Newsletters or general updates",
+      {
+        text: "Marketing offers or discount codes",
+        unlockedBy: ["promotional_offers_past_clients"],
+      },
+      {
+        text: "Promotional announcements",
+        unlockedBy: ["promotional_offers_past_clients"],
+      },
+      {
+        text: "Review requests",
+        unlockedBy: ["reviews_feedback"],
+      },
+      {
+        text: "Newsletters or general updates",
+        unlockedBy: ["birthday_anniversary"],
+      },
     ],
     expansions: [
       {
@@ -82,10 +100,22 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "Two-way replies for delivery issues",
     ],
     notIncluded: [
-      "Marketing offers to past customers",
-      "Promotional announcements",
-      "Review requests",
-      "Cross-selling or upselling messages",
+      {
+        text: "Marketing offers to past customers",
+        unlockedBy: ["promotional_offers_past_customers"],
+      },
+      {
+        text: "Promotional announcements",
+        unlockedBy: ["announce_new_products"],
+      },
+      {
+        text: "Review requests",
+        unlockedBy: ["reviews_after_delivery"],
+      },
+      {
+        text: "Cross-selling or upselling messages",
+        unlockedBy: ["promotional_offers_past_customers"],
+      },
     ],
     expansions: [
       {
@@ -114,10 +144,16 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "Login confirmation codes",
     ],
     notIncluded: [
-      "Any non-security messages",
-      "Marketing or promotions",
-      "Account updates unrelated to verification",
-      "Newsletters",
+      {
+        text: "Any non-security messages",
+        unlockedBy: ["account_notifications", "onboarding_welcome"],
+      },
+      { text: "Marketing or promotions" },
+      {
+        text: "Account updates unrelated to verification",
+        unlockedBy: ["account_notifications"],
+      },
+      { text: "Newsletters" },
     ],
     expansions: [
       {
@@ -144,10 +180,19 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "Customer satisfaction follow-ups",
     ],
     notIncluded: [
-      "Outbound marketing or promotions",
-      "Messages not initiated by a support interaction",
-      "Cold outreach",
-      "Review requests",
+      {
+        text: "Outbound marketing or promotions",
+        unlockedBy: ["promotional_offers_support_contacts"],
+      },
+      {
+        text: "Messages not initiated by a support interaction",
+        unlockedBy: ["proactive_outreach"],
+      },
+      { text: "Cold outreach" },
+      {
+        text: "Review requests",
+        unlockedBy: ["satisfaction_surveys"],
+      },
     ],
     expansions: [
       {
@@ -177,8 +222,8 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "Newsletter-style updates",
     ],
     notIncluded: [
-      "Messages to people who haven't explicitly opted in to marketing",
-      "Content from other brands (affiliate marketing)",
+      { text: "Messages to people who haven't explicitly opted in to marketing" },
+      { text: "Content from other brands (affiliate marketing)" },
     ],
     expansions: [],
   },
@@ -195,9 +240,15 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "Internal policy updates",
     ],
     notIncluded: [
-      "Messages to customers or external contacts",
-      "Marketing content",
-      "Messages to anyone who isn't a team member",
+      {
+        text: "Messages to customers or external contacts",
+        unlockedBy: ["operational_alerts_customers"],
+      },
+      { text: "Marketing content" },
+      {
+        text: "Messages to anyone who isn't a team member",
+        unlockedBy: ["contractors_freelancers"],
+      },
     ],
     expansions: [
       {
@@ -224,9 +275,15 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "RSVP collection via reply",
     ],
     notIncluded: [
-      "Commercial advertising",
-      "Messages to non-members",
-      "Sponsored content from third parties",
+      {
+        text: "Commercial advertising",
+        unlockedBy: ["sponsored_partner_content"],
+      },
+      { text: "Messages to non-members" },
+      {
+        text: "Sponsored content from third parties",
+        unlockedBy: ["sponsored_partner_content"],
+      },
     ],
     expansions: [
       {
@@ -252,9 +309,18 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       "Two-way replies (accept/decline)",
     ],
     notIncluded: [
-      "Marketing offers",
-      "Promotional content",
-      "Messages unrelated to reservations and waitlist",
+      {
+        text: "Marketing offers",
+        unlockedBy: ["promotional_offers_past_guests"],
+      },
+      {
+        text: "Promotional content",
+        unlockedBy: ["announce_availability_events"],
+      },
+      {
+        text: "Messages unrelated to reservations and waitlist",
+        unlockedBy: ["reviews_after_visits"],
+      },
     ],
     expansions: [
       {
