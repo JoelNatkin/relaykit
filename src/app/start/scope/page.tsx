@@ -87,8 +87,7 @@ function ScopeContent() {
             Let&apos;s make sure this covers everything
           </h1>
           <p className="text-lg text-tertiary">
-            Here&apos;s what your registration allows. Check below if
-            you&apos;ll need more.
+            Here&apos;s what your registration allows.
           </p>
         </div>
 
@@ -126,9 +125,8 @@ function ScopeContent() {
 
               {showPromoNote && (
                 <p className="mt-4 rounded-lg bg-warning-primary p-3 text-sm text-tertiary">
-                  This means your users will see a separate marketing consent
-                  checkbox during opt-in. Stricter, but gives you flexibility to
-                  send promos later.
+                  Your app&apos;s opt-in form will include a checkbox for
+                  marketing messages.
                 </p>
               )}
             </div>
