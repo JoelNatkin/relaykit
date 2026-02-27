@@ -30,7 +30,7 @@ export const UseCaseTile = ({
         "hover:bg-primary_hover",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
         isSelected
-          ? "border-brand bg-brand-secondary ring-1 ring-brand"
+          ? "border-brand bg-brand-secondary"
           : "border-secondary bg-primary",
       )}
     >
