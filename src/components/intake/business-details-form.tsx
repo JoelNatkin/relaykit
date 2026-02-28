@@ -15,6 +15,17 @@ import {
 } from "@/lib/intake/validation";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
+const DESCRIPTION_EXAMPLES: Record<UseCaseId, string> = {
+  appointments: "A booking platform for pet groomers",
+  orders: "An online store that ships handmade candles",
+  verification: "A SaaS app with two-factor login",
+  support: "A help desk for a home repair service",
+  marketing: "A local bakery that runs weekly specials",
+  internal: "A staffing agency coordinating shift schedules",
+  community: "A running club with 200 local members",
+  waitlist: "A restaurant with online reservations",
+};
+
 interface BusinessDetailsFormProps {
   useCase: UseCaseId;
   onValid: (data: BusinessDetailsData) => void;
@@ -162,7 +173,7 @@ export function BusinessDetailsForm({
 
         <TextArea
           label="What does your business/app do?"
-          placeholder="Describe your app in a sentence or two. Example: 'A booking platform for pet groomers'"
+          placeholder={`Describe your app in a sentence or two. Example: '${DESCRIPTION_EXAMPLES[useCase]}'`}
           isRequired
           rows={3}
           value={form.business_description}
