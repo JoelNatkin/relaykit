@@ -5,6 +5,7 @@ import {
   AlertCircle,
   Check,
   CheckCircle,
+  ChevronDown,
   Edit05,
   RefreshCcw01,
 } from "@untitledui/icons";
@@ -18,6 +19,8 @@ interface ReviewPreviewCardProps {
   originalMessages: [string, string, string];
   businessName: string;
   complianceSlug: string;
+  useCaseLabel: string;
+  expansionLabels: string[];
   onDescriptionChange: (value: string) => void;
   onSampleMessageChange: (index: number, value: string) => void;
   onRevertDescription: () => void;
@@ -87,6 +90,73 @@ function validateMessage(
   return { error: null, warning: null };
 }
 
+function FaqAccordion({
+  useCaseLabel,
+  expansionLabels,
+}: {
+  useCaseLabel: string;
+  expansionLabels: string[];
+}) {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  function buildCoverageAnswer() {
+    if (expansionLabels.length === 0) {
+      return `Your registration covers ${useCaseLabel}. If you need to add more messaging types later, you can update your registration.`;
+    }
+    const joined =
+      expansionLabels.length === 1
+        ? expansionLabels[0]
+        : expansionLabels.slice(0, -1).join(", ") +
+          " and " +
+          expansionLabels[expansionLabels.length - 1];
+    return `Your registration covers ${useCaseLabel}, plus ${joined}.`;
+  }
+
+  const items = [
+    {
+      question: "Will carriers see these exact messages?",
+      answer:
+        "No. Carriers review your campaign description and sample messages to understand the type of texts you'll send, but they don't enforce exact wording. Your actual messages can differ as long as they match the described purpose.",
+    },
+    {
+      question: "Can I change my messages later?",
+      answer:
+        "Yes. Once registered, you can update your campaign description and sample messages at any time through your dashboard. Changes are typically reviewed within 24 hours.",
+    },
+    {
+      question: "What does this registration cover?",
+      answer: buildCoverageAnswer(),
+    },
+  ];
+
+  return (
+    <div className="flex flex-col divide-y divide-secondary">
+      {items.map((item, i) => (
+        <div key={i}>
+          <button
+            type="button"
+            onClick={() => setOpenIndex(openIndex === i ? null : i)}
+            className="flex w-full items-center justify-between py-2.5 text-left"
+          >
+            <span className="text-sm font-medium text-secondary">
+              {item.question}
+            </span>
+            <ChevronDown
+              className={cx(
+                "size-4 shrink-0 text-fg-quaternary transition duration-100 ease-linear",
+                openIndex === i && "rotate-180",
+              )}
+            />
+          </button>
+          {openIndex === i && (
+            <p className="pb-3 text-sm text-tertiary">{item.answer}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function ReviewPreviewCard({
   campaignDescription,
   sampleMessages,
@@ -94,6 +164,8 @@ export function ReviewPreviewCard({
   originalMessages,
   businessName,
   complianceSlug,
+  useCaseLabel,
+  expansionLabels,
   onDescriptionChange,
   onSampleMessageChange,
   onRevertDescription,
@@ -329,6 +401,12 @@ export function ReviewPreviewCard({
             ))}
           </div>
         </div>
+
+        {/* FAQ accordion */}
+        <FaqAccordion
+          useCaseLabel={useCaseLabel}
+          expansionLabels={expansionLabels}
+        />
 
         {/* Compliance website */}
         <div className="flex flex-col gap-2">

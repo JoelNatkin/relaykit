@@ -71,6 +71,15 @@ function ReviewContent() {
     [businessName],
   );
 
+  // Resolve expansion labels from URL param
+  const expansionLabels = useMemo(() => {
+    if (!expansions || !useCase) return [];
+    const selectedIds = expansions.split(",").filter(Boolean);
+    return selectedIds
+      .map((id) => useCase.expansions.find((e) => e.id === id)?.label)
+      .filter((label): label is string => !!label);
+  }, [expansions, useCase]);
+
   // Editable state for campaign description and sample messages
   const [descriptionOverride, setDescriptionOverride] = useState<
     string | null
@@ -179,6 +188,8 @@ function ReviewContent() {
             originalMessages={templates.sample_messages}
             businessName={businessName}
             complianceSlug={complianceSlug}
+            useCaseLabel={useCase.label}
+            expansionLabels={expansionLabels}
             onDescriptionChange={handleDescriptionChange}
             onSampleMessageChange={handleSampleMessageChange}
             onRevertDescription={() => setDescriptionOverride(null)}
@@ -188,22 +199,29 @@ function ReviewContent() {
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 flex items-center justify-between">
-          <Button
-            href={buildBackHref()}
-            color="link-gray"
-            iconLeading={ArrowLeft}
-          >
-            Back
-          </Button>
-          <Button
-            size="lg"
-            color="primary"
-            iconLeading={CreditCard02}
-            isDisabled={previewHasErrors}
-          >
-            Proceed to payment — $199
-          </Button>
+        <div className="mt-8 flex flex-col items-end gap-3">
+          <p className="text-sm text-tertiary">
+            Our registration templates are optimized for carrier approval. If
+            your registration is rejected and we can&apos;t resolve it,
+            you&apos;ll get a full refund.
+          </p>
+          <div className="flex w-full items-center justify-between">
+            <Button
+              href={buildBackHref()}
+              color="link-gray"
+              iconLeading={ArrowLeft}
+            >
+              Back
+            </Button>
+            <Button
+              size="lg"
+              color="primary"
+              iconLeading={CreditCard02}
+              isDisabled={previewHasErrors}
+            >
+              Proceed to payment — $199
+            </Button>
+          </div>
         </div>
       </div>
     </div>
