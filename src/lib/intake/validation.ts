@@ -81,10 +81,13 @@ export const businessDetailsSchema = z
       .string()
       .min(2, "Required field")
       .max(100, "Required field"),
-    business_description: z
-      .string()
-      .min(20, "Required field")
-      .max(500, "Required field"),
+    business_description: z.string().superRefine((val, ctx) => {
+      if (!val) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
+      } else if (val.length < 20) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "20 character minimum" });
+      }
+    }),
     has_ein: z.enum(["yes", "no"], {
       message: "Required field",
     }),
@@ -95,16 +98,20 @@ export const businessDetailsSchema = z
     contact_name: z
       .string()
       .min(2, "Required field"),
-    email: z
-      .string()
-      .email("Required field"),
-    phone: z
-      .string()
-      .min(1, "Required field")
-      .refine(
-        (val) => phoneDigits(val).length === 10,
-        "Required field",
-      ),
+    email: z.string().superRefine((val, ctx) => {
+      if (!val) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a valid email address" });
+      }
+    }),
+    phone: z.string().superRefine((val, ctx) => {
+      if (!val) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
+      } else if (phoneDigits(val).length !== 10) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a valid phone number" });
+      }
+    }),
     address_line1: z
       .string()
       .min(1, "Required field"),
@@ -117,9 +124,13 @@ export const businessDetailsSchema = z
         (val) => (US_STATES as readonly string[]).includes(val),
         "Required field",
       ),
-    address_zip: z
-      .string()
-      .regex(/^\d{5}$/, "Required field"),
+    address_zip: z.string().superRefine((val, ctx) => {
+      if (!val) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
+      } else if (!/^\d{5}$/.test(val)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a 5-digit ZIP code" });
+      }
+    }),
 
     // App-specific (all optional at base level, conditionally required below)
     website_url: z.string().optional(),
@@ -132,10 +143,16 @@ export const businessDetailsSchema = z
   .superRefine((data, ctx) => {
     // EIN conditional validation
     if (data.has_ein === "yes") {
-      if (!data.ein || einDigits(data.ein).length !== 9) {
+      if (!data.ein) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Required field",
+          path: ["ein"],
+        });
+      } else if (einDigits(data.ein).length !== 9) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "EIN must be 9 digits",
           path: ["ein"],
         });
       }
