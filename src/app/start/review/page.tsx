@@ -200,7 +200,7 @@ function ReviewContent() {
         </div>
 
         {/* Navigation */}
-        <div className="mt-8 flex flex-col items-end gap-3">
+        <div className="mt-8 flex flex-col items-end gap-5">
           <p className="text-sm text-tertiary">
             If we can&apos;t get you approved, you&apos;ll get a full refund.
           </p>
