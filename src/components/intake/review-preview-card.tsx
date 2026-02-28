@@ -1,44 +1,26 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import {
-  AlertCircle,
-  CheckCircle,
-  ChevronDown,
-  RefreshCcw01,
-} from "@untitledui/icons";
+import { CheckCircle, ChevronDown } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
 interface ReviewPreviewCardProps {
   campaignDescription: string;
   sampleMessages: [string, string, string];
-  originalDescription: string;
-  originalMessages: [string, string, string];
-  businessName: string;
+  sampleMessageLabels: [string, string, string];
   complianceSlug: string;
   useCaseLabel: string;
   expansionLabels: string[];
   includedItems: string[];
-  onDescriptionChange: (value: string) => void;
-  onSampleMessageChange: (index: number, value: string) => void;
-  onRevertDescription: () => void;
-  onRevertMessages: () => void;
-  onValidationChange: (hasErrors: boolean) => void;
 }
 
-/** Textarea that auto-grows to fit content. */
-function AutoTextarea({
+/** Read-only textarea-styled container that auto-sizes to fit content. */
+function ReadOnlyField({
   value,
-  onChange,
-  onBlur,
   minRows,
-  isInvalid = false,
 }: {
   value: string;
-  onChange: (value: string) => void;
-  onBlur: () => void;
   minRows: number;
-  isInvalid?: boolean;
 }) {
   const ref = useRef<HTMLTextAreaElement>(null);
 
@@ -53,39 +35,12 @@ function AutoTextarea({
     <textarea
       ref={ref}
       value={value}
-      onChange={(e) => onChange(e.target.value)}
-      onBlur={onBlur}
+      readOnly
+      tabIndex={-1}
       rows={minRows}
-      className={cx(
-        "w-full resize-none rounded-lg border bg-primary px-3 py-2 text-sm text-primary outline-none transition duration-100 ease-linear focus:border-brand",
-        isInvalid ? "border-error" : "border-secondary",
-      )}
+      className="w-full resize-none rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none"
     />
   );
-}
-
-function validateDescription(value: string): string | null {
-  if (!value.trim()) return "This field is required";
-  if (value.length < 40) return "Minimum 40 characters";
-  if (value.length > 4096) return "Maximum 4,096 characters";
-  return null;
-}
-
-function validateMessage(
-  value: string,
-  businessName: string,
-): { error: string | null; warning: string | null } {
-  if (!value.trim()) return { error: "This field is required", warning: null };
-  const hasName = value.toLowerCase().includes(businessName.toLowerCase());
-  const hasStop = /\bstop\b/i.test(value);
-  if (!hasName || !hasStop) {
-    return {
-      error: null,
-      warning:
-        "Sample messages should include your business name and a STOP opt-out option",
-    };
-  }
-  return { error: null, warning: null };
 }
 
 function FaqAccordion({
@@ -137,7 +92,8 @@ function FaqAccordion({
           </ul>
           {expansionLabels.length > 0 && (
             <p>
-              You also added: {expansionLabels.map((l) => l.toLowerCase()).join(", ")}.
+              You also added:{" "}
+              {expansionLabels.map((l) => l.toLowerCase()).join(", ")}.
             </p>
           )}
         </div>
@@ -154,9 +110,7 @@ function FaqAccordion({
             onClick={() => setOpenIndex(openIndex === i ? null : i)}
             className="flex w-full items-center justify-between py-2.5 text-left"
           >
-            <span className="text-sm text-tertiary">
-              {item.question}
-            </span>
+            <span className="text-sm text-tertiary">{item.question}</span>
             <ChevronDown
               className={cx(
                 "size-4 shrink-0 text-fg-quaternary transition duration-100 ease-linear",
@@ -174,78 +128,12 @@ function FaqAccordion({
 export function ReviewPreviewCard({
   campaignDescription,
   sampleMessages,
-  originalDescription,
-  originalMessages,
-  businessName,
+  sampleMessageLabels,
   complianceSlug,
   useCaseLabel,
   expansionLabels,
   includedItems,
-  onDescriptionChange,
-  onSampleMessageChange,
-  onRevertDescription,
-  onRevertMessages,
-  onValidationChange,
 }: ReviewPreviewCardProps) {
-  const descriptionEdited = campaignDescription !== originalDescription;
-  const messagesEdited =
-    sampleMessages[0] !== originalMessages[0] ||
-    sampleMessages[1] !== originalMessages[1] ||
-    sampleMessages[2] !== originalMessages[2];
-
-  // Validation state
-  const [descError, setDescError] = useState<string | null>(null);
-  const [msgErrors, setMsgErrors] = useState<(string | null)[]>([
-    null,
-    null,
-    null,
-  ]);
-  const [msgWarnings, setMsgWarnings] = useState<(string | null)[]>([
-    null,
-    null,
-    null,
-  ]);
-
-  // Sync validation state to parent
-  useEffect(() => {
-    onValidationChange(
-      descError !== null || msgErrors.some((e) => e !== null),
-    );
-  }, [descError, msgErrors, onValidationChange]);
-
-  function handleDescBlur() {
-    const error = validateDescription(campaignDescription);
-    setDescError(error);
-  }
-
-  function handleMsgBlur(index: number) {
-    const { error, warning } = validateMessage(
-      sampleMessages[index],
-      businessName,
-    );
-    setMsgErrors((prev) => {
-      const next = [...prev];
-      next[index] = error;
-      return next;
-    });
-    setMsgWarnings((prev) => {
-      const next = [...prev];
-      next[index] = warning;
-      return next;
-    });
-  }
-
-  function handleRevertDescription() {
-    setDescError(null);
-    onRevertDescription();
-  }
-
-  function handleRevertMessages() {
-    setMsgErrors([null, null, null]);
-    setMsgWarnings([null, null, null]);
-    onRevertMessages();
-  }
-
   return (
     <div className="rounded-xl border border-secondary bg-secondary">
       <div className="border-b border-secondary px-5 py-3">
@@ -257,86 +145,24 @@ export function ReviewPreviewCard({
       <div className="flex flex-col gap-5 p-5">
         {/* Campaign description */}
         <div className="flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
-              Campaign description
-            </span>
-            {descriptionEdited && (
-              <button
-                type="button"
-                onClick={handleRevertDescription}
-                title="Restore original"
-                className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
-              >
-                <RefreshCcw01 className="size-3" />
-                Undo
-              </button>
-            )}
-          </div>
-          <AutoTextarea
-            value={campaignDescription}
-            onChange={onDescriptionChange}
-            onBlur={handleDescBlur}
-            minRows={4}
-            isInvalid={!!descError}
-          />
-          {descError && (
-            <div className="flex items-center gap-1.5">
-              <AlertCircle className="size-3.5 shrink-0 text-fg-error-secondary" />
-              <span className="text-xs text-error-primary">{descError}</span>
-            </div>
-          )}
+          <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
+            Campaign description
+          </span>
+          <ReadOnlyField value={campaignDescription} minRows={4} />
         </div>
 
         {/* Sample messages */}
         <div className="flex flex-col gap-2.5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
-              Sample messages
-            </span>
-            {messagesEdited && (
-              <button
-                type="button"
-                onClick={handleRevertMessages}
-                title="Restore original"
-                className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
-              >
-                <RefreshCcw01 className="size-3" />
-                Undo
-              </button>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
+            Sample messages
+          </span>
+          <div className="flex flex-col gap-3">
             {sampleMessages.map((msg, i) => (
               <div key={i} className="flex flex-col gap-1">
-                <div className="flex gap-2">
-                  <span className="mt-2 shrink-0 text-sm text-tertiary">
-                    {i + 1}.
-                  </span>
-                  <AutoTextarea
-                    value={msg}
-                    onChange={(val) => onSampleMessageChange(i, val)}
-                    onBlur={() => handleMsgBlur(i)}
-                    minRows={3}
-                    isInvalid={!!msgErrors[i]}
-                  />
-                </div>
-                {msgErrors[i] && (
-                  <div className="flex items-center gap-1.5">
-                    <AlertCircle className="size-3.5 shrink-0 text-fg-error-secondary" />
-                    <span className="text-xs text-error-primary">
-                      {msgErrors[i]}
-                    </span>
-                  </div>
-                )}
-                {msgWarnings[i] && !msgErrors[i] && (
-                  <div className="flex items-center gap-1.5">
-                    <AlertCircle className="size-3.5 shrink-0 text-fg-warning-secondary" />
-                    <span className="text-xs text-warning-primary">
-                      {msgWarnings[i]}
-                    </span>
-                  </div>
-                )}
+                <span className="text-sm text-tertiary">
+                  {sampleMessageLabels[i]}
+                </span>
+                <ReadOnlyField value={msg} minRows={3} />
               </div>
             ))}
           </div>

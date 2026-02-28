@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, Suspense, useMemo, useCallback } from "react";
+import { Suspense, useMemo } from "react";
 import { ArrowLeft, CreditCard02 } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
@@ -19,7 +19,6 @@ function ReviewContent() {
   // Intake params from previous screens
   const useCaseId = searchParams.get("use_case") as UseCaseId | null;
   const expansions = searchParams.get("expansions") ?? "";
-  const campaignType = searchParams.get("campaign_type") ?? "";
 
   // Business details from Screen 2
   const businessName = searchParams.get("business_name") ?? "";
@@ -33,7 +32,6 @@ function ReviewContent() {
   const addressCity = searchParams.get("address_city") ?? "";
   const addressState = searchParams.get("address_state") ?? "";
   const addressZip = searchParams.get("address_zip") ?? "";
-  const websiteUrl = searchParams.get("website_url") ?? "";
   const serviceType = searchParams.get("service_type") ?? "";
   const productType = searchParams.get("product_type") ?? "";
   const appName = searchParams.get("app_name") ?? "";
@@ -80,18 +78,6 @@ function ReviewContent() {
       .filter((label): label is string => !!label);
   }, [expansions, useCase]);
 
-  // Editable state for campaign description and sample messages
-  const [descriptionOverride, setDescriptionOverride] = useState<
-    string | null
-  >(null);
-  const [messagesOverride, setMessagesOverride] = useState<
-    [string, string, string] | null
-  >(null);
-  const [previewHasErrors, setPreviewHasErrors] = useState(false);
-  const handleValidationChange = useCallback((hasErrors: boolean) => {
-    setPreviewHasErrors(hasErrors);
-  }, []);
-
   if (!useCase || !templates) {
     return (
       <div className="flex min-h-svh flex-col items-center justify-center bg-primary px-4">
@@ -105,10 +91,6 @@ function ReviewContent() {
     );
   }
 
-  const currentDescription =
-    descriptionOverride ?? templates.campaign_description;
-  const currentMessages = messagesOverride ?? templates.sample_messages;
-
   // Build the full address string
   const fullAddress = [addressLine1, addressCity, `${addressState} ${addressZip}`]
     .filter(Boolean)
@@ -117,7 +99,6 @@ function ReviewContent() {
   // Build edit href that sends them back to Screen 2 with all data preserved
   function buildEditHref() {
     const params = new URLSearchParams(searchParams.toString());
-    // Remove review-only params if any existed
     return `/start/details?${params.toString()}`;
   }
 
@@ -125,16 +106,6 @@ function ReviewContent() {
   function buildBackHref() {
     const params = new URLSearchParams(searchParams.toString());
     return `/start/details?${params.toString()}`;
-  }
-
-  function handleDescriptionChange(value: string) {
-    setDescriptionOverride(value);
-  }
-
-  function handleSampleMessageChange(index: number, value: string) {
-    const updated = [...currentMessages] as [string, string, string];
-    updated[index] = value;
-    setMessagesOverride(updated);
   }
 
   return (
@@ -182,20 +153,13 @@ function ReviewContent() {
 
           {/* Right: Generated preview */}
           <ReviewPreviewCard
-            campaignDescription={currentDescription}
-            sampleMessages={currentMessages}
-            originalDescription={templates.campaign_description}
-            originalMessages={templates.sample_messages}
-            businessName={businessName}
+            campaignDescription={templates.campaign_description}
+            sampleMessages={templates.sample_messages}
+            sampleMessageLabels={templates.sample_message_labels}
             complianceSlug={complianceSlug}
             useCaseLabel={useCase.label}
             expansionLabels={expansionLabels}
             includedItems={useCase.included}
-            onDescriptionChange={handleDescriptionChange}
-            onSampleMessageChange={handleSampleMessageChange}
-            onRevertDescription={() => setDescriptionOverride(null)}
-            onRevertMessages={() => setMessagesOverride(null)}
-            onValidationChange={handleValidationChange}
           />
         </div>
 
@@ -216,7 +180,6 @@ function ReviewContent() {
               size="lg"
               color="primary"
               iconLeading={CreditCard02}
-              isDisabled={previewHasErrors}
             >
               Proceed to payment — $199
             </Button>

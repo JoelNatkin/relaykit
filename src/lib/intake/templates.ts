@@ -14,6 +14,7 @@ interface TemplateInput {
 interface TemplateOutput {
   campaign_description: string;
   sample_messages: [string, string, string];
+  sample_message_labels: [string, string, string];
 }
 
 const CAMPAIGN_DESCRIPTIONS: Record<UseCaseId, (i: TemplateInput) => string> = {
@@ -78,10 +79,54 @@ const SAMPLE_MESSAGES: Record<UseCaseId, (i: TemplateInput) => [string, string, 
   ],
 };
 
+const SAMPLE_MESSAGE_LABELS: Record<UseCaseId, [string, string, string]> = {
+  appointments: [
+    "Appointment confirmation",
+    "Appointment reminder",
+    "Post-visit follow-up",
+  ],
+  orders: [
+    "Order confirmation",
+    "Shipping update",
+    "Delivery confirmation",
+  ],
+  verification: [
+    "Verification code",
+    "Login code",
+    "Phone verified",
+  ],
+  support: [
+    "Ticket received",
+    "Ticket status update",
+    "Ticket resolved",
+  ],
+  marketing: [
+    "Promotional offer",
+    "New product announcement",
+    "Sale alert",
+  ],
+  internal: [
+    "Shift update",
+    "Meeting reminder",
+    "Operational alert",
+  ],
+  community: [
+    "Event announcement",
+    "Community update",
+    "Welcome message",
+  ],
+  waitlist: [
+    "Waitlist ready notification",
+    "Waitlist position update",
+    "Reservation confirmation",
+  ],
+};
+
 export function generateTemplates(input: TemplateInput): TemplateOutput {
   return {
     campaign_description: CAMPAIGN_DESCRIPTIONS[input.use_case](input),
     sample_messages: SAMPLE_MESSAGES[input.use_case](input),
+    sample_message_labels: SAMPLE_MESSAGE_LABELS[input.use_case],
   };
 }
 
