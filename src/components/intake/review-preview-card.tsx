@@ -114,7 +114,7 @@ function FaqAccordion({
 
   const items = [
     {
-      question: "Will carriers see these exact messages?",
+      question: "Do I have to use these exact messages?",
       answer:
         "No. Carriers review your campaign description and sample messages to understand the type of texts you'll send, but they don't enforce exact wording. Your actual messages can differ as long as they match the described purpose.",
     },
@@ -138,7 +138,7 @@ function FaqAccordion({
             onClick={() => setOpenIndex(openIndex === i ? null : i)}
             className="flex w-full items-center justify-between py-2.5 text-left"
           >
-            <span className="text-sm font-medium text-secondary">
+            <span className="text-sm text-tertiary">
               {item.question}
             </span>
             <ChevronDown
@@ -327,12 +327,12 @@ export function ReviewPreviewCard({
               isInvalid={!!descError}
             />
           ) : (
-            <p className="px-3 py-2 text-sm text-primary">
+            <p className="text-sm text-primary">
               {campaignDescription}
             </p>
           )}
           {descError && (
-            <div className="flex items-center gap-1.5 px-3">
+            <div className="flex items-center gap-1.5">
               <AlertCircle className="size-3.5 shrink-0 text-fg-error-secondary" />
               <span className="text-xs text-error-primary">{descError}</span>
             </div>
@@ -382,7 +382,7 @@ export function ReviewPreviewCard({
                   )}
                 </div>
                 {msgErrors[i] && (
-                  <div className="flex items-center gap-1.5 pl-6">
+                  <div className="flex items-center gap-1.5">
                     <AlertCircle className="size-3.5 shrink-0 text-fg-error-secondary" />
                     <span className="text-xs text-error-primary">
                       {msgErrors[i]}
@@ -390,7 +390,7 @@ export function ReviewPreviewCard({
                   </div>
                 )}
                 {msgWarnings[i] && !msgErrors[i] && (
-                  <div className="flex items-center gap-1.5 pl-6">
+                  <div className="flex items-center gap-1.5">
                     <AlertCircle className="size-3.5 shrink-0 text-fg-warning-secondary" />
                     <span className="text-xs text-warning-primary">
                       {msgWarnings[i]}
@@ -413,14 +413,14 @@ export function ReviewPreviewCard({
           <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
             Compliance website
           </span>
-          <p className="px-3 text-sm text-tertiary">
+          <p className="text-sm text-tertiary">
             We&apos;ll create a page at{" "}
             <span className="font-medium text-primary">
               {complianceSlug}.relaykit.co
             </span>{" "}
             with:
           </p>
-          <div className="flex flex-col gap-1 px-3">
+          <div className="flex flex-col gap-1">
             {[
               "Privacy policy (with required mobile data language)",
               "Terms of service (with messaging disclosures)",
@@ -439,7 +439,7 @@ export function ReviewPreviewCard({
           <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
             What happens next
           </span>
-          <ol className="flex flex-col gap-1 px-3">
+          <ol className="flex flex-col gap-1">
             {[
               "You pay $199",
               "We submit your registration to US carriers (usually 2\u20137 days)",

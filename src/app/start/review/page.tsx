@@ -201,8 +201,7 @@ function ReviewContent() {
         {/* Navigation */}
         <div className="mt-8 flex flex-col items-end gap-3">
           <p className="text-sm text-tertiary">
-            Our registration templates are optimized for carrier approval. If
-            your registration is rejected and we can&apos;t resolve it,
+            If your registration is rejected and we can&apos;t resolve it,
             you&apos;ll get a full refund.
           </p>
           <div className="flex w-full items-center justify-between">
