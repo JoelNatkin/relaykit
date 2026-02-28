@@ -70,13 +70,18 @@ function ReviewContent() {
   );
 
   // Resolve expansion labels from URL param
+  // Parse selected expansion IDs from URL param
+  const selectedExpansions = useMemo(
+    () => (expansions ? expansions.split(",").filter(Boolean) : []),
+    [expansions],
+  );
+
   const expansionLabels = useMemo(() => {
-    if (!expansions || !useCase) return [];
-    const selectedIds = expansions.split(",").filter(Boolean);
-    return selectedIds
+    if (selectedExpansions.length === 0 || !useCase) return [];
+    return selectedExpansions
       .map((id) => useCase.expansions.find((e) => e.id === id)?.label)
       .filter((label): label is string => !!label);
-  }, [expansions, useCase]);
+  }, [selectedExpansions, useCase]);
 
   if (!useCase || !templates) {
     return (
@@ -160,6 +165,8 @@ function ReviewContent() {
             useCaseLabel={useCase.label}
             expansionLabels={expansionLabels}
             includedItems={useCase.included}
+            notIncludedItems={useCase.notIncluded}
+            selectedExpansions={selectedExpansions}
           />
         </div>
 

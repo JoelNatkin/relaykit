@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CheckCircle, ChevronDown } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
+import type { ScopeItem } from "@/lib/intake/use-case-data";
 
 interface ReviewPreviewCardProps {
   campaignDescription: string;
@@ -12,16 +13,87 @@ interface ReviewPreviewCardProps {
   useCaseLabel: string;
   expansionLabels: string[];
   includedItems: string[];
+  notIncludedItems: ScopeItem[];
+  selectedExpansions: string[];
+}
+
+function ScopeCheckIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className="size-4 shrink-0"
+      aria-hidden="true"
+    >
+      <path
+        d="M13.3334 4L6.00008 11.3333L2.66675 8"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ScopeXIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      className="size-4 shrink-0"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 4L4 12M4 4L12 12"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ScopeListItem({
+  text,
+  isIncluded,
+}: {
+  text: string;
+  isIncluded: boolean;
+}) {
+  return (
+    <li className="flex items-start gap-2 text-sm">
+      {isIncluded ? (
+        <span className="mt-0.5 text-fg-success-secondary">
+          <ScopeCheckIcon />
+        </span>
+      ) : (
+        <span className="mt-0.5 text-fg-warning-secondary">
+          <ScopeXIcon />
+        </span>
+      )}
+      <span className="text-tertiary">{text}</span>
+    </li>
+  );
 }
 
 function FaqAccordion({
   useCaseLabel,
   expansionLabels,
   includedItems,
+  notIncludedItems,
+  selectedExpansions,
 }: {
   useCaseLabel: string;
   expansionLabels: string[];
   includedItems: string[];
+  notIncludedItems: ScopeItem[];
+  selectedExpansions: string[];
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -54,19 +126,23 @@ function FaqAccordion({
           <p>
             Your registration covers {label}. That means you can send:
           </p>
-          <ul className="flex flex-col gap-1 pl-4">
+          <ul className="flex flex-col gap-2">
             {includedItems.map((item) => (
-              <li key={item} className="list-disc">
-                {item}
-              </li>
+              <ScopeListItem key={item} text={item} isIncluded />
             ))}
+            {notIncludedItems.map((item) => {
+              const unlocked =
+                item.unlockedBy !== undefined &&
+                item.unlockedBy.some((id) => selectedExpansions.includes(id));
+              return (
+                <ScopeListItem
+                  key={item.text}
+                  text={item.text}
+                  isIncluded={unlocked}
+                />
+              );
+            })}
           </ul>
-          {expansionLabels.length > 0 && (
-            <p>
-              You also added:{" "}
-              {expansionLabels.map((l) => l.toLowerCase()).join(", ")}.
-            </p>
-          )}
         </div>
       ),
     },
@@ -104,6 +180,8 @@ export function ReviewPreviewCard({
   useCaseLabel,
   expansionLabels,
   includedItems,
+  notIncludedItems,
+  selectedExpansions,
 }: ReviewPreviewCardProps) {
   return (
     <div className="rounded-xl border border-secondary bg-secondary">
@@ -144,6 +222,8 @@ export function ReviewPreviewCard({
           useCaseLabel={useCaseLabel}
           expansionLabels={expansionLabels}
           includedItems={includedItems}
+          notIncludedItems={notIncludedItems}
+          selectedExpansions={selectedExpansions}
         />
 
         {/* Compliance website */}
