@@ -12,31 +12,36 @@ import {
   generateTemplates,
   generateComplianceSlug,
 } from "@/lib/intake/templates";
+import { getIntakeSession } from "@/lib/intake/session-storage";
 
 function ReviewContent() {
   const searchParams = useSearchParams();
 
-  // Intake params from previous screens
-  const useCaseId = searchParams.get("use_case") as UseCaseId | null;
-  const expansions = searchParams.get("expansions") ?? "";
+  // Restore from sessionStorage as fallback for back-navigation
+  const session = useMemo(() => getIntakeSession(), []);
 
-  // Business details from Screen 2
-  const businessName = searchParams.get("business_name") ?? "";
-  const businessDescription = searchParams.get("business_description") ?? "";
-  const hasEin = searchParams.get("has_ein") ?? "";
-  const businessType = searchParams.get("business_type") ?? "";
-  const contactName = searchParams.get("contact_name") ?? "";
-  const email = searchParams.get("email") ?? "";
-  const phone = searchParams.get("phone") ?? "";
-  const addressLine1 = searchParams.get("address_line1") ?? "";
-  const addressCity = searchParams.get("address_city") ?? "";
-  const addressState = searchParams.get("address_state") ?? "";
-  const addressZip = searchParams.get("address_zip") ?? "";
-  const serviceType = searchParams.get("service_type") ?? "";
-  const productType = searchParams.get("product_type") ?? "";
-  const appName = searchParams.get("app_name") ?? "";
-  const communityName = searchParams.get("community_name") ?? "";
-  const venueType = searchParams.get("venue_type") ?? "";
+  // Intake params from previous screens (URL params first, session fallback)
+  const useCaseId = (searchParams.get("use_case") ?? session.use_case ?? null) as UseCaseId | null;
+  const expansions = searchParams.get("expansions") ?? (session.expansions?.join(",") ?? "");
+
+  // Business details: URL params first, then sessionStorage fallback
+  const bd = session.business_details ?? {};
+  const businessName = searchParams.get("business_name") ?? bd.business_name ?? "";
+  const businessDescription = searchParams.get("business_description") ?? bd.business_description ?? "";
+  const hasEin = searchParams.get("has_ein") ?? bd.has_ein ?? "";
+  const businessType = searchParams.get("business_type") ?? bd.business_type ?? "";
+  const contactName = searchParams.get("contact_name") ?? bd.contact_name ?? "";
+  const email = searchParams.get("email") ?? bd.email ?? "";
+  const phone = searchParams.get("phone") ?? bd.phone ?? "";
+  const addressLine1 = searchParams.get("address_line1") ?? bd.address_line1 ?? "";
+  const addressCity = searchParams.get("address_city") ?? bd.address_city ?? "";
+  const addressState = searchParams.get("address_state") ?? bd.address_state ?? "";
+  const addressZip = searchParams.get("address_zip") ?? bd.address_zip ?? "";
+  const serviceType = searchParams.get("service_type") ?? bd.service_type ?? "";
+  const productType = searchParams.get("product_type") ?? bd.product_type ?? "";
+  const appName = searchParams.get("app_name") ?? bd.app_name ?? "";
+  const communityName = searchParams.get("community_name") ?? bd.community_name ?? "";
+  const venueType = searchParams.get("venue_type") ?? bd.venue_type ?? "";
 
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 

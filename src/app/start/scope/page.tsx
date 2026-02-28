@@ -13,6 +13,10 @@ import {
   hasMarketingExpansion,
   isPromoExpansion,
 } from "@/lib/intake/campaign-type";
+import {
+  getIntakeSession,
+  saveIntakeSession,
+} from "@/lib/intake/session-storage";
 
 function getDefaultExpansions(
   expansions: { id: string }[],
@@ -28,7 +32,14 @@ function ScopeContent() {
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 
   const [selectedExpansions, setSelectedExpansions] = useState<string[]>(
-    () => (useCase ? getDefaultExpansions(useCase.expansions) : []),
+    () => {
+      // Restore from session if available for this use case
+      const session = getIntakeSession();
+      if (session.use_case === useCaseId && session.expansions) {
+        return session.expansions;
+      }
+      return useCase ? getDefaultExpansions(useCase.expansions) : [];
+    },
   );
 
   if (!useCase) {
@@ -51,9 +62,13 @@ function ScopeContent() {
   const showPromoNote = hasMarketingExpansion(selectedExpansions);
 
   function toggleExpansion(id: string) {
-    setSelectedExpansions((prev) =>
-      prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id],
-    );
+    setSelectedExpansions((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((e) => e !== id)
+        : [...prev, id];
+      saveIntakeSession({ expansions: next });
+      return next;
+    });
   }
 
   function buildContinueHref() {
@@ -63,6 +78,14 @@ function ScopeContent() {
       params.set("expansions", selectedExpansions.join(","));
     }
     params.set("campaign_type", effectiveCampaignType);
+
+    // Save to session on navigate forward
+    saveIntakeSession({
+      use_case: useCase!.id,
+      expansions: selectedExpansions,
+      campaign_type: effectiveCampaignType,
+    });
+
     return `/start/details?${params.toString()}`;
   }
 

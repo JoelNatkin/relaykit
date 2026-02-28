@@ -8,6 +8,10 @@ import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-ic
 import { BusinessDetailsForm } from "@/components/intake/business-details-form";
 import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
 import type { BusinessDetailsData } from "@/lib/intake/validation";
+import {
+  getIntakeSession,
+  saveIntakeSession,
+} from "@/lib/intake/session-storage";
 
 function DetailsContent() {
   const searchParams = useSearchParams();
@@ -16,7 +20,7 @@ function DetailsContent() {
   const campaignType = searchParams.get("campaign_type") ?? "";
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 
-  // Extract form field initial values from URL params (for edit round-trip)
+  // Extract form field initial values: URL params first, then sessionStorage fallback
   const formFields = [
     "business_name", "business_description", "has_ein", "ein", "business_type",
     "contact_name", "email", "phone", "address_line1", "address_city",
@@ -24,12 +28,21 @@ function DetailsContent() {
     "product_type", "app_name", "community_name", "venue_type",
   ];
   const initialValues = useMemo(() => {
+    // Try URL params first
     const vals: Record<string, string> = {};
     for (const field of formFields) {
       const v = searchParams.get(field);
       if (v) vals[field] = v;
     }
-    return Object.keys(vals).length > 0 ? vals : undefined;
+    if (Object.keys(vals).length > 0) return vals;
+
+    // Fall back to sessionStorage
+    const session = getIntakeSession();
+    if (session.business_details && Object.keys(session.business_details).length > 0) {
+      return session.business_details;
+    }
+
+    return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
@@ -37,6 +50,14 @@ function DetailsContent() {
 
   const handleValid = useCallback((data: BusinessDetailsData) => {
     setValidData(data);
+    // Save business details to session on every valid change
+    const details: Record<string, string> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== null && value !== undefined && value !== "") {
+        details[key] = String(value);
+      }
+    }
+    saveIntakeSession({ business_details: details });
   }, []);
 
   const handleInvalid = useCallback(() => {

@@ -5,9 +5,20 @@ import { ArrowRight } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { UseCaseTile } from "@/components/intake/use-case-tile";
 import { USE_CASE_LIST } from "@/lib/intake/use-case-data";
+import {
+  getIntakeSession,
+  saveIntakeSession,
+} from "@/lib/intake/session-storage";
 
 export default function StartPage() {
-  const [selectedUseCase, setSelectedUseCase] = useState<string | null>(null);
+  const [selectedUseCase, setSelectedUseCase] = useState<string | null>(
+    () => getIntakeSession().use_case ?? null,
+  );
+
+  function handleSelect(id: string) {
+    setSelectedUseCase(id);
+    saveIntakeSession({ use_case: id as Parameters<typeof saveIntakeSession>[0]["use_case"] });
+  }
 
   return (
     <div className="flex min-h-svh flex-col bg-primary">
@@ -31,7 +42,7 @@ export default function StartPage() {
               description={useCase.description}
               icon={useCase.icon}
               isSelected={selectedUseCase === useCase.id}
-              onSelect={setSelectedUseCase}
+              onSelect={handleSelect}
             />
           ))}
         </div>
