@@ -37,8 +37,9 @@ export const UseCaseTile = ({
       <FeaturedIcon
         icon={icon}
         size="md"
-        color={isSelected ? "brand" : "gray"}
-        theme={isSelected ? "dark" : "light"}
+        color="gray"
+        theme="light"
+        className={isSelected ? "bg-brand-200" : undefined}
       />
       <div className="flex flex-col gap-0.5">
         <span className="text-sm font-semibold text-primary">{label}</span>
