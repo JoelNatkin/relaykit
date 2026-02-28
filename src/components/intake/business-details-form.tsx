@@ -145,7 +145,7 @@ export function BusinessDetailsForm({
     <div className="flex flex-col gap-8">
       {/* Section: Your business */}
       <fieldset className="flex flex-col gap-5">
-        <legend className="text-lg font-semibold text-primary">
+        <legend className="mb-2 text-lg font-semibold text-primary">
           Your business
         </legend>
 
@@ -222,7 +222,7 @@ export function BusinessDetailsForm({
           <p className="rounded-lg bg-secondary p-3 text-sm text-tertiary">
             No problem! We&apos;ll register you as a sole proprietor.
             You&apos;re limited to one campaign and one phone number,
-            which is plenty for most indie apps.
+            which is plenty for most apps.
           </p>
         )}
 
@@ -265,7 +265,7 @@ export function BusinessDetailsForm({
 
       {/* Section: Contact information */}
       <fieldset className="flex flex-col gap-5">
-        <legend className="text-lg font-semibold text-primary">
+        <legend className="mb-2 text-lg font-semibold text-primary">
           Contact information
         </legend>
 
@@ -321,8 +321,8 @@ export function BusinessDetailsForm({
           hint={fieldError("address_line1")}
         />
 
-        <div className="grid grid-cols-4 gap-4">
-          <div className="col-span-2">
+        <div className="flex gap-4">
+          <div className="w-[40%]">
             <Input
               label="City"
               placeholder="City"
@@ -335,7 +335,7 @@ export function BusinessDetailsForm({
             />
           </div>
 
-          <div className="col-span-1">
+          <div className="w-[35%]">
             <Select
               label="State"
               placeholder="State"
@@ -355,7 +355,7 @@ export function BusinessDetailsForm({
             </Select>
           </div>
 
-          <div className="col-span-1">
+          <div className="w-[25%]">
             <Input
               label="ZIP code"
               placeholder="XXXXX"

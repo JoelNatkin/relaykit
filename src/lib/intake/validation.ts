@@ -79,14 +79,14 @@ export const businessDetailsSchema = z
     // Business
     business_name: z
       .string()
-      .min(2, "Business name must be at least 2 characters")
-      .max(100, "Business name must be under 100 characters"),
+      .min(2, "Required field")
+      .max(100, "Required field"),
     business_description: z
       .string()
-      .min(20, "Description must be at least 20 characters")
-      .max(500, "Description must be under 500 characters"),
+      .min(20, "Required field")
+      .max(500, "Required field"),
     has_ein: z.enum(["yes", "no"], {
-      message: "Please select whether you have an EIN",
+      message: "Required field",
     }),
     ein: z.string().optional(),
     business_type: z.string().optional(),
@@ -94,32 +94,32 @@ export const businessDetailsSchema = z
     // Contact
     contact_name: z
       .string()
-      .min(2, "Name must be at least 2 characters"),
+      .min(2, "Required field"),
     email: z
       .string()
-      .email("Please enter a valid email address"),
+      .email("Required field"),
     phone: z
       .string()
-      .min(1, "Phone number is required")
+      .min(1, "Required field")
       .refine(
         (val) => phoneDigits(val).length === 10,
-        "Please enter a valid 10-digit US phone number",
+        "Required field",
       ),
     address_line1: z
       .string()
-      .min(5, "Street address must be at least 5 characters"),
+      .min(1, "Required field"),
     address_city: z
       .string()
-      .min(2, "City must be at least 2 characters"),
+      .min(2, "Required field"),
     address_state: z
       .string()
       .refine(
         (val) => (US_STATES as readonly string[]).includes(val),
-        "Please select a state",
+        "Required field",
       ),
     address_zip: z
       .string()
-      .regex(/^\d{5}$/, "Please enter a valid 5-digit ZIP code"),
+      .regex(/^\d{5}$/, "Required field"),
 
     // App-specific (all optional at base level, conditionally required below)
     website_url: z.string().optional(),
@@ -135,14 +135,14 @@ export const businessDetailsSchema = z
       if (!data.ein || einDigits(data.ein).length !== 9) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Please enter a valid 9-digit EIN",
+          message: "Required field",
           path: ["ein"],
         });
       }
       if (!data.business_type) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Please select a business type",
+          message: "Required field",
           path: ["business_type"],
         });
       }
@@ -206,7 +206,7 @@ export function validateUseCaseFields(
     if (field === "app_name") continue;
     const val = data[field];
     if (!val || (typeof val === "string" && val.trim().length < 2)) {
-      errors.push({ field, message: `${label} is required` });
+      errors.push({ field, message: "Required field" });
     }
   }
   return errors;
