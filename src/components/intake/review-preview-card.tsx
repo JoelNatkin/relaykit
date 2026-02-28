@@ -205,7 +205,7 @@ export function ReviewPreviewCard({
           <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
             Sample messages
           </span>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-5">
             {sampleMessages.map((msg, i) => (
               <div key={i} className="flex flex-col gap-1">
                 <span className="text-sm text-tertiary">

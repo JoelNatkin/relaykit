@@ -129,13 +129,27 @@ function ReviewContent() {
           </span>
         </div>
 
-        <div className="mb-8 flex flex-col gap-2">
-          <h1 className="text-display-sm font-semibold text-primary sm:text-display-md">
-            Here&apos;s what we&apos;ll register for you
-          </h1>
-          <p className="text-lg text-tertiary">
-            Review your details and messaging profile.
-          </p>
+        <div className="mb-8 flex items-start justify-between gap-6">
+          <div className="flex flex-col gap-2">
+            <h1 className="text-display-sm font-semibold text-primary sm:text-display-md">
+              Here&apos;s what we&apos;ll register for you
+            </h1>
+            <p className="text-lg text-tertiary">
+              Review your details and messaging profile.
+            </p>
+          </div>
+          <div className="hidden shrink-0 flex-col items-end gap-2 lg:flex">
+            <Button
+              size="lg"
+              color="primary"
+              iconLeading={CreditCard02}
+            >
+              Proceed to payment — $199
+            </Button>
+            <p className="text-sm text-tertiary">
+              Money back if not approved
+            </p>
+          </div>
         </div>
 
         {/* Two-column layout */}
