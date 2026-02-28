@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { CheckCircle, ChevronDown } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
@@ -12,35 +12,6 @@ interface ReviewPreviewCardProps {
   useCaseLabel: string;
   expansionLabels: string[];
   includedItems: string[];
-}
-
-/** Read-only textarea-styled container that auto-sizes to fit content. */
-function ReadOnlyField({
-  value,
-  minRows,
-}: {
-  value: string;
-  minRows: number;
-}) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
-  }, [value]);
-
-  return (
-    <textarea
-      ref={ref}
-      value={value}
-      readOnly
-      tabIndex={-1}
-      rows={minRows}
-      className="w-full resize-none rounded-lg border border-secondary bg-primary px-3 py-2 text-sm text-primary outline-none"
-    />
-  );
 }
 
 function FaqAccordion({
@@ -148,7 +119,7 @@ export function ReviewPreviewCard({
           <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
             Campaign description
           </span>
-          <ReadOnlyField value={campaignDescription} minRows={4} />
+          <p className="text-sm text-primary">{campaignDescription}</p>
         </div>
 
         {/* Sample messages */}
@@ -162,7 +133,7 @@ export function ReviewPreviewCard({
                 <span className="text-sm text-tertiary">
                   {sampleMessageLabels[i]}
                 </span>
-                <ReadOnlyField value={msg} minRows={3} />
+                <p className="text-sm text-primary">{msg}</p>
               </div>
             ))}
           </div>
