@@ -3,13 +3,10 @@
 import { useState, useRef, useEffect } from "react";
 import {
   AlertCircle,
-  Check,
   CheckCircle,
   ChevronDown,
-  Edit05,
   RefreshCcw01,
 } from "@untitledui/icons";
-import { Button } from "@/components/base/buttons/button";
 import { cx } from "@/utils/cx";
 
 interface ReviewPreviewCardProps {
@@ -60,7 +57,7 @@ function AutoTextarea({
       rows={minRows}
       className={cx(
         "w-full resize-none rounded-lg border bg-primary px-3 py-2 text-sm text-primary outline-none transition duration-100 ease-linear focus:border-brand",
-        isInvalid ? "border-error" : "border-primary",
+        isInvalid ? "border-error" : "border-tertiary",
       )}
     />
   );
@@ -178,15 +175,6 @@ export function ReviewPreviewCard({
     sampleMessages[1] !== originalMessages[1] ||
     sampleMessages[2] !== originalMessages[2];
 
-  // Card-level edit mode
-  const [isEditing, setIsEditing] = useState(false);
-
-  // Draft state (used while editing)
-  const [descDraft, setDescDraft] = useState(campaignDescription);
-  const [msgDrafts, setMsgDrafts] = useState<[string, string, string]>([
-    ...sampleMessages,
-  ]);
-
   // Validation state
   const [descError, setDescError] = useState<string | null>(null);
   const [msgErrors, setMsgErrors] = useState<(string | null)[]>([
@@ -207,35 +195,16 @@ export function ReviewPreviewCard({
     );
   }, [descError, msgErrors, onValidationChange]);
 
-  // Sync drafts from props when not editing (handles undo)
-  useEffect(() => {
-    if (!isEditing) {
-      setDescDraft(campaignDescription);
-      setMsgDrafts([...sampleMessages]);
-    }
-  }, [campaignDescription, sampleMessages, isEditing]);
-
-  function handleEdit() {
-    setDescDraft(campaignDescription);
-    setMsgDrafts([...sampleMessages]);
-    setIsEditing(true);
-  }
-
-  function handleDone() {
-    setIsEditing(false);
-  }
-
   function handleDescBlur() {
-    const error = validateDescription(descDraft);
+    const error = validateDescription(campaignDescription);
     setDescError(error);
-    if (descDraft !== campaignDescription) {
-      onDescriptionChange(descDraft);
-    }
   }
 
   function handleMsgBlur(index: number) {
-    const value = msgDrafts[index];
-    const { error, warning } = validateMessage(value, businessName);
+    const { error, warning } = validateMessage(
+      sampleMessages[index],
+      businessName,
+    );
     setMsgErrors((prev) => {
       const next = [...prev];
       next[index] = error;
@@ -246,57 +215,25 @@ export function ReviewPreviewCard({
       next[index] = warning;
       return next;
     });
-    if (value !== sampleMessages[index]) {
-      onSampleMessageChange(index, value);
-    }
-  }
-
-  function updateMsgDraft(index: number, value: string) {
-    setMsgDrafts((prev) => {
-      const next = [...prev] as [string, string, string];
-      next[index] = value;
-      return next;
-    });
   }
 
   function handleRevertDescription() {
     setDescError(null);
-    setDescDraft(originalDescription);
     onRevertDescription();
   }
 
   function handleRevertMessages() {
     setMsgErrors([null, null, null]);
     setMsgWarnings([null, null, null]);
-    setMsgDrafts([...originalMessages]);
     onRevertMessages();
   }
 
   return (
     <div className="rounded-xl border border-secondary bg-secondary">
-      <div className="flex items-center justify-between border-b border-secondary px-5 py-3">
+      <div className="border-b border-secondary px-5 py-3">
         <h3 className="text-lg font-semibold text-primary">
           What we&apos;ll submit
         </h3>
-        {isEditing ? (
-          <Button
-            color="link-gray"
-            size="sm"
-            iconLeading={Check}
-            onClick={handleDone}
-          >
-            Done
-          </Button>
-        ) : (
-          <Button
-            color="link-gray"
-            size="sm"
-            iconLeading={Edit05}
-            onClick={handleEdit}
-          >
-            Edit
-          </Button>
-        )}
       </div>
 
       <div className="flex flex-col gap-5 p-5">
@@ -318,19 +255,13 @@ export function ReviewPreviewCard({
               </button>
             )}
           </div>
-          {isEditing ? (
-            <AutoTextarea
-              value={descDraft}
-              onChange={setDescDraft}
-              onBlur={handleDescBlur}
-              minRows={4}
-              isInvalid={!!descError}
-            />
-          ) : (
-            <p className="text-sm text-primary">
-              {campaignDescription}
-            </p>
-          )}
+          <AutoTextarea
+            value={campaignDescription}
+            onChange={onDescriptionChange}
+            onBlur={handleDescBlur}
+            minRows={4}
+            isInvalid={!!descError}
+          />
           {descError && (
             <div className="flex items-center gap-1.5">
               <AlertCircle className="size-3.5 shrink-0 text-fg-error-secondary" />
@@ -361,25 +292,16 @@ export function ReviewPreviewCard({
             {sampleMessages.map((msg, i) => (
               <div key={i} className="flex flex-col gap-1">
                 <div className="flex gap-2">
-                  <span
-                    className={cx(
-                      "shrink-0 text-sm text-tertiary",
-                      isEditing ? "mt-2" : "mt-0.5",
-                    )}
-                  >
+                  <span className="mt-2 shrink-0 text-sm text-tertiary">
                     {i + 1}.
                   </span>
-                  {isEditing ? (
-                    <AutoTextarea
-                      value={msgDrafts[i]}
-                      onChange={(val) => updateMsgDraft(i, val)}
-                      onBlur={() => handleMsgBlur(i)}
-                      minRows={3}
-                      isInvalid={!!msgErrors[i]}
-                    />
-                  ) : (
-                    <p className="text-sm text-primary">{msg}</p>
-                  )}
+                  <AutoTextarea
+                    value={msg}
+                    onChange={(val) => onSampleMessageChange(i, val)}
+                    onBlur={() => handleMsgBlur(i)}
+                    minRows={3}
+                    isInvalid={!!msgErrors[i]}
+                  />
                 </div>
                 {msgErrors[i] && (
                   <div className="flex items-center gap-1.5">
