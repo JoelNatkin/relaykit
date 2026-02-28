@@ -190,6 +190,7 @@ function ReviewContent() {
             complianceSlug={complianceSlug}
             useCaseLabel={useCase.label}
             expansionLabels={expansionLabels}
+            includedItems={useCase.included}
             onDescriptionChange={handleDescriptionChange}
             onSampleMessageChange={handleSampleMessageChange}
             onRevertDescription={() => setDescriptionOverride(null)}

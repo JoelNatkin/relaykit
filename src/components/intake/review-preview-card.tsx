@@ -18,6 +18,7 @@ interface ReviewPreviewCardProps {
   complianceSlug: string;
   useCaseLabel: string;
   expansionLabels: string[];
+  includedItems: string[];
   onDescriptionChange: (value: string) => void;
   onSampleMessageChange: (index: number, value: string) => void;
   onRevertDescription: () => void;
@@ -90,39 +91,57 @@ function validateMessage(
 function FaqAccordion({
   useCaseLabel,
   expansionLabels,
+  includedItems,
 }: {
   useCaseLabel: string;
   expansionLabels: string[];
+  includedItems: string[];
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  function buildCoverageAnswer() {
-    if (expansionLabels.length === 0) {
-      return `Your registration covers ${useCaseLabel}. If you need to add more messaging types later, you can update your registration.`;
-    }
-    const joined =
-      expansionLabels.length === 1
-        ? expansionLabels[0]
-        : expansionLabels.slice(0, -1).join(", ") +
-          " and " +
-          expansionLabels[expansionLabels.length - 1];
-    return `Your registration covers ${useCaseLabel}, plus ${joined}.`;
-  }
+  const label = useCaseLabel.toLowerCase();
 
-  const items = [
+  const items: { question: string; content: React.ReactNode }[] = [
     {
-      question: "Do I have to use these exact messages?",
-      answer:
-        "No. Carriers review your campaign description and sample messages to understand the type of texts you'll send, but they don't enforce exact wording. Your actual messages can differ as long as they match the described purpose.",
+      question: "What if my messages look different from these?",
+      content: (
+        <p className="pb-3 text-sm text-tertiary">
+          These are typical messages for your category. Your actual messages can
+          be different — carriers just want to understand the general type of
+          texts you&apos;ll send, not the exact wording.
+        </p>
+      ),
     },
     {
       question: "Can I change my messages later?",
-      answer:
-        "Yes. Once registered, you can update your campaign description and sample messages at any time through your dashboard. Changes are typically reviewed within 24 hours.",
+      content: (
+        <p className="pb-3 text-sm text-tertiary">
+          Yes. You have flexibility to adjust your messaging anytime after
+          approval, as long as it fits the use case you registered for.
+        </p>
+      ),
     },
     {
       question: "What does this registration cover?",
-      answer: buildCoverageAnswer(),
+      content: (
+        <div className="flex flex-col gap-2 pb-3 text-sm text-tertiary">
+          <p>
+            Your registration covers {label}. That means you can send:
+          </p>
+          <ul className="flex flex-col gap-1 pl-4">
+            {includedItems.map((item) => (
+              <li key={item} className="list-disc">
+                {item}
+              </li>
+            ))}
+          </ul>
+          {expansionLabels.length > 0 && (
+            <p>
+              You also added: {expansionLabels.map((l) => l.toLowerCase()).join(", ")}.
+            </p>
+          )}
+        </div>
+      ),
     },
   ];
 
@@ -145,9 +164,7 @@ function FaqAccordion({
               )}
             />
           </button>
-          {openIndex === i && (
-            <p className="pb-3 text-sm text-tertiary">{item.answer}</p>
-          )}
+          {openIndex === i && item.content}
         </div>
       ))}
     </div>
@@ -163,6 +180,7 @@ export function ReviewPreviewCard({
   complianceSlug,
   useCaseLabel,
   expansionLabels,
+  includedItems,
   onDescriptionChange,
   onSampleMessageChange,
   onRevertDescription,
@@ -328,6 +346,7 @@ export function ReviewPreviewCard({
         <FaqAccordion
           useCaseLabel={useCaseLabel}
           expansionLabels={expansionLabels}
+          includedItems={includedItems}
         />
 
         {/* Compliance website */}
