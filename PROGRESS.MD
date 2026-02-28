@@ -4,11 +4,11 @@
 - [x] Project scaffolding (Untitled UI starter kit + Supabase/Stripe/Twilio deps)
 - [x] Screen 1: Use Case Selection (`/start`) — 8 tiles, single select, Continue button
 - [x] Screen 1b: Use Case Advisory (`/start/scope`) — included/not-included sections, expansion checkboxes (non-promo pre-checked), campaign type upgrade logic
+- [x] Screen 2: Business Details (`/start/details`) — Zod validation, conditional EIN/business type fields, use-case-specific fields, inline validation on blur
 
 ## In Progress
 
 ## Up Next
-- [ ] Screen 2: Business Details (`/start/details`)
 - [ ] Screen 3: Review & Confirm (`/start/review`)
 - [ ] Stripe Checkout integration
 - [ ] Database schema + Supabase migrations
