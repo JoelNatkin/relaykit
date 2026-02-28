@@ -123,7 +123,7 @@ function ScopeContent() {
             selectedExpansions={selectedExpansions}
           />
 
-          {/* Expansion options */}
+          {/* Expansion options (not shown for marketing — already broadest category) */}
           {useCase.expansions.length > 0 && (
             <div className="rounded-xl border border-secondary p-5">
               <h3 className="mb-3 text-sm font-semibold text-primary">
@@ -146,20 +146,6 @@ function ScopeContent() {
                   marketing messages.
                 </p>
               )}
-            </div>
-          )}
-
-          {/* Marketing note (no expansions for marketing) */}
-          {useCase.id === "marketing" && (
-            <div className="rounded-xl border border-secondary p-5">
-              <h3 className="mb-3 text-sm font-semibold text-primary">
-                Will you also need any of these in the future?
-              </h3>
-              <p className="text-sm text-tertiary">
-                No expansion needed — marketing is already the broadest
-                registration category. You&apos;re covered for all promotional
-                and transactional messaging.
-              </p>
             </div>
           )}
         </div>
