@@ -140,14 +140,12 @@ export function BusinessDetailsForm({
   const useCaseFields = USE_CASE_FIELDS[useCase] ?? [];
   const showEinFields = form.has_ein === "yes";
   const showSolePropNote = form.has_ein === "no";
-  const showNoWebsiteNote =
-    form.website_url === "" || form.website_url === undefined;
 
   return (
     <div className="flex flex-col gap-8">
       {/* Section: Your business */}
       <fieldset className="flex flex-col gap-5">
-        <legend className="text-sm font-semibold text-primary">
+        <legend className="text-lg font-semibold text-primary">
           Your business
         </legend>
 
@@ -172,6 +170,34 @@ export function BusinessDetailsForm({
           onBlur={() => handleBlur("business_description")}
           isInvalid={!!fieldError("business_description")}
           hint={fieldError("business_description")}
+        />
+
+        {/* Use-case-specific fields */}
+        {useCaseFields.map(({ field, label, placeholder }) => {
+          const isOptional = field === "app_name";
+          return (
+            <Input
+              key={field}
+              label={label}
+              placeholder={placeholder}
+              isRequired={!isOptional}
+              value={form[field] ?? ""}
+              onChange={(val) => updateField(field, val)}
+              onBlur={() => handleBlur(field)}
+              isInvalid={!!fieldError(field)}
+              hint={fieldError(field)}
+            />
+          );
+        })}
+
+        <Input
+          label="Website"
+          placeholder="yourapp.com"
+          value={form.website_url}
+          onChange={(val) => updateField("website_url", val)}
+          onBlur={() => handleBlur("website_url")}
+          isInvalid={!!fieldError("website_url")}
+          hint={fieldError("website_url")}
         />
 
         <div className="flex flex-col gap-1.5">
@@ -239,7 +265,7 @@ export function BusinessDetailsForm({
 
       {/* Section: Contact information */}
       <fieldset className="flex flex-col gap-5">
-        <legend className="text-sm font-semibold text-primary">
+        <legend className="text-lg font-semibold text-primary">
           Contact information
         </legend>
 
@@ -295,8 +321,8 @@ export function BusinessDetailsForm({
           hint={fieldError("address_line1")}
         />
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="col-span-2 sm:col-span-1">
+        <div className="grid grid-cols-4 gap-4">
+          <div className="col-span-2">
             <Input
               label="City"
               placeholder="City"
@@ -342,48 +368,6 @@ export function BusinessDetailsForm({
             />
           </div>
         </div>
-      </fieldset>
-
-      {/* Section divider */}
-      <hr className="border-secondary" />
-
-      {/* Section: Your app */}
-      <fieldset className="flex flex-col gap-5">
-        <legend className="text-sm font-semibold text-primary">
-          Your app
-        </legend>
-
-        <Input
-          label="Do you have a website for this app?"
-          placeholder="https://yourapp.com"
-          value={form.website_url}
-          onChange={(val) => updateField("website_url", val)}
-          onBlur={() => handleBlur("website_url")}
-          isInvalid={!!fieldError("website_url")}
-          hint={
-            fieldError("website_url") ??
-            (showNoWebsiteNote
-              ? "If not, we'll generate a compliance website for you — it's included in the price."
-              : undefined)
-          }
-        />
-
-        {useCaseFields.map(({ field, label, placeholder }) => {
-          const isOptional = field === "app_name";
-          return (
-            <Input
-              key={field}
-              label={label}
-              placeholder={placeholder}
-              isRequired={!isOptional}
-              value={form[field] ?? ""}
-              onChange={(val) => updateField(field, val)}
-              onBlur={() => handleBlur(field)}
-              isInvalid={!!fieldError(field)}
-              hint={fieldError(field)}
-            />
-          );
-        })}
       </fieldset>
     </div>
   );

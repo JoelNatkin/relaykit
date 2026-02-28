@@ -122,11 +122,7 @@ export const businessDetailsSchema = z
       .regex(/^\d{5}$/, "Please enter a valid 5-digit ZIP code"),
 
     // App-specific (all optional at base level, conditionally required below)
-    website_url: z
-      .string()
-      .url("Please enter a valid URL")
-      .or(z.literal(""))
-      .optional(),
+    website_url: z.string().optional(),
     service_type: z.string().optional(),
     product_type: z.string().optional(),
     app_name: z.string().optional(),
@@ -162,7 +158,7 @@ export const USE_CASE_FIELDS: Partial<
   appointments: [
     {
       field: "service_type",
-      label: "What type of service?",
+      label: "What type of service do your customers book?",
       placeholder: "e.g., dental, hair salon, consulting, auto repair",
     },
   ],

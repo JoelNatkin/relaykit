@@ -90,7 +90,6 @@ function DetailsContent() {
           </h1>
           <p className="text-lg text-tertiary">
             We use this to register your messaging with US carriers.
-            Takes about 2 minutes.
           </p>
         </div>
 
