@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { CheckCircle, Edit05, RefreshCcw01 } from "@untitledui/icons";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { AlertCircle, CheckCircle, Edit05, RefreshCcw01 } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
 interface ReviewPreviewCardProps {
@@ -9,21 +9,25 @@ interface ReviewPreviewCardProps {
   sampleMessages: [string, string, string];
   originalDescription: string;
   originalMessages: [string, string, string];
+  businessName: string;
   complianceSlug: string;
   onDescriptionChange: (value: string) => void;
   onSampleMessageChange: (index: number, value: string) => void;
   onRevertDescription: () => void;
   onRevertMessages: () => void;
+  onValidationChange: (hasErrors: boolean) => void;
 }
 
 function EditableText({
   value,
   onChange,
   multiline = false,
+  isInvalid = false,
 }: {
   value: string;
   onChange: (value: string) => void;
   multiline?: boolean;
+  isInvalid?: boolean;
 }) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -44,9 +48,7 @@ function EditableText({
         onChange={(e) => setDraft(e.target.value)}
         onBlur={() => {
           setIsEditing(false);
-          if (draft !== value) {
-            onChange(draft);
-          }
+          onChange(draft);
         }}
         onKeyDown={(e) => {
           if (e.key === "Escape") {
@@ -56,13 +58,14 @@ function EditableText({
           if (e.key === "Enter" && !multiline) {
             e.preventDefault();
             setIsEditing(false);
-            if (draft !== value) {
-              onChange(draft);
-            }
+            onChange(draft);
           }
         }}
         rows={multiline ? 4 : 2}
-        className="w-full rounded-lg border border-brand bg-primary px-3 py-2 text-sm text-primary outline-none"
+        className={cx(
+          "w-full rounded-lg border bg-primary px-3 py-2 text-sm text-primary outline-none",
+          isInvalid ? "border-error" : "border-brand",
+        )}
       />
     );
   }
@@ -77,6 +80,7 @@ function EditableText({
       className={cx(
         "w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm text-primary",
         "transition duration-100 ease-linear hover:bg-secondary",
+        isInvalid && "ring-1 ring-error",
       )}
     >
       {value}
@@ -84,22 +88,100 @@ function EditableText({
   );
 }
 
+function validateDescription(value: string): string | null {
+  if (!value.trim()) return "This field is required";
+  if (value.length < 40) return "Minimum 40 characters";
+  if (value.length > 4096) return "Maximum 4,096 characters";
+  return null;
+}
+
+function validateMessage(
+  value: string,
+  businessName: string,
+): { error: string | null; warning: string | null } {
+  if (!value.trim()) return { error: "This field is required", warning: null };
+  const hasName = value.toLowerCase().includes(businessName.toLowerCase());
+  const hasStop = /\bstop\b/i.test(value);
+  if (!hasName || !hasStop) {
+    return {
+      error: null,
+      warning:
+        "Sample messages should include your business name and a STOP opt-out option",
+    };
+  }
+  return { error: null, warning: null };
+}
+
 export function ReviewPreviewCard({
   campaignDescription,
   sampleMessages,
   originalDescription,
   originalMessages,
+  businessName,
   complianceSlug,
   onDescriptionChange,
   onSampleMessageChange,
   onRevertDescription,
   onRevertMessages,
+  onValidationChange,
 }: ReviewPreviewCardProps) {
   const descriptionEdited = campaignDescription !== originalDescription;
   const messagesEdited =
     sampleMessages[0] !== originalMessages[0] ||
     sampleMessages[1] !== originalMessages[1] ||
     sampleMessages[2] !== originalMessages[2];
+
+  const [descError, setDescError] = useState<string | null>(null);
+  const [msgErrors, setMsgErrors] = useState<(string | null)[]>([
+    null,
+    null,
+    null,
+  ]);
+  const [msgWarnings, setMsgWarnings] = useState<(string | null)[]>([
+    null,
+    null,
+    null,
+  ]);
+
+  const syncValidation = useCallback(
+    (dErr: string | null, mErrs: (string | null)[]) => {
+      onValidationChange(dErr !== null || mErrs.some((e) => e !== null));
+    },
+    [onValidationChange],
+  );
+
+  function handleDescriptionBlur(value: string) {
+    const error = validateDescription(value);
+    setDescError(error);
+    syncValidation(error, msgErrors);
+    onDescriptionChange(value);
+  }
+
+  function handleMessageBlur(index: number, value: string) {
+    const { error, warning } = validateMessage(value, businessName);
+    const nextErrors = [...msgErrors];
+    nextErrors[index] = error;
+    setMsgErrors(nextErrors);
+    const nextWarnings = [...msgWarnings];
+    nextWarnings[index] = warning;
+    setMsgWarnings(nextWarnings);
+    syncValidation(descError, nextErrors);
+    onSampleMessageChange(index, value);
+  }
+
+  function handleRevertDescription() {
+    setDescError(null);
+    syncValidation(null, msgErrors);
+    onRevertDescription();
+  }
+
+  function handleRevertMessages() {
+    const cleared = [null, null, null] as (string | null)[];
+    setMsgErrors(cleared);
+    setMsgWarnings(cleared);
+    syncValidation(descError, cleared);
+    onRevertMessages();
+  }
 
   return (
     <div className="rounded-xl border border-secondary bg-secondary">
@@ -120,7 +202,7 @@ export function ReviewPreviewCard({
             {descriptionEdited && (
               <button
                 type="button"
-                onClick={onRevertDescription}
+                onClick={handleRevertDescription}
                 title="Restore original"
                 className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
               >
@@ -131,9 +213,16 @@ export function ReviewPreviewCard({
           </div>
           <EditableText
             value={campaignDescription}
-            onChange={onDescriptionChange}
+            onChange={handleDescriptionBlur}
             multiline
+            isInvalid={!!descError}
           />
+          {descError && (
+            <div className="flex items-center gap-1.5 px-3">
+              <AlertCircle className="size-3.5 shrink-0 text-fg-error-secondary" />
+              <span className="text-xs text-error-primary">{descError}</span>
+            </div>
+          )}
         </div>
 
         {/* Sample messages */}
@@ -146,7 +235,7 @@ export function ReviewPreviewCard({
             {messagesEdited && (
               <button
                 type="button"
-                onClick={onRevertMessages}
+                onClick={handleRevertMessages}
                 title="Restore original"
                 className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
               >
@@ -157,14 +246,33 @@ export function ReviewPreviewCard({
           </div>
           <div className="flex flex-col gap-2">
             {sampleMessages.map((msg, i) => (
-              <div key={i} className="flex gap-2">
-                <span className="mt-2 shrink-0 text-sm text-tertiary">
-                  {i + 1}.
-                </span>
-                <EditableText
-                  value={msg}
-                  onChange={(val) => onSampleMessageChange(i, val)}
-                />
+              <div key={i} className="flex flex-col gap-1">
+                <div className="flex gap-2">
+                  <span className="mt-2 shrink-0 text-sm text-tertiary">
+                    {i + 1}.
+                  </span>
+                  <EditableText
+                    value={msg}
+                    onChange={(val) => handleMessageBlur(i, val)}
+                    isInvalid={!!msgErrors[i]}
+                  />
+                </div>
+                {msgErrors[i] && (
+                  <div className="flex items-center gap-1.5 pl-6">
+                    <AlertCircle className="size-3.5 shrink-0 text-fg-error-secondary" />
+                    <span className="text-xs text-error-primary">
+                      {msgErrors[i]}
+                    </span>
+                  </div>
+                )}
+                {msgWarnings[i] && !msgErrors[i] && (
+                  <div className="flex items-center gap-1.5 pl-6">
+                    <AlertCircle className="size-3.5 shrink-0 text-fg-warning-secondary" />
+                    <span className="text-xs text-warning-primary">
+                      {msgWarnings[i]}
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, Suspense, useMemo } from "react";
+import { useState, Suspense, useMemo, useCallback } from "react";
 import { ArrowLeft, CreditCard02 } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
@@ -78,6 +78,10 @@ function ReviewContent() {
   const [messagesOverride, setMessagesOverride] = useState<
     [string, string, string] | null
   >(null);
+  const [previewHasErrors, setPreviewHasErrors] = useState(false);
+  const handleValidationChange = useCallback((hasErrors: boolean) => {
+    setPreviewHasErrors(hasErrors);
+  }, []);
 
   if (!useCase || !templates) {
     return (
@@ -174,11 +178,13 @@ function ReviewContent() {
             sampleMessages={currentMessages}
             originalDescription={templates.campaign_description}
             originalMessages={templates.sample_messages}
+            businessName={businessName}
             complianceSlug={complianceSlug}
             onDescriptionChange={handleDescriptionChange}
             onSampleMessageChange={handleSampleMessageChange}
             onRevertDescription={() => setDescriptionOverride(null)}
             onRevertMessages={() => setMessagesOverride(null)}
+            onValidationChange={handleValidationChange}
           />
         </div>
 
@@ -195,6 +201,7 @@ function ReviewContent() {
             size="lg"
             color="primary"
             iconLeading={CreditCard02}
+            isDisabled={previewHasErrors}
           >
             Proceed to payment — $199
           </Button>
