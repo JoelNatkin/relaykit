@@ -57,7 +57,7 @@ function AutoTextarea({
       rows={minRows}
       className={cx(
         "w-full resize-none rounded-lg border bg-primary px-3 py-2 text-sm text-primary outline-none transition duration-100 ease-linear focus:border-brand",
-        isInvalid ? "border-error" : "border-tertiary",
+        isInvalid ? "border-error" : "border-secondary",
       )}
     />
   );
@@ -238,7 +238,7 @@ export function ReviewPreviewCard({
 
       <div className="flex flex-col gap-5 p-5">
         {/* Campaign description */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
               Campaign description
@@ -271,7 +271,7 @@ export function ReviewPreviewCard({
         </div>
 
         {/* Sample messages */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2.5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
               Sample messages
@@ -342,7 +342,7 @@ export function ReviewPreviewCard({
             </span>{" "}
             with:
           </p>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             {[
               "Privacy policy (with required mobile data language)",
               "Terms of service (with messaging disclosures)",
