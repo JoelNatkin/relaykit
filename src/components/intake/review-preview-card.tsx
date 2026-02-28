@@ -1,18 +1,14 @@
 "use client";
 
-import {
-  useState,
-  useRef,
-  useEffect,
-  useImperativeHandle,
-  forwardRef,
-} from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   AlertCircle,
+  Check,
   CheckCircle,
   Edit05,
   RefreshCcw01,
 } from "@untitledui/icons";
+import { Button } from "@/components/base/buttons/button";
 import { cx } from "@/utils/cx";
 
 interface ReviewPreviewCardProps {
@@ -29,84 +25,43 @@ interface ReviewPreviewCardProps {
   onValidationChange: (hasErrors: boolean) => void;
 }
 
-interface EditableTextHandle {
-  activate: () => void;
-}
-
-const EditableText = forwardRef<
-  EditableTextHandle,
-  {
-    value: string;
-    onChange: (value: string) => void;
-    multiline?: boolean;
-    isInvalid?: boolean;
-  }
->(function EditableText({ value, onChange, multiline = false, isInvalid = false }, ref) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
-
-  useImperativeHandle(ref, () => ({
-    activate: () => {
-      setDraft(value);
-      setIsEditing(true);
-    },
-  }));
+/** Textarea that auto-grows to fit content. */
+function AutoTextarea({
+  value,
+  onChange,
+  onBlur,
+  minRows,
+  isInvalid = false,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onBlur: () => void;
+  minRows: number;
+  isInvalid?: boolean;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
-    }
-  }, [isEditing]);
-
-  if (isEditing) {
-    return (
-      <textarea
-        ref={inputRef}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={() => {
-          setIsEditing(false);
-          onChange(draft);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") {
-            setDraft(value);
-            setIsEditing(false);
-          }
-          if (e.key === "Enter" && !multiline) {
-            e.preventDefault();
-            setIsEditing(false);
-            onChange(draft);
-          }
-        }}
-        rows={multiline ? 4 : 2}
-        className={cx(
-          "w-full rounded-lg border bg-primary px-3 py-2 text-sm text-primary outline-none",
-          isInvalid ? "border-error" : "border-brand",
-        )}
-      />
-    );
-  }
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [value]);
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        setDraft(value);
-        setIsEditing(true);
-      }}
+    <textarea
+      ref={ref}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
+      rows={minRows}
       className={cx(
-        "w-full cursor-pointer rounded-lg px-3 py-2 text-left text-sm text-primary",
-        "transition duration-100 ease-linear hover:bg-secondary",
-        isInvalid && "ring-1 ring-error",
+        "w-full resize-none rounded-lg border bg-primary px-3 py-2 text-sm text-primary outline-none transition duration-100 ease-linear focus:border-brand",
+        isInvalid ? "border-error" : "border-primary",
       )}
-    >
-      {value}
-    </button>
+    />
   );
-});
+}
 
 function validateDescription(value: string): string | null {
   if (!value.trim()) return "This field is required";
@@ -151,6 +106,16 @@ export function ReviewPreviewCard({
     sampleMessages[1] !== originalMessages[1] ||
     sampleMessages[2] !== originalMessages[2];
 
+  // Card-level edit mode
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Draft state (used while editing)
+  const [descDraft, setDescDraft] = useState(campaignDescription);
+  const [msgDrafts, setMsgDrafts] = useState<[string, string, string]>([
+    ...sampleMessages,
+  ]);
+
+  // Validation state
   const [descError, setDescError] = useState<string | null>(null);
   const [msgErrors, setMsgErrors] = useState<(string | null)[]>([
     null,
@@ -163,24 +128,41 @@ export function ReviewPreviewCard({
     null,
   ]);
 
-  // Sync validation state to parent via useEffect to avoid stale closures
+  // Sync validation state to parent
   useEffect(() => {
     onValidationChange(
       descError !== null || msgErrors.some((e) => e !== null),
     );
   }, [descError, msgErrors, onValidationChange]);
 
-  // Refs for programmatic edit activation
-  const descEditRef = useRef<EditableTextHandle>(null);
-  const msg0EditRef = useRef<EditableTextHandle>(null);
+  // Sync drafts from props when not editing (handles undo)
+  useEffect(() => {
+    if (!isEditing) {
+      setDescDraft(campaignDescription);
+      setMsgDrafts([...sampleMessages]);
+    }
+  }, [campaignDescription, sampleMessages, isEditing]);
 
-  function handleDescriptionBlur(value: string) {
-    const error = validateDescription(value);
-    setDescError(error);
-    onDescriptionChange(value);
+  function handleEdit() {
+    setDescDraft(campaignDescription);
+    setMsgDrafts([...sampleMessages]);
+    setIsEditing(true);
   }
 
-  function handleMessageBlur(index: number, value: string) {
+  function handleDone() {
+    setIsEditing(false);
+  }
+
+  function handleDescBlur() {
+    const error = validateDescription(descDraft);
+    setDescError(error);
+    if (descDraft !== campaignDescription) {
+      onDescriptionChange(descDraft);
+    }
+  }
+
+  function handleMsgBlur(index: number) {
+    const value = msgDrafts[index];
     const { error, warning } = validateMessage(value, businessName);
     setMsgErrors((prev) => {
       const next = [...prev];
@@ -192,26 +174,57 @@ export function ReviewPreviewCard({
       next[index] = warning;
       return next;
     });
-    onSampleMessageChange(index, value);
+    if (value !== sampleMessages[index]) {
+      onSampleMessageChange(index, value);
+    }
+  }
+
+  function updateMsgDraft(index: number, value: string) {
+    setMsgDrafts((prev) => {
+      const next = [...prev] as [string, string, string];
+      next[index] = value;
+      return next;
+    });
   }
 
   function handleRevertDescription() {
     setDescError(null);
+    setDescDraft(originalDescription);
     onRevertDescription();
   }
 
   function handleRevertMessages() {
     setMsgErrors([null, null, null]);
     setMsgWarnings([null, null, null]);
+    setMsgDrafts([...originalMessages]);
     onRevertMessages();
   }
 
   return (
     <div className="rounded-xl border border-secondary bg-secondary">
-      <div className="border-b border-secondary px-5 py-3">
+      <div className="flex items-center justify-between border-b border-secondary px-5 py-3">
         <h3 className="text-lg font-semibold text-primary">
           What we&apos;ll submit
         </h3>
+        {isEditing ? (
+          <Button
+            color="link-gray"
+            size="sm"
+            iconLeading={Check}
+            onClick={handleDone}
+          >
+            Done
+          </Button>
+        ) : (
+          <Button
+            color="link-gray"
+            size="sm"
+            iconLeading={Edit05}
+            onClick={handleEdit}
+          >
+            Edit
+          </Button>
+        )}
       </div>
 
       <div className="flex flex-col gap-5 p-5">
@@ -221,35 +234,31 @@ export function ReviewPreviewCard({
             <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
               Campaign description
             </span>
-            <div className="flex items-center gap-2">
-              {descriptionEdited && (
-                <button
-                  type="button"
-                  onClick={handleRevertDescription}
-                  title="Restore original"
-                  className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
-                >
-                  <RefreshCcw01 className="size-3" />
-                  Undo
-                </button>
-              )}
+            {descriptionEdited && (
               <button
                 type="button"
-                onClick={() => descEditRef.current?.activate()}
-                title="Edit campaign description"
-                className="text-fg-tertiary transition duration-100 ease-linear hover:text-fg-secondary"
+                onClick={handleRevertDescription}
+                title="Restore original"
+                className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
               >
-                <Edit05 className="size-5" />
+                <RefreshCcw01 className="size-3" />
+                Undo
               </button>
-            </div>
+            )}
           </div>
-          <EditableText
-            ref={descEditRef}
-            value={campaignDescription}
-            onChange={handleDescriptionBlur}
-            multiline
-            isInvalid={!!descError}
-          />
+          {isEditing ? (
+            <AutoTextarea
+              value={descDraft}
+              onChange={setDescDraft}
+              onBlur={handleDescBlur}
+              minRows={4}
+              isInvalid={!!descError}
+            />
+          ) : (
+            <p className="px-3 py-2 text-sm text-primary">
+              {campaignDescription}
+            </p>
+          )}
           {descError && (
             <div className="flex items-center gap-1.5 px-3">
               <AlertCircle className="size-3.5 shrink-0 text-fg-error-secondary" />
@@ -264,41 +273,41 @@ export function ReviewPreviewCard({
             <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
               Sample messages
             </span>
-            <div className="flex items-center gap-2">
-              {messagesEdited && (
-                <button
-                  type="button"
-                  onClick={handleRevertMessages}
-                  title="Restore original"
-                  className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
-                >
-                  <RefreshCcw01 className="size-3" />
-                  Undo
-                </button>
-              )}
+            {messagesEdited && (
               <button
                 type="button"
-                onClick={() => msg0EditRef.current?.activate()}
-                title="Edit sample messages"
-                className="text-fg-tertiary transition duration-100 ease-linear hover:text-fg-secondary"
+                onClick={handleRevertMessages}
+                title="Restore original"
+                className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
               >
-                <Edit05 className="size-5" />
+                <RefreshCcw01 className="size-3" />
+                Undo
               </button>
-            </div>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             {sampleMessages.map((msg, i) => (
               <div key={i} className="flex flex-col gap-1">
                 <div className="flex gap-2">
-                  <span className="mt-2 shrink-0 text-sm text-tertiary">
+                  <span
+                    className={cx(
+                      "shrink-0 text-sm text-tertiary",
+                      isEditing ? "mt-2" : "mt-0.5",
+                    )}
+                  >
                     {i + 1}.
                   </span>
-                  <EditableText
-                    ref={i === 0 ? msg0EditRef : undefined}
-                    value={msg}
-                    onChange={(val) => handleMessageBlur(i, val)}
-                    isInvalid={!!msgErrors[i]}
-                  />
+                  {isEditing ? (
+                    <AutoTextarea
+                      value={msgDrafts[i]}
+                      onChange={(val) => updateMsgDraft(i, val)}
+                      onBlur={() => handleMsgBlur(i)}
+                      minRows={3}
+                      isInvalid={!!msgErrors[i]}
+                    />
+                  ) : (
+                    <p className="text-sm text-primary">{msg}</p>
+                  )}
                 </div>
                 {msgErrors[i] && (
                   <div className="flex items-center gap-1.5 pl-6">

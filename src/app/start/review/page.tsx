@@ -149,13 +149,12 @@ function ReviewContent() {
             Here&apos;s what we&apos;ll register for you
           </h1>
           <p className="text-lg text-tertiary">
-            Review your details and messaging profile. You can edit
-            anything before proceeding.
+            Review your details and messaging profile.
           </p>
         </div>
 
         {/* Two-column layout */}
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid items-start gap-6 lg:grid-cols-2">
           {/* Left: Details */}
           <ReviewDetailsCard
             businessName={businessName}

@@ -32,7 +32,7 @@ const CAMPAIGN_DESCRIPTIONS: Record<UseCaseId, (i: TemplateInput) => string> = {
   community: (i) =>
     `${i.community_name ?? i.business_name} sends event announcements, community updates, membership notifications, and group activity alerts to members who have opted in to receive messages.`,
   waitlist: (i) =>
-    `${i.business_name} sends waitlist position updates, availability alerts, and reservation confirmations to customers who have joined our waitlist at our ${i.venue_type ?? "venue"}. Customers can reply to accept or decline.`,
+    `${i.business_name} sends waitlist position updates, availability alerts, and reservation confirmations to customers. Customers can reply to accept or decline.`,
 };
 
 const SAMPLE_MESSAGES: Record<UseCaseId, (i: TemplateInput) => [string, string, string]> = {
