@@ -309,6 +309,8 @@ export function BusinessDetailsForm({
           label="Your full name"
           placeholder="Full name"
           isRequired
+          name="name"
+          autoComplete="name"
           value={form.contact_name}
           onChange={(val) => updateField("contact_name", val)}
           onBlur={() => handleBlur("contact_name")}
@@ -321,6 +323,8 @@ export function BusinessDetailsForm({
           placeholder="you@example.com"
           type="email"
           isRequired
+          name="email"
+          autoComplete="email"
           value={form.email}
           onChange={(val) => updateField("email", val)}
           onBlur={() => handleBlur("email")}
@@ -336,6 +340,8 @@ export function BusinessDetailsForm({
           placeholder="(555) 555-1234"
           type="tel"
           isRequired
+          name="tel"
+          autoComplete="tel"
           value={form.phone}
           onChange={(val) => updateField("phone", val)}
           onBlur={() => handleBlur("phone")}
@@ -350,6 +356,8 @@ export function BusinessDetailsForm({
           label="Street address"
           placeholder="123 Main St"
           isRequired
+          name="street-address"
+          autoComplete="address-line1"
           value={form.address_line1}
           onChange={(val) => updateField("address_line1", val)}
           onBlur={() => handleBlur("address_line1")}
@@ -363,6 +371,8 @@ export function BusinessDetailsForm({
               label="City"
               placeholder="City"
               isRequired
+              name="address-level2"
+              autoComplete="address-level2"
               value={form.address_city}
               onChange={(val) => updateField("address_city", val)}
               onBlur={() => handleBlur("address_city")}
@@ -376,6 +386,7 @@ export function BusinessDetailsForm({
               label="State"
               placeholder="State"
               isRequired
+              name="address-level1"
               items={US_STATE_OPTIONS}
               selectedKey={form.address_state || null}
               onSelectionChange={(key) =>
@@ -396,6 +407,8 @@ export function BusinessDetailsForm({
               label="ZIP code"
               placeholder="XXXXX"
               isRequired
+              name="postal-code"
+              autoComplete="postal-code"
               value={form.address_zip}
               onChange={(val) => updateField("address_zip", val)}
               onBlur={() => handleBlur("address_zip")}
