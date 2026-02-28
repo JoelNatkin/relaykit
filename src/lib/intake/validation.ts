@@ -74,18 +74,53 @@ export const BUSINESS_TYPE_OPTIONS = [
 const phoneDigits = (val: string) => val.replace(/\D/g, "");
 const einDigits = (val: string) => val.replace(/\D/g, "");
 
+/** Format a phone string as (XXX) XXX-XXXX while the user types */
+export function formatPhone(raw: string): string {
+  const digits = phoneDigits(raw).slice(0, 10);
+  if (digits.length === 0) return "";
+  if (digits.length <= 3) return `(${digits}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+/** Format an EIN string as XX-XXXXXXX while the user types */
+export function formatEin(raw: string): string {
+  const digits = einDigits(raw).slice(0, 9);
+  if (digits.length <= 2) return digits;
+  return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+}
+
+/** Normalize a website URL — prepend https:// if missing */
+export function normalizeWebsiteUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
+/** Characters that break Twilio's API */
+const BUSINESS_NAME_REGEX = /^[a-zA-Z0-9\s.,\-!]+$/;
+
 export const businessDetailsSchema = z
   .object({
     // Business
-    business_name: z
-      .string()
-      .min(2, "Required field")
-      .max(100, "Required field"),
+    business_name: z.string().superRefine((val, ctx) => {
+      if (!val || val.trim().length < 2) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
+      } else if (val.length > 100) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "100 character maximum" });
+      } else if (!BUSINESS_NAME_REGEX.test(val)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Business name can only contain letters, numbers, spaces, and basic punctuation (. , - !)",
+        });
+      }
+    }),
     business_description: z.string().superRefine((val, ctx) => {
       if (!val) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
       } else if (val.length < 20) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "20 character minimum" });
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Please describe your business in at least a sentence or two" });
       }
     }),
     has_ein: z.enum(["yes", "no"], {
@@ -95,7 +130,10 @@ export const businessDetailsSchema = z
     business_type: z.string().optional(),
 
     // Contact
-    contact_name: z
+    first_name: z
+      .string()
+      .min(2, "Required field"),
+    last_name: z
       .string()
       .min(2, "Required field"),
     email: z.string().superRefine((val, ctx) => {
@@ -108,8 +146,13 @@ export const businessDetailsSchema = z
     phone: z.string().superRefine((val, ctx) => {
       if (!val) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
-      } else if (phoneDigits(val).length !== 10) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a valid phone number" });
+      } else {
+        const digits = phoneDigits(val);
+        if (digits.length !== 10) {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a 10-digit US phone number" });
+        } else if (digits[0] === "0" || digits[0] === "1") {
+          ctx.addIssue({ code: z.ZodIssueCode.custom, message: "US area codes don't start with 0 or 1" });
+        }
       }
     }),
     address_line1: z
@@ -128,7 +171,7 @@ export const businessDetailsSchema = z
       if (!val) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
       } else if (!/^\d{5}$/.test(val)) {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a 5-digit ZIP code" });
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "ZIP code must be 5 digits" });
       }
     }),
 
@@ -161,6 +204,19 @@ export const businessDetailsSchema = z
           code: z.ZodIssueCode.custom,
           message: "Required field",
           path: ["business_type"],
+        });
+      }
+    }
+
+    // Website URL validation (optional field)
+    if (data.website_url && data.website_url.trim()) {
+      const url = data.website_url.trim();
+      // Must contain at least one dot and a TLD
+      if (!/\.[a-zA-Z]{2,}/.test(url)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Enter a valid URL like yourapp.com",
+          path: ["website_url"],
         });
       }
     }

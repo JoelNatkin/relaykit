@@ -12,6 +12,9 @@ import {
   BUSINESS_TYPE_OPTIONS,
   USE_CASE_FIELDS,
   validateUseCaseFields,
+  formatPhone,
+  formatEin,
+  normalizeWebsiteUrl,
 } from "@/lib/intake/validation";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
@@ -49,7 +52,8 @@ export function BusinessDetailsForm({
       has_ein: "",
       ein: "",
       business_type: "",
-      contact_name: "",
+      first_name: "",
+      last_name: "",
       email: "",
       phone: "",
       address_line1: "",
@@ -90,7 +94,12 @@ export function BusinessDetailsForm({
   }, []);
 
   const updateField = useCallback(
-    (field: string, value: string) => {
+    (field: string, rawValue: string) => {
+      // Auto-format specific fields
+      let value = rawValue;
+      if (field === "phone") value = formatPhone(rawValue);
+      if (field === "ein") value = formatEin(rawValue);
+
       const next = { ...form, [field]: value };
       setForm(next);
 
@@ -164,6 +173,18 @@ export function BusinessDetailsForm({
 
   const handleBlur = useCallback(
     (field: string) => {
+      // Normalize website URL on blur
+      if (field === "website_url" && form.website_url) {
+        const normalized = normalizeWebsiteUrl(form.website_url);
+        if (normalized !== form.website_url) {
+          const next = { ...form, website_url: normalized };
+          setForm(next);
+          setTouched((prev) => new Set(prev).add(field));
+          validateField(field, next);
+          return;
+        }
+      }
+
       setTouched((prev) => new Set(prev).add(field));
       validateField(field, form);
     },
@@ -272,7 +293,7 @@ export function BusinessDetailsForm({
               onChange={(val) => updateField("ein", val)}
               onBlur={() => handleBlur("ein")}
               isInvalid={!!fieldError("ein")}
-              hint={fieldError("ein")}
+              hint={fieldError("ein") ?? "9-digit employer identification number"}
             />
 
             <Select
@@ -305,18 +326,36 @@ export function BusinessDetailsForm({
           Contact information
         </legend>
 
-        <Input
-          label="Your full name"
-          placeholder="Full name"
-          isRequired
-          name="name"
-          autoComplete="name"
-          value={form.contact_name}
-          onChange={(val) => updateField("contact_name", val)}
-          onBlur={() => handleBlur("contact_name")}
-          isInvalid={!!fieldError("contact_name")}
-          hint={fieldError("contact_name")}
-        />
+        <div className="flex gap-4">
+          <div className="flex-1">
+            <Input
+              label="First name"
+              placeholder="First name"
+              isRequired
+              name="given-name"
+              autoComplete="given-name"
+              value={form.first_name}
+              onChange={(val) => updateField("first_name", val)}
+              onBlur={() => handleBlur("first_name")}
+              isInvalid={!!fieldError("first_name")}
+              hint={fieldError("first_name")}
+            />
+          </div>
+          <div className="flex-1">
+            <Input
+              label="Last name"
+              placeholder="Last name"
+              isRequired
+              name="family-name"
+              autoComplete="family-name"
+              value={form.last_name}
+              onChange={(val) => updateField("last_name", val)}
+              onBlur={() => handleBlur("last_name")}
+              isInvalid={!!fieldError("last_name")}
+              hint={fieldError("last_name")}
+            />
+          </div>
+        </div>
 
         <Input
           label="Email address"

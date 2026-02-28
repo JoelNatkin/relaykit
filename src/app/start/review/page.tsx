@@ -30,7 +30,8 @@ function ReviewContent() {
   const businessDescription = searchParams.get("business_description") ?? bd.business_description ?? "";
   const hasEin = searchParams.get("has_ein") ?? bd.has_ein ?? "";
   const businessType = searchParams.get("business_type") ?? bd.business_type ?? "";
-  const contactName = searchParams.get("contact_name") ?? bd.contact_name ?? "";
+  const firstName = searchParams.get("first_name") ?? bd.first_name ?? "";
+  const lastName = searchParams.get("last_name") ?? bd.last_name ?? "";
   const email = searchParams.get("email") ?? bd.email ?? "";
   const phone = searchParams.get("phone") ?? bd.phone ?? "";
   const addressLine1 = searchParams.get("address_line1") ?? bd.address_line1 ?? "";
@@ -167,7 +168,7 @@ function ReviewContent() {
                 ? businessType
                 : "Sole Proprietor"
             }
-            contactName={contactName}
+            contactName={`${firstName} ${lastName}`.trim()}
             email={email}
             phone={phone}
             address={fullAddress}

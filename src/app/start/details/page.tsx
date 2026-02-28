@@ -23,7 +23,7 @@ function DetailsContent() {
   // Extract form field initial values: URL params first, then sessionStorage fallback
   const formFields = [
     "business_name", "business_description", "has_ein", "ein", "business_type",
-    "contact_name", "email", "phone", "address_line1", "address_city",
+    "first_name", "last_name", "email", "phone", "address_line1", "address_city",
     "address_state", "address_zip", "website_url", "service_type",
     "product_type", "app_name", "community_name", "venue_type",
   ];
