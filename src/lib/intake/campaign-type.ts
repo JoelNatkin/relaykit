@@ -19,26 +19,33 @@ export function determineCampaignType(
     return DEFAULT_CAMPAIGN_TYPES[useCase];
   }
 
-  const hasPromoExpansion = expansions.some(
-    (e) =>
-      e.includes("promotional") ||
-      e.includes("offers") ||
-      e.includes("reviews"),
-  );
-
-  if (hasPromoExpansion) {
+  if (expansions.some(isPromoExpansion)) {
     return "MIXED";
   }
 
   return "LOW_VOLUME_MIXED";
 }
 
+/** Expansion IDs that involve marketing, promotional, or sponsored content */
+const PROMO_EXPANSION_IDS = new Set([
+  // appointments
+  "promotional_offers_past_clients",
+  "reviews_feedback",
+  // orders
+  "promotional_offers_past_customers",
+  "announce_new_products",
+  "reviews_after_delivery",
+  // support
+  "promotional_offers_support_contacts",
+  // community
+  "sponsored_partner_content",
+  // waitlist
+  "promotional_offers_past_guests",
+  "reviews_after_visits",
+]);
+
 export function isPromoExpansion(id: string): boolean {
-  return (
-    id.includes("promotional") ||
-    id.includes("offers") ||
-    id.includes("reviews")
-  );
+  return PROMO_EXPANSION_IDS.has(id);
 }
 
 export function hasMarketingExpansion(expansions: string[]): boolean {
