@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Input } from "@/components/base/input/input";
 import { TextArea } from "@/components/base/textarea/textarea";
 import { Select } from "@/components/base/select/select";
@@ -75,6 +75,19 @@ export function BusinessDetailsForm({
 
   const [errors, setErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState<TouchedFields>(new Set());
+
+  // Validate on mount when returning with pre-filled data
+  useEffect(() => {
+    if (!initialValues) return;
+    const result = businessDetailsSchema.safeParse(form);
+    if (result.success) {
+      const ucErrors = validateUseCaseFields(useCase, result.data);
+      if (ucErrors.length === 0) {
+        onValid(result.data);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const updateField = useCallback(
     (field: string, value: string) => {

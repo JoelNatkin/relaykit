@@ -37,44 +37,44 @@ const CAMPAIGN_DESCRIPTIONS: Record<UseCaseId, (i: TemplateInput) => string> = {
 
 const SAMPLE_MESSAGES: Record<UseCaseId, (i: TemplateInput) => [string, string, string]> = {
   appointments: (i) => [
-    `Hi {{name}}, your appointment with ${i.business_name} is confirmed for {{date}} at {{time}}. Reply YES to confirm or RESCHEDULE to change.`,
-    `Reminder: You have an appointment tomorrow at {{time}} with ${i.business_name}. Reply CANCEL if you need to cancel.`,
-    `Thanks for visiting ${i.business_name}! We hope everything went well. Reply STOP to opt out of messages.`,
+    `Hi {{name}}, your appointment with ${i.business_name} is confirmed for {{date}} at {{time}}. Reply YES to confirm or RESCHEDULE to change. Reply STOP to opt out.`,
+    `Reminder: You have an appointment tomorrow at {{time}} with ${i.business_name}. Reply CANCEL if you need to cancel. Reply STOP to opt out.`,
+    `Thanks for visiting ${i.business_name}! We hope everything went well. Reply STOP to opt out.`,
   ],
   orders: (i) => [
-    `Your order #{{order_id}} from ${i.business_name} has been confirmed! We'll notify you when it ships.`,
-    `Great news! Your order from ${i.business_name} has shipped. Track it here: {{tracking_url}}`,
-    `Your ${i.business_name} order has been delivered. Reply STOP to opt out of messages.`,
+    `Your order #{{order_id}} from ${i.business_name} has been confirmed! We'll notify you when it ships. Reply STOP to opt out.`,
+    `Great news! Your order from ${i.business_name} has shipped. Track it here: {{tracking_url}}. Reply STOP to opt out.`,
+    `Your ${i.business_name} order has been delivered. Reply STOP to opt out.`,
   ],
   verification: (i) => [
-    `Your ${i.app_name ?? i.business_name} verification code is {{code}}. It expires in 10 minutes. Do not share this code.`,
-    `{{code}} is your ${i.app_name ?? i.business_name} login code. If you didn't request this, ignore this message.`,
-    `Your phone number has been verified for ${i.app_name ?? i.business_name}. You can now log in.`,
+    `Your ${i.app_name ?? i.business_name} verification code is {{code}}. It expires in 10 minutes. Do not share this code. Reply STOP to opt out.`,
+    `{{code}} is your ${i.app_name ?? i.business_name} login code. If you didn't request this, ignore this message. Reply STOP to opt out.`,
+    `Your phone number has been verified for ${i.app_name ?? i.business_name}. You can now log in. Reply STOP to opt out.`,
   ],
   support: (i) => [
-    `${i.business_name} Support: We've received your request (#{{ticket_id}}). A team member will respond shortly.`,
-    `Update on your support ticket #{{ticket_id}}: {{status_update}}. Reply to this message for more help.`,
+    `${i.business_name} Support: We've received your request (#{{ticket_id}}). A team member will respond shortly. Reply STOP to opt out.`,
+    `Update on your support ticket #{{ticket_id}}: {{status_update}}. Reply to this message for more help. Reply STOP to opt out.`,
     `Your support ticket #{{ticket_id}} has been resolved. Thanks for contacting ${i.business_name}! Reply STOP to opt out.`,
   ],
   marketing: (i) => [
-    `${i.business_name}: {{promo_message}}! Use code {{code}} for {{discount}}% off. Reply STOP to unsubscribe.`,
+    `${i.business_name}: {{promo_message}}! Use code {{code}} for {{discount}}% off. Reply STOP to opt out.`,
     `New from ${i.business_name}: {{product_name}} is now available! Check it out: {{link}}. Reply STOP to opt out.`,
-    `${i.business_name} Sale Alert: {{sale_details}}. Shop now: {{link}}. Reply STOP to unsubscribe.`,
+    `${i.business_name} Sale Alert: {{sale_details}}. Shop now: {{link}}. Reply STOP to opt out.`,
   ],
   internal: (i) => [
-    `${i.business_name} Team: Your shift on {{date}} has been updated. New time: {{time}}. Reply OK to confirm.`,
-    `Reminder: Team meeting today at {{time}}. Agenda: {{topic}}. — ${i.business_name}`,
-    `${i.business_name} Alert: {{alert_message}}. Contact your manager if you have questions.`,
+    `${i.business_name} Team: Your shift on {{date}} has been updated. New time: {{time}}. Reply OK to confirm. Reply STOP to opt out.`,
+    `Reminder: Team meeting today at {{time}}. Agenda: {{topic}}. — ${i.business_name}. Reply STOP to opt out.`,
+    `${i.business_name} Alert: {{alert_message}}. Contact your manager if you have questions. Reply STOP to opt out.`,
   ],
   community: (i) => [
-    `${i.community_name ?? i.business_name}: {{event_name}} is happening on {{date}}! Reply YES to RSVP.`,
-    `Update from ${i.community_name ?? i.business_name}: {{update_message}}. Reply STOP to leave the group.`,
+    `${i.community_name ?? i.business_name}: {{event_name}} is happening on {{date}}! Reply YES to RSVP. Reply STOP to opt out.`,
+    `Update from ${i.community_name ?? i.business_name}: {{update_message}}. Reply STOP to opt out.`,
     `${i.community_name ?? i.business_name}: Welcome, {{name}}! You're now a member. Reply STOP to opt out.`,
   ],
   waitlist: (i) => [
-    `${i.business_name}: Great news! Your spot is ready. Please arrive within {{minutes}} minutes. Reply YES to confirm.`,
-    `You're #{{position}} on the waitlist at ${i.business_name}. Estimated wait: {{time}}. Reply CANCEL to leave.`,
-    `Your reservation at ${i.business_name} for {{date}} at {{time}} is confirmed. Reply CHANGE to modify.`,
+    `${i.business_name}: Great news! Your spot is ready. Please arrive within {{minutes}} minutes. Reply YES to confirm. Reply STOP to opt out.`,
+    `You're #{{position}} on the waitlist at ${i.business_name}. Estimated wait: {{time}}. Reply STOP to opt out.`,
+    `Your reservation at ${i.business_name} for {{date}} at {{time}} is confirmed. Reply CHANGE to modify. Reply STOP to opt out.`,
   ],
 };
 

@@ -1,7 +1,18 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
-import { AlertCircle, CheckCircle, Edit05, RefreshCcw01 } from "@untitledui/icons";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
+import {
+  AlertCircle,
+  CheckCircle,
+  Edit05,
+  RefreshCcw01,
+} from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
 interface ReviewPreviewCardProps {
@@ -18,20 +29,29 @@ interface ReviewPreviewCardProps {
   onValidationChange: (hasErrors: boolean) => void;
 }
 
-function EditableText({
-  value,
-  onChange,
-  multiline = false,
-  isInvalid = false,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-  multiline?: boolean;
-  isInvalid?: boolean;
-}) {
+interface EditableTextHandle {
+  activate: () => void;
+}
+
+const EditableText = forwardRef<
+  EditableTextHandle,
+  {
+    value: string;
+    onChange: (value: string) => void;
+    multiline?: boolean;
+    isInvalid?: boolean;
+  }
+>(function EditableText({ value, onChange, multiline = false, isInvalid = false }, ref) {
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(value);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    activate: () => {
+      setDraft(value);
+      setIsEditing(true);
+    },
+  }));
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -86,7 +106,7 @@ function EditableText({
       {value}
     </button>
   );
-}
+});
 
 function validateDescription(value: string): string | null {
   if (!value.trim()) return "This field is required";
@@ -143,43 +163,46 @@ export function ReviewPreviewCard({
     null,
   ]);
 
-  const syncValidation = useCallback(
-    (dErr: string | null, mErrs: (string | null)[]) => {
-      onValidationChange(dErr !== null || mErrs.some((e) => e !== null));
-    },
-    [onValidationChange],
-  );
+  // Sync validation state to parent via useEffect to avoid stale closures
+  useEffect(() => {
+    onValidationChange(
+      descError !== null || msgErrors.some((e) => e !== null),
+    );
+  }, [descError, msgErrors, onValidationChange]);
+
+  // Refs for programmatic edit activation
+  const descEditRef = useRef<EditableTextHandle>(null);
+  const msg0EditRef = useRef<EditableTextHandle>(null);
 
   function handleDescriptionBlur(value: string) {
     const error = validateDescription(value);
     setDescError(error);
-    syncValidation(error, msgErrors);
     onDescriptionChange(value);
   }
 
   function handleMessageBlur(index: number, value: string) {
     const { error, warning } = validateMessage(value, businessName);
-    const nextErrors = [...msgErrors];
-    nextErrors[index] = error;
-    setMsgErrors(nextErrors);
-    const nextWarnings = [...msgWarnings];
-    nextWarnings[index] = warning;
-    setMsgWarnings(nextWarnings);
-    syncValidation(descError, nextErrors);
+    setMsgErrors((prev) => {
+      const next = [...prev];
+      next[index] = error;
+      return next;
+    });
+    setMsgWarnings((prev) => {
+      const next = [...prev];
+      next[index] = warning;
+      return next;
+    });
     onSampleMessageChange(index, value);
   }
 
   function handleRevertDescription() {
     setDescError(null);
-    syncValidation(null, msgErrors);
     onRevertDescription();
   }
 
   function handleRevertMessages() {
-    const cleared = [null, null, null] as (string | null)[];
-    setMsgErrors(cleared);
-    setMsgWarnings(cleared);
-    syncValidation(descError, cleared);
+    setMsgErrors([null, null, null]);
+    setMsgWarnings([null, null, null]);
     onRevertMessages();
   }
 
@@ -195,23 +218,33 @@ export function ReviewPreviewCard({
         {/* Campaign description */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-tertiary">
+            <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
               Campaign description
-              <Edit05 className="size-3 text-fg-quaternary" />
             </span>
-            {descriptionEdited && (
+            <div className="flex items-center gap-2">
+              {descriptionEdited && (
+                <button
+                  type="button"
+                  onClick={handleRevertDescription}
+                  title="Restore original"
+                  className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
+                >
+                  <RefreshCcw01 className="size-3" />
+                  Undo
+                </button>
+              )}
               <button
                 type="button"
-                onClick={handleRevertDescription}
-                title="Restore original"
-                className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
+                onClick={() => descEditRef.current?.activate()}
+                title="Edit campaign description"
+                className="text-fg-tertiary transition duration-100 ease-linear hover:text-fg-secondary"
               >
-                <RefreshCcw01 className="size-3" />
-                Undo
+                <Edit05 className="size-5" />
               </button>
-            )}
+            </div>
           </div>
           <EditableText
+            ref={descEditRef}
             value={campaignDescription}
             onChange={handleDescriptionBlur}
             multiline
@@ -228,21 +261,30 @@ export function ReviewPreviewCard({
         {/* Sample messages */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-tertiary">
+            <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
               Sample messages
-              <Edit05 className="size-3 text-fg-quaternary" />
             </span>
-            {messagesEdited && (
+            <div className="flex items-center gap-2">
+              {messagesEdited && (
+                <button
+                  type="button"
+                  onClick={handleRevertMessages}
+                  title="Restore original"
+                  className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
+                >
+                  <RefreshCcw01 className="size-3" />
+                  Undo
+                </button>
+              )}
               <button
                 type="button"
-                onClick={handleRevertMessages}
-                title="Restore original"
-                className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
+                onClick={() => msg0EditRef.current?.activate()}
+                title="Edit sample messages"
+                className="text-fg-tertiary transition duration-100 ease-linear hover:text-fg-secondary"
               >
-                <RefreshCcw01 className="size-3" />
-                Undo
+                <Edit05 className="size-5" />
               </button>
-            )}
+            </div>
           </div>
           <div className="flex flex-col gap-2">
             {sampleMessages.map((msg, i) => (
@@ -252,6 +294,7 @@ export function ReviewPreviewCard({
                     {i + 1}.
                   </span>
                   <EditableText
+                    ref={i === 0 ? msg0EditRef : undefined}
                     value={msg}
                     onChange={(val) => handleMessageBlur(i, val)}
                     isInvalid={!!msgErrors[i]}
