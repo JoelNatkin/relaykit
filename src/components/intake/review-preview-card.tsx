@@ -1,15 +1,19 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { CheckCircle } from "@untitledui/icons";
+import { CheckCircle, Edit05, RefreshCcw01 } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 
 interface ReviewPreviewCardProps {
   campaignDescription: string;
   sampleMessages: [string, string, string];
+  originalDescription: string;
+  originalMessages: [string, string, string];
   complianceSlug: string;
   onDescriptionChange: (value: string) => void;
   onSampleMessageChange: (index: number, value: string) => void;
+  onRevertDescription: () => void;
+  onRevertMessages: () => void;
 }
 
 function EditableText({
@@ -83,14 +87,24 @@ function EditableText({
 export function ReviewPreviewCard({
   campaignDescription,
   sampleMessages,
+  originalDescription,
+  originalMessages,
   complianceSlug,
   onDescriptionChange,
   onSampleMessageChange,
+  onRevertDescription,
+  onRevertMessages,
 }: ReviewPreviewCardProps) {
+  const descriptionEdited = campaignDescription !== originalDescription;
+  const messagesEdited =
+    sampleMessages[0] !== originalMessages[0] ||
+    sampleMessages[1] !== originalMessages[1] ||
+    sampleMessages[2] !== originalMessages[2];
+
   return (
     <div className="rounded-xl border border-secondary bg-secondary">
       <div className="border-b border-secondary px-5 py-3">
-        <h3 className="text-sm font-semibold text-primary">
+        <h3 className="text-lg font-semibold text-primary">
           What we&apos;ll submit
         </h3>
       </div>
@@ -98,9 +112,23 @@ export function ReviewPreviewCard({
       <div className="flex flex-col gap-5 p-5">
         {/* Campaign description */}
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
-            Campaign description
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-tertiary">
+              Campaign description
+              <Edit05 className="size-3 text-fg-quaternary" />
+            </span>
+            {descriptionEdited && (
+              <button
+                type="button"
+                onClick={onRevertDescription}
+                title="Restore original"
+                className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
+              >
+                <RefreshCcw01 className="size-3" />
+                Undo
+              </button>
+            )}
+          </div>
           <EditableText
             value={campaignDescription}
             onChange={onDescriptionChange}
@@ -110,9 +138,23 @@ export function ReviewPreviewCard({
 
         {/* Sample messages */}
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
-            Sample messages
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-tertiary">
+              Sample messages
+              <Edit05 className="size-3 text-fg-quaternary" />
+            </span>
+            {messagesEdited && (
+              <button
+                type="button"
+                onClick={onRevertMessages}
+                title="Restore original"
+                className="flex items-center gap-1 text-xs text-tertiary transition duration-100 ease-linear hover:text-secondary"
+              >
+                <RefreshCcw01 className="size-3" />
+                Undo
+              </button>
+            )}
+          </div>
           <div className="flex flex-col gap-2">
             {sampleMessages.map((msg, i) => (
               <div key={i} className="flex gap-2">

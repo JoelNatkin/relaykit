@@ -145,8 +145,8 @@ function ReviewContent() {
             Here&apos;s what we&apos;ll register for you
           </h1>
           <p className="text-lg text-tertiary">
-            Review your details and the messaging profile we&apos;ve
-            generated. You can edit anything before proceeding.
+            Review your details and messaging profile. You can edit
+            anything before proceeding.
           </p>
         </div>
 
@@ -172,9 +172,13 @@ function ReviewContent() {
           <ReviewPreviewCard
             campaignDescription={currentDescription}
             sampleMessages={currentMessages}
+            originalDescription={templates.campaign_description}
+            originalMessages={templates.sample_messages}
             complianceSlug={complianceSlug}
             onDescriptionChange={handleDescriptionChange}
             onSampleMessageChange={handleSampleMessageChange}
+            onRevertDescription={() => setDescriptionOverride(null)}
+            onRevertMessages={() => setMessagesOverride(null)}
           />
         </div>
 

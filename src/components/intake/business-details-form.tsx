@@ -28,6 +28,7 @@ const DESCRIPTION_EXAMPLES: Record<UseCaseId, string> = {
 
 interface BusinessDetailsFormProps {
   useCase: UseCaseId;
+  initialValues?: Partial<Record<string, string>>;
   onValid: (data: BusinessDetailsData) => void;
   onInvalid: () => void;
 }
@@ -37,28 +38,39 @@ type TouchedFields = Set<string>;
 
 export function BusinessDetailsForm({
   useCase,
+  initialValues,
   onValid,
   onInvalid,
 }: BusinessDetailsFormProps) {
-  const [form, setForm] = useState<Record<string, string>>({
-    business_name: "",
-    business_description: "",
-    has_ein: "",
-    ein: "",
-    business_type: "",
-    contact_name: "",
-    email: "",
-    phone: "",
-    address_line1: "",
-    address_city: "",
-    address_state: "",
-    address_zip: "",
-    website_url: "",
-    service_type: "",
-    product_type: "",
-    app_name: "",
-    community_name: "",
-    venue_type: "",
+  const [form, setForm] = useState<Record<string, string>>(() => {
+    const defaults: Record<string, string> = {
+      business_name: "",
+      business_description: "",
+      has_ein: "",
+      ein: "",
+      business_type: "",
+      contact_name: "",
+      email: "",
+      phone: "",
+      address_line1: "",
+      address_city: "",
+      address_state: "",
+      address_zip: "",
+      website_url: "",
+      service_type: "",
+      product_type: "",
+      app_name: "",
+      community_name: "",
+      venue_type: "",
+    };
+    if (initialValues) {
+      for (const [key, value] of Object.entries(initialValues)) {
+        if (key in defaults && value) {
+          defaults[key] = value;
+        }
+      }
+    }
+    return defaults;
   });
 
   const [errors, setErrors] = useState<FieldErrors>({});

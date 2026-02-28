@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, Suspense, useCallback } from "react";
+import { useState, Suspense, useCallback, useMemo } from "react";
 import { ArrowRight, ArrowLeft } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
@@ -15,6 +15,23 @@ function DetailsContent() {
   const expansions = searchParams.get("expansions") ?? "";
   const campaignType = searchParams.get("campaign_type") ?? "";
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
+
+  // Extract form field initial values from URL params (for edit round-trip)
+  const formFields = [
+    "business_name", "business_description", "has_ein", "ein", "business_type",
+    "contact_name", "email", "phone", "address_line1", "address_city",
+    "address_state", "address_zip", "website_url", "service_type",
+    "product_type", "app_name", "community_name", "venue_type",
+  ];
+  const initialValues = useMemo(() => {
+    const vals: Record<string, string> = {};
+    for (const field of formFields) {
+      const v = searchParams.get(field);
+      if (v) vals[field] = v;
+    }
+    return Object.keys(vals).length > 0 ? vals : undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const [validData, setValidData] = useState<BusinessDetailsData | null>(null);
 
@@ -96,6 +113,7 @@ function DetailsContent() {
         {/* Form */}
         <BusinessDetailsForm
           useCase={useCase.id}
+          initialValues={initialValues}
           onValid={handleValid}
           onInvalid={handleInvalid}
         />

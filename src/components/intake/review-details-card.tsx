@@ -44,7 +44,7 @@ export function ReviewDetailsCard({
   return (
     <div className="rounded-xl border border-secondary">
       <div className="flex items-center justify-between border-b border-secondary px-5 py-3">
-        <h3 className="text-sm font-semibold text-primary">Your details</h3>
+        <h3 className="text-lg font-semibold text-primary">Your details</h3>
         <Button
           href={editHref}
           color="link-gray"
