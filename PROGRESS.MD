@@ -5,11 +5,11 @@
 - [x] Screen 1: Use Case Selection (`/start`) — 8 tiles, single select, Continue button
 - [x] Screen 1b: Use Case Advisory (`/start/scope`) — included/not-included sections, expansion checkboxes (non-promo pre-checked), campaign type upgrade logic
 - [x] Screen 2: Business Details (`/start/details`) — Zod validation, conditional EIN/business type fields, use-case-specific fields, inline validation on blur, context-aware error messages, dynamic placeholder examples
+- [x] Screen 3: Review & Confirm (`/start/review`) — two-column layout, details summary card with edit link, generated preview with inline-editable campaign description and sample messages, template generator, compliance slug
 
 ## In Progress
 
 ## Up Next
-- [ ] Screen 3: Review & Confirm (`/start/review`)
 - [ ] Stripe Checkout integration
 - [ ] Database schema + Supabase migrations
 
