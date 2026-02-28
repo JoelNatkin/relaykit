@@ -210,6 +210,8 @@ export function BusinessDetailsForm({
           label="Business or app name"
           placeholder="The name your customers will see on texts"
           isRequired
+          spellCheck="false"
+          autoCorrect="off"
           value={form.business_name}
           onChange={(val) => updateField("business_name", val)}
           onBlur={() => handleBlur("business_name")}
@@ -250,6 +252,8 @@ export function BusinessDetailsForm({
         <Input
           label="Website"
           placeholder="yourapp.com"
+          spellCheck="false"
+          autoCorrect="off"
           value={form.website_url}
           onChange={(val) => updateField("website_url", val)}
           onBlur={() => handleBlur("website_url")}
@@ -289,6 +293,8 @@ export function BusinessDetailsForm({
               label="EIN"
               placeholder="XX-XXXXXXX"
               isRequired
+              spellCheck="false"
+              autoCorrect="off"
               value={form.ein}
               onChange={(val) => updateField("ein", val)}
               onBlur={() => handleBlur("ein")}
@@ -334,6 +340,8 @@ export function BusinessDetailsForm({
               isRequired
               name="given-name"
               autoComplete="given-name"
+              spellCheck="false"
+              autoCorrect="off"
               value={form.first_name}
               onChange={(val) => updateField("first_name", val)}
               onBlur={() => handleBlur("first_name")}
@@ -348,6 +356,8 @@ export function BusinessDetailsForm({
               isRequired
               name="family-name"
               autoComplete="family-name"
+              spellCheck="false"
+              autoCorrect="off"
               value={form.last_name}
               onChange={(val) => updateField("last_name", val)}
               onBlur={() => handleBlur("last_name")}
@@ -364,6 +374,8 @@ export function BusinessDetailsForm({
           isRequired
           name="email"
           autoComplete="email"
+          spellCheck="false"
+          autoCorrect="off"
           value={form.email}
           onChange={(val) => updateField("email", val)}
           onBlur={() => handleBlur("email")}
@@ -381,6 +393,8 @@ export function BusinessDetailsForm({
           isRequired
           name="tel"
           autoComplete="tel"
+          spellCheck="false"
+          autoCorrect="off"
           value={form.phone}
           onChange={(val) => updateField("phone", val)}
           onBlur={() => handleBlur("phone")}
@@ -397,6 +411,8 @@ export function BusinessDetailsForm({
           isRequired
           name="street-address"
           autoComplete="address-line1"
+          spellCheck="false"
+          autoCorrect="off"
           value={form.address_line1}
           onChange={(val) => updateField("address_line1", val)}
           onBlur={() => handleBlur("address_line1")}
@@ -412,6 +428,8 @@ export function BusinessDetailsForm({
               isRequired
               name="address-level2"
               autoComplete="address-level2"
+              spellCheck="false"
+              autoCorrect="off"
               value={form.address_city}
               onChange={(val) => updateField("address_city", val)}
               onBlur={() => handleBlur("address_city")}
@@ -448,6 +466,8 @@ export function BusinessDetailsForm({
               isRequired
               name="postal-code"
               autoComplete="postal-code"
+              spellCheck="false"
+              autoCorrect="off"
               value={form.address_zip}
               onChange={(val) => updateField("address_zip", val)}
               onBlur={() => handleBlur("address_zip")}

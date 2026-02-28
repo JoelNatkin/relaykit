@@ -158,9 +158,13 @@ export const businessDetailsSchema = z
     address_line1: z
       .string()
       .min(1, "Required field"),
-    address_city: z
-      .string()
-      .min(2, "Required field"),
+    address_city: z.string().superRefine((val, ctx) => {
+      if (!val || val.trim().length < 2) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required field" });
+      } else if (!/^[a-zA-Z\s.\-']+$/.test(val)) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Enter a valid city name" });
+      }
+    }),
     address_state: z
       .string()
       .refine(
