@@ -198,6 +198,82 @@ export function BusinessDetailsForm({
   const showEinFields = form.has_ein === "yes";
   const showSolePropNote = form.has_ein === "no";
 
+  const addressFields = (streetLabel: string) => (
+    <>
+      <Input
+        label={streetLabel}
+        placeholder="123 Main St"
+        isRequired
+        name="street-address"
+        autoComplete="address-line1"
+        spellCheck="false"
+        autoCorrect="off"
+        value={form.address_line1}
+        onChange={(val) => updateField("address_line1", val)}
+        onBlur={() => handleBlur("address_line1")}
+        isInvalid={!!fieldError("address_line1")}
+        hint={fieldError("address_line1")}
+      />
+
+      <div className="flex gap-4">
+        <div className="w-[40%]">
+          <Input
+            label="City"
+            placeholder="City"
+            isRequired
+            name="address-level2"
+            autoComplete="address-level2"
+            spellCheck="false"
+            autoCorrect="off"
+            value={form.address_city}
+            onChange={(val) => updateField("address_city", val)}
+            onBlur={() => handleBlur("address_city")}
+            isInvalid={!!fieldError("address_city")}
+            hint={fieldError("address_city")}
+          />
+        </div>
+
+        <div className="w-[35%]">
+          <Select
+            label="State"
+            placeholder="State"
+            isRequired
+            name="address-level1"
+            items={US_STATE_OPTIONS}
+            selectedKey={form.address_state || null}
+            onSelectionChange={(key) =>
+              updateField("address_state", String(key))
+            }
+            onBlur={() => handleBlur("address_state")}
+            isInvalid={!!fieldError("address_state")}
+            hint={fieldError("address_state")}
+          >
+            {(item) => (
+              <Select.Item id={item.id}>{item.label}</Select.Item>
+            )}
+          </Select>
+        </div>
+
+        <div className="w-[25%]">
+          <Input
+            label="ZIP code"
+            placeholder="XXXXX"
+            isRequired
+            name="postal-code"
+            autoComplete="postal-code"
+            spellCheck="false"
+            autoCorrect="off"
+            value={form.address_zip}
+            onChange={(val) => updateField("address_zip", val)}
+            onBlur={() => handleBlur("address_zip")}
+            isInvalid={!!fieldError("address_zip")}
+            hint={fieldError("address_zip")}
+          />
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex flex-col gap-8">
       {/* Section: Your business */}
@@ -324,6 +400,15 @@ export function BusinessDetailsForm({
                 <Select.Item id={item.id}>{item.label}</Select.Item>
               )}
             </Select>
+
+            <p className="text-sm font-semibold text-secondary">
+              Registered business address
+            </p>
+            <p className="text-sm text-tertiary">
+              Use the address associated with your business registration.
+              Mismatches can delay approval.
+            </p>
+            {addressFields("Street address")}
           </>
         )}
       </fieldset>
@@ -410,84 +495,7 @@ export function BusinessDetailsForm({
           }
         />
 
-        {showEinFields && (
-          <p className="text-sm text-tertiary">
-            Use the address associated with your business registration.
-            Mismatches can delay approval.
-          </p>
-        )}
-
-        <Input
-          label="Street address"
-          placeholder="123 Main St"
-          isRequired
-          name="street-address"
-          autoComplete="address-line1"
-          spellCheck="false"
-          autoCorrect="off"
-          value={form.address_line1}
-          onChange={(val) => updateField("address_line1", val)}
-          onBlur={() => handleBlur("address_line1")}
-          isInvalid={!!fieldError("address_line1")}
-          hint={fieldError("address_line1")}
-        />
-
-        <div className="flex gap-4">
-          <div className="w-[40%]">
-            <Input
-              label="City"
-              placeholder="City"
-              isRequired
-              name="address-level2"
-              autoComplete="address-level2"
-              spellCheck="false"
-              autoCorrect="off"
-              value={form.address_city}
-              onChange={(val) => updateField("address_city", val)}
-              onBlur={() => handleBlur("address_city")}
-              isInvalid={!!fieldError("address_city")}
-              hint={fieldError("address_city")}
-            />
-          </div>
-
-          <div className="w-[35%]">
-            <Select
-              label="State"
-              placeholder="State"
-              isRequired
-              name="address-level1"
-              items={US_STATE_OPTIONS}
-              selectedKey={form.address_state || null}
-              onSelectionChange={(key) =>
-                updateField("address_state", String(key))
-              }
-              onBlur={() => handleBlur("address_state")}
-              isInvalid={!!fieldError("address_state")}
-              hint={fieldError("address_state")}
-            >
-              {(item) => (
-                <Select.Item id={item.id}>{item.label}</Select.Item>
-              )}
-            </Select>
-          </div>
-
-          <div className="w-[25%]">
-            <Input
-              label="ZIP code"
-              placeholder="XXXXX"
-              isRequired
-              name="postal-code"
-              autoComplete="postal-code"
-              spellCheck="false"
-              autoCorrect="off"
-              value={form.address_zip}
-              onChange={(val) => updateField("address_zip", val)}
-              onBlur={() => handleBlur("address_zip")}
-              isInvalid={!!fieldError("address_zip")}
-              hint={fieldError("address_zip")}
-            />
-          </div>
-        </div>
+        {!showEinFields && addressFields("Your address")}
       </fieldset>
     </div>
   );
