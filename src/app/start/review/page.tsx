@@ -3,7 +3,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, Check, CreditCard02 } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
@@ -138,6 +138,66 @@ function ReviewContent() {
   }
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  const handleCheckout = useCallback(async () => {
+    setIsCheckingOut(true);
+    setCheckoutError(null);
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          use_case: useCaseId,
+          expansions: selectedExpansions,
+          campaign_type: searchParams.get("campaign_type") ?? session.campaign_type ?? "",
+          business_name: businessName,
+          business_description: businessDescription,
+          has_ein: hasEin,
+          ein: searchParams.get("ein") ?? bd.ein ?? null,
+          business_type: businessType || null,
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          phone,
+          address_line1: addressLine1,
+          address_city: addressCity,
+          address_state: addressState,
+          address_zip: addressZip,
+          website_url: (searchParams.get("website_url") ?? bd.website_url) || null,
+          service_type: serviceType || null,
+          product_type: productType || null,
+          app_name: appName || null,
+          community_name: communityName || null,
+          venue_type: venueType || null,
+          campaign_description_override: null,
+          sample_messages_override: null,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setCheckoutError(data.error ?? "Something went wrong. Please try again.");
+        setIsCheckingOut(false);
+        return;
+      }
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.checkout_url;
+    } catch {
+      setCheckoutError("Network error. Please check your connection and try again.");
+      setIsCheckingOut(false);
+    }
+  }, [
+    useCaseId, selectedExpansions, searchParams, session, bd,
+    businessName, businessDescription, hasEin, businessType,
+    firstName, lastName, email, phone,
+    addressLine1, addressCity, addressState, addressZip,
+    serviceType, productType, appName, communityName, venueType,
+  ]);
 
   const isEinRegistration = hasEin === "yes";
 
@@ -273,11 +333,18 @@ function ReviewContent() {
                   </li>
                 </ul>
 
+                {checkoutError && (
+                  <p className="mt-4 rounded-lg bg-error-primary p-3 text-sm text-error-primary">
+                    {checkoutError}
+                  </p>
+                )}
+
                 <div className="mt-6 flex gap-3">
                   <Button
                     className="flex-1"
                     size="lg"
                     color="secondary"
+                    isDisabled={isCheckingOut}
                     onClick={() => setIsModalOpen(false)}
                   >
                     Go back and check
@@ -287,6 +354,9 @@ function ReviewContent() {
                     size="lg"
                     color="primary"
                     iconLeading={CreditCard02}
+                    isLoading={isCheckingOut}
+                    showTextWhileLoading
+                    onClick={handleCheckout}
                   >
                     Everything looks good
                   </Button>
