@@ -342,13 +342,13 @@ export function BusinessDetailsForm({
           hint={fieldError("website_url")}
         />
 
-        <div className="flex flex-col gap-1.5">
+        <div>
           <RadioGroup
             aria-label="Do you have a US business tax ID (EIN)?"
             value={form.has_ein}
             onChange={(val) => updateField("has_ein", val)}
           >
-            <p className="text-sm font-medium text-secondary">
+            <p className="mb-1.5 text-sm font-medium text-secondary">
               Do you have a US business tax ID (EIN)?
             </p>
             <RadioButton value="yes" label="Yes" />
@@ -401,13 +401,15 @@ export function BusinessDetailsForm({
               )}
             </Select>
 
-            <p className="text-sm font-semibold text-secondary">
-              Registered business address
-            </p>
-            <p className="text-sm text-tertiary">
-              Use the address associated with your business registration.
-              Mismatches can delay approval.
-            </p>
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-semibold text-secondary">
+                Registered business address
+              </p>
+              <p className="text-sm text-tertiary">
+                Use the address associated with your business registration.
+                Mismatches can delay approval.
+              </p>
+            </div>
             {addressFields("Street address")}
           </>
         )}
@@ -472,7 +474,7 @@ export function BusinessDetailsForm({
           isInvalid={!!fieldError("email")}
           hint={
             fieldError("email") ??
-            "We'll send your registration updates and deliverable here"
+            "We'll send your registration updates and setup files here"
           }
         />
 
@@ -491,7 +493,7 @@ export function BusinessDetailsForm({
           isInvalid={!!fieldError("phone")}
           hint={
             fieldError("phone") ??
-            "Used for carrier verification — we'll send a code to this number"
+            "We may need to send a verification code to this number"
           }
         />
 

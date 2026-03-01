@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, CreditCard02 } from "@untitledui/icons";
+import { ArrowLeft, Check, CreditCard02 } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
 import {
@@ -248,23 +248,23 @@ function ReviewContent() {
 
                 <ul className="mt-5 flex flex-col gap-2.5 text-sm text-secondary">
                   <li className="flex items-start gap-2">
-                    <span className="mt-1.5 block size-1.5 shrink-0 rounded-full bg-quaternary" />
+                    <Check className="mt-0.5 size-4 shrink-0 text-fg-secondary" aria-hidden="true" />
                     Business name matches your legal name exactly
                   </li>
                   {isEinRegistration && (
                     <li className="flex items-start gap-2">
-                      <span className="mt-1.5 block size-1.5 shrink-0 rounded-full bg-quaternary" />
+                      <Check className="mt-0.5 size-4 shrink-0 text-fg-secondary" aria-hidden="true" />
                       EIN matches your IRS records
                     </li>
                   )}
                   <li className="flex items-start gap-2">
-                    <span className="mt-1.5 block size-1.5 shrink-0 rounded-full bg-quaternary" />
+                    <Check className="mt-0.5 size-4 shrink-0 text-fg-secondary" aria-hidden="true" />
                     {isEinRegistration
                       ? "Address matches your business registration"
                       : "Address is current and accurate"}
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="mt-1.5 block size-1.5 shrink-0 rounded-full bg-quaternary" />
+                    <Check className="mt-0.5 size-4 shrink-0 text-fg-secondary" aria-hidden="true" />
                     Email and phone number are ones you actively monitor
                   </li>
                 </ul>
@@ -284,7 +284,7 @@ function ReviewContent() {
                     color="primary"
                     iconLeading={CreditCard02}
                   >
-                    Everything looks good — pay $199
+                    Everything looks good — $199
                   </Button>
                 </div>
               </div>
