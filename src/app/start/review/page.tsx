@@ -284,7 +284,7 @@ function ReviewContent() {
                     color="primary"
                     iconLeading={CreditCard02}
                   >
-                    Everything looks good — $199
+                    Everything looks good
                   </Button>
                 </div>
               </div>
