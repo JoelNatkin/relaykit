@@ -240,10 +240,8 @@ function ReviewContent() {
                   Before you pay, double-check your details
                 </h2>
                 <p className="mt-2 text-sm text-tertiary">
-                  We&apos;ll use this information to register your business
-                  with US carriers. If anything doesn&apos;t match your
-                  official records, your registration could be delayed or
-                  rejected.
+                  If anything doesn&apos;t match your official records, your
+                  registration could be delayed or rejected.
                 </p>
 
                 <ul className="mt-5 flex flex-col gap-2.5 text-sm text-secondary">
