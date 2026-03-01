@@ -1,3 +1,5 @@
+// CRITICAL: This component uses sessionStorage for cross-screen persistence.
+// Key: "relaykit_intake" — do NOT remove sessionStorage read/write logic.
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -72,6 +74,15 @@ function ScopeContent() {
     });
   }
 
+  // Keep session in sync as expansions change
+  useEffect(() => {
+    saveIntakeSession({
+      use_case: useCase!.id,
+      expansions: selectedExpansions,
+      campaign_type: effectiveCampaignType,
+    });
+  }, [useCase, selectedExpansions, effectiveCampaignType]);
+
   function buildContinueHref() {
     const params = new URLSearchParams();
     params.set("use_case", useCase!.id);
@@ -79,14 +90,6 @@ function ScopeContent() {
       params.set("expansions", selectedExpansions.join(","));
     }
     params.set("campaign_type", effectiveCampaignType);
-
-    // Save to session on navigate forward
-    saveIntakeSession({
-      use_case: useCase!.id,
-      expansions: selectedExpansions,
-      campaign_type: effectiveCampaignType,
-    });
-
     return `/start/details?${params.toString()}`;
   }
 

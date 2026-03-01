@@ -45,42 +45,68 @@ export function BusinessDetailsForm({
   onValid,
   onInvalid,
 }: BusinessDetailsFormProps) {
-  const [form, setForm] = useState<Record<string, string>>(() => {
-    const defaults: Record<string, string> = {
-      business_name: "",
-      business_description: "",
-      has_ein: "",
-      ein: "",
-      business_type: "",
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
-      address_line1: "",
-      address_city: "",
-      address_state: "",
-      address_zip: "",
-      website_url: "",
-      service_type: "",
-      product_type: "",
-      app_name: "",
-      community_name: "",
-      venue_type: "",
-    };
-    if (initialValues) {
-      for (const [key, value] of Object.entries(initialValues)) {
-        if (key in defaults && value) {
-          defaults[key] = value;
-        }
+  const EMPTY_FORM: Record<string, string> = {
+    business_name: "",
+    business_description: "",
+    has_ein: "",
+    ein: "",
+    business_type: "",
+    first_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    address_line1: "",
+    address_city: "",
+    address_state: "",
+    address_zip: "",
+    website_url: "",
+    service_type: "",
+    product_type: "",
+    app_name: "",
+    community_name: "",
+    venue_type: "",
+  };
+
+  function applyInitialValues(
+    defaults: Record<string, string>,
+    values?: Partial<Record<string, string>>,
+  ) {
+    if (!values) return defaults;
+    const merged = { ...defaults };
+    for (const [key, value] of Object.entries(values)) {
+      if (key in merged && value) {
+        merged[key] = value;
       }
     }
-    return defaults;
-  });
+    return merged;
+  }
+
+  const [form, setForm] = useState<Record<string, string>>(() =>
+    applyInitialValues(EMPTY_FORM, initialValues),
+  );
 
   const [errors, setErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState<TouchedFields>(new Set());
+  const [appliedInitials, setAppliedInitials] = useState(!!initialValues);
 
-  // Validate on mount when returning with pre-filled data
+  // When initialValues arrives late (sessionStorage hydration), apply it
+  useEffect(() => {
+    if (!initialValues || appliedInitials) return;
+    const merged = applyInitialValues(EMPTY_FORM, initialValues);
+    setForm(merged);
+    setAppliedInitials(true);
+
+    // Validate the restored data
+    const result = businessDetailsSchema.safeParse(merged);
+    if (result.success) {
+      const ucErrors = validateUseCaseFields(useCase, result.data);
+      if (ucErrors.length === 0) {
+        onValid(result.data);
+      }
+    }
+  }, [initialValues, appliedInitials, useCase, onValid]);
+
+  // Validate on mount when returning with pre-filled data (sync path)
   useEffect(() => {
     if (!initialValues) return;
     const result = businessDetailsSchema.safeParse(form);

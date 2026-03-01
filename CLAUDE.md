@@ -77,6 +77,10 @@ docs/                     # PRDs (reference only, not deployed)
 ## Build Discipline
 - Update PROGRESS.md after every commit — check off completed items, move "In Progress" forward
 
+## Critical Implementation Notes
+- Wizard screens (/start, /start/scope, /start/details, /start/review) use sessionStorage key "relaykit_intake" for cross-screen state persistence. This must be preserved in all changes to wizard components.
+- sessionStorage reads happen in useEffect (not useState initializers) to avoid SSR hydration mismatches.
+
 ## PRD Reference
 PRDs are in the /docs directory. Read the relevant PRD before building each component:
 - PRD_01: Intake Wizard

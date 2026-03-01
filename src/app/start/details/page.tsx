@@ -1,3 +1,5 @@
+// CRITICAL: This component uses sessionStorage for cross-screen persistence.
+// Key: "relaykit_intake" — do NOT remove sessionStorage read/write logic.
 "use client";
 
 import { useSearchParams } from "next/navigation";

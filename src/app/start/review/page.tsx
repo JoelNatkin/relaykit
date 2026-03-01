@@ -1,3 +1,5 @@
+// CRITICAL: This component uses sessionStorage for cross-screen persistence.
+// Key: "relaykit_intake" — do NOT remove sessionStorage read/write logic.
 "use client";
 
 import { useSearchParams } from "next/navigation";
@@ -25,9 +27,11 @@ function ReviewContent() {
 
   // Restore from sessionStorage after hydration (avoids SSR mismatch)
   const [session, setSession] = useState<ReturnType<typeof getIntakeSession>>({});
+  const [sessionLoaded, setSessionLoaded] = useState(false);
 
   useEffect(() => {
     setSession(getIntakeSession());
+    setSessionLoaded(true);
   }, []);
 
   // Intake params from previous screens (URL params first, session fallback)
@@ -99,7 +103,11 @@ function ReviewContent() {
       .filter((label): label is string => !!label);
   }, [selectedExpansions, useCase]);
 
+  // Wait for sessionStorage hydration before deciding data is missing
   if (!useCase || !templates) {
+    if (!sessionLoaded) {
+      return <div className="min-h-svh bg-primary" />;
+    }
     return (
       <div className="flex min-h-svh flex-col items-center justify-center bg-primary px-4">
         <p className="mb-4 text-lg text-tertiary">
