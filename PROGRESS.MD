@@ -13,22 +13,26 @@
 - [x] Frontend checkout wiring — Review page modal "Everything looks good" button calls `/api/checkout`, shows loading spinner via `isLoading`/`showTextWhileLoading`, displays inline error on failure, redirects to Stripe hosted checkout on success
 - [x] Server client helpers — `src/lib/stripe.ts` (Stripe SDK factory), `src/lib/supabase.ts` (Supabase service-role client factory)
 - [x] Environment setup — Stripe price IDs in .env (`STRIPE_SETUP_PRICE_ID`, `STRIPE_MONTHLY_PRICE_ID`), Supabase URL + keys in .env, `supabase/.temp/` added to .gitignore
+- [x] Template engine (PRD_02) — `src/lib/templates/`: deterministic string interpolation engine generating 6 compliance artifacts from intake data. `generateArtifacts(intake)` returns campaign_description, sample_messages (3), opt_in_description, privacy_policy, terms_of_service, opt_in_page_content (structured), plus tcr_use_case, tcr_flags, and compliance_site_slug. Templates use PRD_02 verbatim text for all 8 use cases. Existing stub at `src/lib/intake/templates.ts` refactored to re-export from engine while keeping `generateTemplates()` with {{placeholder}} sample messages for review page preview.
+- [x] Vertical detection (PRD_05 Addendum) — `src/lib/templates/verticals/`: 17 industry keyword matchers in `detectVerticals()`, 17 vertical module files (healthcare, mental_health, legal, financial, veterinary, automotive, etc.), `assembleGuidelines()` for appending industry-specific guidance to SMS_GUIDELINES.md. Rule modules (healthcare, mental_health, legal, financial) sort first.
 
 ## In Progress
 
 ## Up Next
 - [ ] Stripe end-to-end test (add `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` to .env, run `stripe listen --forward-to localhost:3000/api/webhooks/stripe`)
-- [ ] Dashboard page (`/dashboard`) — post-payment landing (PRD_06)
-- [ ] Template engine (PRD_02)
+- [ ] Wire template engine into webhook pipeline (call `generateArtifacts()` in `checkout.session.completed` handler)
 - [ ] Compliance site generator (PRD_03)
 - [ ] Twilio submission engine (PRD_04)
+- [ ] Deliverable generator (PRD_05) — SMS_GUIDELINES.md with vertical modules
+- [ ] Dashboard page (`/dashboard`) — post-payment landing (PRD_06)
 - [ ] Confirmation email setup
 
 ## Must Not Break
 - **sessionStorage persistence**: All wizard screens use sessionStorage key `"relaykit_intake"` for cross-screen state. Reads MUST happen in `useEffect` (not `useState` initializers) to avoid SSR hydration mismatches. See CLAUDE.md "Critical Implementation Notes" and the `// CRITICAL` comment at the top of each wizard page file. The root cause of the prior break was that `BusinessDetailsForm` ignored late-arriving `initialValues` props — this is now handled by a dedicated `useEffect` with an `appliedInitials` guard.
+- **Template engine public API**: `generateArtifacts(intake: IntakeData)` in `src/lib/templates/index.ts` is the canonical entry point for artifact generation. `generateTemplates()` in `src/lib/intake/templates.ts` is for review page preview only (uses {{placeholder}} sample messages). Do not merge these — they serve different purposes.
 
 ## Current PRD
-Building from: `docs/PRD_01_INTAKE_WIZARD.md` + `docs/PRICING_MODEL_UPDATE.md`
+Building from: `docs/PRD_02_TEMPLATE_ENGINE.md` + `docs/PRD_05_ADDENDUM_VERTICALS.md`
 
 ## Session Resume Prompt
 If starting a new session, use this prompt:
