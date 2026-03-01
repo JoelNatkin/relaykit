@@ -1,5 +1,11 @@
 import type { UseCaseId } from "./use-case-data";
 
+export { generateComplianceSlug } from "@/lib/templates/variables";
+export { generateArtifacts } from "@/lib/templates";
+export type { GeneratedArtifacts, IntakeData } from "@/lib/templates";
+
+// --- Preview-specific types (used by review page) ---
+
 interface TemplateInput {
   use_case: UseCaseId;
   business_name: string;
@@ -16,6 +22,8 @@ interface TemplateOutput {
   sample_messages: [string, string, string];
   sample_message_labels: [string, string, string];
 }
+
+// --- Preview campaign descriptions (shorter, for Screen 3 display) ---
 
 const CAMPAIGN_DESCRIPTIONS: Record<UseCaseId, (i: TemplateInput) => string> = {
   appointments: (i) =>
@@ -35,6 +43,8 @@ const CAMPAIGN_DESCRIPTIONS: Record<UseCaseId, (i: TemplateInput) => string> = {
   waitlist: (i) =>
     `${i.business_name} sends waitlist position updates, availability alerts, and reservation confirmations to customers. Customers can reply to accept or decline.`,
 };
+
+// --- Preview sample messages (with {{placeholder}} variables for display) ---
 
 const SAMPLE_MESSAGES: Record<UseCaseId, (i: TemplateInput) => [string, string, string]> = {
   appointments: (i) => [
@@ -122,17 +132,15 @@ const SAMPLE_MESSAGE_LABELS: Record<UseCaseId, [string, string, string]> = {
   ],
 };
 
+/**
+ * Generates preview templates for the review page (Screen 3).
+ * Sample messages use {{placeholder}} variables for customer display.
+ * For Twilio submission artifacts, use `generateArtifacts()` instead.
+ */
 export function generateTemplates(input: TemplateInput): TemplateOutput {
   return {
     campaign_description: CAMPAIGN_DESCRIPTIONS[input.use_case](input),
     sample_messages: SAMPLE_MESSAGES[input.use_case](input),
     sample_message_labels: SAMPLE_MESSAGE_LABELS[input.use_case],
   };
-}
-
-export function generateComplianceSlug(businessName: string): string {
-  return businessName
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
 }
