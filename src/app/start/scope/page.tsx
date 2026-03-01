@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { ArrowRight, ArrowLeft } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { Checkbox } from "@/components/base/checkbox/checkbox";
@@ -32,15 +32,16 @@ function ScopeContent() {
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 
   const [selectedExpansions, setSelectedExpansions] = useState<string[]>(
-    () => {
-      // Restore from session if available for this use case
-      const session = getIntakeSession();
-      if (session.use_case === useCaseId && session.expansions) {
-        return session.expansions;
-      }
-      return useCase ? getDefaultExpansions(useCase.expansions) : [];
-    },
+    () => (useCase ? getDefaultExpansions(useCase.expansions) : []),
   );
+
+  // Restore expansions from sessionStorage after hydration
+  useEffect(() => {
+    const session = getIntakeSession();
+    if (session.use_case === useCaseId && session.expansions) {
+      setSelectedExpansions(session.expansions);
+    }
+  }, [useCaseId]);
 
   if (!useCase) {
     return (

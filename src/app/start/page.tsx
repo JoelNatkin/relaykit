@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { UseCaseTile } from "@/components/intake/use-case-tile";
@@ -11,9 +11,15 @@ import {
 } from "@/lib/intake/session-storage";
 
 export default function StartPage() {
-  const [selectedUseCase, setSelectedUseCase] = useState<string | null>(
-    () => getIntakeSession().use_case ?? null,
-  );
+  const [selectedUseCase, setSelectedUseCase] = useState<string | null>(null);
+
+  // Restore selection from sessionStorage after hydration
+  useEffect(() => {
+    const session = getIntakeSession();
+    if (session.use_case) {
+      setSelectedUseCase(session.use_case);
+    }
+  }, []);
 
   function handleSelect(id: string) {
     setSelectedUseCase(id);

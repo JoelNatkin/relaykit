@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, Suspense, useCallback, useMemo } from "react";
+import { useState, useEffect, Suspense, useCallback, useMemo } from "react";
 import { ArrowRight, ArrowLeft } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
@@ -27,24 +27,30 @@ function DetailsContent() {
     "address_state", "address_zip", "website_url", "service_type",
     "product_type", "app_name", "community_name", "venue_type",
   ];
-  const initialValues = useMemo(() => {
-    // Try URL params first
+
+  // First pass: URL params only (safe for SSR)
+  const urlValues = useMemo(() => {
     const vals: Record<string, string> = {};
     for (const field of formFields) {
       const v = searchParams.get(field);
       if (v) vals[field] = v;
     }
-    if (Object.keys(vals).length > 0) return vals;
-
-    // Fall back to sessionStorage
-    const session = getIntakeSession();
-    if (session.business_details && Object.keys(session.business_details).length > 0) {
-      return session.business_details;
-    }
-
-    return undefined;
+    return Object.keys(vals).length > 0 ? vals : undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  const [initialValues, setInitialValues] = useState<
+    Partial<Record<string, string>> | undefined
+  >(urlValues);
+
+  // Hydrate from sessionStorage after mount if no URL params
+  useEffect(() => {
+    if (urlValues) return;
+    const session = getIntakeSession();
+    if (session.business_details && Object.keys(session.business_details).length > 0) {
+      setInitialValues(session.business_details);
+    }
+  }, [urlValues]);
 
   const [validData, setValidData] = useState<BusinessDetailsData | null>(null);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { ArrowLeft, CreditCard02 } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
@@ -23,8 +23,12 @@ import { getIntakeSession } from "@/lib/intake/session-storage";
 function ReviewContent() {
   const searchParams = useSearchParams();
 
-  // Restore from sessionStorage as fallback for back-navigation
-  const session = useMemo(() => getIntakeSession(), []);
+  // Restore from sessionStorage after hydration (avoids SSR mismatch)
+  const [session, setSession] = useState<ReturnType<typeof getIntakeSession>>({});
+
+  useEffect(() => {
+    setSession(getIntakeSession());
+  }, []);
 
   // Intake params from previous screens (URL params first, session fallback)
   const useCaseId = (searchParams.get("use_case") ?? session.use_case ?? null) as UseCaseId | null;
