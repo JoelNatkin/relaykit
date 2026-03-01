@@ -165,9 +165,10 @@ function ReviewContent() {
               iconLeading={CreditCard02}
               onClick={() => setIsModalOpen(true)}
             >
-              Start my registration — $199 + $19/mo
+              Start my registration
             </Button>
             <p className="text-sm text-tertiary">
+              <span className="font-semibold">$199 + $19 per mo.</span>{" "}
               Money back if not approved
             </p>
           </div>
@@ -208,6 +209,7 @@ function ReviewContent() {
         {/* Navigation */}
         <div className="mt-8 flex flex-col items-end gap-5">
           <p className="text-sm text-tertiary">
+            <span className="font-semibold">$199 + $19 per mo.</span>{" "}
             If we can&apos;t get you approved, you&apos;ll get a full refund.
           </p>
           <div className="flex w-full items-center justify-between">
@@ -224,7 +226,7 @@ function ReviewContent() {
               iconLeading={CreditCard02}
               onClick={() => setIsModalOpen(true)}
             >
-              Start my registration — $199 + $19/mo
+              Start my registration
             </Button>
           </div>
         </div>
