@@ -259,9 +259,10 @@ export function ReviewPreviewCard({
           </span>
           <ol className="flex flex-col gap-1">
             {[
-              "You pay $199",
-              "We submit your registration to US carriers (usually 2\u20137 days)",
-              "You get an integration kit to add SMS to your app",
+              "You pay $199 setup + $19/month",
+              "We submit your registration to US carriers (usually 3\u201310 days)",
+              "You get an integration kit with live credentials and compliance co-pilot",
+              "Your SMS infrastructure stays live, monitored, and compliant",
             ].map((step, i) => (
               <li key={i} className="flex gap-2 text-sm text-tertiary">
                 <span className="shrink-0 font-medium text-primary">
@@ -271,6 +272,25 @@ export function ReviewPreviewCard({
               </li>
             ))}
           </ol>
+        </div>
+
+        {/* Your plan */}
+        <div className="flex flex-col gap-2">
+          <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
+            Your plan
+          </span>
+          <ul className="flex flex-col gap-1">
+            {[
+              "$199 one-time setup",
+              "$19/month includes 1,000 messages, phone number, compliance hosting & monitoring",
+              "Additional messages: $15 per 1,000 (auto-scales, no interruption)",
+            ].map((item) => (
+              <li key={item} className="flex gap-2 text-sm text-tertiary">
+                <span className="shrink-0 text-tertiary">&bull;</span>
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

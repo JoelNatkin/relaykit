@@ -165,7 +165,7 @@ function ReviewContent() {
               iconLeading={CreditCard02}
               onClick={() => setIsModalOpen(true)}
             >
-              Proceed to payment — $199
+              Start my registration — $199 + $19/mo
             </Button>
             <p className="text-sm text-tertiary">
               Money back if not approved
@@ -224,7 +224,7 @@ function ReviewContent() {
               iconLeading={CreditCard02}
               onClick={() => setIsModalOpen(true)}
             >
-              Proceed to payment — $199
+              Start my registration — $199 + $19/mo
             </Button>
           </div>
         </div>
