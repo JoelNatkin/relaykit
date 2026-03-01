@@ -216,7 +216,12 @@ export function BusinessDetailsForm({
           onChange={(val) => updateField("business_name", val)}
           onBlur={() => handleBlur("business_name")}
           isInvalid={!!fieldError("business_name")}
-          hint={fieldError("business_name")}
+          hint={
+            fieldError("business_name") ??
+            (showEinFields
+              ? "Use your legal business name exactly as registered with the IRS"
+              : undefined)
+          }
         />
 
         <TextArea
@@ -299,7 +304,7 @@ export function BusinessDetailsForm({
               onChange={(val) => updateField("ein", val)}
               onBlur={() => handleBlur("ein")}
               isInvalid={!!fieldError("ein")}
-              hint={fieldError("ein") ?? "9-digit employer identification number"}
+              hint={fieldError("ein") ?? "Must match the name and address on your IRS filing"}
             />
 
             <Select
@@ -404,6 +409,13 @@ export function BusinessDetailsForm({
             "Used for carrier verification — we'll send a code to this number"
           }
         />
+
+        {showEinFields && (
+          <p className="text-sm text-tertiary">
+            Use the address associated with your business registration.
+            Mismatches can delay approval.
+          </p>
+        )}
 
         <Input
           label="Street address"
