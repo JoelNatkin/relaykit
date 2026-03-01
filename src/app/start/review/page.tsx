@@ -1,10 +1,16 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { Suspense, useMemo } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { ArrowLeft, CreditCard02 } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
+import {
+  DialogTrigger,
+  ModalOverlay,
+  Modal,
+  Dialog,
+} from "@/components/application/modals/modal";
 import { ReviewDetailsCard } from "@/components/intake/review-details-card";
 import { ReviewPreviewCard } from "@/components/intake/review-preview-card";
 import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
@@ -119,6 +125,10 @@ function ReviewContent() {
     return `/start/details?${params.toString()}`;
   }
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const isEinRegistration = hasEin === "yes";
+
   return (
     <div className="flex min-h-svh flex-col bg-primary">
       <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-12 sm:px-6 lg:py-16">
@@ -149,6 +159,7 @@ function ReviewContent() {
               size="lg"
               color="primary"
               iconLeading={CreditCard02}
+              onClick={() => setIsModalOpen(true)}
             >
               Proceed to payment — $199
             </Button>
@@ -207,12 +218,76 @@ function ReviewContent() {
               size="lg"
               color="primary"
               iconLeading={CreditCard02}
+              onClick={() => setIsModalOpen(true)}
             >
               Proceed to payment — $199
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Confirmation modal */}
+      <DialogTrigger isOpen={isModalOpen} onOpenChange={setIsModalOpen}>
+        <ModalOverlay isDismissable={false}>
+          <Modal className="max-w-lg">
+            <Dialog>
+              <div className="w-full rounded-xl bg-primary p-6 shadow-xl">
+                <h2 className="text-lg font-semibold text-primary">
+                  Before you pay, double-check your details
+                </h2>
+                <p className="mt-2 text-sm text-tertiary">
+                  We&apos;ll use this information to register your business
+                  with US carriers. If anything doesn&apos;t match your
+                  official records, your registration could be delayed or
+                  rejected.
+                </p>
+
+                <ul className="mt-5 flex flex-col gap-2.5 text-sm text-secondary">
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1.5 block size-1.5 shrink-0 rounded-full bg-quaternary" />
+                    Business name matches your legal name exactly
+                  </li>
+                  {isEinRegistration && (
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1.5 block size-1.5 shrink-0 rounded-full bg-quaternary" />
+                      EIN matches your IRS records
+                    </li>
+                  )}
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1.5 block size-1.5 shrink-0 rounded-full bg-quaternary" />
+                    {isEinRegistration
+                      ? "Address matches your business registration"
+                      : "Address is current and accurate"}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="mt-1.5 block size-1.5 shrink-0 rounded-full bg-quaternary" />
+                    Email and phone number are ones you actively monitor
+                  </li>
+                </ul>
+
+                <div className="mt-6 flex gap-3">
+                  <Button
+                    className="flex-1"
+                    size="lg"
+                    color="secondary"
+                    onClick={() => setIsModalOpen(false)}
+                  >
+                    Go back and check
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    size="lg"
+                    color="primary"
+                    iconLeading={CreditCard02}
+                  >
+                    Everything looks good — pay $199
+                  </Button>
+                </div>
+              </div>
+            </Dialog>
+          </Modal>
+        </ModalOverlay>
+      </DialogTrigger>
     </div>
   );
 }
