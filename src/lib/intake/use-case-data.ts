@@ -235,7 +235,7 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
         unlockedBy: ["operational_alerts_customers"],
       },
       {
-        text: "Messages to anyone who isn't a team member",
+        text: "Messages to non team members",
         unlockedBy: ["contractors_freelancers"],
       },
     ],
