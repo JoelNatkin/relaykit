@@ -282,7 +282,7 @@ export function ReviewPreviewCard({
           <ul className="flex flex-col gap-1">
             {[
               "$199 one-time setup",
-              "$19/month includes 1,000 messages, phone number, compliance hosting & monitoring",
+              "$19/month includes 500 messages, phone number, compliance proxy & monitoring",
               "Additional messages: $15 per 1,000 (auto-scales, no interruption)",
             ].map((item) => (
               <li key={item} className="flex gap-2 text-sm text-tertiary">

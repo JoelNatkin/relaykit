@@ -1,38 +1,73 @@
 # PRICING MODEL UPDATE
-## RelayKit — From One-Time to Recurring Infrastructure
-### Updated Feb 28, 2026
+## RelayKit — Managed SMS Compliance Infrastructure with Free Sandbox
+### Version 2.0 — Mar 1, 2026
 
 > **This document replaces pricing sections in PROJECT_OVERVIEW.md, PRD_01 Section 5, and PRD_07 Sections 2 & 4. Feed this to CC alongside the relevant PRD when building Stripe integration.**
+>
+> **CHANGE LOG (v2.0):** Added free sandbox tier. Compliance Shield paid tier ($29/month) removed — drift detection is now baseline for all customers. BYO Twilio tier added for Phase 2. Infrastructure costs updated to include proxy + Redis.
 
 ---
 
 ## DECISION SUMMARY
 
-RelayKit is no longer a one-time registration service. It is managed SMS compliance infrastructure with recurring billing.
+RelayKit has three tiers, one pricing structure, and no paywalled compliance features.
 
-**Old model:** $199 one-time. Done.
-**New model:** $199 setup + $19/month subscription with auto-scaling message blocks.
+| Tier | Price | What it is |
+|------|-------|-----------|
+| **Sandbox** | Free | Instant API key, full testing, no time limit |
+| **Setup** | $199 one-time | 10DLC registration, compliance site, all artifacts |
+| **Monthly** | $19/month | Live messaging through compliance proxy, 500 messages included |
+
+Everything a customer needs to stay compliant is included. No upsells, no tiered protection.
 
 ---
 
-## 1. PRICING STRUCTURE
+## 1. FREE SANDBOX TIER
+
+### What's included (no credit card, no time limit)
+- Sandbox API key (`rk_sandbox_` prefix) — instant on signup
+- Full API access (same endpoints as production)
+- Outbound messages to one verified phone number (100/day limit)
+- Inbound message forwarding (replies from verified number)
+- Opt-out testing (STOP/START keyword handling)
+- Same compliance checks as production (content scanning, opt-out enforcement)
+- Dashboard with API key, verified phone, usage counter
+
+### Purpose
+The sandbox is customer acquisition. Developers build their entire SMS integration for free, with a real working API, before paying anything. By the time they register, they've already invested time in the integration — the payment is to go live, not to start building.
+
+### Costs to RelayKit
+- Shared sandbox phone number: ~$1.15/month
+- Per-message carrier cost: ~$0.0079/segment
+- At 100 active sandbox developers sending 50 messages/day: ~$40/day carrier cost
+- This is customer acquisition cost, cheaper than any paid channel
+
+### Conversion path
+Sandbox → Registration CTA on dashboard (engagement-signal-aware nudge) → Intake wizard (PRD_01) → Stripe checkout → Registration pipeline begins
+
+---
+
+## 2. PRICING STRUCTURE
 
 ### One-Time Setup Fee
-- **$199** — covers 10DLC registration, compliance site generation, all artifacts, Twilio submission, rejection handling, and integration kit delivery
+- **$199** — covers 10DLC registration, compliance site generation, all artifacts, Twilio subaccount creation, Twilio submission, rejection handling, and integration kit delivery
 
 ### Monthly Subscription (Required)
 - **$19/month** — billed monthly, starts after registration approval
 - Includes:
-  - 1,000 SMS segments per month
+  - 500 SMS segments per month
   - Phone number rental
+  - Compliance proxy (every message scanned inline before delivery)
+  - Opt-out enforcement, quiet hours, SHAFT-C content scanning, rate limiting
+  - Semantic drift detection (Claude-powered, sampled, with rewrite suggestions)
+  - Message preview endpoint (validate templates against registration)
   - Compliance site hosting (kept live and audit-ready)
-  - Baseline compliance monitoring (8 rules per message)
   - Trust score monitoring
   - Campaign status visibility
   - Carrier regulation change tracking
 
 ### Auto-Scaling Message Blocks
-- When usage exceeds 1,000 messages, additional blocks are added automatically
+- When usage exceeds 500 messages, additional blocks are added automatically
 - **$15 per additional 1,000 messages**
 - No service interruption — messages keep sending
 - Blocks added in real-time as usage crosses thresholds
@@ -41,12 +76,12 @@ RelayKit is no longer a one-time registration service. It is managed SMS complia
 ### Monthly Billing Example
 | Usage | Monthly Bill | Effective Rate |
 |-------|-------------|----------------|
-| 0–1,000 | $19 | 1.9¢/msg |
-| 1,001–2,000 | $34 | 1.7¢/msg |
-| 2,001–3,000 | $49 | 1.6¢/msg |
-| 3,001–4,000 | $64 | 1.6¢/msg |
-| 5,000 | $79 | 1.6¢/msg |
-| 10,000 | $154 | 1.5¢/msg |
+| 0–500 | $19 | 3.8¢/msg |
+| 501–1,500 | $34 | 2.3¢/msg |
+| 1,501–2,500 | $49 | 2.0¢/msg |
+| 2,501–3,500 | $64 | 1.8¢/msg |
+| 5,000 | $86 | 1.7¢/msg |
+| 10,000 | $161 | 1.6¢/msg |
 
 ### Volume Tapering (Gentle, Not Aggressive)
 At higher volumes, block pricing decreases slightly:
@@ -64,19 +99,48 @@ At higher volumes, block pricing decreases slightly:
 
 ---
 
-## 2. STRIPE IMPLEMENTATION (Replaces PRD_01 Section 5)
+## 3. BYO TWILIO TIER (Phase 2)
+
+Registration-only service for developers who bring their own Twilio account.
+
+### Pricing
+- **$199 one-time** — registration only, no monthly subscription
+- No proxy, no compliance monitoring, no managed phone number
+- Delivers: direct Twilio credentials (SID, auth token, Messaging Service SID) + SMS_GUIDELINES.md compliance co-pilot
+
+### What's included
+- 10DLC registration through RelayKit's ISV account
+- Compliance site generation and hosting
+- All artifacts (campaign description, sample messages, privacy policy, terms, opt-in form)
+- Rejection handling
+- BYO Twilio deliverable (MESSAGING_SETUP.md with Twilio API calls instead of RelayKit API)
+
+### Upgrade path
+Persistent dashboard upsell: "Want automatic compliance protection? Switch to RelayKit's managed API — same code, one key swap."
+
+Migration: create subaccount under RelayKit ISV, port existing number, swap API key. Customer's code changes are minimal (endpoint URL + auth header).
+
+### Why offer this
+- Some developers already have Twilio accounts and won't give them up
+- Entry tier creates relationship — upgrade to proxy later
+- $199 one-time is still profitable (82%+ margin on registration)
+- Captures customers who would otherwise do it themselves or use a Fiverr gig
+
+---
+
+## 4. STRIPE IMPLEMENTATION (Replaces PRD_01 Section 5)
 
 ### Checkout Flow
-1. Customer clicks "Start my registration" on Screen 3 (Review & Confirm)
+1. Customer clicks "Register now" on dashboard (or "Start my registration" on intake Screen 3)
 2. Frontend calls `POST /api/checkout`
 3. Backend creates a **Stripe Checkout Session** in `subscription` mode with:
    - **Line item 1:** Setup fee — $199.00 one-time (using `price_data` with `recurring: null` or a one-time Stripe Price)
    - **Line item 2:** Monthly subscription — $19.00/month recurring (Stripe Price object)
-   - Customer email pre-filled from intake
+   - Customer email pre-filled from intake (or from sandbox account)
    - `payment_method_collection: 'always'` (required for future overage billing)
    - Success URL: `relaykit.com/dashboard?session_id={CHECKOUT_SESSION_ID}`
    - Cancel URL: `relaykit.com/start/review`
-   - Metadata: `{ intake_session_id: "{id}" }`
+   - Metadata: `{ intake_session_id: "{id}", customer_id: "{id}" }`
 4. Customer completes payment on Stripe's hosted checkout
 5. Stripe charges $199 + first month $19 = **$218 at checkout**
 6. Redirects to dashboard
@@ -98,8 +162,8 @@ Product: "RelayKit Message Block"
 **`checkout.session.completed`** — same as current PRD_01 spec:
 1. Verify signature
 2. Look up intake_session_id
-3. Create customer + registration records
-4. Trigger artifact generation pipeline
+3. Create customer + registration records (or link to existing sandbox customer)
+4. Trigger artifact generation pipeline (starts with subaccount creation — PRD_04)
 5. Store Stripe customer_id and subscription_id on customer record
 
 **`invoice.payment_failed`** — new:
@@ -116,104 +180,47 @@ Product: "RelayKit Message Block"
 
 ### Usage Metering (v1 — Simple Approach)
 - Track message count per customer per billing period using Supabase
+- Proxy increments counter on every successful message send
 - At end of billing cycle (or triggered by threshold crossing), create Stripe Invoice Items for overage blocks
 - Use Stripe's `usage_record` API on a metered price, OR simply create one-time invoice items — decide during build based on what's simpler
-- **v1 simplification:** If metered billing is too complex for launch, hard-cap at 1,000 and require manual plan upgrade. Add auto-scaling in week 3. Flag this decision for Joel.
+- **v1 simplification:** If metered billing is too complex for launch, hard-cap at 500 and require manual plan upgrade. Add auto-scaling in week 3. Flag this decision for Joel.
 
 ### Subscription Lifecycle
 ```
-CHECKOUT → active (subscription created, $199 + $19 charged)
-  → payment_past_due (card fails on renewal)
-    → 7-day grace period
-    → suspended (messaging paused)
-    → reactivated (card updated) OR churned (30 days no payment)
-  → cancelled (customer cancels)
-    → messaging paused immediately  
-    → compliance site stays live 30 days
-    → data retained 90 days
+SANDBOX (free, no Stripe involvement)
+  → CHECKOUT → active (subscription created, $199 + $19 charged)
+    → payment_past_due (card fails on renewal)
+      → 7-day grace period
+      → suspended (messaging paused)
+      → reactivated (card updated) OR churned (30 days no payment)
+    → cancelled (customer cancels)
+      → messaging paused immediately  
+      → compliance site stays live 30 days
+      → data retained 90 days
+      → sandbox continues to work (they can still test)
 ```
 
 ---
 
-## 3. SCREEN 3 PREVIEW CARD UPDATE
+## 5. SCREEN 3 PREVIEW CARD UPDATE
 
-The Review & Confirm screen (Screen 3) preview card currently shows:
-```
-WHAT HAPPENS NEXT
-1. You pay $199
-2. We submit your registration...
-3. You get an integration kit...
-```
-
-**Replace with:**
+The Review & Confirm screen (Screen 3) preview card:
 ```
 WHAT HAPPENS NEXT
 1. You pay $199 setup + $19/month
 2. We submit your registration to US carriers (usually 3–10 days)
-3. You get an integration kit with live credentials and compliance co-pilot
-4. Your SMS infrastructure stays live, monitored, and compliant
+3. Your sandbox keeps working while you wait
+4. On approval, swap your sandbox key for your live key — same code, same API
 
 YOUR PLAN
 $199 one-time setup
-$19/month includes 1,000 messages, phone number, compliance hosting & monitoring
+$19/month includes 500 messages, phone number, compliance proxy & monitoring
 Additional messages: $15 per 1,000 (auto-scales, no interruption)
 ```
 
 ---
 
-## 4. LANDING PAGE PRICING UPDATE (Replaces PRD_07 Section 4)
-
-### Section 4: What You Get
-```
-$199 setup + $19/month. Everything included.
-
-SETUP ($199 one-time)
-✓ 10DLC carrier registration (90%+ first-time approval rate)
-✓ Compliance website with privacy policy, terms, and opt-in page
-✓ AI-native integration kit — drop two files in your project and go
-✓ Industry-specific compliance co-pilot (17 verticals)
-✓ Rejection handling — we fix and resubmit
-
-MONTHLY ($19/month)
-✓ 1,000 SMS messages included
-✓ Dedicated phone number
-✓ Compliance site hosting (always live, always audit-ready)
-✓ Message compliance monitoring (every message scanned)
-✓ Trust score & campaign status monitoring
-✓ Carrier regulation change alerts
-
-NEED MORE MESSAGES?
-Grows in predictable $15 steps per 1,000 messages.
-No service interruption. No surprise bills. No contracts.
-```
-
-### FAQ Updates
-```
-Q: What does $19/month cover?
-A: Your phone number, 1,000 messages, compliance site hosting, and 
-ongoing monitoring that keeps your SMS channel safe and approved. 
-Think of it as managed SMS infrastructure — you build, we keep 
-the carrier compliance handled.
-
-Q: What if I send more than 1,000 messages?
-A: We automatically add message blocks at $15 per 1,000. No 
-interruption, no surprise bills — just predictable $15 steps 
-as your app grows.
-
-Q: Can I cancel?
-A: Yes, anytime. No contracts. If you cancel, messaging stops 
-but your compliance site stays live for 30 days.
-
-Q: What ongoing costs are there beyond RelayKit?
-A: None. Phone number rental and carrier fees are included in 
-your $19/month. You don't need a Twilio account.
-```
-
-> **Note:** Remove the old FAQ answer that says "Twilio charges per-message fees... RelayKit's fee is one-time." This is no longer accurate.
-
----
-
-## 5. UPDATED UNIT ECONOMICS
+## 6. UPDATED UNIT ECONOMICS
 
 ### Twilio Fee Schedule (as of Aug 2025)
 | Brand Type | Brand Fee | Campaign Vetting | Phone Number | Campaign Monthly Fee |
@@ -245,13 +252,14 @@ Campaign monthly fee varies by use case: $1.50 (transactional) to $10 (marketing
 | Phone number rental | ~$1.15 | ~$1.15 |
 | Twilio campaign monthly fee | ~$1.50 | ~$10.00 |
 | Compliance site hosting | ~$0.50 | ~$0.50 |
-| Monitoring infrastructure | ~$1.00 | ~$1.00 |
-| Message cost (1,000 × $0.01 blended) | ~$10.00 | ~$10.00 |
+| Proxy + Redis infrastructure | ~$1.00 | ~$1.00 |
+| Drift detection (Claude API sampling) | ~$0.25 | ~$0.25 |
+| Message cost (500 × $0.01 blended) | ~$5.00 | ~$5.00 |
 | Stripe processing (3%) | ~$0.57 | ~$0.57 |
-| **Monthly gross profit** | **~$4.28** | **~($4.22)** |
-| **Monthly gross margin** | **~23%** | **negative** |
+| **Monthly gross profit** | **~$9.03** | **~$0.53** |
+| **Monthly gross margin** | **~48%** | **~3%** |
 
-> **⚠️ Important:** For marketing/mixed use cases, the $19/month base barely breaks even or loses money when including 1,000 messages. The margin comes from two places: (1) most customers won't use all 1,000 messages every month, and (2) message block overage ($15/1k) carries ~33% margin. Monitor this closely. If marketing-heavy customers cluster, consider whether marketing use cases should be on a higher base tier in a future pricing revision.
+> **⚠️ Note:** Marketing/mixed use cases are roughly breakeven on the base tier at 500 included messages. Margin comes from: (1) most customers won't use all 500 messages every month, and (2) overage kicks in earlier, generating block revenue sooner. The move from 1,000 to 500 included significantly improves base tier economics.
 
 ### Message Block Revenue
 | Item | Amount |
@@ -264,16 +272,14 @@ Campaign monthly fee varies by use case: $1.50 (transactional) to $10 (marketing
 ### Customer LTV Model (12-month retention)
 | Scenario | Setup | Monthly × 12 | Overage | Total LTV |
 |----------|-------|-------------|---------|-----------|
-| Light user (500 msg/mo) | $199 | $228 | $0 | $427 |
-| Typical user (1,000 msg/mo) | $199 | $228 | $0 | $427 |
+| Light user (250 msg/mo) | $199 | $228 | $0 | $427 |
+| Typical user (1,000 msg/mo) | $199 | $228 | $90 | $517 |
 | Growth user (3,000 msg/mo) | $199 | $228 | $360 | $787 |
 | Scale user (10,000 msg/mo) | $199 | $228 | $1,620* | $2,047 |
 
 *Scale user benefits from volume tapering at 5k+
 
-> **Note:** LTV does not change from previous version because the Twilio fee correction affects one-time registration cost (already captured in setup) and monthly campaign fee (absorbed into the $19 base). The customer-facing pricing is unchanged.
-
-### Revenue Targets (Updated)
+### Revenue Targets
 | Milestone | Customers | Setup Rev | MRR (base) | Est. Overage MRR | Total Annual |
 |-----------|----------|-----------|-----------|-----------------|-------------|
 | Validation | 50 | $9,950 | $950 | ~$200 | ~$23,750 |
@@ -282,68 +288,15 @@ Campaign monthly fee varies by use case: $1.50 (transactional) to $10 (marketing
 
 ---
 
-## 6. PRD_04 FEE TABLE CORRECTION
-
-PRD_04 Section 2 has an outdated Twilio fee structure. Replace the fee table with:
-
-```
-### Twilio fee structure (pass-through costs per customer)
-| Item | Cost | Frequency |
-|------|------|-----------|
-| Brand registration (sole prop) | $4.50 | One-time |
-| Brand registration (low volume standard) | $4.50 | One-time |
-| Brand registration (standard, includes vetting) | $46.00 | One-time |
-| Campaign vetting | $15.00 | One-time |
-| Phone number | ~$1.15/month | Recurring |
-| Campaign fee | $1.50–$10.00/month | Recurring (varies by use case) |
-| **Total initial (sole prop / low vol standard)** | **~$20.65** | — |
-| **Total initial (standard)** | **~$62.15** | — |
-| **Total recurring** | **~$2.65–$11.15/mo** | — |
-```
-
-> **Note:** Secondary vetting is now bundled into the $46 Standard Brand fee (as of Aug 2025). It is no longer a separate $41.50 charge. Remove all references to "Standard vetting: $41.50" from PRD_04.
-
----
-
-## 7. PROJECT_OVERVIEW.md UPDATES
-
-### Decisions Made — Replace pricing entry:
-```
-- **Pricing:** $199 one-time setup + $19/month subscription (1,000 messages 
-  included, auto-scaling $15 blocks). Volume tapering at 5k+ messages.
-```
-
-### Explicitly NOT in v1 — Remove this line:
-```
-- Recurring subscription billing  ← REMOVE THIS, it's now in v1
-```
-
-### Add to v1 scope:
-```
-- Stripe subscription billing (setup fee + monthly recurring)
-- Basic usage tracking per customer per billing period
-- Payment failure handling with 7-day grace period
-```
-
----
-
-## 8. COMPLIANCE SHIELD — UNCHANGED
-
-Compliance Shield ($29/month) remains a **post-launch** upsell layered on top of the base $19/month subscription. It adds Claude-powered semantic drift analysis and weekly reports. No changes needed to PRD_08.
-
-When Compliance Shield launches, customers on $19/month who upgrade effectively pay $48/month ($19 base + $29 Shield). This should be presented as a single upgrade, not a confusing stack.
-
----
-
-## 9. CC IMPLEMENTATION NOTES
+## 7. CC IMPLEMENTATION NOTES
 
 ### What CC needs to build for Stripe (in order):
 1. Stripe product + price creation (can be done via Stripe Dashboard or API seed script)
 2. `POST /api/checkout` — creates Subscription checkout session with one-time setup fee
 3. `POST /api/webhooks/stripe` — handles `checkout.session.completed`, `invoice.payment_failed`, `customer.subscription.deleted`
 4. Customer record stores: `stripe_customer_id`, `stripe_subscription_id`, `subscription_status`
-5. Basic usage counter: increment on each outbound message (PRD_04/PRD_08 integration point)
-6. **v1 decision point:** If metered billing is complex, launch with hard cap at 1,000 and manual upgrade. Add auto-scaling in phase 2.
+5. Basic usage counter: increment on each outbound message (proxy integration point)
+6. **v1 decision point:** If metered billing is complex, launch with hard cap at 500 and manual upgrade. Add auto-scaling in phase 2.
 
 ### Environment Variables (add to .env)
 ```

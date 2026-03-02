@@ -13,6 +13,7 @@ import {
   Modal,
   Dialog,
 } from "@/components/application/modals/modal";
+import { Checkbox } from "@/components/base/checkbox/checkbox";
 import { ReviewDetailsCard } from "@/components/intake/review-details-card";
 import { ReviewPreviewCard } from "@/components/intake/review-preview-card";
 import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
@@ -137,6 +138,7 @@ function ReviewContent() {
     return `/start/details?${params.toString()}`;
   }
 
+  const [monitoringConsent, setMonitoringConsent] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -231,6 +233,7 @@ function ReviewContent() {
               size="lg"
               color="primary"
               iconLeading={CreditCard02}
+              isDisabled={!monitoringConsent}
               onClick={() => setIsModalOpen(true)}
             >
               Start my registration
@@ -270,29 +273,62 @@ function ReviewContent() {
           />
         </div>
 
-        {/* Navigation */}
-        <div className="mt-8 flex flex-col items-end gap-5">
-          <p className="text-sm text-tertiary">
-            <span className="font-semibold">$199 + $19 per mo.</span>{" "}
-            Money back if not approved
-          </p>
-          <div className="flex w-full items-center justify-between">
-            <Button
-              href={buildBackHref()}
-              color="link-gray"
-              iconLeading={ArrowLeft}
-            >
-              Back
-            </Button>
-            <Button
-              size="lg"
-              color="primary"
-              iconLeading={CreditCard02}
-              onClick={() => setIsModalOpen(true)}
-            >
-              Start my registration
-            </Button>
+        {/* Pricing breakdown */}
+        <div className="mt-8 rounded-xl border border-secondary p-5">
+          <div className="flex flex-col gap-3">
+            <h3 className="text-md font-semibold text-primary">
+              Pricing breakdown
+            </h3>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-tertiary">One-time setup fee</span>
+                <span className="font-semibold text-primary">$199</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-tertiary">Monthly subscription</span>
+                <span className="font-semibold text-primary">$19/mo</span>
+              </div>
+              <div className="border-t border-secondary pt-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-semibold text-primary">Due today</span>
+                  <span className="font-semibold text-primary">$218</span>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-tertiary">
+              500 messages included monthly. Additional messages $15 per 1,000, auto-scales with no interruption. Money back if not approved.
+            </p>
           </div>
+
+          {/* Monitoring consent */}
+          <div className="mt-4 border-t border-secondary pt-4">
+            <Checkbox
+              isSelected={monitoringConsent}
+              onChange={setMonitoringConsent}
+              label="I agree to compliance monitoring"
+              hint="RelayKit scans outbound messages for opt-out enforcement, prohibited content, and carrier rule compliance. This protects your registration and prevents fines."
+            />
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <div className="mt-5 flex w-full items-center justify-between">
+          <Button
+            href={buildBackHref()}
+            color="link-gray"
+            iconLeading={ArrowLeft}
+          >
+            Back
+          </Button>
+          <Button
+            size="lg"
+            color="primary"
+            iconLeading={CreditCard02}
+            isDisabled={!monitoringConsent}
+            onClick={() => setIsModalOpen(true)}
+          >
+            Start my registration — $218
+          </Button>
         </div>
       </div>
 
