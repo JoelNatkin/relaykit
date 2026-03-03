@@ -4,7 +4,7 @@ import { submitOtp } from "@/lib/twilio/vetting";
 import { updateStatus } from "@/lib/orchestrator/state-machine";
 
 export async function POST(request: NextRequest) {
-  let body: { registrationId?: string; otpCode?: string };
+  let body: { registrationId?: string; otpCode?: string; email?: string };
 
   try {
     body = await request.json();
@@ -15,11 +15,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { registrationId, otpCode } = body;
+  const { registrationId, otpCode, email } = body;
 
-  if (!registrationId || !otpCode) {
+  if (!registrationId || !otpCode || !email) {
     return NextResponse.json(
-      { error: "Missing required fields: registrationId and otpCode" },
+      { error: "Missing required fields: registrationId, otpCode, and email" },
       { status: 400 },
     );
   }
@@ -27,10 +27,10 @@ export async function POST(request: NextRequest) {
   try {
     const supabase = createServiceClient();
 
-    // Fetch registration
+    // Fetch registration with customer info for ownership verification
     const { data: reg, error: regError } = await supabase
       .from("registrations")
-      .select("id, status, twilio_brand_sid")
+      .select("id, status, twilio_brand_sid, customer_id")
       .eq("id", registrationId)
       .single();
 
@@ -38,6 +38,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Registration not found" },
         { status: 404 },
+      );
+    }
+
+    // Verify ownership: caller's email must match the customer's email
+    const { data: customer, error: custError } = await supabase
+      .from("customers")
+      .select("email")
+      .eq("id", reg.customer_id)
+      .single();
+
+    if (custError || !customer || customer.email !== email) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 },
       );
     }
 

@@ -102,8 +102,6 @@ export async function purchasePhoneNumber(
         path: `/2010-04-01/Accounts/${accountSid}/IncomingPhoneNumbers.json`,
         method: "POST",
         params: {
-          SmsEnabled: "true",
-          VoiceEnabled: "false",
           AreaCode: preferredAreaCode,
         },
         accountSid,
@@ -136,10 +134,7 @@ export async function purchasePhoneNumber(
     baseUrl: "api",
     path: `/2010-04-01/Accounts/${accountSid}/IncomingPhoneNumbers.json`,
     method: "POST",
-    params: {
-      SmsEnabled: "true",
-      VoiceEnabled: "false",
-    },
+    params: {},
     accountSid,
     authToken,
     registrationId,
