@@ -113,15 +113,18 @@ async function handleCheckoutCompleted(
   }
 
   // Create registration record
-  const { error: regError } = await supabase
+  const { data: registration, error: regError } = await supabase
     .from("registrations")
     .insert({
       customer_id: customer.id,
-      status: "generating_artifacts",
-    });
+      status: "creating_subaccount",
+    })
+    .select("id")
+    .single();
 
-  if (regError) {
+  if (regError || !registration) {
     console.error("checkout.session.completed: failed to create registration:", regError);
+    return;
   }
 
   // Clean up intake session
@@ -130,10 +133,14 @@ async function handleCheckoutCompleted(
     .delete()
     .eq("id", intakeSessionId);
 
-  // TODO: Trigger artifact generation pipeline (PRD_02)
-  // TODO: Trigger compliance site generator (PRD_03)
-  // TODO: Trigger Twilio submission (PRD_04)
-  // TODO: Send confirmation email (no email provider configured yet)
+  // Trigger the registration pipeline (fire-and-forget — don't block webhook response)
+  if (registration) {
+    import("@/lib/orchestrator/processor").then(({ processRegistration }) => {
+      processRegistration(registration.id).catch((err) => {
+        console.error("[Stripe] Pipeline start failed for registration:", registration.id, err);
+      });
+    });
+  }
 }
 
 async function handlePaymentFailed(
