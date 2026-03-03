@@ -16,15 +16,38 @@
 - [x] Template engine (PRD_02) — `src/lib/templates/`: deterministic string interpolation engine generating 6 compliance artifacts from intake data. `generateArtifacts(intake)` returns campaign_description, sample_messages (3), opt_in_description, privacy_policy, terms_of_service, opt_in_page_content (structured), plus tcr_use_case, tcr_flags, and compliance_site_slug. Templates use PRD_02 verbatim text for all 8 use cases. Existing stub at `src/lib/intake/templates.ts` refactored to re-export from engine while keeping `generateTemplates()` with {{placeholder}} sample messages for review page preview.
 - [x] Vertical detection (PRD_05 Addendum) — `src/lib/templates/verticals/`: 17 industry keyword matchers in `detectVerticals()`, 17 vertical module files (healthcare, mental_health, legal, financial, veterinary, automotive, etc.), `assembleGuidelines()` for appending industry-specific guidance to SMS_GUIDELINES.md. Rule modules (healthcare, mental_health, legal, financial) sort first.
 
+- [x] Compliance site generator (PRD_03) — `src/lib/compliance-site/`: generates 4-page static HTML site (index, privacy, terms, sms) + robots.txt from intake data. `generateComplianceSite(intake)` returns `{ slug, pages }`. Preview route at `GET /api/preview-site`.
+- [x] Twilio submission engine (PRD_04) — Full registration pipeline:
+  - `src/lib/twilio/client.ts`: fetch-based Twilio REST client with AES-256-GCM encryption, retry with backoff, API call logging
+  - `src/lib/twilio/subaccount.ts`: subaccount creation under ISV parent
+  - `src/lib/twilio/brand.ts`: sole proprietor + standard brand registration (Trust Hub profiles, end users, addresses, entity assignments)
+  - `src/lib/twilio/vetting.ts`: secondary vetting + OTP submission
+  - `src/lib/twilio/messaging-service.ts`: messaging service creation with proxy webhook URLs
+  - `src/lib/twilio/campaign.ts`: A2P campaign creation with TCR compliance fields
+  - `src/lib/twilio/phone-number.ts`: number purchase with state area code preference + messaging service assignment
+  - `src/lib/twilio/poll.ts`: brand/vetting/campaign status polling
+  - `src/lib/orchestrator/state-machine.ts`: 17-state machine with valid transitions and optimistic locking
+  - `src/lib/orchestrator/processor.ts`: recursive processRegistration() driving the full pipeline
+  - `src/lib/orchestrator/poller.ts`: cron-triggered polling for async Twilio approvals
+  - `src/lib/api-keys/generate.ts`: rk_live_/rk_sandbox_ key generation with SHA-256 hash storage
+  - `POST /api/cron/poll-registrations`: cron route with shared secret auth
+  - `POST /api/otp`: sole proprietor OTP submission
+  - `POST /api/webhooks/inbound/[registrationId]`: inbound SMS stub (for PRD_09)
+  - `POST /api/webhooks/status/[registrationId]`: status callback stub (for PRD_09)
+  - Stripe webhook wired to trigger `processRegistration()` on checkout completion
+  - DB migration: expanded status enum, Twilio SID columns, twilio_api_log, registration_events, api_keys tables
+  - Stubs: compliance site Cloudflare deploy (advances immediately), proxy webhook verification
+
 ## In Progress
 
 ## Up Next
 - [ ] Stripe end-to-end test (add `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` to .env, run `stripe listen --forward-to localhost:3000/api/webhooks/stripe`)
-- [ ] Wire template engine into webhook pipeline (call `generateArtifacts()` in `checkout.session.completed` handler)
-- [ ] Compliance site generator (PRD_03)
-- [ ] Twilio submission engine (PRD_04)
+- [ ] Apply PRD_04 database migration to Supabase (run `supabase db push` or apply manually)
+- [ ] Add env vars: `TWILIO_AUTH_TOKEN`, `TWILIO_ENCRYPTION_KEY` (openssl rand -hex 32), `CRON_SECRET`, `RELAYKIT_API_DOMAIN`
+- [ ] Compliance site Cloudflare Pages deployment (wire into deploying_site state)
 - [ ] Deliverable generator (PRD_05) — SMS_GUIDELINES.md with vertical modules
 - [ ] Dashboard page (`/dashboard`) — post-payment landing (PRD_06)
+- [ ] Messaging proxy (PRD_09) — fill in webhook stubs, proxy forwarding
 - [ ] Confirmation email setup
 
 ## Must Not Break
@@ -32,7 +55,8 @@
 - **Template engine public API**: `generateArtifacts(intake: IntakeData)` in `src/lib/templates/index.ts` is the canonical entry point for artifact generation. `generateTemplates()` in `src/lib/intake/templates.ts` is for review page preview only (uses {{placeholder}} sample messages). Do not merge these — they serve different purposes.
 
 ## Current PRD
-Building from: `docs/PRD_02_TEMPLATE_ENGINE.md` + `docs/PRD_05_ADDENDUM_VERTICALS.md`
+Completed: PRD_01, PRD_02, PRD_03, PRD_04
+Up next: PRD_05 (Deliverable Generator)
 
 ## Session Resume Prompt
 If starting a new session, use this prompt:
