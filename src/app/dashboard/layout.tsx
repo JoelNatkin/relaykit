@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
+import { IntakeCleanup } from "@/components/dashboard/intake-cleanup";
 import {
   computeLifecycleStage,
   type DashboardState,
@@ -28,6 +30,7 @@ export default async function DashboardLayout({
 
   return (
     <DashboardShell stage={stage} useCase={dashboardState.useCase} sandboxMessageCount={dashboardState.sandboxMessageCount} phoneVerified={dashboardState.phoneVerified} verifiedPhone={dashboardState.verifiedPhone} email={user.email!} registrationStatus={dashboardState.registrationStatus} registrationId={dashboardState.registrationId} registrationPhone={dashboardState.registrationPhone} canonMessageIds={dashboardState.canonMessageIds}>
+      <Suspense><IntakeCleanup /></Suspense>
       {children}
     </DashboardShell>
   );
