@@ -47,6 +47,7 @@
 - [ ] Compliance site Cloudflare Pages deployment (wire into deploying_site state)
 - [ ] Deliverable generator (PRD_05) — SMS_GUIDELINES.md with vertical modules
 - [ ] Dashboard page (`/dashboard`) — post-payment landing (PRD_06)
+- [x] Dashboard Compliance tab (PRD_06 Task 12) — `compliance-sandbox-card.tsx`, `compliance-status-card.tsx`, lifecycle-aware `compliance/page.tsx` with sandbox/live views
 - [ ] Messaging proxy (PRD_09) — fill in webhook stubs, proxy forwarding
 - [ ] Confirmation email setup
 
