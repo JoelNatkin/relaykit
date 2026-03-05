@@ -252,3 +252,16 @@ _Affects: `src/app/api/sandbox-key/route.ts`, `src/components/dashboard/sandbox-
 **D-46 — Sandbox phone verification uses Twilio Verify API, separate from TCR brand OTP** (Date: 2026-03-05)
 Sandbox phone verification (verifying the developer's phone number for sandbox message delivery) uses the Twilio Verify API via `TWILIO_VERIFY_SID`. This is a completely separate flow from the TCR brand OTP verification in `src/app/api/otp/route.ts` (which submits OTP codes to Twilio Trust Hub for brand identity verification). The verified phone is stored in user metadata as `verified_phone`.
 _Affects: `src/app/api/phone-verify/route.ts`, `src/components/dashboard/phone-verification-card.tsx`, `src/app/dashboard/layout.tsx`._
+
+**D-47 — Messages tab is read-only library; plan builder lives only on Overview** (Date: 2026-03-05)
+The Messages tab shows a read-only message library with a "Edit your message plan" link back to the Overview tab. The plan builder component is not duplicated on the Messages tab to avoid dual-instance sync issues (two interactive instances of the same component writing to the same `/api/message-plan` endpoint). Post-registration, the Messages tab shows canon messages (from registration JSONB) marked with a star badge and "Registered message" label (D-36).
+_Alternative rejected: Rendering the plan builder on both tabs — would require shared state synchronization or real-time updates between two instances of the same component._
+_Affects: `src/app/dashboard/messages/page.tsx`, `src/components/dashboard/message-library.tsx`, `src/components/dashboard/message-library-entry.tsx`._
+
+**D-48 — Email templates are deterministic functions, no provider wired yet** (Date: 2026-03-05)
+Email templates (Emails 0–5) are implemented as deterministic string interpolation functions in `src/lib/emails/templates.ts` returning `{ subject, body }` objects. No email provider (Resend, SendGrid, etc.) is integrated yet — templates are ready to plug into any provider. Emails 6–7 (drift alert, message blocked) are deferred to the PRD_08 compliance monitoring build since they depend on drift detection infrastructure that doesn't exist yet.
+_Affects: `src/lib/emails/templates.ts`, `src/lib/emails/types.ts`._
+
+**D-49 — Intake wizard needs three-tier industry gating before beta** (Date: 2026-03-05)
+Before beta launch, the intake wizard (PRD_01 Screen 2) needs a three-tier industry gating layer: Tier 1 (advisory guidance, proceed allowed) for industries like legal, financial, restaurants that have elevated carrier scrutiny but are registrable. Tier 2 (hard decline with waitlist CTA) for healthcare — no HIPAA/BAA per D-18. Tier 3 (hard decline, no waitlist) for cannabis and firearms — carrier ecosystem exclusions that cannot be registered under any circumstance. Implementation: extend `SENSITIVE_INDUSTRIES` config with cannabis/firearms patterns and add blocking logic during the PRD_01 dashboard-path build (Step 4).
+_Affects: `src/lib/intake/` (future), PRD_01 Screen 2 business details._
