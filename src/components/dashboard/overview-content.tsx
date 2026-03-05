@@ -11,10 +11,12 @@ import { SandboxApiKeyCard } from "./sandbox-api-key-card";
 import { PhoneVerificationCard } from "./phone-verification-card";
 import { SandboxUsageCard } from "./sandbox-usage-card";
 import { GoLiveCta } from "./go-live-cta";
+import { RegistrationStatusCard } from "./registration-status-card";
+import { OtpActionCard, BrandAuthCard, RejectionCard } from "./registration-action-cards";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
 export function OverviewContent() {
-  const { stage, useCase, sandboxMessageCount } = useDashboard();
+  const { stage, useCase, sandboxMessageCount, registrationStatus, registrationId, registrationPhone, email } = useDashboard();
   const router = useRouter();
   const [isChanging, setIsChanging] = useState(false);
 
@@ -43,6 +45,22 @@ export function OverviewContent() {
             useCase={useCase}
             onChangeClick={() => setIsChanging(true)}
           />
+
+          {/* Registration progress — Stage 5 (registering) */}
+          {registrationStatus && (
+            <>
+              <RegistrationStatusCard status={registrationStatus} />
+              {registrationStatus === "awaiting_otp" && registrationPhone && registrationId && (
+                <OtpActionCard phone={registrationPhone} registrationId={registrationId} />
+              )}
+              {registrationStatus === "awaiting_brand_auth" && (
+                <BrandAuthCard email={email} />
+              )}
+              {registrationStatus === "rejected" && (
+                <RejectionCard detail={null} />
+              )}
+            </>
+          )}
 
           {/* Engagement nudge — Stage 4 (ready), top of page */}
           {stage === "ready" && <GoLiveCta variant="nudge" />}

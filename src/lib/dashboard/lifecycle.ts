@@ -21,18 +21,20 @@ export interface DashboardState {
   phoneVerified: boolean;
   verifiedPhone: string | null;
   registrationStatus: string | null;
+  registrationId: string | null;
+  registrationPhone: string | null;
 }
 
 export function computeLifecycleStage(state: DashboardState): LifecycleStage {
-  // Stage 6: Live — registration approved
-  if (state.registrationStatus === "approved") {
+  // Stage 6: Live — registration complete
+  if (state.registrationStatus === "complete") {
     return "live";
   }
 
   // Stage 5: Registering — any active registration status
   if (
     state.registrationStatus &&
-    state.registrationStatus !== "approved" &&
+    state.registrationStatus !== "complete" &&
     state.registrationStatus !== "rejected"
   ) {
     return "registering";

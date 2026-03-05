@@ -14,11 +14,14 @@ interface DashboardShellProps {
   phoneVerified: boolean;
   verifiedPhone: string | null;
   email: string;
+  registrationStatus: string | null;
+  registrationId: string | null;
+  registrationPhone: string | null;
 }
 
-export function DashboardShell({ children, stage, useCase, sandboxMessageCount, phoneVerified, verifiedPhone, email }: DashboardShellProps) {
+export function DashboardShell({ children, stage, useCase, sandboxMessageCount, phoneVerified, verifiedPhone, email, registrationStatus, registrationId, registrationPhone }: DashboardShellProps) {
   return (
-    <DashboardProvider stage={stage} useCase={useCase} sandboxMessageCount={sandboxMessageCount} phoneVerified={phoneVerified} verifiedPhone={verifiedPhone} email={email}>
+    <DashboardProvider stage={stage} useCase={useCase} sandboxMessageCount={sandboxMessageCount} phoneVerified={phoneVerified} verifiedPhone={verifiedPhone} email={email} registrationStatus={registrationStatus} registrationId={registrationId} registrationPhone={registrationPhone}>
       <div className="min-h-screen bg-primary">
         <header className="border-b border-secondary bg-primary">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">

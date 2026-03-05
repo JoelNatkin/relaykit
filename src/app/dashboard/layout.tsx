@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   const stage = computeLifecycleStage(dashboardState);
 
   return (
-    <DashboardShell stage={stage} useCase={dashboardState.useCase} sandboxMessageCount={dashboardState.sandboxMessageCount} phoneVerified={dashboardState.phoneVerified} verifiedPhone={dashboardState.verifiedPhone} email={user.email!}>
+    <DashboardShell stage={stage} useCase={dashboardState.useCase} sandboxMessageCount={dashboardState.sandboxMessageCount} phoneVerified={dashboardState.phoneVerified} verifiedPhone={dashboardState.verifiedPhone} email={user.email!} registrationStatus={dashboardState.registrationStatus} registrationId={dashboardState.registrationId} registrationPhone={dashboardState.registrationPhone}>
       {children}
     </DashboardShell>
   );
@@ -57,6 +57,8 @@ async function fetchDashboardState(
       phoneVerified: !!user.user_metadata?.verified_phone,
       verifiedPhone: (user.user_metadata?.verified_phone as string) ?? null,
       registrationStatus: null,
+      registrationId: null,
+      registrationPhone: null,
     };
   }
 
@@ -70,7 +72,7 @@ async function fetchDashboardState(
   // Fetch latest registration
   const { data: registration } = await supabase
     .from("registrations")
-    .select("status")
+    .select("id, status, phone_number")
     .eq("customer_id", customer.id)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -84,5 +86,7 @@ async function fetchDashboardState(
     phoneVerified: false, // TODO: wire to phone verification state
     verifiedPhone: null, // TODO: wire to phone verification state
     registrationStatus: registration?.status ?? null,
+    registrationId: registration?.id ?? null,
+    registrationPhone: registration?.phone_number ?? null,
   };
 }
