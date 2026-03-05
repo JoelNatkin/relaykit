@@ -243,3 +243,12 @@ _Decision, reason, alternatives considered if any, files affected._
 Sandbox users don't have a `customers` row until intake/payment — the customers table requires many NOT NULL fields (business_name, business_description, contact info, etc.) that aren't collected until the intake wizard. Pre-registration use case selection is persisted to `auth.users.raw_user_meta_data` via `supabase.auth.updateUser({ data: { use_case } })`. The dashboard layout reads from user metadata when no customer record exists, falling back to `customer.use_case` post-payment. When a customer record is created at checkout, the use_case value is copied from user metadata to the customers table.
 _Alternative rejected: Creating a minimal customers row with nullable fields — would require schema changes to the existing customers table and risk breaking the intake/checkout flow._
 _Affects: `src/app/api/use-case/route.ts`, `src/app/dashboard/layout.tsx`, `POST /api/checkout` (future: copy metadata to customer record)._
+
+**D-45 — Sandbox API keys stored in plaintext in user metadata** (Date: 2026-03-05)
+Pre-registration sandbox API keys are stored as full plaintext in `auth.users.raw_user_meta_data.sandbox_api_key`. This differs from production keys (which are SHA-256 hashed in the `api_keys` table, shown once, never retrievable). The plaintext approach is justified because sandbox keys are low-security: limited to 100 messages/day, deliver only to the developer's verified phone, and must be re-displayable on the dashboard. Post-registration, sandbox keys move to the `api_keys` table with proper hashing.
+_Alternative rejected: Hashing sandbox keys like production keys — would prevent re-display on the dashboard, forcing a "shown once" UX that conflicts with the sandbox's learn-as-you-build experience._
+_Affects: `src/app/api/sandbox-key/route.ts`, `src/components/dashboard/sandbox-api-key-card.tsx`._
+
+**D-46 — Sandbox phone verification uses Twilio Verify API, separate from TCR brand OTP** (Date: 2026-03-05)
+Sandbox phone verification (verifying the developer's phone number for sandbox message delivery) uses the Twilio Verify API via `TWILIO_VERIFY_SID`. This is a completely separate flow from the TCR brand OTP verification in `src/app/api/otp/route.ts` (which submits OTP codes to Twilio Trust Hub for brand identity verification). The verified phone is stored in user metadata as `verified_phone`.
+_Affects: `src/app/api/phone-verify/route.ts`, `src/components/dashboard/phone-verification-card.tsx`, `src/app/dashboard/layout.tsx`._
