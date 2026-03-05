@@ -1,73 +1,81 @@
-# CC_HANDOFF.md — PRD_05 Deliverable Generator Complete
+# CC_HANDOFF.md — Dashboard Path + Industry Gating Complete
 
 ## Status
 
-**PRD_05 Deliverable Generator: COMPLETE (all 7 tasks).** The three-document lifecycle is fully built: SMS_BUILD_SPEC.md (sandbox), SMS_GUIDELINES.md (sandbox + production editions), MESSAGING_SETUP.md (post-registration), and the `/api/deliverable` route that serves them.
+**PRD_01 Addendum (Dashboard Path) + D-49 Industry Gating: COMPLETE (all 7 tasks).**
 
-**Previous build (PRD_06 Dashboard): COMPLETE (all 13 tasks).**
+Path 2 (dashboard → intake wizard) is fully wired: Screen 1 skip, Screen 1b confirmatory mode, Screen 2 email pre-fill, Screen 3 dashboard-curated messages (read-only), checkout payload includes `source` + `selected_messages`, sessionStorage cleanup on payment success.
+
+Three-tier industry gating on Screen 2: Tier 1 advisory (legal, financial, restaurants), Tier 2 hard decline + waitlist (healthcare), Tier 3 hard decline (cannabis, firearms).
+
+**Previous builds: PRD_05 Deliverable Generator COMPLETE. PRD_06 Dashboard COMPLETE.**
 
 ## This Session's Commits (oldest → newest)
 
 | Hash | Task | Description |
 |------|------|-------------|
-| `8be5d90` | 1 | Canon message renderer + use-case compliance tips |
-| `2a57354` | 2 | Extract build spec template string, add use-case tip |
-| `59d4885` | 3 | Sandbox guidelines template + unified guidelines generator |
-| `cf5b9f7` | 4 | Production SMS_GUIDELINES.md template (14 sections) |
-| `4867ea8` | 5 | MESSAGING_SETUP.md template + generator (PRD_05 Section 3.1 canonical) |
-| `9df7628` | 6 | GET /api/deliverable route for production documents |
-| `823fce3` | 7 | Deliverable module barrel exports + build passes |
-| `393cd80` | — | D-50 decision: credential placeholders in MESSAGING_SETUP.md |
+| `5f23b6e` | 1 | Three-tier industry gating config + detection (D-49) |
+| `0a53675` | 2 | Industry gate alert UI on Screen 2 business details |
+| `fd924fc` | 3 | Path 2 redirect — skip Screen 1 from dashboard |
+| `1df36e8` | 4 | Screen 1b confirmatory mode for dashboard path |
+| `9c370c3` | 5 | Screen 2 email pre-fill + path forwarding |
+| `1fd2b03` | 6 | Screen 3 dashboard messages + read-only preview |
+| `4760124` | 7 | sessionStorage cleanup on payment redirect |
 
-**All pushed to origin/main.**
-
-## Final File Structure (PRD_05 Section 9)
+## Files Created This Session
 
 ```
-src/lib/deliverable/
-  build-spec-template.ts          # SMS_BUILD_SPEC.md template string
-  build-spec-generator.ts         # generateBuildSpec() — sandbox
-  guidelines-template-sandbox.ts  # Sandbox SMS_GUIDELINES.md template
-  guidelines-template-prod.ts     # Production SMS_GUIDELINES.md template
-  guidelines-generator.ts         # generateGuidelines(input, edition) — both editions
-  canon-messages.ts               # CanonMessage type + renderCanonMessagesSection()
-  use-case-tips.ts                # USE_CASE_TIPS per use case
-  template-relaykit.ts            # MESSAGING_SETUP.md template (canonical, D-07)
-  generator.ts                    # generateMessagingSetup() — post-registration
-  index.ts                        # Barrel exports
+src/lib/intake/industry-gating.ts              # detectIndustryGate() — three-tier keyword detection
+src/components/intake/industry-gate-alert.tsx   # IndustryGateAlert — tier-specific UI cards
+src/components/dashboard/intake-cleanup.tsx     # IntakeCleanup — clears sessionStorage post-payment
 ```
 
-## 3 Remaining Missing API Routes (from prior session)
+## Files Modified This Session
 
-The `/api/deliverable` route is now built. Three routes remain — they need PRD_09 (proxy/usage) infrastructure:
+```
+src/app/start/page.tsx                          # Path 2 redirect to /start/scope
+src/app/start/scope/page.tsx                    # Confirmatory copy, pre-populated expansions, back→dashboard
+src/app/start/details/page.tsx                  # Email pre-fill, path=dashboard forwarding
+src/app/start/review/page.tsx                   # Dashboard messages, source/selected_messages in checkout
+src/components/intake/business-details-form.tsx # Industry gate detection + alert rendering
+src/components/intake/review-preview-card.tsx   # dashboardMessages prop, D-17 timing fix
+src/app/dashboard/layout.tsx                    # IntakeCleanup component mounted in Suspense
+```
 
-1. **`/api/live-key`** — Read from `api_keys` table (environment = 'live'). Called by `live-api-key-card.tsx`.
-2. **`/api/usage`** — Read from `message_usage` table for current billing period. Called by `live-usage-card.tsx`.
-3. **`/api/registration-details`** — Join `customers` + `registrations` for business info, compliance site URL, phone, trust score. Called by `registration-details-card.tsx`.
+## Files Modified but Not Yet Committed
 
-## Decisions This Session
+```
+DECISIONS.md    — D-51 appended (RelayKit platform ToS/AUP required before beta)
+CC_HANDOFF.md   — this file
+```
 
-- **D-50** — MESSAGING_SETUP.md uses credential placeholders (`"Your live API key (copy from dashboard)"`) because production keys are SHA-256 hashed and shown once at approval time. Consistent with D-45 sandbox/production key distinction.
+## Decisions Made This Session
+
+- **D-51 — RelayKit platform ToS/AUP required before beta.** Separate from per-customer ToS (PRD_02). Must cover: prohibited use categories (cannabis, firearms, healthcare without BAA, SHAFT-C), right to suspend/terminate, right to block messages inline, no refund on setup fee for policy violations. Beta blocker. Affects: new docs, PRD_01 checkout screen (acceptance checkbox), landing page footer.
 
 ## Gotchas for Next Session
 
-1. **sendSMS() signature is load-bearing across two templates** — `build-spec-template.ts` lines 34-39 and `template-relaykit.ts` section 1 must stay identical (PRD_05 Trap #6). If you change one, change both.
+1. **`path=dashboard` URL param is the Path 2 signal** — threaded through all 4 wizard screens via URL params. If you rename it, update `/start/page.tsx`, `/start/scope/page.tsx`, `/start/details/page.tsx`, and `/start/review/page.tsx`.
 
-2. **`sandbox-guidelines.ts` was deleted** — replaced by `guidelines-template-sandbox.ts` + `guidelines-generator.ts`. The `/api/build-spec` route was updated to use `generateGuidelines(input, "sandbox")` instead of `generateSandboxGuidelines()`. Property names changed to snake_case (`use_case`, `business_name`, `business_description`).
+2. **Industry gate detection runs on every keystroke** in `business_description` and `service_type` fields. The regex matching is fast, but if performance becomes a concern, add debounce in `updateField()` inside `business-details-form.tsx`.
 
-3. **Production guidelines template has `{rate_limit_tier}` in the "What RelayKit handles automatically" section** — this placeholder gets replaced by the guidelines generator. If the registrations table doesn't have a `rate_limit_tier` column yet, it falls back to empty string.
+3. **Industry gate blocks `onValid()` for tier 2/3** — the form's Continue button is disabled via the existing `onInvalid()` callback. Gate check runs before Zod validation in `updateField()`, so a blocked industry prevents the form from ever reporting valid.
 
-4. **`/api/deliverable` requires `registration.status === "complete"`** — returns 403 otherwise. The `registrations` table needs columns: `canon_messages` (JSONB), `phone_number`, `compliance_site_url`, `rate_limit_tier`, `approved_at`, `customer_id`, `status`. Verify these exist before testing end-to-end.
+4. **Tier 2 waitlist CTA is a mailto link** (`hello@relaykit.co`). Replace with a proper waitlist form when one exists.
 
-5. **Credential placeholders in downloaded MESSAGING_SETUP.md** — D-50 decision. The file says "Your live API key (copy from dashboard)" — not the actual key. Developer copies from the dashboard approval moment.
+5. **D-17 fix applied** — `review-preview-card.tsx` "What happens next" section now says "2–3 weeks" (was incorrectly "3–10 days"). This was a pre-existing violation found and fixed during this build.
 
-6. **Vertical modules inject into both sandbox and production guidelines** — via `detectVerticals()` + `assembleGuidelines()` from `src/lib/templates/verticals/`. Triggered when `business_description` is provided.
+6. **`DashboardToIntakeData` type and helpers already existed** at `src/lib/dashboard/dashboard-to-intake.ts` — built during PRD_06. Functions: `buildIntakeData()`, `saveDashboardIntakeData()`, `getDashboardIntakeData()`, `clearDashboardIntakeData()`.
 
-7. **Untracked file:** `docs/plans/2026-03-05-deliverable-generator.md` — the implementation plan. Not committed (plans are working documents).
+7. **Screen 3 checkout payload** now includes `source: 'cold' | 'dashboard'` and optional `selected_messages` + `preferred_area_code`. The `/api/checkout` route currently ignores unknown fields (no strict validation). When you build the checkout handler properly, add these to the request schema.
 
-## Carried Forward from Prior Session
+8. **Area code selector (PRD_01 Addendum Section 4.4) is NOT built yet.** The addendum specifies a simple "That's perfect / Different area code" UI on Screen 3 for both paths. `preferred_area_code` is already passed through in the checkout payload from dashboard data, but the UI component doesn't exist.
 
-These gotchas from the PRD_06 build are still outstanding:
+9. **D-51 (platform ToS/AUP) is a beta blocker.** The checkout screen needs a ToS acceptance checkbox before going live. Not built — decision only.
+
+10. **Untracked files:** `docs/plans/2026-03-05-deliverable-generator.md` — previous session's working plan, not committed.
+
+## Carried Forward from Prior Sessions
 
 - **`sandboxMessageCount` hardcoded to 0** in `layout.tsx`. Needs PRD_09.
 - **Post-registration `phoneVerified` hardcoded to `false`** — only pre-registration branch reads metadata.
@@ -77,5 +85,5 @@ These gotchas from the PRD_06 build are still outstanding:
 - **D-44 pattern is load-bearing** — pre-registration user metadata used by: use-case selector, message plan builder, build spec generator, sandbox API key, phone verification.
 - **`TWILIO_VERIFY_SID` env var required** for phone verification.
 - **Button uses `onClick` not `onPress`** — Untitled UI extends HTML button.
-- **D-17 overrides PRD_06 Section 10.1** — code uses "2–3 weeks" per D-17.
-- **D-49 industry gating not built yet** — needs PRD_01 Screen 2 before beta.
+- **3 API routes still missing** (`/api/live-key`, `/api/usage`, `/api/registration-details`) — need PRD_09 infrastructure.
+- **sendSMS() signature is load-bearing across two templates** — `build-spec-template.ts` and `template-relaykit.ts` must stay identical (PRD_05 Trap #6).
