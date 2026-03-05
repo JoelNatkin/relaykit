@@ -1,46 +1,30 @@
-import type { UseCaseId } from "@/lib/intake/use-case-data";
-import { USE_CASE_LABELS, USE_CASE_FREQUENCIES } from "@/lib/templates/types";
-import {
-  APPROVED_MESSAGE_TYPES,
-  NOT_APPROVED_CONTENT,
-} from "@/lib/templates/message-templates";
-import {
-  detectVerticals,
-  assembleGuidelines,
-} from "@/lib/templates/verticals";
+// ---------------------------------------------------------------------------
+// SMS_GUIDELINES.md — Sandbox Edition Template
+// ---------------------------------------------------------------------------
+// Placeholder-based template for sandbox guidelines. Used by guidelines-generator.ts.
+// Framing: "compliance rules for your use case" — NOT "your registered requirements."
+//
+// Placeholders:
+//   {business_name}, {use_case_label}, {approved_message_types},
+//   {not_approved_content}, {message_frequency}, {use_case_tip}
 
-export interface SandboxGuidelinesInput {
-  useCase: UseCaseId;
-  businessName?: string;
-  businessDescription?: string;
-}
-
-export function generateSandboxGuidelines(
-  input: SandboxGuidelinesInput,
-): string {
-  const useCaseLabel = USE_CASE_LABELS[input.useCase];
-  const businessName = input.businessName || "Your Business";
-  const frequency = USE_CASE_FREQUENCIES[input.useCase];
-  const approved = APPROVED_MESSAGE_TYPES[input.useCase];
-  const notApproved = NOT_APPROVED_CONTENT[input.useCase];
-
-  const baseGuidelines = `# SMS Guidelines for ${businessName}
-## Your Use Case: ${useCaseLabel}
+export const SANDBOX_GUIDELINES_TEMPLATE = `# SMS Guidelines for {business_name}
+## Your Use Case: {use_case_label}
 
 These are the compliance rules for your use case. Your AI coding tool should
 reference this file when writing or modifying any SMS-related code.
 
 ## Approved message types
 
-${approved}
+{approved_message_types}
 
 ## Not approved for this use case
 
-${notApproved}
+{not_approved_content}
 
 ## Message frequency
 
-${frequency}
+{message_frequency}
 
 ---
 
@@ -76,7 +60,7 @@ equivalent. This is carrier-mandated.
 ## Best practices
 
 ### Message frequency
-${frequency}. Don't send more frequently than recipients expect. Unexpected
+{message_frequency}. Don't send more frequently than recipients expect. Unexpected
 messages drive opt-outs and complaints.
 
 ### Message length
@@ -136,19 +120,14 @@ Review the error detail and adjust the message text.
 
 ---
 
+### Tip for your use case
+
+{use_case_tip}
+
+---
+
 ## Getting help
 
 Visit your RelayKit dashboard for message testing, plan management, and
 registration status.
 `;
-
-  // Inject vertical-specific modules if business description is provided
-  if (input.businessDescription) {
-    const verticals = detectVerticals(null, input.businessDescription);
-    if (verticals.length > 0) {
-      return assembleGuidelines(baseGuidelines, verticals);
-    }
-  }
-
-  return baseGuidelines;
-}

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { generateBuildSpec } from "@/lib/deliverable/build-spec-generator";
-import { generateSandboxGuidelines } from "@/lib/deliverable/sandbox-guidelines";
+import { generateGuidelines } from "@/lib/deliverable/guidelines-generator";
 import type { MessagePlanEntry } from "@/lib/dashboard/message-plan-types";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
@@ -77,11 +77,14 @@ export async function POST() {
     messages,
   });
 
-  const guidelines = generateSandboxGuidelines({
-    useCase,
-    businessName: customer?.business_name,
-    businessDescription: customer?.business_description,
-  });
+  const guidelines = generateGuidelines(
+    {
+      use_case: useCase,
+      business_name: customer?.business_name,
+      business_description: customer?.business_description,
+    },
+    "sandbox",
+  );
 
   return NextResponse.json({
     buildSpec,
