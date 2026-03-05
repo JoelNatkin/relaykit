@@ -13,7 +13,7 @@ interface Tab {
 const TABS: Tab[] = [
   { label: "Overview", href: "/dashboard" },
   { label: "Messages", href: "/dashboard/messages", minStage: "use_case_selected" },
-  { label: "Compliance", href: "/dashboard/compliance", minStage: "live" },
+  { label: "Compliance", href: "/dashboard/compliance", minStage: "use_case_selected" },
 ];
 
 const STAGE_ORDER: LifecycleStage[] = [

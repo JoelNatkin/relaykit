@@ -182,6 +182,7 @@ export function MessageLibrary({ canonMessageIds }: MessageLibraryProps) {
               key={entry.template_id}
               entry={entry}
               tier="available"
+              isCanon={false}
             />
           ))}
         </div>
@@ -220,6 +221,7 @@ export function MessageLibrary({ canonMessageIds }: MessageLibraryProps) {
                   key={entry.template_id}
                   entry={entry}
                   tier="expansion"
+                  isCanon={canonSet.has(entry.template_id)}
                 />
               ))}
             </div>
