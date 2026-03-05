@@ -25,6 +25,9 @@ const TEMPLATES: Record<UseCaseId, (v: TemplateVariables) => string> = {
 
   waitlist: (v) =>
     `${v.business_name} sends SMS messages to customers who have opted in to receive waitlist updates, reservation confirmations, and availability notifications related to ${v.venue_type} services. Customers provide consent by entering their phone number when joining the waitlist on the ${v.business_name} website at ${v.website_url} or in person. The form includes a clear disclosure about message types, frequency, and opt-out instructions. Message frequency is ${v.message_frequency} per recipient. Customers can opt out at any time by replying STOP. Standard message and data rates may apply.`,
+
+  exploring: (v) =>
+    `${v.business_name} sends SMS messages to users who have opted in to receive transactional notifications, informational updates, and service-related communications. Users provide consent by entering their phone number on the ${v.business_name} website at ${v.website_url}. The consent form includes a clear disclosure about message types, frequency, and opt-out instructions. Message frequency is ${v.message_frequency} per recipient. Users can opt out at any time by replying STOP. Standard message and data rates may apply.`,
 };
 
 export function renderCampaignDescription(

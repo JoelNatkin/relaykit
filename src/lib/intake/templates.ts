@@ -42,6 +42,8 @@ const CAMPAIGN_DESCRIPTIONS: Record<UseCaseId, (i: TemplateInput) => string> = {
     `${i.community_name ?? i.business_name} sends event announcements, community updates, membership notifications, and group activity alerts to members who have opted in to receive messages.`,
   waitlist: (i) =>
     `${i.business_name} sends waitlist position updates, availability alerts, and reservation confirmations to customers. Customers can reply to accept or decline.`,
+  exploring: (i) =>
+    `${i.business_name} sends transactional notifications, service updates, and informational messages to users who have opted in. Messages include confirmations, reminders, status updates, and alerts.`,
 };
 
 // --- Preview sample messages (with {{placeholder}} variables for display) ---
@@ -87,6 +89,11 @@ const SAMPLE_MESSAGES: Record<UseCaseId, (i: TemplateInput) => [string, string, 
     `You're #{{position}} on the waitlist at ${i.business_name}. Estimated wait: {{time}}. Reply STOP to opt out.`,
     `Your reservation at ${i.business_name} for {{date}} at {{time}} is confirmed. Reply CHANGE to modify. Reply STOP to opt out.`,
   ],
+  exploring: (i) => [
+    `${i.business_name}: Your request has been confirmed! We'll follow up with details. Reply STOP to opt out.`,
+    `${i.business_name}: Reminder — you have an upcoming event tomorrow at {{time}}. Reply STOP to opt out.`,
+    `${i.business_name}: Update — your request is being processed. We'll notify you when it's ready. Reply STOP to opt out.`,
+  ],
 };
 
 const SAMPLE_MESSAGE_LABELS: Record<UseCaseId, [string, string, string]> = {
@@ -129,6 +136,11 @@ const SAMPLE_MESSAGE_LABELS: Record<UseCaseId, [string, string, string]> = {
     "Waitlist ready notification",
     "Waitlist position update",
     "Reservation confirmation",
+  ],
+  exploring: [
+    "Confirmation",
+    "Reminder",
+    "Status update",
   ],
 };
 

@@ -8,6 +8,7 @@ import {
   Users01,
   Globe01,
   ClipboardCheck,
+  SearchLg,
 } from "@untitledui/icons";
 
 export type UseCaseId =
@@ -18,7 +19,8 @@ export type UseCaseId =
   | "marketing"
   | "internal"
   | "community"
-  | "waitlist";
+  | "waitlist"
+  | "exploring";
 
 export interface ExpansionOption {
   id: string;
@@ -322,6 +324,40 @@ export const USE_CASES: Record<UseCaseId, UseCaseDefinition> = {
       {
         id: "reviews_after_visits",
         label: "Request reviews after visits",
+      },
+    ],
+  },
+  exploring: {
+    id: "exploring",
+    label: "Just exploring",
+    description: "Try SMS patterns from multiple use cases",
+    icon: SearchLg,
+    included: [
+      "Booking/order confirmations",
+      "Reminders and status updates",
+      "Verification codes",
+      "Support acknowledgments",
+      "Delivery updates",
+      "Welcome messages and alerts",
+    ],
+    notIncluded: [
+      {
+        text: "Marketing or promotional messages",
+        unlockedBy: ["promotional_messages"],
+      },
+      {
+        text: "Feedback or survey requests",
+        unlockedBy: ["feedback_surveys"],
+      },
+    ],
+    expansions: [
+      {
+        id: "promotional_messages",
+        label: "Send promotional or marketing messages",
+      },
+      {
+        id: "feedback_surveys",
+        label: "Send feedback or survey requests",
       },
     ],
   },

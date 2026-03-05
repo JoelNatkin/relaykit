@@ -25,6 +25,9 @@ const TEMPLATES: Record<UseCaseId, (v: TemplateVariables) => string> = {
 
   waitlist: (v) =>
     `Customers provide opt-in consent when joining the waitlist at ${v.business_name} through the website at ${v.website_url} or in person. The waitlist form includes a phone number field with the following disclosure: "By providing your phone number, you agree to receive waitlist updates and reservation notifications from ${v.business_name}. Message frequency varies. Msg & data rates may apply. Reply HELP for help. Reply STOP to cancel." Customers who join in person provide verbal consent after staff reads the SMS disclosure. The privacy policy at ${v.website_url}/privacy contains additional details about data handling.`,
+
+  exploring: (v) =>
+    `Users provide opt-in consent by entering their phone number on the ${v.business_name} website at ${v.website_url}. The form includes an unchecked consent checkbox with the following disclosure: "By providing your phone number, you agree to receive service notifications and updates from ${v.business_name}. Message frequency varies. Msg & data rates may apply. Reply HELP for help. Reply STOP to cancel." The privacy policy at ${v.website_url}/privacy contains additional details about data handling.`,
 };
 
 export function renderOptInDescription(

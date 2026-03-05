@@ -9,6 +9,7 @@ export const DEFAULT_CAMPAIGN_TYPES: Record<UseCaseId, string> = {
   internal: "LOW_VOLUME",
   community: "LOW_VOLUME",
   waitlist: "MIXED",
+  exploring: "LOW_VOLUME",
 };
 
 export function determineCampaignType(
@@ -42,6 +43,8 @@ const PROMO_EXPANSION_IDS = new Set([
   // waitlist
   "promotional_offers_past_guests",
   "reviews_after_visits",
+  // exploring
+  "promotional_messages",
 ]);
 
 export function isPromoExpansion(id: string): boolean {

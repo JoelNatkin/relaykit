@@ -18,6 +18,8 @@ const SUBHEADS: Record<UseCaseId, (v: TemplateVariables) => string> = {
     `Join ${v.community_name} to receive event updates and community announcements.`,
   waitlist: () =>
     "Enter your phone number to receive waitlist and reservation updates.",
+  exploring: () =>
+    "Enter your phone number to receive service notifications and updates.",
 };
 
 export function renderOptInPageContent(

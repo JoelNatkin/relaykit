@@ -27,6 +27,7 @@ const DESCRIPTION_EXAMPLES: Record<UseCaseId, string> = {
   internal: "A staffing agency coordinating shift schedules",
   community: "A running club with 200 local members",
   waitlist: "A restaurant with online reservations",
+  exploring: "A new app that needs SMS — not sure which category yet",
 };
 
 interface BusinessDetailsFormProps {

@@ -78,6 +78,7 @@ export const USE_CASE_LABELS: Record<UseCaseId, string> = {
   internal: "team notifications and operational alerts",
   community: "community updates and event notifications",
   waitlist: "waitlist and reservation updates",
+  exploring: "service notifications and updates",
 };
 
 export const USE_CASE_FREQUENCIES: Record<UseCaseId, string> = {
@@ -89,6 +90,7 @@ export const USE_CASE_FREQUENCIES: Record<UseCaseId, string> = {
   internal: "varies based on operational needs",
   community: "approximately 2-4 messages per month",
   waitlist: "approximately 1-3 messages per booking",
+  exploring: "varies based on usage",
 };
 
 export const TCR_USE_CASES: Record<UseCaseId, string> = {
@@ -100,6 +102,7 @@ export const TCR_USE_CASES: Record<UseCaseId, string> = {
   internal: "LOW_VOLUME",
   community: "LOW_VOLUME",
   waitlist: "MIXED",
+  exploring: "LOW_VOLUME",
 };
 
 export const TCR_DEFAULT_FLAGS: Record<string, boolean> = {

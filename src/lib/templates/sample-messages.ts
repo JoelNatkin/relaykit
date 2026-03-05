@@ -49,6 +49,12 @@ const TEMPLATES: Record<UseCaseId, (v: TemplateVariables) => string[]> = {
     `${v.business_name}: Your table is ready! Please check in at the host stand within 10 minutes. Reply STOP to unsubscribe.`,
     `${v.business_name}: A reservation has opened up for tonight at 7:30 PM. Reply YES to book or NO to pass. Reply STOP to opt out.`,
   ],
+
+  exploring: (v) => [
+    `${v.business_name}: Your request has been confirmed! We'll follow up with details. Reply STOP to opt out.`,
+    `${v.business_name}: Reminder — you have an upcoming event tomorrow at 2:00 PM. Reply STOP to unsubscribe.`,
+    `${v.business_name}: Update on your request — it's being processed. We'll notify you when it's ready. Reply STOP to opt out.`,
+  ],
 };
 
 export function renderSampleMessages(

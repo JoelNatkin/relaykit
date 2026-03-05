@@ -11,6 +11,13 @@ export {
   TCR_DEFAULT_FLAGS,
 } from "./types";
 export { generateComplianceSlug, deriveVariables } from "./variables";
+export type { MessageTemplate } from "./message-templates";
+export {
+  getMessageTemplates,
+  getAllMessageTemplates,
+  APPROVED_MESSAGE_TYPES,
+  NOT_APPROVED_CONTENT,
+} from "./message-templates";
 
 import type { IntakeData, GeneratedArtifacts } from "./types";
 import { TCR_USE_CASES, TCR_DEFAULT_FLAGS } from "./types";
