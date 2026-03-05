@@ -67,11 +67,14 @@ export function MessageLibraryEntry({
   const displayText = entry.edited_text ?? entry.original_template;
   const config = tierConfig[tier];
 
-  function handleCopy() {
-    navigator.clipboard.writeText(displayText).then(() => {
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(displayText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    } catch {
+      // Clipboard API unavailable — silently fail
+    }
   }
 
   return (
@@ -80,8 +83,8 @@ export function MessageLibraryEntry({
         <div className="min-w-0 flex-1">
           {/* Category heading */}
           <div className="flex items-center gap-1.5">
-            {tier === "expansion" && (
-              <Star01 className="size-4 shrink-0 text-fg-warning-secondary" />
+            {isCanon && (
+              <Star01 className="size-4 shrink-0 text-fg-brand-secondary" />
             )}
             <span className="text-sm font-medium text-primary">
               {entry.category}
@@ -98,6 +101,10 @@ export function MessageLibraryEntry({
             &ldquo;
             <HighlightedMessage text={displayText} />
             &rdquo;
+          </p>
+
+          <p className="mt-1.5 text-xs text-quaternary">
+            Trigger: {entry.trigger}
           </p>
 
           {/* Tier badge */}

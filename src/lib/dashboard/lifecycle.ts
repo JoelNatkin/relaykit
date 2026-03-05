@@ -23,6 +23,7 @@ export interface DashboardState {
   registrationStatus: string | null;
   registrationId: string | null;
   registrationPhone: string | null;
+  canonMessageIds: string[];
 }
 
 export function computeLifecycleStage(state: DashboardState): LifecycleStage {

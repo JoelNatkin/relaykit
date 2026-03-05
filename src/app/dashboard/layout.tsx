@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   const stage = computeLifecycleStage(dashboardState);
 
   return (
-    <DashboardShell stage={stage} useCase={dashboardState.useCase} sandboxMessageCount={dashboardState.sandboxMessageCount} phoneVerified={dashboardState.phoneVerified} verifiedPhone={dashboardState.verifiedPhone} email={user.email!} registrationStatus={dashboardState.registrationStatus} registrationId={dashboardState.registrationId} registrationPhone={dashboardState.registrationPhone}>
+    <DashboardShell stage={stage} useCase={dashboardState.useCase} sandboxMessageCount={dashboardState.sandboxMessageCount} phoneVerified={dashboardState.phoneVerified} verifiedPhone={dashboardState.verifiedPhone} email={user.email!} registrationStatus={dashboardState.registrationStatus} registrationId={dashboardState.registrationId} registrationPhone={dashboardState.registrationPhone} canonMessageIds={dashboardState.canonMessageIds}>
       {children}
     </DashboardShell>
   );
@@ -59,6 +59,7 @@ async function fetchDashboardState(
       registrationStatus: null,
       registrationId: null,
       registrationPhone: null,
+      canonMessageIds: [],
     };
   }
 
@@ -72,7 +73,7 @@ async function fetchDashboardState(
   // Fetch latest registration
   const { data: registration } = await supabase
     .from("registrations")
-    .select("id, status, phone_number")
+    .select("id, status, phone_number, canon_messages")
     .eq("customer_id", customer.id)
     .order("created_at", { ascending: false })
     .limit(1)
@@ -88,5 +89,8 @@ async function fetchDashboardState(
     registrationStatus: registration?.status ?? null,
     registrationId: registration?.id ?? null,
     registrationPhone: registration?.phone_number ?? null,
+    canonMessageIds: Array.isArray(registration?.canon_messages)
+      ? (registration.canon_messages as Array<{ template_id: string }>).map((m) => m.template_id)
+      : [],
   };
 }
