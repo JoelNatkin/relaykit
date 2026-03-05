@@ -5,6 +5,7 @@ import {
   computeLifecycleStage,
   type DashboardState,
 } from "@/lib/dashboard/lifecycle";
+import type { User } from "@supabase/supabase-js";
 
 export default async function DashboardLayout({
   children,
@@ -22,11 +23,11 @@ export default async function DashboardLayout({
   }
 
   // Fetch dashboard state for lifecycle computation
-  const dashboardState = await fetchDashboardState(supabase, user.email!);
+  const dashboardState = await fetchDashboardState(supabase, user);
   const stage = computeLifecycleStage(dashboardState);
 
   return (
-    <DashboardShell stage={stage} email={user.email!}>
+    <DashboardShell stage={stage} useCase={dashboardState.useCase} email={user.email!}>
       {children}
     </DashboardShell>
   );
@@ -34,8 +35,10 @@ export default async function DashboardLayout({
 
 async function fetchDashboardState(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  email: string,
+  user: User,
 ): Promise<DashboardState> {
+  const email = user.email!;
+
   // Try to find customer record for this email
   const { data: customer } = await supabase
     .from("customers")
@@ -44,8 +47,10 @@ async function fetchDashboardState(
     .maybeSingle();
 
   if (!customer) {
+    // Pre-registration: use case may be stored in user metadata
+    const metaUseCase = user.user_metadata?.use_case ?? null;
     return {
-      useCase: null,
+      useCase: metaUseCase,
       hasPlan: false,
       buildSpecGeneratedAt: null,
       sandboxMessageCount: 0,
