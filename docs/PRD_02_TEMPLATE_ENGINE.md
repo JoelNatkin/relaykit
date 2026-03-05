@@ -1,8 +1,14 @@
 # PRD_02: TEMPLATE ENGINE
 ## RelayKit — Compliance Artifact Generation
-### Version 1.0 — Feb 26, 2026
+### Version 2.0 — Mar 3, 2026
 
-> **Dependencies:** Consumes intake data defined in PRD_01. Outputs feed PRD_03 (Compliance Site), PRD_04 (Twilio Submission), and PRD_05 (Deliverable).
+> **Dependencies:** Consumes intake data defined in PRD_01. Outputs feed PRD_03 (Compliance Site), PRD_04 (Twilio Submission), PRD_05 (Deliverable), PRD_06 (Dashboard — message plan builder), and PRD_08 (Compliance Monitoring — drift detection constants).
+>
+> **CHANGE LOG (v2.0):** Expanded Section 4 from 3 sample messages to 5–8 base + 3–4 expansion messages per use case. Added `exploring` use case (9th). Added `MessageTemplate` interface and `getMessageTemplates()` function to Section 10. Added `APPROVED_MESSAGE_TYPES` and `NOT_APPROVED_CONTENT` constant maps. Added expansion message metadata (`is_expansion`, `expansion_type`, `default_enabled`). `generateArtifacts()` unchanged — still selects 3 messages from the full set for Twilio TCR submission.
+>
+> **What v1.0 described:** 3 sample messages per use case, 8 use cases, `generateArtifacts()` only.
+>
+> **What v2.0 describes:** Full message template library (5–8 base + 3–4 expansion per use case), 9 use cases, `getMessageTemplates()` for dashboard consumption, compliance constants for PRD_05/PRD_08.
 
 ---
 
@@ -17,6 +23,11 @@ The template engine takes structured intake data from PRD_01 and generates six c
 5. **Terms of service** — full legal page deployed on the compliance site
 6. **Opt-in page content** — the form copy and disclosure language for the compliance site
 
+Additionally, the engine provides:
+
+7. **Message template library** — full set of 5–8 base + 3–4 expansion messages per use case, consumed by the dashboard message plan builder (PRD_06)
+8. **Compliance constants** — `APPROVED_MESSAGE_TYPES` and `NOT_APPROVED_CONTENT` maps consumed by PRD_05 (deliverable) and PRD_08 (drift detection)
+
 The engine is a deterministic template system, not AI-generated. Every variable is filled from intake data. This is intentional — predictable output means predictable approval. We can trace every rejection back to a specific template and fix it.
 
 ### Architecture
@@ -25,14 +36,20 @@ intake_data (from PRD_01)
        ↓
   Template Engine
        ↓
-  ┌─────────────────────────────────┐
-  │  campaign_description (string)  │ → Twilio campaign submission (PRD_04)
-  │  sample_messages (string[])     │ → Twilio campaign submission (PRD_04)
-  │  opt_in_description (string)    │ → Twilio campaign submission (PRD_04)
-  │  privacy_policy (string)        │ → Compliance site (PRD_03)
-  │  terms_of_service (string)      │ → Compliance site (PRD_03)
-  │  opt_in_page_content (object)   │ → Compliance site (PRD_03)
-  └─────────────────────────────────┘
+  ┌─────────────────────────────────────────────┐
+  │  campaign_description (string)              │ → Twilio campaign submission (PRD_04)
+  │  sample_messages (string[])                 │ → Twilio campaign submission (PRD_04)
+  │  opt_in_description (string)                │ → Twilio campaign submission (PRD_04)
+  │  privacy_policy (string)                    │ → Compliance site (PRD_03)
+  │  terms_of_service (string)                  │ → Compliance site (PRD_03)
+  │  opt_in_page_content (object)               │ → Compliance site (PRD_03)
+  └─────────────────────────────────────────────┘
+
+  ┌─────────────────────────────────────────────┐
+  │  getMessageTemplates(useCase)               │ → Dashboard plan builder (PRD_06)
+  │  APPROVED_MESSAGE_TYPES                     │ → PRD_05 deliverable, PRD_08 drift
+  │  NOT_APPROVED_CONTENT                       │ → PRD_05 deliverable, PRD_08 drift
+  └─────────────────────────────────────────────┘
 ```
 
 ---
@@ -116,83 +133,251 @@ Each use case has a base template. The customer can override on Screen 3 (PRD_01
 {business_name} sends SMS messages to customers who have opted in to receive waitlist updates, reservation confirmations, and availability notifications related to {venue_type} services. Customers provide consent by entering their phone number when joining the waitlist on the {business_name} website at {website_url} or in person. The form includes a clear disclosure about message types, frequency, and opt-out instructions. Message frequency is {message_frequency} per recipient. Customers can opt out at any time by replying STOP. Standard message and data rates may apply.
 ```
 
+### exploring
+```
+{business_name} sends SMS messages to users who have opted in to receive transactional notifications, informational updates, and service-related communications. Users provide consent by entering their phone number on the {business_name} website at {website_url}. The consent form includes a clear disclosure about message types, frequency, and opt-out instructions. Message frequency is {message_frequency} per recipient. Users can opt out at any time by replying STOP. Standard message and data rates may apply.
+```
+
 ---
 
-## 4. SAMPLE MESSAGES (by use case)
+## 4. MESSAGE TEMPLATES (by use case)
 
-Three messages per use case. At least one must include the business name. At least one must include opt-out language. All must match the declared campaign purpose.
+Each use case provides a full message template library: 5–8 **base messages** covering the standard lifecycle for that use case, plus 3–4 **expansion messages** that require a broader registration scope (typically adding marketing or mixed campaign type).
+
+### How these are used
+
+- **Dashboard message plan builder (PRD_06):** `getMessageTemplates(useCase)` returns the full set. Developer selects/deselects and edits in the plan builder UI.
+- **Twilio TCR submission (PRD_04):** `generateArtifacts()` selects the 3 best messages from the enabled base messages for the `sample_messages` field. Selection logic: pick messages with business name + opt-out language + highest use-case relevance.
+- **Build spec (PRD_05):** All enabled messages are included in the developer's build spec document.
+- **Drift detection (PRD_08):** Enabled messages become canon messages after registration; drift analyzer compares production messages against them.
+
+### Template metadata
+
+Every message template includes:
+- **id** — unique identifier: `{useCase}_{snake_case_category}`
+- **category** — human-readable label shown in the plan builder card
+- **template** — full message text with `{variable}` placeholders
+- **trigger** — when this message is sent (helps AI coding tools and the developer)
+- **variables** — array of variable names used in this template
+- **is_expansion** — `false` for base messages, `true` for expansion messages
+- **expansion_type** — `null` for base, `'marketing'` or `'mixed'` for expansion
+- **default_enabled** — `true` for the 2–3 most common base messages; `false` for all others and all expansion messages
+- **compliance_elements** — `{ has_opt_out: boolean, has_business_name: boolean }`
+
+---
 
 ### appointments
-```json
-[
-  "{business_name}: Reminder — your {service_type} appointment is scheduled for tomorrow at 2:00 PM. Reply C to confirm or R to reschedule. Reply STOP to opt out.",
-  "{business_name}: Your appointment has been confirmed for March 5 at 10:30 AM. We look forward to seeing you! Reply STOP to unsubscribe.",
-  "{business_name}: We have a cancellation! An opening is available on March 8 at 3:00 PM. Reply YES to book. Reply STOP to opt out."
-]
-```
+
+#### Base messages (6)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `appointments_booking_confirmation` | Booking confirmation | ☑ ON | `"{business_name}: Your {service_type} appointment is confirmed for {date} at {time}. See you then! Reply HELP for help, STOP to unsubscribe."` | When client books an appointment | `business_name`, `service_type`, `date`, `time` | opt_out: ✓, biz_name: ✓ |
+| 2 | `appointments_reminder_24hr` | Appointment reminder (24hr) | ☑ ON | `"{business_name}: Reminder — your {service_type} appointment is tomorrow at {time}. Reply C to confirm or R to reschedule. Reply STOP to opt out."` | 24 hours before appointment | `business_name`, `service_type`, `time` | opt_out: ✓, biz_name: ✓ |
+| 3 | `appointments_reschedule_confirmation` | Rescheduling confirmation | ☐ OFF | `"{business_name}: Your appointment has been rescheduled to {date} at {time}. Reply STOP to opt out of messages."` | When client reschedules | `business_name`, `date`, `time` | opt_out: ✓, biz_name: ✓ |
+| 4 | `appointments_cancellation` | Cancellation notice | ☑ ON | `"{business_name}: Your appointment on {date} has been cancelled. To rebook, visit {website_url} or call us. Reply STOP to unsubscribe."` | When appointment is cancelled | `business_name`, `date`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 5 | `appointments_noshow_followup` | No-show follow-up | ☐ OFF | `"{business_name}: We missed you today! Would you like to reschedule your {service_type} appointment? Reply YES or visit {website_url}. Reply STOP to opt out."` | After a missed appointment | `business_name`, `service_type`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 6 | `appointments_previsit` | Pre-visit instructions | ☐ OFF | `"{business_name}: Your appointment is today at {time}. Please arrive 10 minutes early. Questions? Reply to this message. Reply STOP to opt out."` | Morning of appointment | `business_name`, `time` | opt_out: ✓, biz_name: ✓ |
+
+#### Expansion messages (4)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `appointments_promo_offer` | Promotional offer | marketing | `"{business_name}: Happy holidays! Enjoy 20% off your next {service_type} visit. Book at {website_url}. Reply STOP to opt out."` | Manually sent for promotions | `business_name`, `service_type`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E2 | `appointments_birthday` | Birthday/anniversary | marketing | `"{business_name}: Happy birthday! Here's a special treat — 15% off your next appointment. Book at {website_url}. Reply STOP to unsubscribe."` | On client's birthday | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `appointments_reengagement` | Re-engagement | marketing | `"{business_name}: We miss you! It's been a while since your last visit. Book your next {service_type} appointment at {website_url}. Reply STOP to opt out."` | After X days of inactivity | `business_name`, `service_type`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E4 | `appointments_review_request` | Review request | mixed | `"{business_name}: Thanks for your visit today! We'd love your feedback: {website_url}/review. Reply STOP to opt out."` | After completed appointment | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+---
 
 ### orders
-```json
-[
-  "{business_name}: Your order #1234 has been confirmed! We'll notify you when it ships. Reply STOP to opt out of notifications.",
-  "{business_name}: Great news — your order has shipped! Track it here: https://example.com/track/1234. Reply STOP to unsubscribe.",
-  "{business_name}: Your package was delivered today at 2:15 PM. We hope you love it! Reply STOP to opt out."
-]
-```
+
+#### Base messages (7)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `orders_confirmation` | Order confirmation | ☑ ON | `"{business_name}: Your order #{order_id} has been confirmed! We'll notify you when it ships. Reply STOP to opt out of notifications."` | When order is placed | `business_name`, `order_id` | opt_out: ✓, biz_name: ✓ |
+| 2 | `orders_shipped` | Shipping notification | ☑ ON | `"{business_name}: Great news — your order #{order_id} has shipped! Track it here: {tracking_url}. Reply STOP to unsubscribe."` | When order ships | `business_name`, `order_id`, `tracking_url` | opt_out: ✓, biz_name: ✓ |
+| 3 | `orders_out_for_delivery` | Out for delivery | ☐ OFF | `"{business_name}: Your order #{order_id} is out for delivery today. Keep an eye out! Reply STOP to opt out."` | When out for delivery | `business_name`, `order_id` | opt_out: ✓, biz_name: ✓ |
+| 4 | `orders_delivered` | Delivery confirmation | ☑ ON | `"{business_name}: Your order #{order_id} was delivered today. We hope you love it! Reply STOP to opt out."` | When delivery is confirmed | `business_name`, `order_id` | opt_out: ✓, biz_name: ✓ |
+| 5 | `orders_delay_notice` | Delay notification | ☐ OFF | `"{business_name}: Update on order #{order_id} — there's a slight delay. New estimated delivery: {date}. We apologize for the wait. Reply STOP to opt out."` | When shipment is delayed | `business_name`, `order_id`, `date` | opt_out: ✓, biz_name: ✓ |
+| 6 | `orders_return_confirmation` | Return confirmed | ☐ OFF | `"{business_name}: We received your return for order #{order_id}. Your refund will be processed within 5-7 business days. Reply STOP to unsubscribe."` | When return is received | `business_name`, `order_id` | opt_out: ✓, biz_name: ✓ |
+| 7 | `orders_pickup_ready` | Ready for pickup | ☐ OFF | `"{business_name}: Your order #{order_id} is ready for pickup! Visit us at {address} during business hours. Reply STOP to opt out."` | When order is ready for pickup | `business_name`, `order_id`, `address` | opt_out: ✓, biz_name: ✓ |
+
+#### Expansion messages (3)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `orders_reorder_reminder` | Reorder reminder | marketing | `"{business_name}: Running low? Reorder your {product_type} favorites at {website_url}. Reply STOP to opt out."` | After estimated usage period | `business_name`, `product_type`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E2 | `orders_flash_sale` | Flash sale | marketing | `"{business_name}: Flash sale! 25% off all {product_type} for the next 24 hours. Shop now: {website_url}. Reply STOP to unsubscribe."` | Manually sent for promotions | `business_name`, `product_type`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `orders_review_request` | Review request | mixed | `"{business_name}: How's your order? We'd love to hear from you: {website_url}/review. Reply STOP to opt out."` | Days after delivery | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+---
 
 ### verification
-```json
-[
-  "Your {app_name} verification code is 847293. This code expires in 10 minutes. If you didn't request this, ignore this message.",
-  "{app_name}: Your login code is 551628. Do not share this code with anyone.",
-  "{app_name}: Use code 392047 to verify your phone number. This code expires in 5 minutes."
-]
-```
+
+#### Base messages (5)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `verification_login_code` | Login verification code | ☑ ON | `"Your {app_name} verification code is {code}. This code expires in 10 minutes. If you didn't request this, ignore this message."` | When user requests login OTP | `app_name`, `code` | opt_out: ✗, biz_name: ✓ (via app_name) |
+| 2 | `verification_signup_code` | Signup verification code | ☑ ON | `"{app_name}: Use code {code} to verify your phone number. This code expires in 5 minutes."` | During account registration | `app_name`, `code` | opt_out: ✗, biz_name: ✓ |
+| 3 | `verification_password_reset` | Password reset code | ☐ OFF | `"{app_name}: Your password reset code is {code}. Expires in 10 minutes. If you didn't request this, secure your account immediately."` | When user requests password reset | `app_name`, `code` | opt_out: ✗, biz_name: ✓ |
+| 4 | `verification_mfa_code` | Multi-factor auth code | ☐ OFF | `"{app_name}: Your security code is {code}. Do not share this code with anyone. This code expires in 5 minutes."` | When MFA is triggered | `app_name`, `code` | opt_out: ✗, biz_name: ✓ |
+| 5 | `verification_device_confirmation` | New device alert | ☐ OFF | `"{app_name}: A new device just signed in to your account. If this wasn't you, reset your password immediately at {website_url}."` | When login from new device detected | `app_name`, `website_url` | opt_out: ✗, biz_name: ✓ |
+
+> **Note:** Verification messages intentionally omit opt-out language. OTP/2FA messages are transactional and user-initiated — STOP language is not required and would be confusing. TCR recognizes this for the `TWO_FACTOR_AUTHENTICATION` campaign type.
+
+#### Expansion messages (3)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `verification_security_tip` | Security tip | mixed | `"{app_name}: Security tip — enable two-factor authentication to protect your account. Set it up at {website_url}/settings. Reply STOP to opt out."` | After account creation | `app_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E2 | `verification_welcome` | Welcome message | mixed | `"{app_name}: Welcome! Your account is verified and ready to go. Get started at {website_url}. Reply STOP to opt out."` | After successful verification | `app_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `verification_feature_announcement` | Feature announcement | marketing | `"{app_name}: New feature alert — you can now use passkeys for faster login. Learn more: {website_url}/blog. Reply STOP to unsubscribe."` | Manually sent | `app_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+---
 
 ### support
-```json
-[
-  "{business_name}: Thanks for reaching out! A support agent will respond shortly. Reply STOP to opt out of messages.",
-  "{business_name} Support: Your issue (#4521) has been resolved. Let us know if you need anything else. Reply STOP to unsubscribe.",
-  "{business_name}: We received your message and are looking into it. Expected response time: 2 hours. Reply STOP to opt out."
-]
-```
+
+#### Base messages (6)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `support_acknowledgment` | Ticket acknowledgment | ☑ ON | `"{business_name}: Thanks for reaching out! A support agent will respond shortly. Your ticket: #{ticket_id}. Reply STOP to opt out of messages."` | When support request received | `business_name`, `ticket_id` | opt_out: ✓, biz_name: ✓ |
+| 2 | `support_resolution` | Issue resolved | ☑ ON | `"{business_name} Support: Your issue (#{ticket_id}) has been resolved. Let us know if you need anything else. Reply STOP to unsubscribe."` | When ticket is closed | `business_name`, `ticket_id` | opt_out: ✓, biz_name: ✓ |
+| 3 | `support_eta` | Response ETA | ☑ ON | `"{business_name}: We received your message and are looking into it. Expected response time: {eta}. Reply STOP to opt out."` | When request is queued | `business_name`, `eta` | opt_out: ✓, biz_name: ✓ |
+| 4 | `support_followup` | Follow-up check-in | ☐ OFF | `"{business_name}: Checking in — is your issue (#{ticket_id}) fully resolved? Reply YES if all good, or describe what's still wrong. Reply STOP to opt out."` | Days after resolution | `business_name`, `ticket_id` | opt_out: ✓, biz_name: ✓ |
+| 5 | `support_escalation` | Escalation notice | ☐ OFF | `"{business_name}: Your issue (#{ticket_id}) has been escalated to a senior agent. You'll hear from us within {eta}. Reply STOP to unsubscribe."` | When ticket is escalated | `business_name`, `ticket_id`, `eta` | opt_out: ✓, biz_name: ✓ |
+| 6 | `support_info_needed` | Information requested | ☐ OFF | `"{business_name}: We need a bit more info to resolve your issue (#{ticket_id}). Please reply with the details or call us at {contact_phone}. Reply STOP to opt out."` | When agent needs more info | `business_name`, `ticket_id`, `contact_phone` | opt_out: ✓, biz_name: ✓ |
+
+#### Expansion messages (3)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `support_satisfaction_survey` | Satisfaction survey | mixed | `"{business_name}: How was your support experience? Rate us 1-5 by replying with a number. Reply STOP to opt out."` | After ticket resolution | `business_name` | opt_out: ✓, biz_name: ✓ |
+| E2 | `support_new_feature_tip` | Feature tip | marketing | `"{business_name}: Did you know? You can now track your support tickets online at {website_url}/support. Reply STOP to unsubscribe."` | Periodic | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `support_maintenance_notice` | Maintenance notice | mixed | `"{business_name}: Heads up — scheduled maintenance on {date} from {time}. Some features may be briefly unavailable. Reply STOP to opt out."` | Before scheduled maintenance | `business_name`, `date`, `time` | opt_out: ✓, biz_name: ✓ |
+
+---
 
 ### marketing
-```json
-[
-  "{business_name}: This week only — 20% off your next order with code SAVE20. Shop now at {website_url}. Reply STOP to unsubscribe.",
-  "{business_name}: New arrivals just dropped! Check out what's new: {website_url}/new. Msg & data rates may apply. Reply STOP to opt out.",
-  "{business_name}: Thanks for being a loyal customer! Enjoy free shipping on your next order. Use code FREESHIP. Reply STOP to unsubscribe."
-]
-```
+
+#### Base messages (6)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `marketing_weekly_promo` | Weekly promotion | ☑ ON | `"{business_name}: This week only — 20% off your next order with code SAVE20. Shop now at {website_url}. Reply STOP to unsubscribe."` | Weekly promo schedule | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 2 | `marketing_new_arrivals` | New arrivals | ☑ ON | `"{business_name}: New arrivals just dropped! Check out what's new: {website_url}/new. Msg & data rates may apply. Reply STOP to opt out."` | When new products launch | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 3 | `marketing_loyalty_reward` | Loyalty reward | ☑ ON | `"{business_name}: Thanks for being a loyal customer! Enjoy free shipping on your next order. Use code FREESHIP at {website_url}. Reply STOP to unsubscribe."` | Loyalty program triggers | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 4 | `marketing_seasonal_sale` | Seasonal sale | ☐ OFF | `"{business_name}: Our seasonal sale starts now — up to 40% off select items. Shop: {website_url}/sale. Reply STOP to opt out."` | Seasonal event triggers | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 5 | `marketing_back_in_stock` | Back in stock | ☐ OFF | `"{business_name}: Good news — the item you wanted is back in stock! Grab it before it's gone: {website_url}. Reply STOP to unsubscribe."` | When watched item restocks | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 6 | `marketing_abandoned_cart` | Abandoned cart | ☐ OFF | `"{business_name}: You left something in your cart! Complete your order at {website_url}/cart. Reply STOP to opt out."` | After cart abandonment | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+#### Expansion messages (3)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `marketing_referral` | Referral program | marketing | `"{business_name}: Share the love! Give a friend $10 off and get $10 when they order. Details: {website_url}/referral. Reply STOP to opt out."` | Periodic to active customers | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E2 | `marketing_vip_early_access` | VIP early access | marketing | `"{business_name}: VIP exclusive — shop our new collection 24 hours before everyone else. Early access: {website_url}/vip. Reply STOP to unsubscribe."` | Before public product launch | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `marketing_event_invite` | Event invitation | mixed | `"{business_name}: You're invited! Join us for a special event on {date}. Details and RSVP: {website_url}/events. Reply STOP to opt out."` | Before events | `business_name`, `date`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+---
 
 ### internal
-```json
-[
-  "{business_name} Team: Reminder — staff meeting tomorrow at 9:00 AM in the main conference room. Reply STOP to opt out.",
-  "{business_name} Alert: Schedule change — your shift on Friday has been moved to 2:00 PM. Please confirm. Reply STOP to unsubscribe.",
-  "{business_name} Ops: System maintenance scheduled for tonight 11 PM - 2 AM. Please save your work. Reply STOP to opt out."
-]
-```
+
+#### Base messages (6)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `internal_meeting_reminder` | Meeting reminder | ☑ ON | `"{business_name} Team: Reminder — staff meeting tomorrow at {time} in the main conference room. Reply STOP to opt out."` | Day before meeting | `business_name`, `time` | opt_out: ✓, biz_name: ✓ |
+| 2 | `internal_schedule_change` | Schedule change | ☑ ON | `"{business_name} Alert: Schedule change — your shift on {date} has been moved to {time}. Please confirm by replying OK. Reply STOP to unsubscribe."` | When schedule is updated | `business_name`, `date`, `time` | opt_out: ✓, biz_name: ✓ |
+| 3 | `internal_system_maintenance` | System maintenance | ☑ ON | `"{business_name} Ops: System maintenance scheduled for {date} {time}. Please save your work. Reply STOP to opt out."` | Before planned maintenance | `business_name`, `date`, `time` | opt_out: ✓, biz_name: ✓ |
+| 4 | `internal_incident_alert` | Incident alert | ☐ OFF | `"{business_name} URGENT: System incident in progress. Status page: {website_url}/status. Updates will follow. Reply STOP to opt out."` | During active incident | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 5 | `internal_policy_update` | Policy update | ☐ OFF | `"{business_name}: New team policy effective {date}. Please review details at {website_url}. Reply STOP to unsubscribe."` | When policy changes | `business_name`, `date`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 6 | `internal_task_assignment` | Task assignment | ☐ OFF | `"{business_name}: New task assigned to you — {task_description}. Due by {date}. Questions? Reply to this message. Reply STOP to opt out."` | When task is assigned | `business_name`, `task_description`, `date` | opt_out: ✓, biz_name: ✓ |
+
+#### Expansion messages (3)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `internal_team_celebration` | Team celebration | mixed | `"{business_name}: Congrats to the team on hitting our quarterly goal! Lunch on us this Friday. Reply STOP to opt out."` | Milestone achieved | `business_name` | opt_out: ✓, biz_name: ✓ |
+| E2 | `internal_training_reminder` | Training reminder | mixed | `"{business_name}: Reminder — mandatory training session on {date} at {time}. Register at {website_url}. Reply STOP to unsubscribe."` | Before training events | `business_name`, `date`, `time`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `internal_company_news` | Company news | mixed | `"{business_name}: Company update — read the latest news from leadership at {website_url}/news. Reply STOP to opt out."` | When news is published | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+---
 
 ### community
-```json
-[
-  "{community_name}: Meetup this Saturday at 10 AM at Central Park! RSVP by replying YES. Reply STOP to opt out of updates.",
-  "{community_name}: Welcome to the group! Events and updates will be sent to this number. Reply HELP for info or STOP to leave.",
-  "{community_name}: Reminder — dues are due by March 15. Details at {website_url}. Reply STOP to unsubscribe."
-]
-```
+
+#### Base messages (6)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `community_event_notification` | Event notification | ☑ ON | `"{community_name}: Meetup this Saturday at {time} at {location}! RSVP by replying YES. Reply STOP to opt out of updates."` | When event is scheduled | `community_name`, `time`, `location` | opt_out: ✓, biz_name: ✓ (via community_name) |
+| 2 | `community_welcome` | Welcome message | ☑ ON | `"{community_name}: Welcome to the group! Events and updates will be sent to this number. Reply HELP for info or STOP to leave."` | When member joins | `community_name` | opt_out: ✓, biz_name: ✓ |
+| 3 | `community_dues_reminder` | Dues/payment reminder | ☐ OFF | `"{community_name}: Reminder — dues are due by {date}. Details at {website_url}. Reply STOP to unsubscribe."` | Before payment deadline | `community_name`, `date`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| 4 | `community_event_reminder` | Event reminder | ☑ ON | `"{community_name}: Reminder — tomorrow's event starts at {time}. See you there! Reply STOP to opt out."` | Day before event | `community_name`, `time` | opt_out: ✓, biz_name: ✓ |
+| 5 | `community_event_cancelled` | Event cancelled | ☐ OFF | `"{community_name}: Tomorrow's event has been cancelled. We'll reschedule soon — stay tuned. Reply STOP to opt out."` | When event is cancelled | `community_name` | opt_out: ✓, biz_name: ✓ |
+| 6 | `community_announcement` | General announcement | ☐ OFF | `"{community_name}: {announcement_text}. Details at {website_url}. Reply STOP to unsubscribe."` | Manual announcement | `community_name`, `announcement_text`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+#### Expansion messages (3)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `community_sponsor_promo` | Sponsor promotion | marketing | `"{community_name}: Special offer from our sponsor — 20% off at {sponsor_name}. Use code COMMUNITY20 at {website_url}. Reply STOP to opt out."` | Sponsor partnership | `community_name`, `sponsor_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E2 | `community_merchandise` | Merchandise announcement | marketing | `"{community_name}: New merch alert! Rep the community — shop at {website_url}/shop. Reply STOP to unsubscribe."` | When merch launches | `community_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `community_survey` | Community survey | mixed | `"{community_name}: We want to hear from you! Take our quick survey: {website_url}/survey. Reply STOP to opt out."` | Periodic engagement | `community_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+---
 
 ### waitlist
-```json
-[
-  "{business_name}: You're on the waitlist! Estimated wait: 25 minutes. We'll text when your table is ready. Reply STOP to opt out.",
-  "{business_name}: Your table is ready! Please check in at the host stand within 10 minutes. Reply STOP to unsubscribe.",
-  "{business_name}: A reservation has opened up for tonight at 7:30 PM. Reply YES to book or NO to pass. Reply STOP to opt out."
-]
-```
+
+#### Base messages (6)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `waitlist_joined` | Waitlist confirmation | ☑ ON | `"{business_name}: You're on the waitlist! Estimated wait: {wait_time}. We'll text when your table is ready. Reply STOP to opt out."` | When customer joins waitlist | `business_name`, `wait_time` | opt_out: ✓, biz_name: ✓ |
+| 2 | `waitlist_ready` | Table/spot ready | ☑ ON | `"{business_name}: Your table is ready! Please check in at the host stand within 10 minutes. Reply STOP to unsubscribe."` | When spot opens | `business_name` | opt_out: ✓, biz_name: ✓ |
+| 3 | `waitlist_opening` | Opening available | ☑ ON | `"{business_name}: A reservation has opened up for {date} at {time}. Reply YES to book or NO to pass. Reply STOP to opt out."` | When cancellation creates opening | `business_name`, `date`, `time` | opt_out: ✓, biz_name: ✓ |
+| 4 | `waitlist_update` | Wait time update | ☐ OFF | `"{business_name}: Quick update — your estimated wait is now {wait_time}. Thanks for your patience! Reply STOP to opt out."` | When wait time changes significantly | `business_name`, `wait_time` | opt_out: ✓, biz_name: ✓ |
+| 5 | `waitlist_reservation_confirmation` | Reservation confirmed | ☐ OFF | `"{business_name}: Your reservation is confirmed for {date} at {time}. Party of {party_size}. See you then! Reply STOP to unsubscribe."` | When reservation is made | `business_name`, `date`, `time`, `party_size` | opt_out: ✓, biz_name: ✓ |
+| 6 | `waitlist_reservation_reminder` | Reservation reminder | ☐ OFF | `"{business_name}: Reminder — your reservation is tonight at {time}. Reply C to confirm or X to cancel. Reply STOP to opt out."` | Day of reservation | `business_name`, `time` | opt_out: ✓, biz_name: ✓ |
+
+#### Expansion messages (4)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `waitlist_special_event` | Special event invite | marketing | `"{business_name}: Join us for a special {venue_type} event on {date}! Reserve your spot: {website_url}. Reply STOP to opt out."` | Before special events | `business_name`, `venue_type`, `date`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E2 | `waitlist_happy_hour` | Happy hour / daily special | marketing | `"{business_name}: Today's special — half-price appetizers from 4-6 PM. Walk in or reserve: {website_url}. Reply STOP to unsubscribe."` | Daily specials | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `waitlist_loyalty_perk` | Loyalty perk | marketing | `"{business_name}: Thanks for dining with us! Your next visit earns double loyalty points. Details: {website_url}. Reply STOP to opt out."` | After visit | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E4 | `waitlist_review_request` | Review request | mixed | `"{business_name}: Thanks for visiting! How was your experience? Leave a review: {website_url}/review. Reply STOP to opt out."` | After visit completes | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+---
+
+### exploring
+
+The `exploring` use case provides a curated cross-section of common message patterns from multiple use cases. This gives developers who selected "Just exploring" a representative set to experiment with in the sandbox without committing to a specific use case.
+
+#### Base messages (8)
+
+| # | ID | Category | Default | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------|----------|---------|-----------|------------|
+| 1 | `exploring_confirmation` | Booking/order confirmation | ☑ ON | `"{business_name}: Your request has been confirmed! We'll follow up with details. Reply STOP to opt out."` | After user action confirmed | `business_name` | opt_out: ✓, biz_name: ✓ |
+| 2 | `exploring_reminder` | Reminder | ☑ ON | `"{business_name}: Reminder — you have an upcoming event tomorrow at {time}. Reply STOP to unsubscribe."` | Day before scheduled event | `business_name`, `time` | opt_out: ✓, biz_name: ✓ |
+| 3 | `exploring_status_update` | Status update | ☑ ON | `"{business_name}: Update on your request — it's being processed. We'll notify you when it's ready. Reply STOP to opt out."` | When status changes | `business_name` | opt_out: ✓, biz_name: ✓ |
+| 4 | `exploring_verification` | Verification code | ☐ OFF | `"{business_name}: Your verification code is {code}. This code expires in 10 minutes."` | When user requests code | `business_name`, `code` | opt_out: ✗, biz_name: ✓ |
+| 5 | `exploring_support_ack` | Support acknowledgment | ☐ OFF | `"{business_name}: Thanks for reaching out! We'll get back to you shortly. Reply STOP to opt out."` | When support request received | `business_name` | opt_out: ✓, biz_name: ✓ |
+| 6 | `exploring_delivery_update` | Delivery/shipment update | ☐ OFF | `"{business_name}: Your order has shipped! Track it here: {tracking_url}. Reply STOP to unsubscribe."` | When order ships | `business_name`, `tracking_url` | opt_out: ✓, biz_name: ✓ |
+| 7 | `exploring_welcome` | Welcome message | ☐ OFF | `"{business_name}: Welcome! You'll receive updates at this number. Reply HELP for info or STOP to opt out."` | When user signs up | `business_name` | opt_out: ✓, biz_name: ✓ |
+| 8 | `exploring_alert` | Alert/notification | ☐ OFF | `"{business_name}: Heads up — {alert_text}. Details at {website_url}. Reply STOP to opt out."` | Event-driven alerts | `business_name`, `alert_text`, `website_url` | opt_out: ✓, biz_name: ✓ |
+
+#### Expansion messages (3)
+
+| # | ID | Category | Expansion Type | Template | Trigger | Variables | Compliance |
+|---|-----|----------|---------------|----------|---------|-----------|------------|
+| E1 | `exploring_promo` | Promotional message | marketing | `"{business_name}: Special offer — save 20% with code SAVE20. Shop at {website_url}. Reply STOP to opt out."` | Manual promotion | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E2 | `exploring_feedback` | Feedback request | mixed | `"{business_name}: We'd love your feedback! Take a quick survey: {website_url}/feedback. Reply STOP to unsubscribe."` | Periodic | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
+| E3 | `exploring_reengagement` | Re-engagement | marketing | `"{business_name}: It's been a while! Check out what's new at {website_url}. Reply STOP to opt out."` | After inactivity period | `business_name`, `website_url` | opt_out: ✓, biz_name: ✓ |
 
 ---
 
@@ -238,6 +423,11 @@ Members provide opt-in consent when joining {community_name} by entering their p
 ### waitlist
 ```
 Customers provide opt-in consent when joining the waitlist at {business_name} through the website at {website_url} or in person. The waitlist form includes a phone number field with the following disclosure: "By providing your phone number, you agree to receive waitlist updates and reservation notifications from {business_name}. Message frequency varies. Msg & data rates may apply. Reply HELP for help. Reply STOP to cancel." Customers who join in person provide verbal consent after staff reads the SMS disclosure. The privacy policy at {website_url}/privacy contains additional details about data handling.
+```
+
+### exploring
+```
+Users provide opt-in consent by entering their phone number on the {business_name} website at {website_url}. The form includes an unchecked consent checkbox with the following disclosure: "By providing your phone number, you agree to receive service notifications and updates from {business_name}. Message frequency varies. Msg & data rates may apply. Reply HELP for help. Reply STOP to cancel." The privacy policy at {website_url}/privacy contains additional details about data handling.
 ```
 
 ---
@@ -408,6 +598,7 @@ This defines the text content for the opt-in form on the compliance site (PRD_03
 | internal | "Enter your phone number to receive team notifications and schedule updates." |
 | community | "Join {community_name} to receive event updates and community announcements." |
 | waitlist | "Enter your phone number to receive waitlist and reservation updates." |
+| exploring | "Enter your phone number to receive service notifications and updates from {business_name}." |
 
 ### Consent checkbox disclosure text
 ```
@@ -449,6 +640,7 @@ When submitting to Twilio, each use case maps to a specific TCR standard campaig
 | internal | `LOW_VOLUME` | true | true | true |
 | community | `LOW_VOLUME` | true | true | true |
 | waitlist | `MIXED` | true | true | true |
+| exploring | `LOW_VOLUME` | true | true | true |
 
 ### Default message flow flags (submitted with campaign)
 
@@ -468,7 +660,47 @@ All campaigns set these to `true`:
 
 ## 10. IMPLEMENTATION
 
-### Function signature
+### MessageTemplate interface
+
+This is the interface consumed by PRD_06's message plan builder via `getMessageTemplates()`.
+
+```typescript
+interface MessageTemplate {
+  id: string;                  // e.g., 'appointments_booking_confirmation'
+  category: string;            // e.g., 'Booking confirmation'
+  template: string;            // Full message text with {variables}
+  trigger: string;             // "When client books an appointment"
+  variables: string[];         // ['business_name', 'date', 'time']
+  is_expansion: boolean;       // true for expansion messages
+  expansion_type?: string;     // 'marketing' | 'mixed' — only present if is_expansion
+  default_enabled: boolean;    // true for the 2-3 most common base messages
+  compliance_elements: {
+    has_opt_out: boolean;
+    has_business_name: boolean;
+  };
+}
+
+/**
+ * Returns the full message template library for a given use case.
+ * Called by PRD_06 dashboard when developer selects a use case.
+ * Returns base messages first, then expansion messages.
+ */
+function getMessageTemplates(useCase: string): MessageTemplate[] {
+  const templates = MESSAGE_TEMPLATES[useCase];
+  if (!templates) throw new Error(`Unknown use case: ${useCase}`);
+  return templates;
+}
+```
+
+### generateArtifacts() — unchanged from v1.0
+
+`generateArtifacts()` still produces the 6 compliance artifacts for Twilio submission. It selects the best 3 messages from the full template set for `sample_messages`. Selection logic:
+
+1. Filter to base messages only (no expansion) that are `default_enabled`
+2. Prefer messages with both `has_opt_out: true` and `has_business_name: true`
+3. Pick 3 messages with the highest use-case relevance (first 3 default-enabled)
+4. Render templates with variable interpolation
+
 ```typescript
 interface IntakeData {
   use_case: string;
@@ -494,7 +726,7 @@ interface IntakeData {
 
 interface GeneratedArtifacts {
   campaign_description: string;
-  sample_messages: string[];
+  sample_messages: string[];          // Always exactly 3, rendered (no {variables})
   opt_in_description: string;
   privacy_policy: string;
   terms_of_service: string;
@@ -521,6 +753,7 @@ function renderCampaignDescription(intake: IntakeData): string {
   const templates = {
     appointments: (d) => `${d.business_name} sends SMS messages to customers who have opted in...`,
     orders: (d) => `${d.business_name} sends SMS messages to customers who have opted in...`,
+    exploring: (d) => `${d.business_name} sends SMS messages to users who have opted in...`,
     // ... etc
   };
   return templates[intake.use_case](deriveVariables(intake));
@@ -566,6 +799,7 @@ const USE_CASE_LABELS: Record<string, string> = {
   internal: 'team notifications and operational alerts',
   community: 'community updates and event notifications',
   waitlist: 'waitlist and reservation updates',
+  exploring: 'service notifications and updates',
 };
 
 const USE_CASE_FREQUENCIES: Record<string, string> = {
@@ -577,6 +811,7 @@ const USE_CASE_FREQUENCIES: Record<string, string> = {
   internal: 'varies based on operational needs',
   community: 'approximately 2-4 messages per month',
   waitlist: 'approximately 1-3 messages per booking',
+  exploring: 'varies based on usage',
 };
 
 const TCR_USE_CASES: Record<string, string> = {
@@ -588,6 +823,40 @@ const TCR_USE_CASES: Record<string, string> = {
   internal: 'LOW_VOLUME',
   community: 'LOW_VOLUME',
   waitlist: 'MIXED',
+  exploring: 'LOW_VOLUME',
+};
+
+/**
+ * Per-use-case description of what message types are approved.
+ * Consumed by PRD_05 (SMS_GUIDELINES.md) and PRD_08 (drift detection).
+ */
+const APPROVED_MESSAGE_TYPES: Record<string, string> = {
+  appointments: 'Appointment confirmations, reminders, rescheduling notices, cancellation notices, no-show follow-ups, and pre-visit instructions',
+  orders: 'Order confirmations, shipping notifications, delivery updates, delay notices, return confirmations, and pickup-ready alerts',
+  verification: 'One-time verification codes (OTP), login codes, password reset codes, multi-factor authentication codes, and new-device security alerts',
+  support: 'Support ticket acknowledgments, resolution notices, response ETAs, follow-up check-ins, escalation notices, and information requests',
+  marketing: 'Promotional offers, new arrival announcements, loyalty rewards, seasonal sales, back-in-stock alerts, and abandoned cart reminders',
+  internal: 'Meeting reminders, schedule changes, system maintenance notices, incident alerts, policy updates, and task assignments',
+  community: 'Event notifications, welcome messages, dues reminders, event reminders, cancellation notices, and general announcements',
+  waitlist: 'Waitlist confirmations, table/spot-ready alerts, opening notifications, wait time updates, reservation confirmations, and reservation reminders',
+  exploring: 'Transactional confirmations, reminders, status updates, verification codes, support acknowledgments, delivery updates, welcome messages, and alerts',
+};
+
+/**
+ * Per-use-case description of what content is NOT approved.
+ * Consumed by PRD_05 (SMS_GUIDELINES.md) and PRD_08 (drift detection).
+ * These are the boundaries the drift analyzer checks against.
+ */
+const NOT_APPROVED_CONTENT: Record<string, string> = {
+  appointments: 'Marketing promotions, discount offers, upsells, referral requests, review solicitations, or any message unrelated to scheduling. To add promotional messages, register a separate marketing campaign.',
+  orders: 'Marketing promotions, product recommendations, upsells, cross-sells, review solicitations, or any message unrelated to order lifecycle. To add promotional messages, register a separate marketing campaign.',
+  verification: 'Marketing messages, promotional offers, newsletters, account activity summaries, feature announcements, or any message the user did not explicitly request. Verification messages must be user-initiated.',
+  support: 'Marketing promotions, product announcements, upsells, survey requests, or any message unrelated to an active support interaction. To add promotional messages, register a separate marketing campaign.',
+  marketing: 'Transactional messages disguised as marketing (e.g., "your order shipped" in a marketing campaign), messages to recipients who haven\'t given explicit marketing consent, or SHAFT-C content (sex, hate, alcohol, firearms, tobacco, cannabis).',
+  internal: 'External customer communications, marketing to team members, messages to non-employees, or any content targeting consumers rather than internal staff.',
+  community: 'Direct product sales, third-party advertising, messages to non-members, or commercial promotions unrelated to community activities. Sponsor promotions require marketing expansion.',
+  waitlist: 'Marketing promotions, menu advertising, event marketing, loyalty program solicitations, or any message unrelated to waitlist/reservation status. To add promotional messages, register a separate marketing campaign.',
+  exploring: 'SHAFT-C content (sex, hate, alcohol, firearms, tobacco, cannabis), messages to recipients who haven\'t opted in, or high-volume blast messaging. Choose a specific use case before going to production.',
 };
 ```
 

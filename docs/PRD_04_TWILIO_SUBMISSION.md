@@ -455,6 +455,7 @@ enum RegistrationStatus {
   VERIFYING_SITE = 'verifying_site',
   SUBMITTING_BRAND = 'submitting_brand',
   AWAITING_OTP = 'awaiting_otp',           // Sole prop only
+  AWAITING_BRAND_AUTH = 'awaiting_brand_auth', // Auth+ 2.0: public/for-profit brands must click email verification link from TCR within 7 days. Phase 2: will expand to all brand types per TCR's stated roadmap. Dashboard state card: "Check your email — TCR sent a verification link to {email}. Click it within 7 days to continue."
   BRAND_PENDING = 'brand_pending',
   BRAND_APPROVED = 'brand_approved',
   VETTING_IN_PROGRESS = 'vetting_in_progress', // Standard only
@@ -681,17 +682,21 @@ async function handleCampaignRejection(reg: Registration, campaign: any) {
 
 ### Known rejection patterns and auto-fixes
 
-| Rejection code | Meaning | Auto-fix possible? | Fix |
-|---------------|---------|-------------------|-----|
-| 805 | Missing privacy policy on website | Check site → if live, resubmit | Verify and resubmit |
-| 806 | Missing terms on website | Check site → if live, resubmit | Verify and resubmit |
-| 810 | Sample messages don't match use case | No — needs manual review | Escalate |
-| 811 | Missing opt-out in sample messages | Yes — append opt-out to samples | Auto-fix and resubmit |
-| 812 | Missing brand name in sample messages | Yes — prepend brand name | Auto-fix and resubmit |
-| 820 | Website not accessible | Check site → redeploy if needed | Redeploy and resubmit |
-| 830 | Opt-in mechanism not found | Check site → verify form exists | Verify and resubmit |
+> **Re-vetting fee policy:** Each resubmission incurs a non-refundable $15 campaign vetting fee charged by Twilio/TCR. RelayKit **absorbs this cost** as part of the rejection handling service — do not pass it to the customer. Track resubmission counts per registration; flag registrations with 3+ rejections for manual review as a margin risk signal.
 
-> **NOTE:** These codes are illustrative. Actual Twilio/TCR rejection codes should be documented as we encounter them in production.
+> **Developer-facing rejection copy:** When surfacing rejection information to the developer, do NOT show raw error codes or "our team is reviewing" language. Each rejection code must map to: (1) plain-language explanation of what carriers flagged, (2) why that thing triggers a flag, (3) the exact fix needed. See PRD_06 dashboard rejection card spec for the UI treatment. The rejection email subject line must be: `"Carriers flagged your registration — here's what to do"`.
+
+| Rejection code | Meaning | Auto-fix possible? | Fix | Developer-facing explanation |
+|---------------|---------|-------------------|-----|------------------------------|
+| 805 | Missing privacy policy on website | Check site → if live, resubmit | Verify and resubmit | "Carriers checked your compliance site and couldn't find a privacy policy. We're verifying the site and resubmitting." |
+| 806 | Missing terms on website | Check site → if live, resubmit | Verify and resubmit | "Your compliance site needs a Terms of Service page. We're verifying and resubmitting." |
+| 810 | Sample messages don't match use case | No — needs manual review | Escalate | "Carriers flagged your sample messages as not matching your registered use case. Our team will review and contact you within 24 hours." |
+| 811 | Missing opt-out in sample messages | Yes — append opt-out to samples | Auto-fix and resubmit | "Your sample messages were missing required opt-out language. We've added it automatically and resubmitted." |
+| 812 | Missing brand name in sample messages | Yes — prepend brand name | Auto-fix and resubmit | "Carriers require your business name in sample messages. We've added it and resubmitted." |
+| 820 | Website not accessible | Check site → redeploy if needed | Redeploy and resubmit | "Carriers couldn't reach your compliance site. We're redeploying it and resubmitting." |
+| 830 | Opt-in mechanism not found | Check site → verify form exists | Verify and resubmit | "Carriers need to see an opt-in form on your compliance site. We're verifying it exists and resubmitting." |
+
+> **NOTE:** These codes are illustrative. Actual Twilio/TCR rejection codes should be documented as encountered in production.
 
 ### Resubmission
 ```typescript
@@ -871,3 +876,30 @@ const mockBrand = await twilioClient.messaging.v1
 ```
 
 Use mock mode during development and integration testing. Switch to production for real submissions.
+
+---
+
+## 14. PHASE 2 TODOS — DO NOT BUILD IN V1
+
+These are confirmed future additions. They are flagged here so they are not forgotten when PRD_04 is next touched.
+
+### TODO-P2-01: Brand re-use for second projects
+When a returning customer registers a second project with the same EIN, the existing approved brand SID can be reused — only a new campaign, Messaging Service, and phone number are needed. This skips brand review entirely (saving 1–7 days) and avoids the $46 brand registration fee.
+
+- Store `twilio_brand_sid` on the `customers` table (not just `registrations`) so it persists across projects
+- Pipeline branches at `SUBMITTING_BRAND`: `hasExistingApprovedBrand ? skipToStep_CREATING_SERVICE : startFromStep_SUBMITTING_BRAND`
+- Dashboard copy for returning customer: "Your brand is already verified — we'll link this project to your existing record. This campaign should move faster."
+
+### TODO-P2-02: Second campaign registration pathway
+When a customer who registered as transactional wants to add marketing capability post-approval, a second campaign must be registered on their existing subaccount. The existing approved campaign is NOT modified.
+
+- Implement `registerSecondCampaign(registrationId, newCampaignType)` function
+- New campaign uses same subaccount SID and Messaging Service
+- Dashboard expansion flow triggers this, not the intake wizard
+- Dashboard copy: "We'll register an additional campaign that covers marketing messages. Your transactional messages keep running without interruption."
+
+### TODO-P2-03: EIN 5-brand limit detection
+TCR allows a maximum of 5 Standard Brands per EIN. Before submitting a brand registration, check `registration_count_by_ein`. If this would be the 6th, block submission and surface: "You have 5 active brand registrations under your EIN. TCR has a 5-brand limit per business — please contact us before registering another project."
+
+### TODO-P2-04: Authentication+ 2.0 expansion
+TCR has stated intent to expand Authentication+ (email verification step) to all brand types, not just public companies. When that happens, `AWAITING_BRAND_AUTH` becomes a state for all registrations. Architect the OTP flow (already built) as a model for this step.

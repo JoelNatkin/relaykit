@@ -8,7 +8,7 @@
 
 ## 1. OVERVIEW
 
-The intake wizard is a 5-screen flow that takes a visitor from "I need my app to send texts" to paid customer in under 5 minutes. The flow is: Use Case Selection → Use Case Advisory → Business Details → Review & Confirm → Payment. After payment, the customer is redirected to their dashboard (PRD_06) where registration begins automatically.
+The intake wizard is a 4-screen flow plus a Stripe Checkout redirect that takes a visitor from "I need my app to send texts" to paid customer in under 5 minutes. The flow is: Use Case Selection → Use Case Advisory → Business Details → Review & Confirm → Stripe Checkout (hosted, not a RelayKit-rendered screen). After payment, the customer is redirected to their dashboard (PRD_06) where registration begins automatically.
 
 The advisory screen (Screen 1b) is a key differentiator. It shows the customer exactly what they're committing to — what messages they'll be able to send and what they won't — and helps them expand their registration to cover future needs before they lock in. This is where RelayKit acts as the expert, crafting the right registration to maximize the customer's flexibility while maintaining approval odds.
 
@@ -138,24 +138,40 @@ Show 3-4 checkboxes based on the selected use case. These represent common adjac
 | community | ☐ Send sponsored or partner content · ☐ Collect payments or fees via SMS links |
 | waitlist | ☐ Send promotional offers to past guests · ☐ Announce new availability or special events · ☐ Request reviews after visits |
 
-### Campaign type upgrade logic
+### Campaign type logic
 
-When the customer checks expansion options, we silently upgrade the TCR campaign type to accommodate broader messaging while maintaining approval odds:
+> **Terminology note:** TCR campaigns are static once approved. Checking expansion options does NOT upgrade the existing campaign — it determines what campaign type RelayKit registers from day one. If a customer initially registers as transactional and later wants marketing capability, that requires a **second campaign registration** on their existing subaccount. This addendum corrects earlier language that described expansion as an "upgrade." UX copy must reflect this: "We'll register an additional campaign" not "We'll upgrade your registration."
+
+When the customer checks expansion options, RelayKit determines the appropriate TCR campaign type to register from day one:
 
 ```typescript
-function determineCampaignType(useCase: string, expansions: string[]): string {
+function determineCampaignType(
+  useCase: string, 
+  expansions: string[],
+  registrationTier: 'transactional' | 'mixed'  // from MIXED checkbox on Screen 1b
+): string {
+  // Explicit MIXED election overrides everything
+  if (registrationTier === 'mixed') {
+    return 'MIXED';
+  }
+
+  // waitlist defaults to MIXED regardless
+  if (useCase === 'waitlist') {
+    return 'MIXED';
+  }
+
   // If no expansions selected, use the default narrow type
   if (expansions.length === 0) {
     return DEFAULT_CAMPAIGN_TYPES[useCase];
   }
   
-  // If any promotional/marketing expansion is selected, upgrade to MIXED
+  // If any promotional/marketing expansion is selected, use MIXED
   const hasPromoExpansion = expansions.some(e => 
     e.includes('promotional') || e.includes('offers') || e.includes('reviews')
   );
   
   if (hasPromoExpansion) {
-    return 'MIXED'; // Covers both transactional and promotional
+    return 'MIXED';
   }
   
   // For non-promotional expansions, use LOW_VOLUME_MIXED
@@ -174,10 +190,11 @@ const DEFAULT_CAMPAIGN_TYPES: Record<string, string> = {
 };
 ```
 
-### When campaign type upgrades
+### When expansion options are selected
 
 If an expansion is selected:
-1. Show an inline note below the checkboxes: **"Got it — we'll register you for a broader messaging category that covers both {original_use_case_label} and {expansion_description}. This may require slightly stricter consent language on your opt-in form, which we'll handle automatically."**
+1. Show an inline note below the checkboxes: **"Got it — we'll register your {original_use_case_label} campaign to include {expansion_description}. Your registration covers both from day one."**
+2. If the customer later wants to add marketing capability that wasn't included at registration, that requires a second campaign registration — this is handled via the dashboard expansion flow, not here.
 2. The template engine (PRD_02) uses the expanded campaign type and adjusts:
    - Campaign description to cover both the primary use case and expansions
    - Sample messages to include at least one example of the expanded functionality
@@ -231,7 +248,7 @@ All fields are visible on initial load (no progressive disclosure). Fields are g
 | `business_name` | Business or app name | text | Yes | Min 2 chars, max 100 | "The name your customers will see on texts" |
 | `business_description` | What does your business/app do? | textarea | Yes | Min 20 chars, max 500 | "Describe your app in a sentence or two. Example: 'A booking platform for pet groomers'" |
 | `has_ein` | Do you have a US business tax ID (EIN)? | radio (Yes/No) | Yes | — | Help tooltip: "If you're a sole proprietor or hobbyist without an EIN, select No. We'll register you as a sole proprietor." |
-| `ein` | EIN | text | If has_ein=Yes | 9 digits, format XX-XXXXXXX | "XX-XXXXXXX" |
+| `ein` | EIN | text | If has_ein=Yes | 9 digits, format XX-XXXXXXX | "XX-XXXXXXX" · *Inline annotation: "Carriers use this to verify your business is real — it's how you get a higher trust score."* |
 | `business_type` | Business type | select | If has_ein=Yes | — | Options: LLC, Corporation, Partnership, Non-profit |
 
 **Section: Contact information**
@@ -240,8 +257,8 @@ All fields are visible on initial load (no progressive disclosure). Fields are g
 |-------|-------|------|----------|------------|------------------|
 | `contact_name` | Your full name | text | Yes | Min 2 chars | — |
 | `email` | Email address | email | Yes | Valid email format | "We'll send your registration updates and deliverable here" |
-| `phone` | Mobile phone number | tel | Yes | Valid US phone, 10 digits | "Used for carrier verification — we'll send a code to this number" |
-| `address_line1` | Street address | text | Yes | Min 5 chars | — |
+| `phone` | Mobile phone number | tel | Yes | Valid US phone, 10 digits | "Used for carrier verification — we'll send a code to this number" · *Inline annotation for sole proprietors: "For sole proprietor registrations, TCR limits this to 3 verifications per phone number lifetime — across all providers you've ever registered with."* |
+| `address_line1` | Street address | text | Yes | Min 5 chars | *Inline annotation: "Carriers verify this matches your registered business address — mismatches delay approval."* |
 | `address_city` | City | text | Yes | Min 2 chars | — |
 | `address_state` | State | select | Yes | Valid US state | Dropdown of 50 states + DC |
 | `address_zip` | ZIP code | text | Yes | 5 digits | "XXXXX" |
@@ -250,7 +267,7 @@ All fields are visible on initial load (no progressive disclosure). Fields are g
 
 | Field | Label | Type | Required | Appears for use cases | Placeholder/Help |
 |-------|-------|------|----------|-----------------------|------------------|
-| `website_url` | Do you have a website for this app? | text | No | All | "If yes, enter URL. If not, we'll create a compliance page for you." |
+| `website_url` | Do you have a website for this app? | text | No | All | "If yes, enter URL. If not, we'll create a compliance page for you." · *Inline annotation: "This is the URL carriers visit to verify you have a privacy policy and opt-in mechanism."* |
 | `service_type` | What type of service? | text | Yes | appointments | "e.g., dental, hair salon, consulting, auto repair" |
 | `product_type` | What do you sell/deliver? | text | Yes | orders | "e.g., clothing, food delivery, handmade goods" |
 | `app_name` | App name (if different from business) | text | No | verification | "The name users see when they get a code" |
@@ -259,7 +276,7 @@ All fields are visible on initial load (no progressive disclosure). Fields are g
 
 ### Conditional logic
 - If `has_ein` = No: hide `ein` and `business_type` fields. Show inline note: "No problem! We'll register you as a sole proprietor. You're limited to one campaign and one phone number, which is plenty for most indie apps."
-- If `website_url` is empty: show inline note: "We'll generate a compliance website for your business — it's included in the price."
+- If `website_url` is empty: show inline note: "We'll generate a compliance site for your business — it's included in the price."
 - Use-case-specific fields appear based on the use case selected on Screen 1
 
 ### Validation
@@ -342,7 +359,7 @@ SAMPLE MESSAGES
 2. "{generated_sample_2}"  
 3. "{generated_sample_3}"
 
-COMPLIANCE WEBSITE
+COMPLIANCE SITE
 We'll create a page at {slug}.{compliance_domain} with:
 ✓ Privacy policy (with required mobile data language)
 ✓ Terms of service (with messaging disclosures)
@@ -382,7 +399,7 @@ The generated campaign description and sample messages should be editable inline
 3. Backend creates Stripe Checkout Session with:
    - Price: $199.00 USD (one-time)
    - Product name: "RelayKit — SMS Registration"
-   - Product description: "10DLC registration, compliance website, and SMS integration kit for {business_name}"
+   - Product description: "10DLC registration, compliance site, and SMS integration kit for {business_name}"
    - Customer email pre-filled from intake
    - Success URL: `relaykit.com/dashboard?session_id={CHECKOUT_SESSION_ID}`
    - Cancel URL: `relaykit.com/start/review` (return to review screen)
