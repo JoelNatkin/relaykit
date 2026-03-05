@@ -19,6 +19,7 @@ export interface DashboardState {
   buildSpecGeneratedAt: string | null;
   sandboxMessageCount: number;
   phoneVerified: boolean;
+  verifiedPhone: string | null;
   registrationStatus: string | null;
 }
 

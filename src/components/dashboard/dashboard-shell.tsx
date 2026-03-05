@@ -10,12 +10,15 @@ interface DashboardShellProps {
   children: ReactNode;
   stage: LifecycleStage;
   useCase: UseCaseId | null;
+  sandboxMessageCount: number;
+  phoneVerified: boolean;
+  verifiedPhone: string | null;
   email: string;
 }
 
-export function DashboardShell({ children, stage, useCase, email }: DashboardShellProps) {
+export function DashboardShell({ children, stage, useCase, sandboxMessageCount, phoneVerified, verifiedPhone, email }: DashboardShellProps) {
   return (
-    <DashboardProvider stage={stage} useCase={useCase}>
+    <DashboardProvider stage={stage} useCase={useCase} sandboxMessageCount={sandboxMessageCount} phoneVerified={phoneVerified} verifiedPhone={verifiedPhone}>
       <div className="min-h-screen bg-primary">
         <header className="border-b border-secondary bg-primary">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">

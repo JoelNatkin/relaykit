@@ -7,10 +7,13 @@ import { UseCaseSelector } from "./use-case-selector";
 import { UseCaseBadge } from "./use-case-badge";
 import { MessagePlanBuilder } from "./message-plan-builder";
 import { BuildSpecSection } from "./build-spec-section";
+import { SandboxApiKeyCard } from "./sandbox-api-key-card";
+import { PhoneVerificationCard } from "./phone-verification-card";
+import { SandboxUsageCard } from "./sandbox-usage-card";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
 export function OverviewContent() {
-  const { stage, useCase } = useDashboard();
+  const { stage, useCase, sandboxMessageCount } = useDashboard();
   const router = useRouter();
   const [isChanging, setIsChanging] = useState(false);
 
@@ -39,6 +42,14 @@ export function OverviewContent() {
             useCase={useCase}
             onChangeClick={() => setIsChanging(true)}
           />
+
+          {/* Sandbox infrastructure cards — persist across all sandbox stages */}
+          <SandboxApiKeyCard />
+          <PhoneVerificationCard />
+          {sandboxMessageCount > 0 && (
+            <SandboxUsageCard messageCount={sandboxMessageCount} />
+          )}
+
           <MessagePlanBuilder useCase={useCase} />
           <BuildSpecSection useCase={useCase} />
         </>

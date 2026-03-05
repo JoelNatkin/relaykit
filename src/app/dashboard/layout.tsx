@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   const stage = computeLifecycleStage(dashboardState);
 
   return (
-    <DashboardShell stage={stage} useCase={dashboardState.useCase} email={user.email!}>
+    <DashboardShell stage={stage} useCase={dashboardState.useCase} sandboxMessageCount={dashboardState.sandboxMessageCount} phoneVerified={dashboardState.phoneVerified} verifiedPhone={dashboardState.verifiedPhone} email={user.email!}>
       {children}
     </DashboardShell>
   );
@@ -47,14 +47,15 @@ async function fetchDashboardState(
     .maybeSingle();
 
   if (!customer) {
-    // Pre-registration: use case may be stored in user metadata
+    // Pre-registration: use case and phone verification in user metadata
     const metaUseCase = user.user_metadata?.use_case ?? null;
     return {
       useCase: metaUseCase,
       hasPlan: !!user.user_metadata?.message_plan,
-      buildSpecGeneratedAt: null,
-      sandboxMessageCount: 0,
-      phoneVerified: false,
+      buildSpecGeneratedAt: user.user_metadata?.build_spec_generated_at ?? null,
+      sandboxMessageCount: 0, // TODO: wire to usage tracking
+      phoneVerified: !!user.user_metadata?.verified_phone,
+      verifiedPhone: (user.user_metadata?.verified_phone as string) ?? null,
       registrationStatus: null,
     };
   }
@@ -81,6 +82,7 @@ async function fetchDashboardState(
     buildSpecGeneratedAt: plan?.build_spec_generated_at ?? null,
     sandboxMessageCount: 0, // TODO: wire to usage tracking
     phoneVerified: false, // TODO: wire to phone verification state
+    verifiedPhone: null, // TODO: wire to phone verification state
     registrationStatus: registration?.status ?? null,
   };
 }
