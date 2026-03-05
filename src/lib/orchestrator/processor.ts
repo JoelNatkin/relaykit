@@ -20,6 +20,10 @@ import {
   updateStatus,
   type RegistrationStatus,
 } from "@/lib/orchestrator/state-machine";
+import {
+  buildRegistrationContext,
+  type RegistrationContext,
+} from "@/lib/orchestrator/registration-context";
 
 // ---------------------------------------------------------------------------
 // Logging prefix
@@ -132,6 +136,12 @@ export async function processRegistration(
     );
     return;
   }
+
+  // ---- Build registration context (Phase 2: projectId will be populated) ----
+  const _ctx: RegistrationContext = buildRegistrationContext(
+    customer.id,
+    registrationId
+  );
 
   const currentStatus = registration.status as RegistrationStatus;
 
