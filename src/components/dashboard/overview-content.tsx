@@ -6,6 +6,7 @@ import { useDashboard } from "./dashboard-context";
 import { UseCaseSelector } from "./use-case-selector";
 import { UseCaseBadge } from "./use-case-badge";
 import { MessagePlanBuilder } from "./message-plan-builder";
+import { BuildSpecSection } from "./build-spec-section";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
 export function OverviewContent() {
@@ -39,6 +40,7 @@ export function OverviewContent() {
             onChangeClick={() => setIsChanging(true)}
           />
           <MessagePlanBuilder useCase={useCase} />
+          <BuildSpecSection useCase={useCase} />
         </>
       ) : null}
     </div>
