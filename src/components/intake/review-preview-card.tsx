@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, ChevronDown } from "@untitledui/icons";
+import { CheckCircle, ChevronDown, Star01 } from "@untitledui/icons";
 import { cx } from "@/utils/cx";
 import type { ScopeItem } from "@/lib/intake/use-case-data";
+import type { DashboardToIntakeData } from "@/lib/dashboard/dashboard-to-intake";
 
 interface ReviewPreviewCardProps {
   campaignDescription: string;
@@ -15,6 +16,8 @@ interface ReviewPreviewCardProps {
   includedItems: string[];
   notIncludedItems: ScopeItem[];
   selectedExpansions: string[];
+  /** Path 2: dashboard-curated messages (rendered read-only instead of sampleMessages) */
+  dashboardMessages?: DashboardToIntakeData["selected_messages"];
 }
 
 function ScopeCheckIcon() {
@@ -182,7 +185,9 @@ export function ReviewPreviewCard({
   includedItems,
   notIncludedItems,
   selectedExpansions,
+  dashboardMessages,
 }: ReviewPreviewCardProps) {
+  const isDashboardPath = !!dashboardMessages?.length;
   return (
     <div className="rounded-xl border border-secondary bg-secondary">
       <div className="border-b border-secondary px-5 py-3">
@@ -203,18 +208,37 @@ export function ReviewPreviewCard({
         {/* Sample messages */}
         <div className="flex flex-col gap-2.5">
           <span className="text-xs font-semibold uppercase tracking-wide text-tertiary">
-            Sample messages
+            {isDashboardPath ? "Your messages" : "Sample messages"}
           </span>
-          <div className="flex flex-col gap-5">
-            {sampleMessages.map((msg, i) => (
-              <div key={i} className="flex flex-col gap-1">
-                <span className="text-sm text-tertiary">
-                  {sampleMessageLabels[i]}
-                </span>
-                <p className="text-sm text-primary">{msg}</p>
-              </div>
-            ))}
-          </div>
+          {isDashboardPath ? (
+            <div className="flex flex-col gap-4">
+              {dashboardMessages!.map((msg) => (
+                <div key={msg.template_id} className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm text-tertiary">{msg.category}</span>
+                    {msg.is_expansion && (
+                      <Star01 className="size-3.5 text-fg-warning-secondary" aria-label="Expansion message" />
+                    )}
+                  </div>
+                  <p className="text-sm text-primary">&ldquo;{msg.text}&rdquo;</p>
+                  <span className="text-xs text-quaternary">
+                    Trigger: {msg.trigger}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-5">
+              {sampleMessages.map((msg, i) => (
+                <div key={i} className="flex flex-col gap-1">
+                  <span className="text-sm text-tertiary">
+                    {sampleMessageLabels[i]}
+                  </span>
+                  <p className="text-sm text-primary">{msg}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* FAQ accordion */}
@@ -260,7 +284,7 @@ export function ReviewPreviewCard({
           <ol className="flex flex-col gap-1">
             {[
               "You pay $199 setup + $19/month",
-              "We submit your registration to US carriers (usually 3\u201310 days)",
+              "We submit your registration to US carriers (usually 2\u20133 weeks)",
               "You get an integration kit with live credentials and compliance co-pilot",
               "Your SMS infrastructure stays live, monitored, and compliant",
             ].map((step, i) => (

@@ -22,18 +22,27 @@ import {
   generateComplianceSlug,
 } from "@/lib/intake/templates";
 import { getIntakeSession } from "@/lib/intake/session-storage";
+import {
+  getDashboardIntakeData,
+  type DashboardToIntakeData,
+} from "@/lib/dashboard/dashboard-to-intake";
 
 function ReviewContent() {
   const searchParams = useSearchParams();
+  const isDashboardPath = searchParams.get("path") === "dashboard";
 
   // Restore from sessionStorage after hydration (avoids SSR mismatch)
   const [session, setSession] = useState<ReturnType<typeof getIntakeSession>>({});
   const [sessionLoaded, setSessionLoaded] = useState(false);
+  const [dashData, setDashData] = useState<DashboardToIntakeData | null>(null);
 
   useEffect(() => {
     setSession(getIntakeSession());
+    if (isDashboardPath) {
+      setDashData(getDashboardIntakeData());
+    }
     setSessionLoaded(true);
-  }, []);
+  }, [isDashboardPath]);
 
   // Intake params from previous screens (URL params first, session fallback)
   const useCaseId = (searchParams.get("use_case") ?? session.use_case ?? null) as UseCaseId | null;
@@ -176,6 +185,14 @@ function ReviewContent() {
           venue_type: venueType || null,
           campaign_description_override: null,
           sample_messages_override: null,
+          // Path 2: include source and dashboard-curated messages
+          ...(isDashboardPath && dashData ? {
+            source: "dashboard" as const,
+            selected_messages: dashData.selected_messages,
+            preferred_area_code: dashData.preferred_area_code ?? null,
+          } : {
+            source: "cold" as const,
+          }),
         }),
       });
 
@@ -270,6 +287,7 @@ function ReviewContent() {
             includedItems={useCase.included}
             notIncludedItems={useCase.notIncluded}
             selectedExpansions={selectedExpansions}
+            dashboardMessages={dashData?.selected_messages}
           />
         </div>
 
