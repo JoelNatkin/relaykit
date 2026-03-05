@@ -19,6 +19,7 @@ import {
   getIntakeSession,
   saveIntakeSession,
 } from "@/lib/intake/session-storage";
+import { getDashboardIntakeData } from "@/lib/dashboard/dashboard-to-intake";
 
 function getDefaultExpansions(
   expansions: { id: string }[],
@@ -31,19 +32,29 @@ function getDefaultExpansions(
 function ScopeContent() {
   const searchParams = useSearchParams();
   const useCaseId = searchParams.get("use_case") as UseCaseId | null;
+  const isDashboardPath = searchParams.get("path") === "dashboard";
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 
   const [selectedExpansions, setSelectedExpansions] = useState<string[]>(
-    () => (useCase ? getDefaultExpansions(useCase.expansions) : []),
+    () => {
+      if (!useCase) return [];
+      // Path 2: pre-populate from dashboard data (SSR-safe — returns [] if window undefined)
+      if (isDashboardPath) {
+        const dashData = getDashboardIntakeData();
+        if (dashData?.expansions?.length) return dashData.expansions;
+      }
+      return getDefaultExpansions(useCase.expansions);
+    },
   );
 
-  // Restore expansions from sessionStorage after hydration
+  // Restore expansions from sessionStorage after hydration (Path 1 only)
   useEffect(() => {
+    if (isDashboardPath) return;
     const session = getIntakeSession();
     if (session.use_case === useCaseId && session.expansions) {
       setSelectedExpansions(session.expansions);
     }
-  }, [useCaseId]);
+  }, [useCaseId, isDashboardPath]);
 
   if (!useCase) {
     return (
@@ -90,6 +101,7 @@ function ScopeContent() {
       params.set("expansions", selectedExpansions.join(","));
     }
     params.set("campaign_type", effectiveCampaignType);
+    if (isDashboardPath) params.set("path", "dashboard");
     return `/start/details?${params.toString()}`;
   }
 
@@ -111,10 +123,14 @@ function ScopeContent() {
 
         <div className="mb-8 flex flex-col gap-2">
           <h1 className="text-display-sm font-semibold text-primary sm:text-display-md">
-            Let&apos;s make sure this covers everything
+            {isDashboardPath
+              ? "Here\u2019s what your registration will cover"
+              : "Let\u2019s make sure this covers everything"}
           </h1>
           <p className="text-lg text-tertiary">
-            Here&apos;s what your registration allows.
+            {isDashboardPath
+              ? "Based on your message plan, here\u2019s what we\u2019ll register. Confirm or adjust before we proceed."
+              : "Here\u2019s what your registration allows."}
           </p>
         </div>
 
@@ -157,7 +173,7 @@ function ScopeContent() {
         {/* Navigation */}
         <div className="mt-8 flex items-center justify-between">
           <Button
-            href="/start"
+            href={isDashboardPath ? "/dashboard" : "/start"}
             color="link-gray"
             iconLeading={ArrowLeft}
           >
