@@ -238,3 +238,8 @@ _Any PRD section marked "Phase 2" or "BYO Twilio" is out of scope._
 _CC appends new decisions here during build sessions. Format:_
 _**D-[next number] — [Title]** (Date: YYYY-MM-DD)_
 _Decision, reason, alternatives considered if any, files affected._
+
+**D-44 — Pre-registration use case stored in Supabase user metadata, not customers table** (Date: 2026-03-05)
+Sandbox users don't have a `customers` row until intake/payment — the customers table requires many NOT NULL fields (business_name, business_description, contact info, etc.) that aren't collected until the intake wizard. Pre-registration use case selection is persisted to `auth.users.raw_user_meta_data` via `supabase.auth.updateUser({ data: { use_case } })`. The dashboard layout reads from user metadata when no customer record exists, falling back to `customer.use_case` post-payment. When a customer record is created at checkout, the use_case value is copied from user metadata to the customers table.
+_Alternative rejected: Creating a minimal customers row with nullable fields — would require schema changes to the existing customers table and risk breaking the intake/checkout flow._
+_Affects: `src/app/api/use-case/route.ts`, `src/app/dashboard/layout.tsx`, `POST /api/checkout` (future: copy metadata to customer record)._

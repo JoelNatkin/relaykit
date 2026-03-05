@@ -51,7 +51,7 @@ async function fetchDashboardState(
     const metaUseCase = user.user_metadata?.use_case ?? null;
     return {
       useCase: metaUseCase,
-      hasPlan: false,
+      hasPlan: !!user.user_metadata?.message_plan,
       buildSpecGeneratedAt: null,
       sandboxMessageCount: 0,
       phoneVerified: false,

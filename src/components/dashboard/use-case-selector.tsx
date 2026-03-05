@@ -71,7 +71,7 @@ const USE_CASE_TILES: UseCaseTile[] = [
   {
     id: "waitlist",
     label: "Waitlist & reservations",
-    description: "Booking confirmations, waitlist updates",
+    description: "Waitlist positions, reservation holds, availability alerts",
     icon: ClipboardCheck,
   },
   {

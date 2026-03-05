@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useDashboard } from "./dashboard-context";
 import { UseCaseSelector } from "./use-case-selector";
 import { UseCaseBadge } from "./use-case-badge";
+import { MessagePlanBuilder } from "./message-plan-builder";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
 export function OverviewContent() {
@@ -32,10 +33,13 @@ export function OverviewContent() {
       {showSelector ? (
         <UseCaseSelector onSelect={handleSelect} />
       ) : useCase ? (
-        <UseCaseBadge
-          useCase={useCase}
-          onChangeClick={() => setIsChanging(true)}
-        />
+        <>
+          <UseCaseBadge
+            useCase={useCase}
+            onChangeClick={() => setIsChanging(true)}
+          />
+          <MessagePlanBuilder useCase={useCase} />
+        </>
       ) : null}
     </div>
   );
