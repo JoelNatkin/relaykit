@@ -14,12 +14,14 @@ import {
   getIntakeSession,
   saveIntakeSession,
 } from "@/lib/intake/session-storage";
+import { getDashboardIntakeData } from "@/lib/dashboard/dashboard-to-intake";
 
 function DetailsContent() {
   const searchParams = useSearchParams();
   const useCaseId = searchParams.get("use_case") as UseCaseId | null;
   const expansions = searchParams.get("expansions") ?? "";
   const campaignType = searchParams.get("campaign_type") ?? "";
+  const isDashboardPath = searchParams.get("path") === "dashboard";
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 
   // Extract form field initial values: URL params first, then sessionStorage fallback
@@ -51,8 +53,16 @@ function DetailsContent() {
     const session = getIntakeSession();
     if (session.business_details && Object.keys(session.business_details).length > 0) {
       setInitialValues(session.business_details);
+      return;
     }
-  }, [urlValues]);
+    // Path 2: pre-fill email from dashboard data
+    if (isDashboardPath) {
+      const dashData = getDashboardIntakeData();
+      if (dashData?.email) {
+        setInitialValues({ email: dashData.email });
+      }
+    }
+  }, [urlValues, isDashboardPath]);
 
   const [validData, setValidData] = useState<BusinessDetailsData | null>(null);
 
@@ -88,6 +98,7 @@ function DetailsContent() {
   function buildBackHref() {
     const params = new URLSearchParams();
     params.set("use_case", useCase!.id);
+    if (isDashboardPath) params.set("path", "dashboard");
     return `/start/scope?${params.toString()}`;
   }
 
@@ -98,6 +109,7 @@ function DetailsContent() {
     params.set("use_case", useCase!.id);
     if (expansions) params.set("expansions", expansions);
     if (campaignType) params.set("campaign_type", campaignType);
+    if (isDashboardPath) params.set("path", "dashboard");
 
     // Serialize form data
     for (const [key, value] of Object.entries(validData)) {
