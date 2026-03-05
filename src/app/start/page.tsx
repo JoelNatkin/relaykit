@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { UseCaseTile } from "@/components/intake/use-case-tile";
@@ -11,17 +12,25 @@ import {
   getIntakeSession,
   saveIntakeSession,
 } from "@/lib/intake/session-storage";
+import { getDashboardIntakeData } from "@/lib/dashboard/dashboard-to-intake";
 
 export default function StartPage() {
+  const router = useRouter();
   const [selectedUseCase, setSelectedUseCase] = useState<string | null>(null);
 
-  // Restore selection from sessionStorage after hydration
+  // Path 2: redirect to scope screen if entering from dashboard
   useEffect(() => {
+    const dashData = getDashboardIntakeData();
+    if (dashData?.use_case) {
+      router.replace(`/start/scope?use_case=${dashData.use_case}&path=dashboard`);
+      return;
+    }
+    // Path 1: restore selection from sessionStorage
     const session = getIntakeSession();
     if (session.use_case) {
       setSelectedUseCase(session.use_case);
     }
-  }, []);
+  }, [router]);
 
   function handleSelect(id: string) {
     setSelectedUseCase(id);
