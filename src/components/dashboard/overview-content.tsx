@@ -13,6 +13,10 @@ import { SandboxUsageCard } from "./sandbox-usage-card";
 import { GoLiveCta } from "./go-live-cta";
 import { RegistrationStatusCard } from "./registration-status-card";
 import { OtpActionCard, BrandAuthCard, RejectionCard } from "./registration-action-cards";
+import { ApprovalResourcesCard } from "./approval-resources-card";
+import { LiveApiKeyCard } from "./live-api-key-card";
+import { LiveUsageCard } from "./live-usage-card";
+import { RegistrationDetailsCard } from "./registration-details-card";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
 export function OverviewContent() {
@@ -43,11 +47,21 @@ export function OverviewContent() {
         <>
           <UseCaseBadge
             useCase={useCase}
-            onChangeClick={() => setIsChanging(true)}
+            onChangeClick={stage !== "live" ? () => setIsChanging(true) : undefined}
           />
 
+          {/* Stage 6 (live) — approval moment + live infrastructure */}
+          {stage === "live" && (
+            <>
+              <ApprovalResourcesCard />
+              <LiveApiKeyCard />
+              <LiveUsageCard />
+              <RegistrationDetailsCard />
+            </>
+          )}
+
           {/* Registration progress — Stage 5 (registering) */}
-          {registrationStatus && (
+          {registrationStatus && stage !== "live" && (
             <>
               <RegistrationStatusCard status={registrationStatus} />
               {registrationStatus === "awaiting_otp" && registrationPhone && registrationId && (
@@ -65,18 +79,26 @@ export function OverviewContent() {
           {/* Engagement nudge — Stage 4 (ready), top of page */}
           {stage === "ready" && <GoLiveCta variant="nudge" />}
 
-          {/* Sandbox infrastructure cards — persist across all sandbox stages */}
-          <SandboxApiKeyCard />
-          <PhoneVerificationCard />
-          {sandboxMessageCount > 0 && (
-            <SandboxUsageCard messageCount={sandboxMessageCount} />
+          {/* Sandbox infrastructure cards — persist across all sandbox stages (not live) */}
+          {stage !== "live" && (
+            <>
+              <SandboxApiKeyCard />
+              <PhoneVerificationCard />
+              {sandboxMessageCount > 0 && (
+                <SandboxUsageCard messageCount={sandboxMessageCount} />
+              )}
+            </>
           )}
 
-          <MessagePlanBuilder useCase={useCase} />
-          <BuildSpecSection useCase={useCase} />
+          {stage !== "live" && (
+            <>
+              <MessagePlanBuilder useCase={useCase} />
+              <BuildSpecSection useCase={useCase} />
 
-          {/* Default Go Live CTA — always visible at bottom */}
-          <GoLiveCta variant="default" />
+              {/* Default Go Live CTA — always visible at bottom */}
+              <GoLiveCta variant="default" />
+            </>
+          )}
         </>
       ) : null}
     </div>

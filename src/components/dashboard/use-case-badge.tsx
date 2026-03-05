@@ -17,7 +17,7 @@ const USE_CASE_LABELS: Record<UseCaseId, string> = {
 
 interface UseCaseBadgeProps {
   useCase: UseCaseId;
-  onChangeClick: () => void;
+  onChangeClick?: () => void;
 }
 
 export function UseCaseBadge({ useCase, onChangeClick }: UseCaseBadgeProps) {
@@ -29,9 +29,11 @@ export function UseCaseBadge({ useCase, onChangeClick }: UseCaseBadgeProps) {
           {USE_CASE_LABELS[useCase]}
         </span>
       </span>
-      <Button size="sm" color="link-color" onClick={onChangeClick}>
-        Change
-      </Button>
+      {onChangeClick && (
+        <Button size="sm" color="link-color" onClick={onChangeClick}>
+          Change
+        </Button>
+      )}
     </div>
   );
 }
