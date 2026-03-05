@@ -10,6 +10,7 @@ interface DashboardContextValue {
   sandboxMessageCount: number;
   phoneVerified: boolean;
   verifiedPhone: string | null;
+  email: string;
 }
 
 const DashboardContext = createContext<DashboardContextValue | null>(null);
@@ -20,10 +21,11 @@ export function DashboardProvider({
   sandboxMessageCount,
   phoneVerified,
   verifiedPhone,
+  email,
   children,
 }: DashboardContextValue & { children: React.ReactNode }) {
   return (
-    <DashboardContext.Provider value={{ stage, useCase, sandboxMessageCount, phoneVerified, verifiedPhone }}>
+    <DashboardContext.Provider value={{ stage, useCase, sandboxMessageCount, phoneVerified, verifiedPhone, email }}>
       {children}
     </DashboardContext.Provider>
   );

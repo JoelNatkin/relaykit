@@ -10,6 +10,7 @@ import { BuildSpecSection } from "./build-spec-section";
 import { SandboxApiKeyCard } from "./sandbox-api-key-card";
 import { PhoneVerificationCard } from "./phone-verification-card";
 import { SandboxUsageCard } from "./sandbox-usage-card";
+import { GoLiveCta } from "./go-live-cta";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
 export function OverviewContent() {
@@ -43,6 +44,9 @@ export function OverviewContent() {
             onChangeClick={() => setIsChanging(true)}
           />
 
+          {/* Engagement nudge — Stage 4 (ready), top of page */}
+          {stage === "ready" && <GoLiveCta variant="nudge" />}
+
           {/* Sandbox infrastructure cards — persist across all sandbox stages */}
           <SandboxApiKeyCard />
           <PhoneVerificationCard />
@@ -52,6 +56,9 @@ export function OverviewContent() {
 
           <MessagePlanBuilder useCase={useCase} />
           <BuildSpecSection useCase={useCase} />
+
+          {/* Default Go Live CTA — always visible at bottom */}
+          <GoLiveCta variant="default" />
         </>
       ) : null}
     </div>
