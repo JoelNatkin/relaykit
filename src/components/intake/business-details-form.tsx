@@ -17,6 +17,11 @@ import {
   normalizeWebsiteUrl,
 } from "@/lib/intake/validation";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
+import {
+  detectIndustryGate,
+  type IndustryGateResult,
+} from "@/lib/intake/industry-gating";
+import { IndustryGateAlert } from "@/components/intake/industry-gate-alert";
 
 const DESCRIPTION_EXAMPLES: Record<UseCaseId, string> = {
   appointments: "A booking platform for pet groomers",
@@ -89,6 +94,9 @@ export function BusinessDetailsForm({
   const [errors, setErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState<TouchedFields>(new Set());
   const [appliedInitials, setAppliedInitials] = useState(!!initialValues);
+  const [industryGate, setIndustryGate] = useState<IndustryGateResult | null>(
+    null,
+  );
 
   // When initialValues arrives late (sessionStorage hydration), apply it
   useEffect(() => {
@@ -96,6 +104,17 @@ export function BusinessDetailsForm({
     const merged = applyInitialValues(EMPTY_FORM, initialValues);
     setForm(merged);
     setAppliedInitials(true);
+
+    // Check industry gate on hydrated data
+    const gate = detectIndustryGate(
+      merged.business_description,
+      merged.service_type || null,
+    );
+    setIndustryGate(gate);
+    if (gate && gate.tier !== "advisory") {
+      onInvalid();
+      return;
+    }
 
     // Validate the restored data
     const result = businessDetailsSchema.safeParse(merged);
@@ -105,11 +124,23 @@ export function BusinessDetailsForm({
         onValid(result.data);
       }
     }
-  }, [initialValues, appliedInitials, useCase, onValid]);
+  }, [initialValues, appliedInitials, useCase, onValid, onInvalid]);
 
   // Validate on mount when returning with pre-filled data (sync path)
   useEffect(() => {
     if (!initialValues) return;
+
+    // Check industry gate on initial data
+    const gate = detectIndustryGate(
+      form.business_description,
+      form.service_type || null,
+    );
+    setIndustryGate(gate);
+    if (gate && gate.tier !== "advisory") {
+      onInvalid();
+      return;
+    }
+
     const result = businessDetailsSchema.safeParse(form);
     if (result.success) {
       const ucErrors = validateUseCaseFields(useCase, result.data);
@@ -129,6 +160,21 @@ export function BusinessDetailsForm({
 
       const next = { ...form, [field]: value };
       setForm(next);
+
+      // Run industry gate detection when relevant fields change
+      if (field === "business_description" || field === "service_type") {
+        const gate = detectIndustryGate(
+          field === "business_description" ? value : next.business_description,
+          field === "service_type" ? value : next.service_type || null,
+        );
+        setIndustryGate(gate);
+        // Block form if tier 2 or 3
+        if (gate && gate.tier !== "advisory") {
+          onInvalid();
+          if (touched.has(field)) validateField(field, next);
+          return;
+        }
+      }
 
       // Validate full form to update parent
       const result = businessDetailsSchema.safeParse(next);
@@ -338,6 +384,8 @@ export function BusinessDetailsForm({
           isInvalid={!!fieldError("business_description")}
           hint={fieldError("business_description")}
         />
+
+        {industryGate && <IndustryGateAlert gate={industryGate} />}
 
         {/* Use-case-specific fields */}
         {useCaseFields.map(({ field, label, placeholder }) => {
