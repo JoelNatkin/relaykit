@@ -1,11 +1,14 @@
 import { Nav } from "./nav";
+import { Hero } from "./hero";
+import { Problem } from "./problem";
 
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-primary">
       <Nav />
       <main>
-        {/* Sections added in Tasks 3-7 */}
+        <Hero />
+        <Problem />
       </main>
     </div>
   );
