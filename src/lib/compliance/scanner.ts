@@ -38,14 +38,14 @@ function checkBusinessName(
 async function checkFirstMessageOptOut(
   messageBody: string,
   to: string,
-  registrationId: string,
+  customerId: string,
 ): Promise<AsyncCheckResult | null> {
   const supabase = createServiceClient();
 
   const { count, error } = await supabase
     .from('messages')
     .select('id', { count: 'exact', head: true })
-    .eq('customer_id', registrationId)
+    .eq('customer_id', customerId)
     .eq('to_number', to)
     .eq('direction', 'outbound')
     .eq('environment', 'live');
@@ -78,7 +78,7 @@ async function checkFirstMessageOptOut(
 
 async function checkMessageFrequency(
   to: string,
-  registrationId: string,
+  customerId: string,
   effectiveCampaignType: string | null,
 ): Promise<AsyncCheckResult> {
   const supabase = createServiceClient();
@@ -88,7 +88,7 @@ async function checkMessageFrequency(
   const { count, error } = await supabase
     .from('messages')
     .select('id', { count: 'exact', head: true })
-    .eq('customer_id', registrationId)
+    .eq('customer_id', customerId)
     .eq('to_number', to)
     .eq('direction', 'outbound')
     .eq('environment', 'live')
@@ -126,16 +126,17 @@ async function checkMessageFrequency(
 export async function runAsyncChecks(params: {
   messageBody: string;
   to: string;
+  customerId: string;
   registrationId: string;
   businessName: string;
   effectiveCampaignType: string | null;
 }): Promise<AsyncScanResult> {
-  const { messageBody, to, registrationId, businessName, effectiveCampaignType } = params;
+  const { messageBody, to, customerId, businessName, effectiveCampaignType } = params;
 
   const [bm01, bm02, bm06] = await Promise.all([
     checkBusinessName(messageBody, businessName),
-    checkFirstMessageOptOut(messageBody, to, registrationId),
-    checkMessageFrequency(to, registrationId, effectiveCampaignType),
+    checkFirstMessageOptOut(messageBody, to, customerId),
+    checkMessageFrequency(to, customerId, effectiveCampaignType),
   ]);
 
   // Filter out null results (BM-02 returns null when not applicable).
