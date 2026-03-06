@@ -1,89 +1,74 @@
-# CC_HANDOFF.md — Messaging Proxy & Developer Sandbox (PRD_09 Phase 1)
+# CC_HANDOFF.md — Compliance Monitoring (PRD_08 Phase 1)
 
 ## Status
 
-**PRD_09 Phase 1 (Messaging Proxy & Developer Sandbox): COMPLETE (all 10 tasks).**
+**PRD_08 Phase 1 (Compliance Monitoring): COMPLETE (all 11 tasks).**
 
-Build passes clean (`npm run build`). No new dependencies added (Postgres-only, no Redis — D-52).
+Build passes clean (`npm run build`). No new dependencies added.
 
-**Previous builds: PRD_06 Dashboard COMPLETE. PRD_05 Deliverable Generator COMPLETE. PRD_01 Addendum (Dashboard Path + Industry Gating) COMPLETE.**
+**Previous builds: PRD_09 Phase 1 COMPLETE. PRD_06 Dashboard COMPLETE. PRD_05 Deliverable Generator COMPLETE. PRD_01 Addendum COMPLETE.**
 
 ## Files Created This Session
 
 ```
-supabase/migrations/20260306000000_messaging_proxy.sql     # 5 new tables: sms_opt_outs, recipient_consents, messages, webhook_endpoints, sandbox_daily_usage
+supabase/migrations/20260306100000_compliance_monitoring.sql  # 2 new tables: message_scans, compliance_alerts
 
-src/lib/proxy/types.ts                    # AuthenticatedContext, ProxyResponse, ProxyError, makeProxyError()
-src/lib/proxy/auth.ts                     # Dual-path API key auth (api_keys table + user metadata fallback)
-src/lib/proxy/compliance-pipeline.ts      # Orchestrates opt-out, SHAFT-C, marketing consent checks
-src/lib/proxy/opt-out.ts                  # isOptedOut(), addOptOut(), removeOptOut() — Postgres-backed
-src/lib/proxy/content-scanner.ts          # scanForShaftC() — regex SHAFT-C keyword detection
-src/lib/proxy/marketing-consent.ts        # classifyMessageType(), checkMarketingConsent() — D-14 MIXED tier
-src/lib/proxy/forward.ts                  # forwardToTwilio() — subaccount forwarding with 21610 defense-in-depth
-src/lib/proxy/message-logger.ts           # logMessage() — fire-and-forget, SHA-256 body hash
-src/lib/proxy/usage-meter.ts              # incrementUsage() — billing period upsert on message_usage
-src/lib/proxy/webhook-forwarder.ts        # forwardWebhookEvent() — HMAC-SHA256 signed delivery
+src/lib/compliance/types.ts               # AsyncCheckResult, AsyncScanResult
+src/lib/compliance/scanner.ts             # runAsyncChecks() — BM-01, BM-02, BM-06
+src/lib/compliance/alert-generator.ts     # persistScanAndAlert() — 24h dedup per rule
 
-src/lib/sandbox/limits.ts                 # checkAndIncrementDailyLimit() — 100/day Postgres upsert
-src/lib/sandbox/manager.ts                # sendSandboxMessage() — verified phone, [SANDBOX] prefix, parent account
+src/app/api/compliance/alerts/route.ts    # GET + PATCH /api/compliance/alerts
 
-src/app/api/v1/messages/route.ts          # POST /v1/messages — main send endpoint
-src/app/api/v1/opt-outs/route.ts          # GET + POST /v1/opt-outs
-src/app/api/v1/opt-outs/[phoneNumber]/route.ts  # GET /v1/opt-outs/{phone}
-src/app/api/v1/consents/route.ts          # POST /v1/consents
-src/app/api/v1/consents/[phoneNumber]/route.ts  # DELETE /v1/consents/{phone}
-src/app/api/v1/webhooks/route.ts          # POST + GET /v1/webhooks
-src/app/api/v1/webhooks/[webhookId]/route.ts    # DELETE /v1/webhooks/{id}
-src/app/api/v1/account/route.ts           # GET /v1/account
+src/components/dashboard/drift-alert-card.tsx  # DriftAlertCard — compliance suggestions list
 ```
 
 ## Files Modified This Session
 
 ```
-src/app/api/webhooks/inbound/[registrationId]/route.ts  # Stub → full STOP/START + webhook forwarding
-src/app/api/webhooks/status/[registrationId]/route.ts   # Stub → status update + retroactive opt-out
-src/app/dashboard/layout.tsx                             # sandboxMessageCount + phoneVerified wired to real data
-DECISIONS.md                                              # D-52 through D-55 appended
-CC_HANDOFF.md                                             # This file
+src/lib/proxy/types.ts                    # Added businessName to AuthenticatedContext
+src/lib/proxy/auth.ts                     # Populates businessName from customers table
+src/app/api/v1/messages/route.ts          # Wired async compliance checks after delivery
+src/components/dashboard/compliance-status-card.tsx  # Props: hasAlerts → alertCount + stats
+src/app/dashboard/compliance/page.tsx     # Data-driven: fetches /api/compliance/alerts
+src/lib/emails/templates.ts              # Added Emails 6+7 (warning digest, blocks notification)
+src/lib/emails/types.ts                  # Added ComplianceWarningDigestVars, MessagesBlockedVars
+src/app/start/review/page.tsx            # Updated consent copy + added monitoring_consent to payload
 ```
 
-## Decisions Made This Session
+## What This Build Delivers
 
-- **D-52 — Phase 1 proxy uses Postgres-only, no Redis.** Volumes don't justify Redis in Phase 1. Designed for easy Redis addition later.
-- **D-53 — Opt-out table keyed on user_id, not customer_id.** Pre-reg sandbox users have no customers row. Opt-outs persist across sandbox→registration transition.
-- **D-54 — Sandbox inbound webhook uses 'sandbox' sentinel registrationId.** Shared sandbox number's Messaging Service points to `/api/webhooks/inbound/sandbox`.
-- **D-55 — Pre-registration API key auth uses admin.listUsers() scan.** O(n) across all users — acceptable for Phase 1, needs optimization before scale.
+1. **Async monitoring pipeline:** After every live message delivery, three checks run fire-and-forget:
+   - BM-01: Business name present in message body
+   - BM-02: First message to new recipient includes opt-out language
+   - BM-06: Message frequency within weekly limits (getWeeklyLimit per campaign type: 20 transactional, 40 mixed)
 
-## Env Vars Required (New)
+2. **Alert infrastructure:** Scan results land in `message_scans`. Failed checks generate `compliance_alerts` with 24h per-rule deduplication. Dashboard queries via `/api/compliance/alerts`.
 
-```
-SANDBOX_TWILIO_NUMBER=+1XXXXXXXXXX    # Shared sandbox Twilio number
-SANDBOX_DAILY_LIMIT=100                # Sandbox daily message limit (default 100)
-```
+3. **Dashboard compliance tab:** Now data-driven — shows scan stats (scanned/clean/warnings), unacknowledged alerts with "Got it" acknowledge button. No longer hardcoded "All clear."
+
+4. **Email templates 6+7:** Warning daily digest and blocked messages notification (deterministic, no provider wired).
+
+5. **Checkout consent:** Updated copy per PRD_08 Section 6, `monitoring_consent` included in checkout payload.
+
+## Decisions — No New Decisions This Session
+
+All implementation followed existing decisions (D-19 non-optional monitoring, D-24 multi-channel opt-out, D-29 no paid tier, D-52 Postgres-only).
 
 ## Gotchas for Next Session
 
-1. **`admin.listUsers()` in auth.ts is O(n)** — scans all users to find pre-reg sandbox key matches (D-55). Fine for Phase 1 (<500 users). Before scale: either store pre-reg keys in `api_keys` table at generation time, or add a lookup table.
+1. **`message_scans` is keyed on `registration_id`, not `customer_id`** — the alerts API route resolves the customer's latest registration to query scan stats. If multi-project (Phase 2) adds multiple registrations per customer, the stats query will need to aggregate across registrations.
 
-2. **Sandbox inbound requires manual Twilio setup** — the shared sandbox number's Messaging Service must have its inbound webhook pointed to `https://{domain}/api/webhooks/inbound/sandbox` (D-54). This is a one-time Twilio console config, not automated.
+2. **Async checks query the `messages` table by `customer_id`** — BM-02 (first message) and BM-06 (frequency) both use `customer_id` + `to_number` filters on the `messages` table. This works for v1 single-project but may need `registration_id` scoping in Phase 2.
 
-3. **`sms_opt_outs.customer_id` is nullable** — pre-reg sandbox users don't have a customer record. All opt-out lookups use `user_id`. The `customer_id` column is populated when available but is not the lookup key.
+3. **`businessName` on AuthenticatedContext** — added in this session. Populated from `customers.business_name` in `resolvePostRegistrationContext()`. Null for sandbox. Used by async scanner for BM-01 business name check.
 
-4. **Supabase client `PromiseLike` does not have `.catch()`** — fire-and-forget patterns must use `.then(({ error }) => { ... })` not `.then().catch()`. This tripped the build during implementation.
+4. **Alert dedup is 24h window** — one alert per (customer_id, rule_id) per 24 hours. If a customer sends 100 messages without their business name, only one BM-01 alert is created per day.
 
-5. **Zod uses `.issues` not `.errors`** — `parsed.error.issues[0]?.message` is the correct accessor. `parsed.error.errors` does not exist in the Zod version used.
+5. **`monitoring_consent` in checkout payload** — added to the POST body but not yet consumed by `/api/checkout`. The checkout route should persist this to the customer record when that route is updated.
 
-6. **Marketing consent check only runs for MIXED tier** — `compliance-pipeline.ts` checks `ctx.effectiveCampaignType === 'mixed'` before running `classifyMessageType()`. Transactional-only customers never hit the consent check.
+6. **Email templates 6+7 not wired to sending** — same as Emails 0–5, these return `{ subject, body }` but no email provider is integrated yet.
 
-7. **Message body is never stored** — `messages.body_hash` is a SHA-256 hash. The plaintext body is never persisted. This is deliberate PII avoidance.
-
-8. **Webhook secrets are stored in plaintext** in `webhook_endpoints.secret` — needed for HMAC signing on every forward. This is the standard pattern (same as Stripe, GitHub).
-
-9. **Phase 1 webhooks have no retry** — single delivery attempt. Phase 2 adds exponential backoff + dead letter queue.
-
-10. **`forwardToTwilio()` catches Twilio error 21610** and retroactively adds the number to the opt-out list. This defense-in-depth means RelayKit's opt-out list self-heals even if the inline check missed.
-
-11. **`sendSandboxMessage()` uses `getParentCredentials()`** — sandbox sends via the parent Twilio account, not a subaccount. Live sends use `getSubaccountCredentials()`.
+7. **Compliance site link still `href="#"`** — carried forward from prior session.
 
 ## Carried Forward from Prior Sessions
 
@@ -91,22 +76,23 @@ SANDBOX_DAILY_LIMIT=100                # Sandbox daily message limit (default 10
 - **Area code selector UI (PRD_01 Addendum Section 4.4) not built.** `preferred_area_code` passes through in checkout payload but no UI component exists.
 - **Email templates not wired to sending** — `src/lib/emails/templates.ts` returns `{ subject, body }`. Need provider (Resend/SendGrid).
 - **Compliance site link is `href="#"` placeholder** in `compliance/page.tsx`.
-- **Compliance `hasAlerts` always false** — no drift detection until PRD_08.
-- **3 API routes still missing** (`/api/live-key`, `/api/usage`, `/api/registration-details`) — now partially addressed by `/v1/account` endpoint but dashboard-specific routes may still be needed.
+- **3 API routes still missing** (`/api/live-key`, `/api/usage`, `/api/registration-details`) — partially addressed by `/v1/account` endpoint but dashboard-specific routes may still be needed.
 - **`sendSMS()` signature is load-bearing across two templates** — `build-spec-template.ts` and `template-relaykit.ts` must stay identical (PRD_05 Trap #6).
 - **Button uses `onClick` not `onPress`** — Untitled UI extends HTML button.
 - **`TWILIO_VERIFY_SID` env var required** for phone verification.
+- **Supabase client `PromiseLike` does not have `.catch()`** — use `.then(({ error }) => { ... })` for fire-and-forget.
+- **Zod uses `.issues` not `.errors`** — `parsed.error.issues[0]?.message`.
 
-## What's NOT Built Yet (PRD_09 Phase 2/3)
+## What's NOT Built Yet (PRD_08 Phase 2/3)
 
-- Rate limiting (full token bucket with trust-score-aware MPS)
-- Quiet hours enforcement
-- Per-customer content allowlists based on vertical detection
-- URL blocklist scanning
-- Drift detection (Claude-powered sampled message analysis)
+- BM-05 quiet hours enforcement (inline)
+- BM-08 URL blocklist scanning (inline)
+- BM-09 semantic drift detection (Claude API, sampled analysis)
 - Message preview endpoint (`POST /v1/messages/preview`)
-- Webhook retry with exponential backoff + dead letter queue
-- Message status tracking beyond Twilio callbacks
-- Idempotency key support
-- GET /v1/messages and GET /v1/messages/{id} (list/get endpoints)
-- Registration nudge based on engagement signals
+- Per-customer SHAFT-C content allowlists based on vertical detection
+- PHI detection for healthcare customers (inline)
+- Drift escalation automation (throttle → pause)
+- Admin alert system (Joel notifications)
+- Compliance site monitoring
+- Historical compliance trend data
+- Daily digest / blocked notification email sending (templates exist, no provider)
