@@ -3,47 +3,51 @@
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
 import { CheckCircle, AlertTriangle } from "@untitledui/icons";
 
+interface ComplianceStats {
+  total: number;
+  clean: number;
+  warning: number;
+}
+
 interface ComplianceStatusCardProps {
-  /** Whether drift alerts exist. Defaults to false (all clear). */
-  hasAlerts?: boolean;
+  alertCount: number;
+  stats: ComplianceStats | null;
 }
 
 export function ComplianceStatusCard({
-  hasAlerts = false,
+  alertCount,
+  stats,
 }: ComplianceStatusCardProps) {
-  if (hasAlerts) {
-    return (
-      <div className="rounded-xl border border-secondary bg-primary p-6">
-        <FeaturedIcon
-          icon={AlertTriangle}
-          color="warning"
-          theme="light"
-          size="lg"
-        />
-        <h3 className="mt-4 text-sm font-semibold text-primary">
-          Drift detected
-        </h3>
-        <p className="mt-2 text-sm text-tertiary">
-          Some messages have drifted from your registered content. Review the
-          alerts below.
-        </p>
-      </div>
-    );
-  }
+  const hasAlerts = alertCount > 0;
 
   return (
     <div className="rounded-xl border border-secondary bg-primary p-6">
       <FeaturedIcon
-        icon={CheckCircle}
-        color="success"
+        icon={hasAlerts ? AlertTriangle : CheckCircle}
+        color={hasAlerts ? "warning" : "success"}
         theme="light"
         size="lg"
       />
-      <h3 className="mt-4 text-sm font-semibold text-primary">All clear</h3>
+      <h3 className="mt-4 text-sm font-semibold text-primary">
+        {hasAlerts ? "Needs attention" : "All clear"}
+      </h3>
       <p className="mt-2 text-sm text-tertiary">
-        Your messages are within your registration. We check every message
-        against your registered content.
+        {hasAlerts
+          ? `${alertCount} compliance ${alertCount === 1 ? "suggestion" : "suggestions"} for your messages. Review them below.`
+          : "Your messages are within your registration. We check every message against your registered content."}
       </p>
+
+      {stats && stats.total > 0 && (
+        <div className="mt-4 flex gap-4 border-t border-secondary pt-4 text-xs text-tertiary">
+          <span>{stats.total} scanned</span>
+          <span className="text-fg-success-secondary">{stats.clean} clean</span>
+          {stats.warning > 0 && (
+            <span className="text-fg-warning-secondary">
+              {stats.warning} warnings
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }
