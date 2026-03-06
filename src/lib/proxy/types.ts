@@ -30,6 +30,8 @@ export interface AuthenticatedContext {
   verifiedPhone: string | null;
   /** Registration phone number — live only. */
   phoneNumber: string | null;
+  /** Business name from customers table — null for sandbox. */
+  businessName: string | null;
 }
 
 /** Validated inbound send request. */

@@ -116,7 +116,7 @@ async function resolvePostRegistrationContext(
   // Fetch customer + latest registration in one go
   const { data: customer } = await supabase
     .from("customers")
-    .select("id, email, effective_campaign_type, twilio_subaccount_sid, twilio_subaccount_auth, live_active")
+    .select("id, email, effective_campaign_type, twilio_subaccount_sid, twilio_subaccount_auth, live_active, business_name")
     .eq("id", customerId)
     .single();
 
@@ -181,6 +181,7 @@ async function resolvePostRegistrationContext(
       effectiveCampaignType: customer.effective_campaign_type ?? null,
       verifiedPhone,
       phoneNumber: registration?.twilio_phone_number ?? null,
+      businessName: customer.business_name ?? null,
     },
   };
 }
@@ -224,6 +225,7 @@ async function resolvePreRegistrationContext(
       effectiveCampaignType: null,
       verifiedPhone: user.user_metadata?.verified_phone ?? null,
       phoneNumber: null,
+      businessName: null,
     },
   };
 }

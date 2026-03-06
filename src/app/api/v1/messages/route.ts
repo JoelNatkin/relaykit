@@ -14,6 +14,9 @@ import { logMessage } from "@/lib/proxy/message-logger";
 import { incrementUsage } from "@/lib/proxy/usage-meter";
 import { sendSandboxMessage } from "@/lib/sandbox/manager";
 import { makeProxyError } from "@/lib/proxy/types";
+import { runAsyncChecks } from "@/lib/compliance/scanner";
+import { persistScanAndAlert } from "@/lib/compliance/alert-generator";
+import { createServiceClient } from "@/lib/supabase";
 
 const sendMessageSchema = z.object({
   to: z
@@ -137,6 +140,37 @@ export async function POST(request: NextRequest) {
 
   if (ctx.customerId) {
     incrementUsage(ctx.customerId);
+  }
+
+  // 8. Async: compliance monitoring (fire-and-forget, PRD_08 BM-01/02/06)
+  if (ctx.registrationId && ctx.customerId) {
+    runAsyncChecks({
+      messageBody: messageRequest.body,
+      to: messageRequest.to,
+      customerId: ctx.customerId,
+      registrationId: ctx.registrationId,
+      businessName: ctx.businessName ?? '',
+      effectiveCampaignType: ctx.effectiveCampaignType,
+    }).then((scanResult) => {
+      const supabase = createServiceClient();
+      supabase
+        .from('messages')
+        .select('id')
+        .eq('external_id', externalId)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            persistScanAndAlert({
+              registrationId: ctx.registrationId!,
+              customerId: ctx.customerId!,
+              messageId: data.id,
+              messageSid: forwardResult.twilioSid,
+              recipientPhone: messageRequest.to,
+              scanResult,
+            });
+          }
+        });
+    });
   }
 
   // 7. Return 202 Accepted
