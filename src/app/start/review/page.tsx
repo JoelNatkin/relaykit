@@ -185,6 +185,7 @@ function ReviewContent() {
           venue_type: venueType || null,
           campaign_description_override: null,
           sample_messages_override: null,
+          monitoring_consent: monitoringConsent,
           // Path 2: include source and dashboard-curated messages
           ...(isDashboardPath && dashData ? {
             source: "dashboard" as const,
@@ -216,6 +217,7 @@ function ReviewContent() {
     firstName, lastName, email, phone,
     addressLine1, addressCity, addressState, addressZip,
     serviceType, productType, appName, communityName, venueType,
+    monitoringConsent,
   ]);
 
   const isEinRegistration = hasEin === "yes";
@@ -323,8 +325,8 @@ function ReviewContent() {
             <Checkbox
               isSelected={monitoringConsent}
               onChange={setMonitoringConsent}
-              label="I agree to compliance monitoring"
-              hint="RelayKit scans outbound messages for opt-out enforcement, prohibited content, and carrier rule compliance. This protects your registration and prevents fines."
+              label="I understand that RelayKit monitors outbound messages"
+              hint="RelayKit enforces compliance on outbound messages to protect your phone number from carrier suspension and maintain platform integrity for all users."
             />
           </div>
         </div>
