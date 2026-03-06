@@ -12,9 +12,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-    title: "SMS API for Developers | AI Build Spec, Free Sandbox — RelayKit",
-    description:
-        "Free SMS sandbox with AI build spec — pick your messages, generate a spec, and let your AI coding tool build the integration. RelayKit handles 10DLC registration and compliance. No credit card required.",
+    title: "RelayKit",
+    description: "SMS API for developers. Free sandbox, AI build spec, 10DLC registration and compliance handled.",
 };
 
 export const viewport: Viewport = {

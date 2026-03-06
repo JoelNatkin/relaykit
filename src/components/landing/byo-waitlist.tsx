@@ -24,7 +24,7 @@ export function BYOWaitlist() {
 
   if (status === "success") {
     return (
-      <section className="bg-secondary px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
+      <section id="byo-waitlist" className="bg-secondary px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
         <div className="mx-auto mt-12 max-w-xl rounded-xl border border-secondary bg-primary p-6 text-center">
           <p className="text-sm font-medium text-success-primary">
             We'll email you when it's ready.
@@ -35,7 +35,7 @@ export function BYOWaitlist() {
   }
 
   return (
-    <section className="bg-secondary px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
+    <section id="byo-waitlist" className="bg-secondary px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
       <div className="mx-auto mt-12 max-w-xl rounded-xl border border-secondary bg-primary p-6 text-center">
         <p className="text-sm font-medium text-primary">
           Already have a Twilio account?
