@@ -183,7 +183,7 @@ export async function processRegistration(
         const site = generateComplianceSite(intake);
 
         // Save compliance site URL to registration
-        const complianceSiteUrl = `https://${site.slug}.smsverified.com`;
+        const complianceSiteUrl = `https://${site.slug}.${process.env.COMPLIANCE_SITE_DOMAIN ?? "msgverified.com"}`;
         const { error: updateError } = await supabase
           .from("registrations")
           .update({ compliance_site_url: complianceSiteUrl })

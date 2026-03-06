@@ -2,7 +2,7 @@ import { formatPhone } from "@/lib/intake/validation";
 import type { IntakeData, TemplateVariables } from "./types";
 import { USE_CASE_LABELS, USE_CASE_FREQUENCIES } from "./types";
 
-const COMPLIANCE_SITE_DOMAIN = "smsverified.com";
+const COMPLIANCE_SITE_DOMAIN = process.env.COMPLIANCE_SITE_DOMAIN ?? "msgverified.com";
 
 export function generateComplianceSlug(businessName: string): string {
   return businessName
