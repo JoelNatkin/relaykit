@@ -15,6 +15,8 @@ import type {
   OtpRequiredVars,
   CampaignApprovedVars,
   RegistrationRejectedVars,
+  ComplianceWarningDigestVars,
+  MessagesBlockedVars,
 } from "./types";
 
 const DASHBOARD_URL = "https://relaykit.com/dashboard";
@@ -159,6 +161,46 @@ ${vars.auto_fix_status}
 Your sandbox stays live in the meantime.
 
 → See details: ${DASHBOARD_URL}
+
+— RelayKit`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Email 6: Compliance warning — daily digest (PRD_08 Section 7)
+// ---------------------------------------------------------------------------
+export function complianceWarningDigest(
+  vars: ComplianceWarningDigestVars,
+): EmailTemplate {
+  return {
+    subject: `SMS compliance summary — ${vars.business_name} — ${vars.date}`,
+    body: `${vars.warning_count} compliance ${vars.warning_count === 1 ? "suggestion" : "suggestions"} for your messages today:
+
+${vars.warning_list}
+
+These are recommendations, not blocks. Following them improves your deliverability and reduces the risk of carrier filtering.
+
+→ View details: ${DASHBOARD_URL}
+
+— RelayKit`,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Email 7: Messages blocked notification (PRD_08 Section 7)
+// ---------------------------------------------------------------------------
+export function messagesBlocked(
+  vars: MessagesBlockedVars,
+): EmailTemplate {
+  return {
+    subject: `Messages blocked — ${vars.business_name}`,
+    body: `${vars.blocked_count} ${vars.blocked_count === 1 ? "message was" : "messages were"} blocked by compliance enforcement today:
+
+${vars.violation_summary}
+
+These messages were prevented from reaching carriers, so no fines or penalties apply. But repeated blocks may indicate a code issue that needs attention.
+
+→ View details: ${DASHBOARD_URL}
 
 — RelayKit`,
   };

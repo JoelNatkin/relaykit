@@ -27,3 +27,18 @@ export interface RegistrationRejectedVars {
   rejection_explanation: string;
   auto_fix_status: string;
 }
+
+/** Variables for compliance warning daily digest (Email 6) */
+export interface ComplianceWarningDigestVars {
+  business_name: string;
+  date: string;
+  warning_count: number;
+  warning_list: string;
+}
+
+/** Variables for messages blocked notification (Email 7) */
+export interface MessagesBlockedVars {
+  business_name: string;
+  blocked_count: number;
+  violation_summary: string;
+}
