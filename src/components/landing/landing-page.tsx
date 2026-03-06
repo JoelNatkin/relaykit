@@ -4,6 +4,8 @@ import { Problem } from "./problem";
 import { HowItWorks } from "./how-it-works";
 import { WhatYouGet } from "./what-you-get";
 import { BYOWaitlist } from "./byo-waitlist";
+import { UseCases } from "./use-cases";
+import { FAQ } from "./faq";
 
 export function LandingPage() {
   return (
@@ -15,6 +17,8 @@ export function LandingPage() {
         <HowItWorks />
         <WhatYouGet />
         <BYOWaitlist />
+        <UseCases />
+        <FAQ />
       </main>
     </div>
   );
