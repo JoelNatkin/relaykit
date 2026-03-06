@@ -24,7 +24,7 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section className="border-t border-secondary bg-primary px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <section id="how-it-works" className="border-t border-secondary bg-primary px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <h2 className="text-center text-display-xs font-semibold text-primary sm:text-display-sm">
           Pick your messages. Generate a spec. Ship it.

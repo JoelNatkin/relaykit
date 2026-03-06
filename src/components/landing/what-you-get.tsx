@@ -48,7 +48,7 @@ const TIERS = [
 
 export function WhatYouGet() {
   return (
-    <section className="border-t border-secondary bg-secondary px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <section id="pricing" className="border-t border-secondary bg-secondary px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <h2 className="text-center text-display-xs font-semibold text-primary sm:text-display-sm">
           Everything you need. Nothing you don't.

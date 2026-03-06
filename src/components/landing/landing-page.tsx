@@ -6,6 +6,8 @@ import { WhatYouGet } from "./what-you-get";
 import { BYOWaitlist } from "./byo-waitlist";
 import { UseCases } from "./use-cases";
 import { FAQ } from "./faq";
+import { ClosingCTA } from "./closing-cta";
+import { Footer } from "./footer";
 
 export function LandingPage() {
   return (
@@ -19,7 +21,9 @@ export function LandingPage() {
         <BYOWaitlist />
         <UseCases />
         <FAQ />
+        <ClosingCTA />
       </main>
+      <Footer />
     </div>
   );
 }
