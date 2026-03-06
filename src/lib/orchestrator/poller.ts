@@ -6,6 +6,8 @@ import {
 } from "@/lib/twilio/poll";
 import { updateStatus } from "@/lib/orchestrator/state-machine";
 import { processRegistration } from "@/lib/orchestrator/processor";
+import { sendEmail } from "@/lib/emails/sender";
+import { registrationRejected } from "@/lib/emails/templates";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -64,7 +66,7 @@ export async function pollPendingRegistrations(): Promise<PollResult> {
 
   const { data: brandPending, error: brandQueryError } = await supabase
     .from("registrations")
-    .select("id, twilio_brand_sid")
+    .select("id, twilio_brand_sid, customer_id")
     .eq("status", "brand_pending");
 
   if (brandQueryError) {
@@ -113,6 +115,22 @@ export async function pollPendingRegistrations(): Promise<PollResult> {
             .update({ rejection_reason: failureReason ?? "Brand registration failed" })
             .eq("id", reg.id);
 
+          // Email 5: registration rejected
+          const { data: rejCust } = await supabase
+            .from("customers")
+            .select("email, contact_name")
+            .eq("id", reg.customer_id)
+            .single();
+          if (rejCust) {
+            const firstName = rejCust.contact_name.split(" ")[0] ?? rejCust.contact_name;
+            const tpl = registrationRejected({
+              first_name: firstName,
+              rejection_explanation: failureReason ?? "Your brand registration was not approved by carriers.",
+              auto_fix_status: "We're reviewing the details and will reach out with next steps.",
+            });
+            void sendEmail({ to: rejCust.email, subject: tpl.subject, body: tpl.body });
+          }
+
           result.brandAdvanced++;
           console.log(
             `${LOG_PREFIX} [${reg.id}] Brand REJECTED: ${failureReason}`
@@ -133,7 +151,7 @@ export async function pollPendingRegistrations(): Promise<PollResult> {
 
   const { data: vettingPending, error: vettingQueryError } = await supabase
     .from("registrations")
-    .select("id, twilio_brand_sid, twilio_vetting_sid")
+    .select("id, twilio_brand_sid, twilio_vetting_sid, customer_id")
     .eq("status", "vetting_in_progress");
 
   if (vettingQueryError) {
@@ -194,6 +212,22 @@ export async function pollPendingRegistrations(): Promise<PollResult> {
             .update({ rejection_reason: "Secondary vetting failed" })
             .eq("id", reg.id);
 
+          // Email 5: registration rejected
+          const { data: rejCust } = await supabase
+            .from("customers")
+            .select("email, contact_name")
+            .eq("id", reg.customer_id)
+            .single();
+          if (rejCust) {
+            const firstName = rejCust.contact_name.split(" ")[0] ?? rejCust.contact_name;
+            const tpl = registrationRejected({
+              first_name: firstName,
+              rejection_explanation: "Secondary vetting was not approved. This is sometimes caused by a mismatch between your business details and public records.",
+              auto_fix_status: "We're reviewing the details and will reach out with next steps.",
+            });
+            void sendEmail({ to: rejCust.email, subject: tpl.subject, body: tpl.body });
+          }
+
           result.vettingAdvanced++;
           console.log(
             `${LOG_PREFIX} [${reg.id}] Vetting FAILED`
@@ -237,10 +271,10 @@ export async function pollPendingRegistrations(): Promise<PollResult> {
           continue;
         }
 
-        // Fetch customer's subaccount credentials
+        // Fetch customer's subaccount credentials and contact info
         const { data: cust, error: custError } = await supabase
           .from("customers")
-          .select("twilio_subaccount_sid, twilio_subaccount_auth")
+          .select("twilio_subaccount_sid, twilio_subaccount_auth, email, contact_name")
           .eq("id", reg.customer_id)
           .single();
 
@@ -290,6 +324,15 @@ export async function pollPendingRegistrations(): Promise<PollResult> {
               rejection_reason: failureReason ?? "Campaign verification failed",
             })
             .eq("id", reg.id);
+
+          // Email 5: registration rejected
+          const firstName = cust.contact_name.split(" ")[0] ?? cust.contact_name;
+          const tpl = registrationRejected({
+            first_name: firstName,
+            rejection_explanation: failureReason ?? "Your campaign was not approved by carriers.",
+            auto_fix_status: "We're reviewing the details and will reach out with next steps.",
+          });
+          void sendEmail({ to: cust.email, subject: tpl.subject, body: tpl.body });
 
           result.campaignAdvanced++;
           console.log(

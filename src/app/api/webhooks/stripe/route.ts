@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase";
+import { sendEmail } from "@/lib/emails/sender";
+import { registrationSubmitted } from "@/lib/emails/templates";
+import { generateComplianceSlug } from "@/lib/templates/variables";
 
 export async function POST(request: NextRequest) {
   const stripe = getStripe();
@@ -140,6 +143,15 @@ async function handleCheckoutCompleted(
         console.error("[Stripe] Pipeline start failed for registration:", registration.id, err);
       });
     });
+
+    // Email 2: registration submitted — fire-and-forget alongside pipeline
+    const slug = generateComplianceSlug(String(d.business_name ?? ""));
+    const complianceSiteUrl = `https://${slug}.${process.env.COMPLIANCE_SITE_DOMAIN ?? "msgverified.com"}`;
+    const tpl = registrationSubmitted({
+      first_name: String(d.first_name ?? ""),
+      compliance_site_url: complianceSiteUrl,
+    });
+    void sendEmail({ to: String(d.email), subject: tpl.subject, body: tpl.body });
   }
 }
 

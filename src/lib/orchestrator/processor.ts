@@ -24,6 +24,9 @@ import {
   buildRegistrationContext,
   type RegistrationContext,
 } from "@/lib/orchestrator/registration-context";
+import { formatPhone } from "@/lib/intake/validation";
+import { sendEmail } from "@/lib/emails/sender";
+import { otpRequired, campaignApproved } from "@/lib/emails/templates";
 
 // ---------------------------------------------------------------------------
 // Logging prefix
@@ -289,6 +292,14 @@ export async function processRegistration(
             "awaiting_otp"
           );
 
+          // Email 3: OTP required
+          const otpFirstName = (customer.contact_name as string).split(" ")[0] ?? customer.contact_name;
+          const tplOtp = otpRequired({
+            first_name: otpFirstName,
+            formatted_phone: formatPhone(customer.phone),
+          });
+          void sendEmail({ to: customer.email, subject: tplOtp.subject, body: tplOtp.body });
+
           console.log(
             `${LOG_PREFIX} [${registrationId}] Sole prop brand submitted — awaiting OTP`
           );
@@ -525,6 +536,11 @@ export async function processRegistration(
           "generating_api_key",
           "complete"
         );
+
+        // Email 4: campaign approved
+        const approvedFirstName = (customer.contact_name as string).split(" ")[0] ?? customer.contact_name;
+        const tplApproved = campaignApproved({ first_name: approvedFirstName });
+        void sendEmail({ to: customer.email, subject: tplApproved.subject, body: tplApproved.body });
 
         console.log(
           `${LOG_PREFIX} [${registrationId}] Registration complete for ${customer.business_name}`
