@@ -38,26 +38,30 @@
   - DB migration: expanded status enum, Twilio SID columns, twilio_api_log, registration_events, api_keys tables
   - Stubs: compliance site Cloudflare deploy (advances immediately), proxy webhook verification
 
+- [x] PRD_05 Deliverable Generator — SMS_BUILD_SPEC.md, SMS_GUIDELINES.md, MESSAGING_SETUP.md generation
+- [x] PRD_06 Dashboard — full customer dashboard with lifecycle stages, message plan builder, sandbox API key, phone verification
+- [x] PRD_01 Addendum — dashboard-to-intake flow, industry gating (three-tier)
+- [x] PRD_09 Phase 1 — messaging proxy, developer sandbox, compliance pipeline, 7 API routes
+- [x] PRD_08 Phase 1 — compliance monitoring: async checks (BM-01/02/06), message_scans + compliance_alerts tables, dashboard wiring, alert emails 6+7, checkout consent
+
 ## In Progress
 
 ## Up Next
 - [ ] Stripe end-to-end test (add `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` to .env, run `stripe listen --forward-to localhost:3000/api/webhooks/stripe`)
-- [ ] Apply PRD_04 database migration to Supabase (run `supabase db push` or apply manually)
+- [ ] Apply database migrations to Supabase (run `supabase db push` or apply manually)
 - [ ] Add env vars: `TWILIO_AUTH_TOKEN`, `TWILIO_ENCRYPTION_KEY` (openssl rand -hex 32), `CRON_SECRET`, `RELAYKIT_API_DOMAIN`
 - [ ] Compliance site Cloudflare Pages deployment (wire into deploying_site state)
-- [ ] Deliverable generator (PRD_05) — SMS_GUIDELINES.md with vertical modules
-- [ ] Dashboard page (`/dashboard`) — post-payment landing (PRD_06)
-- [x] Dashboard Compliance tab (PRD_06 Task 12) — `compliance-sandbox-card.tsx`, `compliance-status-card.tsx`, lifecycle-aware `compliance/page.tsx` with sandbox/live views
-- [ ] Messaging proxy (PRD_09) — fill in webhook stubs, proxy forwarding
-- [ ] Confirmation email setup
+- [ ] Wire email templates to sending provider (Resend/SendGrid)
+- [ ] Platform ToS/AUP (D-51 beta blocker)
+- [ ] PRD_08 Phase 2: BM-05 quiet hours, BM-08 URL blocklist, BM-09 drift detection (Claude API)
 
 ## Must Not Break
 - **sessionStorage persistence**: All wizard screens use sessionStorage key `"relaykit_intake"` for cross-screen state. Reads MUST happen in `useEffect` (not `useState` initializers) to avoid SSR hydration mismatches. See CLAUDE.md "Critical Implementation Notes" and the `// CRITICAL` comment at the top of each wizard page file. The root cause of the prior break was that `BusinessDetailsForm` ignored late-arriving `initialValues` props — this is now handled by a dedicated `useEffect` with an `appliedInitials` guard.
 - **Template engine public API**: `generateArtifacts(intake: IntakeData)` in `src/lib/templates/index.ts` is the canonical entry point for artifact generation. `generateTemplates()` in `src/lib/intake/templates.ts` is for review page preview only (uses {{placeholder}} sample messages). Do not merge these — they serve different purposes.
 
 ## Current PRD
-Completed: PRD_01, PRD_02, PRD_03, PRD_04
-Up next: PRD_05 (Deliverable Generator)
+Completed: PRD_01, PRD_02, PRD_03, PRD_04, PRD_05, PRD_06, PRD_09 Phase 1, PRD_08 Phase 1
+Up next: PRD_08 Phase 2 or integration testing
 
 ## Session Resume Prompt
 If starting a new session, use this prompt:
