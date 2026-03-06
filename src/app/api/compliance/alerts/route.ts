@@ -47,19 +47,34 @@ export async function GET() {
     );
   }
 
-  // Fetch scan stats using count queries (avoids fetching all rows)
-  const { count: totalCount } = await serviceClient
-    .from("message_scans")
-    .select("id", { count: "exact", head: true })
+  // Get registration_id for scan stats (message_scans is keyed on registration_id)
+  const { data: registration } = await serviceClient
+    .from("registrations")
+    .select("id")
     .eq("customer_id", customer.id)
-    .gte("scanned_at", thirtyDaysAgo);
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  const { count: warningCount } = await serviceClient
-    .from("message_scans")
-    .select("id", { count: "exact", head: true })
-    .eq("customer_id", customer.id)
-    .eq("overall_status", "warning")
-    .gte("scanned_at", thirtyDaysAgo);
+  // Fetch scan stats using count queries (avoids fetching all rows)
+  const registrationId = registration?.id;
+
+  const { count: totalCount } = registrationId
+    ? await serviceClient
+        .from("message_scans")
+        .select("id", { count: "exact", head: true })
+        .eq("registration_id", registrationId)
+        .gte("scanned_at", thirtyDaysAgo)
+    : { count: 0 };
+
+  const { count: warningCount } = registrationId
+    ? await serviceClient
+        .from("message_scans")
+        .select("id", { count: "exact", head: true })
+        .eq("registration_id", registrationId)
+        .eq("overall_status", "warning")
+        .gte("scanned_at", thirtyDaysAgo)
+    : { count: 0 };
 
   const total = totalCount ?? 0;
   const warning = warningCount ?? 0;
