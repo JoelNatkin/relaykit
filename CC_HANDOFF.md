@@ -1,98 +1,108 @@
-# CC_HANDOFF.md — Compliance Monitoring (PRD_08 Phase 1)
+# CC_HANDOFF.md — Landing Page (PRD_07)
 
 ## Status
 
-**PRD_08 Phase 1 (Compliance Monitoring): COMPLETE (all 11 tasks).**
+**PRD_07 (Landing Page): COMPLETE (8 tasks + review fixes).**
 
-Build passes clean (`npm run build`). No new dependencies added.
+Build passes clean (`npm run build`). Landing page renders as static content. No new dependencies added.
 
-**Previous builds: PRD_09 Phase 1 COMPLETE. PRD_06 Dashboard COMPLETE. PRD_05 Deliverable Generator COMPLETE. PRD_01 Addendum COMPLETE.**
+**Previous builds: PRD_08 Phase 1 COMPLETE. PRD_09 Phase 1 COMPLETE. PRD_06 Dashboard COMPLETE. PRD_05 Deliverable Generator COMPLETE. PRD_01 Addendum COMPLETE.**
 
 ## Files Created This Session
 
 ```
-supabase/migrations/20260306100000_compliance_monitoring.sql  # 2 new tables: message_scans, compliance_alerts
+supabase/migrations/20260307000000_byo_waitlist.sql  # byo_waitlist table (email capture)
 
-src/lib/compliance/types.ts               # AsyncCheckResult, AsyncScanResult
-src/lib/compliance/scanner.ts             # runAsyncChecks() — BM-01, BM-02, BM-06
-src/lib/compliance/alert-generator.ts     # persistScanAndAlert() — 24h dedup per rule
+src/app/api/byo-waitlist/route.ts          # POST /api/byo-waitlist — email upsert
+src/app/terms/page.tsx                     # Stub — D-51 content added later
+src/app/privacy/page.tsx                   # Stub — D-51 content added later
 
-src/app/api/compliance/alerts/route.ts    # GET + PATCH /api/compliance/alerts
-
-src/components/dashboard/drift-alert-card.tsx  # DriftAlertCard — compliance suggestions list
+src/components/landing/landing-page.tsx    # Assembly component (all sections)
+src/components/landing/nav.tsx             # Nav bar: logo, login, CTA
+src/components/landing/hero.tsx            # h1 + subtext + CTA + tool pills
+src/components/landing/problem.tsx         # Empathy section
+src/components/landing/how-it-works.tsx    # 3-step section with FeaturedIcon
+src/components/landing/what-you-get.tsx    # 3 pricing tier cards
+src/components/landing/byo-waitlist.tsx    # Client: email capture form
+src/components/landing/use-cases.tsx       # 8 use case tiles
+src/components/landing/faq.tsx             # Client: 10-item accordion
+src/components/landing/closing-cta.tsx     # Bottom CTA
+src/components/landing/footer.tsx          # 3-column footer with legal links
 ```
 
 ## Files Modified This Session
 
 ```
-src/lib/proxy/types.ts                    # Added businessName to AuthenticatedContext
-src/lib/proxy/auth.ts                     # Populates businessName from customers table
-src/app/api/v1/messages/route.ts          # Wired async compliance checks after delivery
-src/components/dashboard/compliance-status-card.tsx  # Props: hasAlerts → alertCount + stats
-src/app/dashboard/compliance/page.tsx     # Data-driven: fetches /api/compliance/alerts
-src/lib/emails/templates.ts              # Added Emails 6+7 (warning digest, blocks notification)
-src/lib/emails/types.ts                  # Added ComplianceWarningDigestVars, MessagesBlockedVars
-src/app/start/review/page.tsx            # Updated consent copy + added monitoring_consent to payload
+src/app/page.tsx           # Replaced HomeScreen with LandingPage + OG metadata
+src/app/layout.tsx         # Generic metadata ("RelayKit") — page-level overrides
+```
+
+## Files Deleted This Session
+
+```
+src/app/home-screen.tsx    # Untitled UI starter placeholder — replaced
 ```
 
 ## What This Build Delivers
 
-1. **Async monitoring pipeline:** After every live message delivery, three checks run fire-and-forget:
-   - BM-01: Business name present in message body
-   - BM-02: First message to new recipient includes opt-out language
-   - BM-06: Message frequency within weekly limits (getWeeklyLimit per campaign type: 20 transactional, 40 mixed)
+1. **Single-page marketing landing page** at `/` — statically generated, no SSR data fetching.
 
-2. **Alert infrastructure:** Scan results land in `message_scans`. Failed checks generate `compliance_alerts` with 24h per-rule deduplication. Dashboard queries via `/api/compliance/alerts`.
+2. **7 content sections:** Hero (AI-first positioning + tool pills), Problem (empathy), How It Works (3 steps), What You Get (3 pricing tiers), Use Cases (8 tiles), FAQ (10-item accordion), Closing CTA.
 
-3. **Dashboard compliance tab:** Now data-driven — shows scan stats (scanned/clean/warnings), unacknowledged alerts with "Got it" acknowledge button. No longer hardcoded "All clear."
+3. **BYO Twilio waitlist:** Email capture form → `POST /api/byo-waitlist` → `byo_waitlist` Supabase table. Upsert on email conflict (idempotent). No email automation — collection only.
 
-4. **Email templates 6+7:** Warning daily digest and blocked messages notification (deterministic, no provider wired).
+4. **Legal stubs:** `/terms` and `/privacy` placeholder pages for D-51 content.
 
-5. **Checkout consent:** Updated copy per PRD_08 Section 6, `monitoring_consent` included in checkout payload.
+5. **SEO:** Page-level metadata with Open Graph and Twitter card tags. Semantic HTML (h1, h2, section, nav, footer). Section anchor IDs for in-page navigation.
+
+6. **Footer:** Product/Company/Legal columns. Links to `#how-it-works`, `#pricing`, `#faq` anchors. `/privacy` and `/terms` routes.
 
 ## Decisions — No New Decisions This Session
 
-All implementation followed existing decisions (D-19 non-optional monitoring, D-24 multi-channel opt-out, D-29 no paid tier, D-52 Postgres-only).
+All implementation followed existing decisions:
+- D-17: Registration timing "approximately 2–3 weeks" (overrode PRD FAQ's "3–10 business days")
+- D-27: Pricing locked ($199/$19/$15)
+- D-36: "carrier-registered messages" (not "canon messages")
+- D-38: No prohibited compliance phrases
+- D-43: No Phase 2 features on landing page
+- D-51: Terms/Privacy stubs (content added later)
 
 ## Gotchas for Next Session
 
-1. **`message_scans` is keyed on `registration_id`, not `customer_id`** — the alerts API route resolves the customer's latest registration to query scan stats. If multi-project (Phase 2) adds multiple registrations per customer, the stats query will need to aggregate across registrations.
+1. **`/login` and `/signup` routes don't exist.** Nav and hero CTAs link to `/signup`, nav has `/login`. These need magic link auth pages built. For launch, could redirect both to `/dashboard` which triggers auth.
 
-2. **Async checks query the `messages` table by `customer_id`** — BM-02 (first message) and BM-06 (frequency) both use `customer_id` + `to_number` filters on the `messages` table. This works for v1 single-project but may need `registration_id` scoping in Phase 2.
+2. **BYO waitlist form uses plain `<input>` not Untitled UI `Input`.** The Untitled UI Input is React Aria-based and controlled form state was simpler with native HTML. Styled with semantic tokens. Works fine — just not using the design system component for this one input.
 
-3. **`businessName` on AuthenticatedContext** — added in this session. Populated from `customers.business_name` in `resolvePostRegistrationContext()`. Null for sandbox. Used by async scanner for BM-01 business name check.
+3. **Tool logos are text pills, not actual logos.** "Cursor", "Claude Code", "Lovable", "Replit", "Bolt" rendered as styled `<span>` badges. Replace with SVG logos when licensing is confirmed.
 
-4. **Alert dedup is 24h window** — one alert per (customer_id, rule_id) per 24 hours. If a customer sends 100 messages without their business name, only one BM-01 alert is created per day.
+4. **No OG image.** Social sharing previews will be text-only until an image is added to the metadata.
 
-5. **`monitoring_consent` in checkout payload** — added to the POST body but not yet consumed by `/api/checkout`. The checkout route should persist this to the customer record when that route is updated.
+5. **No sitemap.xml.** PRD_07 Section 4 calls for one. Low priority for single-page site but should be added via `app/sitemap.ts` before launch.
 
-6. **Email templates 6+7 not wired to sending** — same as Emails 0–5, these return `{ subject, body }` but no email provider is integrated yet.
+6. **Footer "About" link is `href="#"`.** Placeholder until an about page exists.
 
-7. **Compliance site link still `href="#"`** — carried forward from prior session.
+7. **FAQ accordion has no `aria-expanded` attributes.** Functional but could be improved for accessibility with `aria-expanded`/`aria-controls` on the toggle buttons.
 
 ## Carried Forward from Prior Sessions
 
-- **D-51 (platform ToS/AUP) is a beta blocker.** Checkout screen needs ToS acceptance checkbox. Not built — decision only.
+- **D-51 (platform ToS/AUP) is a beta blocker.** `/terms` and `/privacy` stubs exist but need real content. Checkout screen needs ToS acceptance checkbox.
+- **`/login` and `/signup` routes don't exist** — magic link auth pages needed.
 - **Area code selector UI (PRD_01 Addendum Section 4.4) not built.** `preferred_area_code` passes through in checkout payload but no UI component exists.
 - **Email templates not wired to sending** — `src/lib/emails/templates.ts` returns `{ subject, body }`. Need provider (Resend/SendGrid).
 - **Compliance site link is `href="#"` placeholder** in `compliance/page.tsx`.
-- **3 API routes still missing** (`/api/live-key`, `/api/usage`, `/api/registration-details`) — partially addressed by `/v1/account` endpoint but dashboard-specific routes may still be needed.
+- **3 API routes still missing** (`/api/live-key`, `/api/usage`, `/api/registration-details`).
 - **`sendSMS()` signature is load-bearing across two templates** — `build-spec-template.ts` and `template-relaykit.ts` must stay identical (PRD_05 Trap #6).
 - **Button uses `onClick` not `onPress`** — Untitled UI extends HTML button.
 - **`TWILIO_VERIFY_SID` env var required** for phone verification.
 - **Supabase client `PromiseLike` does not have `.catch()`** — use `.then(({ error }) => { ... })` for fire-and-forget.
 - **Zod uses `.issues` not `.errors`** — `parsed.error.issues[0]?.message`.
 
-## What's NOT Built Yet (PRD_08 Phase 2/3)
+## What's NOT Built Yet
 
-- BM-05 quiet hours enforcement (inline)
-- BM-08 URL blocklist scanning (inline)
-- BM-09 semantic drift detection (Claude API, sampled analysis)
-- Message preview endpoint (`POST /v1/messages/preview`)
-- Per-customer SHAFT-C content allowlists based on vertical detection
-- PHI detection for healthcare customers (inline)
-- Drift escalation automation (throttle → pause)
-- Admin alert system (Joel notifications)
-- Compliance site monitoring
-- Historical compliance trend data
-- Daily digest / blocked notification email sending (templates exist, no provider)
+- `/login` and `/signup` auth pages (magic link)
+- D-51 Terms of Service / Acceptable Use Policy content
+- OG image for social sharing
+- sitemap.xml
+- Tool logo SVGs (using text pills currently)
+- Conversion tracking events (PRD_07 Section 5 — Plausible or custom)
+- PRD_08 Phase 2/3 (drift detection, quiet hours, URL blocklist)

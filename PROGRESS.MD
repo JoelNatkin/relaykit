@@ -43,6 +43,7 @@
 - [x] PRD_01 Addendum — dashboard-to-intake flow, industry gating (three-tier)
 - [x] PRD_09 Phase 1 — messaging proxy, developer sandbox, compliance pipeline, 7 API routes
 - [x] PRD_08 Phase 1 — compliance monitoring: async checks (BM-01/02/06), message_scans + compliance_alerts tables, dashboard wiring, alert emails 6+7, checkout consent
+- [x] PRD_07 Landing Page — single-page marketing site: hero (AI-first), problem, how-it-works (3 steps), pricing tiers (Free/$199/$19), BYO waitlist email capture, use cases, FAQ (10 items), closing CTA, footer, /terms + /privacy stubs, SEO + OG metadata
 
 ## In Progress
 
@@ -60,8 +61,8 @@
 - **Template engine public API**: `generateArtifacts(intake: IntakeData)` in `src/lib/templates/index.ts` is the canonical entry point for artifact generation. `generateTemplates()` in `src/lib/intake/templates.ts` is for review page preview only (uses {{placeholder}} sample messages). Do not merge these — they serve different purposes.
 
 ## Current PRD
-Completed: PRD_01, PRD_02, PRD_03, PRD_04, PRD_05, PRD_06, PRD_09 Phase 1, PRD_08 Phase 1
-Up next: PRD_08 Phase 2 or integration testing
+Completed: PRD_01, PRD_02, PRD_03, PRD_04, PRD_05, PRD_06, PRD_07, PRD_09 Phase 1, PRD_08 Phase 1
+Up next: /login + /signup auth pages, D-51 ToS/AUP content, integration testing, PRD_08 Phase 2
 
 ## Session Resume Prompt
 If starting a new session, use this prompt:
