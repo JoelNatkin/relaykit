@@ -289,3 +289,7 @@ _Affects: `src/app/api/webhooks/inbound/[registrationId]/route.ts`. The sandbox 
 **D-55 — Pre-registration API key auth uses admin.listUsers() scan** (Date: 2026-03-05)
 When a sandbox API key is not found in the `api_keys` table (pre-registration), the auth module falls back to scanning all auth users via `supabase.auth.admin.listUsers()` looking for a matching `sandbox_api_key` in user metadata. This is an O(n) scan across all users. Acceptable for Phase 1 (low hundreds of users), but will need optimization before scale: either migrate pre-reg keys to `api_keys` table at generation time, or add an index/lookup table mapping key hashes to user IDs.
 _Affects: `src/lib/proxy/auth.ts`._
+
+**D-56 — Compliance site domain is msgverified.com** (Date: 2026-03-06)
+Customer compliance sites deploy to `{slug}.msgverified.com`. The domain `msgverified.com` is registered on Cloudflare. This supersedes the placeholder "neutral domain" language in D-05. Each customer's compliance site URL follows the pattern `https://{slug}.msgverified.com` where `slug` is derived at registration time.
+_Affects: PRD_03, `src/lib/compliance-site/`, any code that constructs or displays the compliance site URL._
