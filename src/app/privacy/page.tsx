@@ -385,48 +385,66 @@ export default function PrivacyPage() {
               3.2 Carrier Registration
             </h3>
             <p className="mt-2 text-md leading-relaxed text-tertiary">
-              When you register for 10DLC, your business information — including
-              your legal business name, EIN, address, and use case details —
-              is submitted to The Campaign Registry (TCR) and US wireless
-              carriers as part of the required brand and campaign registration
-              process. This information becomes part of your registered profile
-              with TCR and is used by carriers to evaluate your messaging
-              traffic.
+              When you register for 10DLC, your business information (name, EIN,
+              address, use case, campaign description, and sample messages) is
+              submitted to The Campaign Registry (TCR) and shared with US mobile
+              carriers (AT&T, T-Mobile, Verizon, and others) as part of the
+              brand and campaign registration process. This sharing is required
+              for the Service to function — without it, your messages cannot be
+              delivered. Carrier data handling is governed by each carrier's own
+              privacy policies.
             </p>
           </div>
 
           <div>
             <h3 className="text-base font-semibold text-secondary">
-              3.3 Legal Disclosures
+              3.3 Compliance Site
             </h3>
             <p className="mt-2 text-md leading-relaxed text-tertiary">
-              We may disclose your information if required by law, regulation,
-              legal process, or governmental request, or if we believe
-              disclosure is necessary to protect the rights, property, or
-              safety of RelayKit, our users, or the public.
+              The compliance site generated for you at{" "}
+              <code className="rounded bg-secondary px-1 py-0.5 font-mono text-sm text-secondary">
+                {"{slug}.msgverified.com"}
+              </code>{" "}
+              displays your business name, contact information (email, phone,
+              address), privacy policy, terms of service, and SMS opt-in page.
+              This information is publicly accessible by design — carrier
+              reviewers, your End Users, and the general public can view it.
+              This is a requirement of 10DLC registration.
             </p>
           </div>
 
           <div>
             <h3 className="text-base font-semibold text-secondary">
-              3.4 Business Transfers
+              3.4 Legal Requirements
             </h3>
             <p className="mt-2 text-md leading-relaxed text-tertiary">
-              If RelayKit is involved in a merger, acquisition, or sale of
-              assets, your information may be transferred as part of that
-              transaction. We will notify you via email and post a prominent
-              notice on the Service before any such transfer and any associated
-              change to this Privacy Policy.
+              We may disclose your information if required by law, legal
+              process, or governmental request, or if we believe disclosure is
+              necessary to protect our rights, your safety, or the safety of
+              others, investigate fraud, or respond to a government request.
             </p>
           </div>
 
           <div>
             <h3 className="text-base font-semibold text-secondary">
-              3.5 No Sale of Data
+              3.5 Business Transfer
             </h3>
             <p className="mt-2 text-md leading-relaxed text-tertiary">
-              RelayKit does not sell, rent, or trade your personal information
-              to third parties for their own marketing or commercial purposes.
+              If Vaulted Press LLC is involved in a merger, acquisition, or sale
+              of assets, your information may be transferred as part of that
+              transaction. We will notify you via email before your information
+              becomes subject to a different privacy policy.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-secondary">
+              3.6 No Sale of Personal Information
+            </h3>
+            <p className="mt-2 text-md leading-relaxed text-tertiary">
+              We do not sell, rent, lease, or trade your personal information to
+              third parties for their marketing or commercial purposes. We do
+              not share your information with data brokers.
             </p>
           </div>
         </div>
@@ -434,64 +452,112 @@ export default function PrivacyPage() {
 
       <hr className="my-8 border-secondary" />
 
-      {/* 4. Message Content and Data Retention */}
+      {/* 4. Data Retention */}
       <section className="mt-8">
         <h2 className="border-b border-secondary pb-2 text-lg font-semibold text-primary">
-          4. Message Content and Data Retention
+          4. Data Retention
         </h2>
-
-        <div className="mt-6 space-y-6">
-          <div>
-            <h3 className="text-base font-semibold text-secondary">
-              4.1 Message Content Processing
-            </h3>
-            <p className="mt-2 text-md leading-relaxed text-tertiary">
-              All outbound SMS messages sent through the Compliance Proxy are
-              processed by RelayKit's compliance infrastructure. This processing
-              includes real-time scanning for prohibited content, opt-out
-              enforcement, quiet hours compliance, and rate limit enforcement.
-              Message content is not reviewed by humans except in the context
-              of investigating reported violations or responding to legal
-              process.
-            </p>
-          </div>
-
-          <div>
-            <h3 className="text-base font-semibold text-secondary">
-              4.2 Retention Schedule
-            </h3>
-            <ul className="mt-2 list-disc space-y-1.5 pl-5 text-md text-tertiary">
-              <li>
-                <strong className="font-semibold text-secondary">
-                  Full message content:
-                </strong>{" "}
-                30 days — retained for drift detection and compliance dispute
-                resolution, then permanently deleted
-              </li>
-              <li>
-                <strong className="font-semibold text-secondary">
+        <div className="mt-4 overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-secondary">
+                <th className="py-2 pr-4 text-left font-semibold text-secondary">
+                  Data Type
+                </th>
+                <th className="py-2 pr-4 text-left font-semibold text-secondary">
+                  Retention Period
+                </th>
+                <th className="py-2 text-left font-semibold text-secondary">
+                  Reason
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-secondary">
+              <tr>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  Account information
+                </td>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  Duration of account + 90 days after deletion
+                </td>
+                <td className="py-3 text-tertiary align-top">
+                  Account operation and post-termination audit
+                </td>
+              </tr>
+              <tr>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  Registration data
+                </td>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  Duration of account + 90 days
+                </td>
+                <td className="py-3 text-tertiary align-top">
+                  Carrier compliance records
+                </td>
+              </tr>
+              <tr>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  Message content
+                </td>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  30 days from send date
+                </td>
+                <td className="py-3 text-tertiary align-top">
+                  Drift detection and dispute resolution
+                </td>
+              </tr>
+              <tr>
+                <td className="py-3 pr-4 text-tertiary align-top">
                   Message metadata
-                </strong>{" "}
-                (timestamps, recipient phone numbers, delivery status,
-                compliance check results):{" "}
-                90 days — retained for compliance audit purposes
-              </li>
-              <li>
-                <strong className="font-semibold text-secondary">
-                  Account and registration data:
-                </strong>{" "}
-                90 days after account closure, then permanently deleted
-              </li>
-              <li>
-                <strong className="font-semibold text-secondary">
-                  Payment records:
-                </strong>{" "}
-                Retained as required by applicable tax and financial
-                regulations (typically 7 years)
-              </li>
-            </ul>
-          </div>
+                </td>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  90 days from send date
+                </td>
+                <td className="py-3 text-tertiary align-top">
+                  Compliance audit trail
+                </td>
+              </tr>
+              <tr>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  Payment records
+                </td>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  As required by tax and financial regulations (typically 7
+                  years)
+                </td>
+                <td className="py-3 text-tertiary align-top">
+                  Legal and tax obligations
+                </td>
+              </tr>
+              <tr>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  API usage logs
+                </td>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  90 days
+                </td>
+                <td className="py-3 text-tertiary align-top">
+                  Debugging, rate limit enforcement, abuse detection
+                </td>
+              </tr>
+              <tr>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  Compliance site content
+                </td>
+                <td className="py-3 pr-4 text-tertiary align-top">
+                  Duration of account + 30 days after cancellation
+                </td>
+                <td className="py-3 text-tertiary align-top">
+                  Carrier audit requirements
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+        <p className="mt-3 text-md leading-relaxed text-tertiary">
+          After the retention period, data is permanently deleted. We do not
+          retain data longer than necessary for the purposes described above.
+        </p>
       </section>
 
       <hr className="my-8 border-secondary" />
@@ -502,91 +568,169 @@ export default function PrivacyPage() {
           5. Data Security
         </h2>
         <p className="mt-4 text-md leading-relaxed text-tertiary">
-          We implement reasonable technical and organizational security measures
-          to protect your information, including:
+          We implement reasonable administrative, technical, and physical
+          security measures to protect your information, including:
         </p>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-md text-tertiary">
-          <li>Encryption in transit (TLS) for all API and dashboard traffic</li>
           <li>
-            API keys are hashed (SHA-256) at rest — live production keys are
-            shown once and cannot be retrieved
+            <strong className="font-semibold text-secondary">
+              Encryption in transit
+            </strong>{" "}
+            — all data transmitted between your application and RelayKit uses
+            TLS 1.2 or higher
           </li>
           <li>
-            Supabase Row Level Security (RLS) ensures your data is accessible
-            only to your account
+            <strong className="font-semibold text-secondary">
+              Encryption at rest
+            </strong>{" "}
+            — sensitive credentials (Twilio subaccount credentials) are
+            encrypted using AES-256-GCM before storage
           </li>
           <li>
-            Magic link authentication eliminates password storage and associated
-            breach risks
+            <strong className="font-semibold text-secondary">
+              Access controls
+            </strong>{" "}
+            — database access is restricted to authenticated service accounts
+            with least-privilege permissions
+          </li>
+          <li>
+            <strong className="font-semibold text-secondary">
+              API key security
+            </strong>{" "}
+            — API keys are hashed before storage; plaintext keys are shown once
+            at generation and never stored
+          </li>
+          <li>
+            <strong className="font-semibold text-secondary">
+              Magic link authentication
+            </strong>{" "}
+            — no passwords are stored or transmitted
+          </li>
+          <li>
+            <strong className="font-semibold text-secondary">
+              Infrastructure security
+            </strong>{" "}
+            — hosted on Supabase (SOC 2 Type II compliant) and Cloudflare (SOC
+            2 Type II, ISO 27001 certified)
           </li>
         </ul>
         <p className="mt-3 text-md leading-relaxed text-tertiary">
-          No security system is impenetrable. While we take reasonable steps to
-          protect your information, we cannot guarantee absolute security.
-          Notify us immediately at{" "}
-          <a
-            href="mailto:security@relaykit.com"
-            className="text-brand-secondary underline hover:text-brand-primary"
-          >
-            security@relaykit.com
-          </a>{" "}
-          if you believe your account has been compromised.
+          No method of transmission or storage is 100% secure. While we strive
+          to protect your information, we cannot guarantee absolute security.
         </p>
       </section>
 
       <hr className="my-8 border-secondary" />
 
-      {/* 6. Your Rights and Choices */}
+      {/* 6. Your Rights */}
       <section className="mt-8">
         <h2 className="border-b border-secondary pb-2 text-lg font-semibold text-primary">
-          6. Your Rights and Choices
+          6. Your Rights
         </h2>
 
         <div className="mt-6 space-y-6">
           <div>
             <h3 className="text-base font-semibold text-secondary">
-              6.1 Access and Correction
+              6.1 Access and Portability
             </h3>
             <p className="mt-2 text-md leading-relaxed text-tertiary">
-              You may access and update your account information at any time
-              through the dashboard. If you need to correct registration
-              information that has already been submitted to TCR, contact us at{" "}
+              You may request a copy of the personal information we hold about
+              you by contacting{" "}
+              <a
+                href="mailto:privacy@relaykit.com"
+                className="text-brand-secondary underline hover:text-brand-primary"
+              >
+                privacy@relaykit.com
+              </a>
+              . We will provide the information in a structured, commonly used
+              format within 30 days.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-secondary">
+              6.2 Correction
+            </h3>
+            <p className="mt-2 text-md leading-relaxed text-tertiary">
+              You may update your account information through the dashboard at
+              any time. For corrections to registration data that has already
+              been submitted to carriers, contact{" "}
               <a
                 href="mailto:support@relaykit.com"
                 className="text-brand-secondary underline hover:text-brand-primary"
               >
                 support@relaykit.com
-              </a>{" "}
-              — note that corrections may require resubmission and a new carrier
-              review period.
+              </a>
+              .
             </p>
           </div>
 
           <div>
             <h3 className="text-base font-semibold text-secondary">
-              6.2 Account Deletion
+              6.3 Deletion
             </h3>
             <p className="mt-2 text-md leading-relaxed text-tertiary">
-              You may request deletion of your account by canceling your
-              subscription and contacting support. Account data is retained for
-              90 days after closure for compliance audit purposes, then
-              permanently deleted. Note that business information already
-              submitted to TCR and carriers cannot be withdrawn from their
-              systems.
+              You may request deletion of your account and associated data by
+              contacting{" "}
+              <a
+                href="mailto:privacy@relaykit.com"
+                className="text-brand-secondary underline hover:text-brand-primary"
+              >
+                privacy@relaykit.com
+              </a>
+              . Upon receiving a verified deletion request:
+            </p>
+            <ul className="mt-3 list-disc space-y-1.5 pl-5 text-md text-tertiary">
+              <li>
+                Your account will be deactivated and messaging services
+                suspended
+              </li>
+              <li>
+                Personal information will be deleted within 30 days, except
+                where retention is required by law or for legitimate business
+                purposes (e.g., tax records, fraud prevention)
+              </li>
+              <li>
+                Message content and metadata will be deleted according to the
+                retention schedule in Section 4
+              </li>
+              <li>Your compliance site will be taken offline</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-secondary">
+              6.4 Opt-Out of Communications
+            </h3>
+            <p className="mt-2 text-md leading-relaxed text-tertiary">
+              You may opt out of non-essential email communications (such as
+              product updates or feature announcements) at any time. You cannot
+              opt out of transactional emails related to your account,
+              registration status, compliance alerts, or payment notifications,
+              as these are necessary to provide the Service.
             </p>
           </div>
 
           <div>
             <h3 className="text-base font-semibold text-secondary">
-              6.3 Communications Preferences
+              6.5 California Residents
             </h3>
             <p className="mt-2 text-md leading-relaxed text-tertiary">
-              You may opt out of non-essential communications (such as product
-              updates and newsletters) by clicking the unsubscribe link in any
-              marketing email. You cannot opt out of transactional emails
-              related to your account, registration status, compliance alerts,
-              and payment notifications — these are necessary for the operation
-              of the Service.
+              If you are a California resident, you may have additional rights
+              under the California Consumer Privacy Act (CCPA) and the
+              California Privacy Rights Act (CPRA), including the right to know
+              what personal information we collect and how it is used, the right
+              to delete personal information, the right to opt out of the sale
+              of personal information (we do not sell personal information), and
+              the right to non-discrimination for exercising your privacy
+              rights. To exercise these rights, contact{" "}
+              <a
+                href="mailto:privacy@relaykit.com"
+                className="text-brand-secondary underline hover:text-brand-primary"
+              >
+                privacy@relaykit.com
+              </a>
+              .
             </p>
           </div>
         </div>
@@ -599,45 +743,63 @@ export default function PrivacyPage() {
         <h2 className="border-b border-secondary pb-2 text-lg font-semibold text-primary">
           7. End User Data
         </h2>
-        <p className="mt-4 text-md leading-relaxed text-tertiary">
-          When you use the Service to send SMS messages to your End Users,
-          RelayKit processes End User phone numbers and message content as a
-          data processor acting on your behalf. You are the data controller
-          responsible for your End Users' data.
-        </p>
-        <p className="mt-3 text-md leading-relaxed text-tertiary">
-          Specifically:
-        </p>
-        <ul className="mt-3 list-disc space-y-1.5 pl-5 text-md text-tertiary">
-          <li>
-            <strong className="font-semibold text-secondary">
-              Recipient phone numbers
-            </strong>{" "}
-            are stored in hashed form for opt-out tracking. We do not maintain
-            a plaintext directory of your End Users' phone numbers.
-          </li>
-          <li>
-            <strong className="font-semibold text-secondary">
-              Opt-out records
-            </strong>{" "}
-            are maintained indefinitely to prevent re-messaging of individuals
-            who have requested to stop receiving messages. This retention is a
-            compliance requirement under TCPA.
-          </li>
-          <li>
-            <strong className="font-semibold text-secondary">
-              Marketing consent records
-            </strong>{" "}
-            (for Mixed tier) are retained as long as your account is active and
-            for 90 days after closure.
-          </li>
-        </ul>
-        <p className="mt-3 text-md leading-relaxed text-tertiary">
-          You are responsible for ensuring you have appropriate legal basis
-          under applicable privacy laws to provide End User phone numbers to
-          RelayKit for message delivery, and for maintaining your own records
-          of End User consent.
-        </p>
+
+        <div className="mt-6 space-y-6">
+          <div>
+            <h3 className="text-base font-semibold text-secondary">
+              7.1 Your End Users' Information
+            </h3>
+            <p className="mt-2 text-md leading-relaxed text-tertiary">
+              When you send SMS messages through RelayKit, we process your End
+              Users' phone numbers and the content of messages sent to them. We
+              process this information on your behalf as a service provider —
+              you are the controller of your End Users' data.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-secondary">
+              7.2 Our Use of End User Data
+            </h3>
+            <p className="mt-2 text-md leading-relaxed text-tertiary">
+              We use End User data only to:
+            </p>
+            <ul className="mt-3 list-disc space-y-1.5 pl-5 text-md text-tertiary">
+              <li>Route messages through carrier infrastructure</li>
+              <li>
+                Enforce compliance rules (opt-out handling, quiet hours, SHAFT-C
+                scanning, consent verification)
+              </li>
+              <li>Detect semantic drift from your registered use case</li>
+              <li>
+                Generate aggregate, anonymized analytics (message volumes,
+                delivery rates)
+              </li>
+            </ul>
+            <p className="mt-3 text-md leading-relaxed text-tertiary">
+              We do not use End User phone numbers or message content for our
+              own marketing purposes, build profiles of End Users, sell End User
+              data, or contact End Users directly (except to confirm opt-out
+              requests as required by carrier policy).
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-secondary">
+              7.3 Your Obligations
+            </h3>
+            <p className="mt-2 text-md leading-relaxed text-tertiary">
+              You are responsible for providing appropriate privacy disclosures
+              to your End Users, obtaining valid consent before sending
+              messages, honoring opt-out requests, and complying with all
+              applicable privacy laws regarding your End Users' data.
+              RelayKit's compliance site generator creates a privacy policy and
+              opt-in page that satisfy carrier requirements, but you are
+              responsible for ensuring they meet the requirements of applicable
+              law for your specific use case and jurisdiction.
+            </p>
+          </div>
+        </div>
       </section>
 
       <hr className="my-8 border-secondary" />
@@ -648,49 +810,76 @@ export default function PrivacyPage() {
           8. Cookies and Tracking
         </h2>
         <p className="mt-4 text-md leading-relaxed text-tertiary">
-          RelayKit uses session cookies required for authentication (Supabase
-          auth tokens) and functional cookies necessary for the dashboard to
-          operate. We do not use third-party advertising cookies or behavioral
-          tracking pixels.
+          The RelayKit dashboard uses essential cookies for authentication
+          (magic link session management) and security. We do not use
+          third-party advertising cookies or cross-site tracking technologies.
         </p>
         <p className="mt-3 text-md leading-relaxed text-tertiary">
-          We may use standard web analytics to collect aggregated, anonymized
-          information about how the dashboard is used. This data does not
-          identify individual users and is used solely to improve the product.
+          We may use basic analytics to understand how developers use the
+          dashboard (page views, feature usage, session duration). This data is
+          aggregated and not linked to individual advertising profiles.
         </p>
       </section>
 
       <hr className="my-8 border-secondary" />
 
-      {/* 9. Changes to This Policy */}
+      {/* 9. Children's Privacy */}
       <section className="mt-8">
         <h2 className="border-b border-secondary pb-2 text-lg font-semibold text-primary">
-          9. Changes to This Privacy Policy
+          9. Children's Privacy
+        </h2>
+        <p className="mt-4 text-md leading-relaxed text-tertiary">
+          The Service is not intended for use by individuals under 18 years of
+          age. We do not knowingly collect personal information from children.
+          If we learn that we have collected information from a child under 18,
+          we will delete it promptly.
+        </p>
+      </section>
+
+      <hr className="my-8 border-secondary" />
+
+      {/* 10. International Users */}
+      <section className="mt-8">
+        <h2 className="border-b border-secondary pb-2 text-lg font-semibold text-primary">
+          10. International Users
+        </h2>
+        <p className="mt-4 text-md leading-relaxed text-tertiary">
+          The Service is designed for US-based SMS messaging (A2P 10DLC). Your
+          data is processed and stored in the United States. If you access the
+          Service from outside the United States, your information will be
+          transferred to and processed in the United States, which may have
+          different data protection laws than your country of residence.
+        </p>
+      </section>
+
+      <hr className="my-8 border-secondary" />
+
+      {/* 11. Changes to This Policy */}
+      <section className="mt-8">
+        <h2 className="border-b border-secondary pb-2 text-lg font-semibold text-primary">
+          11. Changes to This Policy
         </h2>
         <p className="mt-4 text-md leading-relaxed text-tertiary">
           We may update this Privacy Policy from time to time. Material changes
-          will be communicated via email to the address associated with your
-          account at least{" "}
-          <strong className="font-semibold text-secondary">thirty (30) days</strong>{" "}
-          before they take effect. The updated policy will be posted at
-          relaykit.com/privacy with the new effective date.
-        </p>
-        <p className="mt-3 text-md leading-relaxed text-tertiary">
-          Your continued use of the Service after the effective date of any
-          changes constitutes acceptance of the updated Privacy Policy.
+          will be communicated via email at least{" "}
+          <strong className="font-semibold text-secondary">
+            thirty (30) days
+          </strong>{" "}
+          before they take effect. The current version is always available at
+          relaykit.com/privacy.
         </p>
       </section>
 
       <hr className="my-8 border-secondary" />
 
-      {/* 10. Contact */}
+      {/* 12. Contact Us */}
       <section className="mt-8">
         <h2 className="border-b border-secondary pb-2 text-lg font-semibold text-primary">
-          10. Contact
+          12. Contact Us
         </h2>
         <p className="mt-4 text-md leading-relaxed text-tertiary">
-          If you have questions about this Privacy Policy or how your
-          information is handled, contact us at:
+          If you have questions about this Privacy Policy, want to exercise your
+          privacy rights, or have concerns about how your data is handled:
         </p>
         <div className="mt-4 space-y-1 text-md text-tertiary">
           <p className="font-semibold text-secondary">
