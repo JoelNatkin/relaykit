@@ -1,89 +1,112 @@
-# CC_HANDOFF.md — Dashboard Path + Industry Gating Complete
+# CC_HANDOFF.md — Messaging Proxy & Developer Sandbox (PRD_09 Phase 1)
 
 ## Status
 
-**PRD_01 Addendum (Dashboard Path) + D-49 Industry Gating: COMPLETE (all 7 tasks).**
+**PRD_09 Phase 1 (Messaging Proxy & Developer Sandbox): COMPLETE (all 10 tasks).**
 
-Path 2 (dashboard → intake wizard) is fully wired: Screen 1 skip, Screen 1b confirmatory mode, Screen 2 email pre-fill, Screen 3 dashboard-curated messages (read-only), checkout payload includes `source` + `selected_messages`, sessionStorage cleanup on payment success.
+Build passes clean (`npm run build`). No new dependencies added (Postgres-only, no Redis — D-52).
 
-Three-tier industry gating on Screen 2: Tier 1 advisory (legal, financial, restaurants), Tier 2 hard decline + waitlist (healthcare), Tier 3 hard decline (cannabis, firearms).
-
-**Previous builds: PRD_05 Deliverable Generator COMPLETE. PRD_06 Dashboard COMPLETE.**
-
-## This Session's Commits (oldest → newest)
-
-| Hash | Task | Description |
-|------|------|-------------|
-| `5f23b6e` | 1 | Three-tier industry gating config + detection (D-49) |
-| `0a53675` | 2 | Industry gate alert UI on Screen 2 business details |
-| `fd924fc` | 3 | Path 2 redirect — skip Screen 1 from dashboard |
-| `1df36e8` | 4 | Screen 1b confirmatory mode for dashboard path |
-| `9c370c3` | 5 | Screen 2 email pre-fill + path forwarding |
-| `1fd2b03` | 6 | Screen 3 dashboard messages + read-only preview |
-| `4760124` | 7 | sessionStorage cleanup on payment redirect |
+**Previous builds: PRD_06 Dashboard COMPLETE. PRD_05 Deliverable Generator COMPLETE. PRD_01 Addendum (Dashboard Path + Industry Gating) COMPLETE.**
 
 ## Files Created This Session
 
 ```
-src/lib/intake/industry-gating.ts              # detectIndustryGate() — three-tier keyword detection
-src/components/intake/industry-gate-alert.tsx   # IndustryGateAlert — tier-specific UI cards
-src/components/dashboard/intake-cleanup.tsx     # IntakeCleanup — clears sessionStorage post-payment
+supabase/migrations/20260306000000_messaging_proxy.sql     # 5 new tables: sms_opt_outs, recipient_consents, messages, webhook_endpoints, sandbox_daily_usage
+
+src/lib/proxy/types.ts                    # AuthenticatedContext, ProxyResponse, ProxyError, makeProxyError()
+src/lib/proxy/auth.ts                     # Dual-path API key auth (api_keys table + user metadata fallback)
+src/lib/proxy/compliance-pipeline.ts      # Orchestrates opt-out, SHAFT-C, marketing consent checks
+src/lib/proxy/opt-out.ts                  # isOptedOut(), addOptOut(), removeOptOut() — Postgres-backed
+src/lib/proxy/content-scanner.ts          # scanForShaftC() — regex SHAFT-C keyword detection
+src/lib/proxy/marketing-consent.ts        # classifyMessageType(), checkMarketingConsent() — D-14 MIXED tier
+src/lib/proxy/forward.ts                  # forwardToTwilio() — subaccount forwarding with 21610 defense-in-depth
+src/lib/proxy/message-logger.ts           # logMessage() — fire-and-forget, SHA-256 body hash
+src/lib/proxy/usage-meter.ts              # incrementUsage() — billing period upsert on message_usage
+src/lib/proxy/webhook-forwarder.ts        # forwardWebhookEvent() — HMAC-SHA256 signed delivery
+
+src/lib/sandbox/limits.ts                 # checkAndIncrementDailyLimit() — 100/day Postgres upsert
+src/lib/sandbox/manager.ts                # sendSandboxMessage() — verified phone, [SANDBOX] prefix, parent account
+
+src/app/api/v1/messages/route.ts          # POST /v1/messages — main send endpoint
+src/app/api/v1/opt-outs/route.ts          # GET + POST /v1/opt-outs
+src/app/api/v1/opt-outs/[phoneNumber]/route.ts  # GET /v1/opt-outs/{phone}
+src/app/api/v1/consents/route.ts          # POST /v1/consents
+src/app/api/v1/consents/[phoneNumber]/route.ts  # DELETE /v1/consents/{phone}
+src/app/api/v1/webhooks/route.ts          # POST + GET /v1/webhooks
+src/app/api/v1/webhooks/[webhookId]/route.ts    # DELETE /v1/webhooks/{id}
+src/app/api/v1/account/route.ts           # GET /v1/account
 ```
 
 ## Files Modified This Session
 
 ```
-src/app/start/page.tsx                          # Path 2 redirect to /start/scope
-src/app/start/scope/page.tsx                    # Confirmatory copy, pre-populated expansions, back→dashboard
-src/app/start/details/page.tsx                  # Email pre-fill, path=dashboard forwarding
-src/app/start/review/page.tsx                   # Dashboard messages, source/selected_messages in checkout
-src/components/intake/business-details-form.tsx # Industry gate detection + alert rendering
-src/components/intake/review-preview-card.tsx   # dashboardMessages prop, D-17 timing fix
-src/app/dashboard/layout.tsx                    # IntakeCleanup component mounted in Suspense
-```
-
-## Files Modified but Not Yet Committed
-
-```
-DECISIONS.md    — D-51 appended (RelayKit platform ToS/AUP required before beta)
-CC_HANDOFF.md   — this file
+src/app/api/webhooks/inbound/[registrationId]/route.ts  # Stub → full STOP/START + webhook forwarding
+src/app/api/webhooks/status/[registrationId]/route.ts   # Stub → status update + retroactive opt-out
+src/app/dashboard/layout.tsx                             # sandboxMessageCount + phoneVerified wired to real data
+DECISIONS.md                                              # D-52 through D-55 appended
+CC_HANDOFF.md                                             # This file
 ```
 
 ## Decisions Made This Session
 
-- **D-51 — RelayKit platform ToS/AUP required before beta.** Separate from per-customer ToS (PRD_02). Must cover: prohibited use categories (cannabis, firearms, healthcare without BAA, SHAFT-C), right to suspend/terminate, right to block messages inline, no refund on setup fee for policy violations. Beta blocker. Affects: new docs, PRD_01 checkout screen (acceptance checkbox), landing page footer.
+- **D-52 — Phase 1 proxy uses Postgres-only, no Redis.** Volumes don't justify Redis in Phase 1. Designed for easy Redis addition later.
+- **D-53 — Opt-out table keyed on user_id, not customer_id.** Pre-reg sandbox users have no customers row. Opt-outs persist across sandbox→registration transition.
+- **D-54 — Sandbox inbound webhook uses 'sandbox' sentinel registrationId.** Shared sandbox number's Messaging Service points to `/api/webhooks/inbound/sandbox`.
+- **D-55 — Pre-registration API key auth uses admin.listUsers() scan.** O(n) across all users — acceptable for Phase 1, needs optimization before scale.
+
+## Env Vars Required (New)
+
+```
+SANDBOX_TWILIO_NUMBER=+1XXXXXXXXXX    # Shared sandbox Twilio number
+SANDBOX_DAILY_LIMIT=100                # Sandbox daily message limit (default 100)
+```
 
 ## Gotchas for Next Session
 
-1. **`path=dashboard` URL param is the Path 2 signal** — threaded through all 4 wizard screens via URL params. If you rename it, update `/start/page.tsx`, `/start/scope/page.tsx`, `/start/details/page.tsx`, and `/start/review/page.tsx`.
+1. **`admin.listUsers()` in auth.ts is O(n)** — scans all users to find pre-reg sandbox key matches (D-55). Fine for Phase 1 (<500 users). Before scale: either store pre-reg keys in `api_keys` table at generation time, or add a lookup table.
 
-2. **Industry gate detection runs on every keystroke** in `business_description` and `service_type` fields. The regex matching is fast, but if performance becomes a concern, add debounce in `updateField()` inside `business-details-form.tsx`.
+2. **Sandbox inbound requires manual Twilio setup** — the shared sandbox number's Messaging Service must have its inbound webhook pointed to `https://{domain}/api/webhooks/inbound/sandbox` (D-54). This is a one-time Twilio console config, not automated.
 
-3. **Industry gate blocks `onValid()` for tier 2/3** — the form's Continue button is disabled via the existing `onInvalid()` callback. Gate check runs before Zod validation in `updateField()`, so a blocked industry prevents the form from ever reporting valid.
+3. **`sms_opt_outs.customer_id` is nullable** — pre-reg sandbox users don't have a customer record. All opt-out lookups use `user_id`. The `customer_id` column is populated when available but is not the lookup key.
 
-4. **Tier 2 waitlist CTA is a mailto link** (`hello@relaykit.co`). Replace with a proper waitlist form when one exists.
+4. **Supabase client `PromiseLike` does not have `.catch()`** — fire-and-forget patterns must use `.then(({ error }) => { ... })` not `.then().catch()`. This tripped the build during implementation.
 
-5. **D-17 fix applied** — `review-preview-card.tsx` "What happens next" section now says "2–3 weeks" (was incorrectly "3–10 days"). This was a pre-existing violation found and fixed during this build.
+5. **Zod uses `.issues` not `.errors`** — `parsed.error.issues[0]?.message` is the correct accessor. `parsed.error.errors` does not exist in the Zod version used.
 
-6. **`DashboardToIntakeData` type and helpers already existed** at `src/lib/dashboard/dashboard-to-intake.ts` — built during PRD_06. Functions: `buildIntakeData()`, `saveDashboardIntakeData()`, `getDashboardIntakeData()`, `clearDashboardIntakeData()`.
+6. **Marketing consent check only runs for MIXED tier** — `compliance-pipeline.ts` checks `ctx.effectiveCampaignType === 'mixed'` before running `classifyMessageType()`. Transactional-only customers never hit the consent check.
 
-7. **Screen 3 checkout payload** now includes `source: 'cold' | 'dashboard'` and optional `selected_messages` + `preferred_area_code`. The `/api/checkout` route currently ignores unknown fields (no strict validation). When you build the checkout handler properly, add these to the request schema.
+7. **Message body is never stored** — `messages.body_hash` is a SHA-256 hash. The plaintext body is never persisted. This is deliberate PII avoidance.
 
-8. **Area code selector (PRD_01 Addendum Section 4.4) is NOT built yet.** The addendum specifies a simple "That's perfect / Different area code" UI on Screen 3 for both paths. `preferred_area_code` is already passed through in the checkout payload from dashboard data, but the UI component doesn't exist.
+8. **Webhook secrets are stored in plaintext** in `webhook_endpoints.secret` — needed for HMAC signing on every forward. This is the standard pattern (same as Stripe, GitHub).
 
-9. **D-51 (platform ToS/AUP) is a beta blocker.** The checkout screen needs a ToS acceptance checkbox before going live. Not built — decision only.
+9. **Phase 1 webhooks have no retry** — single delivery attempt. Phase 2 adds exponential backoff + dead letter queue.
 
-10. **Untracked files:** `docs/plans/2026-03-05-deliverable-generator.md` — previous session's working plan, not committed.
+10. **`forwardToTwilio()` catches Twilio error 21610** and retroactively adds the number to the opt-out list. This defense-in-depth means RelayKit's opt-out list self-heals even if the inline check missed.
+
+11. **`sendSandboxMessage()` uses `getParentCredentials()`** — sandbox sends via the parent Twilio account, not a subaccount. Live sends use `getSubaccountCredentials()`.
 
 ## Carried Forward from Prior Sessions
 
-- **`sandboxMessageCount` hardcoded to 0** in `layout.tsx`. Needs PRD_09.
-- **Post-registration `phoneVerified` hardcoded to `false`** — only pre-registration branch reads metadata.
+- **D-51 (platform ToS/AUP) is a beta blocker.** Checkout screen needs ToS acceptance checkbox. Not built — decision only.
+- **Area code selector UI (PRD_01 Addendum Section 4.4) not built.** `preferred_area_code` passes through in checkout payload but no UI component exists.
+- **Email templates not wired to sending** — `src/lib/emails/templates.ts` returns `{ subject, body }`. Need provider (Resend/SendGrid).
 - **Compliance site link is `href="#"` placeholder** in `compliance/page.tsx`.
 - **Compliance `hasAlerts` always false** — no drift detection until PRD_08.
-- **Email templates not wired to sending** — `src/lib/emails/templates.ts` returns `{ subject, body }`. Need provider.
-- **D-44 pattern is load-bearing** — pre-registration user metadata used by: use-case selector, message plan builder, build spec generator, sandbox API key, phone verification.
-- **`TWILIO_VERIFY_SID` env var required** for phone verification.
+- **3 API routes still missing** (`/api/live-key`, `/api/usage`, `/api/registration-details`) — now partially addressed by `/v1/account` endpoint but dashboard-specific routes may still be needed.
+- **`sendSMS()` signature is load-bearing across two templates** — `build-spec-template.ts` and `template-relaykit.ts` must stay identical (PRD_05 Trap #6).
 - **Button uses `onClick` not `onPress`** — Untitled UI extends HTML button.
-- **3 API routes still missing** (`/api/live-key`, `/api/usage`, `/api/registration-details`) — need PRD_09 infrastructure.
-- **sendSMS() signature is load-bearing across two templates** — `build-spec-template.ts` and `template-relaykit.ts` must stay identical (PRD_05 Trap #6).
+- **`TWILIO_VERIFY_SID` env var required** for phone verification.
+
+## What's NOT Built Yet (PRD_09 Phase 2/3)
+
+- Rate limiting (full token bucket with trust-score-aware MPS)
+- Quiet hours enforcement
+- Per-customer content allowlists based on vertical detection
+- URL blocklist scanning
+- Drift detection (Claude-powered sampled message analysis)
+- Message preview endpoint (`POST /v1/messages/preview`)
+- Webhook retry with exponential backoff + dead letter queue
+- Message status tracking beyond Twilio callbacks
+- Idempotency key support
+- GET /v1/messages and GET /v1/messages/{id} (list/get endpoints)
+- Registration nudge based on engagement signals

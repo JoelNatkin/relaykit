@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { createServiceClient } from "@/lib/supabase";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { IntakeCleanup } from "@/components/dashboard/intake-cleanup";
 import {
@@ -52,11 +53,21 @@ async function fetchDashboardState(
   if (!customer) {
     // Pre-registration: use case and phone verification in user metadata
     const metaUseCase = user.user_metadata?.use_case ?? null;
+
+    // Query total sandbox messages sent (for lifecycle stage threshold of 20)
+    const serviceClient = createServiceClient();
+    const { count: sandboxCount } = await serviceClient
+      .from("messages")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("environment", "sandbox")
+      .eq("direction", "outbound");
+
     return {
       useCase: metaUseCase,
       hasPlan: !!user.user_metadata?.message_plan,
       buildSpecGeneratedAt: user.user_metadata?.build_spec_generated_at ?? null,
-      sandboxMessageCount: 0, // TODO: wire to usage tracking
+      sandboxMessageCount: sandboxCount ?? 0,
       phoneVerified: !!user.user_metadata?.verified_phone,
       verifiedPhone: (user.user_metadata?.verified_phone as string) ?? null,
       registrationStatus: null,
@@ -82,13 +93,27 @@ async function fetchDashboardState(
     .limit(1)
     .maybeSingle();
 
+  // Query sandbox message count (post-registration users can still send sandbox)
+  const serviceClient = createServiceClient();
+  const { count: sandboxCount } = await serviceClient
+    .from("messages")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("environment", "sandbox")
+    .eq("direction", "outbound");
+
+  // Phone verification: check user metadata (verification persists across reg)
+  const postRegPhoneVerified = !!user.user_metadata?.verified_phone;
+  const postRegVerifiedPhone =
+    (user.user_metadata?.verified_phone as string) ?? null;
+
   return {
     useCase: customer.use_case ?? null,
     hasPlan: !!plan,
     buildSpecGeneratedAt: plan?.build_spec_generated_at ?? null,
-    sandboxMessageCount: 0, // TODO: wire to usage tracking
-    phoneVerified: false, // TODO: wire to phone verification state
-    verifiedPhone: null, // TODO: wire to phone verification state
+    sandboxMessageCount: sandboxCount ?? 0,
+    phoneVerified: postRegPhoneVerified,
+    verifiedPhone: postRegVerifiedPhone,
     registrationStatus: registration?.status ?? null,
     registrationId: registration?.id ?? null,
     registrationPhone: registration?.phone_number ?? null,
