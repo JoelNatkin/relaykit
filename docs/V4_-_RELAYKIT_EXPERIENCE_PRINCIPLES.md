@@ -85,7 +85,7 @@ The carrier review window is not dead time. It's the ordeal. The hero has submit
 
 **Specific copy pattern for pending states:**
 
-> *Your brand is verified. Your campaign is submitted. Carriers are reviewing your traffic profile — this is the step that makes everything downstream trustworthy. Most campaigns clear in 5–7 business days. In the meantime, your sandbox is live. Keep building.*
+> *Your brand is verified. Your campaign is submitted. Carriers are reviewing your traffic profile — this is the step that makes everything downstream trustworthy. Most campaigns clear in 2–3 weeks (10–15 business days). In the meantime, your sandbox is live. Keep building.*
 
 **For rejection states specifically:** Rejection is the most painful moment in the journey. It's also the moment where RelayKit can differentiate most sharply from competitors who just show an error code.
 
