@@ -3,7 +3,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useEffect, Suspense, useCallback, useMemo } from "react";
+import { useState, useEffect, Suspense, useCallback } from "react";
 import { ArrowRight, ArrowLeft } from "@untitledui/icons";
 import { Button } from "@/components/base/buttons/button";
 import { FeaturedIcon } from "@/components/foundations/featured-icon/featured-icon";
@@ -24,32 +24,12 @@ function DetailsContent() {
   const isDashboardPath = searchParams.get("path") === "dashboard";
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 
-  // Extract form field initial values: URL params first, then sessionStorage fallback
-  const formFields = [
-    "business_name", "business_description", "has_ein", "ein", "business_type",
-    "first_name", "last_name", "email", "phone", "address_line1", "address_city",
-    "address_state", "address_zip", "website_url", "service_type",
-    "product_type", "app_name", "community_name", "venue_type",
-  ];
-
-  // First pass: URL params only (safe for SSR)
-  const urlValues = useMemo(() => {
-    const vals: Record<string, string> = {};
-    for (const field of formFields) {
-      const v = searchParams.get(field);
-      if (v) vals[field] = v;
-    }
-    return Object.keys(vals).length > 0 ? vals : undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
-
   const [initialValues, setInitialValues] = useState<
     Partial<Record<string, string>> | undefined
-  >(urlValues);
+  >(undefined);
 
-  // Hydrate from sessionStorage after mount if no URL params
+  // Hydrate from sessionStorage after mount
   useEffect(() => {
-    if (urlValues) return;
     const session = getIntakeSession();
     if (session.business_details && Object.keys(session.business_details).length > 0) {
       setInitialValues(session.business_details);
@@ -62,7 +42,7 @@ function DetailsContent() {
         setInitialValues({ email: dashData.email });
       }
     }
-  }, [urlValues, isDashboardPath]);
+  }, [isDashboardPath]);
 
   const [validData, setValidData] = useState<BusinessDetailsData | null>(null);
 
@@ -110,18 +90,6 @@ function DetailsContent() {
     if (expansions) params.set("expansions", expansions);
     if (campaignType) params.set("campaign_type", campaignType);
     if (isDashboardPath) params.set("path", "dashboard");
-
-    // Serialize form data
-    for (const [key, value] of Object.entries(validData)) {
-      if (value !== null && value !== undefined && value !== "") {
-        params.set(key, String(value));
-      }
-    }
-
-    // Normalize phone to digits only
-    if (validData.phone) {
-      params.set("phone", validData.phone.replace(/\D/g, ""));
-    }
 
     return `/start/review?${params.toString()}`;
   }

@@ -44,29 +44,29 @@ function ReviewContent() {
     setSessionLoaded(true);
   }, [isDashboardPath]);
 
-  // Intake params from previous screens (URL params first, session fallback)
+  // Intake params from previous screens (URL params for routing, session for data)
   const useCaseId = (searchParams.get("use_case") ?? session.use_case ?? null) as UseCaseId | null;
   const expansions = searchParams.get("expansions") ?? (session.expansions?.join(",") ?? "");
 
-  // Business details: URL params first, then sessionStorage fallback
+  // Business details from sessionStorage only — never in URL
   const bd = session.business_details ?? {};
-  const businessName = searchParams.get("business_name") ?? bd.business_name ?? "";
-  const businessDescription = searchParams.get("business_description") ?? bd.business_description ?? "";
-  const hasEin = searchParams.get("has_ein") ?? bd.has_ein ?? "";
-  const businessType = searchParams.get("business_type") ?? bd.business_type ?? "";
-  const firstName = searchParams.get("first_name") ?? bd.first_name ?? "";
-  const lastName = searchParams.get("last_name") ?? bd.last_name ?? "";
-  const email = searchParams.get("email") ?? bd.email ?? "";
-  const phone = searchParams.get("phone") ?? bd.phone ?? "";
-  const addressLine1 = searchParams.get("address_line1") ?? bd.address_line1 ?? "";
-  const addressCity = searchParams.get("address_city") ?? bd.address_city ?? "";
-  const addressState = searchParams.get("address_state") ?? bd.address_state ?? "";
-  const addressZip = searchParams.get("address_zip") ?? bd.address_zip ?? "";
-  const serviceType = searchParams.get("service_type") ?? bd.service_type ?? "";
-  const productType = searchParams.get("product_type") ?? bd.product_type ?? "";
-  const appName = searchParams.get("app_name") ?? bd.app_name ?? "";
-  const communityName = searchParams.get("community_name") ?? bd.community_name ?? "";
-  const venueType = searchParams.get("venue_type") ?? bd.venue_type ?? "";
+  const businessName = bd.business_name ?? "";
+  const businessDescription = bd.business_description ?? "";
+  const hasEin = bd.has_ein ?? "";
+  const businessType = bd.business_type ?? "";
+  const firstName = bd.first_name ?? "";
+  const lastName = bd.last_name ?? "";
+  const email = bd.email ?? "";
+  const phone = bd.phone ?? "";
+  const addressLine1 = bd.address_line1 ?? "";
+  const addressCity = bd.address_city ?? "";
+  const addressState = bd.address_state ?? "";
+  const addressZip = bd.address_zip ?? "";
+  const serviceType = bd.service_type ?? "";
+  const productType = bd.product_type ?? "";
+  const appName = bd.app_name ?? "";
+  const communityName = bd.community_name ?? "";
+  const venueType = bd.venue_type ?? "";
 
   const useCase = useCaseId ? USE_CASES[useCaseId] : null;
 
@@ -135,15 +135,14 @@ function ReviewContent() {
     .filter(Boolean)
     .join(", ");
 
-  // Build edit href that sends them back to Screen 2 with all data preserved
-  function buildEditHref() {
-    const params = new URLSearchParams(searchParams.toString());
-    return `/start/details?${params.toString()}`;
-  }
-
-  // Build back href
-  function buildBackHref() {
-    const params = new URLSearchParams(searchParams.toString());
+  // Build href back to Screen 2 — routing params only, form data is in sessionStorage
+  function buildDetailsHref() {
+    const params = new URLSearchParams();
+    if (useCaseId) params.set("use_case", useCaseId);
+    if (expansions) params.set("expansions", expansions);
+    const ct = searchParams.get("campaign_type") ?? session.campaign_type ?? "";
+    if (ct) params.set("campaign_type", ct);
+    if (isDashboardPath) params.set("path", "dashboard");
     return `/start/details?${params.toString()}`;
   }
 
@@ -167,7 +166,7 @@ function ReviewContent() {
           business_name: businessName,
           business_description: businessDescription,
           has_ein: hasEin,
-          ein: searchParams.get("ein") ?? bd.ein ?? null,
+          ein: bd.ein ?? null,
           business_type: businessType || null,
           first_name: firstName,
           last_name: lastName,
@@ -177,7 +176,7 @@ function ReviewContent() {
           address_city: addressCity,
           address_state: addressState,
           address_zip: addressZip,
-          website_url: (searchParams.get("website_url") ?? bd.website_url) || null,
+          website_url: bd.website_url || null,
           service_type: serviceType || null,
           product_type: productType || null,
           app_name: appName || null,
@@ -212,7 +211,7 @@ function ReviewContent() {
       setIsCheckingOut(false);
     }
   }, [
-    useCaseId, selectedExpansions, searchParams, session, bd,
+    useCaseId, selectedExpansions, searchParams, session, bd, isDashboardPath, dashData,
     businessName, businessDescription, hasEin, businessType,
     firstName, lastName, email, phone,
     addressLine1, addressCity, addressState, addressZip,
@@ -275,7 +274,7 @@ function ReviewContent() {
             phone={phone}
             address={fullAddress}
             useCaseLabel={useCase.label}
-            editHref={buildEditHref()}
+            editHref={buildDetailsHref()}
           />
 
           {/* Right: Generated preview */}
@@ -334,7 +333,7 @@ function ReviewContent() {
         {/* Navigation */}
         <div className="mt-5 flex w-full items-center justify-between">
           <Button
-            href={buildBackHref()}
+            href={buildDetailsHref()}
             color="link-gray"
             iconLeading={ArrowLeft}
           >
