@@ -5,7 +5,6 @@ const LINKS = {
     { label: "FAQ", href: "#faq" },
   ],
   Company: [
-    { label: "About", href: "#" },
     { label: "Contact", href: "mailto:hello@relaykit.com" },
   ],
   Legal: [
