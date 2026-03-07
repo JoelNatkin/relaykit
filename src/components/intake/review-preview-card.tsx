@@ -258,7 +258,7 @@ export function ReviewPreviewCard({
           <p className="text-sm text-tertiary">
             We&apos;ll create a page at{" "}
             <span className="font-medium text-primary">
-              {complianceSlug}.relaykit.co
+              {complianceSlug}.{process.env.NEXT_PUBLIC_COMPLIANCE_SITE_DOMAIN ?? "msgverified.com"}
             </span>{" "}
             with:
           </p>

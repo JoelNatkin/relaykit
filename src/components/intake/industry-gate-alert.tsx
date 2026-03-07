@@ -47,7 +47,7 @@ export function IndustryGateAlert({ gate }: IndustryGateAlertProps) {
             <Button
               size="sm"
               color="secondary"
-              href="mailto:hello@relaykit.co?subject=Healthcare%20waitlist&body=I%27d%20like%20to%20join%20the%20waitlist%20for%20healthcare%20messaging%20support."
+              href="mailto:hello@relaykit.com?subject=Healthcare%20waitlist&body=I%27d%20like%20to%20join%20the%20waitlist%20for%20healthcare%20messaging%20support."
             >
               Join the waitlist
             </Button>
