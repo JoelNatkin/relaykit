@@ -71,7 +71,14 @@ export async function forwardToTwilio(
         request.to,
         "twilio_error",
         ctx.customerId,
-      ).catch(() => {});
+      ).catch((err) => {
+        console.error(
+          `[Forward] CRITICAL: Twilio returned 21610 (opted-out recipient) but retroactive opt-out ` +
+            `failed to persist. userId=${ctx.userId}, to=${request.to}, ` +
+            `error=${err instanceof Error ? err.message : String(err)}. ` +
+            `MANUAL RESOLUTION REQUIRED.`,
+        );
+      });
 
       return {
         error: makeProxyError(

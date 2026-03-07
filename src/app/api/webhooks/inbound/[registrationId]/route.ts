@@ -105,16 +105,37 @@ export async function POST(
   const normalizedBody = body.trim().toLowerCase();
 
   if (STOP_KEYWORDS.includes(normalizedBody)) {
-    await addOptOut(userId, from, "sms_keyword", customerId);
-    forwardWebhookEvent(userId, customerId, "opt_out.created", {
-      phone_number: from,
-      source: "sms_keyword",
-    });
+    try {
+      await addOptOut(userId, from, "sms_keyword", customerId);
+      forwardWebhookEvent(userId, customerId, "opt_out.created", {
+        phone_number: from,
+        source: "sms_keyword",
+      });
+    } catch (err) {
+      // CRITICAL: Opt-out was NOT recorded but we must still return 200 to Twilio.
+      // This recipient will continue receiving messages until the opt-out is resolved.
+      // The error is already logged by addOptOut — log the context here.
+      console.error(
+        `[Webhook/Inbound] CRITICAL: STOP keyword received but opt-out failed to persist. ` +
+          `userId=${userId}, from=${from}, registrationId=${registrationId}, ` +
+          `error=${err instanceof Error ? err.message : String(err)}. ` +
+          `MANUAL RESOLUTION REQUIRED — this recipient may receive messages in violation of TCPA.`,
+      );
+    }
   } else if (START_KEYWORDS.includes(normalizedBody)) {
-    await removeOptOut(userId, from);
-    forwardWebhookEvent(userId, customerId, "opt_out.removed", {
-      phone_number: from,
-    });
+    try {
+      await removeOptOut(userId, from);
+      forwardWebhookEvent(userId, customerId, "opt_out.removed", {
+        phone_number: from,
+      });
+    } catch (err) {
+      console.error(
+        `[Webhook/Inbound] ERROR: START keyword received but opt-in removal failed. ` +
+          `userId=${userId}, from=${from}, registrationId=${registrationId}, ` +
+          `error=${err instanceof Error ? err.message : String(err)}. ` +
+          `Recipient will remain blocked (fail-closed — safe but inconvenient).`,
+      );
+    }
   }
 
   // Log inbound message
