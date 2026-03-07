@@ -78,17 +78,15 @@ export async function POST(
 
     customerId = reg.customer_id;
 
-    // Get user_id from customer email
+    // Get user_id directly from customers table
     const { data: customer } = await supabase
       .from("customers")
-      .select("email")
+      .select("user_id")
       .eq("id", customerId)
       .single();
 
     if (customer) {
-      const { data: userData } = await supabase.auth.admin.listUsers();
-      const user = userData?.users?.find((u) => u.email === customer.email);
-      userId = user?.id ?? null;
+      userId = customer.user_id;
     }
   }
 

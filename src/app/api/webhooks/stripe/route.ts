@@ -92,10 +92,23 @@ async function handleCheckoutCompleted(
 
   const d = intake.data as Record<string, unknown>;
 
+  // Resolve user_id from auth.users by email (one-time lookup at customer creation)
+  const customerEmail = String(d.email);
+  let userId: string | null = null;
+  const { data: userData } = await supabase.auth.admin.listUsers();
+  const matchingUser = userData?.users?.find((u) => u.email === customerEmail);
+  if (matchingUser) {
+    userId = matchingUser.id;
+  } else {
+    console.error("checkout.session.completed: no auth user found for email:", customerEmail);
+    return;
+  }
+
   // Create customer record
   const { data: customer, error: customerError } = await supabase
     .from("customers")
     .insert({
+      user_id: userId,
       business_name: d.business_name,
       business_description: d.business_description,
       has_ein: d.has_ein === "yes",

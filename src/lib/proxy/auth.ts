@@ -116,7 +116,7 @@ async function resolvePostRegistrationContext(
   // Fetch customer + latest registration in one go
   const { data: customer } = await supabase
     .from("customers")
-    .select("id, email, effective_campaign_type, twilio_subaccount_sid, twilio_subaccount_auth, live_active, business_name")
+    .select("id, user_id, effective_campaign_type, twilio_subaccount_sid, twilio_subaccount_auth, live_active, business_name")
     .eq("id", customerId)
     .single();
 
@@ -127,10 +127,7 @@ async function resolvePostRegistrationContext(
     };
   }
 
-  // Look up the user_id from auth.users by email
-  const { data: userData } = await supabase.auth.admin.listUsers();
-  const user = userData?.users?.find((u) => u.email === customer.email);
-  const userId = user?.id ?? "";
+  const userId = customer.user_id;
 
   // Fetch latest registration
   const { data: registration } = await supabase
@@ -167,7 +164,11 @@ async function resolvePostRegistrationContext(
   }
 
   // Resolve verified phone from user metadata (for sandbox use post-reg)
-  const verifiedPhone = user?.user_metadata?.verified_phone ?? null;
+  let verifiedPhone: string | null = null;
+  if (environment === "sandbox" && userId) {
+    const { data: userData } = await supabase.auth.admin.getUserById(userId);
+    verifiedPhone = userData?.user?.user_metadata?.verified_phone ?? null;
+  }
 
   return {
     context: {
