@@ -31,6 +31,22 @@ export async function POST(request: NextRequest) {
 
   const supabase = createServiceClient();
 
+  // Idempotency: deduplicate by Stripe event ID.
+  // INSERT succeeds for new events; conflicts on duplicate → skip processing.
+  const { error: dedupeError } = await supabase
+    .from("stripe_events")
+    .insert({ id: event.id, event_type: event.type });
+
+  if (dedupeError) {
+    if (dedupeError.code === "23505") {
+      // Unique violation — already processed this event
+      return NextResponse.json({ received: true, deduplicated: true });
+    }
+    // Non-duplicate DB error — log but continue processing.
+    // Better to risk double-processing than to silently drop an event.
+    console.error("[Stripe] Failed to record event for deduplication:", dedupeError.message);
+  }
+
   switch (event.type) {
     case "checkout.session.completed": {
       await handleCheckoutCompleted(supabase, event.data.object as Stripe.Checkout.Session);
