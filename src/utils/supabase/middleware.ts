@@ -35,7 +35,9 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("redirect", request.nextUrl.pathname);
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    copySupabaseCookies(supabaseResponse, redirectResponse);
+    return redirectResponse;
   }
 
   // Redirect authenticated users away from /login and /signup to /dashboard
@@ -47,8 +49,21 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = "/dashboard";
     url.search = "";
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    copySupabaseCookies(supabaseResponse, redirectResponse);
+    return redirectResponse;
   }
 
   return supabaseResponse;
+}
+
+/**
+ * Copy cookie updates (including chunk deletions) from the Supabase response
+ * to a redirect response. Without this, old auth cookie chunks accumulate
+ * on redirect and eventually cause HTTP 431 (header too large).
+ */
+function copySupabaseCookies(from: NextResponse, to: NextResponse) {
+  from.cookies.getAll().forEach((cookie) => {
+    to.cookies.set(cookie.name, cookie.value);
+  });
 }
