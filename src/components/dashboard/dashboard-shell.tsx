@@ -1,8 +1,10 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { TabNav } from "./tab-nav";
 import { DashboardProvider } from "./dashboard-context";
+import { createClient } from "@/utils/supabase/client";
 import type { LifecycleStage } from "@/lib/dashboard/lifecycle";
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 
@@ -21,6 +23,14 @@ interface DashboardShellProps {
 }
 
 export function DashboardShell({ children, stage, useCase, sandboxMessageCount, phoneVerified, verifiedPhone, email, registrationStatus, registrationId, registrationPhone, canonMessageIds }: DashboardShellProps) {
+  const router = useRouter();
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
+
   return (
     <DashboardProvider stage={stage} useCase={useCase} sandboxMessageCount={sandboxMessageCount} phoneVerified={phoneVerified} verifiedPhone={verifiedPhone} email={email} registrationStatus={registrationStatus} registrationId={registrationId} registrationPhone={registrationPhone} canonMessageIds={canonMessageIds}>
       <div className="min-h-screen bg-primary">
@@ -32,7 +42,17 @@ export function DashboardShell({ children, stage, useCase, sandboxMessageCount, 
                   RelayKit
                 </span>
               </div>
-              <span className="text-sm text-tertiary">{email}</span>
+              <span className="text-sm text-tertiary">
+                {email}
+                {" · "}
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="text-tertiary transition duration-100 ease-linear hover:text-secondary"
+                >
+                  Sign out
+                </button>
+              </span>
             </div>
             <TabNav stage={stage} />
           </div>
