@@ -293,3 +293,7 @@ _Affects: `src/lib/proxy/auth.ts`._
 **D-56 — Compliance site domain is msgverified.com** (Date: 2026-03-06)
 Customer compliance sites deploy to `{slug}.msgverified.com`. The domain `msgverified.com` is registered on Cloudflare. This supersedes the placeholder "neutral domain" language in D-05. Each customer's compliance site URL follows the pattern `https://{slug}.msgverified.com` where `slug` is derived at registration time.
 _Affects: PRD_03, `src/lib/compliance-site/`, any code that constructs or displays the compliance site URL._
+
+**D-57 — Intake wizard form data must never appear in URL query params** (Date: 2026-03-07)
+Business details (EIN, phone, address, business description, email) are sensitive PII and must only be persisted in sessionStorage (`relaykit_intake` key), never serialized into URL query parameters. URLs between intake wizard screens carry only routing params: `use_case`, `expansions`, `campaign_type`, and `path`. This was enforced after a smoke test revealed the details page was serializing all form fields into the `/start/review` URL.
+_Affects: `src/app/start/details/page.tsx`, `src/app/start/review/page.tsx`, any future intake wizard screens._
