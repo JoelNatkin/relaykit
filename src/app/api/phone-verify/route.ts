@@ -12,10 +12,6 @@ import { z } from "zod";
  * Uses Twilio Verify API via fetch() (D-02: no SDK).
  */
 
-const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID!;
-const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN!;
-const TWILIO_VERIFY_SID = process.env.TWILIO_VERIFY_SID!;
-
 const sendSchema = z.object({
   phone: z
     .string()
@@ -29,6 +25,23 @@ const verifySchema = z.object({
   code: z.string().length(6, "Code must be 6 digits"),
 });
 
+function getTwilioCredentials() {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const verifySid = process.env.TWILIO_VERIFY_SID;
+
+  if (!accountSid || !authToken || !verifySid) {
+    return null;
+  }
+
+  return {
+    accountSid,
+    authToken,
+    verifySid,
+    authHeader: Buffer.from(`${accountSid}:${authToken}`).toString("base64"),
+  };
+}
+
 // POST — send verification code
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -39,6 +52,14 @@ export async function POST(req: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const creds = getTwilioCredentials();
+  if (!creds) {
+    return NextResponse.json(
+      { error: "Phone verification is not configured" },
+      { status: 503 },
+    );
   }
 
   const body = await req.json();
@@ -53,24 +74,20 @@ export async function POST(req: NextRequest) {
   const { phone } = parsed.data;
 
   // Send verification code via Twilio Verify API
-  const twilioUrl = `https://verify.twilio.com/v2/Services/${TWILIO_VERIFY_SID}/Verifications`;
-  const authHeader = Buffer.from(
-    `${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`,
-  ).toString("base64");
+  const twilioUrl = `https://verify.twilio.com/v2/Services/${creds.verifySid}/Verifications`;
 
   const res = await fetch(twilioUrl, {
     method: "POST",
     headers: {
-      Authorization: `Basic ${authHeader}`,
+      Authorization: `Basic ${creds.authHeader}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: new URLSearchParams({ To: phone, Channel: "sms" }),
   });
 
   if (!res.ok) {
-    const err = await res.json();
     return NextResponse.json(
-      { error: err.message || "Failed to send verification code" },
+      { error: "Failed to send verification code" },
       { status: 422 },
     );
   }
@@ -90,6 +107,14 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const creds = getTwilioCredentials();
+  if (!creds) {
+    return NextResponse.json(
+      { error: "Phone verification is not configured" },
+      { status: 503 },
+    );
+  }
+
   const body = await req.json();
   const parsed = verifySchema.safeParse(body);
   if (!parsed.success) {
@@ -102,24 +127,20 @@ export async function PUT(req: NextRequest) {
   const { phone, code } = parsed.data;
 
   // Check verification via Twilio Verify API
-  const twilioUrl = `https://verify.twilio.com/v2/Services/${TWILIO_VERIFY_SID}/VerificationCheck`;
-  const authHeader = Buffer.from(
-    `${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`,
-  ).toString("base64");
+  const twilioUrl = `https://verify.twilio.com/v2/Services/${creds.verifySid}/VerificationCheck`;
 
   const res = await fetch(twilioUrl, {
     method: "POST",
     headers: {
-      Authorization: `Basic ${authHeader}`,
+      Authorization: `Basic ${creds.authHeader}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: new URLSearchParams({ To: phone, Code: code }),
   });
 
   if (!res.ok) {
-    const err = await res.json();
     return NextResponse.json(
-      { error: err.message || "Verification failed" },
+      { error: "Verification failed" },
       { status: 422 },
     );
   }
