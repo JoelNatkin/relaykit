@@ -74,9 +74,15 @@ export const BUSINESS_TYPE_OPTIONS = [
 const phoneDigits = (val: string) => val.replace(/\D/g, "");
 const einDigits = (val: string) => val.replace(/\D/g, "");
 
-/** Format a phone string as (XXX) XXX-XXXX while the user types */
+/** Format a phone string as (XXX) XXX-XXXX while the user types.
+ *  Strips leading +1 or 1 from autofilled international values. */
 export function formatPhone(raw: string): string {
-  const digits = phoneDigits(raw).slice(0, 10);
+  let digits = phoneDigits(raw);
+  // Strip US country code from autofill (e.g., +12065551234 → 2065551234)
+  if (digits.length === 11 && digits[0] === "1") {
+    digits = digits.slice(1);
+  }
+  digits = digits.slice(0, 10);
   if (digits.length === 0) return "";
   if (digits.length <= 3) return `(${digits}`;
   if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
