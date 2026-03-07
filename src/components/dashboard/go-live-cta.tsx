@@ -46,7 +46,7 @@ export function GoLiveCta({ variant }: GoLiveCtaProps) {
       saveDashboardIntakeData(intakeData);
 
       // Navigate to intake wizard — Path 2 skips Screen 1
-      router.push("/start/scope");
+      router.push(`/start/scope?use_case=${encodeURIComponent(useCase)}&path=dashboard`);
     } catch {
       setIsNavigating(false);
     }
