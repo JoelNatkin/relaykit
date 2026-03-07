@@ -355,53 +355,72 @@ export function BusinessDetailsForm({
           Your business
         </legend>
 
-        <Input
-          label="Business or app name"
-          placeholder="The name your customers will see on texts"
-          isRequired
-          spellCheck="false"
-          autoCorrect="off"
-          value={form.business_name}
-          onChange={(val) => updateField("business_name", val)}
-          onBlur={() => handleBlur("business_name")}
-          isInvalid={!!fieldError("business_name")}
-          hint={
-            fieldError("business_name") ??
-            (showEinFields
-              ? "Use your legal business name exactly as registered with the IRS"
-              : undefined)
-          }
-        />
+        <div>
+          <Input
+            label="Business or app name"
+            placeholder="The name your customers will see on texts"
+            isRequired
+            maxLength={100}
+            spellCheck="false"
+            autoCorrect="off"
+            value={form.business_name}
+            onChange={(val) => updateField("business_name", val)}
+            onBlur={() => handleBlur("business_name")}
+            isInvalid={!!fieldError("business_name")}
+            hint={
+              fieldError("business_name") ??
+              (showEinFields
+                ? "Use your legal business name exactly as registered with the IRS"
+                : undefined)
+            }
+          />
+          <p className="mt-1 text-right text-xs text-quaternary">
+            {form.business_name.length}/100
+          </p>
+        </div>
 
-        <TextArea
-          label="What does your business/app do?"
-          placeholder={`Describe your app in a sentence or two. Example: '${DESCRIPTION_EXAMPLES[useCase]}'`}
-          isRequired
-          rows={3}
-          value={form.business_description}
-          onChange={(val) => updateField("business_description", val)}
-          onBlur={() => handleBlur("business_description")}
-          isInvalid={!!fieldError("business_description")}
-          hint={fieldError("business_description")}
-        />
+        <div>
+          <TextArea
+            label="What does your business/app do?"
+            placeholder={`Describe your app in a sentence or two. Example: '${DESCRIPTION_EXAMPLES[useCase]}'`}
+            isRequired
+            maxLength={500}
+            rows={3}
+            value={form.business_description}
+            onChange={(val) => updateField("business_description", val)}
+            onBlur={() => handleBlur("business_description")}
+            isInvalid={!!fieldError("business_description")}
+            hint={fieldError("business_description")}
+          />
+          <p className="mt-1 text-right text-xs text-quaternary">
+            {form.business_description.length}/500
+          </p>
+        </div>
 
         {industryGate && <IndustryGateAlert gate={industryGate} />}
 
         {/* Use-case-specific fields */}
-        {useCaseFields.map(({ field, label, placeholder }) => {
+        {useCaseFields.map(({ field, label, placeholder, maxLength }) => {
           const isOptional = field === "app_name";
           return (
-            <Input
-              key={field}
-              label={label}
-              placeholder={placeholder}
-              isRequired={!isOptional}
-              value={form[field] ?? ""}
-              onChange={(val) => updateField(field, val)}
-              onBlur={() => handleBlur(field)}
-              isInvalid={!!fieldError(field)}
-              hint={fieldError(field)}
-            />
+            <div key={field}>
+              <Input
+                label={label}
+                placeholder={placeholder}
+                isRequired={!isOptional}
+                maxLength={maxLength}
+                value={form[field] ?? ""}
+                onChange={(val) => updateField(field, val)}
+                onBlur={() => handleBlur(field)}
+                isInvalid={!!fieldError(field)}
+                hint={fieldError(field)}
+              />
+              {maxLength && (
+                <p className="mt-1 text-right text-xs text-quaternary">
+                  {(form[field] ?? "").length}/{maxLength}
+                </p>
+              )}
+            </div>
           );
         })}
 

@@ -236,13 +236,14 @@ export type BusinessDetailsData = z.infer<typeof businessDetailsSchema>;
 
 /** Use-case-specific required fields */
 export const USE_CASE_FIELDS: Partial<
-  Record<UseCaseId, { field: keyof BusinessDetailsData; label: string; placeholder: string }[]>
+  Record<UseCaseId, { field: keyof BusinessDetailsData; label: string; placeholder: string; maxLength?: number }[]>
 > = {
   appointments: [
     {
       field: "service_type",
       label: "What type of service do your customers book?",
       placeholder: "e.g., dental, hair salon, consulting, auto repair",
+      maxLength: 100,
     },
   ],
   orders: [
@@ -250,6 +251,7 @@ export const USE_CASE_FIELDS: Partial<
       field: "product_type",
       label: "What do you sell/deliver?",
       placeholder: "e.g., clothing, food delivery, handmade goods",
+      maxLength: 100,
     },
   ],
   verification: [
@@ -257,6 +259,7 @@ export const USE_CASE_FIELDS: Partial<
       field: "app_name",
       label: "App name (if different from business)",
       placeholder: "The name users see when they get a code",
+      maxLength: 100,
     },
   ],
   community: [
@@ -264,6 +267,7 @@ export const USE_CASE_FIELDS: Partial<
       field: "community_name",
       label: "Community or group name",
       placeholder: "e.g., Local Runners Club, Beta Testers",
+      maxLength: 100,
     },
   ],
   waitlist: [
@@ -271,6 +275,7 @@ export const USE_CASE_FIELDS: Partial<
       field: "venue_type",
       label: "Type of venue/business",
       placeholder: "e.g., restaurant, barbershop, clinic",
+      maxLength: 100,
     },
   ],
 };
