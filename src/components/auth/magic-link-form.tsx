@@ -138,6 +138,7 @@ function OtpDigitInput({
 
 export function EmailOtpForm() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [email, setEmail] = useState("");
   const [digits, setDigits] = useState<string[]>(
     Array.from({ length: CODE_LENGTH }, () => ""),
@@ -166,10 +167,15 @@ export function EmailOtpForm() {
   }, []);
 
   useEffect(() => {
+    setMounted(true);
     return () => {
       if (cooldownRef.current) clearInterval(cooldownRef.current);
     };
   }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   async function handleSendCode(e?: React.FormEvent) {
     e?.preventDefault();
