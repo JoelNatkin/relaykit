@@ -297,3 +297,12 @@ _Affects: PRD_03, `src/lib/compliance-site/`, any code that constructs or displa
 **D-57 — Intake wizard form data must never appear in URL query params** (Date: 2026-03-07)
 Business details (EIN, phone, address, business description, email) are sensitive PII and must only be persisted in sessionStorage (`relaykit_intake` key), never serialized into URL query parameters. URLs between intake wizard screens carry only routing params: `use_case`, `expansions`, `campaign_type`, and `path`. This was enforced after a smoke test revealed the details page was serializing all form fields into the `/start/review` URL.
 _Affects: `src/app/start/details/page.tsx`, `src/app/start/review/page.tsx`, any future intake wizard screens._
+
+**D-58 — Single auth page at /login, no separate signup** (Date: 2026-03-08)
+Login and signup are collapsed into a single page at `/login` with copy "Enter your email to continue." There is no sign-up vs sign-in distinction — `signInWithOtp()` handles both cases (creates account on first use, signs in on subsequent uses). `/signup` redirects to `/login`. All landing page CTAs point to `/login`. This eliminates user confusion about which page to use and removes the "Already have an account?" / "Don't have an account?" cross-links.
+_Affects: `src/app/login/page.tsx`, `src/app/signup/page.tsx`, `src/components/auth/magic-link-form.tsx`, `src/components/landing/nav.tsx`, `src/components/landing/hero.tsx`, `src/components/landing/closing-cta.tsx`._
+
+**D-59 — Auth uses email OTP verification, not magic links** (Date: 2026-03-08)
+Authentication uses Supabase `signInWithOtp()` to send a 6-digit email code, verified client-side via `verifyOtp({ email, token, type: 'email' })`. The user never leaves the `/login` page. This replaces the previous magic link flow which redirected through `/auth/callback`. The callback route has been removed. Supabase dashboard must have email OTP template configured (using `{{ .Token }}` not `{{ .ConfirmationURL }}`).
+_Reason: Magic links open in a new browser context (different tab, sometimes different browser on mobile), breaking session continuity. OTP keeps the user on the same page._
+_Affects: `src/components/auth/magic-link-form.tsx`, `src/app/auth/callback/` (deleted). Supabase dashboard: Authentication > Email Templates._
