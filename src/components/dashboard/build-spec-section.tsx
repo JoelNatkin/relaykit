@@ -114,9 +114,9 @@ export function BuildSpecSection({ useCase }: BuildSpecSectionProps) {
             <Button
               size="sm"
               color="secondary"
-              href="/dashboard/api-reference"
+              isDisabled
             >
-              View API docs
+              API docs — coming soon
             </Button>
           </div>
         </div>
