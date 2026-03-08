@@ -70,7 +70,10 @@ function OtpDigitInput({
 
   function handlePaste(e: ClipboardEvent<HTMLInputElement>) {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, CODE_LENGTH);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, CODE_LENGTH);
     if (!pasted) return;
 
     const next = [...digits];
@@ -84,19 +87,26 @@ function OtpDigitInput({
   }
 
   const boxes = Array.from({ length: CODE_LENGTH }, (_, i) => i);
-  const inputClass = `h-12 w-10 rounded-lg border text-center font-mono text-lg font-semibold outline-none transition duration-100 ease-linear sm:h-14 sm:w-12 sm:text-xl ${
-    isInvalid
-      ? "border-error bg-primary text-error-primary focus:border-error focus:ring-1 focus:ring-error"
-      : "border-primary bg-primary text-primary focus:border-brand focus:ring-1 focus:ring-brand"
-  }`;
+
+  function boxClass(index: number) {
+    const isEmpty = !digits[index];
+    const showInvalid = isInvalid && isEmpty;
+    return `flex-1 aspect-square max-h-14 rounded-lg border text-center font-mono text-xl font-semibold outline-none transition duration-100 ease-linear ${
+      showInvalid
+        ? "border-error bg-primary text-error-primary focus:border-error focus:ring-1 focus:ring-error"
+        : isInvalid
+          ? "border-error bg-primary text-primary focus:border-error focus:ring-1 focus:ring-error"
+          : "border-primary bg-primary text-primary focus:border-brand focus:ring-1 focus:ring-brand"
+    }`;
+  }
 
   return (
     <div>
-      <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+      <div className="flex w-full items-center gap-1.5 sm:gap-2">
         {boxes.map((i) => (
           <span key={i} className="contents">
             {i === GROUP_SIZE && (
-              <span className="mx-1 text-lg font-medium text-quaternary sm:mx-1.5">
+              <span className="shrink-0 text-lg font-medium text-quaternary">
                 –
               </span>
             )}
@@ -113,7 +123,7 @@ function OtpDigitInput({
               onKeyDown={(e) => handleKeyDown(i, e)}
               onPaste={i === 0 ? handlePaste : undefined}
               onFocus={(e) => e.target.select()}
-              className={inputClass}
+              className={boxClass(i)}
               aria-label={`Digit ${i + 1}`}
             />
           </span>
@@ -139,6 +149,7 @@ export function EmailOtpForm() {
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const code = digits.join("");
+  const isCodeComplete = code.length === CODE_LENGTH;
 
   const startCooldown = useCallback(() => {
     setCooldown(RESEND_COOLDOWN_SECONDS);
@@ -188,6 +199,12 @@ export function EmailOtpForm() {
 
   async function handleVerifyCode(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!isCodeComplete) {
+      setError("Enter all digits to continue.");
+      return;
+    }
+
     setError(null);
     setIsLoading(true);
 
@@ -200,16 +217,16 @@ export function EmailOtpForm() {
       });
 
       if (verifyError) {
-        if (
-          verifyError.message.toLowerCase().includes("expired") ||
-          verifyError.code === "otp_expired"
-        ) {
-          setError("That code has expired. Request a new one.");
-        } else {
-          setError(
-            "That code didn\u2019t match. Check your email and try again.",
-          );
-        }
+        // Log full error for debugging — Supabase may conflate
+        // invalid and expired codes under the same error
+        console.error("[OTP verify]", {
+          message: verifyError.message,
+          code: verifyError.code,
+          status: verifyError.status,
+        });
+        setError(
+          "That code didn\u2019t work. Check your email or request a new one.",
+        );
         return;
       }
 
@@ -279,7 +296,6 @@ export function EmailOtpForm() {
             size="md"
             isLoading={isLoading}
             showTextWhileLoading
-            isDisabled={code.length !== CODE_LENGTH}
             className="w-full"
           >
             Verify
