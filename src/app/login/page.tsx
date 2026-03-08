@@ -3,7 +3,7 @@ import { MagicLinkForm } from "@/components/auth/magic-link-form";
 
 export const metadata: Metadata = {
   title: "Log in — RelayKit",
-  description: "Sign in to your RelayKit dashboard with a magic link.",
+  description: "Access your RelayKit dashboard with a magic link.",
 };
 
 export default function LoginPage({
@@ -30,10 +30,10 @@ async function LoginContent({
             RelayKit
           </a>
           <h1 className="mt-6 text-2xl font-semibold text-primary">
-            Welcome back
+            Enter your email to continue
           </h1>
           <p className="mt-2 text-sm text-tertiary">
-            Sign in with a magic link — no password needed.
+            We&apos;ll send you a magic link — no password needed.
           </p>
         </div>
 
@@ -43,17 +43,7 @@ async function LoginContent({
           </div>
         )}
 
-        <MagicLinkForm mode="login" />
-
-        <p className="mt-6 text-center text-sm text-tertiary">
-          Don&apos;t have an account?{" "}
-          <a
-            href="/signup"
-            className="font-medium text-brand-secondary transition duration-100 ease-linear hover:text-brand-secondary_hover"
-          >
-            Start building free
-          </a>
-        </p>
+        <MagicLinkForm />
       </div>
     </div>
   );

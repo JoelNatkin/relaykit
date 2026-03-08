@@ -11,7 +11,7 @@ export function Nav() {
           <Button href="/login" color="link-gray" size="sm">
             Log in
           </Button>
-          <Button href="/signup" color="primary" size="sm">
+          <Button href="/login" color="primary" size="sm">
             Start building free &rarr;
           </Button>
         </div>

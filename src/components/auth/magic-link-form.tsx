@@ -6,11 +6,7 @@ import { Button } from "@/components/base/buttons/button";
 import { Input } from "@/components/base/input/input";
 import { Mail01 } from "@untitledui/icons";
 
-interface MagicLinkFormProps {
-  mode: "login" | "signup";
-}
-
-export function MagicLinkForm({ mode }: MagicLinkFormProps) {
+export function MagicLinkForm() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -52,7 +48,7 @@ export function MagicLinkForm({ mode }: MagicLinkFormProps) {
         <h2 className="text-lg font-semibold text-primary">Check your email</h2>
         <p className="mt-2 text-sm text-tertiary">
           We sent a magic link to <span className="font-medium text-primary">{email}</span>.
-          Click the link to {mode === "signup" ? "get started" : "sign in"}.
+          Click the link to continue.
         </p>
         <button
           type="button"
@@ -90,7 +86,7 @@ export function MagicLinkForm({ mode }: MagicLinkFormProps) {
         showTextWhileLoading
         className="w-full"
       >
-        {mode === "signup" ? "Get started" : "Sign in"}
+        Continue
       </Button>
     </form>
   );

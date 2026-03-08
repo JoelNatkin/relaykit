@@ -8,7 +8,7 @@ export function ClosingCTA() {
           Add SMS to your app. Let AI handle the code.
         </h2>
         <div className="mt-6">
-          <Button href="/signup" color="primary" size="xl">
+          <Button href="/login" color="primary" size="xl">
             Start building free →
           </Button>
         </div>

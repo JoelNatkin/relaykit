@@ -15,7 +15,7 @@ export function Hero() {
           Go live when you're ready. No credit card.
         </p>
         <div className="mt-8">
-          <Button href="/signup" color="primary" size="xl">
+          <Button href="/login" color="primary" size="xl">
             Start building free →
           </Button>
         </div>
