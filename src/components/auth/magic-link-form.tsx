@@ -91,22 +91,22 @@ function OtpDigitInput({
   function boxClass(index: number) {
     const isEmpty = !digits[index];
     const showInvalid = isInvalid && isEmpty;
-    return `flex-1 aspect-square max-h-14 rounded-lg border text-center font-mono text-xl font-semibold outline-none transition duration-100 ease-linear ${
+    return `h-12 min-w-0 flex-1 rounded-lg border text-center text-xl font-normal outline-none transition duration-100 ease-linear [color:#374151] ${
       showInvalid
-        ? "border-error bg-primary text-error-primary focus:border-error focus:ring-1 focus:ring-error"
+        ? "border-error bg-primary focus:border-error focus:ring-1 focus:ring-error"
         : isInvalid
-          ? "border-error bg-primary text-primary focus:border-error focus:ring-1 focus:ring-error"
-          : "border-primary bg-primary text-primary focus:border-brand focus:ring-1 focus:ring-brand"
+          ? "border-error bg-primary focus:border-error focus:ring-1 focus:ring-error"
+          : "border-primary bg-primary focus:border-brand focus:ring-1 focus:ring-brand"
     }`;
   }
 
   return (
     <div>
-      <div className="flex w-full items-center gap-1.5 sm:gap-2">
+      <div className="flex w-full items-center gap-1.5">
         {boxes.map((i) => (
           <span key={i} className="contents">
             {i === GROUP_SIZE && (
-              <span className="shrink-0 text-lg font-medium text-quaternary">
+              <span className="shrink-0 px-0.5 text-lg font-medium text-quaternary">
                 –
               </span>
             )}
