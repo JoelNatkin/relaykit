@@ -8,8 +8,8 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-primary px-4">
-      <div className="w-full max-w-sm">
+    <div className="flex min-h-screen items-center justify-center bg-primary px-6">
+      <div className="w-full max-w-[400px]">
         <a
           href="/"
           className="mb-8 block text-center text-lg font-semibold text-primary"
