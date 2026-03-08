@@ -44,10 +44,17 @@
 - [x] PRD_09 Phase 1 — messaging proxy, developer sandbox, compliance pipeline, 7 API routes
 - [x] PRD_08 Phase 1 — compliance monitoring: async checks (BM-01/02/06), message_scans + compliance_alerts tables, dashboard wiring, alert emails 6+7, checkout consent
 - [x] PRD_07 Landing Page — single-page marketing site: hero (AI-first), problem, how-it-works (3 steps), pricing tiers (Free/$199/$19), BYO waitlist email capture, use cases, FAQ (10 items), closing CTA, footer, /terms + /privacy stubs, SEO + OG metadata
+- [x] Auth page consolidation — collapsed /signup and /login into single /login page with email OTP (D-58, D-59). 6-digit individual digit boxes, 3-3 layout, resend cooldown, client-only mount guard for React Aria hydration fix
+- [x] Landing page CTA updates — all /signup links changed to /login across nav, hero, closing CTA
+- [x] Dashboard fix — disabled "View API docs" button (route doesn't exist), shows "API docs — coming soon"
 
 ## In Progress
 
 ## Up Next
+- [ ] Compliance tab with mock data
+- [ ] Stepper implementation
+- [ ] Environment split (sandbox vs production)
+- [ ] Experience Principles doc fix (line 88: "5–7 days" → "2–3 weeks" per D-17)
 - [ ] Stripe end-to-end test (add `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET` to .env, run `stripe listen --forward-to localhost:3000/api/webhooks/stripe`)
 - [ ] Apply database migrations to Supabase (run `supabase db push` or apply manually)
 - [ ] Add env vars: `TWILIO_AUTH_TOKEN`, `TWILIO_ENCRYPTION_KEY` (openssl rand -hex 32), `CRON_SECRET`, `RELAYKIT_API_DOMAIN`
@@ -61,9 +68,8 @@
 - **Template engine public API**: `generateArtifacts(intake: IntakeData)` in `src/lib/templates/index.ts` is the canonical entry point for artifact generation. `generateTemplates()` in `src/lib/intake/templates.ts` is for review page preview only (uses {{placeholder}} sample messages). Do not merge these — they serve different purposes.
 
 ## Current PRD
-Completed: PRD_01, PRD_02, PRD_03, PRD_04, PRD_05, PRD_06, PRD_07, PRD_09 Phase 1, PRD_08 Phase 1
-Up next: /login + /signup auth pages, D-51 ToS/AUP content, integration testing, PRD_08 Phase 2
+Completed: PRD_01–09 Phase 1, PRD_08 Phase 1. Current: UX/design pass. Up next: compliance tab mock data, stepper, environment split.
 
 ## Session Resume Prompt
 If starting a new session, use this prompt:
-"Read CLAUDE.md, PROGRESS.md, and docs/PRICING_MODEL_UPDATE.md. Check the current codebase to understand what's been built. Resume from the 'In Progress' item in PROGRESS.md."
+"Read CLAUDE.md, DECISIONS.md, CC_HANDOFF.md, and PROGRESS.md. Check the current codebase to understand what's been built. Resume from the 'In Progress' item in PROGRESS.md."
