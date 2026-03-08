@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ClipboardEvent,
+  type KeyboardEvent,
+} from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/base/buttons/button";
@@ -8,16 +15,130 @@ import { Input } from "@/components/base/input/input";
 import { Mail01 } from "@untitledui/icons";
 
 const RESEND_COOLDOWN_SECONDS = 60;
+const CODE_LENGTH = 8;
+const GROUP_SIZE = 4;
+
+function OtpDigitInput({
+  digits,
+  onChange,
+  isInvalid,
+  error,
+}: {
+  digits: string[];
+  onChange: (digits: string[]) => void;
+  isInvalid: boolean;
+  error: string | null;
+}) {
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  function focusInput(index: number) {
+    inputRefs.current[index]?.focus();
+  }
+
+  function handleInput(index: number, value: string) {
+    const digit = value.replace(/\D/g, "").slice(-1);
+    const next = [...digits];
+    next[index] = digit;
+    onChange(next);
+
+    if (digit && index < CODE_LENGTH - 1) {
+      focusInput(index + 1);
+    }
+  }
+
+  function handleKeyDown(index: number, e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Backspace") {
+      if (digits[index]) {
+        const next = [...digits];
+        next[index] = "";
+        onChange(next);
+      } else if (index > 0) {
+        const next = [...digits];
+        next[index - 1] = "";
+        onChange(next);
+        focusInput(index - 1);
+      }
+      e.preventDefault();
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      focusInput(index - 1);
+      e.preventDefault();
+    } else if (e.key === "ArrowRight" && index < CODE_LENGTH - 1) {
+      focusInput(index + 1);
+      e.preventDefault();
+    }
+  }
+
+  function handlePaste(e: ClipboardEvent<HTMLInputElement>) {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, CODE_LENGTH);
+    if (!pasted) return;
+
+    const next = [...digits];
+    for (let i = 0; i < CODE_LENGTH; i++) {
+      next[i] = pasted[i] || "";
+    }
+    onChange(next);
+
+    const focusIdx = Math.min(pasted.length, CODE_LENGTH - 1);
+    focusInput(focusIdx);
+  }
+
+  const boxes = Array.from({ length: CODE_LENGTH }, (_, i) => i);
+  const inputClass = `h-12 w-10 rounded-lg border text-center font-mono text-lg font-semibold outline-none transition duration-100 ease-linear sm:h-14 sm:w-12 sm:text-xl ${
+    isInvalid
+      ? "border-error bg-primary text-error-primary focus:border-error focus:ring-1 focus:ring-error"
+      : "border-primary bg-primary text-primary focus:border-brand focus:ring-1 focus:ring-brand"
+  }`;
+
+  return (
+    <div>
+      <div className="flex items-center justify-center gap-1.5 sm:gap-2">
+        {boxes.map((i) => (
+          <span key={i} className="contents">
+            {i === GROUP_SIZE && (
+              <span className="mx-1 text-lg font-medium text-quaternary sm:mx-1.5">
+                –
+              </span>
+            )}
+            <input
+              ref={(el) => {
+                inputRefs.current[i] = el;
+              }}
+              type="text"
+              inputMode="numeric"
+              autoComplete={i === 0 ? "one-time-code" : "off"}
+              maxLength={1}
+              value={digits[i]}
+              onChange={(e) => handleInput(i, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(i, e)}
+              onPaste={i === 0 ? handlePaste : undefined}
+              onFocus={(e) => e.target.select()}
+              className={inputClass}
+              aria-label={`Digit ${i + 1}`}
+            />
+          </span>
+        ))}
+      </div>
+      {error && (
+        <p className="mt-2 text-center text-sm text-error-primary">{error}</p>
+      )}
+    </div>
+  );
+}
 
 export function EmailOtpForm() {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
+  const [digits, setDigits] = useState<string[]>(
+    Array.from({ length: CODE_LENGTH }, () => ""),
+  );
   const [step, setStep] = useState<"email" | "code">("email");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const code = digits.join("");
 
   const startCooldown = useCallback(() => {
     setCooldown(RESEND_COOLDOWN_SECONDS);
@@ -56,7 +177,7 @@ export function EmailOtpForm() {
       }
 
       setStep("code");
-      setCode("");
+      setDigits(Array.from({ length: CODE_LENGTH }, () => ""));
       startCooldown();
     } catch {
       setError("Something went wrong. Try again.");
@@ -117,6 +238,7 @@ export function EmailOtpForm() {
         return;
       }
 
+      setDigits(Array.from({ length: CODE_LENGTH }, () => ""));
       startCooldown();
     } catch {
       setError("Something went wrong. Try again.");
@@ -136,23 +258,20 @@ export function EmailOtpForm() {
             Check your email
           </h2>
           <p className="mt-2 text-sm text-tertiary">
-            We sent a 6-digit code to{" "}
+            We sent an 8-digit code to{" "}
             <span className="font-medium text-primary">{email}</span>.
           </p>
         </div>
 
         <form onSubmit={handleVerifyCode} className="space-y-4">
-          <Input
-            label="Code"
-            type="text"
-            inputMode="numeric"
-            placeholder="000000"
-            value={code}
-            onChange={(v) => setCode((v as string).replace(/\D/g, "").slice(0, 6))}
-            autoComplete="one-time-code"
+          <OtpDigitInput
+            digits={digits}
+            onChange={(d) => {
+              setDigits(d);
+              setError(null);
+            }}
             isInvalid={!!error}
-            hint={error ?? undefined}
-            size="md"
+            error={error}
           />
           <Button
             type="submit"
@@ -160,7 +279,7 @@ export function EmailOtpForm() {
             size="md"
             isLoading={isLoading}
             showTextWhileLoading
-            isDisabled={code.length !== 6}
+            isDisabled={code.length !== CODE_LENGTH}
             className="w-full"
           >
             Verify
@@ -172,7 +291,7 @@ export function EmailOtpForm() {
             type="button"
             onClick={() => {
               setStep("email");
-              setCode("");
+              setDigits(Array.from({ length: CODE_LENGTH }, () => ""));
               setError(null);
             }}
             className="text-sm font-medium text-brand-secondary transition duration-100 ease-linear hover:text-brand-secondary_hover"
