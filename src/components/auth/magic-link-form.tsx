@@ -91,7 +91,7 @@ function OtpDigitInput({
   function boxClass(index: number) {
     const isEmpty = !digits[index];
     const showInvalid = isInvalid && isEmpty;
-    return `min-w-0 flex-1 aspect-square rounded-lg border text-center text-xl font-normal outline-none transition duration-100 ease-linear [color:#374151] ${
+    return `min-w-0 flex-1 aspect-square rounded-lg border text-center text-2xl font-normal outline-none transition duration-100 ease-linear [color:#374151] ${
       showInvalid
         ? "border-error bg-primary focus:border-error focus:ring-1 focus:ring-error"
         : isInvalid
