@@ -15,8 +15,8 @@ import { Input } from "@/components/base/input/input";
 import { Mail01 } from "@untitledui/icons";
 
 const RESEND_COOLDOWN_SECONDS = 60;
-const CODE_LENGTH = 8;
-const GROUP_SIZE = 4;
+const CODE_LENGTH = 6;
+const GROUP_SIZE = 3;
 
 function OtpDigitInput({
   digits,
@@ -258,7 +258,7 @@ export function EmailOtpForm() {
             Check your email
           </h2>
           <p className="mt-2 text-sm text-tertiary">
-            We sent an 8-digit code to{" "}
+            We sent a code to{" "}
             <span className="font-medium text-primary">{email}</span>.
           </p>
         </div>
