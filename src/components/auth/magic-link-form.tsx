@@ -6,7 +6,11 @@ import { Button } from "@/components/base/buttons/button";
 import { Input } from "@/components/base/input/input";
 import { Mail01 } from "@untitledui/icons";
 
-export function MagicLinkForm() {
+interface MagicLinkFormProps {
+  authError?: boolean;
+}
+
+export function MagicLinkForm({ authError }: MagicLinkFormProps) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -65,29 +69,46 @@ export function MagicLinkForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="Email"
-        type="email"
-        placeholder="you@example.com"
-        icon={Mail01}
-        value={email}
-        onChange={(v) => setEmail(v as string)}
-        isRequired
-        isInvalid={!!error}
-        hint={error ?? undefined}
-        size="md"
-      />
-      <Button
-        type="submit"
-        color="primary"
-        size="md"
-        isLoading={isLoading}
-        showTextWhileLoading
-        className="w-full"
-      >
-        Continue
-      </Button>
-    </form>
+    <>
+      <div className="mb-8 text-center">
+        <h1 className="text-2xl font-semibold text-primary">
+          Enter your email to continue
+        </h1>
+        <p className="mt-2 text-sm text-tertiary">
+          We&apos;ll send you a magic link — no password needed.
+        </p>
+      </div>
+
+      {authError && (
+        <div className="mb-4 rounded-lg border border-error bg-error-primary px-4 py-3 text-sm text-error-primary">
+          That link didn&apos;t work. It may have expired — try again.
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Email"
+          type="email"
+          placeholder="you@example.com"
+          icon={Mail01}
+          value={email}
+          onChange={(v) => setEmail(v as string)}
+          isRequired
+          isInvalid={!!error}
+          hint={error ?? undefined}
+          size="md"
+        />
+        <Button
+          type="submit"
+          color="primary"
+          size="md"
+          isLoading={isLoading}
+          showTextWhileLoading
+          className="w-full"
+        >
+          Continue
+        </Button>
+      </form>
+    </>
   );
 }

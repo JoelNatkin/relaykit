@@ -25,25 +25,11 @@ async function LoginContent({
   return (
     <div className="flex min-h-screen items-center justify-center bg-primary px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <a href="/" className="text-lg font-semibold text-primary">
-            RelayKit
-          </a>
-          <h1 className="mt-6 text-2xl font-semibold text-primary">
-            Enter your email to continue
-          </h1>
-          <p className="mt-2 text-sm text-tertiary">
-            We&apos;ll send you a magic link — no password needed.
-          </p>
-        </div>
+        <a href="/" className="mb-8 block text-center text-lg font-semibold text-primary">
+          RelayKit
+        </a>
 
-        {hasAuthError && (
-          <div className="mb-4 rounded-lg border border-error bg-error-primary px-4 py-3 text-sm text-error-primary">
-            That link didn&apos;t work. It may have expired — try again.
-          </div>
-        )}
-
-        <MagicLinkForm />
+        <MagicLinkForm authError={hasAuthError} />
       </div>
     </div>
   );
