@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { CATEGORIES } from "@/data/categories";
 import { MESSAGES } from "@/data/messages";
 import { PreviewAsInput } from "@/components/plan-builder/preview-as-input";
+import { ConsentPreview } from "@/components/plan-builder/consent-preview";
 
 export default function PlanPage() {
   const params = useParams<{ categoryId: string }>();
@@ -27,9 +28,7 @@ export default function PlanPage() {
 
       <PreviewAsInput />
 
-      <div className="rounded-xl border border-dashed border-tertiary p-8 text-center text-quaternary">
-        Consent form preview (coming soon)
-      </div>
+      <ConsentPreview categoryId={category.id} />
 
       <div className="mt-6 rounded-xl border border-dashed border-tertiary p-8 text-center text-quaternary">
         Compliance checklist (coming soon)
