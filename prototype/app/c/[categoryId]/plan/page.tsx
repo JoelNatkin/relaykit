@@ -30,49 +30,61 @@ export default function PlanPage() {
 
       <PreviewAsInput />
 
-      <ConsentPreview categoryId={category.id} />
+      <div className="space-y-6">
+        <div>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            What your users see
+          </h2>
+          <ConsentPreview categoryId={category.id} />
+        </div>
 
-      <ComplianceChecklist categoryId={category.id} />
+        <ComplianceChecklist categoryId={category.id} />
 
-      {(() => {
-        const categoryMessages = MESSAGES[category.id] || [];
-        const core = categoryMessages.filter((m) => m.tier === "core");
-        const alsoCovered = categoryMessages.filter(
-          (m) => m.tier === "also_covered"
-        );
-        const expansion = categoryMessages.filter(
-          (m) => m.tier === "expansion"
-        );
+        {(() => {
+          const categoryMessages = MESSAGES[category.id] || [];
+          const core = categoryMessages.filter((m) => m.tier === "core");
+          const alsoCovered = categoryMessages.filter(
+            (m) => m.tier === "also_covered"
+          );
+          const expansion = categoryMessages.filter(
+            (m) => m.tier === "expansion"
+          );
 
-        return (
-          <div className="mt-6 space-y-8">
-            {core.length > 0 && (
-              <MessageTier
-                tier="core"
-                messages={core}
-                title="CORE MESSAGES"
-                subtitle="On by default — most apps need these"
-              />
-            )}
-            {alsoCovered.length > 0 && (
-              <MessageTier
-                tier="also_covered"
-                messages={alsoCovered}
-                title="ALSO COVERED"
-                subtitle="Your registration includes these — turn on what you need"
-              />
-            )}
-            {expansion.length > 0 && (
-              <MessageTier
-                tier="expansion"
-                messages={expansion}
-                title="⭐ NEEDS ADDITIONAL REGISTRATION"
-                subtitle="We register a separate campaign alongside yours"
-              />
-            )}
-          </div>
-        );
-      })()}
+          return (
+            <div>
+              <h2 className="mb-4 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                Your messages
+              </h2>
+              <div className="space-y-8">
+                {core.length > 0 && (
+                  <MessageTier
+                    tier="core"
+                    messages={core}
+                    title="CORE MESSAGES"
+                    subtitle="On by default — most apps need these"
+                  />
+                )}
+                {alsoCovered.length > 0 && (
+                  <MessageTier
+                    tier="also_covered"
+                    messages={alsoCovered}
+                    title="ALSO COVERED"
+                    subtitle="Your registration includes these — turn on what you need"
+                  />
+                )}
+                {expansion.length > 0 && (
+                  <MessageTier
+                    tier="expansion"
+                    messages={expansion}
+                    title="⭐ NEEDS ADDITIONAL REGISTRATION"
+                    subtitle="We register a separate campaign alongside yours"
+                  />
+                )}
+              </div>
+            </div>
+          );
+        })()}
+      </div>
     </motion.div>
   );
 }

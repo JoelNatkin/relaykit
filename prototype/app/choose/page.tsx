@@ -27,7 +27,12 @@ export default function ChoosePage() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="mx-auto max-w-3xl px-4 py-12"
+    >
       <div className="mb-10 text-center">
         <h1 className="text-3xl font-bold">What are you building?</h1>
         <p className="mt-2 text-secondary">
@@ -55,6 +60,6 @@ export default function ChoosePage() {
         isOpen={activeCategory !== null}
         onClose={() => setActiveCategory(null)}
       />
-    </div>
+    </motion.div>
   );
 }

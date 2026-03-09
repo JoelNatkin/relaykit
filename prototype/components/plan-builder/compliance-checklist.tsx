@@ -158,7 +158,7 @@ export function ComplianceChecklist({ categoryId }: ComplianceChecklistProps) {
   const allChecks = [check1, check2, check3, check4, check5];
 
   return (
-    <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5">
+    <div className="rounded-xl border border-gray-200 bg-white p-5">
       <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-700">
         Compliance check
       </h3>

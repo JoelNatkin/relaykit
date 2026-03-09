@@ -25,7 +25,7 @@ export function ConsentPreview({ categoryId }: ConsentPreviewProps) {
   const hasExpansion = enabledExpansion.length > 0;
 
   return (
-    <div className="mb-6 overflow-hidden rounded-2xl border border-secondary bg-secondary shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-secondary bg-secondary shadow-sm">
       {/* Browser chrome */}
       <div className="flex h-8 items-center border-b border-secondary bg-tertiary px-3 gap-1.5">
         <div className="w-2 h-2 rounded-full bg-quaternary" />
