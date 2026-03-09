@@ -7,6 +7,7 @@ import { MESSAGES } from "@/data/messages";
 import { PreviewAsInput } from "@/components/plan-builder/preview-as-input";
 import { ConsentPreview } from "@/components/plan-builder/consent-preview";
 import { ComplianceChecklist } from "@/components/plan-builder/compliance-checklist";
+import { MessageTier } from "@/components/plan-builder/message-tier";
 
 export default function PlanPage() {
   const params = useParams<{ categoryId: string }>();
@@ -33,9 +34,45 @@ export default function PlanPage() {
 
       <ComplianceChecklist categoryId={category.id} />
 
-      <div className="mt-6 rounded-xl border border-dashed border-tertiary p-8 text-center text-quaternary">
-        Message cards (coming soon)
-      </div>
+      {(() => {
+        const categoryMessages = MESSAGES[category.id] || [];
+        const core = categoryMessages.filter((m) => m.tier === "core");
+        const alsoCovered = categoryMessages.filter(
+          (m) => m.tier === "also_covered"
+        );
+        const expansion = categoryMessages.filter(
+          (m) => m.tier === "expansion"
+        );
+
+        return (
+          <div className="mt-6 space-y-8">
+            {core.length > 0 && (
+              <MessageTier
+                tier="core"
+                messages={core}
+                title="CORE MESSAGES"
+                subtitle="On by default — most apps need these"
+              />
+            )}
+            {alsoCovered.length > 0 && (
+              <MessageTier
+                tier="also_covered"
+                messages={alsoCovered}
+                title="ALSO COVERED"
+                subtitle="Your registration includes these — turn on what you need"
+              />
+            )}
+            {expansion.length > 0 && (
+              <MessageTier
+                tier="expansion"
+                messages={expansion}
+                title="⭐ NEEDS ADDITIONAL REGISTRATION"
+                subtitle="We register a separate campaign alongside yours"
+              />
+            )}
+          </div>
+        );
+      })()}
     </motion.div>
   );
 }

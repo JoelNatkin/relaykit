@@ -13,7 +13,7 @@ import { MESSAGES } from "@/data/messages";
 
 const STORAGE_KEY = "relaykit_prototype";
 
-interface SessionState {
+export interface SessionState {
   // Personalization
   appName: string;
   website: string;
