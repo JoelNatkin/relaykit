@@ -1,3 +1,16 @@
+import type { FC } from "react";
+import {
+  Calendar,
+  Package,
+  Shield01,
+  MessageChatCircle,
+  Announcement02,
+  Users01,
+  Globe01,
+  ClipboardCheck,
+  SearchLg,
+} from "@untitledui/icons";
+
 export interface PersonalizationField {
   key: string;
   label: string;
@@ -9,7 +22,7 @@ export interface PersonalizationField {
 export interface Category {
   id: string;
   label: string;
-  icon: string;
+  icon: FC<{ className?: string }>;
   description: string;
   modalContent: string | null;
   coversLine: string;
@@ -20,7 +33,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "verification",
     label: "Verification codes",
-    icon: "\u{1F510}",
+    icon: Shield01,
     description: "OTP, 2FA, login codes, password resets",
     modalContent:
       "Login codes, signup verification, password resets, and multi-factor auth. Every message is triggered by your user \u2014 they request it, your app sends it. Highest-trust SMS category with carriers.",
@@ -46,10 +59,10 @@ export const CATEGORIES: Category[] = [
   {
     id: "appointments",
     label: "Appointment reminders",
-    icon: "\u{1F4C5}",
+    icon: Calendar,
     description: "Booking confirmations, reminders, rescheduling",
     modalContent:
-      "Booking confirmations, reminders, rescheduling and cancellation notices. Messages about appointments they already booked.",
+      "Booking confirmations, reminders, rescheduling, and cancellation notices. Messages about appointments they already booked \u2014 your customers expect these.",
     coversLine:
       "confirmations \u00B7 reminders \u00B7 rescheduling \u00B7 cancellations \u00B7 no-show follow-ups",
     personalizationFields: [
@@ -79,10 +92,10 @@ export const CATEGORIES: Category[] = [
   {
     id: "orders",
     label: "Order & delivery updates",
-    icon: "\u{1F4E6}",
+    icon: Package,
     description: "Shipping, tracking, delivery notifications",
     modalContent:
-      "Order confirmations, shipping and tracking updates, delivery notifications.",
+      "Order confirmations, shipping updates, tracking notifications, and delivery alerts. Your customers just bought something \u2014 keep them in the loop from checkout to doorstep.",
     coversLine:
       "order confirmed \u00B7 shipped \u00B7 out for delivery \u00B7 delivered \u00B7 returns \u00B7 pickup ready",
     personalizationFields: [
@@ -112,10 +125,10 @@ export const CATEGORIES: Category[] = [
   {
     id: "support",
     label: "Customer support",
-    icon: "\u{1F4AC}",
+    icon: MessageChatCircle,
     description: "Ticket updates, resolution notices, conversations",
     modalContent:
-      "Ticket acknowledgments, status updates, resolution notices, two-way conversations.",
+      "Ticket acknowledgments, status updates, resolution notices, and two-way conversations. Your customers text in, your team texts back.",
     coversLine:
       "ticket received \u00B7 status updates \u00B7 resolved \u00B7 follow-ups \u00B7 escalation notices",
     personalizationFields: [
@@ -138,10 +151,10 @@ export const CATEGORIES: Category[] = [
   {
     id: "marketing",
     label: "Marketing & promos",
-    icon: "\u{1F4E3}",
+    icon: Announcement02,
     description: "Promotions, announcements, sales, loyalty rewards",
     modalContent:
-      "Promotional offers, announcements, sales, loyalty rewards. Unlike others, these go to opted-in recipients, not in response to user action. Carriers scrutinize more closely.",
+      "Promotional offers, announcements, sales, and loyalty rewards. Unlike transactional messages, these go to opted-in recipients \u2014 not in response to a user action. Carriers scrutinize these more closely.",
     coversLine:
       "promotions \u00B7 announcements \u00B7 sales \u00B7 loyalty \u00B7 back-in-stock",
     personalizationFields: [
@@ -171,10 +184,10 @@ export const CATEGORIES: Category[] = [
   {
     id: "internal",
     label: "Team & internal alerts",
-    icon: "\u{1F465}",
+    icon: Users01,
     description: "Shift reminders, schedule changes, system alerts",
     modalContent:
-      "Shift reminders, schedule changes, system alerts. Sent to your own team, not customers.",
+      "Shift reminders, schedule changes, and system alerts. These go to your own team, not customers \u2014 simpler compliance, faster approval.",
     coversLine:
       "shift notifications \u00B7 meeting reminders \u00B7 system alerts \u00B7 policy updates \u00B7 task assignments",
     personalizationFields: [
@@ -197,10 +210,10 @@ export const CATEGORIES: Category[] = [
   {
     id: "community",
     label: "Community & groups",
-    icon: "\u{1F3D8}\uFE0F",
+    icon: Globe01,
     description: "Event announcements, membership notifications",
     modalContent:
-      "Event announcements, membership notifications, community news.",
+      "Event announcements, membership notifications, and community news. Keep your members informed about what\u2019s happening and what\u2019s next.",
     coversLine:
       "events \u00B7 community news \u00B7 membership updates \u00B7 group alerts \u00B7 RSVP",
     personalizationFields: [
@@ -223,10 +236,10 @@ export const CATEGORIES: Category[] = [
   {
     id: "waitlist",
     label: "Waitlist & reservations",
-    icon: "\u231B",
+    icon: ClipboardCheck,
     description: "Table-ready alerts, waitlist updates, reservations",
     modalContent:
-      '"Your table is ready" alerts, waitlist updates, reservation confirmations.',
+      "\u201CYour table is ready\u201D alerts, waitlist updates, and reservation confirmations. Time-sensitive messages your customers are actively waiting for.",
     coversLine:
       "waitlist updates \u00B7 table/spot ready \u00B7 reservations \u00B7 availability alerts",
     personalizationFields: [
@@ -256,7 +269,7 @@ export const CATEGORIES: Category[] = [
   {
     id: "exploring",
     label: "Just exploring",
-    icon: "\u{1F50D}",
+    icon: SearchLg,
     description: "Not sure yet \u2014 just want to see how it works",
     modalContent: null,
     coversLine: "",

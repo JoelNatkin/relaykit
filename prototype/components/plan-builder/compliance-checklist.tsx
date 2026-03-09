@@ -1,6 +1,5 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
 import { useSession } from "@/context/session-context";
 import { MESSAGES } from "@/data/messages";
 
@@ -19,27 +18,25 @@ interface CheckItem {
 }
 
 function StatusIcon({ status }: { status: CheckStatus }) {
-  const key = status;
-
   const variants = {
     met: {
       className:
-        "w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold",
+        "w-5 h-5 rounded-full bg-bg-success-secondary text-fg-success-primary flex items-center justify-center text-xs font-bold",
       content: "\u2713",
     },
     not_met: {
       className:
-        "w-5 h-5 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xs font-bold",
+        "w-5 h-5 rounded-full bg-bg-error-secondary text-fg-error-primary flex items-center justify-center text-xs font-bold",
       content: "\u2717",
     },
     neutral: {
       className:
-        "w-5 h-5 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center text-xs font-bold",
+        "w-5 h-5 rounded-full bg-bg-tertiary text-fg-quaternary flex items-center justify-center text-xs font-bold",
       content: "\u2014",
     },
     advisory: {
       className:
-        "w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold",
+        "w-5 h-5 rounded-full bg-bg-warning-secondary text-fg-warning-primary flex items-center justify-center text-xs font-bold",
       content: "!",
     },
   };
@@ -47,20 +44,14 @@ function StatusIcon({ status }: { status: CheckStatus }) {
   const v = variants[status];
 
   return (
-    <motion.div
-      key={key}
-      initial={{ scale: 0.8 }}
-      animate={{ scale: 1 }}
-      transition={{ type: "spring", stiffness: 500, damping: 25 }}
-      className={v.className}
-    >
+    <div className={v.className}>
       {v.content}
-    </motion.div>
+    </div>
   );
 }
 
 const StopKeyword = () => (
-  <span className="text-rose-600 font-semibold">STOP</span>
+  <span className="text-text-error-primary font-semibold">STOP</span>
 );
 
 export function ComplianceChecklist({ categoryId }: ComplianceChecklistProps) {
@@ -158,37 +149,30 @@ export function ComplianceChecklist({ categoryId }: ComplianceChecklistProps) {
   const allChecks = [check1, check2, check3, check4, check5];
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-700">
+    <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
+      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
         Compliance check
       </h3>
 
       <div>
-        <AnimatePresence initial={false}>
-          {allChecks
-            .filter((c) => c.visible)
-            .map((check) => (
-              <motion.div
-                key={check.id}
-                layout
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.2, ease: "easeInOut" }}
-                className="flex items-start gap-3 py-2"
-              >
-                <div className="flex-shrink-0">
-                  <StatusIcon status={check.status} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-700">
-                    {check.label}
-                  </p>
-                  <p className="text-xs text-gray-400">{check.explanation}</p>
-                </div>
-              </motion.div>
-            ))}
-        </AnimatePresence>
+        {allChecks
+          .filter((c) => c.visible)
+          .map((check) => (
+            <div
+              key={check.id}
+              className="flex items-start gap-3 py-2"
+            >
+              <div className="flex-shrink-0">
+                <StatusIcon status={check.status} />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-text-secondary">
+                  {check.label}
+                </p>
+                <p className="text-xs text-text-quaternary">{check.explanation}</p>
+              </div>
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { XClose } from "@untitledui/icons";
 import { useSession } from "@/context/session-context";
 import type { Category } from "@/data/categories";
 
@@ -22,51 +22,52 @@ export function CategoryModal({ category, isOpen, onClose }: CategoryModalProps)
     onClose();
   }
 
+  const Icon = category?.icon;
+
+  if (!isOpen || !category || !Icon) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && category && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        className="fixed inset-0 z-40 bg-black/50"
+      />
+
+      {/* Modal container */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="pointer-events-auto relative w-full max-w-md rounded-2xl bg-bg-primary p-8 shadow-xl">
+          {/* Close button */}
+          <button
+            type="button"
             onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/50"
-          />
+            className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary hover:bg-bg-secondary"
+            aria-label="Close"
+          >
+            <XClose className="size-5" />
+          </button>
 
-          {/* Modal container */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <motion.div
-              key="modal"
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="pointer-events-auto w-full max-w-md rounded-2xl bg-white p-8 shadow-xl"
-            >
-              <div className="text-4xl mb-4">{category.icon}</div>
-              <h2 className="text-xl font-bold mb-3">{category.label}</h2>
-              <p className="text-gray-600 mb-4">{category.modalContent}</p>
-              <p className="text-sm text-gray-400 mb-6">{category.coversLine}</p>
-
-              <button
-                onClick={handleContinue}
-                className="w-full rounded-lg bg-brand-600 py-3 font-medium text-white hover:bg-brand-700 transition duration-100 ease-linear"
-              >
-                This is me &rarr; Continue
-              </button>
-
-              <button
-                onClick={onClose}
-                className="mt-3 w-full cursor-pointer text-center text-sm text-gray-500"
-              >
-                &larr; Back
-              </button>
-            </motion.div>
+          {/* Icon */}
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-border-secondary bg-bg-primary shadow-xs">
+            <Icon className="size-6 text-fg-quaternary" />
           </div>
-        </>
-      )}
-    </AnimatePresence>
+
+          <h2 className="text-xl font-bold text-text-primary mb-2">{category.label}</h2>
+
+          {/* Covers line — the specifics people want to see */}
+          <p className="text-sm text-text-tertiary mb-3">{category.coversLine}</p>
+
+          {/* Description */}
+          <p className="text-sm text-text-quaternary mb-6">{category.modalContent}</p>
+
+          <button
+            onClick={handleContinue}
+            className="w-full rounded-lg bg-bg-brand-solid py-3 font-medium text-text-white hover:bg-bg-brand-solid_hover transition duration-100 ease-linear"
+          >
+            Continue &rarr;
+          </button>
+        </div>
+      </div>
+    </>
   );
 }

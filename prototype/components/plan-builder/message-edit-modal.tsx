@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { XClose } from "@untitledui/icons";
 import { useSession } from "@/context/session-context";
 import type { Message } from "@/data/messages";
 
@@ -33,62 +33,60 @@ export function MessageEditModal({
     onClose();
   }
 
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            key="edit-backdrop"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+    <>
+      {/* Backdrop */}
+      <div
+        onClick={onClose}
+        className="fixed inset-0 z-40 bg-black/50"
+      />
+
+      {/* Modal container */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+        <div className="pointer-events-auto relative w-full max-w-lg rounded-2xl bg-bg-primary p-6 shadow-xl">
+          {/* Close button */}
+          <button
+            type="button"
             onClick={onClose}
-            className="fixed inset-0 z-40 bg-black/50"
+            className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-lg text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary hover:bg-bg-secondary"
+            aria-label="Close"
+          >
+            <XClose className="size-5" />
+          </button>
+
+          <h2 className="text-lg font-semibold text-text-primary">
+            Edit message
+          </h2>
+          <p className="text-sm text-text-tertiary mt-1">
+            {message.name}
+          </p>
+
+          <textarea
+            value={localText}
+            onChange={(e) => setLocalText(e.target.value)}
+            className="mt-4 w-full h-32 rounded-lg border border-border-primary p-3 text-sm text-text-primary resize-none shadow-xs focus:outline-none focus:ring-1 focus:ring-focus-ring focus:border-border-brand"
           />
 
-          {/* Modal container */}
-          <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-            <motion.div
-              key="edit-modal"
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.95 }}
-              className="pointer-events-auto w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+          <div className="mt-4 flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-border-secondary px-4 py-2 text-sm font-medium text-text-secondary shadow-xs hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
             >
-              <h2 className="text-lg font-semibold text-gray-900">
-                Edit message
-              </h2>
-              <p className="text-sm text-gray-500 mt-1">
-                {message.name}
-              </p>
-
-              <textarea
-                value={localText}
-                onChange={(e) => setLocalText(e.target.value)}
-                className="mt-4 w-full h-32 rounded-lg border border-gray-300 p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-
-              <div className="mt-4 flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="bg-brand-600 text-white rounded-lg px-4 py-2 text-sm font-medium hover:bg-brand-700 transition duration-100 ease-linear cursor-pointer"
-                >
-                  Save
-                </button>
-              </div>
-            </motion.div>
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="bg-bg-brand-solid text-text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-bg-brand-solid_hover shadow-xs transition duration-100 ease-linear cursor-pointer"
+            >
+              Save
+            </button>
           </div>
-        </>
-      )}
-    </AnimatePresence>
+        </div>
+      </div>
+    </>
   );
 }

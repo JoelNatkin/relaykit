@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import type { Category } from "@/data/categories";
 
 interface CategoryTileProps {
@@ -8,26 +7,26 @@ interface CategoryTileProps {
   onClick: () => void;
 }
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 },
-};
-
 export function CategoryTile({ category, onClick }: CategoryTileProps) {
+  const Icon = category.icon;
+
   return (
-    <motion.button
-      variants={itemVariants}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.15 }}
+    <button
       onClick={onClick}
-      className="flex flex-col items-center gap-2 rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-shadow duration-150 hover:border-brand-200 hover:shadow-md"
+      className="flex flex-col items-start gap-3 rounded-xl border border-border-secondary bg-bg-primary p-5 text-left shadow-xs transition-shadow duration-150 hover:bg-bg-primary_hover hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus-ring"
     >
-      <span className="text-3xl">{category.icon}</span>
-      <span className="font-semibold text-center">{category.label}</span>
-      <span className="text-sm text-gray-500 text-center">
-        {category.description}
-      </span>
-    </motion.button>
+      {/* Featured icon — matches production FeaturedIcon gray/light */}
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-border-secondary bg-bg-primary shadow-xs">
+        <Icon className="size-5 text-fg-quaternary" />
+      </div>
+      <div className="flex flex-col gap-0.5">
+        <span className="text-sm font-semibold text-text-primary">
+          {category.label}
+        </span>
+        <span className="text-sm text-text-tertiary">
+          {category.description}
+        </span>
+      </div>
+    </button>
   );
 }

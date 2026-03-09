@@ -1,25 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { CATEGORIES, Category } from "@/data/categories";
 import { CategoryTile } from "@/components/category-tile";
 import { CategoryModal } from "@/components/category-modal";
-
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.05,
-    },
-  },
-};
 
 export default function ChoosePage() {
   const [activeCategory, setActiveCategory] = useState<Category | null>(null);
 
   function handleTileClick(category: Category) {
-    // Categories with no modal content (e.g. "Just exploring") don't open a modal
     if (!category.modalContent) {
       return;
     }
@@ -27,25 +16,15 @@ export default function ChoosePage() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="mx-auto max-w-3xl px-4 py-12"
-    >
+    <div className="mx-auto max-w-3xl px-4 py-12">
       <div className="mb-10 text-center">
-        <h1 className="text-3xl font-bold">What are you building?</h1>
-        <p className="mt-2 text-secondary">
+        <h1 className="text-3xl font-bold text-text-primary">What are you building?</h1>
+        <p className="mt-2 text-text-tertiary">
           Pick your primary use case &mdash; you can always change this later.
         </p>
       </div>
 
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
-      >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {CATEGORIES.map((category) => (
           <CategoryTile
             key={category.id}
@@ -53,13 +32,13 @@ export default function ChoosePage() {
             onClick={() => handleTileClick(category)}
           />
         ))}
-      </motion.div>
+      </div>
 
       <CategoryModal
         category={activeCategory}
         isOpen={activeCategory !== null}
         onClose={() => setActiveCategory(null)}
       />
-    </motion.div>
+    </div>
   );
 }

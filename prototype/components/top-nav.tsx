@@ -1,22 +1,29 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import { CATEGORIES } from "@/data/categories";
 
 export function TopNav() {
   const { state } = useSession();
+  const pathname = usePathname();
 
-  const categoryLabel = state.selectedCategory
-    ? CATEGORIES.find((c) => c.id === state.selectedCategory)?.label ?? null
+  // Don't show selected category on the chooser page — nothing's been chosen yet
+  const isChooserPage = pathname === "/" || pathname === "/choose";
+
+  const category = state.selectedCategory
+    ? CATEGORIES.find((c) => c.id === state.selectedCategory)
     : null;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-gray-200 bg-white px-6">
+    <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-border-secondary bg-bg-primary px-6">
       {/* Left: wordmark + category */}
       <div className="flex items-center gap-2">
-        <span className="text-lg font-bold text-gray-900">RelayKit</span>
-        {categoryLabel && (
-          <span className="text-sm text-gray-400">· {categoryLabel}</span>
+        <span className="text-lg font-bold text-text-primary">RelayKit</span>
+        {!isChooserPage && category && (
+          <span className="text-sm font-medium text-text-tertiary">
+            · {category.label}
+          </span>
         )}
       </div>
 
@@ -27,7 +34,7 @@ export function TopNav() {
       <button
         type="button"
         onClick={() => alert("Registration flow coming soon.")}
-        className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white transition duration-100 ease-linear hover:bg-brand-700"
+        className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-medium text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
       >
         Register &rarr;
       </button>
