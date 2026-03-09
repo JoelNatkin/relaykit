@@ -6,6 +6,7 @@ import { CATEGORIES } from "@/data/categories";
 import { MESSAGES } from "@/data/messages";
 import { PreviewAsInput } from "@/components/plan-builder/preview-as-input";
 import { ConsentPreview } from "@/components/plan-builder/consent-preview";
+import { ComplianceChecklist } from "@/components/plan-builder/compliance-checklist";
 
 export default function PlanPage() {
   const params = useParams<{ categoryId: string }>();
@@ -30,9 +31,7 @@ export default function PlanPage() {
 
       <ConsentPreview categoryId={category.id} />
 
-      <div className="mt-6 rounded-xl border border-dashed border-tertiary p-8 text-center text-quaternary">
-        Compliance checklist (coming soon)
-      </div>
+      <ComplianceChecklist categoryId={category.id} />
 
       <div className="mt-6 rounded-xl border border-dashed border-tertiary p-8 text-center text-quaternary">
         Message cards (coming soon)
