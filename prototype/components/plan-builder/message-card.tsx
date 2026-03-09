@@ -69,10 +69,22 @@ function renderMessagePreview(
   });
 }
 
-const TIER_BADGES: Record<string, { label: string; tooltip: string } | null> = {
-  core: { label: "Core", tooltip: "On by default — most apps need these" },
-  also_covered: { label: "Included", tooltip: "Your registration includes these — turn on what you need" },
-  expansion: { label: "Add-on", tooltip: "Requires a separate campaign registration" },
+const TIER_BADGES: Record<string, { label: string; tooltip: string; className: string } | null> = {
+  core: {
+    label: "Core",
+    tooltip: "On by default — most apps need these",
+    className: "bg-[#F9F5FF] border border-[#E9D7FE] text-[#6941C6]",
+  },
+  also_covered: {
+    label: "Available",
+    tooltip: "Your registration includes these — turn on what you need",
+    className: "bg-[#ECFDF3] border border-[#ABEFC6] text-[#067647]",
+  },
+  expansion: {
+    label: "Add-on",
+    tooltip: "Requires a separate campaign registration",
+    className: "bg-[#EEF4FF] border border-[#C7D7FE] text-[#3538CD]",
+  },
 };
 
 export function MessageCard({ message }: { message: Message }) {
@@ -109,7 +121,7 @@ export function MessageCard({ message }: { message: Message }) {
             </span>
             {badge && (
               <span
-                className="inline-flex items-center rounded-full bg-bg-secondary px-2 py-0.5 text-[11px] font-medium text-text-quaternary"
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${badge.className}`}
                 title={badge.tooltip}
               >
                 {badge.label}

@@ -26,6 +26,8 @@ export interface Category {
   description: string;
   modalContent: string | null;
   coversLine: string;
+  /** Consent form heading prefix, e.g. "Get appointment reminders from" */
+  formHeading: string;
   personalizationFields: PersonalizationField[];
 }
 
@@ -39,6 +41,7 @@ export const CATEGORIES: Category[] = [
       "Login codes, signup verification, password resets, and multi-factor auth. Every message is triggered by your user \u2014 they request it, your app sends it. Highest-trust SMS category with carriers.",
     coversLine:
       "OTP \u00B7 2FA \u00B7 phone verification \u00B7 password reset \u00B7 device alerts",
+    formHeading: "Get verification codes from",
     personalizationFields: [
       {
         key: "appName",
@@ -65,6 +68,7 @@ export const CATEGORIES: Category[] = [
       "Booking confirmations, reminders, rescheduling, and cancellation notices. Messages about appointments they already booked \u2014 your customers expect these.",
     coversLine:
       "confirmations \u00B7 reminders \u00B7 rescheduling \u00B7 cancellations \u00B7 no-show follow-ups",
+    formHeading: "Get appointment reminders from",
     personalizationFields: [
       {
         key: "appName",
@@ -98,6 +102,7 @@ export const CATEGORIES: Category[] = [
       "Order confirmations, shipping updates, tracking notifications, and delivery alerts. Your customers just bought something \u2014 keep them in the loop from checkout to doorstep.",
     coversLine:
       "order confirmed \u00B7 shipped \u00B7 out for delivery \u00B7 delivered \u00B7 returns \u00B7 pickup ready",
+    formHeading: "Get order updates from",
     personalizationFields: [
       {
         key: "appName",
@@ -131,6 +136,7 @@ export const CATEGORIES: Category[] = [
       "Ticket acknowledgments, status updates, resolution notices, and two-way conversations. Your customers text in, your team texts back.",
     coversLine:
       "ticket received \u00B7 status updates \u00B7 resolved \u00B7 follow-ups \u00B7 escalation notices",
+    formHeading: "Get support updates from",
     personalizationFields: [
       {
         key: "appName",
@@ -157,6 +163,7 @@ export const CATEGORIES: Category[] = [
       "Promotional offers, announcements, sales, and loyalty rewards. Unlike transactional messages, these go to opted-in recipients \u2014 not in response to a user action. Carriers scrutinize these more closely.",
     coversLine:
       "promotions \u00B7 announcements \u00B7 sales \u00B7 loyalty \u00B7 back-in-stock",
+    formHeading: "Get updates from",
     personalizationFields: [
       {
         key: "appName",
@@ -190,6 +197,7 @@ export const CATEGORIES: Category[] = [
       "Shift reminders, schedule changes, and system alerts. These go to your own team, not customers \u2014 simpler compliance, faster approval.",
     coversLine:
       "shift notifications \u00B7 meeting reminders \u00B7 system alerts \u00B7 policy updates \u00B7 task assignments",
+    formHeading: "Get team alerts from",
     personalizationFields: [
       {
         key: "appName",
@@ -216,6 +224,7 @@ export const CATEGORIES: Category[] = [
       "Event announcements, membership notifications, and community news. Keep your members informed about what\u2019s happening and what\u2019s next.",
     coversLine:
       "events \u00B7 community news \u00B7 membership updates \u00B7 group alerts \u00B7 RSVP",
+    formHeading: "Get community updates from",
     personalizationFields: [
       {
         key: "appName",
@@ -242,6 +251,7 @@ export const CATEGORIES: Category[] = [
       "\u201CYour table is ready\u201D alerts, waitlist updates, and reservation confirmations. Time-sensitive messages your customers are actively waiting for.",
     coversLine:
       "waitlist updates \u00B7 table/spot ready \u00B7 reservations \u00B7 availability alerts",
+    formHeading: "Get waitlist updates from",
     personalizationFields: [
       {
         key: "appName",
@@ -273,6 +283,7 @@ export const CATEGORIES: Category[] = [
     description: "Not sure yet \u2014 just want to see how it works",
     modalContent: null,
     coversLine: "",
+    formHeading: "Get messages from",
     personalizationFields: [],
   },
 ];

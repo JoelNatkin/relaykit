@@ -22,40 +22,39 @@ export default function PlanPage() {
 
   if (shouldRedirect) return null;
 
-  const Icon = category.icon;
   const categoryMessages = MESSAGES[category.id] || [];
   const core = categoryMessages.filter((m) => m.tier === "core");
   const alsoCovered = categoryMessages.filter((m) => m.tier === "also_covered");
   const expansion = categoryMessages.filter((m) => m.tier === "expansion");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-[1000px] px-6 py-8">
       {/* Header */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-border-secondary bg-bg-primary shadow-xs">
-          <Icon className="size-5 text-fg-quaternary" />
-        </div>
-        <h1 className="text-2xl font-bold text-text-primary">
-          Your {category.label.toLowerCase()} message plan
+      <div className="mb-6">
+        <p className="mb-1 text-xs font-medium uppercase tracking-widest text-text-tertiary">
+          {category.label}
+        </p>
+        <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+          Your message plan
         </h1>
       </div>
 
       <PreviewAsInput />
 
       {/* Two-column layout: left sticky preview, right scrollable messages */}
-      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-[45fr_55fr]">
         {/* Left column — sticky on desktop */}
-        <div className="lg:self-start lg:sticky lg:top-20">
+        <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none md:self-start md:sticky md:top-20">
           <h2 className="mb-3 text-xl font-semibold text-text-primary">
             Sample opt-in form
           </h2>
-          <ConsentPreview categoryId={category.id} />
+          <ConsentPreview categoryId={category.id} formHeading={category.formHeading} />
         </div>
 
         {/* Right column — message cards */}
-        <div className="max-w-lg">
-          <div className="lg:sticky lg:top-14 lg:z-10">
-            <h2 className="mb-3 text-xl font-semibold text-text-primary lg:bg-bg-primary lg:pt-6 lg:pb-3 lg:border-b lg:border-border-secondary lg:-mt-6">
+        <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none">
+          <div className="md:sticky md:top-14 md:z-10">
+            <h2 className="mb-3 text-xl font-semibold text-text-primary md:bg-bg-primary md:pt-6 md:pb-3 md:border-b md:border-border-secondary md:-mt-6">
               Your messages
             </h2>
           </div>

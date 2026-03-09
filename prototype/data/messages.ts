@@ -10,6 +10,8 @@ export interface Message {
   trigger: string;
   requiresStop: boolean;
   expansionType: "mixed" | "marketing" | null;
+  /** Plural label for consent paragraph, e.g. "booking confirmations" */
+  consentLabel: string;
 }
 
 export const MESSAGES: Record<string, Message[]> = {
@@ -25,6 +27,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "When user requests login OTP",
       requiresStop: false,
       expansionType: null,
+      consentLabel: "login verification codes",
     },
     {
       id: "verification_signup_code",
@@ -37,6 +40,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "During account registration",
       requiresStop: false,
       expansionType: null,
+      consentLabel: "signup verifications",
     },
     {
       id: "verification_password_reset",
@@ -49,6 +53,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "When user requests password reset",
       requiresStop: false,
       expansionType: null,
+      consentLabel: "password reset codes",
     },
     {
       id: "verification_mfa_code",
@@ -61,6 +66,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "When MFA is triggered",
       requiresStop: false,
       expansionType: null,
+      consentLabel: "multi-factor auth codes",
     },
     {
       id: "verification_device_confirmation",
@@ -73,6 +79,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "New device login detected",
       requiresStop: false,
       expansionType: null,
+      consentLabel: "new device alerts",
     },
     {
       id: "verification_security_tip",
@@ -85,6 +92,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "After account creation",
       requiresStop: true,
       expansionType: "mixed",
+      consentLabel: "security tips",
     },
     {
       id: "verification_welcome",
@@ -97,6 +105,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "After successful verification",
       requiresStop: true,
       expansionType: "mixed",
+      consentLabel: "welcome messages",
     },
     {
       id: "verification_feature_announcement",
@@ -109,6 +118,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "Manually sent",
       requiresStop: true,
       expansionType: "marketing",
+      consentLabel: "feature announcements",
     },
   ],
 
@@ -124,6 +134,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "When appointment booked",
       requiresStop: true,
       expansionType: null,
+      consentLabel: "booking confirmations",
     },
     {
       id: "appointments_reminder",
@@ -136,6 +147,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "24h before appointment",
       requiresStop: true,
       expansionType: null,
+      consentLabel: "appointment reminders",
     },
     {
       id: "appointments_reschedule",
@@ -148,6 +160,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "When appointment rescheduled",
       requiresStop: true,
       expansionType: null,
+      consentLabel: "reschedule notices",
     },
     {
       id: "appointments_cancellation",
@@ -160,6 +173,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "When appointment cancelled",
       requiresStop: true,
       expansionType: null,
+      consentLabel: "cancellation notices",
     },
     {
       id: "appointments_promo",
@@ -172,6 +186,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "Manually sent",
       requiresStop: true,
       expansionType: "marketing",
+      consentLabel: "promotional offers",
     },
     {
       id: "appointments_feedback",
@@ -184,6 +199,7 @@ export const MESSAGES: Record<string, Message[]> = {
       trigger: "After appointment",
       requiresStop: true,
       expansionType: "mixed",
+      consentLabel: "feedback requests",
     },
   ],
 };
