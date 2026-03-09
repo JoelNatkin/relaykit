@@ -60,15 +60,16 @@ export default function PlanPage() {
           </div>
           <div className="space-y-8">
             {core.length > 0 && (
-              <MessageTier tier="core" messages={core} />
+              <MessageTier tier="core" messages={core} categoryId={category.id} />
             )}
             {alsoCovered.length > 0 && (
-              <MessageTier tier="also_covered" messages={alsoCovered} />
+              <MessageTier tier="also_covered" messages={alsoCovered} categoryId={category.id} />
             )}
             {expansion.length > 0 && (
               <MessageTier
                 tier="expansion"
                 messages={expansion}
+                categoryId={category.id}
                 title="Marketing & promotion messages"
                 titleRight="+$10/mo"
                 subtitle="Your users check an extra box when they sign up. We handle the rest."

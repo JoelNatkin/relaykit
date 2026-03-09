@@ -1,11 +1,14 @@
 "use client";
 
 import type { Message, MessageTier as MessageTierType } from "@/data/messages";
-import { MessageCard } from "./message-card";
+import type { CustomMessage } from "@/context/session-context";
+import { useSession } from "@/context/session-context";
+import { MessageCard, AddMessageCard } from "./message-card";
 
 interface MessageTierProps {
   tier: MessageTierType;
   messages: Message[];
+  categoryId: string;
   title?: string;
   titleRight?: string;
   subtitle?: string;
@@ -13,10 +16,18 @@ interface MessageTierProps {
 
 export function MessageTier({
   messages,
+  categoryId,
   title,
   titleRight,
   subtitle,
 }: MessageTierProps) {
+  const { state, deleteCustomMessage } = useSession();
+
+  // Get custom messages for this category
+  const customMessages = state.customMessages.filter(
+    (m) => m.categoryId === categoryId
+  );
+
   return (
     <div>
       {/* Header — only shown for tiers that need an explainer */}
@@ -39,8 +50,26 @@ export function MessageTier({
       {/* Cards */}
       <div className="flex flex-col gap-3">
         {messages.map((message) => (
-          <MessageCard key={message.id} message={message} />
+          <MessageCard
+            key={message.id}
+            message={message}
+            categoryId={categoryId}
+          />
         ))}
+
+        {/* Custom messages */}
+        {customMessages.map((message: CustomMessage) => (
+          <MessageCard
+            key={message.id}
+            message={message}
+            categoryId={categoryId}
+            isCustom
+            onDelete={() => deleteCustomMessage(message.id)}
+          />
+        ))}
+
+        {/* Add message card */}
+        <AddMessageCard categoryId={categoryId} />
       </div>
     </div>
   );
