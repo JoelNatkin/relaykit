@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-09 (session 4 — polish pass)
+**Date:** 2026-03-09 (session 5 — plan builder polish)
 **Branch:** main
 
 ---
@@ -7,44 +7,48 @@
 ## Commits This Session
 
 ```
-7ed1de4  fix: prototype polish — strip framer-motion, two-column plan builder, sticky headers, routing fixes
-50025e8  fix: prototype polish — consent form, tier badges, marketing section, layout spacing, per-card compliance prep
+c8b9cfc  fix: prototype polish — eyebrow nav, form heading, badge colors, consent paragraph, layout spacing
 ```
 
-(Session 3 commits from 245171b through c1b4989 are already pushed.)
+(Session 4 commits af2d7d0 and 50025e8 are already on main.)
 
 ---
 
 ## What We Completed
 
-### Polish pass on plan builder page (`/c/[categoryId]/plan`)
+### Plan builder page (`/c/[categoryId]/plan`)
 
-1. **Stripped Framer Motion entirely** — Removed `framer-motion` dependency and all `motion.*` / `AnimatePresence` usage from every prototype file. Content renders as static HTML. No animation dependency.
+1. **Page headline redesign** — Replaced "Your appointment reminders message plan" with small-caps eyebrow label ("APPOINTMENT REMINDERS" in `text-xs uppercase tracking-widest text-text-tertiary`) above simplified "Your message plan" heading. Heading bumps to `text-3xl` on desktop, stays `text-2xl` on mobile.
 
-2. **Two-column layout** — Left column: sticky consent form preview. Right column: scrollable message cards. Grid uses `5fr/7fr` ratio with `gap-12`. Single column on mobile.
+2. **Nav bar simplified** — Removed category label from top nav. Just "RelayKit" wordmark + Register button. Removed unused imports (`usePathname`, `useSession`, `CATEGORIES`).
 
-3. **Consent form redesign** (`consent-preview.tsx`) — Removed browser chrome (dots/URL bar). Now shows: "Sign up for messages" heading, fake Name/Phone form fields, consent language with message type bullets, checkbox, legal links, purple CTA button. Marketing/expansion section removed from consent preview — only base transactional consent shown.
+3. **Layout overhaul** — Container narrowed from `max-w-6xl` (1152px) to `max-w-[1000px]`. Side padding `px-6` (24px). Grid columns 45%/55% with `gap-10` (40px). Breakpoint moved from `lg:` (1024px) to `md:` (768px). Single-column mode centers both columns at `max-w-[500px]`.
 
-4. **Tier badge system** (`message-card.tsx`) — Replaced section headers ("CORE MESSAGES", "ALSO COVERED") with inline pill badges on each card: "Core", "Included", "Add-on". Each badge has a tooltip explaining the tier. Toggle + name + badge stay full opacity; only content fades when disabled (`opacity-40` not `opacity-50`).
+4. **Consent form rewrite** (`consent-preview.tsx`):
+   - Heading: category-specific "Get appointment reminders" in `font-normal text-text-secondary`, matching page heading size.
+   - Bullet list replaced with flowing paragraph using `consentLabel` plurals joined with Oxford commas.
+   - Frequency disclaimer merged into same paragraph as lighter `text-text-tertiary` span.
+   - Dynamic marketing checkbox appears when any expansion message is toggled on.
+   - Legal links moved below checkboxes, `text-sm` uniform size.
+   - CTA button color: `#61656C` (gray), hover `#4E5258`.
+   - Card padding increased to `px-7 py-8`.
 
-5. **Expansion tier header** — "Marketing & promotion messages" on left, "+$10/mo" on right, subtitle: "Your users check an extra box when they sign up. We handle the rest." Removed yellow "We register a separate campaign" banner from individual cards.
+5. **Badge colors redesigned** (`message-card.tsx`):
+   - Core: purple (`bg #F9F5FF`, `border #E9D7FE`, `text #6941C6`)
+   - Available (renamed from "Included"): green (`bg #ECFDF3`, `border #ABEFC6`, `text #067647`)
+   - Add-on: blue (`bg #EEF4FF`, `border #C7D7FE`, `text #3538CD`)
+   - All badges: `text-xs` (12px), `font-medium`, `rounded-full`, `px-2 py-0.5`
 
-6. **Sticky "Your messages" header** — Sticks at `top-14` (nav height), white background with bottom border, negative margin trick so it aligns with "Sample opt-in form" on initial load.
-
-7. **Compliance checklist removed** from plan page — `ComplianceChecklist` import and usage removed. Component file still exists. Will be replaced with per-card compliance warnings (separate task).
-
-8. **Routing fixes** — `redirect()` replaced with `useEffect` + `router.replace()` in both `plan/page.tsx` and `setup/page.tsx` to avoid React "Cannot update component while rendering" error.
-
-9. **Section headline** — Left column changed from "What your users see" to "Sample opt-in form" (same `text-xl font-semibold` as "Your messages").
-
-10. **Layout spacing** — Right column capped at `max-w-lg`. Grid gutter widened from `gap-8` to `gap-12`.
+6. **Data model additions**:
+   - `Message.consentLabel` — plural form for consent paragraph (e.g. "booking confirmations")
+   - `Category.formHeading` — consent card heading prefix (e.g. "Get appointment reminders from")
 
 ---
 
 ## What's In Progress / Partially Done
 
 ### Per-card compliance warnings (not started)
-Compliance indicators moving from the removed checklist to inline warnings on individual message cards. Explicitly deferred as a separate task.
+Compliance indicators moving from the removed checklist to inline warnings on individual message cards. Explicitly deferred.
 
 ### Deferred prototype screens (not started)
 - Category landing pages, docs page, signup screen, post-registration dashboard
@@ -53,43 +57,52 @@ Compliance indicators moving from the removed checklist to inline warnings on in
 ### Prototype decisions not yet recorded in DECISIONS.md
 D-60 through D-70 from `docs/PROTOTYPE_PROPOSAL.md` Section 5 still need to be appended.
 
+### DM Serif Display font removed
+Was added then removed in the same session. Layout uses only the system sans-serif font. Do not re-add.
+
 ---
 
 ## Gotchas for Next Session
 
 1. **Run prototype with:** `cd prototype && npm run dev` — port 3001. Dev script includes `--max-http-header-size=65536` to avoid HTTP 431.
 
-2. **Framer Motion fully removed** — `framer-motion` is no longer in `package.json`. All components use plain HTML elements. Do not re-add.
+2. **Delete .next before restarting** if you see webpack cache errors like "Cannot find module './vendor-chunks/@untitledui.js'" or "__webpack_modules__[moduleId] is not a function". Run `rm -rf prototype/.next` then restart.
 
-3. **Compliance checklist file still exists** — `prototype/components/plan-builder/compliance-checklist.tsx` is in the codebase but not imported anywhere. It will be replaced by per-card warnings.
+3. **Do not add React hooks to plan/page.tsx** — The component has an early return (`if (shouldRedirect) return null`) after one `useEffect`. Adding `useState`/`useRef` before the early return caused "a[d] is not a function" runtime errors in session. If scroll-aware behavior is needed, extract it to a child component that doesn't have an early return path.
 
-4. **Client component redirect pattern** — Both `plan/page.tsx` and `setup/page.tsx` use `useEffect` + `router.replace()` for redirects, not `redirect()` from `next/navigation`. This is required in Next.js 15 client components to avoid React rendering errors.
+4. **Framer Motion fully removed** — Not in `package.json`. Do not re-add.
 
-5. **Consent preview is transactional only** — The marketing/expansion section was intentionally removed from the consent form preview. Marketing messages only appear in the right-column message cards under the "Marketing & promotion messages" tier.
+5. **Compliance checklist file still exists** — `prototype/components/plan-builder/compliance-checklist.tsx` is in the codebase but not imported anywhere.
 
-6. **Root tsconfig.json** — `"prototype"` in `exclude` array so prototype TS files don't interfere with production build.
+6. **Client component redirect pattern** — Both `plan/page.tsx` and `setup/page.tsx` use `useEffect` + `router.replace()` for redirects, not `redirect()` from `next/navigation`.
 
-7. **Data only for 2 categories** — `verification` (8 messages) and `appointments` (6 messages). Other categories redirect to `/choose`.
+7. **Breakpoint is `md:` (768px)** — Two-column layout activates at 768px, not 1024px. All responsive prefixes in plan page use `md:`.
 
-8. **No Untitled UI components** — Prototype uses plain Tailwind with semantic color tokens. Port to Untitled UI when moving to production.
+8. **Data only for 2 categories** — `verification` (8 messages) and `appointments` (6 messages). Other categories redirect to `/choose`.
 
-9. **SessionStorage key:** `relaykit_prototype` — separate from production's `relaykit_intake`.
+9. **No Untitled UI components** — Prototype uses plain Tailwind with semantic color tokens + hex values for badges. Port to Untitled UI when moving to production.
 
-10. **Middleware** (`prototype/middleware.ts`) — Strips cookies from incoming requests for reliable localhost dev.
+10. **SessionStorage key:** `relaykit_prototype` — separate from production's `relaykit_intake`.
+
+11. **Root tsconfig.json** — `"prototype"` in `exclude` array so prototype TS files don't interfere with production build.
+
+12. **Middleware** (`prototype/middleware.ts`) — Strips cookies from incoming requests for reliable localhost dev.
+
+13. **`formHeading` ends with "from"** — Category data `formHeading` values like "Get appointment reminders from" include the trailing "from" but the consent preview currently renders just `{formHeading}` without appName. If the heading should include appName again, append `{appName}` in the JSX.
 
 ---
 
 ## Uncommitted / Untracked Files
 
 ```
-M  CC_HANDOFF.md  — This file (updated for session 4)
+M  CC_HANDOFF.md  — This file (updated for session 5)
 ```
 
 ---
 
 ## Active Build Context
 
-The prototype validates UX changes from the Mar 8 brainstorming session. Current state: plan builder is polished, consent form is clean, tier badges replace section headers, marketing section is right-column only.
+The prototype validates UX changes from the Mar 8 brainstorming session. Current state: plan builder is fully polished with eyebrow navigation, flowing consent paragraph, design-system badge colors, responsive 45/55 grid layout at 768px breakpoint.
 
 Next steps:
 1. Per-card compliance warnings (replace removed checklist)
