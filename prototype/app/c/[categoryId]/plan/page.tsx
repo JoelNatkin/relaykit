@@ -6,7 +6,6 @@ import { CATEGORIES } from "@/data/categories";
 import { MESSAGES } from "@/data/messages";
 import { PreviewAsInput } from "@/components/plan-builder/preview-as-input";
 import { ConsentPreview } from "@/components/plan-builder/consent-preview";
-import { ComplianceChecklist } from "@/components/plan-builder/compliance-checklist";
 import { MessageTier } from "@/components/plan-builder/message-tier";
 
 export default function PlanPage() {
@@ -44,47 +43,36 @@ export default function PlanPage() {
       <PreviewAsInput />
 
       {/* Two-column layout: left sticky preview, right scrollable messages */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
         {/* Left column — sticky on desktop */}
-        <div className="lg:self-start lg:sticky lg:top-20 space-y-6">
-          <div>
-            <h2 className="mb-3 text-xl font-semibold text-text-primary">
-              What your users see
-            </h2>
-            <ConsentPreview categoryId={category.id} />
-          </div>
-
-          <ComplianceChecklist categoryId={category.id} />
+        <div className="lg:self-start lg:sticky lg:top-20">
+          <h2 className="mb-3 text-xl font-semibold text-text-primary">
+            Sample opt-in form
+          </h2>
+          <ConsentPreview categoryId={category.id} />
         </div>
 
         {/* Right column — message cards */}
-        <div>
-          <h2 className="mb-3 text-xl font-semibold text-text-primary lg:sticky lg:top-20 lg:z-10 lg:bg-bg-primary lg:pb-3 lg:border-b lg:border-border-secondary">
-            Your messages
-          </h2>
+        <div className="max-w-lg">
+          <div className="lg:sticky lg:top-14 lg:z-10">
+            <h2 className="mb-3 text-xl font-semibold text-text-primary lg:bg-bg-primary lg:pt-6 lg:pb-3 lg:border-b lg:border-border-secondary lg:-mt-6">
+              Your messages
+            </h2>
+          </div>
           <div className="space-y-8">
             {core.length > 0 && (
-              <MessageTier
-                tier="core"
-                messages={core}
-                title="CORE MESSAGES"
-                subtitle="On by default — most apps need these"
-              />
+              <MessageTier tier="core" messages={core} />
             )}
             {alsoCovered.length > 0 && (
-              <MessageTier
-                tier="also_covered"
-                messages={alsoCovered}
-                title="ALSO COVERED"
-                subtitle="Your registration includes these — turn on what you need"
-              />
+              <MessageTier tier="also_covered" messages={alsoCovered} />
             )}
             {expansion.length > 0 && (
               <MessageTier
                 tier="expansion"
                 messages={expansion}
-                title="⭐ NEEDS ADDITIONAL REGISTRATION"
-                subtitle="We register a separate campaign alongside yours"
+                title="Marketing & promotion messages"
+                titleRight="+$10/mo"
+                subtitle="Your users check an extra box when they sign up. We handle the rest."
               />
             )}
           </div>

@@ -69,6 +69,12 @@ function renderMessagePreview(
   });
 }
 
+const TIER_BADGES: Record<string, { label: string; tooltip: string } | null> = {
+  core: { label: "Core", tooltip: "On by default — most apps need these" },
+  also_covered: { label: "Included", tooltip: "Your registration includes these — turn on what you need" },
+  expansion: { label: "Add-on", tooltip: "Requires a separate campaign registration" },
+};
+
 export function MessageCard({ message }: { message: Message }) {
   const { state, toggleMessage } = useSession();
   const [editOpen, setEditOpen] = useState(false);
@@ -76,43 +82,51 @@ export function MessageCard({ message }: { message: Message }) {
   const isEnabled = !!state.enabledMessages[message.id];
   const template =
     state.messageEdits[message.id] || message.template;
+  const badge = TIER_BADGES[message.tier];
 
   return (
     <>
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
-        <div className={isEnabled ? "" : "opacity-50"}>
-          {/* Top row */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {/* Toggle — always full opacity */}
-              <button
-                type="button"
-                onClick={() => toggleMessage(message.id)}
-                className={`relative w-10 h-6 rounded-full transition duration-100 ease-linear ${
-                  isEnabled ? "bg-bg-brand-solid" : "bg-bg-quaternary"
-                }`}
-                style={{ opacity: 1 }}
-                aria-pressed={isEnabled}
-                aria-label={`Toggle ${message.name}`}
-              >
-                <div
-                  className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-[left] duration-100 ease-linear"
-                  style={{ left: isEnabled ? "calc(100% - 1.25rem)" : "0.25rem" }}
-                />
-              </button>
-              <span className="text-sm font-medium text-text-primary">
-                {message.name}
-              </span>
-            </div>
+        {/* Top row — toggle + name always full opacity */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setEditOpen(true)}
-              className="text-xs text-text-brand-tertiary hover:text-text-brand-secondary cursor-pointer font-medium"
+              onClick={() => toggleMessage(message.id)}
+              className={`relative w-10 h-6 rounded-full transition duration-100 ease-linear flex-shrink-0 ${
+                isEnabled ? "bg-bg-brand-solid" : "bg-bg-quaternary"
+              }`}
+              aria-pressed={isEnabled}
+              aria-label={`Toggle ${message.name}`}
             >
-              Edit
+              <div
+                className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-[left] duration-100 ease-linear"
+                style={{ left: isEnabled ? "calc(100% - 1.25rem)" : "0.25rem" }}
+              />
             </button>
+            <span className="text-sm font-medium text-text-primary">
+              {message.name}
+            </span>
+            {badge && (
+              <span
+                className="inline-flex items-center rounded-full bg-bg-secondary px-2 py-0.5 text-[11px] font-medium text-text-quaternary"
+                title={badge.tooltip}
+              >
+                {badge.label}
+              </span>
+            )}
           </div>
+          <button
+            type="button"
+            onClick={() => setEditOpen(true)}
+            className="text-xs text-text-brand-tertiary hover:text-text-brand-secondary cursor-pointer font-medium"
+          >
+            Edit
+          </button>
+        </div>
 
+        {/* Content below — fades when disabled */}
+        <div className={isEnabled ? "" : "opacity-40"}>
           {/* Message preview */}
           <div className="mt-3 text-sm text-text-tertiary leading-relaxed">
             {renderMessagePreview(template, state)}
@@ -123,12 +137,7 @@ export function MessageCard({ message }: { message: Message }) {
             {message.trigger}
           </div>
 
-          {/* Expansion note */}
-          {message.tier === "expansion" && (
-            <div className="mt-2 flex items-center gap-1.5 text-xs text-text-warning-primary bg-bg-warning-primary rounded-lg px-2 py-1">
-              ⭐ We register a separate campaign alongside yours
-            </div>
-          )}
+
         </div>
       </div>
 
