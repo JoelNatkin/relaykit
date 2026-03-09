@@ -243,15 +243,16 @@ export function MessageCard({ message }: { message: Message }) {
         {isEditing ? (
           /* ── Edit mode ── */
           <div className="mt-3">
-            <div className="text-sm leading-relaxed">
-              {/* Locked prefix */}
+            {/* Single bordered container — reads as one continuous SMS */}
+            <div className="rounded-lg border border-border-primary bg-bg-primary p-3 text-sm text-text-tertiary leading-relaxed shadow-xs">
+              {/* Locked prefix — same text style as editable portion */}
               {parsed.prefix && (
-                <span className="text-text-quaternary select-none">
+                <span className="select-none">
                   {(state.appName || "Your App") + ": "}
                 </span>
               )}
 
-              {/* Auto-sizing textarea */}
+              {/* Editable middle — subtle inset background to signal editability */}
               <textarea
                 ref={textareaRef}
                 value={editText}
@@ -259,13 +260,13 @@ export function MessageCard({ message }: { message: Message }) {
                   setEditText(e.target.value);
                   resize();
                 }}
-                className="w-full mt-1 rounded-lg border border-border-primary p-3 text-sm text-text-primary resize-none shadow-xs focus:outline-none focus:ring-1 focus:ring-focus-ring focus:border-border-brand leading-relaxed"
+                className="w-full my-1 rounded bg-bg-secondary px-2 py-1.5 text-sm text-text-tertiary resize-none leading-relaxed focus:outline-none focus:ring-1 focus:ring-focus-ring"
                 rows={2}
               />
 
-              {/* Locked suffix */}
+              {/* Locked suffix — same text style, flows naturally */}
               {parsed.suffix && (
-                <span className="text-text-quaternary select-none text-sm">
+                <span className="select-none">
                   {parsed.suffix.trim()}
                 </span>
               )}

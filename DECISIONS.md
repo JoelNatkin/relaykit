@@ -306,3 +306,39 @@ _Affects: `src/app/login/page.tsx`, `src/app/signup/page.tsx`, `src/components/a
 Authentication uses Supabase `signInWithOtp()` to send a 6-digit email code, verified client-side via `verifyOtp({ email, token, type: 'email' })`. The user never leaves the `/login` page. This replaces the previous magic link flow which redirected through `/auth/callback`. The callback route has been removed. Supabase dashboard must have email OTP template configured (using `{{ .Token }}` not `{{ .ConfirmationURL }}`).
 _Reason: Magic links open in a new browser context (different tab, sometimes different browser on mobile), breaking session continuity. OTP keeps the user on the same page._
 _Affects: `src/components/auth/magic-link-form.tsx`, `src/app/auth/callback/` (deleted). Supabase dashboard: Authentication > Email Templates._
+
+**D-60 — Message cards use inline editing, no modal** (Date: 2026-03-09)
+Message cards edit in place — click Edit on a card and the preview swaps to an editable textarea within the same card. No modal. The Edit button is hidden while editing; Save and Cancel buttons appear at the bottom of the card. Future iteration (next session): cards will be always-editable with no Edit button at all, and Save/Cancel will only appear after a change is detected.
+_Affects: `prototype/components/plan-builder/message-card.tsx`. `prototype/components/plan-builder/message-edit-modal.tsx` deleted._
+
+**D-61 — Locked compliance elements in message cards** (Date: 2026-03-09)
+`{app_name}:` prefix and "Reply STOP to opt out." suffix are non-editable in every message. They render as normal text (same font, same color as editable content — not gray or faded) inside a single bordered container that reads as one continuous SMS. The developer edits only the middle portion. The cursor cannot enter the locked regions.
+_Affects: `prototype/components/plan-builder/message-card.tsx`, `parseTemplate()` and `reconstructTemplate()` helpers._
+
+**D-62 — Variable pills show interpolated preview data, not raw syntax** (Date: 2026-03-09)
+In preview mode, variables like `{date}` and `{time}` render as interpolated values ("Mar 15, 2026", "2:30 PM") inside subtle gray background pills (`bg-bg-secondary text-text-secondary`). Not purple, not red. `{code}` keeps its warning-toned pill. STOP is bold only — no red color. These are informational, not error states.
+_Affects: `prototype/components/plan-builder/message-card.tsx`, `renderMessagePreview()` function._
+
+**D-63 — Fixed variable palette per category** (Date: 2026-03-09)
+Developers cannot create custom variables. Each category defines a fixed set of variables (e.g., `{app_name}`, `{date}`, `{time}`, `{code}`, `{service_type}`, `{website_url}`). Future iteration: a variable palette row will appear when the textarea has focus, allowing insertion of available variables. Not yet built.
+_Affects: `prototype/data/messages.ts` (variable definitions), `prototype/components/plan-builder/message-card.tsx` (future palette UI)._
+
+**D-64 — Custom messages via Add message card** (Date: 2026-03-09)
+Developers can add new messages via an "Add message" card at the bottom of each tier group. Custom messages get a "Custom" badge and are deletable. Default messages (from the category data) can only be toggled off, never deleted. Not yet built — next session.
+_Affects: `prototype/components/plan-builder/message-card.tsx` (future), `prototype/components/plan-builder/message-tier.tsx` (future Add card)._
+
+**D-65 — Trigger line format is "Triggers when..." or "Triggers..."** (Date: 2026-03-09)
+Trigger lines on message cards use the format "Triggers when appointment booked" (event-based) or "Triggers 24h before appointment" (time-based). The word "Triggers" is always prepended; the original trigger text is lowercased if it starts with a capital letter. Shown in both preview and edit modes.
+_Affects: `prototype/components/plan-builder/message-card.tsx`, `formatTrigger()` function._
+
+**D-66 — "Available" replaces "Included" as second-tier badge name** (Date: 2026-03-09)
+The `also_covered` tier badge displays as "Available" in the UI, not "Included." Tooltip: "Your registration includes these — turn on what you need." This was changed in session 4 and is now confirmed as a decision.
+_Affects: `prototype/components/plan-builder/message-card.tsx`, `TIER_BADGES` constant._
+
+**D-67 — Badge taxonomy is Core / Available / Add-on** (Date: 2026-03-09)
+User-facing badge names are Core (purple), Available (green), Add-on (blue). This replaces the internal Tier 1/2/3 language. The internal `MessageTier` type values remain `core`, `also_covered`, `expansion` — only the display labels changed.
+_Affects: `prototype/components/plan-builder/message-card.tsx`, `TIER_BADGES` constant._
+
+**D-68 — Compliance checklist card removed** (Date: 2026-03-09)
+The standalone compliance checklist component (`compliance-checklist.tsx`) is no longer imported anywhere. Compliance protection is handled by locked elements on each card (D-61) rather than a separate checklist panel. The file still exists in the codebase but is dead code — safe to delete.
+_Affects: `prototype/components/plan-builder/compliance-checklist.tsx` (unused)._
