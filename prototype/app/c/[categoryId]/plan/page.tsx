@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { CATEGORIES } from "@/data/categories";
 import { MESSAGES } from "@/data/messages";
 import { PreviewAsInput } from "@/components/plan-builder/preview-as-input";
@@ -34,9 +35,17 @@ export default function PlanPage() {
         <p className="mb-1 text-xs font-medium uppercase tracking-widest text-text-tertiary">
           {category.label}
         </p>
-        <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
-          Your message plan
-        </h1>
+        <div className="flex items-baseline gap-3">
+          <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
+            Your message plan
+          </h1>
+          <Link
+            href={`/c/${category.id}/messages`}
+            className="text-xs font-medium text-text-quaternary hover:text-text-brand-secondary transition duration-100 ease-linear"
+          >
+            View catalog →
+          </Link>
+        </div>
       </div>
 
       <PreviewAsInput />
