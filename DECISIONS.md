@@ -340,5 +340,21 @@ User-facing badge names are Core (purple), Available (green), Add-on (blue). Thi
 _Affects: `prototype/components/plan-builder/message-card.tsx`, `TIER_BADGES` constant._
 
 **D-68 — Compliance checklist card removed** (Date: 2026-03-09)
-The standalone compliance checklist component (`compliance-checklist.tsx`) is no longer imported anywhere. Compliance protection is handled by locked elements on each card (D-61) rather than a separate checklist panel. The file still exists in the codebase but is dead code — safe to delete.
-_Affects: `prototype/components/plan-builder/compliance-checklist.tsx` (unused)._
+The standalone compliance checklist component (`compliance-checklist.tsx`) has been deleted. Compliance protection is handled by locked elements on each card (D-61) rather than a separate checklist panel.
+_Affects: `prototype/components/plan-builder/compliance-checklist.tsx` (deleted)._
+
+**D-69 — Always-editable message cards with contentEditable pill editor** (Date: 2026-03-09)
+Message cards are always editable — no Edit button, no modal, no mode toggle. The message body uses a `contentEditable` div with non-editable pill spans (`contentEditable="false"` + `data-var` attribute) for variable chips. Save/Cancel buttons appear only when the content has changed (dirty state tracking). This replaces the previous textarea-based edit mode toggled by an Edit button (supersedes the intermediate state described in D-60).
+_Affects: `prototype/components/plan-builder/message-card.tsx`._
+
+**D-70 — Business name is a movable pill, validated on save** (Date: 2026-03-09)
+`{app_name}` is no longer a locked prefix. It renders as a regular variable pill that can be moved, deleted, or repositioned within the message. However, saving is blocked if `{app_name}` is absent: red border on the message container, error text "Your business name must appear in every message," and an "Insert business name" quick-fix link. This replaces the locked-prefix approach from D-61. The only locked element is now the STOP suffix.
+_Affects: `prototype/components/plan-builder/message-card.tsx`._
+
+**D-71 — Variable palette with category-specific fixed variables** (Date: 2026-03-09)
+When the contentEditable area has focus, a row of available variable pills appears below the message. Each pill is a button that inserts the variable at cursor position. Variables are category-specific and fixed: verification gets `app_name, code, website_url, customer_name`; appointments gets `app_name, date, time, service_type, customer_name, website_url`. Variables can be inserted multiple times. Implements D-63.
+_Affects: `prototype/components/plan-builder/message-card.tsx`, `CATEGORY_VARIABLES` constant._
+
+**D-72 — Custom messages via Add message card** (Date: 2026-03-09)
+"+ Add message" card at the bottom of each tier group creates a new custom message. Custom messages get a "Custom" badge (neutral gray), editable title and trigger fields, and a Delete button. Default messages from category data can only be toggled off — never deleted. Custom messages are stored in `sessionState.customMessages` array. Implements D-64.
+_Affects: `prototype/components/plan-builder/message-card.tsx` (AddMessageCard), `prototype/components/plan-builder/message-tier.tsx`, `prototype/context/session-context.tsx`._

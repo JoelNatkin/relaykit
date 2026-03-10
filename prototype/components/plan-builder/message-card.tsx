@@ -55,10 +55,10 @@ function stripStopSuffix(template: string): string {
   return template;
 }
 
-/* ── Pill styling ── */
+/* ── Inline variable styling (bold brand-purple text, same font size as surrounding text) ── */
 
-const PILL_CLASSES =
-  "inline-flex items-center bg-bg-secondary text-text-secondary px-1.5 py-0.5 rounded text-xs font-medium whitespace-nowrap select-none";
+const INLINE_VAR_CLASSES =
+  "font-semibold text-[#7C3AED] whitespace-nowrap select-none";
 
 /* ── DOM ↔ Template conversion ── */
 
@@ -80,7 +80,7 @@ function buildEditableContent(
         const pill = document.createElement("span");
         pill.contentEditable = "false";
         pill.setAttribute("data-var", key);
-        pill.className = PILL_CLASSES;
+        pill.className = INLINE_VAR_CLASSES;
         pill.textContent = v.preview(state);
         fragment.appendChild(pill);
       } else {
@@ -173,6 +173,7 @@ export function MessageCard({
   const [isFocused, setIsFocused] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [showTriggerTooltip, setShowTriggerTooltip] = useState(false);
   const originalContentRef = useRef<string>("");
   const isInitializedRef = useRef(false);
 
@@ -299,7 +300,7 @@ export function MessageCard({
     const pill = document.createElement("span");
     pill.contentEditable = "false";
     pill.setAttribute("data-var", varKey);
-    pill.className = PILL_CLASSES;
+    pill.className = INLINE_VAR_CLASSES;
     pill.textContent = v.preview(state);
 
     const selection = window.getSelection();
@@ -336,7 +337,7 @@ export function MessageCard({
     const pill = document.createElement("span");
     pill.contentEditable = "false";
     pill.setAttribute("data-var", "app_name");
-    pill.className = PILL_CLASSES;
+    pill.className = INLINE_VAR_CLASSES;
     pill.textContent = v.preview(state);
 
     const colonSpace = document.createTextNode(": ");
@@ -400,16 +401,56 @@ export function MessageCard({
           )}
         </div>
 
-        {/* Delete button for custom messages */}
-        {isCustom && onDelete && (
-          <button
-            type="button"
-            onClick={onDelete}
-            className="text-xs text-text-quaternary hover:text-fg-error-primary cursor-pointer font-medium ml-2"
-          >
-            Delete
-          </button>
-        )}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Trigger tooltip icon */}
+          <div className="relative">
+            <button
+              type="button"
+              onMouseEnter={() => setShowTriggerTooltip(true)}
+              onMouseLeave={() => setShowTriggerTooltip(false)}
+              className="text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
+              aria-label={formatTrigger(trigger)}
+            >
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
+                <path d="M8 7V11" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+                <circle cx="8" cy="5.25" r="0.75" fill="currentColor" />
+              </svg>
+            </button>
+            {showTriggerTooltip && (
+              <div className="absolute right-0 top-full mt-1 z-20 rounded-lg bg-bg-primary-solid px-3 py-1.5 text-xs text-text-white shadow-lg">
+                {isCustom ? (
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                    Triggers
+                    <input
+                      type="text"
+                      value={trigger}
+                      onChange={(e) =>
+                        updateCustomMessage(message.id, { trigger: e.target.value })
+                      }
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-xs text-text-white bg-transparent outline-none border-b border-white/30 focus:border-white min-w-[120px]"
+                      placeholder="when something happens"
+                    />
+                  </span>
+                ) : (
+                  <span className="whitespace-nowrap">{formatTrigger(trigger)}</span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Delete button for custom messages */}
+          {isCustom && onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className="text-xs text-text-quaternary hover:text-fg-error-primary cursor-pointer font-medium"
+            >
+              Delete
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Content — fades when disabled */}
@@ -456,7 +497,7 @@ export function MessageCard({
                     e.preventDefault(); // Prevents blur on contentEditable
                     insertVariable(v.key);
                   }}
-                  className="inline-flex items-center bg-bg-secondary text-text-secondary px-2 py-1 rounded text-xs font-medium hover:bg-bg-secondary_hover transition duration-100 ease-linear cursor-pointer"
+                  className="inline-flex items-center bg-[#F9F5FF] text-[#6941C6] border border-[#E9D7FE] px-1.5 py-0.5 rounded-md text-xs font-medium hover:bg-[#F4EBFF] transition duration-100 ease-linear cursor-pointer"
                 >
                   {v.label}
                 </button>
@@ -477,26 +518,6 @@ export function MessageCard({
               </button>
             </div>
           )}
-
-          {/* Trigger line */}
-          <div className="mt-2 text-xs text-text-quaternary">
-            {isCustom ? (
-              <span className="inline-flex items-center gap-1">
-                <span className="text-text-quaternary">Triggers</span>
-                <input
-                  type="text"
-                  value={trigger}
-                  onChange={(e) =>
-                    updateCustomMessage(message.id, { trigger: e.target.value })
-                  }
-                  className="text-xs text-text-quaternary bg-transparent outline-none border-b border-transparent focus:border-border-brand"
-                  placeholder="when something happens"
-                />
-              </span>
-            ) : (
-              formatTrigger(trigger)
-            )}
-          </div>
 
           {/* Save / Cancel — only when dirty */}
           {isDirty && (
