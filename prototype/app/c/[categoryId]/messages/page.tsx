@@ -110,20 +110,22 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      {/* Two-column layout: left sticky opt-in, right scrollable cards */}
-      <div className="grid grid-cols-1 gap-10 md:grid-cols-[45fr_55fr]">
-        {/* Left column — sticky opt-in preview */}
-        <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none md:self-start md:sticky md:top-20">
-          <CatalogOptIn
-            appName={state.appName}
-            website={state.website}
-            allMessages={allMessages}
-            selectedIds={selectedIds}
-          />
-        </div>
+      {/* Two-column when opt-in visible, single column otherwise */}
+      <div className={`grid grid-cols-1 gap-10 ${hasSelection ? "md:grid-cols-[45fr_55fr]" : ""}`}>
+        {/* Left column — sticky opt-in preview, only when cards are selected */}
+        {hasSelection && (
+          <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none md:self-start md:sticky md:top-20">
+            <CatalogOptIn
+              appName={state.appName}
+              website={state.website}
+              allMessages={allMessages}
+              selectedIds={selectedIds}
+            />
+          </div>
+        )}
 
         {/* Right column — toolbar + message cards */}
-        <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none">
+        <div className={`mx-auto w-full md:mx-0 md:max-w-none ${hasSelection ? "max-w-[500px]" : "max-w-[720px]"}`}>
           {/* Toolbar: view toggle + copy actions */}
           <div className="mb-4 flex items-center justify-between md:sticky md:top-14 md:z-10 md:bg-bg-primary md:pt-6 md:pb-3 md:border-b md:border-border-secondary md:-mt-6">
             {/* Left: view toggle */}

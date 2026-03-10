@@ -61,21 +61,19 @@ export function CatalogOptIn({
     .filter((m) => m.expansionType === "marketing" || m.expansionType === "mixed")
     .map((m) => m.consentLabel);
 
-  const hasTransactional = transactionalLabels.length > 0;
   const hasMarketing = marketingLabels.length > 0;
 
-  // Consent checkbox text
-  const checkboxText = hasTransactional
-    ? `By checking this box and submitting this form, I consent to receive ${naturalList(transactionalLabels)} text messages from ${displayName} at the phone number provided. Message frequency varies. Message and data rates may apply. Reply HELP for help. Reply STOP to cancel. View our Privacy Policy (${displayUrl}/privacy) and Terms of Service (${displayUrl}/terms).`
-    : `Toggle on at least one message to see consent language.`;
+  // Checkbox labels — short, no duplicate disclosure
+  const allLabels = [...transactionalLabels, ...marketingLabels];
+  const checkboxLabel = `I agree to receive ${naturalList(allLabels)} text messages from ${displayName}.`;
 
-  // Marketing consent text (separate checkbox)
-  const marketingText = hasMarketing
-    ? `I also consent to receive ${naturalList(marketingLabels)} from ${displayName}. Message frequency varies. You can opt out at any time by replying STOP.`
+  // Marketing consent checkbox — separate per CTIA
+  const marketingCheckboxLabel = hasMarketing
+    ? `I also agree to receive marketing messages from ${displayName}. You can opt out at any time.`
     : null;
 
-  // Fine print
-  const finePrint = `By opting in, you agree to receive automated text messages from ${displayName}. Consent is not a condition of purchase. Message and data rates may apply. Message frequency varies. Text STOP to opt out at any time. Text HELP for help. View our Privacy Policy and Terms of Service.`;
+  // Fine print — the single disclosure block with all CTIA-required elements
+  const finePrint = `By opting in, you agree to receive automated text messages from ${displayName}. Consent is not a condition of purchase. Message and data rates may apply. Message frequency varies. Text STOP to opt out at any time. Text HELP for help. Privacy Policy: ${displayUrl}/privacy. Terms of Service: ${displayUrl}/terms.`;
 
   // Build full copyable block
   function buildCopyText(): string {
@@ -83,12 +81,12 @@ export function CatalogOptIn({
       `--- Opt-in consent form for ${displayName} ---`,
       "",
       "Consent checkbox:",
-      checkboxText,
+      checkboxLabel,
     ];
-    if (marketingText) {
-      lines.push("", "Marketing consent checkbox:", marketingText);
+    if (marketingCheckboxLabel) {
+      lines.push("", "Marketing consent checkbox:", marketingCheckboxLabel);
     }
-    lines.push("", "Fine print:", finePrint);
+    lines.push("", "Disclosure / fine print:", finePrint);
     lines.push(
       "",
       `Privacy Policy: ${displayUrl}/privacy`,
@@ -135,21 +133,21 @@ export function CatalogOptIn({
           </div>
         </div>
 
-        {/* Transactional consent checkbox */}
+        {/* Consent checkbox — short label */}
         <label className="flex items-start gap-2.5 text-sm text-text-secondary cursor-pointer">
           <div className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border border-border-primary bg-bg-primary">
             {/* Unchecked by default — compliance requirement */}
           </div>
-          <span className="leading-relaxed">{checkboxText}</span>
+          <span className="leading-relaxed">{checkboxLabel}</span>
         </label>
 
-        {/* Marketing consent checkbox */}
-        {marketingText && (
+        {/* Marketing consent checkbox — separate per CTIA */}
+        {marketingCheckboxLabel && (
           <label className="mt-3 flex items-start gap-2.5 text-sm text-text-secondary cursor-pointer">
             <div className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border border-border-primary bg-bg-primary">
               {/* Unchecked by default */}
             </div>
-            <span className="leading-relaxed">{marketingText}</span>
+            <span className="leading-relaxed">{marketingCheckboxLabel}</span>
           </label>
         )}
 
