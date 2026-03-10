@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-10 (session 9 — read-only message catalog page)
+**Date:** 2026-03-10 (session 10 — catalog page UX refinements)
 **Branch:** main
 
 ---
@@ -7,72 +7,66 @@
 ## Commits This Session
 
 ```
-a55cc0a  feat: read-only message catalog — helpers, card component, nav link
-014ffc0  feat: message catalog page with opt-in preview and copy system
-66c86a2  fix: two-column layout, title, tooltip, checkbox, copy block for catalog
-aa9971f  fix: hide opt-in until selection, remove duplicate consent text
+69701a7  feat: catalog page UX overhaul — sentence builder, opt-in, tooltips, copy system
 ```
 
-All pushed to `origin/main`.
+Previous session commits (still on main):
+```
+20963ca  docs: session 9 handoff + D-73 (catalog flat layout decision)
+aa9971f  fix: hide opt-in until selection, remove duplicate consent text
+66c86a2  fix: two-column layout, title, tooltip, checkbox, copy block for catalog
+014ffc0  feat: message catalog page with opt-in preview and copy system
+a55cc0a  feat: read-only message catalog — helpers, card component, nav link
+```
 
 ---
 
-## What We Completed
+## What We Completed This Session
 
-### 1. Read-only message catalog page (`/c/[categoryId]/messages`)
-Full read-only catalog of all messages for a use case. No editing capabilities — this is a copy-and-go developer reference, separate from the interactive plan builder at `/c/[categoryId]/plan`.
+### 1. Sentence builder simplified
+Changed from "Preview as [name], a [type] app at [url]" (3 fields with conditional business type) to "I'm building [MyApp]. Our website is [myapp.com]" (2 fields only). Removed `typeFieldKey`, `typeFieldValue`, `typeFieldPlaceholder` logic. Template interpolation still works — `CATEGORY_EXAMPLE_VALUES` defaults to sensible values when session fields are empty.
 
-### 2. Catalog helpers (`prototype/lib/catalog-helpers.ts`)
-- Template interpolation with per-category example values (all 9 categories covered)
-- Copy block formatting: message name, trigger, example (interpolated), template (raw), required variables (including "stop" when `requiresStop` is true), typical variables
-- Multi-message copy block formatting with `---` separators
-- Nature badge logic: Transactional vs Marketing based on `expansionType`
-- Trigger formatting: "Triggers when..." / "Triggers..."
-- Context-aware prompt nudge generation per category
+### 2. Opt-in preview always visible
+Two-column layout (45/55 split) is now permanent, not conditional on card selection. Generic consent text shown when no cards selected: "I agree to receive text messages from {name}." Section header "Sample opt-in form" added above the card.
 
-### 3. Catalog card component (`prototype/components/catalog/catalog-card.tsx`)
-- Checkbox selection (native `<input type="checkbox">` with `sr-only` + visual div)
-- Message name + Transactional/Marketing nature badge (green/orange)
-- Trigger tooltip (info icon, renders above card with `bottom-full mb-1 z-50`)
-- Per-card clipboard copy button
-- Preview mode: inline bold-purple variable interpolation (`font-semibold text-[#7C3AED]`)
-- Template mode: raw template in monospace
-- Per-card view toggle that overrides page-level toggle (click again to clear override)
-- Prompt nudge per card (italic, context-aware)
+### 3. Educational tooltips per message
+Info icon tooltip now shows per-message educational text (e.g., "Sent when a user requests a login code. Confirms their identity before granting access.") instead of just trigger formatting. Keyed by message ID in `TOOLTIP_TEXT` map. Uses hardcoded `bg-[#333333]` because semantic dark tokens resolve wrong in the prototype.
 
-### 4. Opt-in consent preview (`prototype/components/catalog/catalog-opt-in.tsx`)
-- Only appears when at least one card is selected (conditional two-column layout)
-- Fake form fields (Name, Phone number)
-- Short checkbox label: "I agree to receive [labels] text messages from [name]."
-- Separate marketing consent checkbox when marketing messages selected
-- Full CTIA-required fine print (single disclosure block, no duplication)
-- Privacy Policy + Terms of Service links
-- CTA button
-- Copy consent block button
-- Prompt nudge: "Ask your AI: Build my opt-in form using this consent language."
+### 4. Copy combo button
+Replaced separate "Select all" / "Copy all" / "Copy selected" buttons with a split button: main action + chevron dropdown with "Copy N selected" and "Copy all N messages". Added "Clear all" text link when selection exists.
 
-### 5. Messages page (`prototype/app/c/[categoryId]/messages/page.tsx`)
-- Conditional layout: single column (max-w-720px) when no selection, two-column grid (45fr/55fr) when cards selected
-- Left column: sticky opt-in preview
-- Right column: sticky toolbar + flat message card list (no tier grouping — D-73)
-- Toolbar: page-level preview/template toggle, select all / clear, copy selected / copy all
-- Three-level copy system: per card, selected cards, all cards
+### 5. Per-card view toggle (icon button)
+Code/Eye icon button in card header row. Highlights with brand color when local override is active. Moved from footer text link to header icon position.
 
-### 6. Plan page cross-link
-- Added "View catalog →" link to `/c/[categoryId]/plan` header
-- Added "← Edit plan" link to `/c/[categoryId]/messages` header
+### 6. Prompt nudges redesigned
+Dropped "Ask your AI:" prefix. Now short imperative sentences per message ID (e.g., "Write a login verification code that expires in 10 minutes."). Wrapped in curly quotes with inline copy icon button.
 
-### 7. Decision D-73 appended to DECISIONS.md
-Catalog page is flat with nature badges (Transactional/Marketing), not tier grouping (Core/Available/Add-on). Intentional separation from the plan builder page.
+### 7. Marketing-only badges
+Removed Transactional badge. Only Marketing messages show a badge (purple). Absence of badge = transactional.
+
+### 8. Variable text styling
+Changed from bold purple (`text-[#7C3AED]`) to bold dark (`text-text-primary`) for interpolated variables in preview mode.
+
+### 9. Category icon in header
+Added category icon (from `CATEGORIES` data) in a circular bg-secondary container next to the category label.
+
+### 10. Checkbox fix
+Changed from semantic `bg-bg-brand-primary` (resolving wrong) to explicit `bg-[#7C3AED] border-[#7C3AED]` so white checkmark SVG is visible.
+
+### 11. Sticky header + toolbar fix
+Moved "Your messages" h2 inside the sticky container with the toolbar, removing the `md:-mt-6` negative margin that was clipping the header.
+
+### 12. New decisions D-74 through D-79
+Appended 6 new decisions to DECISIONS.md covering all catalog UX changes.
 
 ---
 
 ## What's In Progress / Not Yet Built
 
-- Message data for remaining 6 categories (orders, support, marketing, internal, community, waitlist) — redirect to `/choose`
+- Message data for remaining 6 categories (orders, support, marketing, internal, community, waitlist) — these redirect to `/choose`
 - Category landing pages, docs page, signup screen, post-registration dashboard
-- Per-card compliance warnings (not started)
-- Drag-and-drop message reordering (not planned for v1)
+- Per-card compliance warnings
+- Remaining tooltip text and prompt nudges for categories beyond verification + appointments (fallback works fine)
 
 ---
 
@@ -80,43 +74,44 @@ Catalog page is flat with nature badges (Transactional/Marketing), not tier grou
 
 1. **Run prototype with:** `cd prototype && npm run dev` — port 3001.
 
-2. **Delete .next before restarting** if you see webpack cache errors: `rm -rf prototype/.next`
+2. **Delete .next before restarting** if you see webpack cache errors or stale UI: `rm -rf prototype/.next`
 
 3. **Two separate card components exist:**
-   - `prototype/components/plan-builder/message-card.tsx` — interactive, contentEditable, always-editable (plan page)
-   - `prototype/components/catalog/catalog-card.tsx` — read-only, no editing (catalog page)
+   - `prototype/components/plan-builder/message-card.tsx` — interactive, contentEditable (plan page)
+   - `prototype/components/catalog/catalog-card.tsx` — read-only (catalog page)
    Do not merge or cross-import between them.
 
-4. **ContentEditable is DOM-authoritative (plan builder only)** — The plan builder card uses `contentEditable` with `<span contentEditable="false" data-var="key">` for variable markers. Serialization walks the DOM (`domToTemplate()`). Don't try to make it a controlled React component.
+4. **Hardcoded hex values in catalog components** — Several colors use hardcoded hex instead of semantic tokens because tokens resolve incorrectly in the prototype:
+   - Tooltip: `bg-[#333333]` with `text-white`
+   - Checkbox checked: `bg-[#7C3AED] border-[#7C3AED]`
+   - Marketing badge: `bg-[#F9F5FF] border-[#E9D7FE] text-[#7C3AED]`
 
-5. **Pill preview sync (plan builder only)** — When `state.appName` etc. change, a `useEffect` updates variable text content via `querySelectorAll('[data-var]')` without rebuilding the DOM.
+5. **Catalog card tooltip overflow** — Card has `overflow-visible` and tooltip uses `z-[100]` + `pointer-events-none`. Don't add `overflow-hidden` to cards.
 
-6. **Inline variables vs palette pills have different styling (plan builder)** — Inline: bold purple text, no background (`INLINE_VAR_CLASSES`). Palette: purple-tinted pills with border per Figma specs.
+6. **Per-card view toggle logic** — `localViewMode` is `null` by default (follows global). First click sets opposite of global. Second click clears to null.
 
-7. **Catalog card tooltip overflow** — Card has `overflow-visible` and tooltip uses `z-50` + `pointer-events-none` to prevent clipping. Don't add `overflow-hidden` to cards.
+7. **ContentEditable is DOM-authoritative (plan builder only)** — Don't touch plan page cards.
 
-8. **Per-card view toggle logic** — `localViewMode` is `null` by default (follows global). First click sets opposite of global. Second click clears back to null. Not a simple toggle.
+8. **Framer Motion fully removed** — Not in `package.json`. Do not re-add.
 
-9. **Do not add React hooks to plan/page.tsx** — Early return after `useEffect` means adding hooks before it causes runtime errors.
+9. **Client component redirect pattern** — Both `plan/page.tsx` and `messages/page.tsx` use `useEffect` + `router.replace()`, not `redirect()`.
 
-10. **Framer Motion fully removed** — Not in `package.json`. Do not re-add.
+10. **Data only for 2 categories** — `verification` (8 messages) and `appointments` (6 messages).
 
-11. **Client component redirect pattern** — Both `plan/page.tsx` and `messages/page.tsx` use `useEffect` + `router.replace()`, not `redirect()`.
+11. **No Untitled UI components in prototype** — Plain Tailwind with semantic color tokens + hex values.
 
-12. **Data only for 2 categories** — `verification` (8 messages) and `appointments` (6 messages). Others redirect to `/choose`.
+12. **SessionStorage key:** `relaykit_prototype` — separate from production's `relaykit_intake`.
 
-13. **No Untitled UI components in prototype** — Plain Tailwind with semantic color tokens + hex values for badges.
+13. **DECISIONS.md now has 79 decisions** (D-01 through D-79).
 
-14. **SessionStorage key:** `relaykit_prototype` — separate from production's `relaykit_intake`.
-
-15. **DECISIONS.md now has 73 decisions** (D-01 through D-73).
+14. **Plan page must stay untouched** — verified with `git diff` after every session. The catalog page and plan page are completely independent.
 
 ---
 
 ## Files Modified But Not Yet Committed
 
 ```
-DECISIONS.md    (D-73 appended)
+DECISIONS.md    (D-74 through D-79 appended)
 CC_HANDOFF.md   (this file — overwritten)
 ```
 
@@ -124,8 +119,8 @@ CC_HANDOFF.md   (this file — overwritten)
 
 ## Active Build Context
 
-Two prototype page types now exist:
+Two prototype page types exist:
 - **Plan page** (`/c/[category]/plan`) — interactive plan builder with always-editable contentEditable cards, variable pills, palette, save-time validation, locked STOP suffix, custom message support
-- **Catalog page** (`/c/[category]/messages`) — read-only message catalog with flat list, nature badges, three-level copy system, conditional opt-in preview
+- **Catalog page** (`/c/[category]/messages`) — read-only message catalog with flat list, marketing badges, educational tooltips, copy combo button, sentence builder, always-visible opt-in preview
 
 Active PRDs per CLAUDE.md: PRD_06 (dashboard), PRD_01 (intake), PRD_03 (compliance site), PRD_05 (deliverable). Phase 2 PRDs remain out of scope.

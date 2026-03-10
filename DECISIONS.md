@@ -362,3 +362,27 @@ _Affects: `prototype/components/plan-builder/message-card.tsx` (AddMessageCard),
 **D-73 — Catalog page is flat with nature badges, not tier grouping** (Date: 2026-03-10)
 The read-only message catalog page (`/c/[category]/messages`) displays all messages in a single flat list — no Core/Available/Add-on tier sections. Each card shows a "Transactional" or "Marketing" nature badge based on `expansionType`, not the tier badge used on the plan page. This is intentional: the catalog is a copy-and-go reference for developers, not a plan builder. Tier structure is only relevant on the interactive plan page (`/c/[category]/plan`).
 _Affects: `prototype/app/c/[categoryId]/messages/page.tsx`, `prototype/components/catalog/catalog-card.tsx`, `prototype/lib/catalog-helpers.ts`._
+
+**D-74 — Catalog opt-in preview is always visible** (Date: 2026-03-10)
+The opt-in consent preview on the catalog page is always visible in a two-column layout (45/55 split), not conditionally shown only when messages are selected. When no messages are checked, it shows generic consent text ("I agree to receive text messages from {name}"). When messages are selected, consent labels become specific. This mirrors the plan page's always-visible layout. The opt-in title ("Sample opt-in form") is a section header above the card, not inside it.
+_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`, `prototype/components/catalog/catalog-opt-in.tsx`._
+
+**D-75 — Catalog sentence builder is two fields: app name + website** (Date: 2026-03-10)
+The catalog page sentence builder reads "I'm building [MyApp]. Our website is [myapp.com]" — two inline editable fields only. The business type/vertical field (service type, venue type, product type) has been removed. Template interpolation still works because `CATEGORY_EXAMPLE_VALUES` in `catalog-helpers.ts` defaults to sensible values (e.g., `serviceType || "appointment"`) when the session field is empty.
+_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+
+**D-76 — Marketing-only badges on catalog cards** (Date: 2026-03-10)
+Catalog message cards only show a badge for Marketing messages (purple: `bg-[#F9F5FF] border-[#E9D7FE] text-[#7C3AED]`). Transactional messages get no badge — the absence of a badge implies transactional. This supersedes D-73's mention of both Transactional and Marketing badges; the original green Transactional badge was removed to reduce visual noise.
+_Affects: `prototype/components/catalog/catalog-card.tsx`._
+
+**D-77 — Educational tooltips per message ID on catalog cards** (Date: 2026-03-10)
+Each catalog card's info icon shows an educational tooltip explaining what the message does and when it's sent (e.g., "Sent when a user requests a login code. Confirms their identity before granting access."). Tooltip text is keyed by message ID in a `TOOLTIP_TEXT` map in `catalog-helpers.ts`. Falls back to formatted trigger text for messages without a specific tooltip. Tooltip uses hardcoded `bg-[#333333]` with `text-white` and `max-w-[280px]` because semantic dark tokens resolve incorrectly in the prototype.
+_Affects: `prototype/lib/catalog-helpers.ts`, `prototype/components/catalog/catalog-card.tsx`._
+
+**D-78 — Prompt nudges are short imperatives with inline copy icon** (Date: 2026-03-10)
+Prompt nudges on catalog cards and the opt-in preview are short imperative sentences (e.g., "Write a login verification code that expires in 10 minutes.") — no "Ask your AI:" prefix. Each nudge is wrapped in curly quotes and has an inline copy icon button next to it. Nudge text is keyed per message ID in `PROMPT_NUDGE_BY_ID` map with a generic fallback for future categories.
+_Affects: `prototype/lib/catalog-helpers.ts`, `prototype/components/catalog/catalog-card.tsx`, `prototype/components/catalog/catalog-opt-in.tsx`._
+
+**D-79 — Copy combo button on catalog toolbar** (Date: 2026-03-10)
+The catalog toolbar uses a split copy button: the main button copies selected messages (or all if none selected), and a chevron dropdown offers "Copy N selected" and "Copy all N messages" options. Replaces the previous separate "Select all" / "Copy all" / "Copy selected" buttons. A "Clear all" text button appears when messages are selected.
+_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
