@@ -178,7 +178,7 @@ export function CatalogCard({
 
   return (
     <div
-      className={`rounded-xl border bg-bg-primary p-4 shadow-xs transition duration-100 ease-linear ${
+      className={`rounded-xl border bg-bg-primary p-4 shadow-xs transition duration-100 ease-linear overflow-visible ${
         isSelected ? "border-border-brand" : "border-border-secondary"
       }`}
     >
@@ -187,32 +187,37 @@ export function CatalogCard({
         {/* Left: checkbox + name + badge */}
         <div className="flex items-center gap-3 min-w-0">
           {/* Subtle checkbox */}
-          <button
-            type="button"
-            onClick={() => onToggleSelect(message.id)}
-            className={`flex-shrink-0 w-4 h-4 rounded border transition duration-100 ease-linear flex items-center justify-center cursor-pointer ${
-              isSelected
-                ? "bg-bg-brand-primary border-border-brand"
-                : "border-border-primary bg-bg-primary hover:border-border-brand"
-            }`}
-            aria-label={`Select ${message.name}`}
-            aria-pressed={isSelected}
-          >
-            {isSelected && (
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 10 10"
-                fill="none"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="2 5 4 7 8 3" />
-              </svg>
-            )}
-          </button>
+          <label className="flex-shrink-0 relative cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect(message.id)}
+              className="peer sr-only"
+              aria-label={`Select ${message.name}`}
+            />
+            <div
+              className={`w-4 h-4 rounded border transition duration-100 ease-linear flex items-center justify-center ${
+                isSelected
+                  ? "bg-bg-brand-primary border-border-brand"
+                  : "border-border-primary bg-bg-primary peer-hover:border-border-brand"
+              }`}
+            >
+              {isSelected && (
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="2 5 4 7 8 3" />
+                </svg>
+              )}
+            </div>
+          </label>
 
           <span className="text-sm font-medium text-text-primary truncate">
             {message.name}
@@ -241,7 +246,7 @@ export function CatalogCard({
               <InfoIcon />
             </button>
             {showTriggerTooltip && (
-              <div className="absolute right-0 top-full mt-1 z-20 rounded-lg bg-bg-primary-solid px-3 py-1.5 text-xs text-text-white shadow-lg whitespace-nowrap">
+              <div className="absolute right-0 bottom-full mb-1 z-50 rounded-lg bg-bg-primary-solid px-3 py-1.5 text-xs text-text-white shadow-lg whitespace-nowrap pointer-events-none">
                 {formatTrigger(message.trigger)}
               </div>
             )}

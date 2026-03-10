@@ -91,7 +91,7 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-[720px] px-6 py-8">
+    <div className="mx-auto max-w-[1000px] px-6 py-8">
       {/* Header */}
       <div className="mb-6">
         <p className="mb-1 text-xs font-medium uppercase tracking-widest text-text-tertiary">
@@ -99,10 +99,8 @@ export default function MessagesPage() {
         </p>
         <div className="flex items-baseline gap-3">
           <h1 className="text-2xl md:text-3xl font-bold text-text-primary">
-            Your messages — included with your registration
+            Your messages
           </h1>
-        </div>
-        <div className="mt-2 flex items-center gap-3">
           <Link
             href={`/c/${cat.id}/plan`}
             className="text-xs font-medium text-text-quaternary hover:text-text-brand-secondary transition duration-100 ease-linear"
@@ -112,97 +110,103 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      {/* Toolbar: view toggle + copy actions */}
-      <div className="mb-4 flex items-center justify-between">
-        {/* Left: view toggle */}
-        <div className="flex items-center rounded-lg border border-border-secondary bg-bg-primary shadow-xs">
-          <button
-            type="button"
-            onClick={() => setViewMode("preview")}
-            className={`px-3 py-1.5 text-xs font-medium transition duration-100 ease-linear cursor-pointer rounded-l-lg ${
-              viewMode === "preview"
-                ? "bg-bg-active text-text-primary"
-                : "text-text-tertiary hover:text-text-secondary"
-            }`}
-          >
-            Preview
-          </button>
-          <button
-            type="button"
-            onClick={() => setViewMode("template")}
-            className={`px-3 py-1.5 text-xs font-medium transition duration-100 ease-linear cursor-pointer rounded-r-lg ${
-              viewMode === "template"
-                ? "bg-bg-active text-text-primary"
-                : "text-text-tertiary hover:text-text-secondary"
-            }`}
-          >
-            Template
-          </button>
+      {/* Two-column layout: left sticky opt-in, right scrollable cards */}
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-[45fr_55fr]">
+        {/* Left column — sticky opt-in preview */}
+        <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none md:self-start md:sticky md:top-20">
+          <CatalogOptIn
+            appName={state.appName}
+            website={state.website}
+            allMessages={allMessages}
+            selectedIds={selectedIds}
+          />
         </div>
 
-        {/* Right: copy actions */}
-        <div className="flex items-center gap-2">
-          {hasSelection && (
-            <>
-              <span className="text-xs text-text-tertiary">
-                {selectedIds.size} selected
-              </span>
+        {/* Right column — toolbar + message cards */}
+        <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none">
+          {/* Toolbar: view toggle + copy actions */}
+          <div className="mb-4 flex items-center justify-between md:sticky md:top-14 md:z-10 md:bg-bg-primary md:pt-6 md:pb-3 md:border-b md:border-border-secondary md:-mt-6">
+            {/* Left: view toggle */}
+            <div className="flex items-center rounded-lg border border-border-secondary bg-bg-primary shadow-xs">
               <button
                 type="button"
-                onClick={clearSelection}
+                onClick={() => setViewMode("preview")}
+                className={`px-3 py-1.5 text-xs font-medium transition duration-100 ease-linear cursor-pointer rounded-l-lg ${
+                  viewMode === "preview"
+                    ? "bg-bg-active text-text-primary"
+                    : "text-text-tertiary hover:text-text-secondary"
+                }`}
+              >
+                Preview
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("template")}
+                className={`px-3 py-1.5 text-xs font-medium transition duration-100 ease-linear cursor-pointer rounded-r-lg ${
+                  viewMode === "template"
+                    ? "bg-bg-active text-text-primary"
+                    : "text-text-tertiary hover:text-text-secondary"
+                }`}
+              >
+                Template
+              </button>
+            </div>
+
+            {/* Right: copy actions */}
+            <div className="flex items-center gap-2">
+              {hasSelection && (
+                <>
+                  <span className="text-xs text-text-tertiary">
+                    {selectedIds.size} selected
+                  </span>
+                  <button
+                    type="button"
+                    onClick={clearSelection}
+                    className="text-xs text-text-quaternary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopySelected}
+                    className="rounded-lg border border-border-secondary bg-bg-primary px-3 py-1.5 text-xs font-medium text-text-secondary shadow-xs hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                  >
+                    {copied === "selected" ? "Copied ✓" : "Copy selected"}
+                  </button>
+                </>
+              )}
+              <button
+                type="button"
+                onClick={selectAll}
                 className="text-xs text-text-quaternary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
               >
-                Clear
+                Select all
               </button>
               <button
                 type="button"
-                onClick={handleCopySelected}
+                onClick={handleCopyAll}
                 className="rounded-lg border border-border-secondary bg-bg-primary px-3 py-1.5 text-xs font-medium text-text-secondary shadow-xs hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
               >
-                {copied === "selected" ? "Copied ✓" : "Copy selected"}
+                {copied === "all" ? "Copied ✓" : "Copy all"}
               </button>
-            </>
-          )}
-          <button
-            type="button"
-            onClick={selectAll}
-            className="text-xs text-text-quaternary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-          >
-            Select all
-          </button>
-          <button
-            type="button"
-            onClick={handleCopyAll}
-            className="rounded-lg border border-border-secondary bg-bg-primary px-3 py-1.5 text-xs font-medium text-text-secondary shadow-xs hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-          >
-            {copied === "all" ? "Copied ✓" : "Copy all"}
-          </button>
+            </div>
+          </div>
+
+          {/* Message cards — flat catalog, no tier grouping */}
+          <div className="space-y-3">
+            {allMessages.map((message) => (
+              <CatalogCard
+                key={message.id}
+                message={message}
+                categoryId={cat.id}
+                state={state}
+                isSelected={selectedIds.has(message.id)}
+                onToggleSelect={toggleSelect}
+                globalViewMode={viewMode}
+              />
+            ))}
+          </div>
         </div>
-      </div>
-
-      {/* Message cards — flat catalog, no tier grouping */}
-      <div className="space-y-3">
-        {allMessages.map((message) => (
-          <CatalogCard
-            key={message.id}
-            message={message}
-            categoryId={cat.id}
-            state={state}
-            isSelected={selectedIds.has(message.id)}
-            onToggleSelect={toggleSelect}
-            globalViewMode={viewMode}
-          />
-        ))}
-      </div>
-
-      {/* Opt-in consent preview */}
-      <div className="mt-10">
-        <CatalogOptIn
-          appName={state.appName}
-          website={state.website}
-          allMessages={allMessages}
-          selectedIds={selectedIds}
-        />
       </div>
     </div>
   );

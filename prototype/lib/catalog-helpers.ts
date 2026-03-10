@@ -167,6 +167,10 @@ export function formatCopyBlock(
   const variables = extractVariables(message.template);
   const requiredKeys = new Set(["app_name", "business_name", "community_name"]);
   const required = variables.filter((v) => requiredKeys.has(v));
+  // STOP is a required element on every message that includes it (D-61)
+  if (message.requiresStop) {
+    required.push("stop");
+  }
   const typical = variables.filter((v) => !requiredKeys.has(v));
 
   return [
