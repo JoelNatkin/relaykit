@@ -358,3 +358,7 @@ _Affects: `prototype/components/plan-builder/message-card.tsx`, `CATEGORY_VARIAB
 **D-72 — Custom messages via Add message card** (Date: 2026-03-09)
 "+ Add message" card at the bottom of each tier group creates a new custom message. Custom messages get a "Custom" badge (neutral gray), editable title and trigger fields, and a Delete button. Default messages from category data can only be toggled off — never deleted. Custom messages are stored in `sessionState.customMessages` array. Implements D-64.
 _Affects: `prototype/components/plan-builder/message-card.tsx` (AddMessageCard), `prototype/components/plan-builder/message-tier.tsx`, `prototype/context/session-context.tsx`._
+
+**D-73 — Catalog page is flat with nature badges, not tier grouping** (Date: 2026-03-10)
+The read-only message catalog page (`/c/[category]/messages`) displays all messages in a single flat list — no Core/Available/Add-on tier sections. Each card shows a "Transactional" or "Marketing" nature badge based on `expansionType`, not the tier badge used on the plan page. This is intentional: the catalog is a copy-and-go reference for developers, not a plan builder. Tier structure is only relevant on the interactive plan page (`/c/[category]/plan`).
+_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`, `prototype/components/catalog/catalog-card.tsx`, `prototype/lib/catalog-helpers.ts`._
