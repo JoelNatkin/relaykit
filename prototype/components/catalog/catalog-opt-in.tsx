@@ -30,6 +30,45 @@ function naturalList(items: string[]): string {
   return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
 }
 
+/* ── Inline icons ── */
+
+function ClipboardIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+    </svg>
+  );
+}
+
+function CheckIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
 /* ── CatalogOptIn component ── */
 
 interface CatalogOptInProps {
@@ -48,12 +87,15 @@ export function CatalogOptIn({
   selectedIds,
 }: CatalogOptInProps) {
   const { copied, copy } = useCopyFeedback();
+  const nudgeCopy = useCopyFeedback();
 
   const displayName = appName || "Your App";
   const displayUrl = website || "yourapp.com";
 
-  // Build consent labels from selected messages
+  // Build consent labels from selected messages (or use generic when none selected)
   const selectedMessages = allMessages.filter((m) => selectedIds.has(m.id));
+  const hasSelection = selectedMessages.length > 0;
+
   const transactionalLabels = selectedMessages
     .filter((m) => !m.expansionType)
     .map((m) => m.consentLabel);
@@ -63,9 +105,10 @@ export function CatalogOptIn({
 
   const hasMarketing = marketingLabels.length > 0;
 
-  // Checkbox labels — short, no duplicate disclosure
-  const allLabels = [...transactionalLabels, ...marketingLabels];
-  const checkboxLabel = `I agree to receive ${naturalList(allLabels)} text messages from ${displayName}.`;
+  // Checkbox label — specific when messages selected, generic when not
+  const checkboxLabel = hasSelection
+    ? `I agree to receive ${naturalList([...transactionalLabels, ...marketingLabels])} text messages from ${displayName}.`
+    : `I agree to receive text messages from ${displayName}.`;
 
   // Marketing consent checkbox — separate per CTIA
   const marketingCheckboxLabel = hasMarketing
@@ -95,19 +138,23 @@ export function CatalogOptIn({
     return lines.join("\n");
   }
 
+  const nudgeText = "Build my opt-in form using this consent language.";
+
   return (
     <div className="rounded-2xl border border-border-secondary bg-bg-secondary shadow-sm overflow-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-border-secondary bg-bg-primary">
-        <h3 className="text-sm font-semibold text-text-primary">
-          Opt-in consent preview
-        </h3>
+      {/* Copy button bar */}
+      <div className="flex items-center justify-end px-5 py-2.5 border-b border-border-secondary bg-bg-primary">
         <button
           type="button"
           onClick={() => copy(buildCopyText())}
-          className="text-xs font-medium text-text-quaternary hover:text-text-brand-secondary transition duration-100 ease-linear cursor-pointer"
+          className="text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+          aria-label={copied ? "Copied" : "Copy consent block"}
         >
-          {copied ? "Copied ✓" : "Copy consent block"}
+          {copied ? (
+            <CheckIcon className="text-fg-success-secondary" />
+          ) : (
+            <ClipboardIcon />
+          )}
         </button>
       </div>
 
@@ -133,8 +180,8 @@ export function CatalogOptIn({
           </div>
         </div>
 
-        {/* Consent checkbox — short label */}
-        <label className="flex items-start gap-2.5 text-sm text-text-secondary cursor-pointer">
+        {/* Consent checkbox — same small font as fine print */}
+        <label className="flex items-start gap-2.5 text-xs text-text-secondary cursor-pointer">
           <div className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border border-border-primary bg-bg-primary">
             {/* Unchecked by default — compliance requirement */}
           </div>
@@ -143,7 +190,7 @@ export function CatalogOptIn({
 
         {/* Marketing consent checkbox — separate per CTIA */}
         {marketingCheckboxLabel && (
-          <label className="mt-3 flex items-start gap-2.5 text-sm text-text-secondary cursor-pointer">
+          <label className="mt-3 flex items-start gap-2.5 text-xs text-text-secondary cursor-pointer">
             <div className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border border-border-primary bg-bg-primary">
               {/* Unchecked by default */}
             </div>
@@ -175,11 +222,23 @@ export function CatalogOptIn({
         </button>
       </div>
 
-      {/* Prompt nudge */}
+      {/* Prompt nudge — quoted with inline copy icon */}
       <div className="px-5 py-3 border-t border-border-secondary">
-        <p className="text-xs text-text-quaternary italic">
-          Ask your AI: Build my opt-in form using this consent language.
-        </p>
+        <span className="text-xs text-text-quaternary italic">
+          &ldquo;{nudgeText}&rdquo;
+        </span>
+        <button
+          type="button"
+          onClick={() => nudgeCopy.copy(nudgeText)}
+          className="inline-flex align-middle ml-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+          aria-label={nudgeCopy.copied ? "Copied" : "Copy prompt"}
+        >
+          {nudgeCopy.copied ? (
+            <CheckIcon className="text-fg-success-secondary" />
+          ) : (
+            <ClipboardIcon />
+          )}
+        </button>
       </div>
     </div>
   );

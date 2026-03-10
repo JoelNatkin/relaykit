@@ -155,6 +155,45 @@ export function formatTrigger(trigger: string): string {
   return "Triggers " + trigger;
 }
 
+/* ── Educational tooltip text per message ── */
+
+const TOOLTIP_TEXT: Record<string, string> = {
+  // Verification
+  verification_login_code:
+    "Sent when a user requests a login code. Confirms their identity before granting access.",
+  verification_signup_code:
+    "Sent during account registration. Verifies the phone number belongs to the user.",
+  verification_password_reset:
+    "Sent when a user requests a password reset. Provides a time-limited code for security.",
+  verification_mfa_code:
+    "Sent when multi-factor auth is triggered. Adds a second layer of account security.",
+  verification_device_confirmation:
+    "Sent when a new device signs in. Alerts the user so they can act if it wasn\u2019t them.",
+  verification_security_tip:
+    "Sent after account creation. Encourages users to enable stronger security settings.",
+  verification_welcome:
+    "Sent after successful verification. Confirms the account is ready and provides a starting point.",
+  verification_feature_announcement:
+    "Sent manually to announce new features. Keeps users engaged with product updates.",
+  // Appointments
+  appointments_confirmation:
+    "Sent when a customer books an appointment. Confirms the details so they know it went through.",
+  appointments_reminder:
+    "Sent 24 hours before the appointment. Reduces no-shows by keeping the booking top of mind.",
+  appointments_reschedule:
+    "Sent when an appointment is rescheduled. Updates the customer with the new date and time.",
+  appointments_cancellation:
+    "Sent when an appointment is cancelled. Includes a link to rebook.",
+  appointments_promo:
+    "Sent manually to drive repeat bookings. Offers a discount on the next appointment.",
+  appointments_feedback:
+    "Sent after the appointment. Asks for a review while the experience is fresh.",
+};
+
+export function getTooltipText(message: Message): string {
+  return TOOLTIP_TEXT[message.id] || formatTrigger(message.trigger);
+}
+
 /* ── Copy block formatting ── */
 
 export function formatCopyBlock(
@@ -167,7 +206,6 @@ export function formatCopyBlock(
   const variables = extractVariables(message.template);
   const requiredKeys = new Set(["app_name", "business_name", "community_name"]);
   const required = variables.filter((v) => requiredKeys.has(v));
-  // STOP is a required element on every message that includes it (D-61)
   if (message.requiresStop) {
     required.push("stop");
   }
@@ -195,37 +233,51 @@ export function formatMultipleCopyBlocks(
     .join("\n\n---\n\n");
 }
 
-/* ── Prompt nudge generation ── */
+/* ── Prompt nudge generation — specific per message ID ── */
 
-const PROMPT_NUDGES: Record<string, (message: Message) => string> = {
-  appointments: (m) => {
-    if (m.id.includes("confirmation") || m.id.includes("booking"))
-      return "Ask your AI: Write me a booking confirmation that includes the service type, date, and time.";
-    if (m.id.includes("reminder"))
-      return "Ask your AI: Write an appointment reminder that lets users confirm or reschedule.";
-    if (m.id.includes("cancel"))
-      return "Ask your AI: Write a cancellation notice with a rebooking link.";
-    return "Ask your AI: Write this message for my app using the template above.";
-  },
-  verification: (m) => {
-    if (m.id.includes("login") || m.id.includes("signup") || m.id.includes("mfa"))
-      return "Ask your AI: Send a verification code that expires in 10 minutes.";
-    if (m.id.includes("device"))
-      return "Ask your AI: Alert the user about a new device login with a password reset link.";
-    return "Ask your AI: Write this message for my app using the template above.";
-  },
+const PROMPT_NUDGE_BY_ID: Record<string, string> = {
+  // Verification
+  verification_login_code:
+    "Write a login verification code that expires in 10 minutes.",
+  verification_signup_code:
+    "Write a signup verification with a short expiration window.",
+  verification_password_reset:
+    "Write a password reset code with a security warning.",
+  verification_mfa_code:
+    "Write a multi-factor auth code with a do-not-share warning.",
+  verification_device_confirmation:
+    "Write a new device alert with a password reset link.",
+  verification_security_tip:
+    "Write a security tip encouraging two-factor authentication.",
+  verification_welcome:
+    "Write a welcome message with a getting-started link.",
+  verification_feature_announcement:
+    "Write a feature announcement with a learn-more link.",
+  // Appointments
+  appointments_confirmation:
+    "Write a booking confirmation with service type, date, and time.",
+  appointments_reminder:
+    "Write a reminder that lets users confirm or reschedule.",
+  appointments_reschedule:
+    "Write a reschedule notice with the updated date and time.",
+  appointments_cancellation:
+    "Write a cancellation notice with a rebooking link.",
+  appointments_promo:
+    "Write a promotional offer for a seasonal discount.",
+  appointments_feedback:
+    "Write a feedback request with a review link.",
 };
 
-export function getPromptNudge(message: Message, categoryId: string): string {
-  const nudgeFn = PROMPT_NUDGES[categoryId];
-  if (nudgeFn) return nudgeFn(message);
-  // Generic fallback based on message variables
+export function getPromptNudge(message: Message, _categoryId: string): string {
+  const specific = PROMPT_NUDGE_BY_ID[message.id];
+  if (specific) return specific;
+  // Fallback for future categories
   const vars = extractVariables(message.template);
   const varNames = vars
     .filter((v) => v !== "app_name" && v !== "business_name" && v !== "community_name")
     .map((v) => v.replace(/_/g, " "));
   if (varNames.length > 0) {
-    return `Ask your AI: Write me a ${message.name.toLowerCase()} that includes the ${varNames.join(", ")}.`;
+    return `Write a ${message.name.toLowerCase()} with ${varNames.join(", ")}.`;
   }
-  return `Ask your AI: Write a ${message.name.toLowerCase()} for my app using the template above.`;
+  return `Write a ${message.name.toLowerCase()} using the template above.`;
 }
