@@ -230,8 +230,41 @@ export function CatalogCard({
     >
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
-        {/* Left: name + badge */}
+        {/* Left: checkbox + name + badge */}
         <div className="flex items-center gap-3 min-w-0">
+          {/* Checkbox — left of title */}
+          <label className="flex-shrink-0 relative cursor-pointer">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect(message.id)}
+              className="peer sr-only"
+              aria-label={`Select ${message.name}`}
+            />
+            <div
+              className={`w-4 h-4 rounded border transition duration-100 ease-linear flex items-center justify-center ${
+                isSelected
+                  ? "bg-[#7C3AED] border-[#7C3AED]"
+                  : "border-border-primary bg-bg-primary peer-hover:border-border-brand"
+              }`}
+            >
+              {isSelected && (
+                <svg
+                  width="10"
+                  height="10"
+                  viewBox="0 0 10 10"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="2 5 4 7 8 3" />
+                </svg>
+              )}
+            </div>
+          </label>
+
           <span className="text-base font-medium text-text-primary truncate">
             {message.name}
           </span>
@@ -246,7 +279,7 @@ export function CatalogCard({
           )}
         </div>
 
-        {/* Right: view toggle + info icon + copy button + checkbox */}
+        {/* Right: view toggle + info icon + copy button */}
         <div className="flex items-center gap-1.5 flex-shrink-0">
           {/* Per-card view toggle icon button */}
           <button
@@ -293,44 +326,11 @@ export function CatalogCard({
               <ClipboardIcon />
             )}
           </button>
-
-          {/* Checkbox — far right, separated from icons */}
-          <label className="flex-shrink-0 relative cursor-pointer ml-2">
-            <input
-              type="checkbox"
-              checked={isSelected}
-              onChange={() => onToggleSelect(message.id)}
-              className="peer sr-only"
-              aria-label={`Select ${message.name}`}
-            />
-            <div
-              className={`w-4 h-4 rounded border transition duration-100 ease-linear flex items-center justify-center ${
-                isSelected
-                  ? "bg-[#7C3AED] border-[#7C3AED]"
-                  : "border-border-primary bg-bg-primary peer-hover:border-border-brand"
-              }`}
-            >
-              {isSelected && (
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 10 10"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="2 5 4 7 8 3" />
-                </svg>
-              )}
-            </div>
-          </label>
         </div>
       </div>
 
       {/* Message body */}
-      <div className="mt-1">
+      <div className="mt-2">
         {viewMode === "preview" ? renderPreview() : renderTemplate()}
       </div>
 

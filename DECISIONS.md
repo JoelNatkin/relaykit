@@ -363,58 +363,32 @@ _Affects: `prototype/components/plan-builder/message-card.tsx` (AddMessageCard),
 The read-only message catalog page (`/c/[category]/messages`) displays all messages in a single flat list — no Core/Available/Add-on tier sections. Each card shows a "Transactional" or "Marketing" nature badge based on `expansionType`, not the tier badge used on the plan page. This is intentional: the catalog is a copy-and-go reference for developers, not a plan builder. Tier structure is only relevant on the interactive plan page (`/c/[category]/plan`).
 _Affects: `prototype/app/c/[categoryId]/messages/page.tsx`, `prototype/components/catalog/catalog-card.tsx`, `prototype/lib/catalog-helpers.ts`._
 
-**D-74 — Catalog opt-in preview is always visible** (Date: 2026-03-10)
-The opt-in consent preview on the catalog page is always visible in a two-column layout (45/55 split), not conditionally shown only when messages are selected. When no messages are checked, it shows generic consent text ("I agree to receive text messages from {name}"). When messages are selected, consent labels become specific. This mirrors the plan page's always-visible layout. The opt-in title ("Sample opt-in form") is a section header above the card, not inside it.
-_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`, `prototype/components/catalog/catalog-opt-in.tsx`._
+**D-74 — Plan builder reframed as read-only message catalog** (Date: 2026-03-11)
+Plan builder reframed as read-only message catalog — not an editing/building tool. Developers browse and copy, they don't configure.
 
-**D-75 — Catalog sentence builder is two fields: app name + website** (Date: 2026-03-10)
-The catalog page sentence builder reads "I'm building [MyApp]. Our website is [myapp.com]" — two inline editable fields only. The business type/vertical field (service type, venue type, product type) has been removed. Template interpolation still works because `CATEGORY_EXAMPLE_VALUES` in `catalog-helpers.ts` defaults to sensible values (e.g., `serviceType || "appointment"`) when the session field is empty.
-_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+**D-75 — All message types pre-populated on catalog page** (Date: 2026-03-11)
+All message types for a use case are pre-populated on the catalog page. No enable/disable toggles, no tier grouping on the catalog view.
 
-**D-76 — Marketing-only badges on catalog cards** (Date: 2026-03-10)
-Catalog message cards only show a badge for Marketing messages (purple: `bg-[#F9F5FF] border-[#E9D7FE] text-[#7C3AED]`). Transactional messages get no badge — the absence of a badge implies transactional. This supersedes D-73's mention of both Transactional and Marketing badges; the original green Transactional badge was removed to reduce visual noise.
-_Affects: `prototype/components/catalog/catalog-card.tsx`._
+**D-76 — Copy format includes preview and template** (Date: 2026-03-11)
+Copy format includes both preview (with sample values) and template (with variable placeholders). Both are copyable.
 
-**D-77 — Educational tooltips per message ID on catalog cards** (Date: 2026-03-10)
-Each catalog card's info icon shows an educational tooltip explaining what the message does and when it's sent (e.g., "Sent when a user requests a login code. Confirms their identity before granting access."). Tooltip text is keyed by message ID in a `TOOLTIP_TEXT` map in `catalog-helpers.ts`. Falls back to formatted trigger text for messages without a specific tooltip. Tooltip uses hardcoded `bg-[#333333]` with `text-white` and `max-w-[280px]` because semantic dark tokens resolve incorrectly in the prototype.
-_Affects: `prototype/lib/catalog-helpers.ts`, `prototype/components/catalog/catalog-card.tsx`._
+**D-77 — Opt-in consent preview is live and copyable** (Date: 2026-03-11)
+Opt-in consent preview is a live, copyable surface on the catalog page. Updates dynamically based on which message cards are selected.
 
-**D-78 — Prompt nudges are short imperatives with inline copy icon** (Date: 2026-03-10)
-Prompt nudges on catalog cards and the opt-in preview are short imperative sentences (e.g., "Write a login verification code that expires in 10 minutes.") — no "Ask your AI:" prefix. Each nudge is wrapped in curly quotes and has an inline copy icon button next to it. Nudge text is keyed per message ID in `PROMPT_NUDGE_BY_ID` map with a generic fallback for future categories.
-_Affects: `prototype/lib/catalog-helpers.ts`, `prototype/components/catalog/catalog-card.tsx`, `prototype/components/catalog/catalog-opt-in.tsx`._
+**D-78 — SMS_GUIDELINES.md must be comprehensive for AI advisors** (Date: 2026-03-11)
+SMS_GUIDELINES.md must be comprehensive enough that an AI coding assistant with only that file can serve as a competent SMS compliance advisor for that developer's business.
 
-**D-79 — Copy combo button on catalog toolbar** (Date: 2026-03-10)
-The catalog toolbar uses a split copy button: the main button copies selected messages (or all if none selected), and a chevron dropdown offers "Copy N selected" and "Copy all N messages" options. Replaces the previous separate "Select all" / "Copy all" / "Copy selected" buttons. A "Clear all" text button appears when messages are selected.
-_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+**D-79 — Message composer/editor cut entirely** (Date: 2026-03-11)
+Message composer/editor cut entirely. Developers write their own messages using catalog templates and AI prompt nudges as guidance.
 
-**D-80 — Catalog marketing section divider** (Date: 2026-03-11)
-The catalog page splits messages into two groups: transactional (tier !== "expansion") displayed first, then marketing (tier === "expansion") below a section divider. The divider shows "Marketing & promotion messages" heading, "+$10/mo" right-aligned, and subtext "Your users check an extra box when they sign up. We handle the rest." — matching the plan page's `MessageTier` component pattern. Only appears when expansion messages exist for the category.
-_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+**D-80 — Catalog page tone is browse-and-reference** (Date: 2026-03-11)
+UI tone for catalog page is browse-and-reference, not task-and-configure. Subtle interactions, magazine-style layout.
 
-**D-81 — Catalog toolbar is icon-only (no text toggle)** (Date: 2026-03-11)
-The catalog toolbar uses icon-only buttons instead of the previous "Preview | Template" bordered pill toggle. A single Code/Eye icon button toggles view mode. The clipboard+chevron copy dropdown replaces the split button. Icons sit inline with the "Your messages" h2 in a flex row. Scroll-triggered border uses IntersectionObserver + sentinel div to show border only when the sticky header is stuck.
-_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+**D-81 — Sentence builder has two fields only** (Date: 2026-03-11)
+Sentence builder has two fields only: app name and website URL. Business type/vertical captured at registration, not on the catalog page.
 
-**D-82 — Sentence builder inputs use hidden span measurement for width** (Date: 2026-03-11)
-Inline sentence builder inputs measure actual text width using a hidden `<span>` that mirrors font properties (font-semibold, text-lg). Input width is set to `spanOffsetWidth + 8px`. Minimum width is 80px. When empty, the input shows placeholder at minimum width. When filled, it shrinks to fit the typed text. This replaces the previous ch-unit approach which was inaccurate.
-_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+**D-82 — TCR submission variety strategy** (Date: 2026-03-11)
+TCR submission variety strategy — use intake data to tailor the 3 sample messages submitted to TCR, not generic defaults.
 
-**D-83 — Catalog card checkbox moved to far right** (Date: 2026-03-11)
-The selection checkbox on catalog cards moved from the left side of the header (before the title) to the far right (after all icon buttons). Order: [Title + badge] ... [code toggle] [info] [copy] [8px gap] [checkbox]. The `ml-2` provides visual separation from the icon button group.
-_Affects: `prototype/components/catalog/catalog-card.tsx`._
-
-**D-84 — Catalog card title bumped to text-base** (Date: 2026-03-11)
-Message card titles (e.g., "Booking confirmation") increased from `text-sm` to `text-base` for better visual hierarchy. Body-to-header spacing reduced from `mt-3` (12px) to `mt-1` (4px).
-_Affects: `prototype/components/catalog/catalog-card.tsx`._
-
-**D-85 — Catalog prompt nudge uses background strip** (Date: 2026-03-11)
-Catalog card prompt nudges render in a subtle background strip at the bottom of the card: `border-t border-border-secondary bg-bg-secondary rounded-b-xl` with negative margins to span the full card width. Matches the plan page's card footer pattern.
-_Affects: `prototype/components/catalog/catalog-card.tsx`._
-
-**D-86 — Opt-in card copy icon is absolute-positioned** (Date: 2026-03-11)
-The opt-in preview card's copy button moved from a separate top bar with border-b divider to an absolute-positioned icon at `top-3 right-4`. Legal links changed from clickable `<a>` tags to non-clickable `<span>` elements showing the actual URLs (e.g., "myapp.com/privacy"). Prompt nudge area top padding reduced.
-_Affects: `prototype/components/catalog/catalog-opt-in.tsx`._
-
-**D-87 — service_type default changed to empty string** (Date: 2026-03-11)
-The `service_type` variable in `CATEGORY_EXAMPLE_VALUES` for appointments changed from defaulting to `"appointment"` to `""`. This prevents "appointment appointment" duplication in templates like "Your {service_type} appointment". Copy block output uses `.replace(/  +/g, " ")` to collapse double spaces from empty variables.
-_Affects: `prototype/lib/catalog-helpers.ts`._
+**D-83 — Correct D-61 — catalog page is display-only** (Date: 2026-03-11)
+Correct D-61 — catalog page is display-only. Editing capability was cut.
