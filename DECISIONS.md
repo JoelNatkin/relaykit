@@ -386,3 +386,35 @@ _Affects: `prototype/lib/catalog-helpers.ts`, `prototype/components/catalog/cata
 **D-79 — Copy combo button on catalog toolbar** (Date: 2026-03-10)
 The catalog toolbar uses a split copy button: the main button copies selected messages (or all if none selected), and a chevron dropdown offers "Copy N selected" and "Copy all N messages" options. Replaces the previous separate "Select all" / "Copy all" / "Copy selected" buttons. A "Clear all" text button appears when messages are selected.
 _Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+
+**D-80 — Catalog marketing section divider** (Date: 2026-03-11)
+The catalog page splits messages into two groups: transactional (tier !== "expansion") displayed first, then marketing (tier === "expansion") below a section divider. The divider shows "Marketing & promotion messages" heading, "+$10/mo" right-aligned, and subtext "Your users check an extra box when they sign up. We handle the rest." — matching the plan page's `MessageTier` component pattern. Only appears when expansion messages exist for the category.
+_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+
+**D-81 — Catalog toolbar is icon-only (no text toggle)** (Date: 2026-03-11)
+The catalog toolbar uses icon-only buttons instead of the previous "Preview | Template" bordered pill toggle. A single Code/Eye icon button toggles view mode. The clipboard+chevron copy dropdown replaces the split button. Icons sit inline with the "Your messages" h2 in a flex row. Scroll-triggered border uses IntersectionObserver + sentinel div to show border only when the sticky header is stuck.
+_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+
+**D-82 — Sentence builder inputs use hidden span measurement for width** (Date: 2026-03-11)
+Inline sentence builder inputs measure actual text width using a hidden `<span>` that mirrors font properties (font-semibold, text-lg). Input width is set to `spanOffsetWidth + 8px`. Minimum width is 80px. When empty, the input shows placeholder at minimum width. When filled, it shrinks to fit the typed text. This replaces the previous ch-unit approach which was inaccurate.
+_Affects: `prototype/app/c/[categoryId]/messages/page.tsx`._
+
+**D-83 — Catalog card checkbox moved to far right** (Date: 2026-03-11)
+The selection checkbox on catalog cards moved from the left side of the header (before the title) to the far right (after all icon buttons). Order: [Title + badge] ... [code toggle] [info] [copy] [8px gap] [checkbox]. The `ml-2` provides visual separation from the icon button group.
+_Affects: `prototype/components/catalog/catalog-card.tsx`._
+
+**D-84 — Catalog card title bumped to text-base** (Date: 2026-03-11)
+Message card titles (e.g., "Booking confirmation") increased from `text-sm` to `text-base` for better visual hierarchy. Body-to-header spacing reduced from `mt-3` (12px) to `mt-1` (4px).
+_Affects: `prototype/components/catalog/catalog-card.tsx`._
+
+**D-85 — Catalog prompt nudge uses background strip** (Date: 2026-03-11)
+Catalog card prompt nudges render in a subtle background strip at the bottom of the card: `border-t border-border-secondary bg-bg-secondary rounded-b-xl` with negative margins to span the full card width. Matches the plan page's card footer pattern.
+_Affects: `prototype/components/catalog/catalog-card.tsx`._
+
+**D-86 — Opt-in card copy icon is absolute-positioned** (Date: 2026-03-11)
+The opt-in preview card's copy button moved from a separate top bar with border-b divider to an absolute-positioned icon at `top-3 right-4`. Legal links changed from clickable `<a>` tags to non-clickable `<span>` elements showing the actual URLs (e.g., "myapp.com/privacy"). Prompt nudge area top padding reduced.
+_Affects: `prototype/components/catalog/catalog-opt-in.tsx`._
+
+**D-87 — service_type default changed to empty string** (Date: 2026-03-11)
+The `service_type` variable in `CATEGORY_EXAMPLE_VALUES` for appointments changed from defaulting to `"appointment"` to `""`. This prevents "appointment appointment" duplication in templates like "Your {service_type} appointment". Copy block output uses `.replace(/  +/g, " ")` to collapse double spaces from empty variables.
+_Affects: `prototype/lib/catalog-helpers.ts`._

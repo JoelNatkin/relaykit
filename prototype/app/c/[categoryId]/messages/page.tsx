@@ -68,37 +68,93 @@ function ClipboardIcon({ className }: { className?: string }) {
   );
 }
 
+function EyeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function CodeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  );
+}
+
 /* ── Sentence builder inline input ── */
 
 function InlineInput({
   value,
   placeholder,
   onChange,
-  minWidth = "8em",
 }: {
   value: string;
   placeholder: string;
   onChange: (v: string) => void;
-  minWidth?: string;
 }) {
-  const displayLen = (value || placeholder).length;
-  const calcWidth = `${displayLen * 0.6 + 1.5}em`;
+  const spanRef = useRef<HTMLSpanElement>(null);
+  const [inputWidth, setInputWidth] = useState(80);
+
+  useEffect(() => {
+    if (spanRef.current) {
+      // Measure actual rendered text width, add padding (2px left + 4px right + 2px buffer = 8px)
+      const textWidth = spanRef.current.offsetWidth + 8;
+      setInputWidth(Math.max(80, textWidth));
+    }
+  }, [value, placeholder]);
+
   return (
-    <input
-      type="text"
-      value={value}
-      placeholder={placeholder}
-      onChange={(e) => onChange(e.target.value)}
-      className="border-b border-border-secondary bg-transparent font-semibold text-text-primary placeholder:text-text-placeholder placeholder:font-normal focus:border-border-brand focus:outline-none px-1 mx-1"
-      style={{ width: `max(${minWidth}, ${calcWidth})` }}
-    />
+    <>
+      {/* Hidden measuring span — mirrors input font properties exactly */}
+      <span
+        ref={spanRef}
+        aria-hidden
+        className="absolute invisible whitespace-pre font-semibold text-lg"
+        style={{ pointerEvents: "none" }}
+      >
+        {value || placeholder}
+      </span>
+      <input
+        type="text"
+        value={value}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value)}
+        className="border-b border-[#D0D5DD] bg-transparent font-semibold text-text-primary placeholder:text-text-placeholder placeholder:font-normal focus:border-border-brand focus:outline-none mx-1 text-lg overflow-visible"
+        style={{ width: `${inputWidth}px`, paddingLeft: 2, paddingRight: 4 }}
+      />
+    </>
   );
 }
 
 /* ── Category icon ── */
 
 function CategoryIcon({ icon: Icon }: { icon: FC<{ className?: string }> }) {
-  return <Icon className="w-3.5 h-3.5 text-fg-secondary" />;
+  return <Icon className="w-5 h-5 text-[#7C3AED]" />;
 }
 
 /* ── Page component ── */
@@ -122,7 +178,11 @@ export default function MessagesPage() {
   const [showCopyMenu, setShowCopyMenu] = useState(false);
   const copyMenuRef = useRef<HTMLDivElement>(null);
 
-  const { copied, copy } = useCopyFeedback();
+  // Scroll-triggered border: show border only when sticky header is stuck
+  const [isStuck, setIsStuck] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const { copy } = useCopyFeedback();
 
   useEffect(() => {
     if (shouldRedirect) router.replace("/choose");
@@ -141,10 +201,24 @@ export default function MessagesPage() {
     }
   }, [showCopyMenu]);
 
+  // Scroll-triggered border: IntersectionObserver on sentinel
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsStuck(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   if (shouldRedirect) return null;
 
   const cat = category!;
   const allMessages = MESSAGES[cat.id] || [];
+  const coreMessages = allMessages.filter((m) => m.tier !== "expansion");
+  const expansionMessages = allMessages.filter((m) => m.tier === "expansion");
 
   function toggleSelect(messageId: string) {
     setSelectedIds((prev) => {
@@ -173,26 +247,12 @@ export default function MessagesPage() {
     setShowCopyMenu(false);
   }
 
-  function handleDefaultCopy() {
-    if (hasSelection) {
-      handleCopySelected();
-    } else {
-      handleCopyAll();
-    }
-  }
-
-  const copyButtonLabel = copied
-    ? "Copied \u2713"
-    : hasSelection
-      ? `Copy ${selectedIds.size} selected`
-      : "Copy all";
-
   return (
     <div className="mx-auto max-w-[1000px] px-6 py-8">
       {/* Header */}
       <div className="mb-4">
         <div className="mb-1 flex items-center gap-2">
-          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-bg-secondary">
+          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#F9F5FF]" style={{ padding: '4px 12px' }}>
             <CategoryIcon icon={cat.icon} />
           </div>
           <p className="text-xs font-medium uppercase tracking-widest text-text-tertiary">
@@ -213,28 +273,27 @@ export default function MessagesPage() {
       </div>
 
       {/* Sentence builder */}
-      <div className="mb-8 flex flex-wrap items-baseline gap-0 text-base text-text-tertiary leading-loose">
+      <div className="mb-8 flex flex-wrap items-baseline gap-0 text-lg text-text-tertiary leading-loose">
+        <span className="font-semibold text-text-primary mr-2">Preview:</span>
         <span>I&rsquo;m building</span>
         <InlineInput
           value={state.appName}
           placeholder="MyApp"
           onChange={(v) => setField("appName", v)}
-          minWidth="8em"
         />
         <span>. Our website is</span>
         <InlineInput
           value={state.website}
           placeholder="myapp.com"
           onChange={(v) => setField("website", v)}
-          minWidth="10em"
         />
       </div>
 
       {/* Two-column layout: opt-in left, cards right */}
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,_45fr)_minmax(0,_55fr)]">
+      <div className="grid grid-cols-1 gap-10 md:grid-cols-[45fr_55fr]">
         {/* Left column — sticky opt-in preview */}
         <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none md:self-start md:sticky md:top-20">
-          <h2 className="mb-3 text-lg font-semibold text-text-primary">
+          <h2 className="mb-3 text-xl font-semibold text-text-primary">
             Sample opt-in form
           </h2>
           <CatalogOptIn
@@ -247,102 +306,75 @@ export default function MessagesPage() {
 
         {/* Right column — toolbar + message cards */}
         <div className="mx-auto w-full max-w-[500px] md:mx-0 md:max-w-none">
-          {/* Sticky header + toolbar */}
-          <div className="mb-4 md:sticky md:top-14 md:z-10 md:bg-bg-primary md:pt-6 md:pb-3 md:border-b md:border-border-secondary">
-            <h2 className="mb-3 text-lg font-semibold text-text-primary">
-              Your messages
-            </h2>
-
-          {/* Toolbar: view toggle + copy combo button */}
-          <div className="flex items-center justify-between">
-            {/* Left: view toggle */}
-            <div className="flex items-center rounded-lg border border-border-secondary bg-bg-primary shadow-xs">
-              <button
-                type="button"
-                onClick={() => setViewMode("preview")}
-                className={`px-3 py-1.5 text-xs font-medium transition duration-100 ease-linear cursor-pointer rounded-l-lg ${
-                  viewMode === "preview"
-                    ? "bg-bg-active text-text-primary"
-                    : "text-text-tertiary hover:text-text-secondary"
-                }`}
-              >
-                Preview
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode("template")}
-                className={`px-3 py-1.5 text-xs font-medium transition duration-100 ease-linear cursor-pointer rounded-r-lg ${
-                  viewMode === "template"
-                    ? "bg-bg-active text-text-primary"
-                    : "text-text-tertiary hover:text-text-secondary"
-                }`}
-              >
-                Template
-              </button>
-            </div>
-
-            {/* Right: clear all + copy combo button */}
-            <div className="flex items-center gap-3">
-              {hasSelection && (
+          {/* Sentinel — when this scrolls out of view, header is stuck */}
+          <div ref={sentinelRef} className="h-0" />
+          {/* Sticky header with inline icons */}
+          <div className="md:sticky md:top-14 md:z-10">
+            <div className={`flex items-center justify-between mb-3 md:bg-bg-primary md:pt-6 md:-mt-6 transition-[border-color] duration-100 ease-linear border-b ${isStuck ? "border-border-secondary" : "border-transparent"}`}>
+              <h2 className="text-xl font-semibold text-text-primary">
+                Your messages
+              </h2>
+              <div className="flex items-center gap-2">
+                {/* View toggle icon button */}
                 <button
                   type="button"
-                  onClick={() => setSelectedIds(new Set())}
-                  className="text-xs text-text-quaternary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                  className="p-1 rounded text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-pointer"
+                  aria-label={viewMode === "preview" ? "Show template" : "Show preview"}
                 >
-                  Clear all
+                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
                 </button>
-              )}
-              <div className="relative" ref={copyMenuRef}>
-                <div className="flex items-center rounded-lg border border-border-secondary bg-bg-primary shadow-xs">
-                  {/* Main copy action */}
-                  <button
-                    type="button"
-                    onClick={handleDefaultCopy}
-                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer rounded-l-lg"
-                  >
-                    <ClipboardIcon className="w-3.5 h-3.5" />
-                    {copyButtonLabel}
-                  </button>
-                  {/* Dropdown trigger */}
+
+                {/* Copy icon with dropdown */}
+                <div className="relative" ref={copyMenuRef}>
                   <button
                     type="button"
                     onClick={() => setShowCopyMenu((prev) => !prev)}
-                    className="px-2 py-1.5 border-l border-border-secondary text-fg-quaternary hover:text-fg-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer rounded-r-lg"
+                    className="flex items-center gap-0.5 p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
                     aria-label="Copy options"
                   >
-                    <ChevronDownIcon />
+                    <ClipboardIcon className="w-3.5 h-3.5" />
+                    <ChevronDownIcon className="w-3 h-3" />
                   </button>
-                </div>
 
-                {/* Dropdown menu */}
-                {showCopyMenu && (
-                  <div className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1">
-                    {hasSelection && (
+                  {/* Dropdown menu */}
+                  {showCopyMenu && (
+                    <div className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1">
+                      {hasSelection && (
+                        <button
+                          type="button"
+                          onClick={handleCopySelected}
+                          className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                        >
+                          Copy {selectedIds.size} selected
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={handleCopySelected}
+                        onClick={handleCopyAll}
                         className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
                       >
-                        Copy {selectedIds.size} selected
+                        Copy all {allMessages.length} messages
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={handleCopyAll}
-                      className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                    >
-                      Copy all {allMessages.length} messages
-                    </button>
-                  </div>
-                )}
+                      {hasSelection && (
+                        <button
+                          type="button"
+                          onClick={() => { setSelectedIds(new Set()); setShowCopyMenu(false); }}
+                          className="w-full px-3 py-2 text-left text-xs text-text-quaternary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer border-t border-border-secondary"
+                        >
+                          Clear selection
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-          </div>
 
-          {/* Message cards — flat catalog, no tier grouping */}
+          {/* Message cards — transactional first, then marketing with divider */}
           <div className="space-y-3">
-            {allMessages.map((message) => (
+            {coreMessages.map((message) => (
               <CatalogCard
                 key={message.id}
                 message={message}
@@ -354,6 +386,36 @@ export default function MessagesPage() {
               />
             ))}
           </div>
+
+          {/* Marketing section divider */}
+          {expansionMessages.length > 0 && (
+            <>
+              <div className="mt-6 mb-3">
+                <div className="flex items-baseline justify-between">
+                  <h3 className="text-sm font-semibold text-text-primary">
+                    Marketing &amp; promotion messages
+                  </h3>
+                  <span className="text-sm text-text-quaternary">+$10/mo</span>
+                </div>
+                <p className="text-xs text-text-tertiary mt-0.5">
+                  Your users check an extra box when they sign up. We handle the rest.
+                </p>
+              </div>
+              <div className="space-y-3">
+                {expansionMessages.map((message) => (
+                  <CatalogCard
+                    key={message.id}
+                    message={message}
+                    categoryId={cat.id}
+                    state={state}
+                    isSelected={selectedIds.has(message.id)}
+                    onToggleSelect={toggleSelect}
+                    globalViewMode={viewMode}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

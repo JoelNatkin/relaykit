@@ -230,10 +230,72 @@ export function CatalogCard({
     >
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
-        {/* Left: checkbox + name + badge */}
+        {/* Left: name + badge */}
         <div className="flex items-center gap-3 min-w-0">
-          {/* Checkbox */}
-          <label className="flex-shrink-0 relative cursor-pointer">
+          <span className="text-base font-medium text-text-primary truncate">
+            {message.name}
+          </span>
+
+          {/* Only show Marketing badge — no Transactional badge */}
+          {isMarketing && (
+            <span
+              className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0 bg-[#F9F5FF] border border-[#E9D7FE] text-[#7C3AED]"
+            >
+              Marketing
+            </span>
+          )}
+        </div>
+
+        {/* Right: view toggle + info icon + copy button + checkbox */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Per-card view toggle icon button */}
+          <button
+            type="button"
+            onClick={toggleLocalView}
+            className={`p-1 rounded transition duration-100 ease-linear cursor-pointer ${
+              localViewMode !== null
+                ? "text-fg-brand-primary bg-bg-brand-primary_alt"
+                : "text-fg-quaternary hover:text-fg-tertiary"
+            }`}
+            aria-label={viewMode === "preview" ? "Show template" : "Show preview"}
+          >
+            {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+          </button>
+
+          {/* Trigger tooltip */}
+          <div className="relative">
+            <button
+              type="button"
+              onMouseEnter={() => setShowTriggerTooltip(true)}
+              onMouseLeave={() => setShowTriggerTooltip(false)}
+              className="p-1 text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
+              aria-label={tooltipText}
+            >
+              <InfoIcon />
+            </button>
+            {showTriggerTooltip && (
+              <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed pointer-events-none">
+                {tooltipText}
+              </div>
+            )}
+          </div>
+
+          {/* Copy single card */}
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+            aria-label={copied ? "Copied" : "Copy message"}
+          >
+            {copied ? (
+              <CheckIcon className="text-fg-success-secondary" />
+            ) : (
+              <ClipboardIcon />
+            )}
+          </button>
+
+          {/* Checkbox — far right, separated from icons */}
+          <label className="flex-shrink-0 relative cursor-pointer ml-2">
             <input
               type="checkbox"
               checked={isSelected}
@@ -264,78 +326,16 @@ export function CatalogCard({
               )}
             </div>
           </label>
-
-          <span className="text-sm font-medium text-text-primary truncate">
-            {message.name}
-          </span>
-
-          {/* Only show Marketing badge — no Transactional badge */}
-          {isMarketing && (
-            <span
-              className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0 bg-[#F9F5FF] border border-[#E9D7FE] text-[#7C3AED]"
-            >
-              Marketing
-            </span>
-          )}
-        </div>
-
-        {/* Right: view toggle + info icon + copy button */}
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          {/* Per-card view toggle icon button */}
-          <button
-            type="button"
-            onClick={toggleLocalView}
-            className={`p-1 rounded transition duration-100 ease-linear cursor-pointer ${
-              localViewMode !== null
-                ? "text-fg-brand-primary bg-bg-brand-primary_alt"
-                : "text-fg-quaternary hover:text-fg-tertiary"
-            }`}
-            aria-label={viewMode === "preview" ? "Show template" : "Show preview"}
-          >
-            {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
-          </button>
-
-          {/* Trigger tooltip */}
-          <div className="relative">
-            <button
-              type="button"
-              onMouseEnter={() => setShowTriggerTooltip(true)}
-              onMouseLeave={() => setShowTriggerTooltip(false)}
-              className="p-1 text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
-              aria-label={tooltipText}
-            >
-              <InfoIcon />
-            </button>
-            {showTriggerTooltip && (
-              <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg max-w-[280px] whitespace-normal leading-relaxed pointer-events-none">
-                {tooltipText}
-              </div>
-            )}
-          </div>
-
-          {/* Copy single card */}
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-            aria-label={copied ? "Copied" : "Copy message"}
-          >
-            {copied ? (
-              <CheckIcon className="text-fg-success-secondary" />
-            ) : (
-              <ClipboardIcon />
-            )}
-          </button>
         </div>
       </div>
 
       {/* Message body */}
-      <div className="mt-3">
+      <div className="mt-1">
         {viewMode === "preview" ? renderPreview() : renderTemplate()}
       </div>
 
-      {/* Footer: prompt nudge with inline copy icon */}
-      <div className="mt-2.5">
+      {/* Footer: prompt nudge with inline copy icon — subtle background strip */}
+      <div className="mt-3 -mx-4 -mb-4 px-4 pt-2 pb-2.5 border-t border-border-secondary bg-bg-secondary rounded-b-xl">
         <span className="text-xs text-text-quaternary italic">
           &ldquo;{promptNudge}&rdquo;
         </span>

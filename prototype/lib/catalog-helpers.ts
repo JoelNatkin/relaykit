@@ -20,7 +20,7 @@ const CATEGORY_EXAMPLE_VALUES: Record<string, ExampleValue[]> = {
     { key: "app_name", label: "Business name", preview: (s) => s.appName || "YourApp" },
     { key: "date", label: "Date", preview: () => "Mar 15, 2026" },
     { key: "time", label: "Time", preview: () => "2:30 PM" },
-    { key: "service_type", label: "Service type", preview: (s) => s.serviceType || "appointment" },
+    { key: "service_type", label: "Service type", preview: (s) => s.serviceType || "" },
     { key: "customer_name", label: "Customer name", preview: () => "Alex" },
     { key: "website_url", label: "Website", preview: (s) => s.website || "yourapp.com" },
   ],
@@ -202,7 +202,7 @@ export function formatCopyBlock(
   state: SessionState
 ): string {
   const segments = interpolateTemplate(message.template, categoryId, state);
-  const preview = segments.map((s) => s.text).join("");
+  const preview = segments.map((s) => s.text).join("").replace(/  +/g, " ");
   const variables = extractVariables(message.template);
   const requiredKeys = new Set(["app_name", "business_name", "community_name"]);
   const required = variables.filter((v) => requiredKeys.has(v));

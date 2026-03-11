@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-10 (session 10 — catalog page UX refinements)
+**Date:** 2026-03-11 (session 11 — catalog page visual polish + marketing divider)
 **Branch:** main
 
 ---
@@ -7,11 +7,13 @@
 ## Commits This Session
 
 ```
-69701a7  feat: catalog page UX overhaul — sentence builder, opt-in, tooltips, copy system
+(pending)  feat: catalog page polish — marketing divider, input sizing, card layout, icon toolbar
 ```
 
 Previous session commits (still on main):
 ```
+06a7542  docs: session 10 handoff + D-74 through D-79 (catalog UX decisions)
+69701a7  feat: catalog page UX overhaul — sentence builder, opt-in, tooltips, copy system
 20963ca  docs: session 9 handoff + D-73 (catalog flat layout decision)
 aa9971f  fix: hide opt-in until selection, remove duplicate consent text
 66c86a2  fix: two-column layout, title, tooltip, checkbox, copy block for catalog
@@ -23,41 +25,47 @@ a55cc0a  feat: read-only message catalog — helpers, card component, nav link
 
 ## What We Completed This Session
 
-### 1. Sentence builder simplified
-Changed from "Preview as [name], a [type] app at [url]" (3 fields with conditional business type) to "I'm building [MyApp]. Our website is [myapp.com]" (2 fields only). Removed `typeFieldKey`, `typeFieldValue`, `typeFieldPlaceholder` logic. Template interpolation still works — `CATEGORY_EXAMPLE_VALUES` defaults to sensible values when session fields are empty.
+### 1. Marketing section divider (D-80)
+Catalog page now splits messages into transactional (tier !== "expansion") and marketing (tier === "expansion") groups. A section divider appears above marketing cards with "Marketing & promotion messages", "+$10/mo", and subtext. Pattern pulled from plan page's `MessageTier` component.
 
-### 2. Opt-in preview always visible
-Two-column layout (45/55 split) is now permanent, not conditional on card selection. Generic consent text shown when no cards selected: "I agree to receive text messages from {name}." Section header "Sample opt-in form" added above the card.
+### 2. Icon-only toolbar (D-81)
+Replaced "Preview | Template" bordered pill toggle and split copy button with icon-only buttons: Code/Eye toggle + clipboard+chevron copy dropdown. Icons sit inline with "Your messages" h2. Scroll-triggered border uses IntersectionObserver + sentinel div.
 
-### 3. Educational tooltips per message
-Info icon tooltip now shows per-message educational text (e.g., "Sent when a user requests a login code. Confirms their identity before granting access.") instead of just trigger formatting. Keyed by message ID in `TOOLTIP_TEXT` map. Uses hardcoded `bg-[#333333]` because semantic dark tokens resolve wrong in the prototype.
+### 3. Sentence builder improvements
+- "Preview:" label styled bold/dark to match input text (font-semibold text-text-primary)
+- Inputs use hidden `<span>` measurement for accurate shrink-to-fit width (D-82)
+- Input border color changed to `border-[#D0D5DD]`, font size bumped to `text-lg`
+- Padding: `paddingLeft: 2px, paddingRight: 4px`, min width 80px
 
-### 4. Copy combo button
-Replaced separate "Select all" / "Copy all" / "Copy selected" buttons with a split button: main action + chevron dropdown with "Copy N selected" and "Copy all N messages". Added "Clear all" text link when selection exists.
+### 4. Card layout refinements
+- Message title bumped from `text-sm` to `text-base` (D-84)
+- Checkbox moved from left of title to far right, after all icon buttons, with `ml-2` gap (D-83)
+- Header-to-body spacing reduced from `mt-3` to `mt-1`
+- Prompt nudge in background strip: `border-t bg-bg-secondary rounded-b-xl` with negative margins (D-85)
 
-### 5. Per-card view toggle (icon button)
-Code/Eye icon button in card header row. Highlights with brand color when local override is active. Moved from footer text link to header icon position.
+### 5. Opt-in card cleanup (D-86)
+- Copy button changed from top bar with border-b to absolute-positioned icon at top-right
+- Legal links changed from `<a>` tags to `<span>` showing actual URLs
+- Prompt nudge top padding reduced
 
-### 6. Prompt nudges redesigned
-Dropped "Ask your AI:" prefix. Now short imperative sentences per message ID (e.g., "Write a login verification code that expires in 10 minutes."). Wrapped in curly quotes with inline copy icon button.
+### 6. Category icon styling
+- Circle: `w-10 h-10 rounded-full bg-[#F9F5FF]` with `style={{ padding: '4px 12px' }}`
+- Icon: `w-5 h-5 text-[#7C3AED]`
 
-### 7. Marketing-only badges
-Removed Transactional badge. Only Marketing messages show a badge (purple). Absence of badge = transactional.
+### 7. Template interpolation fix (D-87)
+- `service_type` default changed from `"appointment"` to `""` to prevent "appointment appointment"
+- Copy block output uses `.replace(/  +/g, " ")` to collapse double spaces
 
-### 8. Variable text styling
-Changed from bold purple (`text-[#7C3AED]`) to bold dark (`text-text-primary`) for interpolated variables in preview mode.
+### 8. Column alignment fix
+- Grid matches plan page: `md:grid-cols-[45fr_55fr]` with `gap-10`
+- Removed `md:pb-3` from right column sticky header to align first card with opt-in card
+- Left column: `md:self-start md:sticky md:top-20`
 
-### 9. Category icon in header
-Added category icon (from `CATEGORIES` data) in a circular bg-secondary container next to the category label.
+### 9. Tooltip sizing
+- Added `min-w-[220px]` alongside existing `max-w-[280px]` for better aspect ratio
 
-### 10. Checkbox fix
-Changed from semantic `bg-bg-brand-primary` (resolving wrong) to explicit `bg-[#7C3AED] border-[#7C3AED]` so white checkmark SVG is visible.
-
-### 11. Sticky header + toolbar fix
-Moved "Your messages" h2 inside the sticky container with the toolbar, removing the `md:-mt-6` negative margin that was clipping the header.
-
-### 12. New decisions D-74 through D-79
-Appended 6 new decisions to DECISIONS.md covering all catalog UX changes.
+### 10. New decisions D-80 through D-87
+Appended 8 new decisions to DECISIONS.md covering all catalog UX changes.
 
 ---
 
@@ -85,35 +93,34 @@ Appended 6 new decisions to DECISIONS.md covering all catalog UX changes.
    - Tooltip: `bg-[#333333]` with `text-white`
    - Checkbox checked: `bg-[#7C3AED] border-[#7C3AED]`
    - Marketing badge: `bg-[#F9F5FF] border-[#E9D7FE] text-[#7C3AED]`
+   - Category icon circle: `bg-[#F9F5FF]`, icon: `text-[#7C3AED]`
+   - Input border: `border-[#D0D5DD]`
 
 5. **Catalog card tooltip overflow** — Card has `overflow-visible` and tooltip uses `z-[100]` + `pointer-events-none`. Don't add `overflow-hidden` to cards.
 
 6. **Per-card view toggle logic** — `localViewMode` is `null` by default (follows global). First click sets opposite of global. Second click clears to null.
 
-7. **ContentEditable is DOM-authoritative (plan builder only)** — Don't touch plan page cards.
+7. **Sentence builder input sizing** — Uses hidden `<span>` with matching font properties to measure text width. `offsetWidth + 8px` for padding. Min width 80px. Falls back to minWidth when value is empty.
 
-8. **Framer Motion fully removed** — Not in `package.json`. Do not re-add.
+8. **ContentEditable is DOM-authoritative (plan builder only)** — Don't touch plan page cards.
 
-9. **Client component redirect pattern** — Both `plan/page.tsx` and `messages/page.tsx` use `useEffect` + `router.replace()`, not `redirect()`.
+9. **Framer Motion fully removed** — Not in `package.json`. Do not re-add.
 
-10. **Data only for 2 categories** — `verification` (8 messages) and `appointments` (6 messages).
+10. **Client component redirect pattern** — Both `plan/page.tsx` and `messages/page.tsx` use `useEffect` + `router.replace()`, not `redirect()`.
 
-11. **No Untitled UI components in prototype** — Plain Tailwind with semantic color tokens + hex values.
+11. **Data only for 2 categories** — `verification` (8 messages) and `appointments` (6 messages).
 
-12. **SessionStorage key:** `relaykit_prototype` — separate from production's `relaykit_intake`.
+12. **No Untitled UI components in prototype** — Plain Tailwind with semantic color tokens + hex values.
 
-13. **DECISIONS.md now has 79 decisions** (D-01 through D-79).
+13. **SessionStorage key:** `relaykit_prototype` — separate from production's `relaykit_intake`.
 
-14. **Plan page must stay untouched** — verified with `git diff` after every session. The catalog page and plan page are completely independent.
+14. **DECISIONS.md now has 87 decisions** (D-01 through D-87).
 
----
+15. **Plan page must stay untouched** — verified with `git diff` after every session. The catalog page and plan page are completely independent.
 
-## Files Modified But Not Yet Committed
+16. **Catalog messages split into two groups** — `coreMessages` (tier !== "expansion") rendered first, then `expansionMessages` (tier === "expansion") below the marketing divider. The divider only renders when expansion messages exist.
 
-```
-DECISIONS.md    (D-74 through D-79 appended)
-CC_HANDOFF.md   (this file — overwritten)
-```
+17. **Checkbox is far-right on cards** — After copy icon with `ml-2` (8px) gap. Order: [title+badge] ... [code] [info] [copy] [gap] [checkbox].
 
 ---
 
@@ -121,6 +128,6 @@ CC_HANDOFF.md   (this file — overwritten)
 
 Two prototype page types exist:
 - **Plan page** (`/c/[category]/plan`) — interactive plan builder with always-editable contentEditable cards, variable pills, palette, save-time validation, locked STOP suffix, custom message support
-- **Catalog page** (`/c/[category]/messages`) — read-only message catalog with flat list, marketing badges, educational tooltips, copy combo button, sentence builder, always-visible opt-in preview
+- **Catalog page** (`/c/[category]/messages`) — read-only message catalog with marketing section divider, icon-only toolbar, shrink-to-fit sentence builder, educational tooltips, copy combo dropdown, always-visible opt-in preview, checkbox at far right
 
 Active PRDs per CLAUDE.md: PRD_06 (dashboard), PRD_01 (intake), PRD_03 (compliance site), PRD_05 (deliverable). Phase 2 PRDs remain out of scope.

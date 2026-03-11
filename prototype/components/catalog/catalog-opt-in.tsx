@@ -142,12 +142,13 @@ export function CatalogOptIn({
 
   return (
     <div className="rounded-2xl border border-border-secondary bg-bg-secondary shadow-sm overflow-hidden">
-      {/* Copy button bar */}
-      <div className="flex items-center justify-end px-5 py-2.5 border-b border-border-secondary bg-bg-primary">
+      {/* Form preview */}
+      <div className="bg-bg-primary px-7 py-6 relative">
+        {/* Copy icon — top-right corner */}
         <button
           type="button"
           onClick={() => copy(buildCopyText())}
-          className="text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+          className="absolute top-3 right-4 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
           aria-label={copied ? "Copied" : "Copy consent block"}
         >
           {copied ? (
@@ -156,10 +157,6 @@ export function CatalogOptIn({
             <ClipboardIcon />
           )}
         </button>
-      </div>
-
-      {/* Form preview */}
-      <div className="bg-bg-primary px-7 py-6">
         {/* Fake form fields */}
         <div className="space-y-3 mb-5">
           <div>
@@ -203,14 +200,14 @@ export function CatalogOptIn({
           {finePrint}
         </p>
 
-        {/* Legal links */}
+        {/* Legal links — mock/preview, not clickable */}
         <p className="mt-3 space-x-3">
-          <a href="#" className="text-xs text-text-brand-secondary underline">
-            Privacy Policy
-          </a>
-          <a href="#" className="text-xs text-text-brand-secondary underline">
-            Terms of Service
-          </a>
+          <span className="text-xs text-text-tertiary">
+            {displayUrl}/privacy
+          </span>
+          <span className="text-xs text-text-tertiary">
+            {displayUrl}/terms
+          </span>
         </p>
 
         {/* CTA button */}
@@ -223,7 +220,7 @@ export function CatalogOptIn({
       </div>
 
       {/* Prompt nudge — quoted with inline copy icon */}
-      <div className="px-5 py-3 border-t border-border-secondary">
+      <div className="px-5 pt-2 pb-3 border-t border-border-secondary">
         <span className="text-xs text-text-quaternary italic">
           &ldquo;{nudgeText}&rdquo;
         </span>
