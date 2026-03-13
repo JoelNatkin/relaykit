@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import type { FC } from "react";
 import { CATEGORIES } from "@/data/categories";
-import { MESSAGES } from "@/data/messages";
+import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { CatalogOptIn } from "@/components/catalog/catalog-opt-in";
@@ -168,6 +168,10 @@ export default function MessagesPage() {
   const messages = category ? MESSAGES[category.id] : undefined;
   const shouldRedirect = !category || !messages || messages.length === 0;
 
+  // Variant selection (D-91)
+  const variants = category ? CATEGORY_VARIANTS[category.id] : undefined;
+  const [activeVariant, setActiveVariant] = useState("standard");
+
   // View mode: preview (interpolated) or template (raw)
   const [viewMode, setViewMode] = useState<"preview" | "template">("preview");
 
@@ -235,6 +239,12 @@ export default function MessagesPage() {
   const selectedMessages = allMessages.filter((m) => selectedIds.has(m.id));
   const hasSelection = selectedIds.size > 0;
 
+  /** Get the active template for a message based on the selected variant */
+  function getActiveTemplate(msg: typeof allMessages[number]): string | undefined {
+    if (activeVariant === "standard" || !msg.variants) return undefined;
+    return msg.variants[activeVariant] ?? undefined;
+  }
+
   function handleCopySelected() {
     const text = formatMultipleCopyBlocks(selectedMessages, cat.id, state);
     copy(text, "selected");
@@ -288,6 +298,32 @@ export default function MessagesPage() {
           onChange={(v) => setField("website", v)}
         />
       </div>
+
+      {/* Variant pills (D-91) */}
+      {variants && variants.length > 1 && (
+        <div className="mb-8 flex items-center gap-2">
+          <span className="text-xs font-medium text-text-quaternary mr-1">Style:</span>
+          <div className="flex items-center gap-1 rounded-lg border border-border-secondary p-0.5">
+            {variants.map((v) => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => setActiveVariant(v.id)}
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition duration-100 ease-linear ${
+                  activeVariant === v.id
+                    ? "bg-bg-brand-solid text-text-white"
+                    : "text-text-tertiary hover:text-text-secondary hover:bg-bg-primary_hover"
+                }`}
+              >
+                {v.label}
+              </button>
+            ))}
+          </div>
+          <span className="text-[11px] text-text-quaternary">
+            All variants are included in your Blueprint regardless of selection.
+          </span>
+        </div>
+      )}
 
       {/* Two-column layout: opt-in left, cards right */}
       <div className="grid grid-cols-1 gap-10 md:grid-cols-[45fr_55fr]">
@@ -383,6 +419,7 @@ export default function MessagesPage() {
                 isSelected={selectedIds.has(message.id)}
                 onToggleSelect={toggleSelect}
                 globalViewMode={viewMode}
+                activeTemplate={getActiveTemplate(message)}
               />
             ))}
           </div>

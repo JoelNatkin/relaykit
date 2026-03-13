@@ -12,7 +12,27 @@ export interface Message {
   expansionType: "mixed" | "marketing" | null;
   /** Plural label for consent paragraph, e.g. "booking confirmations" */
   consentLabel: string;
+  /** Variant templates keyed by variant name. If absent, only the default template is used. */
+  variants?: Record<string, string>;
 }
+
+/** Variant set definitions per category */
+export interface VariantSet {
+  id: string;
+  label: string;
+}
+
+export const CATEGORY_VARIANTS: Record<string, VariantSet[]> = {
+  appointments: [
+    { id: "standard", label: "Standard" },
+    { id: "action-first", label: "Action-first" },
+    { id: "context-first", label: "Context-first" },
+  ],
+  verification: [
+    { id: "standard", label: "Standard" },
+    { id: "action-first", label: "Action-first" },
+  ],
+};
 
 export const MESSAGES: Record<string, Message[]> = {
   verification: [
@@ -135,6 +155,10 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: null,
       consentLabel: "booking confirmations",
+      variants: {
+        "action-first": "Confirmed — {service_type} appointment on {date} at {time}. {app_name} has you on the books. Reply STOP to opt out.",
+        "context-first": "You just booked a {service_type} appointment. {app_name} confirms {date} at {time}. Reply STOP to opt out.",
+      },
     },
     {
       id: "appointments_reminder",
@@ -148,6 +172,10 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: null,
       consentLabel: "appointment reminders",
+      variants: {
+        "action-first": "Tomorrow at {time} — your {service_type} appointment with {app_name}. Reply STOP to opt out.",
+        "context-first": "Your {service_type} appointment is coming up. {app_name} reminder: tomorrow at {time}. Reply STOP to opt out.",
+      },
     },
     {
       id: "appointments_reschedule",
@@ -161,6 +189,10 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: null,
       consentLabel: "reschedule notices",
+      variants: {
+        "action-first": "Rescheduled — your {service_type} appointment is now {date} at {time}. {app_name}. Reply STOP to opt out.",
+        "context-first": "There's been a change to your {service_type} appointment. {app_name} has moved it to {date} at {time}. Reply STOP to opt out.",
+      },
     },
     {
       id: "appointments_cancellation",
@@ -174,6 +206,10 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: null,
       consentLabel: "cancellation notices",
+      variants: {
+        "action-first": "Cancelled — your {service_type} appointment on {date}. Rebook at {website_url}. {app_name}. Reply STOP to opt out.",
+        "context-first": "Your {service_type} appointment on {date} won't be happening. {app_name}: rebook at {website_url}. Reply STOP to opt out.",
+      },
     },
     {
       id: "appointments_promo",

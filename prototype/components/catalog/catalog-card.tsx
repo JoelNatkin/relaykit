@@ -160,6 +160,8 @@ interface CatalogCardProps {
   onToggleSelect: (messageId: string) => void;
   /** Page-level view mode — card can override locally */
   globalViewMode: "preview" | "template";
+  /** Override template text when a variant is selected */
+  activeTemplate?: string;
 }
 
 export function CatalogCard({
@@ -169,6 +171,7 @@ export function CatalogCard({
   isSelected,
   onToggleSelect,
   globalViewMode,
+  activeTemplate,
 }: CatalogCardProps) {
   const [localViewMode, setLocalViewMode] = useState<
     "preview" | "template" | null
@@ -197,8 +200,10 @@ export function CatalogCard({
 
   /* ── Render message body ── */
 
+  const displayTemplate = activeTemplate ?? message.template;
+
   function renderPreview() {
-    const segments = interpolateTemplate(message.template, categoryId, state);
+    const segments = interpolateTemplate(displayTemplate, categoryId, state);
     return (
       <p className="text-sm text-text-tertiary leading-relaxed">
         {segments.map((seg, i) =>
@@ -217,7 +222,7 @@ export function CatalogCard({
   function renderTemplate() {
     return (
       <p className="text-sm text-text-tertiary leading-relaxed font-mono">
-        {message.template}
+        {displayTemplate}
       </p>
     );
   }
