@@ -392,3 +392,72 @@ TCR submission variety strategy — use intake data to tailor the 3 sample messa
 
 **D-83 — Correct D-61 — catalog page is display-only** (Date: 2026-03-11)
 Correct D-61 — catalog page is display-only. Editing capability was cut.
+
+
+**D-84 — "SMS Blueprint" replaces "Build Spec" in all customer-facing copy** (Date: 2026-03-13)
+The developer-facing document is called the **SMS Blueprint**, personalized as `{app_name} SMS Blueprint` (e.g., "RadarLove SMS Blueprint"). File: `{app_slug}_sms_blueprint.md`. "Build spec" sounds like work for the developer; "Blueprint" frames it as a plan their AI executes. Internal code references (function names, variable names) may remain `build_spec` for now — this is a customer-facing naming decision. The guidelines file is similarly personalized: `{app_name} SMS Guidelines`.
+_Affects: PRD_05, PRD_06, all customer-facing copy, download UI, email templates._
+
+**D-85 — No plan builder — category selection is sufficient for registration scope** (Date: 2026-03-13)
+**Supersedes plan builder concept in PRD_06. Extends D-74, D-75.** There is no message selection step, no enable/disable toggle, no curation UI at the RelayKit level. The developer picks a category; RelayKit determines campaign type, generates artifacts, and submits. All messages in the category library are available as reference. The intelligence about "which messages should I implement?" lives in the conversation between the developer and their AI coding tool, not in a RelayKit UI.
+_Affects: PRD_06 (significant simplification), PRD_01, PRD_02, PRD_05._
+
+**D-86 — Full-library Blueprint — all messages for the category** (Date: 2026-03-13)
+The SMS Blueprint includes every message type for the developer's category, not a curated subset. `generateBuildSpec()` (or equivalent) takes category + customer data and returns the full library rendered with their business details. No `messagePlan` with per-message enabled state. The AI coding tool sees the full landscape and helps the developer choose which to implement during the build conversation.
+_Affects: PRD_05, PRD_06 build spec generator._
+
+**D-87 — Blueprint includes "Before building, ask me" section** (Date: 2026-03-13)
+Use-case-aware clarifying questions appear at the top of the Blueprint, before implementation instructions. The AI encounters them first and asks before writing code. Questions are use-case-specific: appointment apps get different questions than verification systems. Examples: "Do you have an existing database schema?" / "What framework handles scheduled jobs?" / "Where does the opt-in form live in your existing signup flow?" These question sets need to be authored per use case as PRD_05 content work.
+_Affects: PRD_05 template structure._
+
+**D-88 — Blueprint generates a complete reference implementation** (Date: 2026-03-13)
+The Blueprint instructs the AI to produce a complete, working SMS feature — not a utility function, not a scaffold. All core messages for the category triggered correctly, with error handling, opt-in form, and compliance patterns baked in. The "Before building, ask me" pattern (D-87) is what makes the first-try claim credible.
+_Affects: PRD_05 template content and framing._
+
+**D-89 — Marketing is always a separate campaign — never MIXED on initial registration** (Date: 2026-03-13)
+**Supersedes D-16.** Initial registration is always transactional-only. This is a strategy, not a limitation: a transactional-only submission tells a tight, coherent story to the TCR reviewer. Marketing capability is added via a second campaign registration when the developer is ready. `determineCampaignType()` should never return MIXED for initial registration. The $29/mo mixed price point only applies when the developer adds marketing later. "Add marketing campaign" — never "upgrade." Strengthens D-15 and D-37.
+_Affects: PRD_01, PRD_02, PRD_04, PRD_06, PRICING_MODEL._
+
+**D-90 — 5 sample messages to TCR, all transactional for initial registration** (Date: 2026-03-13)
+**Supersedes D-42 (was "exactly 3"). Updates D-82 (also referenced 3).** TCR accepts 2–5 samples; RelayKit always submits 5 (the maximum) because more samples give the reviewer a fuller picture. For transactional campaigns, all 5 samples are transactional messages from the category library. No marketing messages consume sample slots. Selection follows the anti-cookie-cutter strategy (D-91).
+_Affects: PRD_02 generateArtifacts(), PRD_04 submission payload._
+
+**D-91 — Anti-cookie-cutter strategy for TCR submissions and message display** (Date: 2026-03-13)
+Two layers: (1) **Wording variation** — each category has 2–3 message variant sets with different word order and phrasing. Not every message starts with `{app_name}:`. A dental practice's reminder reads differently from a hair salon's. (2) **Selection rotation** — with 5–8 base messages per category, the 5 submitted to TCR rotate across registrations to avoid pattern detection. On the Messages page, pill selectors let the developer browse variant sets and mix-and-match. This is both a UX improvement and a registration approval strategy.
+_Affects: PRD_02 template library (content authoring), Messages page prototype, PRD_04 selection algorithm._
+
+**D-92 — Platform-specific setup instructions at Blueprint download moment** (Date: 2026-03-13)
+Three steps max, one line per platform (Claude Code, Cursor, others). Lives on the Messages page near the Blueprint download CTA. Not a tutorial, not a video. Example — Claude Code: `Put both files in your project root. Then: "Read radarlove_sms_blueprint.md and build my messaging feature."`
+_Affects: PRD_05 download UX, Messages page prototype._
+
+**D-93 — Core positioning locked** (Date: 2026-03-13)
+"Tell Claude Code to build your messaging feature. It might just work on the first try." All customer-facing copy points in this direction. RelayKit describes itself as the SMS context layer for AI coding tools. The Blueprint is the product. The API is the runtime.
+_Affects: PRD_07 landing page, all marketing copy, onboarding copy._
+
+**D-94 — "Your Apps" is the logged-in home page** (Date: 2026-03-13)
+After login, the developer lands on "Your Apps" — a list of their apps with status per app (sandbox / building / registered / live). This page is also the launch point for new apps: "Add new app" → category selection (logged-in variant) → app name → phone verification → Blueprint download. Scales from 1 to N apps without redesign.
+_Affects: PRD_06, PRD_11 (this partially implements the multi-project concept at a lightweight level)._
+
+**D-95 — One app = one registration = one category = one Blueprint (1:1:1:1)** (Date: 2026-03-13)
+Hard guardrails. Each app gets exactly one category, one registration, one Blueprint, one subaccount. A developer with two different apps makes two separate registrations. This keeps scope clean for TCR, prevents category confusion, and gives new users a clear mental model.
+_Affects: PRD_06, PRD_04, "Your Apps" page design._
+
+**D-96 — Email + phone verification required before Blueprint download** (Date: 2026-03-13)
+Auth gate (sign in / sign up via magic link or email OTP per D-59) precedes Blueprint download. Email enables re-engagement ("You started building — ready to register?"). Sandbox phone number collected as "What number should we text?" — framed as development tooling, exciting not bureaucratic. This is separate from TCR business phone collected at registration. Strengthens the phone verification split established in D-46.
+_Affects: Messages page auth gate, onboarding flow._
+
+**D-97 — Per-app pages: Messages, Compliance, Settings — tabs appear after Blueprint download** (Date: 2026-03-13)
+Before Blueprint download, the per-app experience is the Messages page only — no tab bar component, no Compliance, no Settings. After Blueprint download, the tab bar appears with Messages + Compliance + Settings. Tabs earn their place by becoming relevant. Compliance education lives on marketing/category landing pages, not in the app.
+_Affects: Per-app layout component, prototype progressive disclosure._
+
+**D-98 — Settings tab exists post-Blueprint-download only** (Date: 2026-03-13)
+Contains: SMS compliance alerts toggle, account info (business name, email, phone, registration date), API key management (sandbox + live side by side, copy buttons, regenerate for sandbox only). Sub-copy on API keys: "Your AI coding tool will use this key automatically when it reads your SMS Blueprint."
+_Affects: Per-app Settings page._
+
+**D-99 — Billing lives per-app AND per-account** (Date: 2026-03-13)
+Per-app Settings shows that app's plan, cost, and status (sandbox / active / paused). Parent-level account view shows total monthly spend across all apps, payment method, invoices, billing history. Per-app answers "what does this app cost me?" — parent answers "what does RelayKit cost me?"
+_Affects: Settings tab billing section, "Your Apps" or account-level billing page._
+
+**D-100 — Logged-in return flow uses lighter category selection** (Date: 2026-03-13)
+When a logged-in developer creates a new app from "Your Apps," they see a streamlined category selection — not the full marketing category landing page. It assumes they already know what RelayKit is and skips the value prop/persuasion. Pick a use case → name the app → verify phone → get Blueprint. Auth already handled.
+_Affects: "Your Apps" new app flow, category selection component (two faces: public/persuasive vs. logged-in/streamlined)._
