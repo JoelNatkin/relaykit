@@ -424,18 +424,18 @@ export default function MessagesPage() {
             ))}
           </div>
 
-          {/* Marketing section divider */}
+          {/* Marketing section — informational, not selection (D-89) */}
           {expansionMessages.length > 0 && (
             <>
-              <div className="mt-6 mb-3">
+              <div className="mt-8 mb-3 border-t border-border-secondary pt-6">
                 <div className="flex items-baseline justify-between">
                   <h3 className="text-sm font-semibold text-text-primary">
                     Marketing &amp; promotion messages
                   </h3>
-                  <span className="text-sm text-text-quaternary">+$10/mo</span>
+                  <span className="text-xs text-text-quaternary">+$10/mo</span>
                 </div>
-                <p className="text-xs text-text-tertiary mt-0.5">
-                  Your users check an extra box when they sign up. We handle the rest.
+                <p className="text-xs text-text-tertiary mt-1">
+                  Available with a marketing campaign — add anytime from your dashboard. We&rsquo;ll register an additional campaign for marketing messages.
                 </p>
               </div>
               <div className="space-y-3">
@@ -448,11 +448,60 @@ export default function MessagesPage() {
                     isSelected={selectedIds.has(message.id)}
                     onToggleSelect={toggleSelect}
                     globalViewMode={viewMode}
+                    activeTemplate={getActiveTemplate(message)}
                   />
                 ))}
               </div>
             </>
           )}
+
+          {/* Blueprint download CTA (D-84, D-92, D-97) */}
+          <div className="mt-10 rounded-xl border border-border-brand bg-bg-brand-primary p-6">
+            <h3 className="text-lg font-semibold text-text-primary">
+              Get your {state.appName || cat.label} SMS Blueprint
+            </h3>
+            <p className="mt-1 text-sm text-text-tertiary">
+              A complete integration guide with every message above, your sandbox API key, and setup instructions — ready for your AI coding tool.
+            </p>
+
+            {/* Platform-specific setup instructions (D-92) */}
+            <div className="mt-4 space-y-2">
+              <p className="text-xs font-medium text-text-quaternary uppercase tracking-wide">
+                Works with
+              </p>
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                <div className="rounded-lg border border-border-secondary bg-bg-primary p-3">
+                  <p className="text-xs font-semibold text-text-primary">Claude Code</p>
+                  <p className="mt-0.5 text-[11px] text-text-tertiary font-mono">
+                    Drop the Blueprint in your project root. Claude reads it automatically.
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border-secondary bg-bg-primary p-3">
+                  <p className="text-xs font-semibold text-text-primary">Cursor</p>
+                  <p className="mt-0.5 text-[11px] text-text-tertiary font-mono">
+                    Add to your project. Reference it in chat: &ldquo;use the SMS Blueprint.&rdquo;
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border-secondary bg-bg-primary p-3">
+                  <p className="text-xs font-semibold text-text-primary">Windsurf</p>
+                  <p className="mt-0.5 text-[11px] text-text-tertiary font-mono">
+                    Include in workspace. Cascade picks it up from your file tree.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => alert("Auth gate → Task 6")}
+              className="mt-5 w-full rounded-lg bg-bg-brand-solid px-5 py-3 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+            >
+              Get your SMS Blueprint →
+            </button>
+            <p className="mt-2 text-center text-[11px] text-text-quaternary">
+              Free to browse. Sign in to download.
+            </p>
+          </div>
         </div>
       </div>
     </div>
