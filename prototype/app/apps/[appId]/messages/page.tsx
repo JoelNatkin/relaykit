@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { useSession } from "@/context/session-context";
 import { SAMPLE } from "@/components/dashboard/sample-data";
+import { DashboardARevised } from "@/components/dashboard/dashboard-a-revised";
+import { DashboardBRevised } from "@/components/dashboard/dashboard-b-revised";
+import { DashboardCRevised } from "@/components/dashboard/dashboard-c-revised";
 import { ArrowRight, FileCheck02 } from "@untitledui/icons";
 
 export default function AppMessages() {
   const { state } = useSession();
-  const { appState } = state;
+  const { appState, dashboardVersion } = state;
 
   // Pre-download: Messages page only, no tabs, Blueprint CTA prominent (D-97)
   if (appState === "pre-download") {
@@ -43,10 +46,7 @@ export default function AppMessages() {
           </h3>
           <div className="space-y-2">
             {SAMPLE.canonMessages.map((msg, i) => (
-              <div
-                key={i}
-                className="rounded-lg border border-border-secondary bg-bg-primary p-3"
-              >
+              <div key={i} className="rounded-lg border border-border-secondary bg-bg-primary p-3">
                 <p className="text-xs font-medium text-text-primary">{msg.name}</p>
                 <p className="mt-1 text-xs text-text-tertiary font-mono">{msg.template}</p>
               </div>
@@ -60,56 +60,16 @@ export default function AppMessages() {
     );
   }
 
-  // Post-download (sandbox / live): show the message catalog
+  // Post-download: render the selected dashboard version
+  const DashboardComponent = {
+    a: DashboardARevised,
+    b: DashboardBRevised,
+    c: DashboardCRevised,
+  }[dashboardVersion];
+
   return (
     <div className="py-4">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-lg font-semibold text-text-primary">Message Library</h2>
-          <p className="text-sm text-text-tertiary mt-0.5">
-            {appState === "sandbox"
-              ? "Your sandbox is live — test these messages as you build."
-              : "Your registered messages. Carrier-approved and ready to send."}
-          </p>
-        </div>
-        <Link
-          href={`/c/${SAMPLE.categoryId}/messages`}
-          className="text-xs font-medium text-text-brand-secondary hover:underline"
-        >
-          Open full catalog →
-        </Link>
-      </div>
-
-      {/* Canon messages */}
-      <div className="space-y-3">
-        {SAMPLE.canonMessages.map((msg, i) => (
-          <div
-            key={i}
-            className="rounded-xl border border-border-secondary bg-bg-primary p-4"
-          >
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-text-primary">{msg.name}</p>
-              {appState === "live" && (
-                <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[11px] font-medium text-text-success-primary">
-                  Registered
-                </span>
-              )}
-            </div>
-            <p className="mt-2 text-sm text-text-tertiary leading-relaxed">{msg.template}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Marketing section — informational (D-89) */}
-      <div className="mt-8 border-t border-border-secondary pt-6">
-        <div className="flex items-baseline justify-between">
-          <h3 className="text-sm font-semibold text-text-primary">Marketing messages</h3>
-          <span className="text-xs text-text-quaternary">+$10/mo</span>
-        </div>
-        <p className="mt-1 text-xs text-text-tertiary">
-          Available with a marketing campaign — add anytime from your dashboard. We will register an additional campaign for marketing messages.
-        </p>
-      </div>
+      <DashboardComponent appState={appState} />
     </div>
   );
 }
