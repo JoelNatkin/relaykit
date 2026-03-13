@@ -1,7 +1,16 @@
+"use client";
+
+import { useSession } from "@/context/session-context";
+
 export default function AppSettings() {
+  const { state } = useSession();
+
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center">
-      <p className="text-text-tertiary text-sm">Per-app settings — Task 14</p>
+    <div className="py-4">
+      <h2 className="text-lg font-semibold text-text-primary">Settings</h2>
+      <p className="mt-1 text-sm text-text-tertiary">
+        Settings tab — Task 14 ({state.appState === "sandbox" ? "sandbox key only" : "sandbox + live keys"})
+      </p>
     </div>
   );
 }
