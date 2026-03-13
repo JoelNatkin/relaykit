@@ -311,7 +311,7 @@ function CelebrationCard() {
             <CardTitle>You&rsquo;re live</CardTitle>
             <Badge color="green">Approved</Badge>
           </div>
-          <p className="mt-1 text-xs text-text-quaternary">Approved {SAMPLE.approvedDate ?? "March 1, 2026"}</p>
+          <p className="mt-1 text-xs text-text-quaternary">Approved {SAMPLE.approvalDate}</p>
           <p className="mt-2 text-sm text-text-tertiary">Most developers never get here. You did.</p>
         </div>
         <button

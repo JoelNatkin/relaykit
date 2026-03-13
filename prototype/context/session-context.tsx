@@ -21,7 +21,19 @@ export interface CustomMessage {
   template: string;
 }
 
+export type DashboardVersion = "a" | "b" | "c";
+export type AppState = "pre-download" | "sandbox" | "live";
+
 export interface SessionState {
+  // Auth mock
+  isLoggedIn: boolean;
+
+  // Dashboard version toggle (A/B/C comparison)
+  dashboardVersion: DashboardVersion;
+
+  // Per-app state toggle
+  appState: AppState;
+
   // Personalization
   appName: string;
   website: string;
@@ -54,9 +66,15 @@ interface SessionContextValue {
   addCustomMessage: (categoryId: string) => void;
   deleteCustomMessage: (messageId: string) => void;
   updateCustomMessage: (messageId: string, updates: Partial<Pick<CustomMessage, "name" | "trigger" | "template">>) => void;
+  setLoggedIn: (value: boolean) => void;
+  setDashboardVersion: (version: DashboardVersion) => void;
+  setAppState: (state: AppState) => void;
 }
 
 const defaultState: SessionState = {
+  isLoggedIn: false,
+  dashboardVersion: "b",
+  appState: "pre-download",
   appName: "",
   website: "",
   serviceType: "",
@@ -200,6 +218,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     []
   );
 
+  const setLoggedIn = useCallback((value: boolean) => {
+    setState((prev) => ({ ...prev, isLoggedIn: value }));
+  }, []);
+
+  const setDashboardVersion = useCallback((version: DashboardVersion) => {
+    setState((prev) => ({ ...prev, dashboardVersion: version }));
+  }, []);
+
+  const setAppState = useCallback((appState: AppState) => {
+    setState((prev) => ({ ...prev, appState }));
+  }, []);
+
   return (
     <SessionContext.Provider
       value={{
@@ -213,6 +243,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         addCustomMessage,
         deleteCustomMessage,
         updateCustomMessage,
+        setLoggedIn,
+        setDashboardVersion,
+        setAppState,
       }}
     >
       {children}
