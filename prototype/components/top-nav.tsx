@@ -121,10 +121,10 @@ export function TopNav() {
         <button
           type="button"
           onClick={() => setLoggedIn(!isLoggedIn)}
-          className={`rounded-lg px-4 py-2 text-sm font-medium transition duration-100 ease-linear ${
+          className={`text-sm font-medium transition duration-100 ease-linear ${
             isLoggedIn
-              ? "border border-border-primary bg-bg-primary text-text-secondary hover:bg-bg-primary_hover"
-              : "bg-bg-brand-solid text-text-white hover:bg-bg-brand-solid_hover"
+              ? "text-text-secondary hover:text-text-primary"
+              : "text-text-tertiary hover:text-text-secondary"
           }`}
         >
           {isLoggedIn ? "Sign out" : "Sign in"}
