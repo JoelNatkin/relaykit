@@ -513,6 +513,38 @@ _Affects: `prototype/app/sms/[category]/messages/page.tsx`._
 On the public messages page, expansion/marketing messages (Promotional offer, Feedback request) are removed from the main message list and displayed in a separate "Need promotional messages too?" callout section. The callout explains that marketing requires a separate carrier registration (reinforcing D-89). Marketing message cards render at 70% opacity with `border-border-tertiary` and an "Available with marketing registration" badge. This is consistent with D-89's position that initial registration is always transactional-only.
 _Affects: `prototype/app/sms/[category]/messages/page.tsx`._
 
-**D-113 — Two layout variants for messages page, toggled via query param** (Date: 2026-03-15)
-The messages page supports two layout variants: the default layout (right-heavy, messages left + opt-in right) and a steps layout (`?layout=steps`) with personalization + opt-in on the left, messages on the right. The steps layout includes the tool selector (D-110). Both layouts share the same data, components, and localStorage persistence. The query param approach allows A/B comparison in the browser. Final layout selection is TBD.
+**D-113 — Steps layout is the default messages page** (Date: 2026-03-16, updated from 2026-03-15)
+The steps layout is now the default for the public messages page at `/sms/[category]/messages`. The old layout (right-heavy, messages left + opt-in right) is preserved at `?layout=default` for comparison. The steps layout includes the tool selector (D-110), personalization on the left, and messages on the right. Both layouts share the same data, components, and localStorage persistence. Decision finalized — steps layout won.
 _Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-114 — Download modal with account upsell and files-only path** (Date: 2026-03-16)
+The "Download RelayKit" button on the messages page opens a modal with two paths: (1) Create an account (email → 6-digit OTP → downloading confirmation) which gives them sandbox access, personalized files, and a dashboard; (2) "Just the files please" which triggers an immediate download and shows a soft re-invitation ("Your sandbox is free whenever you're ready"). The modal headline is "Get more from RelayKit with an account" with two grouped benefit lists: what the files give you (3 items) and what an account adds (5 items). The OTP input uses 6 individual digit boxes matching the production PinInput component styling.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-115 — Tool selector uses real SVG logos** (Date: 2026-03-16)
+The tool selector section uses official SVG logos from `prototype/public/logos/` for Claude Code, Cursor, Windsurf, GitHub Copilot, and Cline. "Other" uses a generic code brackets icon. Logos render at full color at all times — unselected at 60% opacity, selected at 100% with a 2px solid purple border on the circle. No background fill on either state.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`, `prototype/public/logos/`._
+
+**D-116 — Your Apps page and project layout shell** (Date: 2026-03-16)
+Logged-in users land at `/apps` showing their projects as cards in a grid. Each card shows app name, category pill, status pill (Sandbox/Registered/Live), and created date. Cards link to `/apps/[appId]/overview`. The per-project layout has a breadcrumb ("Your Apps / {AppName}") and four tabs: Overview, Messages, Registration, Settings. No state toggle or A/B/C switcher — those were prototype controls, now removed.
+_Affects: `prototype/app/apps/page.tsx`, `prototype/app/apps/[appId]/layout.tsx`._
+
+**D-117 — Standalone dashboards A/B/C deleted** (Date: 2026-03-16)
+The standalone `/dashboard-a`, `/dashboard-b`, `/dashboard-c` routes and the `/choose` category picker page were deleted. Dashboard A/B/C were alternatives (per D-feedback); the per-project layout at `/apps/[appId]/` replaces them. The A/B/C components still exist in `components/dashboard/` but are not imported by any page. The top nav no longer shows Dash A/B/C links.
+_Affects: Deleted `prototype/app/dashboard-a/`, `dashboard-b/`, `dashboard-c/`, `choose/`. Modified `prototype/components/top-nav.tsx`._
+
+**D-118 — Top nav simplified: no per-project links** (Date: 2026-03-16)
+Logged-out nav shows: Home, Appointments, Messages, Sign in. Logged-in nav shows: Your Apps, Sign out. Per-project tabs (Overview, Messages, Settings) live exclusively in the app layout tab bar, not in the top nav. No A/B/C version switcher or state toggle in the top nav.
+_Affects: `prototype/components/top-nav.tsx`._
+
+**D-119 — Overview page is guided onboarding, not a dashboard** (Date: 2026-03-16)
+The Overview page at `/apps/[appId]/overview` is a two-column guided onboarding flow with 4 sequential steps: (1) Verify phone, (2) Send test message from dashboard, (3) Send message from code, (4) Build SMS feature with AI tool. Steps are always visible with locked/active/completed states and a vertical timeline connector. The right column is a persistent registration pitch card with benefits, pricing ($199 + $19/mo), D-105 refund guarantee, progress bar, and "Start registration" CTA. Steps unlock sequentially. Completing all 4 triggers a celebration message with registration CTA.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-120 — App messages tab reuses public messages page** (Date: 2026-03-16)
+The Messages tab at `/apps/[appId]/messages` renders the same component as the public messages page at `/sms/[category]/messages`. It imports and renders `PublicMessagesPage` directly. The component falls back to "appointments" when no category URL param is present. This ensures identical content in both contexts. Differentiation between logged-in and public versions is deferred to a later session.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-121 — Shared footer component, dead links removed** (Date: 2026-03-16)
+Footer extracted to a shared `Footer` component at `prototype/components/footer.tsx`. The "Company" section (About, Blog) was removed — those pages don't exist. Legal links (Terms, Privacy, Acceptable Use) point to `#` as placeholders. The footer is used on the messages page (both layouts) and compliance page. The homepage retains its own inline footer with scroll-to-section links.
+_Affects: `prototype/components/footer.tsx`, multiple pages._
