@@ -1,15 +1,1086 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { Calendar, Settings01, XClose, Download01 } from "@untitledui/icons";
+import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
+import { useSession } from "@/context/session-context";
+import { CatalogCard } from "@/components/catalog/catalog-card";
+import { CatalogOptIn } from "@/components/catalog/catalog-opt-in";
+import {
+  formatMultipleCopyBlocks,
+  interpolateTemplate,
+} from "@/lib/catalog-helpers";
 
-export default function PublicMessagesPage() {
-  const params = useParams<{ category: string }>();
+/* ── localStorage personalization ── */
+
+const PERSONALIZE_KEY = "relaykit_personalize";
+
+interface PersonalizeData {
+  appName: string;
+  website: string;
+  serviceType: string;
+}
+
+function loadPersonalization(): PersonalizeData {
+  try {
+    const stored = localStorage.getItem(PERSONALIZE_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch {
+    // localStorage unavailable
+  }
+  return { appName: "", website: "", serviceType: "" };
+}
+
+function savePersonalization(data: PersonalizeData) {
+  try {
+    localStorage.setItem(PERSONALIZE_KEY, JSON.stringify(data));
+  } catch {
+    // localStorage unavailable
+  }
+}
+
+/* ── Copy feedback hook ── */
+
+function useCopyFeedback() {
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const copy = useCallback(async (text: string, label: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(label);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      // Clipboard API unavailable
+    }
+  }, []);
+
+  return { copied, copy };
+}
+
+/* ── Inline icons ── */
+
+function ChevronDownIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+
+function ClipboardIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+    </svg>
+  );
+}
+
+function EyeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
+function CodeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  );
+}
+
+/* ── Tool logos (recognizable SVG icons) ── */
+
+function ToolLogo({ id, selected }: { id: string; selected: boolean }) {
+  const color = selected ? "currentColor" : "currentColor";
+  const cls = `${selected ? "text-text-primary" : "text-text-quaternary"}`;
+
+  // Anthropic / Claude Code — stylized "A" mark
+  if (id === "claude-code") return (
+    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
+      <path d="M16.5 3L12 21M12 21L7.5 3M5 15h14" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  // Cursor — distinctive arrow/cursor shape
+  if (id === "cursor") return (
+    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
+      <path d="M5 3l14 9-6 2-3 7L5 3z" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  // Windsurf — wave/sail shape
+  if (id === "windsurf") return (
+    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
+      <path d="M3 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0" stroke={color} strokeWidth="1.75" strokeLinecap="round" />
+      <path d="M12 3v11M12 3l5 8M12 3L7 8" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  // GitHub Copilot — pilot/wings icon
+  if (id === "copilot") return (
+    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
+      <path d="M12 4c-4 0-7 2-8 5v4c0 2 1 4 3 5l2 1h6l2-1c2-1 3-3 3-5v-4c-1-3-4-5-8-5z" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="9.5" cy="11" r="1.25" fill={color} />
+      <circle cx="14.5" cy="11" r="1.25" fill={color} />
+      <path d="M9 15c1 1 5 1 6 0" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+
+  // Cline — terminal/command prompt
+  if (id === "cline") return (
+    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
+      <rect x="3" y="4" width="18" height="16" rx="2" stroke={color} strokeWidth="1.75" />
+      <path d="M7 12l3-3M7 12l3 3M13 15h4" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
+  // Other — generic code brackets
+  return (
+    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
+      <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/* ── Personalize slideout ── */
+
+function PersonalizeSlideout({
+  isOpen,
+  onClose,
+  data,
+  onChange,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  data: PersonalizeData;
+  onChange: (data: PersonalizeData) => void;
+}) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Close on Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen, onClose]);
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center">
-      <p className="text-text-tertiary text-sm">
-        Public messages page for {params.category} — reuses existing catalog component (Task 4/5)
-      </p>
+    <>
+      {/* Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 top-14 z-40 bg-white/50 transition-opacity duration-200"
+          onClick={onClose}
+        />
+      )}
+
+      {/* Panel */}
+      <div
+        ref={panelRef}
+        className={`fixed top-14 right-0 z-50 h-[calc(100%-3.5rem)] w-full max-w-sm bg-bg-primary border-l border-border-secondary shadow-xl transition-transform duration-200 ease-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-border-secondary px-6 py-4">
+          <h2 className="text-base font-semibold text-text-primary">
+            Personalize messages
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+            aria-label="Close"
+          >
+            <XClose className="size-5" />
+          </button>
+        </div>
+
+        <div className="px-6 py-6 space-y-5">
+          <p className="text-sm text-text-tertiary">
+            Fill in your details to see how messages will look with your business name. Saved automatically.
+          </p>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+              App / business name
+            </label>
+            <input
+              type="text"
+              value={data.appName}
+              placeholder="GlowStudio"
+              onChange={(e) => onChange({ ...data, appName: e.target.value })}
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+              Website URL
+            </label>
+            <input
+              type="text"
+              value={data.website}
+              placeholder="glowstudio.com"
+              onChange={(e) => onChange({ ...data, website: e.target.value })}
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">
+              Service type
+            </label>
+            <input
+              type="text"
+              value={data.serviceType}
+              placeholder="haircut, dental cleaning, massage"
+              onChange={(e) => onChange({ ...data, serviceType: e.target.value })}
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+            />
+          </div>
+
+          {data.appName && (
+            <p className="text-xs text-text-quaternary">
+              Messages, opt-in form, and Blueprint CTA will update in real time.
+            </p>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+/* ── Steps layout (left: journey, right: proof) ── */
+
+function StepsLayout({
+  categoryId,
+  categoryLabel,
+  state,
+  setField,
+  personalizeData,
+  onPersonalizeChange,
+  coreMessages,
+  expansionMessages,
+  allMessages,
+  variants,
+  variantLabels,
+  activeVariant,
+  setActiveVariant,
+  viewMode,
+  setViewMode,
+  selectedIds,
+  toggleSelect,
+  getActiveTemplate,
+  showCopyMenu,
+  setShowCopyMenu,
+  copyMenuRef,
+  hasSelection,
+  handleCopySelected,
+  handleCopyAll,
+}: {
+  categoryId: string;
+  categoryLabel: string;
+  state: ReturnType<typeof useSession>["state"];
+  setField: (key: string, value: string) => void;
+  personalizeData: PersonalizeData;
+  onPersonalizeChange: (data: PersonalizeData) => void;
+  coreMessages: typeof MESSAGES[string];
+  expansionMessages: typeof MESSAGES[string];
+  allMessages: typeof MESSAGES[string];
+  variants: typeof CATEGORY_VARIANTS[string] | undefined;
+  variantLabels: Record<string, string>;
+  activeVariant: string;
+  setActiveVariant: (v: string) => void;
+  viewMode: "preview" | "template";
+  setViewMode: (v: "preview" | "template") => void;
+  selectedIds: Set<string>;
+  toggleSelect: (id: string) => void;
+  getActiveTemplate: (msg: typeof MESSAGES[string][number]) => string | undefined;
+  showCopyMenu: boolean;
+  setShowCopyMenu: (v: boolean | ((prev: boolean) => boolean)) => void;
+  copyMenuRef: React.RefObject<HTMLDivElement | null>;
+  hasSelection: boolean;
+  handleCopySelected: () => void;
+  handleCopyAll: () => void;
+}) {
+  const [selectedTool, setSelectedTool] = useState("claude-code");
+
+  const tools = [
+    { id: "claude-code", label: "Claude Code" },
+    { id: "cursor", label: "Cursor" },
+    { id: "windsurf", label: "Windsurf" },
+    { id: "copilot", label: "GitHub Copilot" },
+    { id: "cline", label: "Cline" },
+    { id: "other", label: "Other" },
+  ];
+
+  const toolInstructions: Record<string, { before: string; prompt: string | null; after?: string }> = {
+    "claude-code": {
+      before: "Drop SMS_BUILD_SPEC.md and SMS_GUIDELINES.md in your project root. Then run:",
+      prompt: "Build my SMS integration using the two SMS files in the project root.",
+      after: "claude →",
+    },
+    cursor: {
+      before: "Drop both files in your project root. Open Composer:",
+      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md.",
+    },
+    windsurf: {
+      before: "Drop both files in your project root. Open Cascade:",
+      prompt: "Build my SMS integration using the two SMS files in the project root.",
+    },
+    copilot: {
+      before: "Drop both files in your project root. Open Copilot Chat:",
+      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md.",
+    },
+    cline: {
+      before: "Drop both files in your project root. Start a task:",
+      prompt: "Build my SMS integration using the two SMS files.",
+    },
+    other: {
+      before: "Drop both files in your project root and tell your AI coding tool to build using them. Any tool that reads markdown works.",
+      prompt: null,
+    },
+  };
+
+  return (
+    <div>
+      {/* Header */}
+      <div className="bg-bg-secondary py-12">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-3 py-1 text-xs font-medium text-text-brand-secondary">
+              <Calendar className="size-3.5" />
+              {categoryLabel}
+            </span>
+          </div>
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+              Appointment messages, ready to send.
+            </h1>
+            <button
+              type="button"
+              onClick={() => alert("Auth gate → Get RelayKit")}
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+            >
+              <Download01 className="size-4" />
+              Download RelayKit
+            </button>
+          </div>
+          <p className="mt-3 text-base text-text-tertiary max-w-2xl">
+            Compliant appointment messages, ready for your app. Personalize them and start building today.
+          </p>
+        </div>
+      </div>
+
+      {/* Tool selector */}
+      <div className="mx-auto max-w-5xl px-6 pt-8 pb-2">
+        {/* Tool logos row */}
+        <div className="flex items-center gap-6 overflow-x-auto">
+          {tools.map((tool) => (
+            <button
+              key={tool.id}
+              type="button"
+              onClick={() => setSelectedTool(tool.id)}
+              className={`flex flex-col items-center gap-2 min-w-[72px] cursor-pointer transition duration-100 ease-linear ${
+                selectedTool === tool.id ? "opacity-100" : "opacity-35 hover:opacity-60"
+              }`}
+            >
+              <div className={`flex items-center justify-center w-12 h-12 rounded-full transition duration-100 ease-linear ${
+                selectedTool === tool.id
+                  ? "bg-bg-primary shadow-xs ring-2 ring-border-brand"
+                  : "bg-bg-secondary"
+              }`}>
+                <ToolLogo id={tool.id} selected={selectedTool === tool.id} />
+              </div>
+              <span className={`text-[11px] font-medium whitespace-nowrap ${
+                selectedTool === tool.id ? "text-text-primary" : "text-text-tertiary"
+              }`}>
+                {tool.label}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Instruction */}
+        <div className="mt-4">
+          <p className="text-xs text-text-tertiary leading-relaxed">
+            {toolInstructions[selectedTool].before}
+          </p>
+          {toolInstructions[selectedTool].prompt && (
+            <div className="mt-2 flex items-center gap-2">
+              {toolInstructions[selectedTool].after && (
+                <span className="text-xs font-mono text-text-quaternary shrink-0">
+                  {toolInstructions[selectedTool].after}
+                </span>
+              )}
+              <code className="inline-block rounded-md bg-bg-secondary px-2.5 py-1 text-xs font-mono text-text-secondary">
+                {toolInstructions[selectedTool].prompt}
+              </code>
+              <button
+                type="button"
+                onClick={() => {
+                  const prompt = toolInstructions[selectedTool].prompt;
+                  if (prompt) navigator.clipboard.writeText(prompt).catch(() => {});
+                }}
+                className="shrink-0 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                aria-label="Copy prompt"
+              >
+                <ClipboardIcon className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Two-column layout */}
+      <div className="mx-auto max-w-5xl px-6 pt-10 pb-16">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[360px_1fr]">
+          {/* LEFT COLUMN — personalize + opt-in + CTA */}
+          <div className="lg:self-start lg:sticky lg:top-20">
+            {/* Personalize form */}
+            <h2 className="text-lg font-semibold text-text-primary mb-3">
+              Personalize
+            </h2>
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-text-secondary">
+                  App / business name
+                </label>
+                <input
+                  type="text"
+                  value={personalizeData.appName}
+                  placeholder="GlowStudio"
+                  onChange={(e) => onPersonalizeChange({ ...personalizeData, appName: e.target.value })}
+                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-text-secondary">
+                  Website URL
+                </label>
+                <input
+                  type="text"
+                  value={personalizeData.website}
+                  placeholder="glowstudio.com"
+                  onChange={(e) => onPersonalizeChange({ ...personalizeData, website: e.target.value })}
+                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-text-secondary">
+                  Service type
+                </label>
+                <input
+                  type="text"
+                  value={personalizeData.serviceType}
+                  placeholder="haircut, dental cleaning"
+                  onChange={(e) => onPersonalizeChange({ ...personalizeData, serviceType: e.target.value })}
+                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+                />
+              </div>
+            </div>
+
+            {/* Sample opt-in form */}
+            <div className="mt-8">
+              <h2 className="text-lg font-semibold text-text-primary mb-3">
+                Sample opt-in form
+              </h2>
+              <CatalogOptIn
+                appName={state.appName}
+                website={state.website}
+                allMessages={coreMessages}
+                selectedIds={selectedIds}
+              />
+            </div>
+
+          </div>
+
+          {/* RIGHT COLUMN — messages */}
+          <div>
+            {/* Messages header + toolbar */}
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-text-primary">
+                Messages
+              </h2>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                  className="p-1 rounded text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-pointer"
+                  aria-label={viewMode === "preview" ? "Show template" : "Show preview"}
+                >
+                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                </button>
+                <div className="relative" ref={copyMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowCopyMenu((prev: boolean) => !prev)}
+                    className="flex items-center gap-0.5 p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                    aria-label="Copy options"
+                  >
+                    <ClipboardIcon className="w-3.5 h-3.5" />
+                    <ChevronDownIcon className="w-3 h-3" />
+                  </button>
+                  {showCopyMenu && (
+                    <div className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1">
+                      {hasSelection && (
+                        <button
+                          type="button"
+                          onClick={handleCopySelected}
+                          className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                        >
+                          Copy {selectedIds.size} selected
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleCopyAll}
+                        className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                      >
+                        Copy all {coreMessages.length} messages
+                      </button>
+                      {hasSelection && (
+                        <button
+                          type="button"
+                          onClick={() => { setShowCopyMenu(false); }}
+                          className="w-full px-3 py-2 text-left text-xs text-text-quaternary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer border-t border-border-secondary"
+                        >
+                          Clear selection
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Style pills */}
+            {variants && variants.length > 1 && (
+              <div className="mb-4 flex items-center gap-2">
+                {variants.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => setActiveVariant(v.id)}
+                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-100 ease-linear ${
+                      activeVariant === v.id
+                        ? "bg-bg-brand-secondary text-text-brand-secondary"
+                        : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
+                    }`}
+                  >
+                    {variantLabels[v.id] || v.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Core message cards */}
+            <div className="space-y-3">
+              {coreMessages.map((message) => (
+                <CatalogCard
+                  key={message.id}
+                  message={message}
+                  categoryId={categoryId}
+                  state={state}
+                  isSelected={selectedIds.has(message.id)}
+                  onToggleSelect={toggleSelect}
+                  globalViewMode={viewMode}
+                  activeTemplate={getActiveTemplate(message)}
+                />
+              ))}
+            </div>
+
+            {/* Marketing callout */}
+            {expansionMessages.length > 0 && (
+              <div className="mt-8 rounded-xl border border-border-secondary bg-bg-secondary p-6">
+                <h3 className="text-base font-semibold text-text-primary">
+                  Need promotional messages too?
+                </h3>
+                <p className="mt-1 text-sm text-text-tertiary">
+                  Marketing campaigns — promos, re-engagement, seasonal offers — require a separate carrier registration. Start with your transactional messages, get approved, then add marketing when you&rsquo;re ready. Same process, same platform.
+                </p>
+                <div className="mt-4 space-y-3">
+                  {expansionMessages.map((msg) => {
+                    const segments = interpolateTemplate(msg.template, categoryId, state);
+                    return (
+                      <div
+                        key={msg.id}
+                        className="rounded-xl border border-border-tertiary bg-bg-primary p-4 opacity-70"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-medium text-text-secondary">
+                            {msg.name}
+                          </span>
+                          <span className="inline-flex items-center rounded-full bg-bg-secondary border border-border-secondary px-2 py-0.5 text-[10px] font-medium text-text-quaternary">
+                            Available with marketing registration
+                          </span>
+                        </div>
+                        <p className="text-sm text-text-tertiary leading-relaxed">
+                          {segments.map((seg, i) =>
+                            seg.isVariable ? (
+                              <span key={i} className="font-medium text-text-brand-tertiary">
+                                {seg.text}
+                              </span>
+                            ) : (
+                              <span key={i}>{seg.text}</span>
+                            )
+                          )}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Page component ── */
+
+export default function PublicMessagesPage() {
+  const { category } = useParams<{ category: string }>();
+  const { state, setField } = useSession();
+
+  const categoryId = category || "appointments";
+  const allMessages = MESSAGES[categoryId] || [];
+  const variants = CATEGORY_VARIANTS[categoryId];
+
+  const [activeVariant, setActiveVariant] = useState("standard");
+  const [viewMode, setViewMode] = useState<"preview" | "template">("preview");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [showCopyMenu, setShowCopyMenu] = useState(false);
+  const [showPersonalize, setShowPersonalize] = useState(false);
+  const copyMenuRef = useRef<HTMLDivElement>(null);
+
+  const { copy } = useCopyFeedback();
+
+  // Load personalization from localStorage on mount, sync to session state
+  const [personalizeLoaded, setPersonalizeLoaded] = useState(false);
+  useEffect(() => {
+    const saved = loadPersonalization();
+    if (saved.appName) setField("appName", saved.appName);
+    if (saved.website) setField("website", saved.website);
+    if (saved.serviceType) setField("serviceType", saved.serviceType);
+    setPersonalizeLoaded(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handlePersonalizeChange(data: PersonalizeData) {
+    setField("appName", data.appName);
+    setField("website", data.website);
+    setField("serviceType", data.serviceType);
+    savePersonalization(data);
+  }
+
+  const personalizeData: PersonalizeData = {
+    appName: state.appName,
+    website: state.website,
+    serviceType: state.serviceType,
+  };
+
+  // Split: core/also_covered go in main list, expansion goes in marketing callout
+  const coreMessages = allMessages.filter((m) => m.tier !== "expansion");
+  const expansionMessages = allMessages.filter((m) => m.tier === "expansion");
+
+  // Close copy menu on outside click
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (copyMenuRef.current && !copyMenuRef.current.contains(e.target as Node)) {
+        setShowCopyMenu(false);
+      }
+    }
+    if (showCopyMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showCopyMenu]);
+
+  function toggleSelect(messageId: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(messageId)) next.delete(messageId);
+      else next.add(messageId);
+      return next;
+    });
+  }
+
+  function getActiveTemplate(msg: typeof allMessages[number]): string | undefined {
+    if (activeVariant === "standard" || !msg.variants) return undefined;
+    return msg.variants[activeVariant] ?? undefined;
+  }
+
+  const selectedMessages = allMessages.filter((m) => selectedIds.has(m.id));
+  const hasSelection = selectedIds.size > 0;
+
+  function handleCopySelected() {
+    const text = formatMultipleCopyBlocks(selectedMessages, categoryId, state);
+    copy(text, "selected");
+    setShowCopyMenu(false);
+  }
+
+  function handleCopyAll() {
+    const text = formatMultipleCopyBlocks(coreMessages, categoryId, state);
+    copy(text, "all");
+    setShowCopyMenu(false);
+  }
+
+  // Map variant IDs to marketing-friendly labels
+  const variantLabels: Record<string, string> = {
+    standard: "Brand-first",
+    "action-first": "Action-first",
+    "context-first": "Context-first",
+  };
+
+  const categoryLabel =
+    categoryId === "appointments"
+      ? "Appointments"
+      : categoryId.charAt(0).toUpperCase() + categoryId.slice(1);
+
+  const displayName = state.appName || categoryLabel;
+  const searchParams = useSearchParams();
+  const layoutMode = searchParams.get("layout");
+
+  // ── Steps layout ──
+  if (layoutMode === "steps") {
+    return (
+      <>
+        <StepsLayout
+          categoryId={categoryId}
+          categoryLabel={categoryLabel}
+          state={state}
+          setField={setField}
+          personalizeData={personalizeData}
+          onPersonalizeChange={handlePersonalizeChange}
+          coreMessages={coreMessages}
+          expansionMessages={expansionMessages}
+          allMessages={allMessages}
+          variants={variants}
+          variantLabels={variantLabels}
+          activeVariant={activeVariant}
+          setActiveVariant={setActiveVariant}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          selectedIds={selectedIds}
+          toggleSelect={toggleSelect}
+          getActiveTemplate={getActiveTemplate}
+          showCopyMenu={showCopyMenu}
+          setShowCopyMenu={setShowCopyMenu}
+          copyMenuRef={copyMenuRef}
+          hasSelection={hasSelection}
+          handleCopySelected={handleCopySelected}
+          handleCopyAll={handleCopyAll}
+        />
+        {/* Footer */}
+        <footer className="border-t border-border-secondary">
+          <div className="mx-auto max-w-5xl px-6 py-12">
+            <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+              <div>
+                <p className="text-sm font-semibold text-text-primary">Product</p>
+                <ul className="mt-3 flex flex-col gap-2">
+                  <li><Link href="/#how-it-works" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">How it works</Link></li>
+                  <li><Link href="/#categories" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Use cases</Link></li>
+                  <li><Link href="/compliance" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Compliance</Link></li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-text-primary">Company</p>
+                <ul className="mt-3 flex flex-col gap-2">
+                  <li><Link href="/about" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">About</Link></li>
+                  <li><Link href="/blog" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Blog</Link></li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-text-primary">Legal</p>
+                <ul className="mt-3 flex flex-col gap-2">
+                  <li><Link href="/terms" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Terms</Link></li>
+                  <li><Link href="/privacy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Privacy</Link></li>
+                  <li><Link href="/acceptable-use-policy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Acceptable Use</Link></li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-10 border-t border-border-tertiary pt-6">
+              <p className="text-xs text-text-quaternary">&copy; 2026 Vaulted Press LLC</p>
+            </div>
+          </div>
+        </footer>
+      </>
+    );
+  }
+
+  // ── Default layout ──
+  return (
+    <div>
+      {/* Personalize slideout */}
+      <PersonalizeSlideout
+        isOpen={showPersonalize}
+        onClose={() => setShowPersonalize(false)}
+        data={personalizeData}
+        onChange={handlePersonalizeChange}
+      />
+
+      {/* Hero */}
+      <div className="bg-bg-secondary py-12">
+        <div className="mx-auto max-w-5xl px-6">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-3 py-1 text-xs font-medium text-text-brand-secondary">
+              <Calendar className="size-3.5" />
+              {categoryLabel}
+            </span>
+          </div>
+          <h1 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+            Appointment messages, ready to send.
+          </h1>
+          <p className="mt-3 text-base text-text-tertiary max-w-2xl">
+            Everything below goes into two files your AI coding tool reads to build and maintain your messaging feature.{" "}
+            <button
+              type="button"
+              onClick={() => alert("Auth gate → Download")}
+              className="inline-flex items-center gap-1 font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear"
+            >
+              <Download01 className="size-3.5" />
+              Download RelayKit for {categoryLabel}
+            </button>
+          </p>
+          <p className="mt-2 text-xs text-text-quaternary">
+            Free to browse. Sign in to download.
+          </p>
+        </div>
+      </div>
+
+      {/* Two-column layout: messages + opt-in */}
+      <div className="mx-auto max-w-5xl px-6 pt-10 pb-16">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[55fr_45fr]">
+          {/* Left column — message cards */}
+          <div>
+            {/* Toolbar */}
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-text-primary">
+                Messages
+              </h2>
+              <div className="flex items-center gap-2">
+                {/* View toggle */}
+                <button
+                  type="button"
+                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                  className="p-1 rounded text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-pointer"
+                  aria-label={viewMode === "preview" ? "Show template" : "Show preview"}
+                >
+                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                </button>
+
+                {/* Copy dropdown */}
+                <div className="relative" ref={copyMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowCopyMenu((prev) => !prev)}
+                    className="flex items-center gap-0.5 p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                    aria-label="Copy options"
+                  >
+                    <ClipboardIcon className="w-3.5 h-3.5" />
+                    <ChevronDownIcon className="w-3 h-3" />
+                  </button>
+
+                  {showCopyMenu && (
+                    <div className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1">
+                      {hasSelection && (
+                        <button
+                          type="button"
+                          onClick={handleCopySelected}
+                          className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                        >
+                          Copy {selectedIds.size} selected
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleCopyAll}
+                        className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                      >
+                        Copy all {coreMessages.length} messages
+                      </button>
+                      {hasSelection && (
+                        <button
+                          type="button"
+                          onClick={() => { setSelectedIds(new Set()); setShowCopyMenu(false); }}
+                          className="w-full px-3 py-2 text-left text-xs text-text-quaternary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer border-t border-border-secondary"
+                        >
+                          Clear selection
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Style pills + Personalize button */}
+            {variants && variants.length > 1 && (
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  {variants.map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => setActiveVariant(v.id)}
+                      className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-100 ease-linear ${
+                        activeVariant === v.id
+                          ? "bg-bg-brand-secondary text-text-brand-secondary"
+                          : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
+                      }`}
+                    >
+                      {variantLabels[v.id] || v.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPersonalize(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <Settings01 className="size-4" />
+                  Personalize
+                </button>
+              </div>
+            )}
+
+            {/* Personalize button fallback when no variants */}
+            {(!variants || variants.length <= 1) && (
+              <div className="mb-4 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setShowPersonalize(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <Settings01 className="size-4" />
+                  Personalize
+                </button>
+              </div>
+            )}
+
+            {/* Core message cards */}
+            <div className="space-y-3">
+              {coreMessages.map((message) => (
+                <CatalogCard
+                  key={message.id}
+                  message={message}
+                  categoryId={categoryId}
+                  state={state}
+                  isSelected={selectedIds.has(message.id)}
+                  onToggleSelect={toggleSelect}
+                  globalViewMode={viewMode}
+                  activeTemplate={getActiveTemplate(message)}
+                />
+              ))}
+            </div>
+
+            {/* Marketing callout */}
+            {expansionMessages.length > 0 && (
+              <div className="mt-8 rounded-xl border border-border-secondary bg-bg-secondary p-6">
+                <h3 className="text-base font-semibold text-text-primary">
+                  Need promotional messages too?
+                </h3>
+                <p className="mt-1 text-sm text-text-tertiary">
+                  Marketing campaigns — promos, re-engagement, seasonal offers — require a separate carrier registration. Start with your transactional messages, get approved, then add marketing when you&rsquo;re ready. Same process, same platform.
+                </p>
+
+                <div className="mt-4 space-y-3">
+                  {expansionMessages.map((msg) => {
+                    const segments = interpolateTemplate(msg.template, categoryId, state);
+                    return (
+                      <div
+                        key={msg.id}
+                        className="rounded-xl border border-border-tertiary bg-bg-primary p-4 opacity-70"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-sm font-medium text-text-secondary">
+                            {msg.name}
+                          </span>
+                          <span className="inline-flex items-center rounded-full bg-bg-secondary border border-border-secondary px-2 py-0.5 text-[10px] font-medium text-text-quaternary">
+                            Available with marketing registration
+                          </span>
+                        </div>
+                        <p className="text-sm text-text-tertiary leading-relaxed">
+                          {segments.map((seg, i) =>
+                            seg.isVariable ? (
+                              <span key={i} className="font-medium text-text-brand-tertiary">
+                                {seg.text}
+                              </span>
+                            ) : (
+                              <span key={i}>{seg.text}</span>
+                            )
+                          )}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Right column — sticky opt-in preview */}
+          <div className="lg:self-start lg:sticky lg:top-20">
+            <h2 className="mb-3 text-lg font-semibold text-text-primary">
+              Sample opt-in form
+            </h2>
+            <CatalogOptIn
+              appName={state.appName}
+              website={state.website}
+              allMessages={coreMessages}
+              selectedIds={selectedIds}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="border-t border-border-secondary">
+        <div className="mx-auto max-w-5xl px-6 py-12">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+            <div>
+              <p className="text-sm font-semibold text-text-primary">Product</p>
+              <ul className="mt-3 flex flex-col gap-2">
+                <li><Link href="/#how-it-works" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">How it works</Link></li>
+                <li><Link href="/#categories" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Use cases</Link></li>
+                <li><Link href="/compliance" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Compliance</Link></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-text-primary">Company</p>
+              <ul className="mt-3 flex flex-col gap-2">
+                <li><Link href="/about" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">About</Link></li>
+                <li><Link href="/blog" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Blog</Link></li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-text-primary">Legal</p>
+              <ul className="mt-3 flex flex-col gap-2">
+                <li><Link href="/terms" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Terms</Link></li>
+                <li><Link href="/privacy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Privacy</Link></li>
+                <li><Link href="/acceptable-use-policy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Acceptable Use</Link></li>
+              </ul>
+            </div>
+          </div>
+          <div className="mt-10 border-t border-border-tertiary pt-6">
+            <p className="text-xs text-text-quaternary">&copy; 2026 Vaulted Press LLC</p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

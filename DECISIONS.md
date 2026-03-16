@@ -484,3 +484,35 @@ Affects: All PRDs, build order timing, CC session planning.
 **D-105 — Registration money-back guarantee** (Date: 2026-03-14)
 If a customer's 10DLC registration is not approved, they receive a full refund of the $199 setup fee. This guarantee is displayed on the marketing home page. Scope: covers registration rejection only, not account suspension due to customer violations post-approval. Terms to be detailed in ToS.
 Affects: Marketing home page, pricing display, ToS, Stripe refund logic (future).
+
+**D-106 — Category landing page has message style preview with variant toggle** (Date: 2026-03-15)
+The `/sms/[category]` landing page includes a message preview section below the hero with three style pills (Brand-first / Action-first / Context-first) and three sample message cards (Booking confirmation, Appointment reminder, Cancellation notice). Each card shows the message text in the selected variant with interpolated preview values. Variable values render as `font-medium text-text-brand-tertiary` (subtle purple, medium weight) to distinguish from static text without competing with card titles. Trigger lines use "Sent when..." format, not "Triggers when...". This section demonstrates the anti-cookie-cutter strategy (D-91) on the marketing page.
+_Affects: `prototype/app/sms/[category]/page.tsx`._
+
+**D-107 — Public messages page at /sms/[category]/messages replaces placeholder** (Date: 2026-03-15)
+The `/sms/[category]/messages` page is a full public-facing marketing page with the complete message library, style variant pills, `CatalogCard` components with checkboxes/copy/prompt nudges, and a `CatalogOptIn` form — all reusing components from the existing `/c/[category]/messages` catalog page. Styled as a marketing page (same nav, footer, typography as Home and `/sms/[category]`), not as an in-app dashboard. The existing `/c/[category]/messages` page remains unchanged.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-108 — "Download RelayKit" is the single primary CTA, not two separate buttons** (Date: 2026-03-15)
+The messages page uses a single entry point — "Download RelayKit" — not separate "Download Blueprint" and "Start building with RelayKit" buttons. One door, not two. The download action triggers an auth gate (sign in to download). This applies to both the default layout and the steps layout. The CTA text does not include the word "Blueprint" — it's "Download RelayKit" or "Download RelayKit for [Category]".
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`, all CTA copy on the messages page._
+
+**D-109 — Messages page subhead references "two files", not "Blueprint"** (Date: 2026-03-15)
+The messages page subhead and CTA copy avoid the word "Blueprint" and instead reference the deliverable as "two files your AI coding tool reads to build and maintain your messaging feature." This is more concrete and less branded. The integrated hero variant (selected as the default) weaves the CTA inline into the subhead paragraph.
+_Affects: Messages page hero copy._
+
+**D-110 — Tool selector with per-tool setup instructions** (Date: 2026-03-15)
+The `?layout=steps` version of the messages page includes a tool selector section between the hero and the main content. Six tools: Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, and Other. Each shows a recognizable SVG icon (48px circle) and 2-3 lines of per-tool setup instructions. The prompt/command text renders in a light inline code style (`font-mono bg-bg-secondary`) with a clipboard copy button. Claude Code is selected by default. The section has no card wrapper — sits directly on the page. This implements D-92 (platform-specific setup instructions) in a more interactive format.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx` (steps layout)._
+
+**D-111 — Personalization via localStorage, not session-only** (Date: 2026-03-15)
+The messages page stores personalization data (app name, website URL, service type) in `localStorage` under the key `relaykit_personalize`, not just `sessionStorage`. This survives page refreshes and return visits. The data syncs to the session context on mount and updates message cards, opt-in form, and CTA copy in real time. In the default layout, personalization is accessed via a slideout panel triggered by a "Personalize" button. In the steps layout, personalization fields are always visible in the left column.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-112 — Marketing messages separated from core messages on public page** (Date: 2026-03-15)
+On the public messages page, expansion/marketing messages (Promotional offer, Feedback request) are removed from the main message list and displayed in a separate "Need promotional messages too?" callout section. The callout explains that marketing requires a separate carrier registration (reinforcing D-89). Marketing message cards render at 70% opacity with `border-border-tertiary` and an "Available with marketing registration" badge. This is consistent with D-89's position that initial registration is always transactional-only.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-113 — Two layout variants for messages page, toggled via query param** (Date: 2026-03-15)
+The messages page supports two layout variants: the default layout (right-heavy, messages left + opt-in right) and a steps layout (`?layout=steps`) with personalization + opt-in on the left, messages on the right. The steps layout includes the tool selector (D-110). Both layouts share the same data, components, and localStorage persistence. The query param approach allows A/B comparison in the browser. Final layout selection is TBD.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._

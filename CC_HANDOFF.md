@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-14 (marketing page revision pass)
+**Date:** 2026-03-15 (appointments category + messages page build)
 **Branch:** main
 
 ---
@@ -7,54 +7,65 @@
 ## Commits This Session
 
 ```
-[this commit]  feat: marketing home page and compliance page — full revision pass
+[this commit]  feat: appointments category landing + public messages page with two layout variants
 ```
 
 Previous session commits (already on main):
 ```
+06b8685  feat: marketing home page and compliance page — full revision pass
 1cc2545  docs: D-101–D-104, vision implementation memo
 417d205  feat: settings tab — SMS alerts, account info, API keys, billing (D-98, D-99)
-b9e1004  feat: compliance tab — sandbox preview + live monitoring with 5 scenario states
-76d66fb  feat: revised dashboards A/B/C — Blueprint hero, no plan builder, per-app shell
-eeb393f  feat: per-app experience shell — progressive tabs, state toggle, Blueprint hero
 ```
 
 ---
 
 ## What We Completed
 
-### Marketing Home Page (`prototype/app/page.tsx`) — Full Revision
+### Appointments Category Landing Page (`prototype/app/sms/[category]/page.tsx`)
 
-- **Hero**: New subhead — "The fastest way to add compliant SMS to any app."
-- **How it works**: 3 steps with eyebrow "How it works", headline "Shorter than your last standup." Step circles changed from solid purple to light lavender bg with purple number (matches icon style elsewhere).
-- **Step copy**: (1) "A full library of compliant messages." (2) "Drop two files in. Your AI handles the rest." (3) "Build in a fully functional sandbox. Free."
-- **Category grid**: "Explore use cases" section with gray background, per-category CTAs ("View [category] messages →")
-- **Pricing**: Two-card layout (Sandbox $0 / Live $199+$19/mo), matching border treatment (both `border-primary`), no highlighted card. Last bullet: "Need more messages? $15 per 1,000. Scales with usage — up or down."
-- **Compliance cards**: "Why RelayKit?" eyebrow, 4 cards (opt-out, content checks, quiet hours, ongoing monitoring), concluding line
-- **Comparison table**: 3-column (DIY / Others / RelayKit) with row descriptions, updated copy throughout including "Handled, or your money back." for registration
-- **Footer**: 3 columns (Product, Company, Legal) + © 2026 Vaulted Press LLC
-- **Removed**: Bottom redundant CTA section
+- **Hero headline** changed to "Appointment texts in minutes."
+- **Message style preview section** below hero — three pills (Brand-first / Action-first / Context-first) toggling three message cards (Booking confirmation, Appointment reminder, Cancellation notice)
+- Variable values in preview cards render as `font-medium text-text-brand-tertiary` (subtle purple)
+- Trigger lines use "Sent when..." format
+- Selected pill uses light purple tint (`bg-bg-brand-secondary`)
+- Button order swapped: "See all categories" (secondary, left) / "Browse messages" (primary, right)
+- Section headers restyled to eyebrow + headline pattern (matching home page)
+- "See all appointment messages →" CTA links to `/sms/appointments/messages`
 
-### Compliance Page (`prototype/app/compliance/page.tsx`) — New Page
+### Public Messages Page (`prototype/app/sms/[category]/messages/page.tsx`)
 
-- **Hero**: "Compliance, handled." with explanatory subhead
-- **5 content sections** with alternating gray/white backgrounds:
-  1. "Before your messages send" — 3 cards (opt-out, content checks, quiet hours)
-  2. "Ongoing protection" — 2 cards (drift detection, quality monitoring)
-  3. "Before you deploy" — single card (AI-powered message guidance)
-  4. "When something needs attention" — 3 severity cards (drift/warning/critical)
-  5. "Your compliance site" — paragraph with bold closing sentence
-- **3 pull-quote callouts** between sections (italic, lighter text, elegant style)
-- **Bottom CTA**: "Ready to start building?" with gray background
-- **Footer**: Same as home page
+Replaced the placeholder stub with a full public-facing messages page. Two layout variants:
 
-### Nav Bar (`prototype/components/top-nav.tsx`)
+#### Default Layout (no query param)
+- **Integrated hero**: Appointments badge, H1 "Appointment messages, ready to send.", subhead with inline "Download RelayKit for Appointments" CTA (download icon)
+- **Two-column**: messages left (55fr), sticky opt-in form right (45fr)
+- **Personalize slideout**: right-side panel triggered by "Personalize" button on pills row. Three fields (app name, website, service type). Updates all content in real time. Closes on backdrop click or Escape. Starts below nav bar with semi-transparent white backdrop.
+- **Style pills**: Brand-first / Action-first / Context-first (no "Style:" label)
+- **Message cards**: `CatalogCard` components with checkboxes, copy, view toggle (preview/template), prompt nudges
+- **Marketing callout**: "Need promotional messages too?" section at bottom of messages column with dimmed expansion message cards and "Available with marketing registration" badges
+- **Footer**: matches home page
 
-- "Sign in" / "Sign out" changed from filled purple button to plain text link style
+#### Steps Layout (`?layout=steps`)
+- **Hero**: same badge/headline, "Download RelayKit" button inline right of H1
+- **Tool selector section**: 6 tool icons (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other) with SVG logos in 48px circles. Per-tool setup instructions with monospace prompt and copy button. Claude Code selected by default.
+- **Two-column**: left (360px sticky) has Personalize form + Sample opt-in form; right has Messages with style pills + marketing callout
+- No step numbers, no collapsible sections, no "Register & go live" card
 
-### Decision Added
+#### Shared Features (both layouts)
+- Personalization stored in `localStorage` (`relaykit_personalize` key) — survives refreshes
+- Loaded on mount, synced to session context
+- Reuses `CatalogCard`, `CatalogOptIn`, `interpolateTemplate`, `formatMultipleCopyBlocks` from existing catalog components
+- Expansion messages separated into marketing callout (D-112)
 
-- **D-105**: Registration money-back guarantee — full refund of $199 if registration not approved
+### Decisions Added
+- **D-106**: Category landing message style preview with variant toggle
+- **D-107**: Public messages page replaces placeholder
+- **D-108**: "Download RelayKit" as single CTA (not two buttons)
+- **D-109**: Subhead references "two files" not "Blueprint"
+- **D-110**: Tool selector with per-tool setup instructions
+- **D-111**: Personalization via localStorage
+- **D-112**: Marketing messages separated from core on public page
+- **D-113**: Two layout variants toggled via query param
 
 ---
 
@@ -64,33 +75,33 @@ eeb393f  feat: per-app experience shell — progressive tabs, state toggle, Blue
 
 2. **`@untitledui/icons` name check**: `ShieldCheck` does NOT exist — use `ShieldTick`. Always verify icon names before using them.
 
-3. **Category pages**: Only "appointments" has full content. Other categories show placeholder stubs.
+3. **Tool selector SVG logos are approximations** — not official brand assets. Claude Code uses a stylized "A", Cursor a pointer arrow, Windsurf a wave+sail, Copilot a face/visor, Cline a terminal window. Replace with official SVGs when available.
 
-4. **Auth flow is fully mocked** — no Supabase. The "magic link sent" screen has a "Continue" button.
+4. **Auth flow is fully mocked** — no Supabase. All CTA buttons alert() for now.
 
 5. **No Untitled UI base components in prototype** — plain Tailwind with semantic color tokens only.
 
-6. **SessionStorage key:** `relaykit_prototype` — separate from production's `relaykit_intake`.
+6. **SessionStorage key**: `relaykit_prototype` (session context). **localStorage key**: `relaykit_personalize` (messages page personalization). These are separate storage mechanisms.
 
-7. **DECISIONS.md now has 105 decisions** (D-01 through D-105).
+7. **DECISIONS.md now has 113 decisions** (D-01 through D-113).
 
-8. **D-104 gate**: PRDs must be updated to reflect D-84–D-103 before any production code is built from them.
+8. **D-104 gate still active**: PRDs must be updated to reflect D-84–D-103 before any production code is built from them.
 
-9. **D-105**: Registration money-back guarantee is displayed on home page. Terms need ToS detail.
+9. **Layout A/B comparison**: Default layout at `/sms/appointments/messages`, steps layout at `/sms/appointments/messages?layout=steps`. Final selection TBD.
 
-10. **Comparison table structure**: Each row has `topic`, `desc`, `diy`, `others`, `relaykit` fields. First column is 300px wide.
+10. **The `/c/appointments/messages` page is unchanged** — the new public page is at `/sms/appointments/messages`. Both exist.
 
-11. **Page section backgrounds alternate**: Both pages use per-section wrappers (not a single container) for full-width gray/white alternation.
+11. **Category pages beyond "appointments"** still show placeholder stubs on `/sms/[category]`.
 
 ---
 
-## Prototype File Map
+## Prototype File Map (updated)
 
 ```
 prototype/
 ├── app/
-│   ├── page.tsx                          # Marketing home (revised)
-│   ├── compliance/page.tsx               # Public compliance page (NEW)
+│   ├── page.tsx                          # Marketing home (revised last session)
+│   ├── compliance/page.tsx               # Public compliance page
 │   ├── auth/page.tsx                     # Auth gate (5-step mock)
 │   ├── apps/
 │   │   ├── page.tsx                      # Your Apps (logged-in home)
@@ -101,19 +112,17 @@ prototype/
 │   │       ├── compliance/page.tsx       # Compliance tab (5 scenarios)
 │   │       └── settings/page.tsx         # Settings tab (alerts, keys, billing)
 │   ├── sms/[category]/
-│   │   ├── page.tsx                      # Category landing (public)
-│   │   └── messages/page.tsx             # Public messages stub
-│   └── c/[categoryId]/messages/page.tsx  # Catalog with variant pills
+│   │   ├── page.tsx                      # Category landing (REVISED — style preview)
+│   │   └── messages/page.tsx             # Public messages page (NEW — two layouts)
+│   ├── c/[categoryId]/messages/page.tsx  # Catalog with variant pills (unchanged)
+│   └── ...
 ├── components/
-│   ├── top-nav.tsx                       # Context-aware nav (revised)
+│   ├── top-nav.tsx                       # Context-aware nav
 │   ├── catalog/catalog-card.tsx          # Message card with variant support
-│   └── dashboard/
-│       ├── shared.tsx                    # Shared dashboard primitives
-│       ├── dashboard-a-revised.tsx       # Dashboard A (progressive single page)
-│       ├── dashboard-b-revised.tsx       # Dashboard B (tabbed workspace)
-│       ├── dashboard-c-revised.tsx       # Dashboard C (card grid)
-│       └── sample-data.ts               # Mock data (SAMPLE constant)
+│   ├── catalog/catalog-opt-in.tsx        # Sample opt-in form
+│   └── dashboard/                        # Dashboard components
 ├── context/session-context.tsx           # State management
+├── lib/catalog-helpers.ts                # Template interpolation, copy formatting
 └── data/messages.ts                      # Message library + variants
 ```
 
@@ -121,7 +130,9 @@ prototype/
 
 ## What's Next
 
-- Category landing pages beyond "appointments" need full content
+- Final layout selection for messages page (default vs steps)
+- Category landing pages beyond "appointments" need content
+- Official tool logos to replace SVG approximations
+- Wire up auth gate on Download RelayKit CTA
 - Production PRDs must be updated per D-104 before production code resumes
 - ToS needs D-105 money-back guarantee language
-- Change map is in `docs/VISION_IMPLEMENTATION_MEMO.md`

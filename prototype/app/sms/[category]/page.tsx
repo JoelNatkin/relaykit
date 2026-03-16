@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -16,7 +17,7 @@ import {
 
 const HERO = {
   badge: "Appointments",
-  headline: "Your customers already expect appointment texts.",
+  headline: "Appointment texts in minutes.",
   subheadline:
     "Confirmations, reminders, rescheduling, cancellations — these are the messages people actually want. RelayKit gives you the full message library, pre-registered and ready to send.",
 };
@@ -48,6 +49,91 @@ const WHAT_YOU_GET = [
   },
 ];
 
+/* ── Style toggle + message preview cards ── */
+
+type StyleId = "brand-first" | "action-first" | "context-first";
+
+const STYLE_TABS: { id: StyleId; label: string }[] = [
+  { id: "brand-first", label: "Brand-first" },
+  { id: "action-first", label: "Action-first" },
+  { id: "context-first", label: "Context-first" },
+];
+
+const PREVIEW_MESSAGES: {
+  name: string;
+  trigger: string;
+  texts: Record<StyleId, string>;
+}[] = [
+  {
+    name: "Booking confirmation",
+    trigger: "Sent when appointment booked",
+    texts: {
+      "brand-first":
+        "{app_name}: Your {service_type} appointment is confirmed for {date} at {time}. Reply STOP to opt out.",
+      "action-first":
+        "Confirmed — {service_type} appointment on {date} at {time}. {app_name} has you on the books. Reply STOP to opt out.",
+      "context-first":
+        "You just booked a {service_type} appointment. {app_name} confirms {date} at {time}. Reply STOP to opt out.",
+    },
+  },
+  {
+    name: "Appointment reminder",
+    trigger: "Sent 24h before appointment",
+    texts: {
+      "brand-first":
+        "{app_name}: Reminder — your {service_type} appointment is tomorrow at {time}. Reply STOP to opt out.",
+      "action-first":
+        "Tomorrow at {time} — your {service_type} appointment with {app_name}. Reply STOP to opt out.",
+      "context-first":
+        "Your {service_type} appointment is coming up. {app_name} reminder: tomorrow at {time}. Reply STOP to opt out.",
+    },
+  },
+  {
+    name: "Cancellation notice",
+    trigger: "Sent when appointment cancelled",
+    texts: {
+      "brand-first":
+        "{app_name}: Your {service_type} appointment on {date} has been cancelled. To rebook, visit {website_url}. Reply STOP to opt out.",
+      "action-first":
+        "Cancelled — your {service_type} appointment on {date}. Rebook at {website_url}. {app_name}. Reply STOP to opt out.",
+      "context-first":
+        "Your {service_type} appointment on {date} won't be happening. {app_name}: rebook at {website_url}. Reply STOP to opt out.",
+    },
+  },
+];
+
+/** Swap variable placeholders for bold preview values, returning React nodes */
+function interpolate(text: string): React.ReactNode[] {
+  const replacements: Record<string, string> = {
+    "{app_name}": "GlowStudio",
+    "{service_type}": "haircut",
+    "{date}": "Mar 20, 2026",
+    "{time}": "2:30 PM",
+    "{website_url}": "glowstudio.com",
+  };
+
+  const pattern = /\{app_name\}|\{service_type\}|\{date\}|\{time\}|\{website_url\}/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <span key={match.index} className="font-medium text-text-brand-tertiary">
+        {replacements[match[0]]}
+      </span>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts;
+}
+
 const WHY_10DLC = [
   {
     question: "What is 10DLC?",
@@ -68,6 +154,7 @@ const WHY_10DLC = [
 
 export default function CategoryLanding() {
   const { category } = useParams<{ category: string }>();
+  const [activeStyle, setActiveStyle] = useState<StyleId>("brand-first");
 
   // For now, only appointments has real content. Others get a placeholder.
   const isAppointments = category === "appointments";
@@ -104,25 +191,79 @@ export default function CategoryLanding() {
         </p>
         <div className="mt-8 flex items-center justify-center gap-4">
           <Link
+            href="/choose"
+            className="rounded-lg border border-border-primary px-5 py-2.5 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+          >
+            See all categories
+          </Link>
+          <Link
             href={`/sms/${category}/messages`}
             className="inline-flex items-center gap-2 rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
           >
             Browse messages
             <ArrowRight className="size-4" />
           </Link>
+        </div>
+      </div>
+
+      {/* Message style preview */}
+      <div className="mt-16">
+        {/* Style toggle pills */}
+        <div className="flex items-center justify-center gap-2">
+          {STYLE_TABS.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveStyle(tab.id)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-100 ease-linear ${
+                activeStyle === tab.id
+                  ? "bg-bg-brand-secondary text-text-brand-secondary"
+                  : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Message cards */}
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {PREVIEW_MESSAGES.map((msg) => (
+            <div
+              key={msg.name}
+              className="rounded-xl border border-border-secondary p-5"
+            >
+              <h3 className="text-sm font-semibold text-text-primary">
+                {msg.name}
+              </h3>
+              <p className="mt-1 text-xs text-text-tertiary">{msg.trigger}</p>
+              <div className="mt-3 rounded-lg bg-bg-secondary p-3">
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {interpolate(msg.texts[activeStyle])}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA link */}
+        <div className="mt-6 text-center">
           <Link
-            href="/choose"
-            className="rounded-lg border border-border-primary px-5 py-2.5 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+            href={`/sms/${category}/messages`}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear"
           >
-            See all categories
+            See all appointment messages
+            <ArrowRight className="size-4" />
           </Link>
         </div>
       </div>
 
       {/* What you get */}
       <div className="mt-20">
-        <h2 className="text-center text-sm font-semibold uppercase tracking-wide text-text-brand-secondary">
+        <p className="text-center text-sm font-semibold text-text-brand-secondary">
           What you get
+        </p>
+        <h2 className="mt-2 text-center text-2xl font-bold text-text-primary">
+          Everything you need to start sending.
         </h2>
         <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
           {WHAT_YOU_GET.map((item, i) => (
@@ -156,8 +297,11 @@ export default function CategoryLanding() {
 
       {/* Why 10DLC — compliance education */}
       <div className="mt-20">
-        <h2 className="text-center text-sm font-semibold uppercase tracking-wide text-text-brand-secondary">
+        <p className="text-center text-sm font-semibold text-text-brand-secondary">
           Why registration matters
+        </p>
+        <h2 className="mt-2 text-center text-2xl font-bold text-text-primary">
+          Carriers require it. We handle it.
         </h2>
         <div className="mt-8 space-y-4">
           {WHY_10DLC.map((item, i) => (
