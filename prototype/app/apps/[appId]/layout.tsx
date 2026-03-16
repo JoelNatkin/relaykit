@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import type { AppState } from "@/context/session-context";
-import { SAMPLE } from "@/components/dashboard/sample-data";
 
 const APP_STATES: { value: AppState; label: string }[] = [
   { value: "pre-download", label: "Pre-download" },
@@ -13,10 +12,17 @@ const APP_STATES: { value: AppState; label: string }[] = [
 ];
 
 const TABS = [
+  { id: "overview", label: "Overview", href: (appId: string) => `/apps/${appId}/overview` },
   { id: "messages", label: "Messages", href: (appId: string) => `/apps/${appId}/messages` },
-  { id: "compliance", label: "Compliance", href: (appId: string) => `/apps/${appId}/compliance` },
+  { id: "registration", label: "Registration", href: (appId: string) => `/apps/${appId}/registration` },
   { id: "settings", label: "Settings", href: (appId: string) => `/apps/${appId}/settings` },
 ];
+
+const APP_NAMES: Record<string, string> = {
+  glowstudio: "GlowStudio",
+  radarlove: "RadarLove",
+  shipfast: "ShipFast",
+};
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { appId } = useParams<{ appId: string }>();
@@ -24,17 +30,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { state, setAppState } = useSession();
   const { appState, dashboardVersion } = state;
 
-  const showTabs = appState !== "pre-download"; // D-97: tabs appear after Blueprint download
+  const appName = APP_NAMES[appId] || appId;
 
   return (
     <div className="mx-auto max-w-5xl px-6">
-      {/* App header */}
+      {/* Breadcrumb + state toggle */}
       <div className="flex items-center justify-between pt-6 pb-4">
         <div>
-          <p className="text-xs font-medium text-text-quaternary uppercase tracking-wide">
-            {SAMPLE.useCase}
-          </p>
-          <h1 className="text-xl font-bold text-text-primary">{SAMPLE.businessName}</h1>
+          <nav className="flex items-center gap-1.5 text-sm">
+            <Link href="/apps" className="text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">
+              Your Apps
+            </Link>
+            <span className="text-text-quaternary">/</span>
+            <span className="font-medium text-text-primary">{appName}</span>
+          </nav>
         </div>
 
         {/* State toggle — prototype control */}
@@ -62,28 +71,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* Tab bar — only after Blueprint download (D-97) */}
-      {showTabs && (
-        <div className="flex items-center gap-1 border-b border-border-secondary mb-6">
-          {TABS.map((tab) => {
-            const href = tab.href(appId);
-            const isActive = pathname === href || pathname.startsWith(href + "/");
-            return (
-              <Link
-                key={tab.id}
-                href={href}
-                className={`px-3 py-2.5 text-sm font-medium transition duration-100 ease-linear border-b-2 -mb-px ${
-                  isActive
-                    ? "border-border-brand text-text-brand-secondary"
-                    : "border-transparent text-text-tertiary hover:text-text-secondary hover:border-border-primary"
-                }`}
-              >
-                {tab.label}
-              </Link>
-            );
-          })}
-        </div>
-      )}
+      {/* Tab bar */}
+      <div className="flex items-center gap-1 border-b border-border-secondary mb-6">
+        {TABS.map((tab) => {
+          const href = tab.href(appId);
+          const isActive = pathname === href || pathname.startsWith(href + "/");
+          return (
+            <Link
+              key={tab.id}
+              href={href}
+              className={`px-3 py-2.5 text-sm font-medium transition duration-100 ease-linear border-b-2 -mb-px ${
+                isActive
+                  ? "border-border-brand text-text-brand-secondary"
+                  : "border-transparent text-text-tertiary hover:text-text-secondary hover:border-border-primary"
+              }`}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
+      </div>
 
       {/* Page content */}
       <div className="pb-16">

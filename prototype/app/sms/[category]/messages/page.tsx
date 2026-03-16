@@ -69,6 +69,302 @@ function ChevronDownIcon({ className }: { className?: string }) {
   );
 }
 
+/* ── OTP digit input ── */
+
+function OtpInput({ value, onChange, onComplete }: { value: string; onChange: (v: string) => void; onComplete: () => void }) {
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const digits = value.padEnd(6, "").slice(0, 6).split("");
+
+  function handleInput(index: number, char: string) {
+    if (!/^\d$/.test(char)) return;
+    const next = digits.slice();
+    next[index] = char;
+    const joined = next.join("").replace(/[^\d]/g, "");
+    onChange(joined);
+    if (index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+    if (joined.length === 6) {
+      onComplete();
+    }
+  }
+
+  function handleKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      if (digits[index] && digits[index] !== " ") {
+        const next = digits.slice();
+        next[index] = " ";
+        onChange(next.join("").trimEnd());
+      } else if (index > 0) {
+        const next = digits.slice();
+        next[index - 1] = " ";
+        onChange(next.join("").trimEnd());
+        inputRefs.current[index - 1]?.focus();
+      }
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < 5) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  }
+
+  function handlePaste(e: React.ClipboardEvent) {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (pasted) {
+      onChange(pasted);
+      inputRefs.current[Math.min(pasted.length, 5)]?.focus();
+      if (pasted.length === 6) onComplete();
+    }
+  }
+
+  return (
+    <div className="flex gap-2 justify-center">
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <input
+          key={i}
+          ref={(el) => { inputRefs.current[i] = el; }}
+          type="text"
+          inputMode="numeric"
+          maxLength={1}
+          value={digits[i]?.trim() || ""}
+          onChange={() => {}}
+          onInput={(e) => handleInput(i, (e.target as HTMLInputElement).value.slice(-1))}
+          onKeyDown={(e) => handleKeyDown(i, e)}
+          onPaste={handlePaste}
+          onFocus={(e) => e.target.select()}
+          className="w-12 h-14 rounded-xl border bg-bg-primary text-center text-xl font-medium text-text-brand-tertiary shadow-xs transition duration-100 ease-linear focus:ring-2 focus:ring-brand-600 focus:border-brand-600 focus:outline-none border-border-primary"
+          aria-label={`Digit ${i + 1} of 6`}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ── Download modal ── */
+
+function DownloadModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const [step, setStep] = useState<"default" | "code" | "downloading" | "files-only">("default");
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+
+  // Reset state when modal opens/closes
+  useEffect(() => {
+    if (!isOpen) {
+      setTimeout(() => { setStep("default"); setEmail(""); setCode(""); }, 200);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen, onClose]);
+
+  function handleGetRelayKit() {
+    if (!email.trim()) return;
+    console.log("Send magic code to:", email);
+    setStep("code");
+  }
+
+  function handleConfirmCode() {
+    if (!code.trim()) return;
+    console.log("Confirm code:", code, "for email:", email);
+    setStep("downloading");
+    setTimeout(() => {
+      console.log("Download triggered — welcome to sandbox");
+    }, 1500);
+  }
+
+  function handleFilesOnly() {
+    console.log("Download files only — no account");
+    setStep("files-only");
+  }
+
+  if (!isOpen) return null;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div className="absolute inset-0 bg-black/50" />
+
+      <div
+        className="relative w-full max-w-md rounded-xl bg-bg-primary shadow-xl p-8 sm:p-10"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+          aria-label="Close"
+        >
+          <XClose className="size-5" />
+        </button>
+
+        {/* State 1: Default */}
+        {step === "default" && (
+          <div>
+            <h3 className="text-3xl font-semibold text-text-primary">Get more from RelayKit<br />with an account</h3>
+            <p className="mt-1.5 text-sm text-text-tertiary">No credit card. No commitment. No pressure.</p>
+
+            <div className="mt-5">
+              <p className="text-sm font-semibold text-text-primary">RelayKit files give you:</p>
+              <ul className="mt-2.5 space-y-2.5">
+                {[
+                  "Compliant message templates for appointments",
+                  "Opt-in and opt-out copy, ready for your app",
+                  "Full integration spec — your AI coding tool does the building",
+                  "Personalized files ready to drop in your AI tool",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-text-secondary">
+                    <svg className="mt-0.5 size-4 shrink-0 text-fg-brand-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-5">
+              <p className="text-sm font-semibold text-text-primary">Create an account and start testing in minutes:</p>
+              <ul className="mt-2.5 space-y-2.5">
+                {[
+                  "Live sandbox — test real SMS instantly",
+                  "A real phone number to test with",
+                  "Your own API key",
+                  "Your project saved to your dashboard",
+                  "One-click carrier registration when you're ready",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-text-secondary">
+                    <svg className="mt-0.5 size-4 shrink-0 text-fg-brand-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="mt-6">
+              <label className="mb-1.5 block text-sm font-medium text-text-secondary">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@company.com"
+                onKeyDown={(e) => { if (e.key === "Enter") handleGetRelayKit(); }}
+                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGetRelayKit}
+              className="mt-4 w-full rounded-lg bg-bg-brand-solid px-4 py-[14px] text-sm font-semibold text-text-white shadow-xs transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+            >
+              Create Account & Download
+            </button>
+
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={handleFilesOnly}
+                className="text-sm text-text-tertiary hover:underline cursor-pointer"
+              >
+                Just the files please
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* State 2: Code entry */}
+        {step === "code" && (
+          <div>
+            <h3 className="text-xl font-semibold text-text-primary">Check your email</h3>
+            <p className="mt-2 text-sm text-text-tertiary">
+              We sent a code to <span className="font-medium text-text-secondary">{email}</span>
+            </p>
+
+            <div className="mt-6">
+              <label className="mb-2.5 block text-sm font-medium text-text-secondary text-center">Verification code</label>
+              <OtpInput value={code} onChange={setCode} onComplete={handleConfirmCode} />
+            </div>
+
+            <button
+              type="button"
+              onClick={handleConfirmCode}
+              className="mt-4 w-full rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white shadow-xs transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+            >
+              Confirm
+            </button>
+
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => console.log("Resend code to:", email)}
+                className="text-sm text-text-tertiary hover:underline cursor-pointer"
+              >
+                Resend code
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* State 3: Downloading (account path) */}
+        {step === "downloading" && (
+          <div className="flex flex-col items-center py-4 text-center">
+            <div className="flex items-center justify-center size-12 rounded-full bg-bg-success-secondary">
+              <svg className="size-6 text-fg-success-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <h3 className="mt-4 text-xl font-semibold text-text-primary">You&#39;re in. Downloading RelayKit...</h3>
+            <p className="mt-2 text-sm text-text-tertiary">Welcome to your sandbox. You can start building right away.</p>
+          </div>
+        )}
+
+        {/* State 4: Files only confirmation */}
+        {step === "files-only" && (
+          <div className="flex flex-col items-center py-4 text-center">
+            <div className="flex items-center justify-center size-12 rounded-full bg-bg-brand-secondary">
+              <svg className="size-6 text-fg-brand-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="12" y1="18" x2="12" y2="12" />
+                <polyline points="9 15 12 18 15 15" />
+              </svg>
+            </div>
+            <h3 className="mt-4 text-xl font-semibold text-text-primary">You&#39;re all set. Downloading now.</h3>
+            <p className="mt-2 text-sm text-text-tertiary">Your sandbox is free whenever you&#39;re ready.</p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-6 w-full rounded-lg border border-border-primary bg-bg-primary px-4 py-[14px] text-sm font-semibold text-text-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-primary_hover cursor-pointer"
+            >
+              Create an account later
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="mt-3 text-sm text-text-tertiary hover:underline cursor-pointer"
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ClipboardIcon({ className }: { className?: string }) {
   return (
     <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -96,57 +392,31 @@ function CodeIcon({ className }: { className?: string }) {
   );
 }
 
-/* ── Tool logos (recognizable SVG icons) ── */
+/* ── Tool logos (real SVGs from /logos/) ── */
 
-function ToolLogo({ id, selected }: { id: string; selected: boolean }) {
-  const color = selected ? "currentColor" : "currentColor";
-  const cls = `${selected ? "text-text-primary" : "text-text-quaternary"}`;
+const TOOL_LOGO_MAP: Record<string, string> = {
+  "claude-code": "/logos/claude-logo.svg",
+  cursor: "/logos/cursor-logo.svg",
+  windsurf: "/logos/windsurf-logo.svg",
+  copilot: "/logos/github-copilot-logo.svg",
+  cline: "/logos/cline-logo.svg",
+};
 
-  // Anthropic / Claude Code — stylized "A" mark
-  if (id === "claude-code") return (
-    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
-      <path d="M16.5 3L12 21M12 21L7.5 3M5 15h14" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+function ToolLogo({ id }: { id: string; selected: boolean }) {
+  const logoSrc = TOOL_LOGO_MAP[id];
+
+  // "Other" — generic code brackets
+  if (!logoSrc) return (
+    <svg className="w-6 h-6 text-text-quaternary" viewBox="0 0 24 24" fill="none">
+      <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 
-  // Cursor — distinctive arrow/cursor shape
-  if (id === "cursor") return (
-    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
-      <path d="M5 3l14 9-6 2-3 7L5 3z" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  // Windsurf gets 20% larger
+  const sizeClass = id === "windsurf" ? "w-[34px] h-[34px]" : "w-7 h-7";
 
-  // Windsurf — wave/sail shape
-  if (id === "windsurf") return (
-    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
-      <path d="M3 17c2-2 4-2 6 0s4 2 6 0 4-2 6 0" stroke={color} strokeWidth="1.75" strokeLinecap="round" />
-      <path d="M12 3v11M12 3l5 8M12 3L7 8" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-
-  // GitHub Copilot — pilot/wings icon
-  if (id === "copilot") return (
-    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
-      <path d="M12 4c-4 0-7 2-8 5v4c0 2 1 4 3 5l2 1h6l2-1c2-1 3-3 3-5v-4c-1-3-4-5-8-5z" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="9.5" cy="11" r="1.25" fill={color} />
-      <circle cx="14.5" cy="11" r="1.25" fill={color} />
-      <path d="M9 15c1 1 5 1 6 0" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  );
-
-  // Cline — terminal/command prompt
-  if (id === "cline") return (
-    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="4" width="18" height="16" rx="2" stroke={color} strokeWidth="1.75" />
-      <path d="M7 12l3-3M7 12l3 3M13 15h4" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-
-  // Other — generic code brackets
   return (
-    <svg className={`w-6 h-6 ${cls}`} viewBox="0 0 24 24" fill="none">
-      <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke={color} strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
+    <img src={logoSrc} alt={id} className={`${sizeClass} object-contain`} draggable={false} />
   );
 }
 
@@ -315,6 +585,7 @@ function StepsLayout({
   handleCopyAll: () => void;
 }) {
   const [selectedTool, setSelectedTool] = useState("claude-code");
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   const tools = [
     { id: "claude-code", label: "Claude Code" },
@@ -325,36 +596,37 @@ function StepsLayout({
     { id: "other", label: "Other" },
   ];
 
-  const toolInstructions: Record<string, { before: string; prompt: string | null; after?: string }> = {
+  const toolInstructions: Record<string, { before: string; prompt: string }> = {
     "claude-code": {
-      before: "Drop SMS_BUILD_SPEC.md and SMS_GUIDELINES.md in your project root. Then run:",
-      prompt: "Build my SMS integration using the two SMS files in the project root.",
-      after: "claude →",
+      before: "Download RelayKit, drop both files in your project root. Then run:",
+      prompt: 'claude "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md"',
     },
     cursor: {
-      before: "Drop both files in your project root. Open Composer:",
-      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md.",
+      before: "Download RelayKit, drop both files in your project root. Open Composer:",
+      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
     },
     windsurf: {
-      before: "Drop both files in your project root. Open Cascade:",
-      prompt: "Build my SMS integration using the two SMS files in the project root.",
+      before: "Download RelayKit, drop both files in your project root. Open Cascade:",
+      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
     },
     copilot: {
-      before: "Drop both files in your project root. Open Copilot Chat:",
-      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md.",
+      before: "Download RelayKit, drop both files in your project root. Open Copilot Chat:",
+      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
     },
     cline: {
-      before: "Drop both files in your project root. Start a task:",
-      prompt: "Build my SMS integration using the two SMS files.",
+      before: "Download RelayKit, drop both files in your project root. Open Cline:",
+      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
     },
     other: {
-      before: "Drop both files in your project root and tell your AI coding tool to build using them. Any tool that reads markdown works.",
-      prompt: null,
+      before: "Download RelayKit, drop both files in your project root. Tell your AI coding tool:",
+      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
     },
   };
 
   return (
     <div>
+      <DownloadModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} />
+
       {/* Header */}
       <div className="bg-bg-secondary py-12">
         <div className="mx-auto max-w-5xl px-6">
@@ -370,21 +642,24 @@ function StepsLayout({
             </h1>
             <button
               type="button"
-              onClick={() => alert("Auth gate → Get RelayKit")}
-              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+              onClick={() => setShowDownloadModal(true)}
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
             >
               <Download01 className="size-4" />
               Download RelayKit
             </button>
           </div>
           <p className="mt-3 text-base text-text-tertiary max-w-2xl">
-            Compliant appointment messages, ready for your app. Personalize them and start building today.
+            Everything your AI coding tool needs to add SMS — in two files.
           </p>
         </div>
       </div>
 
       {/* Tool selector */}
       <div className="mx-auto max-w-5xl px-6 pt-8 pb-2">
+        <h2 className="text-lg font-semibold text-text-primary mb-4">
+          Follow the steps for your tool.
+        </h2>
         {/* Tool logos row */}
         <div className="flex items-center gap-6 overflow-x-auto">
           {tools.map((tool) => (
@@ -393,13 +668,13 @@ function StepsLayout({
               type="button"
               onClick={() => setSelectedTool(tool.id)}
               className={`flex flex-col items-center gap-2 min-w-[72px] cursor-pointer transition duration-100 ease-linear ${
-                selectedTool === tool.id ? "opacity-100" : "opacity-35 hover:opacity-60"
+                selectedTool === tool.id ? "opacity-100" : "opacity-60 hover:opacity-80"
               }`}
             >
-              <div className={`flex items-center justify-center w-12 h-12 rounded-full transition duration-100 ease-linear ${
+              <div className={`flex items-center justify-center w-14 h-14 rounded-full transition duration-100 ease-linear ${
                 selectedTool === tool.id
-                  ? "bg-bg-primary shadow-xs ring-2 ring-border-brand"
-                  : "bg-bg-secondary"
+                  ? "border-2 border-brand-600"
+                  : "border border-[#999999]"
               }`}>
                 <ToolLogo id={tool.id} selected={selectedTool === tool.id} />
               </div>
@@ -413,33 +688,25 @@ function StepsLayout({
         </div>
 
         {/* Instruction */}
-        <div className="mt-4">
-          <p className="text-xs text-text-tertiary leading-relaxed">
+        <div className="mt-5">
+          <p className="text-sm font-semibold text-text-tertiary leading-relaxed">
             {toolInstructions[selectedTool].before}
           </p>
-          {toolInstructions[selectedTool].prompt && (
-            <div className="mt-2 flex items-center gap-2">
-              {toolInstructions[selectedTool].after && (
-                <span className="text-xs font-mono text-text-quaternary shrink-0">
-                  {toolInstructions[selectedTool].after}
-                </span>
-              )}
-              <code className="inline-block rounded-md bg-bg-secondary px-2.5 py-1 text-xs font-mono text-text-secondary">
-                {toolInstructions[selectedTool].prompt}
-              </code>
-              <button
-                type="button"
-                onClick={() => {
-                  const prompt = toolInstructions[selectedTool].prompt;
-                  if (prompt) navigator.clipboard.writeText(prompt).catch(() => {});
-                }}
-                className="shrink-0 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                aria-label="Copy prompt"
-              >
-                <ClipboardIcon className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          )}
+          <div className="mt-2 flex items-center gap-2 rounded-md bg-bg-secondary px-3 py-2">
+            <code className="flex-1 text-sm font-mono text-text-secondary">
+              {toolInstructions[selectedTool].prompt}
+            </code>
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(toolInstructions[selectedTool].prompt).catch(() => {});
+              }}
+              className="shrink-0 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+              aria-label="Copy prompt"
+            >
+              <ClipboardIcon className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -755,8 +1022,8 @@ export default function PublicMessagesPage() {
   const searchParams = useSearchParams();
   const layoutMode = searchParams.get("layout");
 
-  // ── Steps layout ──
-  if (layoutMode === "steps") {
+  // ── Steps layout (default) ──
+  if (layoutMode !== "default") {
     return (
       <>
         <StepsLayout

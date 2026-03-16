@@ -9,13 +9,14 @@ const PUBLIC_LINKS = [
   { href: "/", label: "Home" },
   { href: "/sms/appointments", label: "Appointments" },
   { href: "/sms/appointments/messages", label: "Messages" },
+  { href: "/apps", label: "Your Apps" },
 ];
 
 const LOGGED_IN_LINKS = [
   { href: "/apps", label: "Your Apps" },
-  { href: "/apps/radarlove/messages", label: "Messages" },
-  { href: "/apps/radarlove/compliance", label: "Compliance" },
-  { href: "/apps/radarlove/settings", label: "Settings" },
+  { href: "/apps/glowstudio/overview", label: "Overview" },
+  { href: "/apps/glowstudio/messages", label: "Messages" },
+  { href: "/apps/glowstudio/settings", label: "Settings" },
 ];
 
 const DASHBOARD_VERSIONS: { value: DashboardVersion; label: string }[] = [

@@ -6,5 +6,5 @@ export default async function AppRoot({
   params: Promise<{ appId: string }>;
 }) {
   const { appId } = await params;
-  redirect(`/apps/${appId}/messages`);
+  redirect(`/apps/${appId}/overview`);
 }
