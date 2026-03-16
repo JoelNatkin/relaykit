@@ -454,18 +454,11 @@ export default function MarketingHome() {
               </ul>
             </div>
             <div>
-              <p className="text-sm font-semibold text-text-primary">Company</p>
-              <ul className="mt-3 flex flex-col gap-2">
-                <li><Link href="/about" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">About</Link></li>
-                <li><Link href="/blog" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Blog</Link></li>
-              </ul>
-            </div>
-            <div>
               <p className="text-sm font-semibold text-text-primary">Legal</p>
               <ul className="mt-3 flex flex-col gap-2">
-                <li><Link href="/terms" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Terms</Link></li>
-                <li><Link href="/privacy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Privacy</Link></li>
-                <li><Link href="/acceptable-use-policy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Acceptable Use</Link></li>
+                <li><Link href="#" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Terms</Link></li>
+                <li><Link href="#" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Privacy</Link></li>
+                <li><Link href="#" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Acceptable Use</Link></li>
               </ul>
             </div>
           </div>

@@ -22,7 +22,7 @@ export default function SetupPage() {
   const category = CATEGORIES.find((c) => c.id === params.categoryId);
 
   useEffect(() => {
-    if (!category) router.replace("/choose");
+    if (!category) router.replace("/");
   }, [category, router]);
 
   if (!category) return null;

@@ -18,7 +18,7 @@ export function CategoryModal({ category, isOpen, onClose }: CategoryModalProps)
   function handleContinue() {
     if (!category) return;
     setCategory(category.id);
-    router.push(`/c/${category.id}/setup`);
+    router.push(`/sms/${category.id}/messages`);
     onClose();
   }
 

@@ -189,7 +189,7 @@ export default function MessagesPage() {
   const { copy } = useCopyFeedback();
 
   useEffect(() => {
-    if (shouldRedirect) router.replace("/choose");
+    if (shouldRedirect) router.replace("/");
   }, [shouldRedirect, router]);
 
   // Close copy menu on outside click

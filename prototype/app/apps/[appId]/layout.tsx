@@ -2,14 +2,6 @@
 
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { useSession } from "@/context/session-context";
-import type { AppState } from "@/context/session-context";
-
-const APP_STATES: { value: AppState; label: string }[] = [
-  { value: "pre-download", label: "Pre-download" },
-  { value: "sandbox", label: "Sandbox" },
-  { value: "live", label: "Live" },
-];
 
 const TABS = [
   { id: "overview", label: "Overview", href: (appId: string) => `/apps/${appId}/overview` },
@@ -20,55 +12,25 @@ const TABS = [
 
 const APP_NAMES: Record<string, string> = {
   glowstudio: "GlowStudio",
-  radarlove: "RadarLove",
-  shipfast: "ShipFast",
 };
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { appId } = useParams<{ appId: string }>();
   const pathname = usePathname();
-  const { state, setAppState } = useSession();
-  const { appState, dashboardVersion } = state;
 
   const appName = APP_NAMES[appId] || appId;
 
   return (
     <div className="mx-auto max-w-5xl px-6">
-      {/* Breadcrumb + state toggle */}
-      <div className="flex items-center justify-between pt-6 pb-4">
-        <div>
-          <nav className="flex items-center gap-1.5 text-sm">
-            <Link href="/apps" className="text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">
-              Your Apps
-            </Link>
-            <span className="text-text-quaternary">/</span>
-            <span className="font-medium text-text-primary">{appName}</span>
-          </nav>
-        </div>
-
-        {/* State toggle — prototype control */}
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] text-text-quaternary mr-1">State:</span>
-          <div className="flex items-center gap-0.5 rounded-lg border border-border-secondary p-0.5">
-            {APP_STATES.map((s) => (
-              <button
-                key={s.value}
-                type="button"
-                onClick={() => setAppState(s.value)}
-                className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition duration-100 ease-linear ${
-                  appState === s.value
-                    ? "bg-bg-brand-solid text-text-white"
-                    : "text-text-tertiary hover:text-text-secondary hover:bg-bg-primary_hover"
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-          <span className="ml-2 text-[11px] text-text-quaternary">
-            Version {dashboardVersion.toUpperCase()}
-          </span>
-        </div>
+      {/* Breadcrumb */}
+      <div className="pt-6 pb-4">
+        <nav className="flex items-center gap-1.5 text-sm">
+          <Link href="/apps" className="text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">
+            Your Apps
+          </Link>
+          <span className="text-text-quaternary">/</span>
+          <span className="font-medium text-text-primary">{appName}</span>
+        </nav>
       </div>
 
       {/* Tab bar */}

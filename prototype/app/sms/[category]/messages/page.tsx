@@ -12,6 +12,7 @@ import {
   formatMultipleCopyBlocks,
   interpolateTemplate,
 } from "@/lib/catalog-helpers";
+import { Footer } from "@/components/footer";
 
 /* ── localStorage personalization ── */
 
@@ -1052,39 +1053,7 @@ export default function PublicMessagesPage() {
           handleCopySelected={handleCopySelected}
           handleCopyAll={handleCopyAll}
         />
-        {/* Footer */}
-        <footer className="border-t border-border-secondary">
-          <div className="mx-auto max-w-5xl px-6 py-12">
-            <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
-              <div>
-                <p className="text-sm font-semibold text-text-primary">Product</p>
-                <ul className="mt-3 flex flex-col gap-2">
-                  <li><Link href="/#how-it-works" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">How it works</Link></li>
-                  <li><Link href="/#categories" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Use cases</Link></li>
-                  <li><Link href="/compliance" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Compliance</Link></li>
-                </ul>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-text-primary">Company</p>
-                <ul className="mt-3 flex flex-col gap-2">
-                  <li><Link href="/about" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">About</Link></li>
-                  <li><Link href="/blog" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Blog</Link></li>
-                </ul>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-text-primary">Legal</p>
-                <ul className="mt-3 flex flex-col gap-2">
-                  <li><Link href="/terms" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Terms</Link></li>
-                  <li><Link href="/privacy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Privacy</Link></li>
-                  <li><Link href="/acceptable-use-policy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Acceptable Use</Link></li>
-                </ul>
-              </div>
-            </div>
-            <div className="mt-10 border-t border-border-tertiary pt-6">
-              <p className="text-xs text-text-quaternary">&copy; 2026 Vaulted Press LLC</p>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </>
     );
   }
@@ -1315,39 +1284,7 @@ export default function PublicMessagesPage() {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="border-t border-border-secondary">
-        <div className="mx-auto max-w-5xl px-6 py-12">
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
-            <div>
-              <p className="text-sm font-semibold text-text-primary">Product</p>
-              <ul className="mt-3 flex flex-col gap-2">
-                <li><Link href="/#how-it-works" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">How it works</Link></li>
-                <li><Link href="/#categories" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Use cases</Link></li>
-                <li><Link href="/compliance" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Compliance</Link></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-text-primary">Company</p>
-              <ul className="mt-3 flex flex-col gap-2">
-                <li><Link href="/about" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">About</Link></li>
-                <li><Link href="/blog" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Blog</Link></li>
-              </ul>
-            </div>
-            <div>
-              <p className="text-sm font-semibold text-text-primary">Legal</p>
-              <ul className="mt-3 flex flex-col gap-2">
-                <li><Link href="/terms" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Terms</Link></li>
-                <li><Link href="/privacy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Privacy</Link></li>
-                <li><Link href="/acceptable-use-policy" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Acceptable Use</Link></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-10 border-t border-border-tertiary pt-6">
-            <p className="text-xs text-text-quaternary">&copy; 2026 Vaulted Press LLC</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

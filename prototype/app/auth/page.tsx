@@ -39,7 +39,7 @@ export default function AuthGate() {
 
   function handleDownload() {
     setLoggedIn(true);
-    router.push("/apps/radarlove/messages");
+    router.push("/apps/glowstudio/overview");
   }
 
   return (
@@ -120,7 +120,7 @@ export default function AuthGate() {
                 type="text"
                 value={state.appName}
                 onChange={(e) => setField("appName", e.target.value)}
-                placeholder="RadarLove"
+                placeholder="GlowStudio"
                 className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none focus:ring-1 focus:ring-border-brand"
               />
             </div>

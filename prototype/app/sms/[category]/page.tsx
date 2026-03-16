@@ -191,7 +191,7 @@ export default function CategoryLanding() {
         </p>
         <div className="mt-8 flex items-center justify-center gap-4">
           <Link
-            href="/choose"
+            href="/"
             className="rounded-lg border border-border-primary px-5 py-2.5 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
           >
             See all categories

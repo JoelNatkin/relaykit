@@ -18,7 +18,7 @@ export default function PlanPage() {
   const shouldRedirect = !category || !messages || messages.length === 0;
 
   useEffect(() => {
-    if (shouldRedirect) router.replace("/choose");
+    if (shouldRedirect) router.replace("/");
   }, [shouldRedirect, router]);
 
   if (shouldRedirect) return null;
