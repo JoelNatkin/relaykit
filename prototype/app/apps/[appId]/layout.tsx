@@ -6,7 +6,6 @@ import { useParams, usePathname } from "next/navigation";
 const TABS = [
   { id: "overview", label: "Overview", href: (appId: string) => `/apps/${appId}/overview` },
   { id: "messages", label: "Messages", href: (appId: string) => `/apps/${appId}/messages` },
-  { id: "registration", label: "Registration", href: (appId: string) => `/apps/${appId}/registration` },
   { id: "settings", label: "Settings", href: (appId: string) => `/apps/${appId}/settings` },
 ];
 
@@ -22,15 +21,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="mx-auto max-w-5xl px-6">
-      {/* Breadcrumb */}
-      <div className="pt-6 pb-4">
-        <nav className="flex items-center gap-1.5 text-sm">
-          <Link href="/apps" className="text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">
-            Your Apps
-          </Link>
-          <span className="text-text-quaternary">/</span>
-          <span className="font-medium text-text-primary">{appName}</span>
-        </nav>
+      {/* App identity */}
+      <div className="pt-6 pb-4 flex items-center gap-3">
+        <h1 className="text-xl font-semibold text-text-primary">{appName}</h1>
+        <span className="inline-flex items-center rounded-full bg-bg-brand-section_subtle px-2.5 py-0.5 text-xs font-medium text-text-brand-secondary">
+          Appointments
+        </span>
       </div>
 
       {/* Tab bar */}

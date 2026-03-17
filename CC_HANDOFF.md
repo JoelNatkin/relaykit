@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-16 (overview onboarding, route cleanup, download modal, tool selector)
+**Date:** 2026-03-17 (three-section overview, registration/compliance content, redo pattern)
 **Branch:** main
 
 ---
@@ -7,90 +7,82 @@
 ## Commits This Session
 
 ```
-9043f1b  feat: two-column overview with guided onboarding steps, registration sidebar, route cleanup
-5a04888  feat: Your Apps page, project layout shell, download modal, tool selector, messages page updates
+b2de045  feat: three-section overview (onboarding, registration, compliance), simplified right column, tab cleanup, breadcrumb removal, redo pattern
 ```
 
 Previous session commits (already on main):
 ```
-720b2b0  feat: appointments category landing + public messages page with two layout variants
-06b8685  feat: marketing home page and compliance page — full revision pass
-1cc2545  docs: D-101–D-104, vision implementation memo
-417d205  feat: settings tab — SMS alerts, account info, API keys, billing (D-98, D-99)
+0ea7272  docs: D-114–D-121, session handoff for 2026-03-16
+9043f1b  feat: two-column overview with guided onboarding steps, registration sidebar, route cleanup
+5a04888  feat: Your Apps page, project layout shell, download modal, tool selector, messages page updates
 ```
 
 ---
 
 ## What We Completed
 
-### Tool Selector Overhaul (messages page, steps layout)
-- Replaced placeholder SVG icons with real brand logos from `prototype/public/logos/`
-- Logos: claude-logo.svg, cursor-logo.svg, windsurf-logo.svg, github-copilot-logo.svg, cline-logo.svg
-- Selection state: 2px solid purple border on circle, no background fill. Unselected: 1px solid #999, 60% opacity.
-- Per-tool instructions rewritten as two-line pattern: setup text + mono code block with copy button
-- All six tools have a prompt now (including "Other")
-- Section heading: "Follow the steps for your tool."
+### Three-Section Overview Page
+The Overview page at `/apps/[appId]/overview` was restructured from a two-state layout (onboarding vs. post-onboarding) into a three-section accordion:
 
-### Download Modal (4 states)
-- **State 1 (default):** "Get more from RelayKit with an account" — two grouped benefit lists, email field, "Create Account & Download" CTA, "Just the files please" link
-- **State 2 (code entry):** 6-digit OTP with individual digit boxes (auto-advance, backspace, paste support), "Confirm" button
-- **State 3 (downloading, account path):** Green checkmark, "You're in. Downloading RelayKit..."
-- **State 4 (files-only):** File download icon, "You're all set. Downloading now." with "Create an account later" soft re-invitation
-- Modal: max-w-md, rounded-xl, X close, Escape close, bg-black/50 overlay
+1. **"Build your SMS feature"** — 4-step onboarding wizard (verify phone, send test, send from code, build with AI tool)
+2. **"Register your app"** — 2x2 card grid explaining A2P 10DLC registration with narrative intro
+3. **"Monitor your compliance"** — 2x2 card grid explaining post-approval compliance features
 
-### Steps Layout Now Default
-- `/sms/appointments/messages` (no param) → steps layout
-- Old layout preserved at `?layout=default`
+Each section has a checkbox heading (unchecked/checked). First incomplete section auto-expands. Clicking checkboxes toggles completion for prototyping.
 
-### Your Apps Page (`/apps`)
-- Grid of project cards (one column mobile, two desktop)
-- One hardcoded project: GlowStudio, Appointments, Sandbox, March 16 2026
-- Cards link to `/apps/[appId]/overview`
-- "+ New project" button (placeholder)
-
-### Project Layout Shell (`/apps/[appId]/layout.tsx`)
-- Breadcrumb: "Your Apps / {AppName}"
-- Four tabs: Overview, Messages, Registration, Settings
-- Purple underline on active tab
-- No state toggle, no A/B/C switcher (removed)
-
-### Overview Page — Guided Onboarding (`/apps/[appId]/overview`)
-Two-column layout with 4-step sequential onboarding:
-
-**Left column (3/5):**
-- Step 1: "Where should test messages go?" — phone verification with OTP
-- Step 2: "Send a test message" — dropdown picker (4 appointment messages), preview, "Send test" with animation → "Delivered"
-- Step 3: "Now you send one" — Node.js code snippet with copy, "I sent it ✓" self-report
-- Step 4: "Build your SMS feature" — 6-tool selector (same logos as messages page), per-tool instructions, "I built it ✓"
-- Steps have locked/active/completed states, vertical timeline connector, sequential unlocking
-- Completing all 4 → celebration: "You built it. It works. Now let's make it real."
-
-**Right column (2/5):**
-- Sticky registration card with subtle purple background
-- 6 benefits with purple checkmarks
-- Pricing: $199 setup + $19/mo, "Not approved? Full refund." (D-105)
+### Right Column Registration Card
+Persistent card visible across all section states containing:
+- "Register your app" heading + intro paragraph + "Learn more →" link (placeholder href)
 - "Start registration →" primary CTA
-- Progress bar: "Setup progress: N of 4 complete" with 4 dots
+- Pricing: $199 one-time setup, then $19/mo (includes 500 messages/month, $15 per additional 1,000)
+- "Not approved? Full refund."
+- "We handle everything" checklist (4 items, purple checkmarks)
+- "Takes just a few minutes" checklist (3 items, purple checkmarks)
 
-### Route Cleanup
-- **Deleted:** `/dashboard-a`, `/dashboard-b`, `/dashboard-c`, `/choose`, `/apps/[appId]/compliance`
-- **Top nav simplified:** Logged out = Home, Appointments, Messages, Sign in. Logged in = Your Apps, Sign out.
-- **Auth flow:** radarlove → glowstudio, redirects to `/apps/glowstudio/overview`
-- **Category modal:** `/c/{id}/setup` → `/sms/{id}/messages`
-- **Category page:** "See all categories" → `/` (homepage)
-- **App messages tab:** Reuses public messages page component (same content)
-- **Shared footer:** `components/footer.tsx`, removed /about and /blog links, legal links → `#`
+### Layout Changes
+- **Breadcrumb removed** — "Your Apps / GlowStudio" nav deleted (redundant with top nav)
+- **App name above tabs** — "GlowStudio" h1 + "Appointments" purple pill sit above the tab bar
+- **Registration tab removed** — Tabs are now: Overview, Messages, Settings (3 tabs)
+- **Wider gutters** between left/right columns
+
+### Onboarding Step Refinements
+- Step 2: Select dropdown with custom chevron, message preview with bold variable values
+- Step 3: Collapsible code block (4 lines default, "Show full script" toggle), phone/message pre-filled, collapsible "Having trouble?" troubleshooting, "I got the message ✓" button
+- Step 4: Tightened copy, tool instructions shortened
+- Steps 3 & 4: Primary CTA buttons (purple, not secondary)
+- Timeline connector lines: centered and stretched with `flex-1`
+
+### Redo Pattern
+- All 4 completed steps show a "Redo" link on the right
+- Redoing a step reopens it without resetting other steps
+- Phone number change in Step 1 shows amber warnings on Steps 2 and 3
+- Warnings clear when affected step is redone with new number
+
+### 2x2 Card Grid Pattern (Registration + Compliance)
+Both sections use the same visual pattern:
+- @untitledui/icons in purple rounded-square backgrounds (`rounded-lg bg-bg-brand-secondary`)
+- Bold heading + body text per card
+- Registration icons: MessageXCircle, ClipboardCheck, ShieldTick, BellRinging03
+- Compliance icons: MessageCheckCircle, SlashCircle01, SearchRefraction, AlertTriangle
 
 ### Decisions Added
-- **D-113** updated: Steps layout is now the default (not TBD)
-- **D-114:** Download modal with account upsell and files-only path
-- **D-115:** Tool selector uses real SVG logos
-- **D-116:** Your Apps page and project layout shell
-- **D-117:** Standalone dashboards A/B/C deleted
-- **D-118:** Top nav simplified — no per-project links
-- **D-119:** Overview page is guided onboarding, not a dashboard
-- **D-120:** App messages tab reuses public messages page
-- **D-121:** Shared footer component, dead links removed
+- **D-122** through **D-137** (16 new decisions)
+- D-122: Tab order (superseded by D-126)
+- D-123: Sidebar minimal pointer (superseded by D-135)
+- D-124: Step 3 code block collapsed
+- D-125: Step 3 AI tool troubleshooting
+- D-126: Registration tab removed
+- D-127: Progressive disclosure troubleshooting
+- D-128: "I got the message" button text
+- D-129: Collapsed onboarding row (superseded by D-132)
+- D-130: Sidebar disappears post-onboarding (superseded by D-132)
+- D-131: Registration pitch structure
+- D-132: Three-section accordion
+- D-133: Per-step redo pattern
+- D-134: Breadcrumb removed, app name above tabs
+- D-135: Right column persistent registration card
+- D-136: Registration section 2x2 card grid
+- D-137: Compliance section 2x2 card grid
 
 ---
 
@@ -98,31 +90,31 @@ Two-column layout with 4-step sequential onboarding:
 
 1. **Delete `.next` before every dev server start.** Cache corruption is recurring. Always: stop → `rm -rf prototype/.next` → restart.
 
-2. **Dev server runs on port 3001** — the `npm run dev` script in prototype uses `-p 3001`, not 3000. Port 3000 is the production app.
+2. **Dev server runs on port 3001** — the `npm run dev` script in prototype uses `-p 3001`, not 3000.
 
 3. **`@untitledui/icons` name check**: `ShieldCheck` does NOT exist — use `ShieldTick`. Always verify icon names before using them.
 
-4. **Auth flow is fully mocked** — no Supabase. The "Sign in" toggle in the top nav flips `isLoggedIn` in session context. The `/auth` page simulates a magic link flow. No real authentication.
+4. **Auth flow is fully mocked** — no Supabase. The "Sign in" toggle in the top nav flips `isLoggedIn` in session context. No real authentication.
 
 5. **No Untitled UI base components in prototype** — plain Tailwind with semantic color tokens only.
 
-6. **SessionStorage key**: `relaykit_prototype` (session context). **localStorage key**: `relaykit_personalize` (messages page personalization). These are separate storage mechanisms.
+6. **SessionStorage key**: `relaykit_prototype` (session context). **localStorage key**: `relaykit_personalize` (messages page personalization).
 
-7. **DECISIONS.md now has 121 decisions** (D-01 through D-121).
+7. **DECISIONS.md now has 137 decisions** (D-01 through D-137). Several are superseded — D-122 by D-126, D-123 by D-135, D-129/D-130 by D-132.
 
 8. **D-104 gate still active**: PRDs must be updated to reflect D-84–D-103 before any production code is built from them.
 
-9. **Dashboard A/B/C components still exist** in `components/dashboard/` but are no longer imported by any page. They also reference `sample-data.ts` which still uses "RadarLove" naming. These are inert — can be deleted if we're sure we won't need them.
+9. **Section checkbox toggling is for prototyping only** — clicking checkboxes toggles section complete/incomplete state. This is not production behavior; real completion will come from server state.
 
-10. **The `/c/` routes still exist** (`/c/[categoryId]/setup`, `/plan`, `/messages`) — they're older catalog pages from early prototype work. Their `/choose` redirects were fixed to `/`, but the pages themselves are largely orphaned. Consider deleting if not needed.
+10. **"Learn more →" link in right column card** uses `href="#"` as placeholder — will eventually point to a marketing page about registration.
 
-11. **App messages tab renders the full public page** including hero, tool selector, and download modal. This is intentional per D-120 — differentiation deferred to a later session.
+11. **Appointments pill is hardcoded** in layout.tsx — will need to be dynamic when multi-category is supported.
 
-12. **Overview onboarding steps are client-side state only** — refreshing the page resets progress. Persisting step completion (e.g., localStorage or server) is not yet implemented.
+12. **Onboarding step state is client-side only** — refreshing the page resets all progress. Persisting step completion (localStorage or server) is not yet implemented.
 
-13. **Registration and Settings tabs are placeholders** — Registration says "coming soon", Settings is the full existing settings page from the old dashboard.
+13. **Dashboard A/B/C components still exist** in `components/dashboard/` but are not imported. The `/c/` legacy routes are also orphaned. Both can be deleted.
 
-14. **The compliance page at `/apps/[appId]/compliance` was deleted** — compliance monitoring will live on the Overview page or as part of Registration in a future session.
+14. **`?stage=complete` URL param was removed** this session — replaced by checkbox toggling on section headings.
 
 ---
 
@@ -133,51 +125,41 @@ prototype/
 ├── app/
 │   ├── page.tsx                          # Marketing home
 │   ├── compliance/page.tsx               # Public compliance page
-│   ├── auth/page.tsx                     # Auth gate (5-step mock, redirects to glowstudio)
+│   ├── auth/page.tsx                     # Auth gate (mock)
 │   ├── apps/
 │   │   ├── page.tsx                      # Your Apps (project list)
 │   │   └── [appId]/
-│   │       ├── layout.tsx                # Per-app shell (breadcrumb + 4 tabs)
+│   │       ├── layout.tsx                # Per-app shell (app name + pill + 3 tabs)
 │   │       ├── page.tsx                  # Redirects to /overview
-│   │       ├── overview/page.tsx         # Guided onboarding (4 steps + registration sidebar)
+│   │       ├── overview/page.tsx         # Three-section accordion (build/register/monitor)
 │   │       ├── messages/page.tsx         # Renders public messages page component
 │   │       ├── registration/page.tsx     # Placeholder
-│   │       └── settings/page.tsx         # Settings tab (alerts, keys, billing)
+│   │       └── settings/page.tsx         # Settings tab
 │   ├── sms/[category]/
-│   │   ├── page.tsx                      # Category landing (appointments has full content)
-│   │   └── messages/page.tsx             # Public messages page (steps layout default)
-│   ├── c/[categoryId]/                   # Legacy catalog routes (orphaned, consider deleting)
-│   │   ├── setup/page.tsx
-│   │   ├── plan/page.tsx
-│   │   └── messages/page.tsx
-│   └── ...
+│   │   ├── page.tsx                      # Category landing
+│   │   └── messages/page.tsx             # Public messages page
+│   └── c/[categoryId]/                   # Legacy catalog routes (orphaned)
 ├── components/
-│   ├── top-nav.tsx                       # Simplified context-aware nav
-│   ├── footer.tsx                        # Shared footer component (NEW)
-│   ├── category-modal.tsx                # Category picker modal (links to /sms/{id}/messages)
-│   ├── catalog/catalog-card.tsx          # Message card with variant support
-│   ├── catalog/catalog-opt-in.tsx        # Sample opt-in form
-│   └── dashboard/                        # Dashboard A/B/C components (ORPHANED — not imported)
-├── public/logos/                          # Real SVG logos for tool selector (NEW)
-│   ├── claude-logo.svg
-│   ├── cursor-logo.svg
-│   ├── windsurf-logo.svg
-│   ├── github-copilot-logo.svg
-│   └── cline-logo.svg
+│   ├── top-nav.tsx                       # Context-aware nav
+│   ├── footer.tsx                        # Shared footer
+│   ├── category-modal.tsx                # Category picker
+│   ├── catalog/                          # Message cards, opt-in form
+│   └── dashboard/                        # ORPHANED — not imported
+├── public/logos/                          # SVG logos for tool selector
 ├── context/session-context.tsx           # State management
-├── lib/catalog-helpers.ts                # Template interpolation, copy formatting
-└── data/messages.ts                      # Message library + variants
+├── lib/catalog-helpers.ts                # Template interpolation
+└── data/messages.ts                      # Message library
 ```
 
 ---
 
 ## What's Next
 
-- Differentiate logged-in vs public messages page (D-120 deferred)
-- Registration tab — intake wizard or guided flow for carrier registration
+- Wire up registration tab/page with intake wizard flow
 - Persist onboarding step completion (localStorage or server)
+- Differentiate logged-in vs public messages page (D-120 deferred)
 - Category landing pages beyond "appointments"
-- Wire up auth gate on Download RelayKit CTA (currently opens modal)
-- Consider deleting orphaned `/c/` routes and `components/dashboard/` files
+- Delete orphaned `/c/` routes and `components/dashboard/` files
 - Production PRDs must be updated per D-104 before production code resumes
-- ToS needs D-105 money-back guarantee language
+- "Learn more →" link needs a destination (marketing registration page)
+- Make "Appointments" pill dynamic based on project category

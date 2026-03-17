@@ -548,3 +548,69 @@ _Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
 **D-121 — Shared footer component, dead links removed** (Date: 2026-03-16)
 Footer extracted to a shared `Footer` component at `prototype/components/footer.tsx`. The "Company" section (About, Blog) was removed — those pages don't exist. Legal links (Terms, Privacy, Acceptable Use) point to `#` as placeholders. The footer is used on the messages page (both layouts) and compliance page. The homepage retains its own inline footer with scroll-to-section links.
 _Affects: `prototype/components/footer.tsx`, multiple pages._
+
+## New This Session
+
+**D-122 — Tab order: Overview, Registration, Messages, Settings** (Date: 2026-03-16)
+The app layout tab bar order is Overview → Registration → Messages → Settings. Registration moves to second position (previously third after Messages) because it's the natural next step after onboarding and should be visually adjacent to the Overview tab where users are guided.
+_Affects: `prototype/app/apps/[appId]/layout.tsx`._
+
+**D-123 — Registration sidebar on Overview is a minimal pointer, not a sales pitch** (Date: 2026-03-16)
+The registration card in the Overview page right column was stripped back to: heading ("Go live with real users"), one line of context about 2–3 week timeline, pricing ($199 setup + $19/mo), refund guarantee, and a "Learn more →" tertiary link to the Registration tab. Removed: six benefit checkmarks, primary "Start registration" CTA button, progress bar with dots. The card is a quiet persistent reminder — the onboarding steps on the left own all primary actions.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`. Supersedes the sidebar portion of D-119._
+
+**D-124 — Step 3 code block collapsed by default with expander** (Date: 2026-03-16)
+The "Now you send one" code block in the Overview onboarding shows only the first 4 lines (fetch URL, method, auth header) by default. A "Show full script" toggle reveals the rest. The copy button always copies the full script regardless of collapsed state. The `to` number is pre-filled with the user's verified phone from Step 1, and the `body` is pre-filled with the message selected in Step 2.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-125 — Step 3 troubleshooting directs users to their AI coding tool** (Date: 2026-03-16)
+Instead of inline Node.js troubleshooting text ("When your terminal prints 'queued'..."), Step 3 shows: "Having trouble? Copy this into your AI coding tool:" followed by a copyable prompt block. This keeps RelayKit's voice consistent — we're a tool for vibe coders, so debugging help comes from their AI tool, not from us.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-126 — Registration tab removed — Overview absorbs registration at each lifecycle stage** (Date: 2026-03-16)
+The Registration tab is removed from the app layout tab bar. Tabs are now: Overview, Messages, Settings (three tabs only). Registration content lives on the Overview page — the Go live sidebar card during onboarding, and the celebration CTA after completing all steps. As the product matures, Overview will surface registration status contextually rather than as a separate tab. Supersedes D-122.
+_Affects: `prototype/app/apps/[appId]/layout.tsx`._
+
+**D-127 — Troubleshooting in onboarding uses progressive disclosure** (Date: 2026-03-16)
+Troubleshooting blocks in onboarding steps are wrapped in collapsible expanders, collapsed by default. The trigger is a simple clickable text link (e.g., "Having trouble?"). This keeps the primary flow clean while making help discoverable. The pattern is extensible — additional troubleshooting options can be added inside the expander later.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-128 — Step 3 completion button says "I got the message" not "I sent it"** (Date: 2026-03-16)
+The self-report button in Step 3 changed from "I sent it ✓" to "I got the message ✓". The user's action is sending a script from their terminal, but the confirmation they care about is receiving the SMS on their phone. The button text should match the outcome, not the action.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-129 — Completed onboarding collapses to single row with "Review steps" expander** (Date: 2026-03-16)
+When all 4 onboarding steps are complete, the step-by-step timeline is replaced with a single collapsed row: green checkmark + "Sandbox setup complete" + "Review steps" toggle. Expanding shows the four completed step labels. This frees the page for registration content without losing access to the onboarding summary.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-130 — Sidebar card disappears post-onboarding — registration pitch takes full width** (Date: 2026-03-16)
+The two-column layout (steps + sidebar card) is replaced with a full-width layout once onboarding completes. The "Go live with real users" sidebar card is removed. Registration pitch content becomes the main content area below the collapsed onboarding row. Supersedes D-123 for the completed state.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-131 — Registration pitch structure: hook → two-column → timeline → pricing → CTA → note** (Date: 2026-03-16)
+The post-onboarding registration pitch follows a fixed structure: (1) hook line about sandbox vs. real users, (2) two asymmetric cards — "What we handle" (5 items) vs. "What you provide" (3 items, intentionally shorter), (3) horizontal timeline strip (You 5min → We submit → Carriers review 2–3 weeks → You're live), (4) pricing ($199 + $19/mo) with refund guarantee, (5) primary "Start registration" CTA, (6) no-pressure note about sandbox working indefinitely. The visual asymmetry between the two cards is deliberate — it communicates that the developer's burden is light.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-132 — Three-section accordion: Build / Register / Monitor** (Date: 2026-03-16)
+The Overview page uses three collapsible sections: "Build your SMS feature" (4-step onboarding wizard), "Register your app" (registration narrative + pitch), "Monitor your compliance" (placeholder for post-approval). Each section has a checkbox heading — unchecked when incomplete, checked when done. The first incomplete section auto-expands on page load; all others are collapsed. Any section can be expanded at any time. Completing Section 1 auto-collapses it and auto-expands Section 2. Supersedes D-129 (collapsed onboarding row) and D-130 (sidebar disappears post-onboarding). The right-column sidebar card now persists across all states.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-133 — Per-step "Redo" links on completed onboarding steps** (Date: 2026-03-17)
+Each completed onboarding step shows a "Redo" link on the right side of its collapsed summary row. Clicking "Redo" reopens the step to its interactive state without resetting any other step's completion. Completing the step again returns it to completed state. Step 1's old "Change" button (which reset all steps) is replaced by the non-destructive "Redo" pattern. Phone number changes in Step 1 trigger inline amber warning bars on completed Steps 2 and 3 (e.g., "Your verified number changed. Redo to send a test to +1 [new number]."). Warnings clear when the affected step is redone and completed with the new number. Step 4 is not affected by phone changes.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-134 — Breadcrumb removed, app name above tabs** (Date: 2026-03-17)
+The "Your Apps / GlowStudio" breadcrumb is removed from the app layout — redundant since "Your Apps" is in the top nav and projects are one level deep. The app name (`h1`) now sits above the tab bar. Hierarchy: app identity → tabs → tab content. The "Appointments" category pill sits next to the app name in the layout with purple brand styling (`bg-bg-brand-section_subtle text-text-brand-secondary`).
+_Affects: `prototype/app/apps/[appId]/layout.tsx`, `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-135 — Right column card is persistent registration action card** (Date: 2026-03-17)
+The right column card contains all registration action content: "Register your app" heading, intro paragraph, "Learn more →" link (placeholder href), "Start registration →" primary CTA, pricing ($199 setup + $19/mo with message volume details), refund guarantee, "We handle everything" checklist (4 items), and "Takes just a few minutes" checklist (3 items). All checklists use purple checkmarks. The card is persistent across all section states. The left column sections contain only narrative/educational content — no pricing, CTAs, or checklists.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-136 — Registration section uses 2x2 card grid with icon squares** (Date: 2026-03-17)
+The "Register your app" section content uses a structured layout: heading + intro paragraph, then a 2x2 card grid. Each card has an @untitledui/icons icon inside a purple rounded-square (`rounded-lg bg-bg-brand-secondary`), a bold heading, and body text. Cards: (1) MessageXCircle — "Without it, messages don't arrive", (2) ClipboardCheck — "The process is a hassle", (3) ShieldTick — "We handle the whole thing", (4) BellRinging03 — "You stay protected after approval". Timeline strip removed. No-pressure note shortened.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-137 — Compliance section uses same 2x2 card grid pattern** (Date: 2026-03-17)
+The "Monitor your compliance" section uses the same card grid pattern as the registration section. Cards: (1) MessageCheckCircle — "Every message checked before sending", (2) SlashCircle01 — "Opt-outs handled for you", (3) SearchRefraction — "We notice when things drift", (4) AlertTriangle — "You'll know when something needs attention". Footer: "Compliance monitoring activates after carrier registration."
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
