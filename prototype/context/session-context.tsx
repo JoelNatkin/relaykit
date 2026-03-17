@@ -23,6 +23,8 @@ export interface CustomMessage {
 
 export type DashboardVersion = "a" | "b" | "c";
 export type AppState = "pre-download" | "sandbox" | "live";
+export type RegistrationState = "default" | "pending" | "approved" | "changes_requested" | "rejected";
+export type ComplianceView = "all_clear" | "has_alerts";
 
 export interface SessionState {
   // Auth mock
@@ -33,6 +35,12 @@ export interface SessionState {
 
   // Per-app state toggle
   appState: AppState;
+
+  // Registration lifecycle state
+  registrationState: RegistrationState;
+
+  // Compliance dashboard view toggle
+  complianceView: ComplianceView;
 
   // Personalization
   appName: string;
@@ -69,12 +77,16 @@ interface SessionContextValue {
   setLoggedIn: (value: boolean) => void;
   setDashboardVersion: (version: DashboardVersion) => void;
   setAppState: (state: AppState) => void;
+  setRegistrationState: (state: RegistrationState) => void;
+  setComplianceView: (view: ComplianceView) => void;
 }
 
 const defaultState: SessionState = {
   isLoggedIn: false,
   dashboardVersion: "b",
   appState: "pre-download",
+  registrationState: "default",
+  complianceView: "all_clear",
   appName: "",
   website: "",
   serviceType: "",
@@ -230,6 +242,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, appState }));
   }, []);
 
+  const setRegistrationState = useCallback((registrationState: RegistrationState) => {
+    setState((prev) => ({ ...prev, registrationState }));
+  }, []);
+
+  const setComplianceView = useCallback((complianceView: ComplianceView) => {
+    setState((prev) => ({ ...prev, complianceView }));
+  }, []);
+
   return (
     <SessionContext.Provider
       value={{
@@ -246,6 +266,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setLoggedIn,
         setDashboardVersion,
         setAppState,
+        setRegistrationState,
+        setComplianceView,
       }}
     >
       {children}
