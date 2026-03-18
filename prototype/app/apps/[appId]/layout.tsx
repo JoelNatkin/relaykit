@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useSession } from "@/context/session-context";
@@ -21,6 +22,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { state, setRegistrationState, setComplianceView } = useSession();
 
   const appName = APP_NAMES[appId] || appId;
+  const isApproved = state.registrationState === "approved";
+  const isOverview = pathname.endsWith("/overview");
+  const [period, setPeriod] = useState("this_month");
 
   return (
     <div className="mx-auto max-w-5xl px-6">
@@ -72,6 +76,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
           );
         })}
+        {isApproved && isOverview && (
+          <select
+            value={period}
+            onChange={(e) => setPeriod(e.target.value)}
+            className="ml-auto text-sm text-text-tertiary bg-transparent border-none cursor-pointer focus:outline-none"
+          >
+            <option value="this_week">This week</option>
+            <option value="last_7">Last 7 days</option>
+            <option value="this_month">This month</option>
+            <option value="last_30">Last 30 days</option>
+          </select>
+        )}
       </div>
 
       {/* Page content */}

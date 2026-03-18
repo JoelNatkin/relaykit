@@ -614,3 +614,63 @@ _Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
 **D-137 — Compliance section uses same 2x2 card grid pattern** (Date: 2026-03-17)
 The "Monitor your compliance" section uses the same card grid pattern as the registration section. Cards: (1) MessageCheckCircle — "Every message checked before sending", (2) SlashCircle01 — "Opt-outs handled for you", (3) SearchRefraction — "We notice when things drift", (4) AlertTriangle — "You'll know when something needs attention". Footer: "Compliance monitoring activates after carrier registration."
 _Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-138 — Prototype state switcher for registration lifecycle** (Date: 2026-03-17)
+Overview page has a small state selector (text-tertiary text-sm) right-aligned in the H1 row. Four states: Default, Pending, Approved, Rejected. Plus a "Changes Requested" state. Drives conditional rendering in Section 2, right column card, and Section 2 heading badge. For prototyping only — production state comes from server.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`, `prototype/app/apps/[appId]/layout.tsx`._
+
+**D-139 — Registration trigger is a simple confirmation modal** (Date: 2026-03-17)
+"Start registration" opens a centered modal: heading, one-line description, price, "Confirm & pay $199" primary button, "Cancel" secondary. Clicking confirm flips page to Pending state. No real payment flow in prototype.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-140 — Pending state: Section 2 replaces info cards with narrative + expandable** (Date: 2026-03-17)
+When registration is submitted, Section 2's 2x2 info cards are replaced with: bold first sentence ("Your registration is submitted."), narrative paragraph, directly-attached "What carriers review" collapsed expandable (4 items: business identity, website/digital presence, message content/use case, opt-in/consent flow), and a text-tertiary keep-building nudge. Badge: brand-colored "In review" (not amber/warning — pending is normal, not alarming).
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-141 — Pending state: right column transforms to status tracker** (Date: 2026-03-17)
+Registration pitch card completely replaced with: "Registration status" heading, status badge, submitted date (font-semibold), timeline estimate with email notification ("We'll email you at jen@glowstudio.com"), 6-step vertical stepper (submitted → payment → compliance site → carrier review → phone number → live), and support contact (hello@relaykit.ai). All pricing, checklists, and CTAs removed.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-142 — Approved state: Section 2 shows confirmation narrative + key details** (Date: 2026-03-17)
+Approved Section 2 content: confirmation narrative paragraph, phone number, approval date, campaign ID. No info cards, no expandable. Checkbox checked, green "Approved" badge. Section collapsed by default.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-143 — Approved state: right column shows completed stepper + monthly plan** (Date: 2026-03-17)
+All 6 stepper steps green. Below stepper: "Your messages are now delivered through carriers" line + monthly plan reference ($19/mo, 500 included, $15 per additional 1,000).
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-144 — Changes Requested state uses brand colors, not error colors** (Date: 2026-03-17)
+Resubmission is a normal part of the process (~20-30% of submissions), not a failure. Badge and indicators use brand colors, not red/amber. Stepper grows by one step: "Resubmission under review" inserted as active step after completed "Carrier review." Left column shows detail card: what was flagged, what we did, what happens next.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-145 — Rejected state uses red sparingly, leads with refund confirmation** (Date: 2026-03-17)
+Badge: red "Not approved." Stepper shortened to 4 steps (ends at carrier review with red X). Refund line in green (text-success-primary) — "$199 refund issued." Left column: detail card with what was flagged, what this means, your options. "Start new registration" button loops back to Default. Red only on badge and step 4 indicator.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-146 — Compliance sub-switcher for Approved state** (Date: 2026-03-17)
+Second tiny dropdown next to the state switcher, only visible in Approved state. Options: "All clear" / "Has alerts." Drives Section 3 content between green mode (status confirmation) and alert mode (action needed).
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-147 — Compliance alerts use left-border accent cards, not full report anatomy** (Date: 2026-03-17)
+Alert cards are visually simple: colored left border (red for blocks, amber for warnings), one-line description, one-line reassurance, "View details →" expand. Expanded state shows: the actual message (mono code block), what triggered it, and an AI coding tool prompt to fix it (copyable). No multi-section report layout.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-148 — Compliance alert "What to do" includes copyable AI tool prompts** (Date: 2026-03-17)
+Instead of plain-text instructions, compliance alerts provide a copyable prompt the developer can paste into their AI coding tool to fix the issue. Consistent with RelayKit's positioning as a tool for AI-assisted developers.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-149 — Canon messages not duplicated on compliance section — link to Messages tab instead** (Date: 2026-03-17)
+Post-approval compliance section links to "View your registered messages →" (Messages tab) rather than displaying a second copy of canon messages. Avoids duplication. Messages tab is the single home for message reference.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-150 — Approved state Overview will become a full operational dashboard** (Date: 2026-03-17)
+In Approved state, the three-section accordion is replaced with a proper dashboard layout. Phase 1 cards: usage & billing (with block-based overage math), delivery performance, compliance status, recipient overview, sending patterns (hourly chart), message type breakdown. Phase 2 additions: API health, usage forecasting, delivery drill-down, period comparisons, opt-out analysis, use-case-specific cards, CSV export, real-time updates. Registration details move to Settings tab.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-151 — No partial refund for mid-review cancellation** (Date: 2026-03-17)
+Registration cancellation during carrier review is not a designed flow. The promise is "$199. Not approved? Full refund." Mid-review cancellations handled manually case-by-case at founder discretion. No UI for cancellation/partial refund. Revisit post-beta if cancellation requests become a pattern.
+_Affects: Pricing model, no UI impact._
+
+**D-152 — Pre-registration support contact not shown — avoid premature support volume** (Date: 2026-03-17)
+hello@relaykit.ai and support contact only appear after the developer has paid and is in the registration pipeline. Pre-registration questions will be handled by a help/FAQ page behind the "Learn more →" placeholder link. Keeps CTA focus clean and support volume manageable at beta scale.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`._

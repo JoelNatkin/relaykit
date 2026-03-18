@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight, MessageXCircle, ClipboardCheck, ShieldTick, BellRinging03, MessageCheckCircle, SlashCircle01, SearchRefraction, AlertTriangle } from "@untitledui/icons";
 import { useSession } from "@/context/session-context";
+import ApprovedDashboard from "./approved-dashboard";
 
 /* ── Clipboard icon ── */
 
@@ -586,7 +587,10 @@ export default function OverviewPage() {
         onCancel={() => setShowRegModal(false)}
       />
 
-      {/* Two-column layout */}
+      {/* Approved state: full dashboard replacement */}
+      {isApproved ? (
+        <ApprovedDashboard />
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
         {/* LEFT — Sections */}
         <div className="lg:col-span-3">
@@ -1493,6 +1497,7 @@ export default function OverviewPage() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
