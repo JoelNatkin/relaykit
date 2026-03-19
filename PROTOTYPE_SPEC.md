@@ -173,17 +173,52 @@ Badge: red "Not approved." Stepper shortened to 4 steps (red X on step 4). Refun
 
 ### Messages Tab — `/apps/[appId]/messages`
 **File:** `prototype/app/apps/[appId]/messages/page.tsx`
-**Status:** `[IN PROGRESS]` — Needs state-based rendering
+**Status:** `[IN PROGRESS]` — Default state stable; registration lifecycle states not yet differentiated
 
-Currently renders the public messages page component directly (D-120). Needs differentiation by user state:
+**Public/logged-out:** Public messages page at `/sms/[category]/messages`, unchanged. Not rendered by this component.
 
-**Public/logged-out:** Current marketing page, unchanged.
+**Signed up, pre-download:** `[NOT YET DESIGNED]` — Initial download happens here. Overview and Settings don't exist until project is created at download time (D-162). This is the most critical conversion moment in the product.
 
-**Signed up, pre-download:** [NOT YET DESIGNED] — This is where the initial download happens. Overview and Settings don't exist until after download. The Messages page is the entry point for new users.
+---
 
-**Signed up, post-download, pre-registration (Default):** Strip hero banner. Personalization as preview-only (D-155 — preview values not baked into downloads). Collapsed tool selector (D-160). AI command shortlist (D-157). "Download RelayKit" button right-aligned on heading. Dismissible message bar pointing to Overview build flow.
+#### Default state — post-download, pre-registration (STABLE)
 
-**Post-registration (Approved):** Personalization fields read-only showing registered values. Download button still available. AI commands still available. No "registered" badges on individual messages (D-159 — full creative freedom within registered use case).
+**Page header row** (`flex items-center justify-between`):
+- Left: `<h2>AI prompts</h2>` (`text-lg font-semibold text-text-primary`)
+- Right: "AI tool setup" tertiary text button (`text-sm font-medium text-text-tertiary`, no border, no bg) + "Re-download RelayKit" primary CTA (`bg-bg-brand-solid text-text-white rounded-lg px-3.5 py-2 font-semibold shadow-xs`)
+
+**AI prompts — 4-card grid** (`grid-cols-2 lg:grid-cols-4 gap-3`):
+- Cards match Overview Register/Compliance card style: `rounded-lg border border-border-secondary bg-bg-primary p-4`
+- Each card: 40×40 purple icon square (`bg-bg-brand-secondary rounded-lg`) + `text-sm font-semibold` heading + italic prompt text (`text-sm text-text-tertiary italic`) + clipboard copy button (top-right, flips to green checkmark)
+- Cards: ShieldTick / "Compliance review" / *"Review my messages for compliance"* — Edit03 / "Write a message" / *"Write a message that lets us tell users [goal]"* — MessagePlusSquare / "Add a message type" / *"Add a new message type for [purpose]"* — ClipboardCheck / "Check opt-in copy" / *"Check my opt-in form for compliance"*
+- `[PENDING]` No body copy under section heading — intent and context not yet written (e.g. "Copy these into your AI coding tool with your RelayKit files loaded.")
+
+**AI tool setup panel** — toggled by the "AI tool setup" button in the header row. `isToolOpen` state lives in the page component. When open, renders `<ToolPanel />` below the card grid: same 6-tool logo row + per-tool instruction + copyable command as public page. No chevron icon on the toggle button — plain text only.
+- `[PENDING]` No body copy framing the panel (e.g. "First time? Follow the steps for your tool.")
+
+**Two-column layout** (`lg:grid-cols-[300px_1fr]`):
+
+*Left column (sticky, `lg:top-20`):*
+- `<h2>Personalize</h2>` — App / business name, Website URL, Service type inputs. Values persist to `localStorage` key `relaykit_personalize`, loaded on mount (D-111).
+- Note below fields: "Preview only — your downloaded files use template variables." (`text-xs text-text-quaternary`)
+- `<h2>Sample opt-in form</h2>` — `<CatalogOptIn>` component, updates dynamically based on selected message cards
+
+*Right column:*
+- `<h2>Messages</h2>` with copy toolbar (view toggle + copy dropdown) right-aligned
+- Style variant pills (Brand-first / Action-first / Context-first) below the header
+- `<CatalogCard>` components — full category library, checkboxes for copy-selection
+- "Need promotional messages too?" callout at bottom for expansion messages — same as public page (D-112)
+
+---
+
+#### Pending / Changes Requested / Rejected states
+`[NOT YET DIFFERENTIATED]` — All three states currently render the Default layout. No spec yet for whether/how these states change the Messages tab content. Likely stays identical — registration state doesn't affect what messages are available pre-approval.
+
+#### Approved state
+`[NOT YET DIFFERENTIATED]` — Currently renders the Default layout. Planned changes per D-159:
+- Personalization fields read-only, showing registered values (business_name from registration record)
+- AI commands still available
+- No "registered" badges on individual message cards — full creative freedom within registered use case
 
 ---
 

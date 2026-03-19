@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-17 (approved dashboard rebuild, settings refinements)
+**Date:** 2026-03-19 (Messages tab Default state)
 **Branch:** main
 
 ---
@@ -7,11 +7,12 @@
 ## Commits This Session
 
 ```
-fb810a0  feat: full-width 3x2 dashboard grid, card polish, Settings refinements (600px, inline editing, cancellation, portability)
+(in progress — Messages tab Default state built)
 ```
 
-Previous session commits (already on main before this session):
+Previous session commits:
 ```
+fb810a0  feat: full-width 3x2 dashboard grid, card polish, Settings refinements (600px, inline editing, cancellation, portability)
 8f216b0  feat: registration lifecycle states (pending/approved/changes-requested/rejected) + compliance dashboard
 de1cdd6  feat: three-section overview (onboarding, registration, compliance), simplified right column, tab cleanup, breadcrumb removal, redo pattern
 0ea7272  docs: D-114–D-121, session handoff for 2026-03-16
@@ -21,103 +22,67 @@ de1cdd6  feat: three-section overview (onboarding, registration, compliance), si
 
 ## What We Completed
 
-### Approved State — Full Dashboard Rebuild
-The Approved state of the Overview page was completely rebuilt from a three-section accordion into an operational app dashboard.
+### Messages Tab — Default State (post-download, pre-registration)
 
-**Layout evolution during this session:**
-1. Started with 2-column (70/30) layout with 2×3 card grid + right sidebar (Quick tools, Registration details, Support)
-2. Removed right sidebar entirely — sidebar content moved to Settings
-3. Changed to full-width 3×2 card grid
-4. Reordered cards to final layout
-5. Moved period selector from above grid to tab row
-6. Moved marketing upsell banner between row 1 and row 2
+The Messages tab at `/apps/[appId]/messages` now renders an app-specific component for logged-in users instead of the raw public messages page.
 
-**Final card layout (3×2 grid):**
-- Row 1: DELIVERY (98.4% big number, delivered/failed/pending stats, trend) → RECIPIENTS (284 big number, opt-outs/replies dot-separated, trend) → COMPLIANCE (99.4% compliance rate, alert rows or "All clear")
-- Row 2: USAGE & BILLING (347/500 big number, progress bar, remaining count, plan line) → MESSAGE TYPES (horizontal bar chart, 4 appointment types) → SENDING PATTERNS (24-bar hourly chart, quiet hours in amber)
+**What changed:**
+- `prototype/app/apps/[appId]/messages/page.tsx` — fully rewritten as `AppMessagesPage`
+- No marketing hero — clean page header with "Messages" h2 on left, "Re-download files" tertiary text link + "Last downloaded Mar 15, 2026" date note on right
+- AI commands card — 4 copyable prompts (D-157): "Review my messages for compliance", "Write a message that lets us tell users [goal]", "Add a new message type for [purpose]", "Check my opt-in form for compliance"
+- Tool selector collapsed under "AI tool setup instructions" chevron, closed by default (D-160)
+- Two-column layout: left = personalization fields + preview note + opt-in form (sticky); right = variant pills + message cards + marketing callout
+- Personalization note: "Preview only — your downloaded files use template variables." below the three fields
+- localStorage personalization persists as before (D-111)
+- All registration states (Default/Pending/Approved/Changes Requested/Rejected) render the same content — Approved differentiation is next
 
-**Compliance card modes:**
-- "All clear" mode: green 99.4%, green dot + "All clear", clean/blocked/warned breakdown
-- "Has alerts" mode: amber 99.4%, two alert summary rows with "Fix →" / "View →" links opening a detail modal
-
-**Alert detail modal:** Shows the flagged message in a code block, what triggered it, what to do, and a copyable AI prompt for fixing.
-
-**Marketing upsell banner:** Restyled as a contained message bar (border, info icon, heading + body text, brand link, dismiss X). Appears between row 1 and row 2 only when "Has alerts" is selected. Dismissible per session.
-
-**Period selector:** "This month" dropdown moved to the tab row in layout.tsx, right-aligned with `ml-auto`. Only visible when Approved + on Overview page. State lives in layout.tsx (display-only, doesn't change data).
-
-### Visual Polish Pass
-- Delivery trend line: `text-xs` → `text-sm` to match stats line
-- Recipients card: consolidated to single dot-separated line + added trend line matching Delivery's format
-- Compliance card: removed truncation on alert text (full text wraps), removed "View your registered messages →" bottom link
-- Usage & Billing: removed overage projection and detailed plan line, simplified to "Plan: $19/mo · 500 included"
-- Bar thickness: Usage & Billing progress bar `h-2` → `h-3` to match Message Types bars. Sending Patterns bars changed to `gap-0.5 rounded-t`.
-- Sending Patterns label shortened to "Peak: 2–4 PM · Quiet: 9 PM–9 AM"
-
-### Settings Page Refinements
-- **Layout narrowed:** `max-w-[800px]` → `max-w-[600px]`, centered
-- **Inline editing:** Business name, Email, Phone in Account info + alert phone in SMS compliance alerts. `EditableField` component swaps between display (value + "Edit" link) and edit mode (input + Save/Cancel). One field at a time via shared `editingField` state. Values persist in local component state.
-- **Cancel plan:** Text link in Billing section (`text-tertiary`, `hover:text-error-primary`). Opens centered modal: "Cancel your plan" heading, sandbox continuity copy, "Keep plan" (grey) + "Cancel plan" (red) buttons. No guilt copy, no survey.
-- **Portability section:** "Moving on?" heading at bottom. "Transfer your phone number" with mailto link. "Export your registration data" with secondary button (prototype only).
-- **Registration section** (from prior work): visible in Approved state, shows Status (green Active), Phone, Approved date, Campaign ID, Plan, compliance site link.
-- **Developer tools section** (from prior work): visible in Approved state, shows sandbox phone + send test message action.
-
-### Non-Approved States
-All non-Approved states (Default, Pending, Changes Requested, Rejected) are completely unchanged. The conditional in `overview/page.tsx` renders `<ApprovedDashboard />` when approved, otherwise falls through to the existing three-section accordion with right sidebar.
+**Public page untouched** — `prototype/app/sms/[category]/messages/page.tsx` not modified.
 
 ---
 
 ## Files Modified / Created
 
 ```
-prototype/
-├── app/apps/[appId]/
-│   ├── layout.tsx                          # Added period selector to tab row (approved + overview only), useState import
-│   ├── overview/
-│   │   ├── page.tsx                        # Added import + conditional: isApproved ? <ApprovedDashboard /> : existing
-│   │   └── approved-dashboard.tsx          # NEW — full approved dashboard (cards, modal, upsell, chart data)
-│   └── settings/page.tsx                   # Rewritten: 600px, EditableField, CancelModal, portability section
+prototype/app/apps/[appId]/messages/page.tsx   # Rewritten — new AppMessagesPage component
+PROTOTYPE_SPEC.md                               # Messages Tab section updated
+CC_HANDOFF.md                                   # This file
 ```
-
-No uncommitted changes. Working tree clean.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **Delete `.next` before every dev server start.** Cache corruption is recurring. Always: stop → `rm -rf prototype/.next` → restart.
+1. **Delete `.next` before every dev server start.** Always: stop → `rm -rf prototype/.next` → restart.
 
-2. **Dev server runs on port 3001** — the `npm run dev` script in prototype uses `-p 3001`, not 3000.
+2. **Dev server runs on port 3001** — `-p 3001` in the prototype npm script.
 
-3. **`@untitledui/icons` name check**: `ShieldCheck` does NOT exist — use `ShieldTick`. Always verify icon names before using them.
+3. **`@untitledui/icons` name check**: `ShieldCheck` does NOT exist — use `ShieldTick`.
 
-4. **Auth flow is fully mocked** — no Supabase. The "Sign in" toggle in the top nav flips `isLoggedIn` in session context. No real authentication.
+4. **Auth flow is fully mocked** — "Sign in" toggle in top nav flips `isLoggedIn` in session context.
 
 5. **No Untitled UI base components in prototype** — plain Tailwind with semantic color tokens only.
 
-6. **SessionStorage key**: `relaykit_prototype` (session context). **localStorage key**: `relaykit_personalize` (messages page personalization).
+6. **SessionStorage key**: `relaykit_prototype`. **localStorage key**: `relaykit_personalize`.
 
-7. **DECISIONS.md has 137 decisions** (D-01 through D-137). No new decisions were added this session.
+7. **DECISIONS.md has 166 decisions** (D-01 through D-166).
 
-8. **D-104 gate still active**: PRDs must be updated to reflect D-84–D-103 before any production code is built from them.
+8. **Messages tab Approved state is deferred** — all 5 registration states render the same content. Next step: differentiate Approved state (read-only personalization showing registered values, etc. per D-159).
 
-9. **Period selector state lives in layout.tsx** — it's display-only and doesn't change any dashboard data. If it ever needs to drive data filtering, the state would need to be lifted to session context or passed down.
+9. **Messages tab `categoryId`** derives from `state.selectedCategory`, falling back to `"appointments"`. When the session has no selected category (fresh load), it defaults to appointments. This is fine for the prototype.
 
-10. **Approved dashboard is a separate component** (`approved-dashboard.tsx`) imported by `overview/page.tsx`. It manages its own state (alertDetail, upsellDismissed). The period state lives in `layout.tsx`.
+10. **"Re-download files" and "Last downloaded" are hardcoded** — Mar 15, 2026 placeholder date. Production would read from user metadata (download_at timestamp).
 
-11. **Settings editable fields are prototype-only** — values persist in local component state, not sessionStorage or server. Refreshing the page resets edits to SAMPLE defaults.
+11. **Pre-existing TS errors in settings/page.tsx** (4 errors, string→literal type mismatches from last session) — not introduced by this session's work.
 
-12. **Cancel plan modal is UI-only** — both "Cancel plan" and "Keep plan" just close the modal. No state change occurs.
+12. **Approved dashboard is a separate component** (`approved-dashboard.tsx`) imported by `overview/page.tsx`.
 
-13. **"Download export" button in portability section is a no-op** — prototype UI only.
+13. **Dashboard orphans still exist** — `components/dashboard/` (old A/B/C variants) and `/c/` legacy routes on disk, safe to delete.
 
-14. **Compliance sub-switcher** (All clear / Has alerts) is in the H1 row of layout.tsx — only visible when Approved is selected. It drives the compliance card mode and the marketing upsell visibility.
+14. **"Appointments" pill is hardcoded** in layout.tsx — needs to be dynamic when multi-category is supported.
 
-15. **Dashboard orphans still exist** — `components/dashboard/` (old A/B/C variants) and `/c/` legacy routes are not imported but still on disk. Can be deleted.
+15. **`bg-bg-error-solid` may not be defined** in theme — verify cancel modal in settings renders correctly.
 
-16. **Appointments pill is hardcoded** in layout.tsx — will need to be dynamic when multi-category is supported.
-
-17. **`bg-bg-error-solid` and `bg-bg-error-solid_hover`** are used in the cancel modal's destructive button. These may or may not be defined in the current Untitled UI theme — verify visually that the red button renders correctly.
+16. **Compliance modal "Fix it with AI"** prompt pattern needs revision (see PROTOTYPE_SPEC.md Known Issues).
 
 ---
 
@@ -132,26 +97,25 @@ prototype/
 │   ├── apps/
 │   │   ├── page.tsx                      # Your Apps (project list)
 │   │   └── [appId]/
-│   │       ├── layout.tsx                # Per-app shell (app name + pill + tabs + state switchers + period selector)
+│   │       ├── layout.tsx                # App shell (name, pill, tabs, state switchers, period selector)
 │   │       ├── page.tsx                  # Redirects to /overview
 │   │       ├── overview/
 │   │       │   ├── page.tsx              # Conditional: approved dashboard OR three-section accordion
-│   │       │   └── approved-dashboard.tsx # Full 3×2 card grid dashboard for Approved state
-│   │       ├── messages/page.tsx         # Renders public messages page component
-│   │       ├── registration/page.tsx     # Placeholder
-│   │       └── settings/page.tsx         # Settings (600px, inline editing, cancellation, portability)
+│   │       │   └── approved-dashboard.tsx # Full 3×2 card grid (Approved state)
+│   │       ├── messages/page.tsx         # App-specific messages page (Default state built)
+│   │       └── settings/page.tsx         # 600px, inline editing, cancellation, portability
 │   ├── sms/[category]/
-│   │   ├── page.tsx                      # Category landing
-│   │   └── messages/page.tsx             # Public messages page
-│   └── c/[categoryId]/                   # Legacy catalog routes (orphaned)
+│   │   ├── page.tsx                      # Category landing (appointments)
+│   │   └── messages/page.tsx             # Public messages page (steps layout default) — UNTOUCHED
+│   └── c/[categoryId]/                   # ORPHANED — legacy catalog routes, safe to delete
 ├── components/
 │   ├── top-nav.tsx                       # Context-aware nav
 │   ├── footer.tsx                        # Shared footer
 │   ├── category-modal.tsx                # Category picker
 │   ├── catalog/                          # Message cards, opt-in form
-│   └── dashboard/                        # ORPHANED — not imported (old A/B/C variants)
+│   └── dashboard/                        # ORPHANED — old A/B/C variants, safe to delete
 ├── public/logos/                          # SVG logos for tool selector
-├── context/session-context.tsx           # State management (+ registrationState, complianceView)
+├── context/session-context.tsx           # State management
 ├── lib/catalog-helpers.ts                # Template interpolation
 └── data/messages.ts                      # Message library
 ```
@@ -160,15 +124,12 @@ prototype/
 
 ## What's Next
 
-- Wire up registration tab/page with intake wizard flow
-- Persist onboarding step completion (localStorage or server)
-- Differentiate logged-in vs public messages page (D-120 deferred)
-- Category landing pages beyond "appointments"
+- Differentiate Messages tab Approved state (personalization read-only, no hero, registered context)
+- Wire up "Re-download files" to a real download action or modal
+- Messages tab Pending/Changes Requested states (may just stay same as Default)
+- Download confirmation flow needs design (D-162 — orient users toward Overview after download)
+- Registration form with live preview (D-161)
 - Delete orphaned `/c/` routes and `components/dashboard/` files
-- Production PRDs must be updated per D-104 before production code resumes
-- "Learn more →" link needs a destination (marketing registration page)
 - Make "Appointments" pill dynamic based on project category
-- Verify `bg-bg-error-solid` renders correctly for the cancel modal button
-- Consider lifting period selector state to session context if it needs to filter dashboard data
-- "Send test message" in Developer tools settings section needs an action
-- "Start marketing registration →" link in upsell banner needs a destination
+- Verify `bg-bg-error-solid` renders correctly for cancel modal button
+- Production PRDs must be updated per D-104 before production code resumes
