@@ -336,7 +336,6 @@ export default function MessagesPage() {
             appName={state.appName}
             website={state.website}
             allMessages={allMessages}
-            selectedIds={selectedIds}
           />
         </div>
 
@@ -416,8 +415,7 @@ export default function MessagesPage() {
                 message={message}
                 categoryId={cat.id}
                 state={state}
-                isSelected={selectedIds.has(message.id)}
-                onToggleSelect={toggleSelect}
+
                 globalViewMode={viewMode}
                 activeTemplate={getActiveTemplate(message)}
               />
@@ -445,8 +443,7 @@ export default function MessagesPage() {
                     message={message}
                     categoryId={cat.id}
                     state={state}
-                    isSelected={selectedIds.has(message.id)}
-                    onToggleSelect={toggleSelect}
+
                     globalViewMode={viewMode}
                     activeTemplate={getActiveTemplate(message)}
                   />

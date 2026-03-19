@@ -418,22 +418,23 @@ export default function AppMessagesPage() {
       {/* AI prompts header row */}
       <div className="mb-3">
         <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-text-primary">AI prompts</h2>
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setIsToolOpen((prev) => !prev)}
-            className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-          >
-            AI tool setup
-          </button>
-          <button
-            type="button"
-            onClick={() => console.log("Re-download triggered")}
-            className="rounded-lg bg-bg-brand-solid px-3.5 py-2 text-sm font-semibold text-text-white shadow-xs hover:bg-bg-brand-solid_hover transition duration-100 ease-linear cursor-pointer"
-          >
-            Re-download RelayKit
-          </button>
+          <h2 className="text-lg font-semibold text-text-primary">AI prompts</h2>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsToolOpen((prev) => !prev)}
+              className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+            >
+              AI tool setup
+            </button>
+            <button
+              type="button"
+              onClick={() => console.log("Re-download triggered")}
+              className="rounded-lg bg-bg-brand-solid px-3.5 py-2 text-sm font-semibold text-text-white shadow-xs hover:bg-bg-brand-solid_hover transition duration-100 ease-linear cursor-pointer"
+            >
+              Re-download RelayKit
+            </button>
+          </div>
         </div>
         <p className="mt-1 text-sm text-text-tertiary">Quick commands for your AI tool with RelayKit loaded</p>
       </div>
