@@ -720,3 +720,19 @@ _Affects: CC workflow, all prototype and production builds._
 **D-166 — BACKLOG.md captures deferred ideas and Phase 2 features** (Date: 2026-03-19)
 A new file, BACKLOG.md, is a parking lot for ideas, deferred work, and future features. Two tiers: "Likely" (will probably happen) and "Maybe" (interesting but unvalidated). Items move to DECISIONS.md when they become real decisions. CC never builds from BACKLOG.md unless Joel explicitly promotes an item.
 _Affects: Session workflow, idea capture process._
+
+**D-167 — Messages tab uses h2 section headers throughout** (Date: 2026-03-19)
+Section headers on the app Messages tab ("AI prompts", "Personalize", "Sample opt-in form", "Messages") all use `text-lg font-semibold text-text-primary` — the same h2 style used on the Overview page sections. The tab label in the layout shell serves as the page title; there is no separate page-level h1/h2 for "Messages" at the top. This creates visual parity between the Messages tab and Overview tab section anatomy.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-168 — AI prompts cards use italic text, not monospace** (Date: 2026-03-19)
+The copyable prompt text on AI command cards is styled `text-sm text-text-tertiary italic` — not monospace. Monospace signals "code to run in a terminal." These prompts are conversational instructions for an AI tool, not shell commands. Italic distinguishes them as quotable language without the terminal connotation. The tool setup panel (per-tool setup commands) retains monospace since those are actual shell/tool commands.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-169 — "Last downloaded" date removed from Messages tab** (Date: 2026-03-19)
+The "Last downloaded Mar 15, 2026" note beneath the Re-download button was removed. It added visual noise without actionable value — developers know when they last downloaded; what they need is the button. Removed to keep the header row clean.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-170 — Messages tab registration states: Pending/Changes Requested/Rejected stay identical to Default** (Date: 2026-03-19)
+The Pending, Changes Requested, and Rejected registration states render the same content as the Default state on the Messages tab. Registration state doesn't change what messages are available or how the developer interacts with them pre-approval. Only the Approved state will be differentiated (read-only personalization showing registered values per D-159). This is intentional, not an oversight.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
