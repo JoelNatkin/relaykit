@@ -436,7 +436,7 @@ export default function AppMessagesPage() {
             </button>
           </div>
         </div>
-        <p className="mt-1 text-sm text-text-tertiary">Quick commands for your AI tool with RelayKit loaded</p>
+        <p className="mt-1 text-sm text-text-secondary">Quick commands for your AI tool with RelayKit loaded.</p>
       </div>
 
       <AiCommandsGrid />
@@ -450,7 +450,7 @@ export default function AppMessagesPage() {
           <h2 className="text-lg font-semibold text-text-primary mb-1">
             Preview your messages
           </h2>
-          <p className="mb-3 text-sm text-text-tertiary">See how messages look with your details. RelayKit handles the real values in your code.</p>
+          <p className="mb-3 text-sm text-text-secondary">See how your messages look with your details filled in.</p>
           <div className="space-y-3">
             <div>
               <label className="mb-1 block text-xs font-medium text-text-secondary">
@@ -500,7 +500,7 @@ export default function AppMessagesPage() {
             <h2 className="text-lg font-semibold text-text-primary mb-1">
               Sample opt-in form
             </h2>
-            <p className="mb-3 text-sm text-text-tertiary">Carriers require consent before you text anyone. Your AI tool can customize this to match your app.</p>
+            <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours current.</p>
             <CatalogOptIn
               appName={state.appName}
               website={state.website}
@@ -538,7 +538,7 @@ export default function AppMessagesPage() {
               </button>
             </div>
             </div>
-            <p className="mt-1 text-sm text-text-tertiary">Use them, change them, or ask your AI tool to create new ones. RelayKit keeps them compliant</p>
+            <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
           </div>
 
           {/* Style variant pills */}

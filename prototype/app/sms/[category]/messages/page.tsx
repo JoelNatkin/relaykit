@@ -636,9 +636,10 @@ function StepsLayout({
 
       {/* Tool selector */}
       <div className="mx-auto max-w-5xl px-6 pt-8 pb-2">
-        <h2 className="text-lg font-semibold text-text-primary mb-4">
+        <h2 className="text-lg font-semibold text-text-primary mb-1">
           Follow the steps for your tool.
         </h2>
+        <p className="mb-4 text-sm text-text-secondary">Each tool works a little differently. Here's the quickest path.</p>
         {/* Tool logos row */}
         <div className="flex items-center gap-6 overflow-x-auto">
           {tools.map((tool) => (
@@ -694,11 +695,11 @@ function StepsLayout({
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[360px_1fr]">
           {/* LEFT COLUMN — personalize + opt-in + CTA */}
           <div className="lg:self-start lg:sticky lg:top-20">
-            {/* Preview your messages form */}
+            {/* Personalize form */}
             <h2 className="text-lg font-semibold text-text-primary mb-1">
-              Preview your messages
+              Personalize
             </h2>
-            <p className="mb-3 text-sm text-text-tertiary">See how messages look with your details. RelayKit handles the real values in your code.</p>
+            <p className="mb-3 text-sm text-text-secondary">See how your messages look with your details filled in.</p>
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-xs font-medium text-text-secondary">
@@ -743,7 +744,7 @@ function StepsLayout({
               <h2 className="text-lg font-semibold text-text-primary mb-1">
                 Sample opt-in form
               </h2>
-              <p className="mb-3 text-sm text-text-tertiary">Carriers require consent before you text anyone. Your AI tool can customize this to match your app.</p>
+              <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours current.</p>
               <CatalogOptIn
                 appName={state.appName}
                 website={state.website}
@@ -1032,7 +1033,7 @@ export default function PublicMessagesPage() {
                   </button>
                 </div>
               </div>
-              <p className="mt-1 text-sm text-text-tertiary">Use them, change them, or ask your AI tool to create new ones. RelayKit keeps them compliant</p>
+              <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
             </div>
 
             {/* Style pills + Personalize button */}
