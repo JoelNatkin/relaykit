@@ -694,10 +694,11 @@ function StepsLayout({
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[360px_1fr]">
           {/* LEFT COLUMN — personalize + opt-in + CTA */}
           <div className="lg:self-start lg:sticky lg:top-20">
-            {/* Personalize form */}
-            <h2 className="text-lg font-semibold text-text-primary mb-3">
-              Personalize
+            {/* Preview your messages form */}
+            <h2 className="text-lg font-semibold text-text-primary mb-1">
+              Preview your messages
             </h2>
+            <p className="mb-3 text-sm text-text-tertiary">See how messages look with your details. RelayKit handles the real values in your code.</p>
             <div className="space-y-3">
               <div>
                 <label className="mb-1 block text-xs font-medium text-text-secondary">
@@ -739,9 +740,10 @@ function StepsLayout({
 
             {/* Sample opt-in form */}
             <div className="mt-8">
-              <h2 className="text-lg font-semibold text-text-primary mb-3">
+              <h2 className="text-lg font-semibold text-text-primary mb-1">
                 Sample opt-in form
               </h2>
+              <p className="mb-3 text-sm text-text-tertiary">Carriers require consent before you text anyone. Your AI tool can customize this to match your app.</p>
               <CatalogOptIn
                 appName={state.appName}
                 website={state.website}
@@ -1005,29 +1007,32 @@ export default function PublicMessagesPage() {
           {/* Left column — message cards */}
           <div>
             {/* Toolbar */}
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-semibold text-text-primary">
-                Messages
-              </h2>
-              <div className="flex items-center gap-2">
-                {/* View toggle */}
-                <button
-                  type="button"
-                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
-                  className="p-1 rounded text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-pointer"
-                  aria-label={viewMode === "preview" ? "Show template" : "Show preview"}
-                >
-                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCopyAll}
-                  className="p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                  aria-label="Copy all messages"
-                >
-                  <ClipboardIcon className="w-3.5 h-3.5" />
-                </button>
+            <div className="mb-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-text-primary">
+                  Messages
+                </h2>
+                <div className="flex items-center gap-2">
+                  {/* View toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                    className="p-1 rounded text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-pointer"
+                    aria-label={viewMode === "preview" ? "Show template" : "Show preview"}
+                  >
+                    {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopyAll}
+                    className="p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                    aria-label="Copy all messages"
+                  >
+                    <ClipboardIcon className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
+              <p className="mt-1 text-sm text-text-tertiary">Use them, change them, or ask your AI tool to create new ones. RelayKit keeps them compliant</p>
             </div>
 
             {/* Style pills + Personalize button */}
@@ -1135,9 +1140,10 @@ export default function PublicMessagesPage() {
 
           {/* Right column — sticky opt-in preview */}
           <div className="lg:self-start lg:sticky lg:top-20">
-            <h2 className="mb-3 text-lg font-semibold text-text-primary">
+            <h2 className="mb-1 text-lg font-semibold text-text-primary">
               Sample opt-in form
             </h2>
+            <p className="mb-3 text-sm text-text-tertiary">Carriers require consent before you text anyone. Your AI tool can customize this to match your app.</p>
             <CatalogOptIn
               appName={state.appName}
               website={state.website}

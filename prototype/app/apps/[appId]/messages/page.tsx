@@ -416,7 +416,8 @@ export default function AppMessagesPage() {
   return (
     <div>
       {/* AI prompts header row */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3">
+        <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-text-primary">AI prompts</h2>
         <div className="flex items-center gap-3">
           <button
@@ -434,6 +435,7 @@ export default function AppMessagesPage() {
             Re-download RelayKit
           </button>
         </div>
+        <p className="mt-1 text-sm text-text-tertiary">Quick commands for your AI tool with RelayKit loaded</p>
       </div>
 
       <AiCommandsGrid />
@@ -444,9 +446,10 @@ export default function AppMessagesPage() {
 
         {/* LEFT — personalization + opt-in */}
         <div className="lg:self-start lg:sticky lg:top-20">
-          <h2 className="text-lg font-semibold text-text-primary mb-3">
-            Personalize
+          <h2 className="text-lg font-semibold text-text-primary mb-1">
+            Preview your messages
           </h2>
+          <p className="mb-3 text-sm text-text-tertiary">See how messages look with your details. RelayKit handles the real values in your code.</p>
           <div className="space-y-3">
             <div>
               <label className="mb-1 block text-xs font-medium text-text-secondary">
@@ -491,15 +494,12 @@ export default function AppMessagesPage() {
               />
             </div>
           </div>
-          <p className="mt-2 text-xs text-text-quaternary">
-            Preview only — your downloaded files use template variables.
-          </p>
-
           {/* Opt-in form */}
           <div className="mt-8">
-            <h2 className="text-lg font-semibold text-text-primary mb-3">
+            <h2 className="text-lg font-semibold text-text-primary mb-1">
               Sample opt-in form
             </h2>
+            <p className="mb-3 text-sm text-text-tertiary">Carriers require consent before you text anyone. Your AI tool can customize this to match your app.</p>
             <CatalogOptIn
               appName={state.appName}
               website={state.website}
@@ -511,7 +511,8 @@ export default function AppMessagesPage() {
         {/* RIGHT — messages */}
         <div>
           {/* Messages header + toolbar */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3">
+            <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-text-primary">
               Messages
             </h2>
@@ -535,6 +536,8 @@ export default function AppMessagesPage() {
                 <ClipboardIcon className="w-3.5 h-3.5" />
               </button>
             </div>
+            </div>
+            <p className="mt-1 text-sm text-text-tertiary">Use them, change them, or ask your AI tool to create new ones. RelayKit keeps them compliant</p>
           </div>
 
           {/* Style variant pills */}
