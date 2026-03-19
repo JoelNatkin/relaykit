@@ -736,3 +736,13 @@ _Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
 **D-170 — Messages tab registration states: Pending/Changes Requested/Rejected stay identical to Default** (Date: 2026-03-19)
 The Pending, Changes Requested, and Rejected registration states render the same content as the Default state on the Messages tab. Registration state doesn't change what messages are available or how the developer interacts with them pre-approval. Only the Approved state will be differentiated (read-only personalization showing registered values per D-159). This is intentional, not an oversight.
 _Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
+
+## New This Session
+
+**D-171 — Checkboxes and copy-selected removed from message cards** (Date: 2026-03-19)
+Checkboxes are removed from every message card on both the public messages page (`/sms/[category]/messages`) and the post-download Messages tab (`/apps/[appId]/messages`). The "copy selected" dropdown is removed; the copy toolbar now has a single clipboard button that copies all core messages. The opt-in form (`CatalogOptIn`) always lists all message types for the category by default — no selection mechanism. The `selectedIds` prop is removed from `CatalogCard` and `CatalogOptIn`. Opt-in alignment with implemented messages is handled by `SMS_GUIDELINES.md`, not by UI selection. Note: Joel's task specified "D-167" but that number was assigned last session; this is D-171.
+_Affects: `prototype/components/catalog/catalog-card.tsx`, `prototype/components/catalog/catalog-opt-in.tsx`, `prototype/app/sms/[category]/messages/page.tsx`, `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-172 — Opt-in disclosure copy tightened** (Date: 2026-03-19)
+The disclosure paragraph below the consent checkbox is replaced with industry-standard abbreviated copy: "By opting in, you agree to receive automated texts from {app_name}. Consent is not a condition of purchase. Msg frequency varies. Msg & data rates may apply. Text STOP to opt out, HELP for help." Privacy and Terms URLs are rendered as inline links ("Privacy · Terms") appended to the fine print paragraph — not spelled-out full URLs. Duplicate spelled-out URL lines below the fine print are removed. The links use the personalized domain (`{website_url}/privacy`, `{website_url}/terms`). Note: Joel's task specified "D-168" but that number was assigned last session; this is D-172.
+_Affects: `prototype/components/catalog/catalog-opt-in.tsx`._

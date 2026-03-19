@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   ShieldTick,
@@ -65,23 +65,6 @@ function useCopyFeedback() {
 
 /* ── Inline icons ── */
 
-function ChevronDownIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  );
-}
 
 function ClipboardIcon({ className }: { className?: string }) {
   return (
@@ -385,9 +368,6 @@ export default function AppMessagesPage() {
   const [isToolOpen, setIsToolOpen] = useState(false);
   const [activeVariant, setActiveVariant] = useState("standard");
   const [viewMode, setViewMode] = useState<"preview" | "template">("preview");
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [showCopyMenu, setShowCopyMenu] = useState(false);
-  const copyMenuRef = useRef<HTMLDivElement>(null);
 
   const { copy } = useCopyFeedback();
 
@@ -417,46 +397,14 @@ export default function AppMessagesPage() {
   const coreMessages = allMessages.filter((m) => m.tier !== "expansion");
   const expansionMessages = allMessages.filter((m) => m.tier === "expansion");
 
-  // Close copy menu on outside click
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (copyMenuRef.current && !copyMenuRef.current.contains(e.target as Node)) {
-        setShowCopyMenu(false);
-      }
-    }
-    if (showCopyMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [showCopyMenu]);
-
-  function toggleSelect(messageId: string) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(messageId)) next.delete(messageId);
-      else next.add(messageId);
-      return next;
-    });
-  }
-
   function getActiveTemplate(msg: (typeof allMessages)[number]): string | undefined {
     if (activeVariant === "standard" || !msg.variants) return undefined;
     return msg.variants[activeVariant] ?? undefined;
   }
 
-  const selectedMessages = allMessages.filter((m) => selectedIds.has(m.id));
-  const hasSelection = selectedIds.size > 0;
-
-  function handleCopySelected() {
-    const text = formatMultipleCopyBlocks(selectedMessages, categoryId, state);
-    copy(text, "selected");
-    setShowCopyMenu(false);
-  }
-
   function handleCopyAll() {
     const text = formatMultipleCopyBlocks(coreMessages, categoryId, state);
     copy(text, "all");
-    setShowCopyMenu(false);
   }
 
   const variantLabels: Record<string, string> = {
@@ -556,7 +504,6 @@ export default function AppMessagesPage() {
               appName={state.appName}
               website={state.website}
               allMessages={coreMessages}
-              selectedIds={selectedIds}
             />
           </div>
         </div>
@@ -579,50 +526,14 @@ export default function AppMessagesPage() {
               >
                 {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
               </button>
-
-              <div className="relative" ref={copyMenuRef}>
-                <button
-                  type="button"
-                  onClick={() => setShowCopyMenu((prev) => !prev)}
-                  className="flex items-center gap-0.5 p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                  aria-label="Copy options"
-                >
-                  <ClipboardIcon className="w-3.5 h-3.5" />
-                  <ChevronDownIcon className="w-3 h-3" />
-                </button>
-                {showCopyMenu && (
-                  <div className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1">
-                    {hasSelection && (
-                      <button
-                        type="button"
-                        onClick={handleCopySelected}
-                        className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                      >
-                        Copy {selectedIds.size} selected
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={handleCopyAll}
-                      className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                    >
-                      Copy all {coreMessages.length} messages
-                    </button>
-                    {hasSelection && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setSelectedIds(new Set());
-                          setShowCopyMenu(false);
-                        }}
-                        className="w-full px-3 py-2 text-left text-xs text-text-quaternary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer border-t border-border-secondary"
-                      >
-                        Clear selection
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
+              <button
+                type="button"
+                onClick={handleCopyAll}
+                className="p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                aria-label="Copy all messages"
+              >
+                <ClipboardIcon className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
 
@@ -654,8 +565,6 @@ export default function AppMessagesPage() {
                 message={message}
                 categoryId={categoryId}
                 state={state}
-                isSelected={selectedIds.has(message.id)}
-                onToggleSelect={toggleSelect}
                 globalViewMode={viewMode}
                 activeTemplate={getActiveTemplate(message)}
               />

@@ -64,11 +64,11 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **Tool selector:** Six tools with real SVG logos from `/public/logos/` (D-115). Claude Code default. 56px circles, 1px #999 default border / 2px purple selected border. Unselected 60% opacity, selected 100%. Per-tool 2-3 line instructions. Prompt text in `font-mono bg-bg-secondary` with copy button. (D-110)
 
-**Message cards:** Full library for category. `CatalogCard` components with checkboxes (for copy-selected, not message selection — D-85), copy buttons, prompt nudges. Personalization updates cards in real time via localStorage (D-111).
+**Message cards:** Full library for category. `CatalogCard` components with copy buttons and prompt nudges. No checkboxes — checkboxes removed per D-171. Personalization updates cards in real time via localStorage (D-111).
 
 **Marketing messages:** Separated into "Need promotional messages too?" callout section. 70% opacity, `border-border-tertiary`, "Available with marketing registration" badge. (D-112)
 
-**Opt-in form:** `CatalogOptIn` component. Live, copyable, updates dynamically based on selected cards. (D-77)
+**Opt-in form:** `CatalogOptIn` component. Always lists all message types for the category. Fine print uses abbreviated industry-standard copy with inline Privacy · Terms links (D-172). No selection mechanism — opt-in shows all messages by default (D-171). (D-77)
 
 **Download modal:** Opens on "Download RelayKit" click. Two paths (D-114):
 1. "Sign up & download" — email → 6-digit OTP → downloading confirmation. Benefits: sandbox access, personalized files, dashboard.
@@ -204,9 +204,9 @@ Badge: red "Not approved." Stepper shortened to 4 steps (red X on step 4). Refun
 - `<h2>Sample opt-in form</h2>` — `<CatalogOptIn>` component, updates dynamically based on selected message cards
 
 *Right column:*
-- `<h2>Messages</h2>` with copy toolbar (view toggle + copy dropdown) right-aligned
+- `<h2>Messages</h2>` with copy toolbar (view toggle + single clipboard button copies all) right-aligned — no copy dropdown, no "copy selected" (D-171)
 - Style variant pills (Brand-first / Action-first / Context-first) below the header
-- `<CatalogCard>` components — full category library, checkboxes for copy-selection
+- `<CatalogCard>` components — full category library, no checkboxes (D-171)
 - "Need promotional messages too?" callout at bottom for expansion messages — same as public page (D-112)
 
 ---

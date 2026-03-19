@@ -156,8 +156,6 @@ interface CatalogCardProps {
   message: Message;
   categoryId: string;
   state: SessionState;
-  isSelected: boolean;
-  onToggleSelect: (messageId: string) => void;
   /** Page-level view mode — card can override locally */
   globalViewMode: "preview" | "template";
   /** Override template text when a variant is selected */
@@ -168,8 +166,6 @@ export function CatalogCard({
   message,
   categoryId,
   state,
-  isSelected,
-  onToggleSelect,
   globalViewMode,
   activeTemplate,
 }: CatalogCardProps) {
@@ -228,48 +224,11 @@ export function CatalogCard({
   }
 
   return (
-    <div
-      className={`rounded-xl border bg-bg-primary p-4 shadow-xs transition duration-100 ease-linear overflow-visible ${
-        isSelected ? "border-border-brand" : "border-border-secondary"
-      }`}
-    >
+    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs overflow-visible">
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
-        {/* Left: checkbox + name + badge */}
+        {/* Left: name + badge */}
         <div className="flex items-center gap-3 min-w-0">
-          {/* Checkbox — left of title */}
-          <label className="flex-shrink-0 relative cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isSelected}
-              onChange={() => onToggleSelect(message.id)}
-              className="peer sr-only"
-              aria-label={`Select ${message.name}`}
-            />
-            <div
-              className={`w-4 h-4 rounded border transition duration-100 ease-linear flex items-center justify-center ${
-                isSelected
-                  ? "bg-[#7C3AED] border-[#7C3AED]"
-                  : "border-border-primary bg-bg-primary peer-hover:border-border-brand"
-              }`}
-            >
-              {isSelected && (
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 10 10"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="2 5 4 7 8 3" />
-                </svg>
-              )}
-            </div>
-          </label>
-
           <span className="text-base font-medium text-text-primary truncate">
             {message.name}
           </span>

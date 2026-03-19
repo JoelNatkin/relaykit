@@ -62,14 +62,6 @@ function useCopyFeedback() {
 
 /* ── Inline icons ── */
 
-function ChevronDownIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="6 9 12 15 18 9" />
-    </svg>
-  );
-}
-
 /* ── OTP digit input ── */
 
 function OtpInput({ value, onChange, onComplete }: { value: string; onChange: (v: string) => void; onComplete: () => void }) {
@@ -550,14 +542,7 @@ function StepsLayout({
   setActiveVariant,
   viewMode,
   setViewMode,
-  selectedIds,
-  toggleSelect,
   getActiveTemplate,
-  showCopyMenu,
-  setShowCopyMenu,
-  copyMenuRef,
-  hasSelection,
-  handleCopySelected,
   handleCopyAll,
 }: {
   categoryId: string;
@@ -575,14 +560,7 @@ function StepsLayout({
   setActiveVariant: (v: string) => void;
   viewMode: "preview" | "template";
   setViewMode: (v: "preview" | "template") => void;
-  selectedIds: Set<string>;
-  toggleSelect: (id: string) => void;
   getActiveTemplate: (msg: typeof MESSAGES[string][number]) => string | undefined;
-  showCopyMenu: boolean;
-  setShowCopyMenu: (v: boolean | ((prev: boolean) => boolean)) => void;
-  copyMenuRef: React.RefObject<HTMLDivElement | null>;
-  hasSelection: boolean;
-  handleCopySelected: () => void;
   handleCopyAll: () => void;
 }) {
   const [selectedTool, setSelectedTool] = useState("claude-code");
@@ -768,7 +746,6 @@ function StepsLayout({
                 appName={state.appName}
                 website={state.website}
                 allMessages={coreMessages}
-                selectedIds={selectedIds}
               />
             </div>
 
@@ -790,46 +767,14 @@ function StepsLayout({
                 >
                   {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
                 </button>
-                <div className="relative" ref={copyMenuRef}>
-                  <button
-                    type="button"
-                    onClick={() => setShowCopyMenu((prev: boolean) => !prev)}
-                    className="flex items-center gap-0.5 p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                    aria-label="Copy options"
-                  >
-                    <ClipboardIcon className="w-3.5 h-3.5" />
-                    <ChevronDownIcon className="w-3 h-3" />
-                  </button>
-                  {showCopyMenu && (
-                    <div className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1">
-                      {hasSelection && (
-                        <button
-                          type="button"
-                          onClick={handleCopySelected}
-                          className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Copy {selectedIds.size} selected
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={handleCopyAll}
-                        className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                      >
-                        Copy all {coreMessages.length} messages
-                      </button>
-                      {hasSelection && (
-                        <button
-                          type="button"
-                          onClick={() => { setShowCopyMenu(false); }}
-                          className="w-full px-3 py-2 text-left text-xs text-text-quaternary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer border-t border-border-secondary"
-                        >
-                          Clear selection
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  className="p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                  aria-label="Copy all messages"
+                >
+                  <ClipboardIcon className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
 
@@ -861,8 +806,6 @@ function StepsLayout({
                   message={message}
                   categoryId={categoryId}
                   state={state}
-                  isSelected={selectedIds.has(message.id)}
-                  onToggleSelect={toggleSelect}
                   globalViewMode={viewMode}
                   activeTemplate={getActiveTemplate(message)}
                 />
@@ -930,10 +873,7 @@ export default function PublicMessagesPage() {
 
   const [activeVariant, setActiveVariant] = useState("standard");
   const [viewMode, setViewMode] = useState<"preview" | "template">("preview");
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [showCopyMenu, setShowCopyMenu] = useState(false);
   const [showPersonalize, setShowPersonalize] = useState(false);
-  const copyMenuRef = useRef<HTMLDivElement>(null);
 
   const { copy } = useCopyFeedback();
 
@@ -965,46 +905,14 @@ export default function PublicMessagesPage() {
   const coreMessages = allMessages.filter((m) => m.tier !== "expansion");
   const expansionMessages = allMessages.filter((m) => m.tier === "expansion");
 
-  // Close copy menu on outside click
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (copyMenuRef.current && !copyMenuRef.current.contains(e.target as Node)) {
-        setShowCopyMenu(false);
-      }
-    }
-    if (showCopyMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }
-  }, [showCopyMenu]);
-
-  function toggleSelect(messageId: string) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(messageId)) next.delete(messageId);
-      else next.add(messageId);
-      return next;
-    });
-  }
-
   function getActiveTemplate(msg: typeof allMessages[number]): string | undefined {
     if (activeVariant === "standard" || !msg.variants) return undefined;
     return msg.variants[activeVariant] ?? undefined;
   }
 
-  const selectedMessages = allMessages.filter((m) => selectedIds.has(m.id));
-  const hasSelection = selectedIds.size > 0;
-
-  function handleCopySelected() {
-    const text = formatMultipleCopyBlocks(selectedMessages, categoryId, state);
-    copy(text, "selected");
-    setShowCopyMenu(false);
-  }
-
   function handleCopyAll() {
     const text = formatMultipleCopyBlocks(coreMessages, categoryId, state);
     copy(text, "all");
-    setShowCopyMenu(false);
   }
 
   // Map variant IDs to marketing-friendly labels
@@ -1043,14 +951,7 @@ export default function PublicMessagesPage() {
           setActiveVariant={setActiveVariant}
           viewMode={viewMode}
           setViewMode={setViewMode}
-          selectedIds={selectedIds}
-          toggleSelect={toggleSelect}
           getActiveTemplate={getActiveTemplate}
-          showCopyMenu={showCopyMenu}
-          setShowCopyMenu={setShowCopyMenu}
-          copyMenuRef={copyMenuRef}
-          hasSelection={hasSelection}
-          handleCopySelected={handleCopySelected}
           handleCopyAll={handleCopyAll}
         />
         <Footer />
@@ -1118,49 +1019,14 @@ export default function PublicMessagesPage() {
                 >
                   {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
                 </button>
-
-                {/* Copy dropdown */}
-                <div className="relative" ref={copyMenuRef}>
-                  <button
-                    type="button"
-                    onClick={() => setShowCopyMenu((prev) => !prev)}
-                    className="flex items-center gap-0.5 p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                    aria-label="Copy options"
-                  >
-                    <ClipboardIcon className="w-3.5 h-3.5" />
-                    <ChevronDownIcon className="w-3 h-3" />
-                  </button>
-
-                  {showCopyMenu && (
-                    <div className="absolute right-0 top-full mt-1 z-50 min-w-[160px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1">
-                      {hasSelection && (
-                        <button
-                          type="button"
-                          onClick={handleCopySelected}
-                          className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Copy {selectedIds.size} selected
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        onClick={handleCopyAll}
-                        className="w-full px-3 py-2 text-left text-xs text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                      >
-                        Copy all {coreMessages.length} messages
-                      </button>
-                      {hasSelection && (
-                        <button
-                          type="button"
-                          onClick={() => { setSelectedIds(new Set()); setShowCopyMenu(false); }}
-                          className="w-full px-3 py-2 text-left text-xs text-text-quaternary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer border-t border-border-secondary"
-                        >
-                          Clear selection
-                        </button>
-                      )}
-                    </div>
-                  )}
-                </div>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  className="p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                  aria-label="Copy all messages"
+                >
+                  <ClipboardIcon className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
 
@@ -1216,8 +1082,6 @@ export default function PublicMessagesPage() {
                   message={message}
                   categoryId={categoryId}
                   state={state}
-                  isSelected={selectedIds.has(message.id)}
-                  onToggleSelect={toggleSelect}
                   globalViewMode={viewMode}
                   activeTemplate={getActiveTemplate(message)}
                 />
@@ -1278,7 +1142,6 @@ export default function PublicMessagesPage() {
               appName={state.appName}
               website={state.website}
               allMessages={coreMessages}
-              selectedIds={selectedIds}
             />
           </div>
         </div>

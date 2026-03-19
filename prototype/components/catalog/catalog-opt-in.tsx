@@ -76,15 +76,12 @@ interface CatalogOptInProps {
   website: string;
   /** All messages in the category */
   allMessages: Message[];
-  /** IDs of currently selected (checked) messages */
-  selectedIds: Set<string>;
 }
 
 export function CatalogOptIn({
   appName,
   website,
   allMessages,
-  selectedIds,
 }: CatalogOptInProps) {
   const { copied, copy } = useCopyFeedback();
   const nudgeCopy = useCopyFeedback();
@@ -92,31 +89,26 @@ export function CatalogOptIn({
   const displayName = appName || "Your App";
   const displayUrl = website || "yourapp.com";
 
-  // Build consent labels from selected messages (or use generic when none selected)
-  const selectedMessages = allMessages.filter((m) => selectedIds.has(m.id));
-  const hasSelection = selectedMessages.length > 0;
-
-  const transactionalLabels = selectedMessages
+  // Build consent labels from ALL messages in the category
+  const transactionalLabels = allMessages
     .filter((m) => !m.expansionType)
     .map((m) => m.consentLabel);
-  const marketingLabels = selectedMessages
+  const marketingLabels = allMessages
     .filter((m) => m.expansionType === "marketing" || m.expansionType === "mixed")
     .map((m) => m.consentLabel);
 
   const hasMarketing = marketingLabels.length > 0;
 
-  // Checkbox label — specific when messages selected, generic when not
-  const checkboxLabel = hasSelection
-    ? `I agree to receive ${naturalList([...transactionalLabels, ...marketingLabels])} text messages from ${displayName}.`
-    : `I agree to receive text messages from ${displayName}.`;
+  // Checkbox label — always lists all message types
+  const checkboxLabel = `I agree to receive ${naturalList([...transactionalLabels, ...marketingLabels])} text messages from ${displayName}.`;
 
   // Marketing consent checkbox — separate per CTIA
   const marketingCheckboxLabel = hasMarketing
     ? `I also agree to receive marketing messages from ${displayName}. You can opt out at any time.`
     : null;
 
-  // Fine print — the single disclosure block with all CTIA-required elements
-  const finePrint = `By opting in, you agree to receive automated text messages from ${displayName}. Consent is not a condition of purchase. Message and data rates may apply. Message frequency varies. Text STOP to opt out at any time. Text HELP for help. Privacy Policy: ${displayUrl}/privacy. Terms of Service: ${displayUrl}/terms.`;
+  // Fine print — tightened per D-168
+  const finePrint = `By opting in, you agree to receive automated texts from ${displayName}. Consent is not a condition of purchase. Msg frequency varies. Msg & data rates may apply. Text STOP to opt out, HELP for help.`;
 
   // Build full copyable block
   function buildCopyText(): string {
@@ -132,8 +124,8 @@ export function CatalogOptIn({
     lines.push("", "Disclosure / fine print:", finePrint);
     lines.push(
       "",
-      `Privacy Policy: ${displayUrl}/privacy`,
-      `Terms of Service: ${displayUrl}/terms`
+      `Privacy: ${displayUrl}/privacy`,
+      `Terms: ${displayUrl}/terms`
     );
     return lines.join("\n");
   }
@@ -197,17 +189,10 @@ export function CatalogOptIn({
 
         {/* Fine print */}
         <p className="mt-4 text-xs text-text-tertiary leading-relaxed">
-          {finePrint}
-        </p>
-
-        {/* Legal links — mock/preview, not clickable */}
-        <p className="mt-3 space-x-3">
-          <span className="text-xs text-text-tertiary">
-            {displayUrl}/privacy
-          </span>
-          <span className="text-xs text-text-tertiary">
-            {displayUrl}/terms
-          </span>
+          {finePrint}{" "}
+          <span className="text-text-brand-secondary underline cursor-default">Privacy</span>
+          {" · "}
+          <span className="text-text-brand-secondary underline cursor-default">Terms</span>
         </p>
 
         {/* CTA button */}
