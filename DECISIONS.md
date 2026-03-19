@@ -674,3 +674,49 @@ _Affects: Pricing model, no UI impact._
 **D-152 — Pre-registration support contact not shown — avoid premature support volume** (Date: 2026-03-17)
 hello@relaykit.ai and support contact only appear after the developer has paid and is in the registration pipeline. Pre-registration questions will be handled by a help/FAQ page behind the "Learn more →" placeholder link. Keeps CTA focus clean and support volume manageable at beta scale.
 _Affects: `prototype/app/apps/[appId]/overview/page.tsx`._
+
+**D-153: Cancellation policy**
+Plan runs through end of current billing period, then live sending stops, sandbox continues indefinitely. No proration.
+
+**D-154: Registration/number portability**
+Offered as a self-service export (registration data) and assisted transfer (phone number via Twilio porting). Surfaced in Settings, not hidden.
+
+**D-157 — Messages page AI command shortlist** (Date: 2026-03-18)
+Messages page post-download includes a shortlist of common AI commands developers can copy and use with their AI coding tool and RelayKit files loaded. Examples: "Review my messages for compliance" (use along the way and before registering), "Write a message that lets us tell users [goal]" (expand messages and stay compliant). These commands leverage the AI tool + SMS_GUIDELINES.md as the compliance authoring and verification layer. No built-in composer in v1.
+_Affects: Messages page (post-download state), SMS_GUIDELINES.md deliverable._
+
+**D-158 — Sandbox compliance analysis and pre-registration review** (Date: 2026-03-18)
+Sandbox compliance analysis runs during development — same checks as production but non-blocking. Warnings are clearable by the developer after they've addressed the issue. Pre-registration includes a checklist step where the developer runs an AI-powered review of all their messages (a function built into the RelayKit files) and confirms completion via checkbox before proceeding.
+_Affects: Sandbox compliance flow, registration intake wizard, RelayKit deliverable files._
+
+**D-159 — Creative freedom within registered use case** (Date: 2026-03-18)
+All three message style variants (Brand-first, Action-first, Context-first) are freely usable post-registration. TCR sample messages demonstrate the range; APPROVED_MESSAGE_TYPES covers the category broadly. Compliance enforcement is structural (app name prefix, opt-out suffix) and categorical (no marketing through transactional, no prohibited content). Developers have full creative freedom within their registered use case category. Small changes, additional messages, and personalization are expected and allowed.
+_Affects: Compliance enforcement logic, experience principles copy, registration documentation._
+
+**D-160 — Tool selector collapsed by default on signed-up Messages page** (Date: 2026-03-18)
+Tool selector on the signed-up Messages page is kept but collapsed by default under "AI tool setup instructions" header with chevron. Supports re-referencing the command and future tool changes without dominating the page.
+_Affects: Messages page (post-download/logged-in state)._
+
+**D-161 — Registration intake live message preview** (Date: 2026-03-18)
+Registration intake form includes a live message preview (side by side with form fields) showing how the developer's business name, URL, and service type appear in actual messages. Preview updates as they type. Refines D-156 with specific layout direction.
+_Affects: Registration intake wizard UI._
+
+**D-162 — Initial download happens on Messages page, not Overview** (Date: 2026-03-19)
+The initial RelayKit download always happens on the public Messages page (`/sms/[category]/messages`). Overview and Settings pages don't exist until after download — they are created as part of the project that gets created at download/signup time. Flow: stranger → Messages page → "Download RelayKit" → auth gate → download → project created → directed to `/apps/[appId]/overview`. The Messages page is both the public marketing page and the conversion/download point. This is the correct flow — the download confirmation should orient users toward their new project's Overview, not keep them on Messages.
+_Affects: Messages page states, download confirmation flow, project creation logic, PROTOTYPE_SPEC.md._
+
+**D-163 — Prototype is the UI source of truth for production** (Date: 2026-03-19)
+The prototype at `/prototype` (port 3001) is the authoritative source for all UI decisions. Production code will be ported from prototype screens, not built from PRDs. PRDs are historical context. When porting to production, CC builds from prototype code + PROTOTYPE_SPEC.md + DECISIONS.md. D-104 (PRD update gate) is superseded for screens being ported directly from prototype code.
+_Affects: Build process, CC session workflow, all future production builds._
+
+**D-164 — Registration tab confirmed removed — three tabs only** (Date: 2026-03-19)
+App layout has exactly three tabs: Overview, Messages, Settings. Registration tab was removed in D-126 but not recorded as a standalone removal decision. Registration content lives on the Overview page — sidebar card during onboarding, celebration CTA after completing steps, lifecycle states for pending/approved/rejected. Formalizes what D-126 established.
+_Affects: `prototype/app/apps/[appId]/layout.tsx`._
+
+**D-165 — PROTOTYPE_SPEC.md captures screen-level decisions** (Date: 2026-03-19)
+A new file, PROTOTYPE_SPEC.md, documents what each screen looks like, how it behaves, and what data it shows — at a level of detail that lets CC rebuild any screen from the spec alone. Updated as screens stabilize. DECISIONS.md captures what/why; PROTOTYPE_SPEC.md captures what-it-looks-like/how-it-works. CC reads relevant sections before building or modifying screens.
+_Affects: CC workflow, all prototype and production builds._
+
+**D-166 — BACKLOG.md captures deferred ideas and Phase 2 features** (Date: 2026-03-19)
+A new file, BACKLOG.md, is a parking lot for ideas, deferred work, and future features. Two tiers: "Likely" (will probably happen) and "Maybe" (interesting but unvalidated). Items move to DECISIONS.md when they become real decisions. CC never builds from BACKLOG.md unless Joel explicitly promotes an item.
+_Affects: Session workflow, idea capture process._

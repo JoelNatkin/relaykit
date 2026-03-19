@@ -226,3 +226,98 @@ Read the relevant PRD before building each component. PRDs are in the /docs dire
 | PRD_09_MESSAGING_PROXY.md | Messaging proxy |
 
 **Do not build any section marked "Phase 2" or "BYO Twilio" in any PRD.**
+
+
+## Prototype Quality Standards
+
+The prototype at `/prototype` (port 3001) is the UI source of truth. Production code will be ported from prototype screens. This means prototype work must meet production standards in everything except backend integration.
+
+### What "production quality" means in the prototype
+
+**Must match production:**
+- Component naming — use names that make sense when ported (e.g., `ApprovedDashboard`, `EditableField`, not `TestCard` or `TempLayout`)
+- Data shapes — mock data must use the same interfaces and field names that production Supabase queries will return. If the production `registrations` table has `approved_at`, the mock data says `approved_at`, not `approvalDate`
+- Route structure — prototype routes at `/apps/[appId]/overview` will become production routes at the same paths
+- Semantic color tokens — always Untitled UI semantic classes, never raw Tailwind colors
+- Copy and microcopy — must comply with Experience Principles (D-31). Every string is production copy, not placeholder
+- State management patterns — even with mocked data, state should flow the way it will in production (props down, events up, context for cross-component state)
+- Accessibility basics — semantic HTML, proper heading hierarchy, button vs. link distinction, keyboard navigability
+
+**Acceptable prototype shortcuts:**
+- Mock data instead of Supabase queries
+- localStorage/sessionStorage instead of server persistence
+- State switcher dropdowns for lifecycle state (these are development tools, not user-facing)
+- No error boundaries or loading states (unless the screen's UX depends on them)
+- No real auth — the session context toggle is fine
+- No real Stripe, Twilio, or email integration
+
+### State switcher protocol
+
+State switcher dropdowns (e.g., Default/Pending/Approved/Rejected on Overview) are essential development tools. Rules:
+- Always retain them — they're how Joel reviews all states without backend triggers
+- Style them consistently: `text-tertiary text-sm`, right-aligned in the H1 row
+- They drive conditional rendering but are invisible to the "real" UI below them
+- When porting to production, the conditional rendering logic stays; the dropdown is replaced by server state
+- Add state switchers to any new page that has multiple lifecycle states
+
+### Before building or modifying any prototype screen
+
+1. Read PROTOTYPE_SPEC.md for the screen you're about to touch
+2. Read relevant DECISIONS.md entries (the spec references them)
+3. Read V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md if writing any user-facing copy
+4. Check CC_HANDOFF.md for gotchas about the current state
+
+If PROTOTYPE_SPEC.md and the prototype code disagree, the code wins (it's more current). Flag the discrepancy so the spec can be updated.
+
+### After completing significant prototype work
+
+Update PROTOTYPE_SPEC.md for any screen where:
+- Layout or structure changed
+- New states were added
+- Key copy was finalized
+- Interactions were added or removed
+- Data shape changed
+
+Don't update for cosmetic tweaks (spacing, font size adjustments, color refinements).
+
+---
+
+## New File References
+
+| File | When to read | Purpose |
+|------|-------------|---------|
+| PROTOTYPE_SPEC.md | Before building/modifying any prototype screen | Screen-level specifications — what it looks like, how it behaves, why |
+| BACKLOG.md | When Joel asks about future features or Phase 2 ideas | Parking lot for deferred work and ideas — nothing here is scheduled |
+
+### BACKLOG.md protocol
+
+- If Joel mentions an idea during a session that isn't on the current build task, suggest adding it to BACKLOG.md
+- Never build anything from BACKLOG.md unless Joel explicitly promotes it to the current session
+- If CC encounters a natural place where a backlog item would fit, mention it briefly but don't implement it
+- Format for new entries: `- **[Title]** — [Brief description]. (Origin: [session/decision ref])`
+
+---
+
+## Prototype → Production Porting Rules
+
+When the time comes to port prototype screens into the production `src/` codebase:
+
+1. **Build from prototype code + PROTOTYPE_SPEC.md**, not from PRDs. PRDs are historical context. The prototype is the spec.
+2. **Keep the same component structure** — if the prototype has `approved-dashboard.tsx` as a separate component, production should too
+3. **Replace mocks with real data** — swap localStorage reads for Supabase queries, mock state for server state
+4. **Strip state switchers** — replace dropdown-driven conditionals with server-state-driven conditionals (the conditional logic itself stays)
+5. **Add error boundaries, loading states, and edge cases** that the prototype skipped
+6. **D-104 gate is superseded for ported screens** — when porting directly from prototype code, the PRD update requirement (D-104) doesn't apply because the prototype IS the updated spec. DECISIONS.md still applies as the conflict-resolution authority.
+
+---
+
+## Download Flow Correction (D-162 candidate)
+
+Initial RelayKit download always happens on the Messages page. Overview and Settings pages don't exist until after download — they are created as part of the project that gets created at download/signup time. The flow is:
+
+1. Stranger lands on `/sms/[category]/messages` (public messages page)
+2. Clicks "Download RelayKit" → auth gate → download
+3. Download creates their project → project now has Overview, Messages, Settings tabs
+4. User is directed to `/apps/[appId]/overview` to start the build flow
+
+This means the Messages page serves dual duty: public marketing page for strangers AND the conversion/download point. The "signed up, pre-download" state on Messages is the most critical conversion moment in the product.

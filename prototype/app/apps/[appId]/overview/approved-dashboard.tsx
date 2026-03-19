@@ -247,8 +247,8 @@ export default function ApprovedDashboard() {
               <span className="text-3xl font-semibold text-text-primary">347</span>
               <span className="text-lg text-text-tertiary">/ 500</span>
             </div>
-            <div className="mt-3 h-3 rounded-full bg-bg-secondary">
-              <div className="h-3 rounded-full bg-bg-brand-solid" style={{ width: "69.4%" }} />
+            <div className="mt-3 h-2 rounded-full bg-bg-secondary">
+              <div className="h-2 rounded-full bg-bg-brand-solid" style={{ width: "69.4%" }} />
             </div>
             <p className="mt-2 text-sm text-text-secondary">153 messages remaining this period</p>
             <p className="mt-2 text-xs text-text-tertiary">Plan: $19/mo &middot; 500 included</p>
@@ -264,9 +264,9 @@ export default function ApprovedDashboard() {
                     <span className="text-text-secondary">{type.label}</span>
                     <span className="text-text-primary font-medium tabular-nums">{type.count.toLocaleString()}</span>
                   </div>
-                  <div className="h-3 rounded-full bg-bg-secondary">
+                  <div className="h-2 rounded-full bg-bg-secondary">
                     <div
-                      className="h-3 rounded-full bg-bg-brand-solid"
+                      className="h-2 rounded-full bg-bg-brand-solid"
                       style={{ width: `${(type.count / MESSAGE_TYPE_MAX) * 100}%` }}
                     />
                   </div>
@@ -278,14 +278,14 @@ export default function ApprovedDashboard() {
           {/* Card 6 — Sending Patterns (row 2, right) */}
           <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
             <p className="text-sm font-semibold text-text-tertiary uppercase tracking-wide">Sending patterns</p>
-            <div className="mt-3 flex items-end gap-0.5 h-24">
+            <div className="mt-3 flex items-end justify-between h-24">
               {HOURLY_DATA.map((value, i) => {
                 const isQuietHour = i >= 21 || i <= 8;
                 const heightPct = (value / HOURLY_MAX) * 100;
                 return (
                   <div
                     key={i}
-                    className={`flex-1 rounded-t ${isQuietHour ? "bg-fg-warning-primary" : "bg-bg-brand-solid"}`}
+                    className={`w-2 rounded-t ${isQuietHour ? "bg-fg-warning-primary" : "bg-bg-brand-solid"}`}
                     style={{ height: `${Math.max(heightPct, 2)}%` }}
                     title={`${i === 0 ? "12" : i > 12 ? i - 12 : i}${i < 12 ? "AM" : "PM"}: ${value} messages`}
                   />
