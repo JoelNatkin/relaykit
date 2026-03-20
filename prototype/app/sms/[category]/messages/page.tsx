@@ -252,8 +252,8 @@ function InteractiveToolSelector() {
 
 function FilesOnlyConfirmation({ onClose }: { onClose: () => void }) {
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-5">
+    <div className="space-y-6">
+      <div className="flex items-center gap-3">
         <div className="flex items-center justify-center size-10 rounded-full bg-bg-success-secondary">
           <svg className="size-5 text-fg-success-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="20 6 9 17 4 12" />
@@ -267,20 +267,16 @@ function FilesOnlyConfirmation({ onClose }: { onClose: () => void }) {
 
       <InteractiveToolSelector />
 
-      <button
-        type="button"
-        onClick={onClose}
-        className="mt-6 w-full rounded-lg border border-border-primary bg-bg-primary px-4 py-[14px] text-sm font-semibold text-text-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-primary_hover cursor-pointer"
-      >
-        Create an account later
-      </button>
-      <button
-        type="button"
-        onClick={onClose}
-        className="mt-3 w-full text-center text-sm text-text-tertiary hover:underline cursor-pointer"
-      >
-        Close
-      </button>
+      <div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="w-full rounded-lg bg-bg-brand-solid px-4 py-[14px] text-sm font-semibold text-text-white shadow-xs transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+        >
+          Done
+        </button>
+        <p className="mt-2 text-center text-xs text-text-tertiary">You can find this again under Tool setup</p>
+      </div>
     </div>
   );
 }
