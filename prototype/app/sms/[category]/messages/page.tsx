@@ -686,7 +686,7 @@ function PersonalizeSlideout({
             <input
               type="text"
               value={data.appName}
-              placeholder="GlowStudio"
+              placeholder="Enter business name"
               onChange={(e) => onChange({ ...data, appName: e.target.value })}
               className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
             />
@@ -696,13 +696,16 @@ function PersonalizeSlideout({
             <label className="mb-1.5 block text-sm font-medium text-text-secondary">
               Website URL
             </label>
-            <input
-              type="text"
-              value={data.website}
-              placeholder="glowstudio.com"
-              onChange={(e) => onChange({ ...data, website: e.target.value })}
-              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-            />
+            <div className="flex items-center rounded-lg border border-border-primary bg-bg-primary shadow-xs focus-within:border-border-brand transition duration-100 ease-linear">
+              <span className="pl-3.5 text-sm text-text-quaternary select-none">https://</span>
+              <input
+                type="text"
+                value={data.website}
+                placeholder="Enter URL"
+                onChange={(e) => onChange({ ...data, website: e.target.value })}
+                className="flex-1 bg-transparent px-1 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder focus:outline-none"
+              />
+            </div>
           </div>
 
           <div>
@@ -712,7 +715,7 @@ function PersonalizeSlideout({
             <input
               type="text"
               value={data.serviceType}
-              placeholder="haircut, dental cleaning, massage"
+              placeholder="Enter service type"
               onChange={(e) => onChange({ ...data, serviceType: e.target.value })}
               className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
             />
