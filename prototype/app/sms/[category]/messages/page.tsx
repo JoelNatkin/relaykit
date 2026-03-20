@@ -769,6 +769,7 @@ function StepsLayout({
 }) {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [hasDownloaded, setHasDownloaded] = useState(false);
+  const [showPersonalize, setShowPersonalize] = useState(false);
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
 
   const tools = TOOLS;
@@ -779,6 +780,13 @@ function StepsLayout({
         isOpen={showDownloadModal}
         onClose={() => setShowDownloadModal(false)}
         onFilesDownloaded={() => setHasDownloaded(true)}
+      />
+
+      <PersonalizeSlideout
+        isOpen={showPersonalize}
+        onClose={() => setShowPersonalize(false)}
+        data={personalizeData}
+        onChange={onPersonalizeChange}
       />
 
       {/* Header */}
@@ -863,36 +871,16 @@ function StepsLayout({
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_300px]">
           {/* LEFT COLUMN — messages */}
           <div>
-            {/* Messages header + toolbar */}
+            {/* Messages header */}
             <div className="mb-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-                <div className="flex items-center gap-5">
-                  <button
-                    type="button"
-                    onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
-                    className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                  >
-                    {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
-                    <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCopyAll}
-                    className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                  >
-                    <ClipboardIcon className="w-3.5 h-3.5" />
-                    <span>Copy all</span>
-                  </button>
-                </div>
-              </div>
+              <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
               <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
             </div>
 
-            {/* Style pills + marketing link */}
-            {(variants && variants.length > 1 || expansionMessages.length > 0) && (
-              <div className="mt-1 mb-5 flex items-center gap-2">
-                {variants && variants.length > 1 && variants.map((v) => (
+            {/* Style variant pills */}
+            {variants && variants.length > 1 && (
+              <div className="mt-1 mb-3 flex items-center gap-2">
+                {variants.map((v) => (
                   <button
                     key={v.id}
                     type="button"
@@ -906,18 +894,50 @@ function StepsLayout({
                     {variantLabels[v.id] || v.label}
                   </button>
                 ))}
+              </div>
+            )}
+
+            {/* Toolbar row */}
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-4">
                 {expansionMessages.length > 0 && (
                   <button
                     type="button"
                     onClick={() => document.getElementById("marketing-section-steps")?.scrollIntoView({ behavior: "smooth" })}
-                    className="ml-auto flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                    className="flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
                   >
-                    Need marketing messages?
+                    Marketing messages
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                   </button>
                 )}
+                <button
+                  type="button"
+                  onClick={() => setShowPersonalize(true)}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <Settings01 className="size-4" />
+                  Personalize
+                </button>
               </div>
-            )}
+              <div className="flex items-center gap-5">
+                <button
+                  type="button"
+                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                  <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <ClipboardIcon className="w-3.5 h-3.5" />
+                  <span>Copy all</span>
+                </button>
+              </div>
+            </div>
 
             {/* Core message cards */}
             <div className="space-y-3">
@@ -978,63 +998,17 @@ function StepsLayout({
             )}
           </div>
 
-          {/* RIGHT COLUMN — personalize + opt-in */}
+          {/* RIGHT COLUMN — opt-in only */}
           <div className="lg:self-start lg:sticky lg:top-20">
             <h2 className="text-sm font-semibold text-text-primary mb-1">
-              Preview your messages
+              Opt-in form preview
             </h2>
-            <p className="mb-3 text-sm text-text-secondary">See how messages look with your details.</p>
-            <div className="space-y-3">
-              <div>
-                <label className="mb-1 block text-xs font-medium text-text-secondary">
-                  App / business name
-                </label>
-                <input
-                  type="text"
-                  value={personalizeData.appName}
-                  placeholder="GlowStudio"
-                  onChange={(e) => onPersonalizeChange({ ...personalizeData, appName: e.target.value })}
-                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-text-secondary">
-                  Website URL
-                </label>
-                <input
-                  type="text"
-                  value={personalizeData.website}
-                  placeholder="glowstudio.com"
-                  onChange={(e) => onPersonalizeChange({ ...personalizeData, website: e.target.value })}
-                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-text-secondary">
-                  Service type
-                </label>
-                <input
-                  type="text"
-                  value={personalizeData.serviceType}
-                  placeholder="haircut, dental cleaning"
-                  onChange={(e) => onPersonalizeChange({ ...personalizeData, serviceType: e.target.value })}
-                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-                />
-              </div>
-            </div>
-
-            {/* Opt-in form preview */}
-            <div className="mt-8">
-              <h2 className="text-sm font-semibold text-text-primary mb-1">
-                Opt-in form preview
-              </h2>
-              <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours updated.</p>
-              <CatalogOptIn
-                appName={state.appName}
-                website={state.website}
-                allMessages={coreMessages}
-              />
-            </div>
+            <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours updated.</p>
+            <CatalogOptIn
+              appName={state.appName}
+              website={state.website}
+              allMessages={coreMessages}
+            />
           </div>
         </div>
       </div>
@@ -1186,87 +1160,73 @@ export default function PublicMessagesPage() {
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[55fr_45fr]">
           {/* Left column — message cards */}
           <div>
-            {/* Toolbar */}
+            {/* Messages header */}
             <div className="mb-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-                <div className="flex items-center gap-5">
-                  <button
-                    type="button"
-                    onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
-                    className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                  >
-                    {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
-                    <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleCopyAll}
-                    className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                  >
-                    <ClipboardIcon className="w-3.5 h-3.5" />
-                    <span>Copy all</span>
-                  </button>
-                </div>
-              </div>
+              <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
               <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
             </div>
 
-            {/* Style pills + Personalize button + marketing link */}
-            {(variants && variants.length > 1 || expansionMessages.length > 0) && (
-              <div className="mb-4 flex items-center gap-2">
-                {variants && variants.length > 1 && (
-                  <div className="flex items-center gap-2">
-                    {variants.map((v) => (
-                      <button
-                        key={v.id}
-                        type="button"
-                        onClick={() => setActiveVariant(v.id)}
-                        className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-100 ease-linear ${
-                          activeVariant === v.id
-                            ? "bg-bg-brand-secondary text-text-brand-secondary"
-                            : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
-                        }`}
-                      >
-                        {variantLabels[v.id] || v.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setShowPersonalize(true)}
-                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                >
-                  <Settings01 className="size-4" />
-                  Personalize
-                </button>
+            {/* Style variant pills */}
+            {variants && variants.length > 1 && (
+              <div className="mb-3 flex items-center gap-2">
+                {variants.map((v) => (
+                  <button
+                    key={v.id}
+                    type="button"
+                    onClick={() => setActiveVariant(v.id)}
+                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-100 ease-linear ${
+                      activeVariant === v.id
+                        ? "bg-bg-brand-secondary text-text-brand-secondary"
+                        : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
+                    }`}
+                  >
+                    {variantLabels[v.id] || v.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Toolbar row */}
+            <div className="mb-5 flex items-center justify-between">
+              <div className="flex items-center gap-4">
                 {expansionMessages.length > 0 && (
                   <button
                     type="button"
                     onClick={() => document.getElementById("marketing-section-default")?.scrollIntoView({ behavior: "smooth" })}
-                    className="ml-auto flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                    className="flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
                   >
-                    Need marketing messages?
+                    Marketing messages
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                   </button>
                 )}
-              </div>
-            )}
-
-            {/* Personalize button fallback when no variants */}
-            {(!variants || variants.length <= 1) && (
-              <div className="mb-4 flex justify-end">
                 <button
                   type="button"
                   onClick={() => setShowPersonalize(true)}
-                  className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
                 >
                   <Settings01 className="size-4" />
                   Personalize
                 </button>
               </div>
-            )}
+              <div className="flex items-center gap-5">
+                <button
+                  type="button"
+                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                  <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <ClipboardIcon className="w-3.5 h-3.5" />
+                  <span>Copy all</span>
+                </button>
+              </div>
+            </div>
 
             {/* Core message cards */}
             <div className="space-y-3">

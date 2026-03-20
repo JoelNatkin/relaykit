@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useParams } from "next/navigation";
 import {
   ShieldTick,
   Edit03,
   MessagePlusSquare,
   ClipboardCheck,
+  XClose,
+  Settings01,
 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
@@ -360,6 +362,97 @@ function ToolPanel() {
   );
 }
 
+/* ── Personalize slideout ── */
+
+function PersonalizeSlideout({
+  isOpen,
+  onClose,
+  data,
+  onChange,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  data: PersonalizeData;
+  onChange: (data: PersonalizeData) => void;
+}) {
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [isOpen, onClose]);
+
+  return (
+    <>
+      {isOpen && (
+        <div
+          className="fixed inset-0 top-14 z-40 bg-white/50 transition-opacity duration-200"
+          onClick={onClose}
+        />
+      )}
+      <div
+        ref={panelRef}
+        className={`fixed top-14 right-0 z-50 h-[calc(100%-3.5rem)] w-full max-w-sm bg-bg-primary border-l border-border-secondary shadow-xl transition-transform duration-200 ease-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-border-secondary px-6 py-4">
+          <h2 className="text-base font-semibold text-text-primary">
+            Personalize messages
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+            aria-label="Close"
+          >
+            <XClose className="size-5" />
+          </button>
+        </div>
+        <div className="px-6 py-6 space-y-5">
+          <p className="text-sm text-text-tertiary">
+            See how messages look with your details.
+          </p>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">App / business name</label>
+            <input
+              type="text"
+              value={data.appName}
+              placeholder="GlowStudio"
+              onChange={(e) => onChange({ ...data, appName: e.target.value })}
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">Website URL</label>
+            <input
+              type="text"
+              value={data.website}
+              placeholder="glowstudio.com"
+              onChange={(e) => onChange({ ...data, website: e.target.value })}
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+            />
+          </div>
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-text-secondary">Service type</label>
+            <input
+              type="text"
+              value={data.serviceType}
+              placeholder="haircut, dental cleaning, massage"
+              onChange={(e) => onChange({ ...data, serviceType: e.target.value })}
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 /* ── Page ── */
 
 export default function AppMessagesPage() {
@@ -371,6 +464,7 @@ export default function AppMessagesPage() {
   const variants = CATEGORY_VARIANTS[categoryId];
 
   const [isToolOpen, setIsToolOpen] = useState(false);
+  const [showPersonalize, setShowPersonalize] = useState(false);
   const [activeVariant, setActiveVariant] = useState("standard");
   const [viewMode, setViewMode] = useState<"preview" | "template">("preview");
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
@@ -421,6 +515,13 @@ export default function AppMessagesPage() {
 
   return (
     <div>
+      <PersonalizeSlideout
+        isOpen={showPersonalize}
+        onClose={() => setShowPersonalize(false)}
+        data={personalizeData}
+        onChange={handlePersonalizeChange}
+      />
+
       {/* AI prompts header row */}
       <div className="mb-3">
         <div className="flex items-center justify-between">
@@ -465,38 +566,16 @@ export default function AppMessagesPage() {
 
         {/* LEFT — messages */}
         <div>
-          {/* Messages header + toolbar */}
+          {/* Messages header */}
           <div className="mb-3">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-              <div className="flex items-center gap-5">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setViewMode(viewMode === "preview" ? "template" : "preview")
-                  }
-                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                >
-                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
-                  <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCopyAll}
-                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                >
-                  <ClipboardIcon className="w-3.5 h-3.5" />
-                  <span>Copy all</span>
-                </button>
-              </div>
-            </div>
+            <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
             <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
           </div>
 
-          {/* Style variant pills + marketing link */}
-          {(variants && variants.length > 1 || expansionMessages.length > 0) && (
-            <div className="mt-4 mb-5 flex items-center gap-2">
-              {variants && variants.length > 1 && variants.map((v) => (
+          {/* Style variant pills */}
+          {variants && variants.length > 1 && (
+            <div className="mt-4 mb-3 flex items-center gap-2">
+              {variants.map((v) => (
                 <button
                   key={v.id}
                   type="button"
@@ -510,18 +589,52 @@ export default function AppMessagesPage() {
                   {variantLabels[v.id] || v.label}
                 </button>
               ))}
+            </div>
+          )}
+
+          {/* Toolbar row */}
+          <div className="mb-5 flex items-center justify-between">
+            <div className="flex items-center gap-4">
               {expansionMessages.length > 0 && (
                 <button
                   type="button"
                   onClick={() => document.getElementById("marketing-section")?.scrollIntoView({ behavior: "smooth" })}
-                  className="ml-auto flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                  className="flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
                 >
-                  Need marketing messages?
+                  Marketing messages
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </button>
               )}
+              <button
+                type="button"
+                onClick={() => setShowPersonalize(true)}
+                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+              >
+                <Settings01 className="size-4" />
+                Personalize
+              </button>
             </div>
-          )}
+            <div className="flex items-center gap-5">
+              <button
+                type="button"
+                onClick={() =>
+                  setViewMode(viewMode === "preview" ? "template" : "preview")
+                }
+                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+              >
+                {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleCopyAll}
+                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+              >
+                <ClipboardIcon className="w-3.5 h-3.5" />
+                <span>Copy all</span>
+              </button>
+            </div>
+          </div>
 
           {/* Core message cards */}
           <div className="space-y-3">
@@ -582,68 +695,17 @@ export default function AppMessagesPage() {
           )}
         </div>
 
-        {/* RIGHT — personalization + opt-in */}
+        {/* RIGHT — opt-in only */}
         <div className="lg:self-start lg:sticky lg:top-20">
           <h2 className="text-sm font-semibold text-text-primary mb-1">
-            Preview your messages
+            Opt-in form preview
           </h2>
-          <p className="mb-3 text-sm text-text-secondary">See how messages look with your details.</p>
-          <div className="space-y-3">
-            <div>
-              <label className="mb-1 block text-xs font-medium text-text-secondary">
-                App / business name
-              </label>
-              <input
-                type="text"
-                value={personalizeData.appName}
-                placeholder="GlowStudio"
-                onChange={(e) =>
-                  handlePersonalizeChange({ ...personalizeData, appName: e.target.value })
-                }
-                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-text-secondary">
-                Website URL
-              </label>
-              <input
-                type="text"
-                value={personalizeData.website}
-                placeholder="glowstudio.com"
-                onChange={(e) =>
-                  handlePersonalizeChange({ ...personalizeData, website: e.target.value })
-                }
-                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-xs font-medium text-text-secondary">
-                Service type
-              </label>
-              <input
-                type="text"
-                value={personalizeData.serviceType}
-                placeholder="haircut, dental cleaning"
-                onChange={(e) =>
-                  handlePersonalizeChange({ ...personalizeData, serviceType: e.target.value })
-                }
-                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-              />
-            </div>
-          </div>
-          {/* Opt-in form */}
-          <div className="mt-8">
-            <h2 className="text-sm font-semibold text-text-primary mb-1">
-              Opt-in form preview
-            </h2>
-            <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours updated.</p>
-            <CatalogOptIn
-              appName={state.appName}
-              website={state.website}
-              allMessages={coreMessages}
-            />
-          </div>
+          <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours updated.</p>
+          <CatalogOptIn
+            appName={state.appName}
+            website={state.website}
+            allMessages={coreMessages}
+          />
         </div>
       </div>
     </div>
