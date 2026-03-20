@@ -720,7 +720,7 @@ function PersonalizeSlideout({
 
           {data.appName && (
             <p className="text-xs text-text-quaternary">
-              Messages, opt-in form, and Blueprint CTA will update in real time.
+              Messages and opt-in form update in real time.
             </p>
           )}
         </div>
