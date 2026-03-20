@@ -60,7 +60,7 @@ export function CatalogOptIn({
               Name
             </label>
             <div className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-placeholder shadow-xs">
-              Alex Rivera
+              Enter name
             </div>
           </div>
           <div>
@@ -68,7 +68,7 @@ export function CatalogOptIn({
               Phone number
             </label>
             <div className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-placeholder shadow-xs">
-              (555) 123-4567
+              Enter phone
             </div>
           </div>
         </div>
