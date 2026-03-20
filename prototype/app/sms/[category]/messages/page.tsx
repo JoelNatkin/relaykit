@@ -1002,7 +1002,7 @@ function StepsLayout({
             <h2 className="text-lg font-semibold text-text-primary mb-1">
               Opt-in form
             </h2>
-            <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours updated.</p>
+            <p className="mb-3 text-sm text-text-secondary">Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours.</p>
             <CatalogOptIn
               appName={state.appName}
               website={state.website}
@@ -1289,7 +1289,7 @@ export default function PublicMessagesPage() {
             <h2 className="mb-1 text-lg font-semibold text-text-primary">
               Opt-in form
             </h2>
-            <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours updated.</p>
+            <p className="mb-3 text-sm text-text-secondary">Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours.</p>
             <CatalogOptIn
               appName={state.appName}
               website={state.website}
