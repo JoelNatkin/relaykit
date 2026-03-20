@@ -807,21 +807,18 @@ function StepsLayout({
             Everything your AI coding tool needs to add SMS — in two files.
           </p>
 
-          {/* Works with logo row */}
+          {/* Logo row */}
           <div className="mt-6 flex items-center gap-5">
-            <span className="text-xs font-medium text-text-quaternary uppercase tracking-wide">Works with</span>
-            <div className="flex items-center gap-5">
-              {tools.map((tool) => (
-                <div key={tool.id} className="flex flex-col items-center gap-1.5 min-w-[56px]">
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full border border-[#999999]">
-                    <ToolLogo id={tool.id} />
-                  </div>
-                  <span className="text-[10px] font-medium text-text-tertiary whitespace-nowrap">
-                    {tool.label}
-                  </span>
+            {tools.map((tool) => (
+              <div key={tool.id} className="flex flex-col items-center gap-1.5 min-w-[56px]">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full border border-[#999999]">
+                  <ToolLogo id={tool.id} />
                 </div>
-              ))}
-            </div>
+                <span className="text-[10px] font-medium text-text-tertiary whitespace-nowrap">
+                  {tool.label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
