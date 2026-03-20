@@ -913,7 +913,7 @@ function StepsLayout({
               <button
                 type="button"
                 onClick={() => setShowPersonalize(true)}
-                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                className="flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
               >
                 <Sliders04 className="size-4" />
                 Personalize
@@ -921,7 +921,14 @@ function StepsLayout({
               <div className="flex items-center gap-5">
                 <button
                   type="button"
-                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                  onClick={() => {
+                    const hasData = !!(state.appName || state.website || state.serviceType);
+                    if (viewMode === "template" && !hasData) {
+                      setShowPersonalize(true);
+                      return;
+                    }
+                    setViewMode(viewMode === "preview" ? "template" : "preview");
+                  }}
                   className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
                 >
                   {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
@@ -954,6 +961,7 @@ function StepsLayout({
                       prev === message.id ? null : message.id
                     )
                   }
+                  onRequestPersonalize={() => setShowPersonalize(true)}
                 />
               ))}
             </div>
@@ -1026,19 +1034,22 @@ export default function PublicMessagesPage() {
   const variants = CATEGORY_VARIANTS[categoryId];
 
   const [activeVariant, setActiveVariant] = useState("standard");
-  const [viewMode, setViewMode] = useState<"preview" | "template">("preview");
+  const [viewMode, setViewMode] = useState<"preview" | "template">("template");
   const [showPersonalize, setShowPersonalize] = useState(false);
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
 
   const { copy } = useCopyFeedback();
 
-  // Load personalization from localStorage on mount, sync to session state
+  // Load personalization from localStorage on mount, sync to session state — switch to preview if data exists
   const [personalizeLoaded, setPersonalizeLoaded] = useState(false);
   useEffect(() => {
     const saved = loadPersonalization();
     if (saved.appName) setField("appName", saved.appName);
     if (saved.website) setField("website", saved.website);
     if (saved.serviceType) setField("serviceType", saved.serviceType);
+    if (saved.appName || saved.website || saved.serviceType) {
+      setViewMode("preview");
+    }
     setPersonalizeLoaded(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -1200,7 +1211,7 @@ export default function PublicMessagesPage() {
               <button
                 type="button"
                 onClick={() => setShowPersonalize(true)}
-                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                className="flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
               >
                 <Sliders04 className="size-4" />
                 Personalize
@@ -1208,7 +1219,14 @@ export default function PublicMessagesPage() {
               <div className="flex items-center gap-5">
                 <button
                   type="button"
-                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                  onClick={() => {
+                    const hasData = !!(state.appName || state.website || state.serviceType);
+                    if (viewMode === "template" && !hasData) {
+                      setShowPersonalize(true);
+                      return;
+                    }
+                    setViewMode(viewMode === "preview" ? "template" : "preview");
+                  }}
                   className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
                 >
                   {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
@@ -1241,6 +1259,7 @@ export default function PublicMessagesPage() {
                       prev === message.id ? null : message.id
                     )
                   }
+                  onRequestPersonalize={() => setShowPersonalize(true)}
                 />
               ))}
             </div>

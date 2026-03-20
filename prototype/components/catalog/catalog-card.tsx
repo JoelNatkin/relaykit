@@ -188,7 +188,7 @@ function SmallCheckIcon({ className }: { className?: string }) {
 
 /* ── CatalogCard component ── */
 
-interface CatalogCardProps {
+export interface CatalogCardProps {
   message: Message;
   categoryId: string;
   state: SessionState;
@@ -200,6 +200,8 @@ interface CatalogCardProps {
   isPromptsOpen: boolean;
   /** Called when the AI prompts toggle is clicked */
   onTogglePrompts: () => void;
+  /** Called when preview is requested but personalization is empty */
+  onRequestPersonalize?: () => void;
 }
 
 export function CatalogCard({
@@ -210,6 +212,7 @@ export function CatalogCard({
   activeTemplate,
   isPromptsOpen,
   onTogglePrompts,
+  onRequestPersonalize,
 }: CatalogCardProps) {
   const [localViewMode, setLocalViewMode] = useState<
     "preview" | "template" | null
@@ -230,7 +233,19 @@ export function CatalogCard({
     copy(formatCopyBlock(message, categoryId, state));
   }
 
+  const hasPersonalization = !!(state.appName || state.website || state.serviceType);
+
   function toggleLocalView() {
+    // If switching to preview and no personalization data, open slideout instead
+    const targetMode = localViewMode === null
+      ? (globalViewMode === "preview" ? "template" : "preview")
+      : (localViewMode === "preview" ? "template" : "preview");
+
+    if (targetMode === "preview" && !hasPersonalization && onRequestPersonalize) {
+      onRequestPersonalize();
+      return;
+    }
+
     if (localViewMode === null) {
       setLocalViewMode(globalViewMode === "preview" ? "template" : "preview");
     } else {
@@ -274,9 +289,16 @@ export function CatalogCard({
   }
 
   function renderTemplate() {
+    const parts = displayTemplate.split(/(\{[^}]+\})/g);
     return (
-      <p className="text-sm text-text-tertiary leading-relaxed font-mono">
-        {displayTemplate}
+      <p className="text-sm text-text-tertiary leading-relaxed">
+        {parts.map((part, i) =>
+          /^\{[^}]+\}$/.test(part) ? (
+            <span key={i} className={VAR_CLASSES}>{part}</span>
+          ) : (
+            <span key={i}>{part}</span>
+          )
+        )}
       </p>
     );
   }
