@@ -34,27 +34,63 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2.5 py-1 text-xs font-medium text-text-brand-secondary">
           Appointments
         </span>
-        <select
-          value={state.registrationState}
-          onChange={(e) => setRegistrationState(e.target.value as RegistrationState)}
-          className="ml-auto text-sm text-text-tertiary bg-transparent border-none cursor-pointer focus:outline-none"
-        >
-          <option value="default">Default</option>
-          <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
-          <option value="changes_requested">Changes Requested</option>
-          <option value="rejected">Rejected</option>
-        </select>
-        {state.registrationState === "approved" && (
+
+        {/* Contextual status — right-aligned */}
+        <div className="ml-auto flex items-center gap-3">
+          {state.registrationState === "approved" && (
+            <span className="flex items-center gap-1.5 text-sm text-text-secondary">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#12B76A]" />
+              Your app is live
+            </span>
+          )}
+          {state.registrationState === "pending" && (
+            <span className="flex items-center gap-1.5 text-sm text-text-secondary">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#F79009]" />
+              Registration in review
+            </span>
+          )}
+          {state.registrationState === "changes_requested" && (
+            <span className="flex items-center gap-1.5 text-sm text-text-secondary">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#F04438]" />
+              Changes requested
+            </span>
+          )}
+          {state.registrationState === "rejected" && (
+            <span className="flex items-center gap-1.5 text-sm text-text-secondary">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#F04438]" />
+              Registration rejected
+            </span>
+          )}
+          {state.registrationState === "default" && (
+            <span className="flex items-center gap-1.5 text-sm text-text-secondary">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#98A2B3]" />
+              Sandbox
+            </span>
+          )}
+
+          {/* Dev state switchers */}
           <select
-            value={state.complianceView}
-            onChange={(e) => setComplianceView(e.target.value as ComplianceView)}
+            value={state.registrationState}
+            onChange={(e) => setRegistrationState(e.target.value as RegistrationState)}
             className="text-sm text-text-tertiary bg-transparent border-none cursor-pointer focus:outline-none"
           >
-            <option value="all_clear">All clear</option>
-            <option value="has_alerts">Has alerts</option>
+            <option value="default">Default</option>
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="changes_requested">Changes Requested</option>
+            <option value="rejected">Rejected</option>
           </select>
-        )}
+          {state.registrationState === "approved" && (
+            <select
+              value={state.complianceView}
+              onChange={(e) => setComplianceView(e.target.value as ComplianceView)}
+              className="text-sm text-text-tertiary bg-transparent border-none cursor-pointer focus:outline-none"
+            >
+              <option value="all_clear">All clear</option>
+              <option value="has_alerts">Has alerts</option>
+            </select>
+          )}
+        </div>
       </div>
 
       {/* Tab bar */}

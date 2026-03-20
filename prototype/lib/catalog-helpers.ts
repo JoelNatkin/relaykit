@@ -281,3 +281,94 @@ export function getPromptNudge(message: Message, _categoryId: string): string {
   }
   return `Write a ${message.name.toLowerCase()} using the template above.`;
 }
+
+/* ── AI prompts per message (collapsible expander) ── */
+
+const AI_PROMPTS_BY_ID: Record<string, string[]> = {
+  appointments_confirmation: [
+    "Make this more conversational and friendly",
+    "Add the appointment location or address",
+    "Include a calendar link or add-to-calendar prompt",
+  ],
+  appointments_reminder: [
+    "Add a reschedule option with a link",
+    "Include preparation instructions for the appointment",
+    "Write a version for 1-hour-before instead of day-before",
+  ],
+  appointments_reschedule: [
+    "Include a link to pick a new time",
+    "Write a version that apologizes for the change",
+    "Add the old date/time so the user can compare",
+  ],
+  appointments_cancellation: [
+    "Write a version that offers to rebook immediately",
+    "Add a refund or credit confirmation",
+    "Make this warmer — cancellations can feel abrupt",
+  ],
+  appointments_noshow: [
+    "Write a gentle version that doesn't guilt the user",
+    "Include a rebook link with a suggested time",
+    "Add a 'we missed you' tone",
+  ],
+  appointments_feedback: [
+    "Add a direct link to leave a review",
+    "Write a version that mentions the staff member by name",
+    "Make this feel like it's from a person, not a system",
+  ],
+  appointments_promo: [
+    "Write a version with a specific discount amount",
+    "Add urgency — the offer expires in 48 hours",
+    "Write a version for a customer who hasn't booked in 3 months",
+  ],
+  verification_login_code: [
+    "Add a support contact in case the user didn't request this",
+    "Write a version that includes the device or browser that requested the code",
+    "Cut every word that isn't essential — aim for under 80 characters",
+  ],
+  verification_signup_code: [
+    "Write a version that welcomes the user by name",
+    "Add a note about what happens after they verify",
+    "Make the code visually stand out with spacing or punctuation",
+  ],
+  verification_password_reset: [
+    "Add a warning if the user didn't request this reset",
+    "Write a version with a direct link rather than a code",
+    "Include the account email so the user knows which account this is for",
+  ],
+  verification_mfa_code: [
+    "Shorten this — remove everything except the code and expiration",
+    "Add a note that this code is single-use",
+    "Write a version that names the action being protected",
+  ],
+  verification_device_confirmation: [
+    "Include the device type or location in the alert",
+    "Add a direct link to secure the account immediately",
+    "Write a version that explains what to do if it wasn't them",
+  ],
+  verification_security_tip: [
+    "Make this feel like a tip from a friend, not a warning",
+    "Add a specific link to enable two-factor auth",
+    "Write a version for a user who just completed a risky action",
+  ],
+  verification_welcome: [
+    "Add the one most important thing to do first in the app",
+    "Write a version that sets expectations for what SMS messages to expect",
+    "Make this feel like a warm personal greeting, not a system notice",
+  ],
+  verification_feature_announcement: [
+    "Write a version with a single clear call-to-action",
+    "Add a specific benefit the user gets from the new feature",
+    "Make this shorter — one sentence max",
+  ],
+};
+
+export function getAiPrompts(message: Message, _categoryId: string): string[] {
+  const specific = AI_PROMPTS_BY_ID[message.id];
+  if (specific) return specific;
+  const name = message.name.toLowerCase();
+  return [
+    `Cut every word that isn't essential from this ${name}`,
+    `Make the tone warmer without changing the meaning`,
+    `Add a clear next step for the user after receiving this message`,
+  ];
+}

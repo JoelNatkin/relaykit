@@ -746,3 +746,31 @@ _Affects: `prototype/components/catalog/catalog-card.tsx`, `prototype/components
 **D-172 — Opt-in disclosure copy tightened** (Date: 2026-03-19)
 The disclosure paragraph below the consent checkbox is replaced with industry-standard abbreviated copy: "By opting in, you agree to receive automated texts from {app_name}. Consent is not a condition of purchase. Msg frequency varies. Msg & data rates may apply. Text STOP to opt out, HELP for help." Privacy and Terms URLs are rendered as inline links ("Privacy · Terms") appended to the fine print paragraph — not spelled-out full URLs. Duplicate spelled-out URL lines below the fine print are removed. The links use the personalized domain (`{website_url}/privacy`, `{website_url}/terms`). Note: Joel's task specified "D-168" but that number was assigned last session; this is D-172.
 _Affects: `prototype/components/catalog/catalog-opt-in.tsx`._
+
+**D-173 — Opt-in form is preview-only with no copy functionality** (Date: 2026-03-20)
+The opt-in form (`CatalogOptIn`) is a visual preview only — no copy button, no clipboard icon, no AI prompt nudge footer. The form shows Name, Phone, consent checkbox, disclosure text, Privacy · Terms links, and "Sign up for messages" button as a non-interactive preview. The opt-in language developers need is delivered through `SMS_GUIDELINES.md` in their downloaded RelayKit files, not through copy-paste from the UI. This removes the false expectation that copying opt-in HTML from the preview constitutes compliance.
+_Affects: `prototype/components/catalog/catalog-opt-in.tsx`._
+
+**D-174 — "Modify with AI" expander replaces single AI prompt line on message cards** (Date: 2026-03-20)
+Each message card's single AI prompt nudge footer is replaced with a collapsible "Modify with AI ›" expander. Collapsed: brand-purple semibold text link with chevron. Expanded: 3 per-message-ID copyable prompts (stacked, `text-text-secondary italic`). Only one card can be expanded at a time — expanding one collapses any other (parent-managed `expandedCardId` state). Copy button per prompt copies the interpolated message text (in quotes) plus the prompt, separated by a blank line — teaching the pattern of pasting context + instruction to an AI tool. Per-prompt tooltip on hover: "Copies message + prompt for your AI tool." Prompts are stored in `catalog-helpers.ts` in `AI_PROMPTS_BY_ID` with per-message-ID entries and a generic fallback.
+_Affects: `prototype/components/catalog/catalog-card.tsx`, `prototype/lib/catalog-helpers.ts`, both message page files._
+
+**D-175 — Messages column on left, preview/opt-in on right in two-column layout** (Date: 2026-03-20)
+Both the post-download Messages tab and the public messages page (StepsLayout) use a `1fr / 300px` grid with messages on the left (flexible) and preview/opt-in on the right (sticky, 300px). This reverses the previous layout which had personalization on the left. The right column headers ("Preview your messages", "Opt-in form preview") use `text-sm font-semibold` (14px) — visually subordinate to the Messages section headers. The Messages section gets the full-width main column because it's the primary content.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-176 — Contextual status indicator in app layout header** (Date: 2026-03-20)
+The app identity row (GlowStudio + Appointments badge) includes a right-aligned contextual status indicator with colored dot + label. States: green "Your app is live" (approved), amber "Registration in review" (pending), red "Changes requested" / "Registration rejected", grey "Sandbox" (default). Visible on all three tabs. State switcher dropdowns remain to the right of the status indicator for prototype use.
+_Affects: `prototype/app/apps/[appId]/layout.tsx`._
+
+**D-177 — "AI tool setup" and "Download RelayKit" inline with AI prompts heading** (Date: 2026-03-20)
+"AI tool setup" and "Download RelayKit" buttons are right-aligned on the same row as the "AI prompts" h2 heading, separated by a vertical pipe (`|`) in `text-text-quaternary`. Both styled as tertiary text links (`text-sm font-medium text-text-tertiary`). No separate page-level title row — the tab label serves as page identification per D-167.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-178 — Messages section toolbar uses text-labeled buttons** (Date: 2026-03-20)
+The Messages section header toolbar buttons include both icon and text label: "Show template" / "Show preview" (with code/eye icon) and "Copy all" (with clipboard icon). Styled `text-sm text-text-tertiary`. No tooltips — labels are self-describing. Applied consistently on both the post-download Messages tab and public messages page.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-179 — Message card variables styled as brand purple, regular weight** (Date: 2026-03-20)
+Template variables in message card previews (e.g., business name, website) use `font-normal text-text-brand-secondary` — regular weight, brand purple color. This replaces the previous `font-semibold text-text-primary` styling. Variables are visually distinct from surrounding message text but don't overpower it.
+_Affects: `prototype/components/catalog/catalog-card.tsx`._

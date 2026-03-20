@@ -27,6 +27,20 @@
 
 - **BYO Twilio tier (Model 2)** — $199 one-time, registration submitted to customer's own Twilio account. No proxy, no monitoring. Entry point to full RelayKit. (Origin: D-26, PRICING_MODEL Section 3, D-43 Phase 2)
 
+- **Marketing campaign registration flow** — "Start marketing registration" action on Messages tab (Approved state). Short form/modal reusing existing registration data, price change $19→$29/mo, second campaign submission, compliance site update. Includes updating the marketing messages section copy per lifecycle state (pre-reg vs. approved). Permanent affordance location TBD. (Origin: March 19 session, marketing section discussion)
+
+- **Messages tab lifecycle state differentiation** — Approved state: personalization fields become read-only with registered values, no "registered" badges on individual messages (D-159). Pending/Changes Requested/Rejected states need their own Messages tab rendering. (Origin: PM_HANDOFF, March 19 planning)
+
+- **SMS_GUIDELINES.md opt-in section** — Comprehensive opt-in requirements for the AI tool: consent language patterns, disclosure elements, required links, frequency disclosure, and explicit instructions to generate a compliant form component in the developer's framework. Critical for the "RelayKit keeps yours current" promise on the opt-in form preview. (Origin: March 19 session, opt-in form redesign)
+
+- **A2P 10DLC vetting API error codes** — New error codes launching March 23, 2026. Review for actionable improvements to PRD_04 rejection handling and developer-facing error messaging. May improve the debrief experience (D-21). (Origin: March 19 session, Joel note)
+
+- **Operations documentation** — How the app functions end-to-end so it can be handed off and managed. Reference: https://claude.ai/share/d121e93d-569b-419a-b906-8bdf99767dad (Origin: March 19 session, Joel note)
+
+- **Compliance site logo** — Current compliance site uses a fake logo placeholder. Replace with text-based branding (business name styled as logo). Simple, no design dependency. Reference: https://claude.ai/share/3ac13015-ad7e-4534-ab80-9a110d89d2fc (Origin: March 19 session, Joel note)
+
+- **Stripe out of sandbox mode** — Switch Stripe from test mode to live before beta. Coordinate with dev/prod environment split. (Origin: March 19 session, Joel note)
+
 - **Second campaign registration flow** — UI and pipeline for adding a marketing campaign to an existing subaccount. Triggered from dashboard. (Origin: D-15, D-37, D-89, PRD_04 TODO-P2-02)
 
 - **Multi-project dashboard (PRD_11)** — Multiple apps per account, project switcher, per-project billing. Schema guardrails already in place (D-11). (Origin: PRD_11, D-43)
@@ -74,6 +88,18 @@
 ---
 
 ## Maybe — Interesting ideas, not yet validated
+
+- **Variant-aware AI prompts** — Different per-card AI prompt suggestions based on Brand-first/Action-first/Context-first selection. Potentially overkill — prompts should focus on what the message does, not how it's styled. (Origin: March 19 session)
+
+- **Opt-in form structured copy** — If developers struggle with the AI-tool-reads-guidelines approach, revisit making the opt-in form copyable as structured requirements (not HTML) that the AI tool can build from. (Origin: March 19 session)
+
+- **Idea generator lead magnet** — Marketing site page sharing app ideas that use messaging. Conversion path: inspiration → category selection → Messages page → download. Reference: https://claude.ai/share/7aeffdcb-ee0e-4de5-b141-9559f1d4f96c (Origin: March 19 session, Joel note)
+
+- **Blog on marketing site** — Lightweight blog, maybe just linked from footer. Primary purpose is SEO, not content marketing. (Origin: March 19 session, Joel note)
+
+- **Design a logo** — RelayKit brand logo. Not blocking anything currently — "RelayKit" text treatment works for now. (Origin: March 19 session, Joel note)
+
+- **Add animation to pages** — Page transitions, micro-interactions, scroll animations. Note: Framer Motion was previously removed due to hydration failures in prototype. Revisit approach. (Origin: March 19 session, Joel note)
 
 - **Post-registration message customization** — Let developers tweak message wording after registration without re-registering. Tricky because canon messages are immutable (D-13). Could work for non-canon messages only. Schema supports it (D-103 preserved `edited_text` field). (Origin: D-103 discussion)
 

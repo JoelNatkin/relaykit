@@ -220,21 +220,26 @@ function AiCommandsGrid() {
             className="rounded-lg border border-border-secondary bg-bg-primary p-4"
           >
             <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary">
-                <Icon className="size-5 text-fg-brand-primary" />
+              <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-bg-brand-secondary">
+                <Icon className="size-4 text-fg-brand-primary" />
               </div>
-              <button
-                type="button"
-                onClick={() => copyCommand(cmd.id, cmd.prompt)}
-                className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                aria-label={`Copy: ${cmd.prompt}`}
-              >
-                {isCopied ? (
-                  <CheckIcon className="w-3.5 h-3.5 text-fg-success-primary" />
-                ) : (
-                  <ClipboardIcon className="w-3.5 h-3.5" />
-                )}
-              </button>
+              <div className="relative group">
+                <button
+                  type="button"
+                  onClick={() => copyCommand(cmd.id, cmd.prompt)}
+                  className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                  aria-label="Copy prompt"
+                >
+                  {isCopied ? (
+                    <CheckIcon className="w-3.5 h-3.5 text-fg-success-primary" />
+                  ) : (
+                    <ClipboardIcon className="w-3.5 h-3.5" />
+                  )}
+                </button>
+                <div className="absolute right-0 bottom-full mb-1 z-[100] hidden group-hover:block rounded-md bg-[#333333] px-2 py-1 text-[11px] text-white shadow-md whitespace-nowrap pointer-events-none">
+                  Copy prompt
+                </div>
+              </div>
             </div>
             <h4 className="text-sm font-semibold text-text-primary">
               {cmd.heading}
@@ -368,6 +373,7 @@ export default function AppMessagesPage() {
   const [isToolOpen, setIsToolOpen] = useState(false);
   const [activeVariant, setActiveVariant] = useState("standard");
   const [viewMode, setViewMode] = useState<"preview" | "template">("preview");
+  const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
 
   const { copy } = useCopyFeedback();
 
@@ -419,38 +425,158 @@ export default function AppMessagesPage() {
       <div className="mb-3">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-text-primary">AI prompts</h2>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4 text-sm text-text-tertiary">
             <button
               type="button"
               onClick={() => setIsToolOpen((prev) => !prev)}
-              className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+              className="font-medium hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
             >
               AI tool setup
             </button>
+            <span className="text-text-quaternary select-none">|</span>
             <button
               type="button"
-              onClick={() => console.log("Re-download triggered")}
-              className="rounded-lg bg-bg-brand-solid px-3.5 py-2 text-sm font-semibold text-text-white shadow-xs hover:bg-bg-brand-solid_hover transition duration-100 ease-linear cursor-pointer"
+              onClick={() => console.log("Download triggered")}
+              className="font-medium hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
             >
-              Re-download RelayKit
+              Download RelayKit
             </button>
           </div>
         </div>
-        <p className="mt-1 text-sm text-text-secondary">Quick commands for your AI tool with RelayKit loaded.</p>
+        <p className="mt-1 text-sm text-text-secondary">Quick commands for your AI tool with RelayKit loaded in your project.</p>
       </div>
 
       <AiCommandsGrid />
       {isToolOpen && <ToolPanel />}
 
       {/* Two-column layout */}
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[300px_1fr]">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_300px]">
 
-        {/* LEFT — personalization + opt-in */}
+        {/* LEFT — messages */}
+        <div>
+          {/* Messages header + toolbar */}
+          <div className="mb-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
+              <div className="flex items-center gap-5">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setViewMode(viewMode === "preview" ? "template" : "preview")
+                  }
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                  <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <ClipboardIcon className="w-3.5 h-3.5" />
+                  <span>Copy all</span>
+                </button>
+              </div>
+            </div>
+            <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
+          </div>
+
+          {/* Style variant pills + marketing link */}
+          {(variants && variants.length > 1 || expansionMessages.length > 0) && (
+            <div className="mt-4 mb-5 flex items-center gap-2">
+              {variants && variants.length > 1 && variants.map((v) => (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => setActiveVariant(v.id)}
+                  className={`rounded-full px-3 py-1 text-sm font-medium transition duration-100 ease-linear ${
+                    activeVariant === v.id
+                      ? "bg-bg-brand-secondary text-text-brand-secondary"
+                      : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
+                  }`}
+                >
+                  {variantLabels[v.id] || v.label}
+                </button>
+              ))}
+              {expansionMessages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("marketing-section")?.scrollIntoView({ behavior: "smooth" })}
+                  className="ml-auto flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                >
+                  Need marketing messages?
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Core message cards */}
+          <div className="space-y-3">
+            {coreMessages.map((message) => (
+              <CatalogCard
+                key={message.id}
+                message={message}
+                categoryId={categoryId}
+                state={state}
+                globalViewMode={viewMode}
+                activeTemplate={getActiveTemplate(message)}
+                isPromptsOpen={expandedCardId === message.id}
+                onTogglePrompts={() =>
+                  setExpandedCardId((prev) =>
+                    prev === message.id ? null : message.id
+                  )
+                }
+              />
+            ))}
+          </div>
+
+          {/* Marketing callout */}
+          {expansionMessages.length > 0 && (
+            <div id="marketing-section" className="mt-8 rounded-xl border border-border-secondary bg-bg-secondary p-6">
+              <h3 className="text-base font-semibold text-text-primary">
+                Need promotional messages too?
+              </h3>
+              <p className="mt-1 text-sm text-text-tertiary">
+                Promos and offers require a separate registration. Get your app live first, then add marketing from your dashboard.
+              </p>
+              <div className="mt-4 space-y-3">
+                {expansionMessages.map((msg) => {
+                  const segments = interpolateTemplate(msg.template, categoryId, state);
+                  return (
+                    <div
+                      key={msg.id}
+                      className="rounded-xl border border-border-secondary bg-bg-primary p-4"
+                    >
+                      <span className="text-sm font-medium text-text-primary">
+                        {msg.name}
+                      </span>
+                      <p className="mt-2 text-sm text-text-tertiary leading-relaxed">
+                        {segments.map((seg, i) =>
+                          seg.isVariable ? (
+                            <span key={i} className="font-normal text-text-brand-secondary">
+                              {seg.text}
+                            </span>
+                          ) : (
+                            <span key={i}>{seg.text}</span>
+                          )
+                        )}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT — personalization + opt-in */}
         <div className="lg:self-start lg:sticky lg:top-20">
-          <h2 className="text-lg font-semibold text-text-primary mb-1">
+          <h2 className="text-sm font-semibold text-text-primary mb-1">
             Preview your messages
           </h2>
-          <p className="mb-3 text-sm text-text-secondary">See how your messages look with your details filled in.</p>
+          <p className="mb-3 text-sm text-text-secondary">See how messages look with your details.</p>
           <div className="space-y-3">
             <div>
               <label className="mb-1 block text-xs font-medium text-text-secondary">
@@ -497,129 +623,16 @@ export default function AppMessagesPage() {
           </div>
           {/* Opt-in form */}
           <div className="mt-8">
-            <h2 className="text-lg font-semibold text-text-primary mb-1">
-              Sample opt-in form
+            <h2 className="text-sm font-semibold text-text-primary mb-1">
+              Opt-in form preview
             </h2>
-            <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours current.</p>
+            <p className="mb-3 text-sm text-text-secondary">Required by carriers. RelayKit keeps yours updated.</p>
             <CatalogOptIn
               appName={state.appName}
               website={state.website}
               allMessages={coreMessages}
             />
           </div>
-        </div>
-
-        {/* RIGHT — messages */}
-        <div>
-          {/* Messages header + toolbar */}
-          <div className="mb-3">
-            <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-text-primary">
-              Messages
-            </h2>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() =>
-                  setViewMode(viewMode === "preview" ? "template" : "preview")
-                }
-                className="p-1 rounded text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-pointer"
-                aria-label={viewMode === "preview" ? "Show template" : "Show preview"}
-              >
-                {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
-              </button>
-              <button
-                type="button"
-                onClick={handleCopyAll}
-                className="p-1 rounded text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                aria-label="Copy all messages"
-              >
-                <ClipboardIcon className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            </div>
-            <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
-          </div>
-
-          {/* Style variant pills */}
-          {variants && variants.length > 1 && (
-            <div className="mb-4 flex items-center gap-2">
-              {variants.map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => setActiveVariant(v.id)}
-                  className={`rounded-full px-3 py-1 text-sm font-medium transition duration-100 ease-linear ${
-                    activeVariant === v.id
-                      ? "bg-bg-brand-secondary text-text-brand-secondary"
-                      : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
-                  }`}
-                >
-                  {variantLabels[v.id] || v.label}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Core message cards */}
-          <div className="space-y-3">
-            {coreMessages.map((message) => (
-              <CatalogCard
-                key={message.id}
-                message={message}
-                categoryId={categoryId}
-                state={state}
-                globalViewMode={viewMode}
-                activeTemplate={getActiveTemplate(message)}
-              />
-            ))}
-          </div>
-
-          {/* Marketing callout */}
-          {expansionMessages.length > 0 && (
-            <div className="mt-8 rounded-xl border border-border-secondary bg-bg-secondary p-6">
-              <h3 className="text-base font-semibold text-text-primary">
-                Need promotional messages too?
-              </h3>
-              <p className="mt-1 text-sm text-text-tertiary">
-                Marketing campaigns — promos, re-engagement, seasonal offers —
-                require a separate carrier registration. Start with your
-                transactional messages, get approved, then add marketing when
-                you&rsquo;re ready.
-              </p>
-              <div className="mt-4 space-y-3">
-                {expansionMessages.map((msg) => {
-                  const segments = interpolateTemplate(msg.template, categoryId, state);
-                  return (
-                    <div
-                      key={msg.id}
-                      className="rounded-xl border border-border-tertiary bg-bg-primary p-4 opacity-70"
-                    >
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-medium text-text-secondary">
-                          {msg.name}
-                        </span>
-                        <span className="inline-flex items-center rounded-full bg-bg-secondary border border-border-secondary px-2 py-0.5 text-[10px] font-medium text-text-quaternary">
-                          Available with marketing registration
-                        </span>
-                      </div>
-                      <p className="text-sm text-text-tertiary leading-relaxed">
-                        {segments.map((seg, i) =>
-                          seg.isVariable ? (
-                            <span key={i} className="font-medium text-text-brand-tertiary">
-                              {seg.text}
-                            </span>
-                          ) : (
-                            <span key={i}>{seg.text}</span>
-                          )
-                        )}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

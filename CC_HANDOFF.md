@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-19 (Messages tab Default state)
+**Date:** 2026-03-20 (Messages page polish, layout restructure, AI prompts expander)
 **Branch:** main
 
 ---
@@ -7,54 +7,82 @@
 ## Commits This Session
 
 ```
-20304e8  feat: Messages tab Default state — AI prompts, tool setup, re-download, preview personalization
-3346223  docs: add BACKLOG.md, PROTOTYPE_SPEC.md, update CLAUDE.md with prototype quality standards, record D-162–D-166
+[pending]  feat: Messages page polish — layout swap, AI prompts expander, status indicator, copy/marketing redesign
+```
+
+Previous session commits (already on main):
+```
+7f5f599  feat: finalize section body copy on Messages pages, text-secondary color
+156722a  fix: close missing inner div in AI prompts header, fix orphaned /c/ route props
+5fb1d07  feat: rename Personalize → Preview your messages, add section body copy
+9fb6bfa  feat: remove checkboxes/copy-selected, tighten opt-in disclosure copy (D-171, D-172)
 ```
 
 ---
 
 ## What We Completed
 
-### Messages Tab — Default State (post-download, pre-registration)
+### Messages Tab — Major Restructure
 
-`/apps/[appId]/messages` now renders an app-specific component (`AppMessagesPage`) for logged-in users instead of the public messages page. The public page at `/sms/[category]/messages` is completely untouched.
+Full polish pass on `/apps/[appId]/messages`. Changes from top to bottom:
 
-**Layout from top to bottom:**
+1. **Page title removed** — No h1 on any of the three pages (Overview, Messages, Settings). Tab label is the page identifier (D-167).
 
-1. **AI prompts header row** — `<h2>AI prompts</h2>` on the left. On the right: "AI tool setup" tertiary text toggle (no border, no bg, `text-text-tertiary`) + "Re-download RelayKit" primary CTA (`bg-bg-brand-solid`).
+2. **Status indicator in layout** — Right-aligned on the GlowStudio + Appointments row. Colored dot + label for all 5 registration states (D-176). Visible on every tab.
 
-2. **AI prompts card grid** — 4-card grid (`grid-cols-2 lg:grid-cols-4`). Cards match Overview Register/Compliance card style (`rounded-lg border border-border-secondary bg-bg-primary p-4`). Each has a 40×40 purple icon square, `text-sm font-semibold` heading, and italic prompt text (not mono — D-168). Copy button top-right, flips to green checkmark. Four prompts: "Review my messages for compliance" (ShieldTick), "Write a message that lets us tell users [goal]" (Edit03), "Add a new message type for [purpose]" (MessagePlusSquare), "Check my opt-in form for compliance" (ClipboardCheck).
+3. **AI prompts header** — "AI tool setup" and "Download RelayKit" (renamed from "Re-download") moved inline with the "AI prompts" h2. Pipe separator (`|`) between them. Both tertiary text style (D-177). Body copy: "Quick commands for your AI tool with RelayKit loaded in your project."
 
-3. **AI tool setup panel** — toggled by the "AI tool setup" button. `isToolOpen` state lives in the page component. Renders `<ToolPanel />` below the card grid. Same 6-tool logo row + per-tool command + copy button as public page. Collapsed by default (D-160).
+4. **AI command cards** — Icon background shrunk from 40×40 to 32×32 (`h-8 w-8`, icon `size-4`). Copy button has tooltip "Copy prompt."
 
-4. **Two-column layout** (`lg:grid-cols-[300px_1fr]`):
-   - Left (sticky): "Personalize" h2 + 3 inputs + "Preview only — your downloaded files use template variables." note (`text-xs text-text-quaternary`) + "Sample opt-in form" h2 + `<CatalogOptIn>`
-   - Right: "Messages" h2 + copy toolbar + variant pills + `<CatalogCard>` list + marketing callout
+5. **Layout swap** — Messages column moved to the left (`1fr`). Preview/opt-in moved to the right (`300px`, sticky). Right column headers use `text-sm font-semibold` (14px) — visually subordinate (D-175).
 
-5. **All 5 registration states render the same content.** Pending/Changes Requested/Rejected stay identical to Default (D-170). Approved differentiation is the next step (D-159).
+6. **Messages section toolbar** — Icon-only buttons replaced with icon + text label: "Show template"/"Show preview" and "Copy all". `text-text-tertiary`, `gap-5`. No tooltips (D-178).
 
-**No "Last downloaded" date** — removed as unnecessary (D-169).
+7. **Variant pills** — `mt-4 mb-5` spacing. "Need marketing messages?" link in brand purple semibold with chevron-down icon, smooth-scrolls to marketing section.
 
-### DECISIONS.md
-Appended D-167 through D-170.
+8. **CatalogCard changes:**
+   - "Modify with AI ›" expander replaces single prompt nudge footer (D-174). Brand purple semibold text. Only one expanded at a time.
+   - AI prompt copy = interpolated message (in quotes) + prompt. Per-prompt tooltip.
+   - View toggle + copy button have tooltips on the card header.
+   - Variables styled `font-normal text-text-brand-secondary` (D-179).
+   - Message card titles `text-sm` (matching AI command card headings).
 
-### PROTOTYPE_SPEC.md
-Messages Tab section rewritten from a stub to a full spec — includes exact layout anatomy, card details, pending items, and per-state differentiation plan.
+9. **Marketing section** — New copy: "Promos and offers require a separate registration. Get your app live first, then add marketing from your dashboard." Badge removed. Cards: white bg, no opacity, `border-border-secondary`.
+
+10. **Opt-in form** — Preview only, all copy functionality stripped (D-173). "Opt-in form preview" header. Body: "Required by carriers. RelayKit keeps yours updated." Placeholder name "Alex Rivera."
+
+11. **Right column** — "Preview your messages" header. Body: "See how messages look with your details."
+
+### Public Messages Page — Synced
+
+`/sms/[category]/messages` StepsLayout and default layout both synced with post-download tab:
+- Same column swap (messages left, preview/opt-in right, `1fr / 300px`)
+- Same text-labeled toolbar buttons and body copy
+- Same "Modify with AI" expander (already wired from CatalogCard component)
+- Same opt-in form (preview only, from shared component)
+- Same marketing section copy and card styling
+- "Personalize" renamed to "Preview your messages" in StepsLayout
+- Hero, tool selector, and download modal untouched
+
+### Other Changes
+
+- **Overview + Settings** — h1 page titles removed
+- **BACKLOG.md** — 8 items added (4 Likely, 4 Maybe) from Joel's notes
+- **DECISIONS.md** — D-173 through D-179 appended
+- **PROTOTYPE_SPEC.md** — Messages Tab and Public Messages Page sections rewritten; App Layout Shell updated for status indicator
 
 ---
 
 ## In Progress / Partially Done
 
 ### Messages Tab — Approved State
-Not yet differentiated. Currently renders identical to Default. Planned per D-159:
-- Personalization fields read-only, showing registered values (`business_name` from registration record)
+Not yet differentiated. Still renders Default layout. Planned per D-159:
+- Personalization fields read-only with registered values
 - AI commands still available
-- No "registered" badges on individual message cards (full creative freedom within registered use case)
+- No "registered" badges on individual cards
 
-### Body Copy — Not Written
-Two `[PENDING]` items flagged in PROTOTYPE_SPEC.md:
-- Framing copy under "AI prompts" heading (e.g. "Copy these into your AI coding tool with your RelayKit files loaded.")
-- Framing copy above tool setup panel when expanded (e.g. "First time? Follow the steps for your tool.")
+### Messages Tab — Pre-download State
+Not yet designed (D-162). The initial download happens on the public Messages page, not here. This tab doesn't exist until a project is created.
 
 ---
 
@@ -62,81 +90,55 @@ Two `[PENDING]` items flagged in PROTOTYPE_SPEC.md:
 
 1. **Delete `.next` before every dev server start.** Always: `rm -rf prototype/.next` then restart. Port 3001.
 
-2. **Messages tab `categoryId`** derives from `state.selectedCategory`, falling back to `"appointments"`. Fine for prototype — will need to read from the actual app record in production.
+2. **Messages tab `categoryId`** derives from `state.selectedCategory`, falling back to `"appointments"`. Fine for prototype — production reads from actual app record.
 
-3. **`isToolOpen` state is in `AppMessagesPage`** — the toggle button and the panel it controls are in the same component. The `ToolPanel` component is self-contained (manages `selectedTool` and `promptCopied` internally); only the open/close state lives above it.
+3. **`isToolOpen` state is in `AppMessagesPage`** — toggle button and panel in same component. `ToolPanel` manages its own internal state.
 
-4. **No Untitled UI base components in prototype** — plain Tailwind + semantic color tokens only. No `import { Button } from "@/components/base/..."`.
+4. **No Untitled UI base components in prototype** — plain Tailwind + semantic color tokens only.
 
-5. **`ShieldCheck` does NOT exist** in `@untitledui/icons` — use `ShieldTick`. Always verify icon names.
+5. **`ShieldCheck` does NOT exist** in `@untitledui/icons` — use `ShieldTick`.
 
-6. **4 pre-existing TS errors in `settings/page.tsx`** (string→literal type mismatches from a prior session). Not introduced this session, not blocking.
+6. **4 pre-existing TS errors in `settings/page.tsx`** (string→literal type mismatches from a prior session). Not blocking.
 
-7. **`bg-bg-error-solid` in settings cancel modal** — may not be defined in the current Untitled UI theme. Verify visually.
+7. **`bg-bg-error-solid` in settings cancel modal** — may not be defined in theme. Verify visually.
 
-8. **Orphaned files still on disk** — `prototype/components/dashboard/` (old A/B/C variants) and `prototype/app/c/` (legacy catalog routes) are safe to delete but haven't been.
+8. **Orphaned files still on disk** — `prototype/components/dashboard/` and `prototype/app/c/` are safe to delete.
 
-9. **"Appointments" pill in layout.tsx is hardcoded** — needs to be dynamic when multi-category is supported.
+9. **"Appointments" pill in layout.tsx is hardcoded** — needs to be dynamic for multi-category.
 
-10. **DECISIONS.md now has 170 decisions** (D-01 through D-170).
+10. **DECISIONS.md now has 179 decisions** (D-01 through D-179).
 
-11. **D-104 gate still active** — PRDs must be updated to reflect D-84–D-103 before production code is built from them. Prototype work is exempt (D-163), but production builds need updated PRDs first.
+11. **`expandedCardId` state exists in 3 places** — `AppMessagesPage`, `StepsLayout` (internal), and `PublicMessagesPage`. Each manages its own "only one expanded at a time" scope independently.
+
+12. **Marketing section scroll targets** — Three different `id` attributes: `marketing-section` (apps page), `marketing-section-steps` (sms StepsLayout), `marketing-section-default` (sms default layout). Needed because the same page file has two layout branches.
 
 ---
 
 ## Files Modified This Session
 
 ```
-prototype/app/apps/[appId]/messages/page.tsx   # Fully rewritten — AppMessagesPage
-PROTOTYPE_SPEC.md                               # Messages Tab section rewritten
-DECISIONS.md                                    # D-167–D-170 appended
-CC_HANDOFF.md                                   # This file
+prototype/app/apps/[appId]/layout.tsx           # Status indicator, h1 retained, state switchers grouped
+prototype/app/apps/[appId]/messages/page.tsx     # Full restructure — layout swap, toolbar, AI prompts row
+prototype/app/apps/[appId]/overview/page.tsx     # h1 page title removed
+prototype/app/apps/[appId]/settings/page.tsx     # h1 page title removed
+prototype/app/sms/[category]/messages/page.tsx   # Synced with post-download — layout swap, toolbar, copy
+prototype/components/catalog/catalog-card.tsx     # Modify with AI expander, variable styling, tooltips, title size
+prototype/components/catalog/catalog-opt-in.tsx   # Preview only — all copy functionality stripped
+prototype/lib/catalog-helpers.ts                 # AI_PROMPTS_BY_ID map + getAiPrompts export
+BACKLOG.md                                       # 8 items added
+DECISIONS.md                                     # D-173–D-179 appended
+PROTOTYPE_SPEC.md                                # Messages Tab + Public Messages Page rewritten, layout header updated
+CC_HANDOFF.md                                    # This file
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. Write body copy for AI prompts section header and tool setup panel intro
-2. Differentiate Messages tab Approved state (read-only personalization per D-159)
-3. Design "Signed up, pre-download" state of Messages page (D-162 — most critical conversion moment)
-4. Download confirmation flow — orient users toward Overview after download (PROTOTYPE_SPEC "Screens Not Yet Built")
-5. Registration form with live message preview (D-161)
+1. Differentiate Messages tab Approved state (read-only personalization per D-159)
+2. Design "Signed up, pre-download" Messages page state (D-162 — critical conversion moment)
+3. Download confirmation flow — orient users toward Overview after download
+4. Registration form with live message preview (D-161)
+5. SMS_GUIDELINES.md opt-in section (BACKLOG Likely item — critical for "RelayKit keeps yours updated" promise)
 6. Delete orphaned `/c/` routes and `components/dashboard/` files
 7. Make "Appointments" pill dynamic in layout.tsx
-
----
-
-## Prototype File Map
-
-```
-prototype/
-├── app/
-│   ├── page.tsx                          # Marketing home
-│   ├── compliance/page.tsx               # Public compliance page
-│   ├── auth/page.tsx                     # Auth gate (mock)
-│   ├── apps/
-│   │   ├── page.tsx                      # Your Apps (project list)
-│   │   └── [appId]/
-│   │       ├── layout.tsx                # App shell (name, pill, tabs, state switchers, period selector)
-│   │       ├── page.tsx                  # Redirects to /overview
-│   │       ├── overview/
-│   │       │   ├── page.tsx              # Conditional: approved dashboard OR three-section accordion
-│   │       │   └── approved-dashboard.tsx # Full 3×2 card grid (Approved state)
-│   │       ├── messages/page.tsx         # AppMessagesPage — Default state stable
-│   │       └── settings/page.tsx         # 600px, inline editing, cancellation, portability
-│   ├── sms/[category]/
-│   │   ├── page.tsx                      # Category landing (appointments)
-│   │   └── messages/page.tsx             # Public messages page — UNTOUCHED
-│   └── c/[categoryId]/                   # ORPHANED — safe to delete
-├── components/
-│   ├── top-nav.tsx                       # Context-aware nav
-│   ├── footer.tsx                        # Shared footer
-│   ├── category-modal.tsx                # Category picker
-│   ├── catalog/                          # CatalogCard, CatalogOptIn
-│   └── dashboard/                        # ORPHANED — old A/B/C variants, safe to delete
-├── public/logos/                          # SVG logos for tool selector
-├── context/session-context.tsx           # State management
-├── lib/catalog-helpers.ts                # Template interpolation
-└── data/messages.ts                      # Message library
-```

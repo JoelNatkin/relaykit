@@ -1,25 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import type { Message } from "@/data/messages";
-
-/* ── Copy feedback hook ── */
-
-function useCopyFeedback() {
-  const [copied, setCopied] = useState(false);
-
-  async function copy(text: string) {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      // Clipboard API unavailable
-    }
-  }
-
-  return { copied, copy };
-}
 
 /* ── Helper: natural language list ── */
 
@@ -28,45 +9,6 @@ function naturalList(items: string[]): string {
   if (items.length === 1) return items[0];
   if (items.length === 2) return `${items[0]} and ${items[1]}`;
   return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
-}
-
-/* ── Inline icons ── */
-
-function ClipboardIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-      <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-    </svg>
-  );
-}
-
-function CheckIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="12"
-      height="12"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="20 6 9 17 4 12" />
-    </svg>
-  );
 }
 
 /* ── CatalogOptIn component ── */
@@ -83,9 +25,6 @@ export function CatalogOptIn({
   website,
   allMessages,
 }: CatalogOptInProps) {
-  const { copied, copy } = useCopyFeedback();
-  const nudgeCopy = useCopyFeedback();
-
   const displayName = appName || "Your App";
   const displayUrl = website || "yourapp.com";
 
@@ -107,48 +46,13 @@ export function CatalogOptIn({
     ? `I also agree to receive marketing messages from ${displayName}. You can opt out at any time.`
     : null;
 
-  // Fine print — tightened per D-168
+  // Fine print — tightened per D-172
   const finePrint = `By opting in, you agree to receive automated texts from ${displayName}. Consent is not a condition of purchase. Msg frequency varies. Msg & data rates may apply. Text STOP to opt out, HELP for help.`;
-
-  // Build full copyable block
-  function buildCopyText(): string {
-    const lines: string[] = [
-      `--- Opt-in consent form for ${displayName} ---`,
-      "",
-      "Consent checkbox:",
-      checkboxLabel,
-    ];
-    if (marketingCheckboxLabel) {
-      lines.push("", "Marketing consent checkbox:", marketingCheckboxLabel);
-    }
-    lines.push("", "Disclosure / fine print:", finePrint);
-    lines.push(
-      "",
-      `Privacy: ${displayUrl}/privacy`,
-      `Terms: ${displayUrl}/terms`
-    );
-    return lines.join("\n");
-  }
-
-  const nudgeText = "Build my opt-in form using this consent language.";
 
   return (
     <div className="rounded-2xl border border-border-secondary bg-bg-secondary shadow-sm overflow-hidden">
-      {/* Form preview */}
-      <div className="bg-bg-primary px-7 py-6 relative">
-        {/* Copy icon — top-right corner */}
-        <button
-          type="button"
-          onClick={() => copy(buildCopyText())}
-          className="absolute top-3 right-4 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-          aria-label={copied ? "Copied" : "Copy consent block"}
-        >
-          {copied ? (
-            <CheckIcon className="text-fg-success-secondary" />
-          ) : (
-            <ClipboardIcon />
-          )}
-        </button>
+      {/* Form preview — visual only */}
+      <div className="bg-bg-primary px-7 py-6">
         {/* Fake form fields */}
         <div className="space-y-3 mb-5">
           <div>
@@ -156,7 +60,7 @@ export function CatalogOptIn({
               Name
             </label>
             <div className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-placeholder shadow-xs">
-              Jane Doe
+              Alex Rivera
             </div>
           </div>
           <div>
@@ -201,25 +105,6 @@ export function CatalogOptIn({
           className="mt-5 w-full rounded-lg bg-[#61656C] py-2.5 text-sm font-semibold text-white shadow-xs transition duration-100 ease-linear hover:bg-[#4E5258]"
         >
           Sign up for messages
-        </button>
-      </div>
-
-      {/* Prompt nudge — quoted with inline copy icon */}
-      <div className="px-5 pt-2 pb-3 border-t border-border-secondary">
-        <span className="text-xs text-text-quaternary italic">
-          &ldquo;{nudgeText}&rdquo;
-        </span>
-        <button
-          type="button"
-          onClick={() => nudgeCopy.copy(nudgeText)}
-          className="inline-flex align-middle ml-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-          aria-label={nudgeCopy.copied ? "Copied" : "Copy prompt"}
-        >
-          {nudgeCopy.copied ? (
-            <CheckIcon className="text-fg-success-secondary" />
-          ) : (
-            <ClipboardIcon />
-          )}
         </button>
       </div>
     </div>
