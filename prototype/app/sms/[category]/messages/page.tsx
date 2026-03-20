@@ -811,7 +811,7 @@ function StepsLayout({
           <div className="mt-6 flex items-center gap-5">
             {tools.map((tool) => (
               <div key={tool.id} className="flex flex-col items-center gap-1.5 min-w-[56px]">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full border border-[#999999]">
+                <div className="flex items-center justify-center w-10 h-10 rounded-full border border-[#999999] p-1">
                   <ToolLogo id={tool.id} />
                 </div>
                 <span className="text-[10px] font-medium text-text-tertiary whitespace-nowrap">
