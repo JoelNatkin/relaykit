@@ -774,3 +774,15 @@ _Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[ca
 **D-179 — Message card variables styled as brand purple, regular weight** (Date: 2026-03-20)
 Template variables in message card previews (e.g., business name, website) use `font-normal text-text-brand-secondary` — regular weight, brand purple color. This replaces the previous `font-semibold text-text-primary` styling. Variables are visually distinct from surrounding message text but don't overpower it.
 _Affects: `prototype/components/catalog/catalog-card.tsx`._
+
+**D-180 — Pre-download: static "Works with" logo row replaces interactive tool selector** (Date: 2026-03-20)
+The interactive tool selector section (heading, subhead, logo row with selection state, per-tool instructions, prompt snippet) is removed from the pre-download public messages page. Replaced with a static "Works with" logo row at the bottom of the grey hero band. Same 6 logos (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other) at smaller size, no selection state, no hover, no interaction. This is a credibility signal, not a tool. **Supersedes D-110 for pre-download state.**
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-181 — "Just the files" confirmation modal includes interactive tool selector** (Date: 2026-03-20)
+The "files-only" confirmation modal (triggered by "Just the files please" in the download modal) is redesigned. New content: download confirmation message at top, interactive tool selector with selection state and per-tool instructions in the middle (same component as used on the logged-in Messages tab), "Create an account later" button and "Close" link at the bottom. Modal widens to `max-w-lg` for this step. This is where detailed per-tool setup instructions now live for the no-account download path.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-182 — Post-download AI prompts band on public messages page** (Date: 2026-03-20)
+After dismissing the "just the files" confirmation modal (via "Close" or "Create an account later"), the public messages page enters a post-download state (`hasDownloaded` component flag). A new section appears between the hero and the messages content: "AI prompts" h2 header with "AI tool setup | Download RelayKit" brand-colored links on the right, body copy, 4 AI prompt cards (Compliance review, Write a message, Add a message type, Check opt-in copy — same as logged-in Messages tab), and the interactive tool selector with per-tool instructions below. Only the "just the files" path triggers this — the "Create Account & Download" path directs users to their Overview page. **Pre-download state remains the clean marketing page with static logos.**
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._

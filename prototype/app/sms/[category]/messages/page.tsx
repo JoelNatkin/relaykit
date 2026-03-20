@@ -3,7 +3,16 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Calendar, Settings01, XClose, Download01 } from "@untitledui/icons";
+import {
+  Calendar,
+  Settings01,
+  XClose,
+  Download01,
+  ShieldTick,
+  Edit03,
+  MessagePlusSquare,
+  ClipboardCheck,
+} from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
@@ -135,9 +144,233 @@ function OtpInput({ value, onChange, onComplete }: { value: string; onChange: (v
   );
 }
 
+/* ── Shared tool data ── */
+
+const TOOLS = [
+  { id: "claude-code", label: "Claude Code" },
+  { id: "cursor", label: "Cursor" },
+  { id: "windsurf", label: "Windsurf" },
+  { id: "copilot", label: "GitHub Copilot" },
+  { id: "cline", label: "Cline" },
+  { id: "other", label: "Other" },
+];
+
+const TOOL_INSTRUCTIONS: Record<string, { before: string; prompt: string }> = {
+  "claude-code": {
+    before: "Drop both files in your project root. Then run:",
+    prompt: 'claude "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md"',
+  },
+  cursor: {
+    before: "Drop both files in your project root. Open Composer:",
+    prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
+  },
+  windsurf: {
+    before: "Drop both files in your project root. Open Cascade:",
+    prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
+  },
+  copilot: {
+    before: "Drop both files in your project root. Open Copilot Chat:",
+    prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
+  },
+  cline: {
+    before: "Drop both files in your project root. Open Cline:",
+    prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
+  },
+  other: {
+    before: "Drop both files in your project root. Tell your AI coding tool:",
+    prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
+  },
+};
+
+/* ── Interactive tool selector (used in modal + post-download band) ── */
+
+function InteractiveToolSelector() {
+  const [selectedTool, setSelectedTool] = useState("claude-code");
+  const [promptCopied, setPromptCopied] = useState(false);
+
+  function copyPrompt() {
+    navigator.clipboard.writeText(TOOL_INSTRUCTIONS[selectedTool].prompt).catch(() => {});
+    setPromptCopied(true);
+    setTimeout(() => setPromptCopied(false), 1500);
+  }
+
+  return (
+    <div>
+      <div className="flex items-center gap-4 overflow-x-auto">
+        {TOOLS.map((tool) => (
+          <button
+            key={tool.id}
+            type="button"
+            onClick={() => setSelectedTool(tool.id)}
+            className={`flex flex-col items-center gap-1.5 min-w-[56px] cursor-pointer transition duration-100 ease-linear ${
+              selectedTool === tool.id ? "opacity-100" : "opacity-60 hover:opacity-80"
+            }`}
+          >
+            <div className={`flex items-center justify-center w-12 h-12 rounded-full transition duration-100 ease-linear ${
+              selectedTool === tool.id
+                ? "border-2 border-brand-600"
+                : "border border-[#999999]"
+            }`}>
+              <ToolLogo id={tool.id} />
+            </div>
+            <span className={`text-[10px] font-medium whitespace-nowrap ${
+              selectedTool === tool.id ? "text-text-primary" : "text-text-tertiary"
+            }`}>
+              {tool.label}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        <p className="text-sm text-text-tertiary leading-relaxed mb-2">
+          {TOOL_INSTRUCTIONS[selectedTool].before}
+        </p>
+        <div className="flex items-center gap-2 rounded-md bg-bg-secondary px-3 py-2">
+          <code className="flex-1 text-sm font-mono text-text-secondary">
+            {TOOL_INSTRUCTIONS[selectedTool].prompt}
+          </code>
+          <button
+            type="button"
+            onClick={copyPrompt}
+            className="shrink-0 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+            aria-label="Copy prompt"
+          >
+            {promptCopied ? (
+              <svg className="w-3.5 h-3.5 text-fg-success-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+            ) : (
+              <ClipboardIcon className="w-3.5 h-3.5" />
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Files-only confirmation (inside download modal) ── */
+
+function FilesOnlyConfirmation({ onClose }: { onClose: () => void }) {
+  return (
+    <div>
+      <div className="flex items-center gap-3 mb-5">
+        <div className="flex items-center justify-center size-10 rounded-full bg-bg-success-secondary">
+          <svg className="size-5 text-fg-success-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="20 6 9 17 4 12" />
+          </svg>
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-text-primary">Your files are downloading</h3>
+          <p className="text-sm text-text-tertiary">Get started with your AI coding tool.</p>
+        </div>
+      </div>
+
+      <InteractiveToolSelector />
+
+      <button
+        type="button"
+        onClick={onClose}
+        className="mt-6 w-full rounded-lg border border-border-primary bg-bg-primary px-4 py-[14px] text-sm font-semibold text-text-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-primary_hover cursor-pointer"
+      >
+        Create an account later
+      </button>
+      <button
+        type="button"
+        onClick={onClose}
+        className="mt-3 w-full text-center text-sm text-text-tertiary hover:underline cursor-pointer"
+      >
+        Close
+      </button>
+    </div>
+  );
+}
+
+/* ── AI commands card grid (shared with post-download band) ── */
+
+const AI_COMMANDS = [
+  {
+    id: "compliance-review",
+    icon: ShieldTick,
+    heading: "Compliance review",
+    prompt: "Review my messages for compliance",
+  },
+  {
+    id: "write-message",
+    icon: Edit03,
+    heading: "Write a message",
+    prompt: "Write a message that lets us tell users [goal]",
+  },
+  {
+    id: "add-type",
+    icon: MessagePlusSquare,
+    heading: "Add a message type",
+    prompt: "Add a new message type for [purpose]",
+  },
+  {
+    id: "optin-check",
+    icon: ClipboardCheck,
+    heading: "Check opt-in copy",
+    prompt: "Check my opt-in form for compliance",
+  },
+];
+
+function AiCommandsGrid() {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  function copyCommand(id: string, prompt: string) {
+    navigator.clipboard.writeText(prompt).catch(() => {});
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 1500);
+  }
+
+  return (
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      {AI_COMMANDS.map((cmd) => {
+        const Icon = cmd.icon;
+        const isCopied = copiedId === cmd.id;
+        return (
+          <div
+            key={cmd.id}
+            className="rounded-lg border border-border-secondary bg-bg-primary p-4"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-bg-brand-secondary">
+                <Icon className="size-4 text-fg-brand-primary" />
+              </div>
+              <div className="relative group">
+                <button
+                  type="button"
+                  onClick={() => copyCommand(cmd.id, cmd.prompt)}
+                  className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                  aria-label="Copy prompt"
+                >
+                  {isCopied ? (
+                    <svg className="w-3.5 h-3.5 text-fg-success-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                  ) : (
+                    <ClipboardIcon className="w-3.5 h-3.5" />
+                  )}
+                </button>
+                <div className="absolute right-0 bottom-full mb-1 z-[100] hidden group-hover:block rounded-md bg-[#333333] px-2 py-1 text-[11px] text-white shadow-md whitespace-nowrap pointer-events-none">
+                  Copy prompt
+                </div>
+              </div>
+            </div>
+            <h4 className="text-sm font-semibold text-text-primary">
+              {cmd.heading}
+            </h4>
+            <p className="mt-1.5 text-sm text-text-tertiary italic leading-relaxed">
+              &ldquo;{cmd.prompt}&rdquo;
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 /* ── Download modal ── */
 
-function DownloadModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function DownloadModal({ isOpen, onClose, onFilesDownloaded }: { isOpen: boolean; onClose: () => void; onFilesDownloaded?: () => void }) {
   const [step, setStep] = useState<"default" | "code" | "downloading" | "files-only">("default");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
@@ -188,7 +421,7 @@ function DownloadModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
       <div className="absolute inset-0 bg-black/50" />
 
       <div
-        className="relative w-full max-w-md rounded-xl bg-bg-primary shadow-xl p-8 sm:p-10"
+        className={`relative w-full rounded-xl bg-bg-primary shadow-xl p-8 sm:p-10 ${step === "files-only" ? "max-w-lg" : "max-w-md"}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -324,34 +557,9 @@ function DownloadModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
           </div>
         )}
 
-        {/* State 4: Files only confirmation */}
+        {/* State 4: Files only confirmation — with tool selector */}
         {step === "files-only" && (
-          <div className="flex flex-col items-center py-4 text-center">
-            <div className="flex items-center justify-center size-12 rounded-full bg-bg-brand-secondary">
-              <svg className="size-6 text-fg-brand-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                <polyline points="14 2 14 8 20 8" />
-                <line x1="12" y1="18" x2="12" y2="12" />
-                <polyline points="9 15 12 18 15 15" />
-              </svg>
-            </div>
-            <h3 className="mt-4 text-xl font-semibold text-text-primary">You&#39;re all set. Downloading now.</h3>
-            <p className="mt-2 text-sm text-text-tertiary">Your sandbox is free whenever you&#39;re ready.</p>
-            <button
-              type="button"
-              onClick={onClose}
-              className="mt-6 w-full rounded-lg border border-border-primary bg-bg-primary px-4 py-[14px] text-sm font-semibold text-text-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-primary_hover cursor-pointer"
-            >
-              Create an account later
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="mt-3 text-sm text-text-tertiary hover:underline cursor-pointer"
-            >
-              Close
-            </button>
-          </div>
+          <FilesOnlyConfirmation onClose={() => { onFilesDownloaded?.(); onClose(); }} />
         )}
       </div>
     </div>
@@ -395,7 +603,7 @@ const TOOL_LOGO_MAP: Record<string, string> = {
   cline: "/logos/cline-logo.svg",
 };
 
-function ToolLogo({ id }: { id: string; selected: boolean }) {
+function ToolLogo({ id }: { id: string }) {
   const logoSrc = TOOL_LOGO_MAP[id];
 
   // "Other" — generic code brackets
@@ -563,49 +771,19 @@ function StepsLayout({
   getActiveTemplate: (msg: typeof MESSAGES[string][number]) => string | undefined;
   handleCopyAll: () => void;
 }) {
-  const [selectedTool, setSelectedTool] = useState("claude-code");
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [hasDownloaded, setHasDownloaded] = useState(false);
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
 
-  const tools = [
-    { id: "claude-code", label: "Claude Code" },
-    { id: "cursor", label: "Cursor" },
-    { id: "windsurf", label: "Windsurf" },
-    { id: "copilot", label: "GitHub Copilot" },
-    { id: "cline", label: "Cline" },
-    { id: "other", label: "Other" },
-  ];
-
-  const toolInstructions: Record<string, { before: string; prompt: string }> = {
-    "claude-code": {
-      before: "Download RelayKit, drop both files in your project root. Then run:",
-      prompt: 'claude "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md"',
-    },
-    cursor: {
-      before: "Download RelayKit, drop both files in your project root. Open Composer:",
-      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
-    },
-    windsurf: {
-      before: "Download RelayKit, drop both files in your project root. Open Cascade:",
-      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
-    },
-    copilot: {
-      before: "Download RelayKit, drop both files in your project root. Open Copilot Chat:",
-      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
-    },
-    cline: {
-      before: "Download RelayKit, drop both files in your project root. Open Cline:",
-      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
-    },
-    other: {
-      before: "Download RelayKit, drop both files in your project root. Tell your AI coding tool:",
-      prompt: "Build my SMS integration using SMS_BUILD_SPEC.md and SMS_GUIDELINES.md",
-    },
-  };
+  const tools = TOOLS;
 
   return (
     <div>
-      <DownloadModal isOpen={showDownloadModal} onClose={() => setShowDownloadModal(false)} />
+      <DownloadModal
+        isOpen={showDownloadModal}
+        onClose={() => setShowDownloadModal(false)}
+        onFilesDownloaded={() => setHasDownloaded(true)}
+      />
 
       {/* Header */}
       <div className="bg-bg-secondary py-12">
@@ -632,67 +810,63 @@ function StepsLayout({
           <p className="mt-3 text-base text-text-tertiary max-w-2xl">
             Everything your AI coding tool needs to add SMS — in two files.
           </p>
-        </div>
-      </div>
 
-      {/* Tool selector */}
-      <div className="mx-auto max-w-5xl px-6 pt-8 pb-2">
-        <h2 className="text-lg font-semibold text-text-primary mb-1">
-          Follow the steps for your tool.
-        </h2>
-        <p className="mb-4 text-sm text-text-secondary">Each tool works a little differently. Here's the quickest path.</p>
-        {/* Tool logos row */}
-        <div className="flex items-center gap-6 overflow-x-auto">
-          {tools.map((tool) => (
-            <button
-              key={tool.id}
-              type="button"
-              onClick={() => setSelectedTool(tool.id)}
-              className={`flex flex-col items-center gap-2 min-w-[72px] cursor-pointer transition duration-100 ease-linear ${
-                selectedTool === tool.id ? "opacity-100" : "opacity-60 hover:opacity-80"
-              }`}
-            >
-              <div className={`flex items-center justify-center w-14 h-14 rounded-full transition duration-100 ease-linear ${
-                selectedTool === tool.id
-                  ? "border-2 border-brand-600"
-                  : "border border-[#999999]"
-              }`}>
-                <ToolLogo id={tool.id} selected={selectedTool === tool.id} />
-              </div>
-              <span className={`text-[11px] font-medium whitespace-nowrap ${
-                selectedTool === tool.id ? "text-text-primary" : "text-text-tertiary"
-              }`}>
-                {tool.label}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Instruction */}
-        <div className="mt-5">
-          <p className="text-sm font-semibold text-text-tertiary leading-relaxed">
-            {toolInstructions[selectedTool].before}
-          </p>
-          <div className="mt-2 flex items-center gap-2 rounded-md bg-bg-secondary px-3 py-2">
-            <code className="flex-1 text-sm font-mono text-text-secondary">
-              {toolInstructions[selectedTool].prompt}
-            </code>
-            <button
-              type="button"
-              onClick={() => {
-                navigator.clipboard.writeText(toolInstructions[selectedTool].prompt).catch(() => {});
-              }}
-              className="shrink-0 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-              aria-label="Copy prompt"
-            >
-              <ClipboardIcon className="w-3.5 h-3.5" />
-            </button>
+          {/* Works with logo row */}
+          <div className="mt-6 flex items-center gap-5">
+            <span className="text-xs font-medium text-text-quaternary uppercase tracking-wide">Works with</span>
+            <div className="flex items-center gap-5">
+              {tools.map((tool) => (
+                <div key={tool.id} className="flex flex-col items-center gap-1.5 min-w-[56px]">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-full border border-[#999999]">
+                    <ToolLogo id={tool.id} />
+                  </div>
+                  <span className="text-[10px] font-medium text-text-tertiary whitespace-nowrap">
+                    {tool.label}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Post-download AI prompts band */}
+      {hasDownloaded && (
+        <div className="mx-auto max-w-5xl px-6 pt-10 pb-2">
+          {/* Header row */}
+          <div className="flex items-center justify-between mb-1">
+            <h2 className="text-lg font-semibold text-text-primary">AI prompts</h2>
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                onClick={() => {/* toggle tool setup inline */}}
+                className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+              >
+                AI tool setup
+              </button>
+              <span className="text-text-quaternary">|</span>
+              <button
+                type="button"
+                onClick={() => setShowDownloadModal(true)}
+                className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+              >
+                Download RelayKit
+              </button>
+            </div>
+          </div>
+          <p className="mb-4 text-sm text-text-secondary">Quick commands for your AI tool with RelayKit loaded in your project.</p>
+
+          <AiCommandsGrid />
+
+          {/* Tool selector below cards */}
+          <div className="mt-4 mb-2 rounded-xl border border-border-secondary bg-bg-primary p-4">
+            <InteractiveToolSelector />
+          </div>
+        </div>
+      )}
+
       {/* Two-column layout */}
-      <div className="mx-auto max-w-5xl px-6 pt-10 pb-16">
+      <div className={`mx-auto max-w-5xl px-6 ${hasDownloaded ? "pt-6" : "pt-10"} pb-16`}>
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_300px]">
           {/* LEFT COLUMN — messages */}
           <div>

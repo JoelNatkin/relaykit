@@ -58,11 +58,16 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **This is the most important page in the product.** It's where strangers become users. The download happens here.
 
-**Hero:** Integrated variant — CTA woven inline into subhead. References "two files" not "Blueprint" (D-109). Single CTA: "Download RelayKit" (D-108). Hero and tool selector are untouched by the March 20 session changes.
-
-**Tool selector:** Six tools with real SVG logos from `/public/logos/` (D-115). Claude Code default. 56px circles, 1px #999 default border / 2px purple selected border. Unselected 60% opacity, selected 100%. Per-tool 2-3 line instructions. Prompt text in `font-mono bg-bg-secondary` with copy button. (D-110)
+**Hero:** Integrated variant — CTA woven inline into subhead. References "two files" not "Blueprint" (D-109). Single CTA: "Download RelayKit" (D-108). At the bottom of the grey hero band: static "Works with" logo row — 6 tool logos (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other) with names, no interaction. Credibility signal only. (D-180)
 
 **Layout:** StepsLayout is the default (D-113). Two-column grid (`lg:grid-cols-[1fr_300px]`) — messages on left, preview/opt-in on right (D-175). Old layout preserved at `?layout=default` (same column structure).
+
+**Post-download AI prompts band (D-182):** Appears between hero and messages content after user dismisses the "just the files" confirmation modal (`hasDownloaded` state flag). Contains:
+- Header row: "AI prompts" h2 left, "AI tool setup | Download RelayKit" brand-colored semibold links right
+- Body: "Quick commands for your AI tool with RelayKit loaded in your project."
+- 4 AI prompt cards (same as logged-in Messages tab): Compliance review, Write a message, Add a message type, Check opt-in copy
+- Interactive tool selector below cards: 6 logos with selection state (purple border), per-tool instructions, copyable prompt snippet
+- Only triggered by "just the files" path — "Create Account & Download" users go to Overview
 
 **Left column — Messages:**
 - "Messages" h2 + toolbar row: "Show template" / "Show preview" (icon + text label) and "Copy all" (icon + text label), `text-sm text-text-tertiary`, `gap-5` (D-178)
@@ -77,7 +82,7 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **Download modal:** Opens on "Download RelayKit" click. Two paths (D-114):
 1. "Sign up & download" — email → 6-digit OTP → downloading confirmation. Benefits: sandbox access, personalized files, dashboard.
-2. "Just the files, no account" — tertiary path with confirmation modal, immediate download, soft re-invitation.
+2. "Just the files, no account" — redesigned confirmation modal (D-181): download confirmation at top, interactive tool selector with selection state and per-tool instructions in the middle, "Create an account later" + "Close" at bottom. Modal widens to `max-w-lg`.
 
 **Shared footer:** Uses shared `Footer` component (D-121).
 
