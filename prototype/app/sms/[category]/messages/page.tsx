@@ -13,6 +13,7 @@ import {
   ClipboardCheck,
   Sliders04,
   ArrowDown,
+  Code02,
 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
@@ -603,12 +604,8 @@ const TOOL_LOGO_MAP: Record<string, string> = {
 function ToolLogo({ id }: { id: string }) {
   const logoSrc = TOOL_LOGO_MAP[id];
 
-  // "Other" — generic code brackets
-  if (!logoSrc) return (
-    <svg className="w-6 h-6 text-text-quaternary" viewBox="0 0 24 24" fill="none">
-      <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
+  // "Other" — code icon
+  if (!logoSrc) return <Code02 className="w-6 h-6 text-text-quaternary" />;
 
   // Windsurf gets 20% larger
   const sizeClass = id === "windsurf" ? "w-[34px] h-[34px]" : "w-7 h-7";
