@@ -58,9 +58,9 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **This is the most important page in the product.** It's where strangers become users. The download happens here.
 
-**Hero:** Integrated variant — CTA woven inline into subhead. References "two files" not "Blueprint" (D-109). Single CTA: "Download RelayKit" (D-108). At the bottom of the grey hero band: static "Works with" logo row — 6 tool logos (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other) with names, no interaction. Credibility signal only. (D-180)
+**Hero:** Integrated variant — CTA woven inline into subhead. References "two files" not "Blueprint" (D-109). Single CTA: "Download RelayKit" (D-108). At the bottom of the grey hero band: static logo row — 6 tool logos (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other with Code02 icon) in 48px circles (`w-12 h-12`), names below. No interaction — credibility signal only. (D-180, D-192)
 
-**Layout:** StepsLayout is the default (D-113). Two-column grid (`lg:grid-cols-[1fr_300px]`) — messages on left, preview/opt-in on right (D-175). Old layout preserved at `?layout=default` (same column structure).
+**Layout:** StepsLayout is the default (D-113). Two-column grid (`lg:grid-cols-[1fr_300px]`) — messages on left, opt-in on right (D-175). Old layout preserved at `?layout=default` (same structure).
 
 **Post-download AI prompts band (D-182):** Appears between hero and messages content after user dismisses the "just the files" confirmation modal (`hasDownloaded` state flag). Contains:
 - Header row: "AI prompts" h2 left, "AI tool setup | Download RelayKit" brand-colored semibold links right
@@ -70,19 +70,22 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 - Only triggered by "just the files" path — "Create Account & Download" users go to Overview
 
 **Left column — Messages:**
-- "Messages" h2 + toolbar row: "Show template" / "Show preview" (icon + text label) and "Copy all" (icon + text label), `text-sm text-text-tertiary`, `gap-5` (D-178)
-- Body copy: "Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant."
-- Style variant pills (Brand-first / Action-first / Context-first) with "Need marketing messages?" brand-colored link (`text-sm font-semibold text-text-brand-secondary` + chevron-down icon, smooth-scrolls to marketing section)
-- `CatalogCard` components — no checkboxes (D-171), "Modify with AI ›" expander per card (D-174), variables in brand purple regular weight (D-179)
-- "Need promotional messages too?" marketing callout: white card backgrounds (`bg-bg-primary`), no badge, no opacity reduction, copy: "Promos and offers require a separate registration. Get your app live first, then add marketing from your dashboard."
+- "Messages" h2 + body copy: "Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant."
+- Style variant pills (Brand-first / Action-first / Context-first) with "Marketing messages" right-aligned (brand purple, ArrowDown icon, smooth-scrolls to marketing section). `mb-5` spacing below pills row. (D-185)
+- Toolbar row (`mb-3`): Left: "Personalize" (brand purple semibold, Sliders04 icon — opens slideout). Right: "Show template"/"Show preview" toggle + "Copy all". (D-185)
+- Default view: template mode — variables render as brand-purple inline text, not monospace (D-187). Clicking "Show preview" with empty personalization opens slideout (D-188).
+- `CatalogCard` components — no checkboxes (D-171), "Modify with AI ›" expander per card (D-174), per-card preview toggle also opens slideout when empty (D-188)
+- "Need marketing messages too?" marketing callout (`id="marketing-section-steps"`/`marketing-section-default`): white card backgrounds, copy: "Promos and offers require a separate registration. Get your first registration approved, then add marketing from your dashboard." (D-191)
+
+**Personalization slideout (D-184):** Right-side overlay panel, slides from right. Title: "Personalize messages", body: "See how messages look with your details." Three fields: "App / business name" (placeholder "Enter business name"), "Website URL" (non-editable `https://` prefix, placeholder "Enter URL"), "Service type" (placeholder "Enter service type"). Fields start empty. Values persist to localStorage, update messages + opt-in live. (D-189)
 
 **Right column (sticky, `lg:top-20`):**
-- "Preview your messages" (`text-sm font-semibold`) + body: "See how messages look with your details." + 3 inputs (app name, website, service type) — values persist to localStorage (D-111)
-- "Opt-in form preview" (`text-sm font-semibold`) + body: "Required by carriers. RelayKit keeps yours updated." + `CatalogOptIn` (preview only, no copy — D-173)
+- "Opt-in form" (`text-lg font-semibold` — peer-level with Messages h2, D-186) + body: "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."
+- `CatalogOptIn` (preview only, no copy — D-173). Placeholder fields: "Enter name", "Enter phone" (D-190).
 
 **Download modal:** Opens on "Download RelayKit" click. Two paths (D-114):
 1. "Sign up & download" — email → 6-digit OTP → downloading confirmation. Benefits: sandbox access, personalized files, dashboard.
-2. "Just the files, no account" — redesigned confirmation modal (D-181): download confirmation at top, interactive tool selector with selection state and per-tool instructions in the middle, "Create an account later" + "Close" at bottom. Modal widens to `max-w-lg`.
+2. "Just the files, no account" — redesigned confirmation modal (D-181, D-183): green checkmark + "Your files are downloading" header, interactive tool selector with selection state and per-tool instructions, "Done" primary CTA (brand purple, full width), "You can find this again under Tool setup" muted note. Modal widens to `max-w-lg`.
 
 **Shared footer:** Uses shared `Footer` component (D-121).
 
@@ -195,7 +198,7 @@ Badge: red "Not approved." Stepper shortened to 4 steps (red X on step 4). Refun
 
 **AI prompts section header row** (`flex items-center justify-between`):
 - Left: `<h2>AI prompts</h2>` (`text-lg font-semibold text-text-primary`)
-- Right: "AI tool setup" + pipe separator (`|` in `text-text-quaternary`) + "Download RelayKit" — both `text-sm font-medium text-text-tertiary`, `gap-4` (D-177)
+- Right: "AI tool setup" (with rotating chevron, `text-sm font-medium text-text-tertiary`) + pipe separator (`|`) + "Download RelayKit" — `gap-4` (D-177)
 - Body copy: "Quick commands for your AI tool with RelayKit loaded in your project."
 
 **AI prompts — 4-card grid** (`grid-cols-2 lg:grid-cols-4 gap-3 mb-8`):
@@ -203,20 +206,23 @@ Badge: red "Not approved." Stepper shortened to 4 steps (red X on step 4). Refun
 - Each card: 32×32 purple icon square (`h-8 w-8 bg-bg-brand-secondary rounded-lg`, icon `size-4`) + `text-sm font-semibold` heading + italic prompt text (`text-sm text-text-tertiary italic`) + clipboard copy button with tooltip "Copy prompt" (top-right, flips to green checkmark)
 - Cards: ShieldTick / "Compliance review" — Edit03 / "Write a message" — MessagePlusSquare / "Add a message type" — ClipboardCheck / "Check opt-in copy"
 
-**AI tool setup panel** — toggled by the "AI tool setup" button. `isToolOpen` state in page component. Renders `<ToolPanel />` below the card grid: 6-tool logo row + per-tool instruction + copyable command. Collapsed by default (D-160).
+**AI tool setup panel** — toggled by the "AI tool setup" button (chevron rotates 180° when open). `isToolOpen` state in page component. Renders `<ToolPanel />` below the card grid: 6-tool logo row (Code02 for "Other", D-192) + per-tool instruction + copyable command. Collapsed by default (D-160).
 
-**Two-column layout** (`lg:grid-cols-[1fr_300px]`) — messages left, preview right (D-175):
+**Personalization slideout (D-184):** Right-side overlay panel, identical to public page. Title: "Personalize messages", body: "See how messages look with your details." Three fields with generic placeholders, URL field with `https://` prefix (D-189). Triggered by "Personalize" button in toolbar.
+
+**Two-column layout** (`lg:grid-cols-[1fr_300px]`) — messages left, opt-in right (D-175):
 
 *Left column — Messages:*
-- "Messages" h2 + toolbar: "Show template" / "Show preview" (icon + text label) and "Copy all" (icon + text label), `text-sm text-text-tertiary`, `gap-5` (D-178)
-- Body copy: "Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant."
-- Style variant pills (Brand-first / Action-first / Context-first) with `mt-4 mb-5` spacing. "Need marketing messages?" brand link (`text-sm font-semibold text-text-brand-secondary` + chevron-down, smooth-scrolls to `#marketing-section`)
-- `CatalogCard` components — no checkboxes (D-171), "Modify with AI ›" expander per card (D-174), variables in brand purple regular weight (D-179), per-card view toggle + info tooltip + copy button with tooltips
-- "Need promotional messages too?" marketing callout (`id="marketing-section"`): grey section bg, white card backgrounds (`bg-bg-primary border-border-secondary`), no badge, no opacity. Copy: "Promos and offers require a separate registration. Get your app live first, then add marketing from your dashboard."
+- "Messages" h2 + body copy: "Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant."
+- Style variant pills (Brand-first / Action-first / Context-first) with "Marketing messages" right-aligned (brand purple, ArrowDown icon, smooth-scrolls to `#marketing-section`). `mt-4 mb-5` spacing. (D-185)
+- Toolbar row (`mb-3`): Left: "Personalize" (brand purple semibold, Sliders04 icon — opens slideout). Right: "Show template"/"Show preview" toggle + "Copy all". (D-185)
+- Default view: template mode — variables render as brand-purple inline text, not monospace (D-187). Clicking "Show preview" with empty personalization opens slideout (D-188).
+- `CatalogCard` components — no checkboxes (D-171), "Modify with AI ›" expander per card (D-174), per-card preview toggle also opens slideout when empty (D-188)
+- "Need marketing messages too?" marketing callout (`id="marketing-section"`): grey section bg, white card backgrounds. Copy: "Promos and offers require a separate registration. Get your first registration approved, then add marketing from your dashboard." (D-191)
 
 *Right column (sticky, `lg:top-20`):*
-- "Preview your messages" (`text-sm font-semibold`) + body: "See how messages look with your details." + 3 inputs (app name, website, service type). Values persist to localStorage (D-111).
-- "Opt-in form preview" (`text-sm font-semibold`) + body: "Required by carriers. RelayKit keeps yours updated." + `CatalogOptIn` (preview only, no copy — D-173). Placeholder name: "Alex Rivera".
+- "Opt-in form" (`text-lg font-semibold` — peer-level with Messages h2, D-186) + body: "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."
+- `CatalogOptIn` (preview only, no copy — D-173). Placeholder fields: "Enter name", "Enter phone" (D-190).
 
 **All 5 registration states render the same content.** (D-170)
 

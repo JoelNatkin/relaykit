@@ -786,3 +786,43 @@ _Affects: `prototype/app/sms/[category]/messages/page.tsx`._
 **D-182 — Post-download AI prompts band on public messages page** (Date: 2026-03-20)
 After dismissing the "just the files" confirmation modal (via "Close" or "Create an account later"), the public messages page enters a post-download state (`hasDownloaded` component flag). A new section appears between the hero and the messages content: "AI prompts" h2 header with "AI tool setup | Download RelayKit" brand-colored links on the right, body copy, 4 AI prompt cards (Compliance review, Write a message, Add a message type, Check opt-in copy — same as logged-in Messages tab), and the interactive tool selector with per-tool instructions below. Only the "just the files" path triggers this — the "Create Account & Download" path directs users to their Overview page. **Pre-download state remains the clean marketing page with static logos.**
 _Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-183 — "Just the files" modal: Done CTA replaces Close/Create account later** (Date: 2026-03-20)
+The files-only confirmation modal uses a single "Done" primary CTA button (brand purple, full width) instead of the previous "Create an account later" secondary button + "Close" text link. Below the Done button: "You can find this again under Tool setup" in muted text. **Supersedes the button layout portion of D-181.**
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-184 — Personalization fields moved to slideout panel on both messages pages** (Date: 2026-03-20)
+The three personalization fields (App/business name, Website URL, Service type) are removed from the right column of both the logged-in Messages tab and the public messages page. They now live in a right-side slideout panel triggered by a "Personalize" button in the toolbar row. The slideout slides in from the right with an overlay backdrop, title "Personalize messages", body "See how messages look with your details.", and the three input fields. Values persist to localStorage and update messages + opt-in form live. The right column now contains only the opt-in form preview.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-185 — Consolidated toolbar row below variant pills** (Date: 2026-03-20)
+A single toolbar row sits between the variant pills (Brand-first, Action-first, Context-first) and the first message card. Left side: "Personalize" (brand purple semibold, Sliders04 icon). Right side: "Show template"/"Show preview" toggle + "Copy all". "Marketing messages" link (brand purple, ArrowDown icon) sits right-aligned on the pills row, not the toolbar row. "Show template" and "Copy all" are removed from the Messages h2 header area. Applied to both pages.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-186 — Opt-in form header matches Messages h2 as peer-level sections** (Date: 2026-03-20)
+The right column header changed from "Opt-in form preview" (`text-sm`) to "Opt-in form" (`text-lg font-semibold text-text-primary`) — same type style as the "Messages" h2 on the left. They read as peer-level section headers.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-187 — Messages default to template view with styled variable pills** (Date: 2026-03-20)
+Default view mode is "template" (not "preview"). Template messages use normal font (no monospace) with variable placeholders like `{app_name}` rendered inline in brand purple (`text-text-brand-secondary`). On mount, if localStorage has personalization data, auto-switches to preview mode. **Supersedes the previous default of preview mode.**
+_Affects: `prototype/components/catalog/catalog-card.tsx`, `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-188 — Show preview with empty personalization opens slideout** (Date: 2026-03-20)
+When personalization fields are all empty and the user clicks "Show preview" (global toolbar toggle) or a per-card preview toggle, the personalization slideout opens instead of showing a broken/empty preview. When partially filled, the toggle works normally — filled fields interpolate, empty fields stay as styled variable pills. CatalogCard accepts an `onRequestPersonalize` callback for this behavior.
+_Affects: `prototype/components/catalog/catalog-card.tsx`, `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-189 — Personalization fields use generic placeholder text and https:// prefix** (Date: 2026-03-20)
+Personalization slideout fields use generic placeholders: "Enter business name", "Enter URL", "Enter service type". The Website URL field has a non-editable "https://" prefix inside the field (`text-text-quaternary select-none`), visually part of the input but not editable. Fields start empty — no pre-filled values.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-190 — Opt-in form preview uses generic placeholder text** (Date: 2026-03-20)
+The opt-in form preview fields use "Enter name" and "Enter phone" instead of the previous "Alex Rivera" and "(555) 123-4567". These are non-editable display fields.
+_Affects: `prototype/components/catalog/catalog-opt-in.tsx`._
+
+**D-191 — Marketing section copy updated** (Date: 2026-03-20)
+Marketing section heading changed from "Need promotional messages too?" to "Need marketing messages too?" Body copy changed from "...Get your app live first..." to "...Get your first registration approved, then add marketing from your dashboard."
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-192 — "Other" tool logo uses Untitled UI Code02 icon** (Date: 2026-03-20)
+The "Other" fallback in the ToolLogo component uses the `Code02` icon from `@untitledui/icons` instead of an inline SVG code brackets icon. Applied to both pages (hero logo row, confirmation modal, post-download band, logged-in tool panel).
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
