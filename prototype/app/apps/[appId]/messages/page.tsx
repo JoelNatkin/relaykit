@@ -8,7 +8,8 @@ import {
   MessagePlusSquare,
   ClipboardCheck,
   XClose,
-  Settings01,
+  Sliders04,
+  ArrowDown,
 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
@@ -596,7 +597,7 @@ export default function AppMessagesPage() {
                   className="ml-auto flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
                 >
                   Marketing messages
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
+                  <ArrowDown className="size-3.5" />
                 </button>
               )}
             </div>
@@ -609,7 +610,7 @@ export default function AppMessagesPage() {
               onClick={() => setShowPersonalize(true)}
               className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
             >
-              <Settings01 className="size-4" />
+              <Sliders04 className="size-4" />
               Personalize
             </button>
             <div className="flex items-center gap-5">
