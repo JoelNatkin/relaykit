@@ -671,10 +671,10 @@ export default function AppMessagesPage() {
           {expansionMessages.length > 0 && (
             <div id="marketing-section" className="mt-8 rounded-xl border border-border-secondary bg-bg-secondary p-6">
               <h3 className="text-base font-semibold text-text-primary">
-                Need promotional messages too?
+                Need marketing messages too?
               </h3>
               <p className="mt-1 text-sm text-text-tertiary">
-                Promos and offers require a separate registration. Get your app live first, then add marketing from your dashboard.
+                Promos and offers require a separate registration. Get your first registration approved, then add marketing from your dashboard.
               </p>
               <div className="mt-4 space-y-3">
                 {expansionMessages.map((msg) => {
