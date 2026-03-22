@@ -384,12 +384,14 @@ export default function AppSettings() {
               <dd className="text-sm font-medium text-text-primary">$19/mo</dd>
             </div>
           </dl>
-          <a
-            href="#"
-            className="mt-4 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
-          >
-            View compliance site &rarr;
-          </a>
+          <div className="mt-4 flex justify-end">
+            <a
+              href="#"
+              className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+            >
+              View compliance site &rarr;
+            </a>
+          </div>
         </div>
       )}
 
@@ -425,12 +427,14 @@ export default function AppSettings() {
           <p className="mt-4 text-sm text-text-success-primary">
             Your $49 registration fee has been refunded.
           </p>
-          <a
-            href="#"
-            className="mt-2 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
-          >
-            Start a new registration &rarr;
-          </a>
+          <div className="mt-2 flex justify-end">
+            <a
+              href="#"
+              className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+            >
+              Start a new registration &rarr;
+            </a>
+          </div>
           <p className="mt-3 text-sm text-text-tertiary">
             Your sandbox is still active — your code and test environment aren&apos;t going anywhere.
           </p>
@@ -461,7 +465,7 @@ export default function AppSettings() {
               </code>
               <CopyButton text="rk_sandbox_rL7x9Kp2mWqYvBn4" />
             </div>
-            <div className="mt-2">
+            <div className="mt-2 flex justify-end">
               <button
                 type="button"
                 onClick={() => setRegenSandboxModalOpen(true)}
@@ -489,7 +493,7 @@ export default function AppSettings() {
                     rk_live_••••••••••••••••••••
                   </code>
                 </div>
-                <div className="mt-2">
+                <div className="mt-2 flex justify-end">
                   <button
                     type="button"
                     onClick={() => setRegenLiveModalOpen(true)}
@@ -533,12 +537,14 @@ export default function AppSettings() {
                 <span className="text-sm text-text-tertiary">Plan</span>
                 <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
               </div>
-              <a
-                href="#"
-                className="inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
-              >
-                View account billing &rarr;
-              </a>
+              <div className="flex justify-end">
+                <a
+                  href="#"
+                  className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                >
+                  View account billing &rarr;
+                </a>
+              </div>
             </>
           )}
 
@@ -553,12 +559,14 @@ export default function AppSettings() {
                 <span className="text-sm text-text-tertiary">Plan</span>
                 <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
               </div>
-              <a
-                href="#"
-                className="inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
-              >
-                View account billing &rarr;
-              </a>
+              <div className="flex justify-end">
+                <a
+                  href="#"
+                  className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                >
+                  View account billing &rarr;
+                </a>
+              </div>
             </>
           )}
 
@@ -573,13 +581,15 @@ export default function AppSettings() {
                 <span className="text-sm text-text-tertiary">Next billing</span>
                 <span className="text-sm font-medium text-text-primary">Apr 14, 2026</span>
               </div>
-              <a
-                href="#"
-                className="inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
-              >
-                Manage billing &rarr;
-              </a>
-              <div className="border-t border-border-secondary pt-3">
+              <div className="flex justify-end">
+                <a
+                  href="#"
+                  className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                >
+                  Manage billing &rarr;
+                </a>
+              </div>
+              <div className="border-t border-border-secondary pt-3 flex justify-end">
                 <button
                   type="button"
                   onClick={() => setCancelModalOpen(true)}
