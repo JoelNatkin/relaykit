@@ -234,7 +234,7 @@ export default function AppSettings() {
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
         <div className="flex items-start justify-between gap-10">
           <div>
-            <p className="text-sm font-medium text-text-primary">SMS compliance alerts</p>
+            <h3 className="text-lg font-semibold text-text-primary">SMS compliance alerts</h3>
             <p className="text-sm text-text-tertiary mt-0.5">
               Get a text when live messages are blocked or your content drifts from your registered use case. You&apos;ll always get email alerts.
             </p>
