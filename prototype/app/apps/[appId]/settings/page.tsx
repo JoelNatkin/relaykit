@@ -32,27 +32,27 @@ function EditableField({
   if (isEditing) {
     return (
       <div>
-        <dt className="text-xs text-text-tertiary mb-1.5">{label}</dt>
+        <dt className="text-sm text-text-tertiary mb-1.5">{label}</dt>
         <dd>
           <input
             type="text"
             value={editValue}
             onChange={(e) => onEditValueChange(e.target.value)}
-            className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-xs text-text-primary shadow-xs focus:border-border-brand focus:outline-none"
+            className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary shadow-xs focus:border-border-brand focus:outline-none"
             autoFocus
           />
           <div className="mt-2 flex items-center gap-2">
             <button
               type="button"
               onClick={onSave}
-              className="rounded-md bg-bg-brand-solid px-3 py-1.5 text-xs font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+              className="rounded-md bg-bg-brand-solid px-3 py-1.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
             >
               Save
             </button>
             <button
               type="button"
               onClick={onCancel}
-              className="text-xs font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+              className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
             >
               Cancel
             </button>
@@ -64,13 +64,13 @@ function EditableField({
 
   return (
     <div className="flex items-center justify-between">
-      <dt className="text-xs text-text-tertiary">{label}</dt>
+      <dt className="text-sm text-text-tertiary">{label}</dt>
       <dd className="flex items-center gap-2">
-        <span className="text-xs font-medium text-text-primary">{value}</span>
+        <span className="text-sm font-medium text-text-primary">{value}</span>
         <button
           type="button"
           onClick={() => onEdit(fieldKey, value)}
-          className="text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+          className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
         >
           Edit
         </button>
@@ -85,10 +85,10 @@ function ReadOnlyField({ label, value, sub }: { label: string; value: string; su
   return (
     <div>
       <div className="flex items-center justify-between">
-        <dt className="text-xs text-text-tertiary">{label}</dt>
-        <dd className="text-xs font-medium text-text-primary">{value}</dd>
+        <dt className="text-sm text-text-tertiary">{label}</dt>
+        <dd className="text-sm font-medium text-text-primary">{value}</dd>
       </div>
-      {sub && <p className="mt-0.5 text-[11px] text-text-quaternary">{sub}</p>}
+      {sub && <p className="mt-0.5 text-xs text-text-quaternary">{sub}</p>}
     </div>
   );
 }
@@ -232,10 +232,10 @@ export default function AppSettings() {
 
       {/* ── Section 1: SMS Compliance Alerts ── */}
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <div className="flex items-center justify-between">
+        <div className="flex items-start justify-between gap-10">
           <div>
             <p className="text-sm font-medium text-text-primary">SMS compliance alerts</p>
-            <p className="text-xs text-text-tertiary mt-0.5">
+            <p className="text-sm text-text-tertiary mt-0.5">
               Get a text when live messages are blocked or your content drifts from your registered use case. You&apos;ll always get email alerts.
             </p>
           </div>
@@ -244,7 +244,7 @@ export default function AppSettings() {
             role="switch"
             aria-checked={smsNotify}
             onClick={() => setSmsNotify(!smsNotify)}
-            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition duration-100 ease-linear ${
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition duration-100 ease-linear mt-0.5 ${
               smsNotify ? "bg-bg-brand-solid" : "bg-bg-tertiary"
             }`}
           >
@@ -256,11 +256,11 @@ export default function AppSettings() {
           </button>
         </div>
         {smsNotify && (
-          <p className="mt-3 text-xs text-text-quaternary">
+          <p className="mt-3 text-sm text-text-quaternary">
             Alerts go to {alertPhone}{" "}
             <button
               type="button"
-              className="text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+              className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
             >
               Edit
             </button>
@@ -270,7 +270,7 @@ export default function AppSettings() {
 
       {/* ── Section 2: Account Info ── */}
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <h3 className="text-sm font-semibold text-text-primary mb-4">Account info</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">Account info</h3>
         <dl className="space-y-3">
           {hasRegistered && (
             <ReadOnlyField
@@ -310,25 +310,25 @@ export default function AppSettings() {
       {/* ── Section 3: Registration ── */}
       {isPending && (
         <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-          <h3 className="text-sm font-semibold text-text-primary mb-4">Registration</h3>
+          <h3 className="text-lg font-semibold text-text-primary mb-4">Registration</h3>
           <dl className="space-y-3">
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Status</dt>
-              <dd className="flex items-center gap-1.5 text-xs font-medium text-text-primary">
+              <dt className="text-sm text-text-tertiary">Status</dt>
+              <dd className="flex items-center gap-1.5 text-sm font-medium text-text-primary">
                 <StatusDot color="amber" />
                 In review
               </dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Submitted</dt>
-              <dd className="text-xs font-medium text-text-primary">Mar 10, 2026</dd>
+              <dt className="text-sm text-text-tertiary">Submitted</dt>
+              <dd className="text-sm font-medium text-text-primary">Mar 10, 2026</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Estimated review</dt>
-              <dd className="text-xs font-medium text-text-primary">2–3 weeks</dd>
+              <dt className="text-sm text-text-tertiary">Estimated review</dt>
+              <dd className="text-sm font-medium text-text-primary">2–3 weeks</dd>
             </div>
           </dl>
-          <p className="mt-4 text-xs text-text-tertiary">
+          <p className="mt-4 text-sm text-text-tertiary">
             Your sandbox is fully active while you wait.
           </p>
         </div>
@@ -336,21 +336,21 @@ export default function AppSettings() {
 
       {isExtendedReview && (
         <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-          <h3 className="text-sm font-semibold text-text-primary mb-4">Registration</h3>
+          <h3 className="text-lg font-semibold text-text-primary mb-4">Registration</h3>
           <dl className="space-y-3">
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Status</dt>
-              <dd className="flex items-center gap-1.5 text-xs font-medium text-text-primary">
+              <dt className="text-sm text-text-tertiary">Status</dt>
+              <dd className="flex items-center gap-1.5 text-sm font-medium text-text-primary">
                 <StatusDot color="amber" />
                 Extended review
               </dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Submitted</dt>
-              <dd className="text-xs font-medium text-text-primary">Mar 10, 2026</dd>
+              <dt className="text-sm text-text-tertiary">Submitted</dt>
+              <dd className="text-sm font-medium text-text-primary">Mar 10, 2026</dd>
             </div>
           </dl>
-          <p className="mt-4 text-xs text-text-tertiary">
+          <p className="mt-4 text-sm text-text-tertiary">
             The carrier asked for additional information about your registration. We&apos;re handling it — no action needed from you. We&apos;ll reach out if we need anything.
           </p>
         </div>
@@ -358,35 +358,35 @@ export default function AppSettings() {
 
       {isApproved && (
         <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-          <h3 className="text-sm font-semibold text-text-primary mb-4">Registration</h3>
+          <h3 className="text-lg font-semibold text-text-primary mb-4">Registration</h3>
           <dl className="space-y-3">
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Status</dt>
-              <dd className="flex items-center gap-1.5 text-xs font-medium text-text-primary">
+              <dt className="text-sm text-text-tertiary">Status</dt>
+              <dd className="flex items-center gap-1.5 text-sm font-medium text-text-primary">
                 <StatusDot color="green" />
                 Active
               </dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Your SMS number</dt>
-              <dd className="text-xs font-medium text-text-primary">+1 (555) 867-5309</dd>
+              <dt className="text-sm text-text-tertiary">Your SMS number</dt>
+              <dd className="text-sm font-medium text-text-primary">+1 (555) 867-5309</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Approved</dt>
-              <dd className="text-xs font-medium text-text-primary">Mar 31, 2026</dd>
+              <dt className="text-sm text-text-tertiary">Approved</dt>
+              <dd className="text-sm font-medium text-text-primary">Mar 31, 2026</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Campaign ID</dt>
-              <dd className="text-xs font-medium text-text-primary">C-XXXXXX</dd>
+              <dt className="text-sm text-text-tertiary">Campaign ID</dt>
+              <dd className="text-sm font-medium text-text-primary">C-XXXXXX</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Plan</dt>
-              <dd className="text-xs font-medium text-text-primary">$19/mo</dd>
+              <dt className="text-sm text-text-tertiary">Plan</dt>
+              <dd className="text-sm font-medium text-text-primary">$19/mo</dd>
             </div>
           </dl>
           <a
             href="#"
-            className="mt-4 inline-block text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+            className="mt-4 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
           >
             View compliance site &rarr;
           </a>
@@ -395,43 +395,43 @@ export default function AppSettings() {
 
       {isRejected && (
         <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-          <h3 className="text-sm font-semibold text-text-primary mb-4">Registration</h3>
+          <h3 className="text-lg font-semibold text-text-primary mb-4">Registration</h3>
           <dl className="space-y-3">
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Status</dt>
-              <dd className="flex items-center gap-1.5 text-xs font-medium text-text-primary">
+              <dt className="text-sm text-text-tertiary">Status</dt>
+              <dd className="flex items-center gap-1.5 text-sm font-medium text-text-primary">
                 <StatusDot color="red" />
                 Not approved
               </dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Submitted</dt>
-              <dd className="text-xs font-medium text-text-primary">Mar 10, 2026</dd>
+              <dt className="text-sm text-text-tertiary">Submitted</dt>
+              <dd className="text-sm font-medium text-text-primary">Mar 10, 2026</dd>
             </div>
             <div className="flex items-center justify-between">
-              <dt className="text-xs text-text-tertiary">Reviewed</dt>
-              <dd className="text-xs font-medium text-text-primary">Mar 22, 2026</dd>
+              <dt className="text-sm text-text-tertiary">Reviewed</dt>
+              <dd className="text-sm font-medium text-text-primary">Mar 22, 2026</dd>
             </div>
           </dl>
 
           {/* Debrief box */}
           <div className="mt-4 rounded-lg bg-bg-error-primary p-4">
-            <p className="text-xs font-semibold text-text-primary">What happened</p>
-            <p className="mt-1 text-xs text-text-secondary leading-relaxed">
+            <p className="text-sm font-semibold text-text-primary">What happened</p>
+            <p className="mt-1 text-sm text-text-secondary leading-relaxed">
               The carrier couldn&apos;t verify your business name against your EIN. Make sure your registered business name matches exactly what&apos;s on file with the IRS.
             </p>
           </div>
 
-          <p className="mt-4 text-xs text-text-success-primary">
+          <p className="mt-4 text-sm text-text-success-primary">
             Your $49 registration fee has been refunded.
           </p>
           <a
             href="#"
-            className="mt-2 inline-block text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+            className="mt-2 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
           >
             Start a new registration &rarr;
           </a>
-          <p className="mt-3 text-xs text-text-tertiary">
+          <p className="mt-3 text-sm text-text-tertiary">
             Your sandbox is still active — your code and test environment aren&apos;t going anywhere.
           </p>
         </div>
@@ -439,8 +439,8 @@ export default function AppSettings() {
 
       {/* ── Section 4: API Keys ── */}
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <h3 className="text-sm font-semibold text-text-primary mb-1">API keys</h3>
-        <p className="text-xs text-text-tertiary mb-4">
+        <h3 className="text-lg font-semibold text-text-primary mb-1">API keys</h3>
+        <p className="text-sm text-text-tertiary mb-4">
           Your AI coding tool reads this key from your RelayKit files.
         </p>
 
@@ -448,10 +448,10 @@ export default function AppSettings() {
           {/* Sandbox key — always visible */}
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <p className="text-xs font-medium text-text-quaternary uppercase tracking-wide">
+              <p className="text-sm font-medium text-text-quaternary uppercase tracking-wide">
                 Sandbox
               </p>
-              <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[11px] font-medium text-text-success-primary">
+              <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-xs font-medium text-text-success-primary">
                 Active
               </span>
             </div>
@@ -465,7 +465,7 @@ export default function AppSettings() {
               <button
                 type="button"
                 onClick={() => setRegenSandboxModalOpen(true)}
-                className="text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
               >
                 Regenerate
               </button>
@@ -477,10 +477,10 @@ export default function AppSettings() {
             <>
               <div className="border-t border-border-secondary pt-4">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <p className="text-xs font-medium text-text-quaternary uppercase tracking-wide">
+                  <p className="text-sm font-medium text-text-quaternary uppercase tracking-wide">
                     Live
                   </p>
-                  <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[11px] font-medium text-text-success-primary">
+                  <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-xs font-medium text-text-success-primary">
                     Active
                   </span>
                 </div>
@@ -493,13 +493,13 @@ export default function AppSettings() {
                   <button
                     type="button"
                     onClick={() => setRegenLiveModalOpen(true)}
-                    className="text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                    className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
                   >
                     Regenerate
                   </button>
                 </div>
               </div>
-              <p className="text-[11px] text-text-quaternary">
+              <p className="text-xs text-text-quaternary">
                 Live key is shown once when generated. Use Regenerate if you need a new one.
               </p>
             </>
@@ -509,16 +509,16 @@ export default function AppSettings() {
 
       {/* ── Section 5: Billing ── */}
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <h3 className="text-sm font-semibold text-text-primary mb-4">Billing</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">Billing</h3>
         <div className="space-y-3">
           {/* Default */}
           {isDefault && (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Plan</span>
-                <span className="text-xs font-medium text-text-primary">Sandbox — Free</span>
+                <span className="text-sm text-text-tertiary">Plan</span>
+                <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
               </div>
-              <p className="text-[11px] text-text-quaternary">No credit card required.</p>
+              <p className="text-xs text-text-quaternary">No credit card required.</p>
             </>
           )}
 
@@ -526,16 +526,16 @@ export default function AppSettings() {
           {isPending && (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Registration fee</span>
-                <span className="text-xs font-medium text-text-primary">$49 paid · Mar 10, 2026</span>
+                <span className="text-sm text-text-tertiary">Registration fee</span>
+                <span className="text-sm font-medium text-text-primary">$49 paid · Mar 10, 2026</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Plan</span>
-                <span className="text-xs font-medium text-text-primary">Sandbox — Free</span>
+                <span className="text-sm text-text-tertiary">Plan</span>
+                <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
               </div>
               <a
                 href="#"
-                className="inline-block text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                className="inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
               >
                 View account billing &rarr;
               </a>
@@ -546,16 +546,16 @@ export default function AppSettings() {
           {isExtendedReview && (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Registration fee</span>
-                <span className="text-xs font-medium text-text-primary">$49 paid · Mar 10, 2026</span>
+                <span className="text-sm text-text-tertiary">Registration fee</span>
+                <span className="text-sm font-medium text-text-primary">$49 paid · Mar 10, 2026</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Plan</span>
-                <span className="text-xs font-medium text-text-primary">Sandbox — Free</span>
+                <span className="text-sm text-text-tertiary">Plan</span>
+                <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
               </div>
               <a
                 href="#"
-                className="inline-block text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                className="inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
               >
                 View account billing &rarr;
               </a>
@@ -566,16 +566,16 @@ export default function AppSettings() {
           {isApproved && (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Plan</span>
-                <span className="text-xs font-medium text-text-primary">$19/mo</span>
+                <span className="text-sm text-text-tertiary">Plan</span>
+                <span className="text-sm font-medium text-text-primary">$19/mo</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Next billing</span>
-                <span className="text-xs font-medium text-text-primary">Apr 14, 2026</span>
+                <span className="text-sm text-text-tertiary">Next billing</span>
+                <span className="text-sm font-medium text-text-primary">Apr 14, 2026</span>
               </div>
               <a
                 href="#"
-                className="inline-block text-xs font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                className="inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
               >
                 Manage billing &rarr;
               </a>
@@ -583,7 +583,7 @@ export default function AppSettings() {
                 <button
                   type="button"
                   onClick={() => setCancelModalOpen(true)}
-                  className="text-xs font-medium text-text-tertiary hover:text-text-error-primary transition duration-100 ease-linear cursor-pointer"
+                  className="text-sm font-medium text-text-tertiary hover:text-text-error-primary transition duration-100 ease-linear cursor-pointer"
                 >
                   Cancel plan
                 </button>
@@ -595,12 +595,12 @@ export default function AppSettings() {
           {isRejected && (
             <>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Registration fee</span>
-                <span className="text-xs font-medium text-text-primary">$49 refunded · Mar 22, 2026</span>
+                <span className="text-sm text-text-tertiary">Registration fee</span>
+                <span className="text-sm font-medium text-text-primary">$49 refunded · Mar 22, 2026</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-xs text-text-tertiary">Plan</span>
-                <span className="text-xs font-medium text-text-primary">Sandbox — Free</span>
+                <span className="text-sm text-text-tertiary">Plan</span>
+                <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
               </div>
             </>
           )}
