@@ -412,6 +412,29 @@ export default function AppSettings() {
             </div>
           </dl>
 
+          {/* What was submitted */}
+          <div className="mt-4">
+            <p className="text-sm font-semibold text-text-primary mb-2">What was submitted</p>
+            <dl className="space-y-2">
+              <div className="flex items-center justify-between">
+                <dt className="text-sm text-text-tertiary">Business name</dt>
+                <dd className="text-sm font-medium text-text-primary">Radar Love LLC</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-sm text-text-tertiary">EIN</dt>
+                <dd className="text-sm font-medium text-text-primary">••-•••4567</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-sm text-text-tertiary">Business address</dt>
+                <dd className="text-sm font-medium text-text-primary">123 Main St, Austin, TX 78701</dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="text-sm text-text-tertiary">Use case</dt>
+                <dd className="text-sm font-medium text-text-primary">Appointment reminders</dd>
+              </div>
+            </dl>
+          </div>
+
           {/* Debrief box */}
           <div className="mt-4 rounded-lg bg-bg-error-primary p-4">
             <p className="text-sm font-semibold text-text-primary">What happened</p>
