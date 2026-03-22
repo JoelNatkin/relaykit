@@ -379,10 +379,6 @@ export default function AppSettings() {
               <dt className="text-sm text-text-tertiary">Campaign ID</dt>
               <dd className="text-sm font-medium text-text-primary">C-XXXXXX</dd>
             </div>
-            <div className="flex items-center justify-between">
-              <dt className="text-sm text-text-tertiary">Plan</dt>
-              <dd className="text-sm font-medium text-text-primary">$19/mo</dd>
-            </div>
           </dl>
           <div className="mt-4 flex justify-end">
             <a
@@ -483,7 +479,18 @@ export default function AppSettings() {
                   <code className="flex-1 rounded-md bg-bg-secondary px-3 py-2 text-sm font-mono text-text-primary tracking-wider">
                     rk_live_••••••••••••••••••••
                   </code>
-                  <CopyButton text="rk_live_Tx8bQr3nJfLpYm6w" />
+                  {/* When a live key is freshly regenerated, this button becomes active with the real key value.
+                      For now, only the masked/disabled state is shown. */}
+                  <button
+                    type="button"
+                    disabled
+                    className="rounded-md border border-border-secondary p-1.5 text-fg-quaternary opacity-30 cursor-not-allowed"
+                    aria-label="Copy to clipboard"
+                  >
+                    <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </button>
                 </div>
                 <div className="mt-2 flex justify-end">
                   <button
