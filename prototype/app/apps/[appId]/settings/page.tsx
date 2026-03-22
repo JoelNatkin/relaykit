@@ -479,10 +479,11 @@ export default function AppSettings() {
                     Active
                   </span>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center gap-2">
                   <code className="flex-1 rounded-md bg-bg-secondary px-3 py-2 text-sm font-mono text-text-primary tracking-wider">
                     rk_live_••••••••••••••••••••
                   </code>
+                  <CopyButton text="rk_live_Tx8bQr3nJfLpYm6w" />
                 </div>
                 <div className="mt-2 flex justify-end">
                   <button
