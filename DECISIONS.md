@@ -858,3 +858,43 @@ _Affects: PRD_04, carrier integration, registration timeline promises (may super
 **D-200 — Self-guided usability test instrument in prototype** (Date: 2026-03-22)
 Build a /test route in the prototype with lightweight instrumentation layer: task prompts, confidence checks (1–5 scale), page visit logging, completion tracking, debrief survey. Four test tasks: Discovery, Acquisition, Orientation, Activation. Results stored in Supabase or Google Sheet webhook. Run alongside 3–4 live Zoom calls. Prototype screens stay untouched — test wrapper provides instrumentation overlay. State switchers become testing assets for routing testers to specific lifecycle states.
 _Affects: Prototype route structure, beta recruitment workflow._
+
+**D-201 — SMS compliance alerts off by default, SMS is opt-in escalation** (Date: 2026-03-22)
+SMS compliance alerts toggle is off by default on the Settings page. Email alerts are always on and cannot be disabled — they are the baseline notification channel. SMS is an opt-in escalation for developers who want faster notification. When enabled, shows the alert destination phone with an Edit link.
+_Affects: Settings page, notification preferences, future notification infrastructure._
+
+**D-202 — Changes Requested renamed to Extended Review (user-facing label only)** (Date: 2026-03-22)
+The user-facing label for the `changes_requested` registration state is "Extended review" — not "Changes requested." The internal `registrationState` value remains `changes_requested` in session context and all code. Rationale: "Changes requested" implies the developer did something wrong and must act. "Extended review" frames it as a normal part of the carrier process where RelayKit handles everything. Indicator dot changed from red to amber to match this reframing. Consistent with D-144's principle that resubmission uses brand/neutral colors, not error colors.
+_Affects: `prototype/app/apps/[appId]/layout.tsx`, Settings page, Overview page (future copy alignment)._
+
+**D-203 — Developer tools removed from Settings — moves to Messages tab** (Date: 2026-03-22)
+The "Developer tools" section (sandbox phone number, "Send test message" action) is removed from the Settings page. These will move to the Messages tab in a future session where they are contextually relevant alongside the message catalog and AI prompts.
+_Affects: Settings page, Messages tab (future)._
+
+**D-204 — Portability removed from Settings — backlogged** (Date: 2026-03-22)
+The "Moving on?" portability section (phone number transfer, registration data export) is removed from the Settings page. It will be added back if needed based on user feedback post-beta. Currently backlogged.
+_Affects: Settings page, BACKLOG.md._
+
+**D-205 — Live API key shown once, masked on Settings, regenerate as recovery path** (Date: 2026-03-22)
+Live API keys are shown once at generation time, then masked on the Settings page as `rk_live_••••••••••••••••••••`. No copy button on masked keys — they are not retrievable. The "Regenerate" link is the recovery path: confirmation modal warns that the old key is immediately invalidated and the new key will be shown once. This matches standard API key security practices.
+_Affects: Settings page, API key generation flow (future Stripe/production integration)._
+
+**D-206 — Rejection state shows carrier-reason debrief with actionable fix** (Date: 2026-03-22)
+The Rejected state on the Settings Registration section includes a debrief box (light error background) with "What happened" heading and plain-language explanation of what the carrier flagged, with an actionable fix. This is the fixable rejection variant. An opaque/unfixable variant will be added later. Consistent with D-21 (rejection as debrief, not error) and Experience Principles (debrief, not failure notice).
+_Affects: Settings page._
+
+**D-207 — Phone labels disambiguated: Personal phone, Your SMS number, Sandbox phone** (Date: 2026-03-22)
+Three distinct phone labels used across the product: "Personal phone" (developer's own number, used in Account info and alert destination), "Your SMS number" (dedicated campaign number, Approved Registration section), "Sandbox phone" (does not appear on Settings — Messages tab concept). Never use bare "Phone" as a label.
+_Affects: Settings page, all pages displaying phone numbers._
+
+**D-208 — Billing reflects D-193 split: $49 paid at submission, shown in Pending state** (Date: 2026-03-22)
+The Billing section in Pending and Extended Review states shows "Registration fee: $49 paid" with the submission date. This reflects the D-193 fee split ($49 on submission, $150 on approval). In Rejected state, billing shows "$49 refunded" with the review date. Approved state shows the monthly plan rate only — the $150 approval payment is captured elsewhere in the approval flow.
+_Affects: Settings page billing section._
+
+**D-209 — Business name read-only after registration submission** (Date: 2026-03-22)
+Business name becomes read-only on the Settings page from the moment registration is submitted (Pending state onward). Displayed with muted sub-text "Set during registration." No Edit link. This is because business_name is immutable after TCR submission (per D-102) — it's used in canon messages, compliance site, and carrier records.
+_Affects: Settings page Account info section._
+
+**D-210 — Account info fields vary by state: email+phone in Default, adds business name+category from Pending onward** (Date: 2026-03-22)
+In Default state, Account info shows only Email (editable) and Personal phone (editable). From Pending onward, Business name (read-only) and Category (read-only) are added. This progressive disclosure matches the product reality: business name and category don't exist until registration is submitted.
+_Affects: Settings page Account info section._

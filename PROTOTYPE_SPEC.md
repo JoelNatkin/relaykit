@@ -241,21 +241,77 @@ All three states render the Default layout. Registration state doesn't change Me
 
 ### Settings — `/apps/[appId]/settings`
 **File:** `prototype/app/apps/[appId]/settings/page.tsx`
-**Status:** Stable
+**Status:** Stable — full lifecycle state differentiation
 
-**Layout:** 600px max-width, centered.
+**Layout:** 600px max-width, centered. Five card sections stack vertically. Sections appear/disappear based on `registrationState` from session context.
 
-**Account info:** Business name, Email, Phone — each with inline "Edit" link. `EditableField` component: display → edit mode (input + Save/Cancel). One field editable at a time via shared `editingField` state. Values persist in local component state only (prototype).
+**Phone label convention (D-207):** "Personal phone" (developer's own number), "Your SMS number" (dedicated campaign number, Approved only), "Sandbox phone" (not on Settings — Messages tab concept). Never bare "Phone."
 
-**SMS compliance alerts:** Alert phone number with inline edit.
+---
 
-**Registration section** (Approved state only): Status (green Active), Phone, Approved date, Campaign ID, Plan, "View compliance site" link.
+#### Section 1: SMS Compliance Alerts (all states)
+Toggle switch, **off by default** (D-201). Heading: "SMS compliance alerts." Sub-copy: "Get a text when live messages are blocked or your content drifts from your registered use case. You'll always get email alerts." When on: "Alerts go to +1 (512) 555-0147" with "Edit" link (no-op — will link to account settings in production). When off: alert phone line hidden.
 
-**Developer tools** (Approved state only): Sandbox phone, "Send test message" action (no-op in prototype).
+#### Section 2: Account Info (all states, fields vary — D-210)
+`EditableField` component with one-field-at-a-time editing pattern (`editingField` shared state).
 
-**Billing:** Plan details. "Cancel plan" text link (`text-tertiary`, `hover:text-error-primary`). Opens centered modal: "Cancel your plan" heading, sandbox continuity copy (D-153 — plan runs through billing period, sandbox continues), "Keep plan" (grey) + "Cancel plan" (red) buttons. No guilt copy, no survey.
+- **Default:** Email (editable), Personal phone (editable). No business name or category.
+- **Pending / Extended Review / Approved / Rejected:** Business name (read-only, sub-text "Set during registration" — D-209), Email (editable), Personal phone (editable), Category (read-only, e.g., "Appointment reminders").
 
-**Portability** (bottom): "Moving on?" heading. "Transfer your phone number" with mailto link. "Export your registration data" with secondary button (no-op in prototype). (D-154)
+#### Section 3: Registration (Pending, Extended Review, Approved, Rejected only — not Default)
+
+**Pending:**
+- Status: amber dot + "In review"
+- Submitted → date
+- Estimated review → "2–3 weeks"
+- Sub-copy: "Your sandbox is fully active while you wait."
+
+**Extended Review** (internally `changes_requested` — D-202):
+- Status: amber dot + "Extended review"
+- Submitted → date
+- Sub-copy: "The carrier asked for additional information about your registration. We're handling it — no action needed from you. We'll reach out if we need anything."
+
+**Approved:**
+- Status: green dot + "Active"
+- Your SMS number → +1 (555) 867-5309 (mock)
+- Approved → date
+- Campaign ID → C-XXXXXX (mock)
+- Plan → $19/mo
+- "View compliance site →" link (brand color, no-op)
+
+**Rejected (D-206):**
+- Status: red dot + "Not approved"
+- Submitted → date, Reviewed → date
+- Debrief box (`bg-bg-error-primary`, rounded, padded): bold "What happened" + mock rejection reason
+- "$49 registration fee has been refunded" in `text-success-primary`
+- "Start a new registration →" link (brand color, no-op)
+- "Your sandbox is still active — your code and test environment aren't going anywhere."
+
+#### Section 4: API Keys (all states — D-205)
+Heading: "API keys." Sub-copy: "Your AI coding tool reads this key from your RelayKit files."
+
+**Sandbox key (always visible):**
+- Label: "SANDBOX" + green "Active" badge
+- Monospace field: `rk_sandbox_rL7x9Kp2mWqYvBn4` + copy button
+- "Regenerate" link → confirmation modal (destructive)
+
+**Live key (Approved only):**
+- Divider between sandbox and live
+- Label: "LIVE" + green "Active" badge
+- Masked field: `rk_live_••••••••••••••••••••` — no copy button
+- "Regenerate" link → confirmation modal (destructive, warns key shown once)
+- Muted note: "Live key is shown once when generated. Use Regenerate if you need a new one."
+
+#### Section 5: Billing (all states — D-208)
+
+- **Default:** Plan → "Sandbox — Free", muted "No credit card required."
+- **Pending / Extended Review:** Registration fee → "$49 paid · date", Plan → "Sandbox — Free", "View account billing →" link
+- **Approved:** Plan → "$19/mo", Next billing → date, "Manage billing →" link (would open Stripe Portal), separator, "Cancel plan" text link (text-tertiary, hover:text-error-primary). Cancel modal: "Cancel your plan" heading, sandbox continuity copy (D-153), "Keep plan" (grey) + "Cancel plan" (red). No guilt copy, no survey.
+- **Rejected:** Registration fee → "$49 refunded · date", Plan → "Sandbox — Free"
+
+#### Sections REMOVED
+- **Developer tools** — Cut from Settings. Sandbox phone and "Send test message" move to Messages tab (D-203).
+- **Portability ("Moving on?")** — Cut. Backlogged (D-204).
 
 ---
 
@@ -298,7 +354,7 @@ prototype/
 │   │       │   ├── page.tsx              # Conditional: approved dashboard OR three-section accordion
 │   │       │   └── approved-dashboard.tsx # Full 3×2 card grid (Approved state)
 │   │       ├── messages/page.tsx         # [IN PROGRESS] — state-based rendering needed
-│   │       └── settings/page.tsx         # 600px, inline editing, cancellation, portability
+│   │       └── settings/page.tsx         # 600px, 5 sections, full lifecycle state differentiation
 │   ├── sms/[category]/
 │   │   ├── page.tsx                      # Category landing (appointments)
 │   │   └── messages/page.tsx             # Public messages page (steps layout default)
@@ -321,11 +377,10 @@ prototype/
 
 | Issue | Status | Ref |
 |-------|--------|-----|
-| API key prefix shows `sk_sandbox_` in Settings, should be `rk_sandbox_` | Needs fix | DECISIONS.md, BUILD_HANDOFF |
 | `.next` cache corruption recurring | Workaround: delete before every restart | CC_HANDOFF gotcha #1 |
 | D-17 override: Experience Principles line 88 says "5–7 days" | Needs doc fix | D-17 |
 | Orphaned `/c/` routes and `components/dashboard/` files on disk | Safe to delete | CC_HANDOFF |
-| "Appointments" pill hardcoded in layout.tsx | Needs dynamic category | CC_HANDOFF gotcha #16 |
-| `bg-bg-error-solid` may not be defined in theme | Verify cancel modal renders | CC_HANDOFF gotcha #17 |
+| "Appointments" pill hardcoded in layout.tsx | Needs dynamic category | CC_HANDOFF gotcha |
 | Compliance modal "Fix it with AI" generates risky prompts | Needs revision | PM_HANDOFF item 2 |
 | Bar thickness 8px consistency across row 2 cards | May need verification | PM_HANDOFF |
+| Overview page `changes_requested` copy may still say "Changes requested" | Needs alignment with D-202 | CC_HANDOFF gotcha #18 |
