@@ -465,15 +465,6 @@ export default function AppSettings() {
               </code>
               <CopyButton text="rk_sandbox_rL7x9Kp2mWqYvBn4" />
             </div>
-            <div className="mt-2 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setRegenSandboxModalOpen(true)}
-                className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-              >
-                Regenerate
-              </button>
-            </div>
           </div>
 
           {/* Live key — Approved state only */}
