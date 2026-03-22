@@ -102,7 +102,7 @@ function CancelModal({ open, onCancel, onConfirm }: { open: boolean; onCancel: (
           <button
             type="button"
             onClick={onConfirm}
-            className="rounded-lg bg-bg-error-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-error-solid_hover cursor-pointer"
+            className="rounded-lg bg-bg-error-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-[var(--color-error-700)] cursor-pointer"
           >
             Cancel plan
           </button>
@@ -125,10 +125,10 @@ export default function AppSettings() {
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
 
   // Editable field values (prototype local state)
-  const [businessName, setBusinessName] = useState(SAMPLE.businessName);
-  const [email, setEmail] = useState(SAMPLE.email);
-  const [phone, setPhone] = useState(SAMPLE.phone);
-  const [alertPhone, setAlertPhone] = useState(SAMPLE.phone);
+  const [businessName, setBusinessName] = useState<string>(SAMPLE.businessName);
+  const [email, setEmail] = useState<string>(SAMPLE.email);
+  const [phone, setPhone] = useState<string>(SAMPLE.phone);
+  const [alertPhone, setAlertPhone] = useState<string>(SAMPLE.phone);
 
   function startEdit(key: string, value: string) {
     setEditingField(key);

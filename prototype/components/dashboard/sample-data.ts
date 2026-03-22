@@ -10,8 +10,8 @@ export const SAMPLE = {
   categoryId: "appointments",
   email: "joel@radarlove.app",
   phone: "+1 (512) 555-0147",
-  sandboxApiKey: "sk_sandbox_rL7x9Kp2mWqYvBn4",
-  liveApiKey: "sk_live_Tx8bQr3nJfLpYm6w",
+  sandboxApiKey: "rk_sandbox_rL7x9Kp2mWqYvBn4",
+  liveApiKey: "rk_live_Tx8bQr3nJfLpYm6w",
   webhookSecret: "whsec_aR5tPz8kLm2xNq4v",
   complianceSiteUrl: "https://radarlove.msgverified.com",
   registrationDate: "Feb 28, 2026",
@@ -60,7 +60,7 @@ export const SAMPLE = {
     },
     {
       label: "Add your API key",
-      code: 'const relay = new RelayKit({ apiKey: "sk_sandbox_..." });',
+      code: 'const relay = new RelayKit({ apiKey: "rk_sandbox_..." });',
       done: false,
     },
     {
