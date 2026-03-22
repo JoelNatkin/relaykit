@@ -826,3 +826,35 @@ _Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[ca
 **D-192 — "Other" tool logo uses Untitled UI Code02 icon** (Date: 2026-03-20)
 The "Other" fallback in the ToolLogo component uses the `Code02` icon from `@untitledui/icons` instead of an inline SVG code brackets icon. Applied to both pages (hero logo row, confirmation modal, post-download band, logged-in tool panel).
 _Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-193 — Registration fee split: $49 on submission, $150 on approval** (Date: 2026-03-22)
+Registration fee ($199 total) collected in two payments. $49 charged when developer submits registration (covers brand + campaign submission to TCR). $150 charged when carriers approve the campaign. User-facing framing: "$49 to start, $150 when you're cleared to send." Full $49 refund if campaign rejected. Second payment is customer-initiated, not auto-charged.
+_Affects: Stripe integration, registration flow UI, pricing display, Settings billing section._
+
+**D-194 — Customer-initiated second payment, not auto-charge** (Date: 2026-03-22)
+The $150 approval payment is triggered by the developer, not automatically charged to a saved card. Developer receives notification of approval and completes payment themselves. Rationale: matches transparency positioning, avoids negative emotional sequence of charge before excitement lands, developers are allergic to feeling enrolled.
+_Affects: Stripe integration, approval notification flow, dashboard payment UI._
+
+**D-195 — Business entity change: RelayKit LLC** (Date: 2026-03-22)
+Vaulted Press LLC is being replaced with a new LLC under the RelayKit name. Filed with SC Secretary of State. Twilio ISV account will need updating once complete.
+_Affects: Twilio ISV account, Stripe account, compliance site footer, legal references._
+
+**D-196 — Beta pricing: $49 flat, no second payment** (Date: 2026-03-22)
+Beta users pay $49 total for registration (no $150 on approval). Framed as early access pricing. Beta users keep their registration at full pricing launch. Cap at 25–50 slots to create natural urgency and clean cutover.
+_Affects: Stripe integration, registration flow, marketing copy._
+
+**D-197 — Beta access requires prototype user testing** (Date: 2026-03-22)
+Developers earn beta access ($49 pricing) by completing a user test session on the prototype. Mix of unmoderated (majority, ~3:1 ratio) and moderated sessions. Target 8–12 total sessions. Recruitment: Reddit, HN, AI tool Discords, Indie Hackers, Twitter/X.
+_Affects: Beta recruitment strategy, prototype publishing timeline._
+
+**D-198 — Production build strategy: keep infrastructure, rebuild application layer from new PRDs** (Date: 2026-03-22)
+Prototype decisions (D-84 through D-192+) changed the product enough that existing PRDs no longer describe what's being built. Infrastructure modules preserved without new PRDs: Twilio/Sinch pipeline (PRD_04), template engine (PRD_02), compliance site generator (PRD_03), database schema, Stripe webhooks. Application layer gets all-new PRDs written from prototype: Overview, Messages, Settings, Registration form, Intake wizard (dashboard path), Public messages page. Sequence: finish prototype → write PRDs one at a time → build from each immediately. D-104 gate clears naturally as new PRDs replace old ones.
+_Affects: All production build planning, PRD lifecycle, D-104 gate resolution._
+
+**D-199 — Sinch carrier layer evaluation (PENDING — do not build)** (Date: 2026-03-22)
+Evaluating Sinch to replace Twilio as carrier for production SMS and 10DLC registration. Key advantage: standard use case campaigns auto-approved for qualified brands (3–5 days vs. Twilio's 10–15 business day queue). Three questions pending: ISV/reseller support via Registration API, real-world approval timeline, account tier requirements. If confirmed, migration is contained to PRD_04's six API modules. Template engine, compliance site, dashboard, all UI unaffected. DO NOT build anything against Sinch until this decision is confirmed.
+_Affects: PRD_04, carrier integration, registration timeline promises (may supersede D-17 if confirmed)._
+
+**D-200 — Self-guided usability test instrument in prototype** (Date: 2026-03-22)
+Build a /test route in the prototype with lightweight instrumentation layer: task prompts, confidence checks (1–5 scale), page visit logging, completion tracking, debrief survey. Four test tasks: Discovery, Acquisition, Orientation, Activation. Results stored in Supabase or Google Sheet webhook. Run alongside 3–4 live Zoom calls. Prototype screens stay untouched — test wrapper provides instrumentation overlay. State switchers become testing assets for routing testers to specific lifecycle states.
+_Affects: Prototype route structure, beta recruitment workflow._

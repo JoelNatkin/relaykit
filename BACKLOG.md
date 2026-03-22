@@ -59,6 +59,8 @@
 
 ### Infrastructure & Operations
 
+- **Sinch migration plan** — When Sinch is confirmed, create a focused PRD_04-equivalent mapping doc: each Twilio module mapped to its Sinch API equivalent. Registration API (brand + campaign), SMS API (send/receive), number provisioning, webhook handlers, credential model. Estimated 2–3 CC sessions. (Origin: March 22 brainstorming session, D-199)
+
 - **Dev/prod environment split** — Half-day config task. Separate Supabase projects, Stripe test/live keys, Twilio sandbox/production. Deferred until approaching beta. (Origin: BUILD_HANDOFF.md, multiple sessions)
 
 - **Redis cache layer for proxy** — Read-through cache for opt-out lookups, daily limits, API key auth. Not needed at Phase 1 volumes. (Origin: D-52)
