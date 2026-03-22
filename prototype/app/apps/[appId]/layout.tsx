@@ -51,8 +51,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           )}
           {state.registrationState === "changes_requested" && (
             <span className="flex items-center gap-1.5 text-sm text-text-secondary">
-              <span className="inline-block h-2 w-2 rounded-full bg-[#F04438]" />
-              Changes requested
+              <span className="inline-block h-2 w-2 rounded-full bg-[#F79009]" />
+              Extended review
             </span>
           )}
           {state.registrationState === "rejected" && (
@@ -77,7 +77,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <option value="default">Default</option>
             <option value="pending">Pending</option>
             <option value="approved">Approved</option>
-            <option value="changes_requested">Changes Requested</option>
+            <option value="changes_requested">Extended Review</option>
             <option value="rejected">Rejected</option>
           </select>
           {state.registrationState === "approved" && (
