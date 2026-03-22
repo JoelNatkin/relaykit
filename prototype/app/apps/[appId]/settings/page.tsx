@@ -245,7 +245,7 @@ export default function AppSettings() {
             aria-checked={smsNotify}
             onClick={() => setSmsNotify(!smsNotify)}
             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition duration-100 ease-linear mt-0.5 ${
-              smsNotify ? "bg-bg-brand-solid" : "bg-bg-tertiary"
+              smsNotify ? "bg-bg-brand-solid" : "bg-[var(--color-gray-300)]"
             }`}
           >
             <span
