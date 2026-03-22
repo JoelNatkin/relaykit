@@ -571,7 +571,7 @@ export default function AppSettings() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-tertiary">Includes</span>
-                <span className="text-sm font-medium text-text-primary">500 messages, then $15 per 1,000</span>
+                <span className="text-sm font-medium text-text-primary">500 messages, then $15 per additional 1,000</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-tertiary">Next billing</span>
