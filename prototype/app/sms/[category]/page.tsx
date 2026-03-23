@@ -19,33 +19,33 @@ const HERO = {
   badge: "Appointments",
   headline: "Appointment texts in minutes.",
   subheadline:
-    "Confirmations, reminders, rescheduling, cancellations — these are the messages people actually want. RelayKit gives you the full message library, pre-registered and ready to send.",
+    "Your AI coding tool builds the integration. RelayKit handles the carriers.",
 };
 
 const WHAT_YOU_GET = [
   {
     icon: MessageSmileSquare,
-    title: "Pre-written message library",
+    title: "Messages that get approved",
     description:
-      "Booking confirmations, 24-hour reminders, rescheduling links, cancellation notices, no-show follow-ups — all carrier-approved templates.",
+      "Booking confirmations, reminders, cancellation notices — pre-written for your use case, formatted for carriers.",
   },
   {
     icon: FileCheck02,
-    title: "SMS Blueprint for your AI tool",
+    title: "A build spec your AI tool reads",
     description:
-      "A complete integration guide with your API key, messages, and setup instructions. Drop it into Claude Code or Cursor and start building.",
+      "Drop two files into Claude Code or Cursor. It builds your SMS integration and asks the right questions first.",
   },
   {
     icon: Shield01,
-    title: "Carrier registration handled",
+    title: "Registration you don\u2019t touch",
     description:
-      "10DLC brand verification, campaign registration, compliance site — we handle the infrastructure so carriers trust your traffic.",
+      "10DLC brand verification, campaign submission, compliance site — submitted and managed for you.",
   },
   {
     icon: Monitor01,
-    title: "Compliance monitoring",
+    title: "Compliance that runs itself",
     description:
-      "Every message is scanned before it reaches the carrier. Drift detection, consent enforcement, and automatic blocking keep your account protected.",
+      "Every message scanned before delivery. Opt-out enforcement, content rules, drift detection. Included, not upsold.",
   },
 ];
 
@@ -257,8 +257,13 @@ export default function CategoryLanding() {
         </div>
       </div>
 
+      {/* Pricing context line */}
+      <p className="mt-12 text-center text-sm text-text-tertiary">
+        Free sandbox. No credit card. $199 + $19/mo when you&apos;re ready to go live.
+      </p>
+
       {/* What you get */}
-      <div className="mt-20">
+      <div className="mt-12">
         <p className="text-center text-sm font-semibold text-text-brand-secondary">
           What you get
         </p>
