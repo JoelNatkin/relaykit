@@ -118,7 +118,7 @@ export default function MarketingHome() {
           in minutes, not months.
         </h1>
         <p className="mt-4 text-lg text-text-tertiary max-w-2xl mx-auto">
-          The fastest way to add compliant SMS to any app.
+          Two files. Your AI coding tool. A working SMS feature.
         </p>
         <div className="mt-8 flex items-center justify-center gap-4">
           <button
@@ -161,8 +161,13 @@ export default function MarketingHome() {
         </div>
       </div>
 
+      {/* Pricing context line */}
+      <p className="py-8 text-center text-sm text-text-tertiary">
+        Free to build and test. $199 setup + $19/mo when you go live.
+      </p>
+
       {/* Category grid — the product showcase */}
-      <div id="categories" className="mt-24 scroll-mt-8 bg-bg-secondary py-16">
+      <div id="categories" className="scroll-mt-8 bg-bg-secondary py-16">
         <div className="mx-auto max-w-5xl px-6">
           <h2 className="text-center text-2xl font-bold text-text-primary">
             Explore use cases
@@ -441,8 +446,13 @@ export default function MarketingHome() {
         </div>
       </div>
 
+      {/* Reassurance line */}
+      <p className="mt-16 text-center text-sm text-text-tertiary">
+        No contracts. Cancel anytime. Your code stays yours.
+      </p>
+
       {/* Footer */}
-      <footer className="mt-24 border-t border-border-secondary">
+      <footer className="mt-12 border-t border-border-secondary">
         <div className="mx-auto max-w-5xl px-6 py-12">
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
             <div>
