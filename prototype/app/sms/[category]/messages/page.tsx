@@ -14,6 +14,7 @@ import {
   Sliders04,
   ArrowDown,
   Code02,
+  Expand06,
 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
@@ -24,6 +25,25 @@ import {
   interpolateTemplate,
 } from "@/lib/catalog-helpers";
 import { Footer } from "@/components/footer";
+
+/* ── Playbook flow data ── */
+
+const PLAYBOOK_FLOWS: Record<
+  string,
+  { heading: string; tagline: string; steps: string[] }
+> = {
+  appointments: {
+    heading: "Your complete appointment SMS system",
+    tagline: "One prompt. Your AI tool builds the whole flow.",
+    steps: [
+      "Booking confirmed",
+      "Reminder sent",
+      "No response followed up",
+      "No-show rebooked",
+      "Cancellation handled",
+    ],
+  },
+};
 
 /* ── localStorage personalization ── */
 
@@ -729,6 +749,83 @@ function PersonalizeSlideout({
   );
 }
 
+/* ── Playbook summary ── */
+
+function PlaybookSummary({ categoryId }: { categoryId: string }) {
+  const flow = PLAYBOOK_FLOWS[categoryId];
+  if (!flow) return null;
+
+  const lastIndex = flow.steps.length - 1;
+
+  return (
+    <div className="bg-bg-secondary py-8">
+      <div className="mx-auto max-w-5xl px-6">
+        <h2 className="text-lg font-semibold text-text-primary">
+          {flow.heading}
+        </h2>
+
+        {/* Desktop: horizontal flow */}
+        <div className="hidden sm:flex items-start mt-6">
+          {flow.steps.map((step, i) => (
+            <div key={step} className="flex items-start flex-1 min-w-0">
+              <div className="flex flex-col items-center w-full">
+                <div className="flex items-center w-full">
+                  {/* Hollow circle */}
+                  <div className="w-4 h-4 rounded-full border-2 border-fg-brand-primary shrink-0" />
+                  {/* Connector line + arrow */}
+                  {i < lastIndex && (
+                    <div className="flex items-center flex-1 min-w-0 mx-1">
+                      <div className="flex-1 h-px bg-fg-brand-primary" />
+                      <div className="w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-fg-brand-primary shrink-0" />
+                    </div>
+                  )}
+                  {/* End dot after last label's connector */}
+                  {i === lastIndex && (
+                    <div className="flex items-center flex-1 min-w-0 mx-1">
+                      <div className="flex-1 h-px bg-fg-brand-primary" />
+                      <div className="w-3.5 h-3.5 rounded-full bg-fg-brand-primary shrink-0" />
+                    </div>
+                  )}
+                </div>
+                <span className="text-sm text-text-secondary mt-2 text-center">
+                  {step}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile: vertical flow */}
+        <div className="sm:hidden mt-6 flex flex-col">
+          {flow.steps.map((step, i) => (
+            <div key={step} className="flex items-start gap-3">
+              <div className="flex flex-col items-center">
+                <div
+                  className={`shrink-0 rounded-full ${
+                    i === lastIndex
+                      ? "w-4 h-4 bg-fg-brand-primary"
+                      : "w-4 h-4 border-2 border-fg-brand-primary"
+                  }`}
+                />
+                {i < lastIndex && (
+                  <div className="w-px h-6 bg-fg-brand-primary" />
+                )}
+              </div>
+              <span className="text-sm text-text-secondary -mt-0.5">
+                {step}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-5 text-sm text-text-tertiary italic">
+          {flow.tagline}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /* ── Steps layout (left: journey, right: proof) ── */
 
 function StepsLayout({
@@ -772,6 +869,7 @@ function StepsLayout({
   const [hasDownloaded, setHasDownloaded] = useState(false);
   const [showPersonalize, setShowPersonalize] = useState(false);
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
 
   const tools = TOOLS;
 
@@ -791,7 +889,7 @@ function StepsLayout({
       />
 
       {/* Header */}
-      <div className="bg-bg-secondary py-12">
+      <div className="bg-bg-tertiary py-12">
         <div className="mx-auto max-w-5xl px-6">
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-3 py-1 text-xs font-medium text-text-brand-secondary">
@@ -803,21 +901,29 @@ function StepsLayout({
             <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
               Appointment messages, ready to send.
             </h1>
-            <button
-              type="button"
-              onClick={() => setShowDownloadModal(true)}
-              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-            >
-              <Download01 className="size-4" />
-              Download RelayKit
-            </button>
+            {/* Desktop CTA — hidden on mobile */}
+            <div className="hidden sm:flex sm:flex-col sm:items-end shrink-0">
+              <button
+                type="button"
+                onClick={() => setShowDownloadModal(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+              >
+                <Download01 className="size-4" />
+                Download RelayKit
+              </button>
+              <div className="mt-2 text-right">
+                <p className="text-xs text-text-tertiary">Free to build and test. $199 + $19/mo when you go live.</p>
+                <p className="text-xs text-text-tertiary">No lock-in. Your code is yours.</p>
+                <p className="mt-1 text-xs text-text-tertiary">You&apos;ll get two files and a sandbox API key. Drop them into your AI tool and start building.</p>
+              </div>
+            </div>
           </div>
           <p className="mt-3 text-base text-text-tertiary max-w-2xl">
             Everything your AI coding tool needs to add SMS — in two files.
           </p>
 
           {/* Logo row */}
-          <div className="mt-6 flex items-center gap-5">
+          <div className="mt-8 flex items-center gap-5">
             {tools.map((tool) => (
               <div key={tool.id} className="flex flex-col items-center gap-1.5 min-w-[56px]">
                 <div className="flex items-center justify-center w-12 h-12 rounded-full border border-[#999999]">
@@ -829,8 +935,107 @@ function StepsLayout({
               </div>
             ))}
           </div>
+
+          {/* Mobile CTA — after logos, full width */}
+          <div className="sm:hidden mt-6">
+            <button
+              type="button"
+              onClick={() => setShowDownloadModal(true)}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+            >
+              <Download01 className="size-4" />
+              Download RelayKit
+            </button>
+            <div className="mt-2 text-center">
+              <p className="text-xs text-text-tertiary">Free to build and test. $199 + $19/mo when you go live.</p>
+              <p className="text-xs text-text-tertiary">No lock-in. Your code is yours.</p>
+              <p className="mt-1 text-xs text-text-tertiary">You&apos;ll get two files and a sandbox API key. Drop them into your AI tool and start building.</p>
+            </div>
+          </div>
+
+          {/* How it works link */}
+          <button
+            type="button"
+            onClick={() => setShowHowItWorks(true)}
+            className="mt-5 inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+          >
+            <Expand06 className="size-4" />
+            How it works
+          </button>
         </div>
       </div>
+
+      {/* How it works modal */}
+      {showHowItWorks && (
+        <div className="fixed inset-0 z-50 bg-white overflow-y-auto">
+          <div className="sticky top-0 z-10 flex justify-end p-4 bg-white border-b border-border-secondary">
+            <button
+              type="button"
+              onClick={() => setShowHowItWorks(false)}
+              className="p-2 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+              aria-label="Close"
+            >
+              <XClose className="size-5" />
+            </button>
+          </div>
+          <div className="mx-auto max-w-4xl px-6 py-12">
+            <h2 className="text-2xl font-bold text-text-primary text-center">How it works</h2>
+            <p className="mt-3 text-base text-text-tertiary text-center max-w-2xl mx-auto">
+              Your AI coding tool builds the integration. RelayKit handles the carriers.
+            </p>
+
+            {/* What you get cards */}
+            <div className="mt-10">
+              <p className="text-center text-sm font-semibold text-text-brand-secondary">What you get</p>
+              <h3 className="mt-2 text-center text-xl font-bold text-text-primary">Everything you need to start sending.</h3>
+              <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {[
+                  { title: "Messages that get approved", desc: "Booking confirmations, reminders, cancellation notices — pre-written for your use case, formatted for carriers." },
+                  { title: "A build spec your AI tool reads", desc: "Drop two files into Claude Code or Cursor. It builds your SMS integration and asks the right questions first." },
+                  { title: "Registration you don\u2019t touch", desc: "10DLC brand verification, campaign submission, compliance site — submitted and managed for you." },
+                  { title: "Compliance that runs itself", desc: "Every message scanned before delivery. Opt-out enforcement, content rules, drift detection. Included, not upsold." },
+                ].map((card) => (
+                  <div key={card.title} className="rounded-xl border border-border-secondary p-5">
+                    <h4 className="text-sm font-semibold text-text-primary">{card.title}</h4>
+                    <p className="mt-1 text-sm text-text-tertiary">{card.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Why registration matters */}
+            <div className="mt-16">
+              <p className="text-center text-sm font-semibold text-text-brand-secondary">Why registration matters</p>
+              <h3 className="mt-2 text-center text-xl font-bold text-text-primary">Carriers require it. We handle it.</h3>
+              <div className="mt-8 space-y-4">
+                {[
+                  { q: "What is 10DLC?", a: "10DLC (10-Digit Long Code) is the carrier-mandated registration system for business SMS. Without it, your messages get filtered, throttled, or blocked entirely." },
+                  { q: "Why can\u2019t I just send texts from Twilio?", a: "You can — but unregistered traffic gets heavily filtered. Carriers treat unregistered numbers as potential spam. Registration is what makes your traffic trusted." },
+                  { q: "What does RelayKit handle?", a: "Brand verification with The Campaign Registry, campaign registration with carriers, compliance site hosting, ongoing compliance monitoring, and the proxy that enforces rules on every message." },
+                ].map((item) => (
+                  <div key={item.q} className="rounded-xl border border-border-secondary p-5">
+                    <h4 className="text-sm font-semibold text-text-primary">{item.q}</h4>
+                    <p className="mt-2 text-sm text-text-tertiary">{item.a}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-12 text-center">
+              <button
+                type="button"
+                onClick={() => setShowHowItWorks(false)}
+                className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+              >
+                Back to messages
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Playbook summary */}
+      <PlaybookSummary categoryId={categoryId} />
 
       {/* Post-download AI prompts band */}
       {hasDownloaded && (
@@ -869,24 +1074,24 @@ function StepsLayout({
 
       {/* Two-column layout */}
       <div className={`mx-auto max-w-5xl px-6 ${hasDownloaded ? "pt-6" : "pt-10"} pb-16`}>
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_300px]">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_376px]">
           {/* LEFT COLUMN — messages */}
-          <div>
+          <div className="max-w-[500px]">
             {/* Messages header */}
             <div className="mb-3">
               <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-              <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
+              <p className="mt-1 text-sm text-text-secondary">Every message is pre-written for your use case and formatted for carriers. Copy them, adapt them, or let your AI tool use them as a starting point.</p>
             </div>
 
-            {/* Style variant pills + marketing link */}
+            {/* Style variant pills + marketing pill */}
             {(variants && variants.length > 1 || expansionMessages.length > 0) && (
-              <div className="mt-1 mb-5 flex items-center gap-2">
+              <div className="mt-1 mb-5 flex flex-wrap items-center gap-2">
                 {variants && variants.length > 1 && variants.map((v) => (
                   <button
                     key={v.id}
                     type="button"
                     onClick={() => setActiveVariant(v.id)}
-                    className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-100 ease-linear ${
+                    className={`rounded-full px-4 py-1.5 text-sm font-medium whitespace-nowrap transition duration-100 ease-linear ${
                       activeVariant === v.id
                         ? "bg-bg-brand-secondary text-text-brand-secondary"
                         : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
@@ -899,9 +1104,9 @@ function StepsLayout({
                   <button
                     type="button"
                     onClick={() => document.getElementById("marketing-section-steps")?.scrollIntoView({ behavior: "smooth" })}
-                    className="ml-auto flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                    className="rounded-full px-4 py-1.5 text-sm font-medium whitespace-nowrap bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover transition duration-100 ease-linear cursor-pointer inline-flex items-center gap-1"
                   >
-                    Marketing messages
+                    Marketing
                     <ArrowDown className="size-3.5" />
                   </button>
                 )}
@@ -1017,6 +1222,13 @@ function StepsLayout({
               allMessages={coreMessages}
             />
           </div>
+        </div>
+
+        {/* Learn more link */}
+        <div className="mt-12 mb-4">
+          <a href="/" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">
+            Learn more about RelayKit &rarr;
+          </a>
         </div>
       </div>
     </div>
