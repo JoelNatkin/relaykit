@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-22 (Settings page rebuild, state switcher rename, prefix fixes)
+**Date:** 2026-03-23 (Settings page rebuild with full lifecycle state differentiation)
 **Branch:** main
 
 ---
@@ -7,6 +7,17 @@
 ## Commits This Session
 
 ```
+7ec98f8  feat: add What was submitted subsection to Rejected registration state
+c52fc4b  fix: remove Plan row from Registration, disable live key copy button when masked
+78b2791  fix: add "additional" to billing includes copy
+f431f31  fix: add Includes row to Approved billing section
+6e2801d  fix: add copy button to live API key field
+3ce0b70  fix: remove Regenerate link from sandbox API key section
+7bba1db  fix: darken toggle off-state from gray-100 to gray-300 for visibility
+b7e70b2  fix: right-align all action buttons and links on Settings tab
+262da3c  fix: SMS compliance alerts heading to section header style
+8482511  fix: bump Settings type to 14px body, 18px section headers, add toggle gap
+b304173  docs: D-201–D-210, rewrite PROTOTYPE_SPEC Settings section, CC_HANDOFF update
 ebf2586  feat: rebuild Settings page with full lifecycle state differentiation
 05b4946  fix: rename Changes Requested to Extended Review in state switcher
 2b72335  fix: sk→rk sandbox prefix, TS errors, error token in settings
@@ -26,29 +37,34 @@ fe3c369  fix: generic placeholder text in personalization fields, add https:// p
 
 ## What We Completed
 
+### Pre-session Decisions (D-193–D-200)
+- Registration fee split $49/$150 (D-193), customer-initiated second payment (D-194), RelayKit LLC entity change (D-195), beta pricing $49 flat (D-196), beta access requires user testing (D-197), production build strategy (D-198), Sinch evaluation pending (D-199), usability test instrument (D-200)
+
 ### Pre-work Fixes
-1. **`sk_sandbox_` → `rk_sandbox_`** — All API key prefixes in `sample-data.ts` updated. Also fixed `sk_live_` → `rk_live_`.
-2. **TS errors in settings/page.tsx** — Added explicit `<string>` type to 4 `useState` calls that had literal types from `as const` SAMPLE data.
-3. **`bg-bg-error-solid_hover` token** — Doesn't exist in theme. Replaced with `hover:bg-[var(--color-error-700)]`.
+1. **`sk_sandbox_` → `rk_sandbox_`** and **`sk_live_` → `rk_live_`** — All API key prefixes in `sample-data.ts` updated
+2. **TS errors in settings/page.tsx** — Added explicit `<string>` type to 4 `useState` calls (literal types from `as const` SAMPLE data)
+3. **`bg-bg-error-solid_hover` token** — Doesn't exist in theme. Replaced with `hover:bg-[var(--color-error-700)]`
 
-### State Switcher Rename
-4. **"Changes Requested" → "Extended Review"** (D-202) — Display label only, internal value remains `changes_requested`. Indicator dot changed from red to amber to match reframing (not an error, normal process).
+### State Switcher Rename (D-202)
+4. **"Changes Requested" → "Extended Review"** — Display label only, internal value remains `changes_requested`. Indicator dot changed from red to amber.
 
-### Settings Page Full Rebuild
-5. **Full lifecycle state differentiation** — Page now renders differently across all 5 registration states (Default, Pending, Extended Review, Approved, Rejected).
-6. **5 sections:** SMS Compliance Alerts → Account Info → Registration → API Keys → Billing.
-7. **SMS alerts toggle off by default** (D-201) — Opt-in SMS escalation, email always on.
-8. **Account info varies by state** (D-210) — Default shows email + personal phone only. Pending onward adds read-only business name + category.
-9. **Registration section** — State-specific content: Pending (in review + timeline), Extended Review (carrier handling it), Approved (active + details), Rejected (debrief box + refund confirmation).
-10. **API keys** — Sandbox key always visible with copy + regenerate. Live key (Approved only) masked, no copy, regenerate as recovery. Confirmation modals for both.
-11. **Billing reflects D-193 fee split** — $49 paid in Pending, $49 refunded in Rejected, $19/mo in Approved with cancel flow.
-12. **Removed sections:** Developer tools (D-203, moves to Messages tab), Portability (D-204, backlogged).
+### Settings Page Full Rebuild (D-201–D-214)
+5. **Full lifecycle state differentiation** across all 5 registration states (Default, Pending, Extended Review, Approved, Rejected)
+6. **5 sections:** SMS Compliance Alerts → Account Info → Registration → API Keys → Billing
+7. **Typography:** 14px body text (`text-sm`), 18px section headers (`text-lg font-semibold`) matching Messages tab
+8. **All action buttons/links right-aligned** (`flex justify-end`)
+9. **SMS alerts toggle off by default** (D-201), off-state uses `gray-300` for visibility
+10. **Account info varies by state** (D-210) — Default: email + personal phone. Pending onward: adds read-only business name + category
+11. **Registration section** — Pending (in review + timeline), Extended Review (carrier handling), Approved (active + details, no Plan row — D-212), Rejected (What was submitted + debrief box — D-206, D-214)
+12. **API keys** — Sandbox: always visible, copy button, no Regenerate (D-211). Live (Approved only): masked, copy button disabled (`opacity-30 cursor-not-allowed`), Regenerate with confirmation modal (D-205)
+13. **Billing reflects D-193 fee split** — $49 paid in Pending, $49 refunded in Rejected, $19/mo + Includes row (D-213) + cancel flow in Approved
+14. **Removed sections:** Developer tools (D-203, moves to Messages tab), Portability (D-204, backlogged)
 
-### Decisions & Docs
-13. **D-193 through D-200** — 8 decisions from pre-session brainstorming (fee split, entity change, beta pricing, production build strategy, Sinch evaluation, usability testing).
-14. **D-201 through D-210** — 10 decisions from Settings rebuild.
-15. **PROTOTYPE_SPEC.md** — Settings section completely rewritten.
-16. **BACKLOG.md** — Sinch migration plan added under Infrastructure & Operations.
+### Documentation
+15. **DECISIONS.md** — D-193–D-214 (22 new decisions)
+16. **PROTOTYPE_SPEC.md** — Settings section fully rewritten
+17. **BACKLOG.md** — 6 new items: Sinch migration plan, rejected state field expansion, privacy/legal baseline, developer tools on Messages tab, account-level settings, high-volume pricing tier
+18. **CC_HANDOFF.md** — This file
 
 ---
 
@@ -64,7 +80,7 @@ Not yet differentiated. Still renders Default layout. Planned per D-159:
 Not yet designed (D-162). The initial download happens on the public Messages page, not here. This tab doesn't exist until a project is created.
 
 ### Default layout (`?layout=default`) — Synced
-The `?layout=default` variant of the public messages page was synced last session with the same toolbar, slideout, and right column changes as StepsLayout.
+The `?layout=default` variant of the public messages page was synced in a prior session with the same toolbar, slideout, and right column changes as StepsLayout.
 
 ---
 
@@ -98,25 +114,29 @@ The `?layout=default` variant of the public messages page was synced last sessio
 
 14. **Orphaned files still on disk** — `prototype/components/dashboard/` and `prototype/app/c/` are safe to delete.
 
-15. **DECISIONS.md now has 210 decisions** (D-01 through D-210).
+15. **DECISIONS.md now has 214 decisions** (D-01 through D-214).
 
-16. **Settings page `ConfirmModal` is local** — Reusable modal extracted within settings page (cancel plan, regen sandbox key, regen live key). Could be promoted to shared component if other pages need it.
+16. **Settings page `ConfirmModal` is local** — Reusable modal extracted within settings page (cancel plan, regen live key). Could be promoted to shared component if other pages need it.
 
 17. **Settings alert phone Edit is a no-op** — Placeholder button. In production, would navigate to account-level settings.
 
 18. **Overview page still says "Changes requested"** — The D-202 rename (Extended Review) was applied to layout.tsx status indicator and state switcher. Overview page Section 2 content for `changes_requested` state may still use old terminology — verify and align in a future session.
+
+19. **Live key copy button disabled state** — Uses `opacity-30 cursor-not-allowed disabled` on a plain button with inline SVG. When live key regeneration is implemented, swap to active `CopyButton` component with the real key value.
+
+20. **"What was submitted" in Rejected state uses mock data** — Business name, EIN, address, use case are hardcoded. Production will read from the registration record.
 
 ---
 
 ## Files Modified This Session
 
 ```
-prototype/app/apps/[appId]/settings/page.tsx   # Major: full lifecycle rebuild
+prototype/app/apps/[appId]/settings/page.tsx   # Major: full lifecycle rebuild, typography, layout
 prototype/app/apps/[appId]/layout.tsx          # State switcher label + dot color
 prototype/components/dashboard/sample-data.ts  # sk→rk prefix, sk_live→rk_live
-DECISIONS.md                                   # D-193–D-210 appended
-PROTOTYPE_SPEC.md                              # Settings section rewritten
-BACKLOG.md                                     # Sinch migration plan added
+DECISIONS.md                                   # D-193–D-214 appended
+PROTOTYPE_SPEC.md                              # Settings section fully rewritten
+BACKLOG.md                                     # 6 new items added
 CC_HANDOFF.md                                  # This file
 ```
 

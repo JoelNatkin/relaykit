@@ -15,6 +15,16 @@
 
 ### Product Features
 
+- **Rejected state registration data display** — Expand "What was submitted" fields based on carrier error code mapping. Currently shows business name, EIN (masked), address, use case. May need website URL, business description, etc. (Origin: Settings PRD session, March 22–23)
+
+- **Privacy/legal compliance baseline** — Privacy policy, ToS, cookie consent, GDPR/CCPA/state law data practice disclosures. Required before beta. (Origin: Settings session, March 22)
+
+- **Developer tools on Messages tab** — Sandbox phone display and "Send test message" action. Moved from Settings (D-203). (Origin: Settings session, March 22)
+
+- **Account-level settings page** — Email, personal phone (with re-verification), payment method (Stripe Customer Portal), notification preferences, danger zone (delete account). Needed for multi-project. (Origin: Settings PRD, March 23)
+
+- **High-volume pricing tier (5,000+/mo)** — Special pricing not yet defined. Billing section needs update when locked. (Origin: Settings session, March 22)
+
 - **Message composer UI** — Dashboard tool for drafting/testing messages in-app. Joel has ideas, explicitly deferred. Revisit after beta feedback reveals whether AI tool + SMS_GUIDELINES.md is sufficient or developers want an in-app authoring surface. (Origin: multiple sessions, explicitly deferred)
 
 - **Sandbox behavior analysis** — PRD_08 compliance checking running in sandbox, non-blocking, clearable warnings. Validates developer's messages against their registered use case before they go live. (Origin: D-158, prototype planning)

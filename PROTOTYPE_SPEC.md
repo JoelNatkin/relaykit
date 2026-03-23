@@ -241,16 +241,16 @@ All three states render the Default layout. Registration state doesn't change Me
 
 ### Settings — `/apps/[appId]/settings`
 **File:** `prototype/app/apps/[appId]/settings/page.tsx`
-**Status:** Stable — full lifecycle state differentiation
+**Status:** Stable — full lifecycle state differentiation across all 5 states
 
-**Layout:** 600px max-width, centered. Five card sections stack vertically. Sections appear/disappear based on `registrationState` from session context.
+**Layout:** 600px max-width, centered. Five card sections stack vertically (`space-y-6`). Sections appear/disappear based on `registrationState` from session context. All body text is 14px (`text-sm`). Section headers are 18px (`text-lg font-semibold`) — matching Messages tab headers. All action buttons/links right-aligned (`flex justify-end`).
 
 **Phone label convention (D-207):** "Personal phone" (developer's own number), "Your SMS number" (dedicated campaign number, Approved only), "Sandbox phone" (not on Settings — Messages tab concept). Never bare "Phone."
 
 ---
 
 #### Section 1: SMS Compliance Alerts (all states)
-Toggle switch, **off by default** (D-201). Heading: "SMS compliance alerts." Sub-copy: "Get a text when live messages are blocked or your content drifts from your registered use case. You'll always get email alerts." When on: "Alerts go to +1 (512) 555-0147" with "Edit" link (no-op — will link to account settings in production). When off: alert phone line hidden.
+Toggle switch, **off by default** (D-201). Section header style (`text-lg font-semibold`): "SMS compliance alerts." `flex items-start justify-between gap-10` between text and toggle for minimum 40px spacing. Toggle off-state uses `gray-300` (`rgb(213 215 218)`) for visibility against white card background. Sub-copy: "Get a text when live messages are blocked or your content drifts from your registered use case. You'll always get email alerts." When on: "Alerts go to +1 (512) 555-0147" with "Edit" link (no-op — will link to account settings in production). When off: alert phone line hidden.
 
 #### Section 2: Account Info (all states, fields vary — D-210)
 `EditableField` component with one-field-at-a-time editing pattern (`editingField` shared state).
@@ -276,37 +276,38 @@ Toggle switch, **off by default** (D-201). Heading: "SMS compliance alerts." Sub
 - Your SMS number → +1 (555) 867-5309 (mock)
 - Approved → date
 - Campaign ID → C-XXXXXX (mock)
-- Plan → $19/mo
-- "View compliance site →" link (brand color, no-op)
+- No Plan row — pricing lives in Billing only (D-212)
+- "View compliance site →" link (brand color, right-aligned, no-op)
 
-**Rejected (D-206):**
+**Rejected (D-206, D-214):**
 - Status: red dot + "Not approved"
 - Submitted → date, Reviewed → date
-- Debrief box (`bg-bg-error-primary`, rounded, padded): bold "What happened" + mock rejection reason
+- "What was submitted" subsection: Business name, EIN (masked last 4: "••-•••4567"), Business address, Use case — all read-only
+- Debrief box (`bg-bg-error-primary`, rounded, padded): bold "What happened" + mock rejection reason with actionable fix
 - "$49 registration fee has been refunded" in `text-success-primary`
-- "Start a new registration →" link (brand color, no-op)
+- "Start a new registration →" link (brand color, right-aligned, no-op)
 - "Your sandbox is still active — your code and test environment aren't going anywhere."
 
-#### Section 4: API Keys (all states — D-205)
+#### Section 4: API Keys (all states — D-205, D-211)
 Heading: "API keys." Sub-copy: "Your AI coding tool reads this key from your RelayKit files."
 
-**Sandbox key (always visible):**
+**Sandbox key (always visible — D-211):**
 - Label: "SANDBOX" + green "Active" badge
 - Monospace field: `rk_sandbox_rL7x9Kp2mWqYvBn4` + copy button
-- "Regenerate" link → confirmation modal (destructive)
+- No Regenerate link — sandbox keys are low-security, always visible and copyable
 
-**Live key (Approved only):**
+**Live key (Approved only — D-205):**
 - Divider between sandbox and live
 - Label: "LIVE" + green "Active" badge
-- Masked field: `rk_live_••••••••••••••••••••` — no copy button
-- "Regenerate" link → confirmation modal (destructive, warns key shown once)
+- Masked field: `rk_live_••••••••••••••••••••` + copy button (visually disabled: `opacity-30 cursor-not-allowed disabled`, no click action when key is masked — activates after regeneration when new key is briefly visible)
+- "Regenerate" link (right-aligned) → confirmation modal (destructive, warns key shown once and old key immediately invalidated)
 - Muted note: "Live key is shown once when generated. Use Regenerate if you need a new one."
 
-#### Section 5: Billing (all states — D-208)
+#### Section 5: Billing (all states — D-208, D-213)
 
 - **Default:** Plan → "Sandbox — Free", muted "No credit card required."
-- **Pending / Extended Review:** Registration fee → "$49 paid · date", Plan → "Sandbox — Free", "View account billing →" link
-- **Approved:** Plan → "$19/mo", Next billing → date, "Manage billing →" link (would open Stripe Portal), separator, "Cancel plan" text link (text-tertiary, hover:text-error-primary). Cancel modal: "Cancel your plan" heading, sandbox continuity copy (D-153), "Keep plan" (grey) + "Cancel plan" (red). No guilt copy, no survey.
+- **Pending / Extended Review:** Registration fee → "$49 paid · date", Plan → "Sandbox — Free", "View account billing →" link (right-aligned)
+- **Approved:** Plan → "$19/mo", Includes → "500 messages, then $15 per additional 1,000" (D-213), Next billing → date, "Manage billing →" link (right-aligned, would open Stripe Portal), separator, "Cancel plan" text link (right-aligned, text-tertiary, hover:text-error-primary). Cancel modal: "Cancel your plan" heading, sandbox continuity copy (D-153), "Keep plan" (grey) + "Cancel plan" (red). No guilt copy, no survey.
 - **Rejected:** Registration fee → "$49 refunded · date", Plan → "Sandbox — Free"
 
 #### Sections REMOVED

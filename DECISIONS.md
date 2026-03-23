@@ -876,11 +876,11 @@ The "Moving on?" portability section (phone number transfer, registration data e
 _Affects: Settings page, BACKLOG.md._
 
 **D-205 — Live API key shown once, masked on Settings, regenerate as recovery path** (Date: 2026-03-22)
-Live API keys are shown once at generation time, then masked on the Settings page as `rk_live_••••••••••••••••••••`. No copy button on masked keys — they are not retrievable. The "Regenerate" link is the recovery path: confirmation modal warns that the old key is immediately invalidated and the new key will be shown once. This matches standard API key security practices.
+Live API keys are shown once at generation time, then masked on the Settings page as `rk_live_••••••••••••••••••••`. Copy button is present but visually disabled (reduced opacity, no hover, no click action) when key is masked — it activates only during the brief window after regeneration when the new key is visible. The "Regenerate" link is the recovery path: confirmation modal warns that the old key is immediately invalidated and the new key will be shown once. This matches standard API key security practices.
 _Affects: Settings page, API key generation flow (future Stripe/production integration)._
 
 **D-206 — Rejection state shows carrier-reason debrief with actionable fix** (Date: 2026-03-22)
-The Rejected state on the Settings Registration section includes a debrief box (light error background) with "What happened" heading and plain-language explanation of what the carrier flagged, with an actionable fix. This is the fixable rejection variant. An opaque/unfixable variant will be added later. Consistent with D-21 (rejection as debrief, not error) and Experience Principles (debrief, not failure notice).
+The Rejected state on the Settings Registration section includes a "What was submitted" subsection (business name, EIN masked to last 4 digits, business address, use case — all read-only) followed by a debrief box (`bg-bg-error-primary`, rounded, padded) with "What happened" heading and plain-language explanation of what the carrier flagged, with an actionable fix. The submission data gives the developer context for understanding the rejection. This is the fixable rejection variant. An opaque/unfixable variant will be added later. Consistent with D-21 (rejection as debrief, not error) and Experience Principles (debrief, not failure notice).
 _Affects: Settings page._
 
 **D-207 — Phone labels disambiguated: Personal phone, Your SMS number, Sandbox phone** (Date: 2026-03-22)
@@ -898,3 +898,19 @@ _Affects: Settings page Account info section._
 **D-210 — Account info fields vary by state: email+phone in Default, adds business name+category from Pending onward** (Date: 2026-03-22)
 In Default state, Account info shows only Email (editable) and Personal phone (editable). From Pending onward, Business name (read-only) and Category (read-only) are added. This progressive disclosure matches the product reality: business name and category don't exist until registration is submitted.
 _Affects: Settings page Account info section._
+
+**D-211 — Sandbox API key has no regenerate — low-security, always visible and copyable** (Date: 2026-03-23)
+Sandbox API keys do not have a Regenerate link on the Settings page. They are low-security (limited to verified phone, 100 messages/day) and always displayed in full with a copy button. This differs from live keys which have Regenerate as a recovery path. If sandbox key rotation is needed in production, it can be added later — for now, simplicity wins.
+_Affects: Settings page API keys section._
+
+**D-212 — Plan row removed from Registration section — pricing lives in Billing only** (Date: 2026-03-23)
+The "Plan → $19/mo" row was removed from the Approved Registration section. Plan and pricing information lives exclusively in the Billing section to avoid duplication. Registration section shows only registration-specific data: status, SMS number, approval date, campaign ID.
+_Affects: Settings page Registration section (Approved state)._
+
+**D-213 — Billing Approved state shows Includes row with message volume details** (Date: 2026-03-23)
+The Approved Billing section includes an "Includes" row between Plan and Next billing: "500 messages, then $15 per additional 1,000." This gives developers clear visibility into their usage economics without navigating to a separate billing page.
+_Affects: Settings page Billing section (Approved state)._
+
+**D-214 — Rejected state includes "What was submitted" section above debrief** (Date: 2026-03-23)
+The Rejected Registration section shows a "What was submitted" subsection above the debrief box: Business name, EIN (masked — last 4 digits only, e.g., "••-•••4567"), Business address, and Use case. All read-only display fields. This gives the developer context for understanding the rejection reason directly below it. Fields may expand based on carrier error code mapping in the future (backlogged).
+_Affects: Settings page Registration section (Rejected state)._
