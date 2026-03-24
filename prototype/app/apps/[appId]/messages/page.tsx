@@ -21,6 +21,102 @@ import {
   interpolateTemplate,
 } from "@/lib/catalog-helpers";
 
+/* ── Playbook flow data ── */
+
+const PLAYBOOK_FLOWS: Record<
+  string,
+  { heading: string; tagline: string; steps: string[] }
+> = {
+  appointments: {
+    heading: "Your complete appointment SMS system",
+    tagline: "One prompt. Your AI tool builds the whole flow.",
+    steps: [
+      "Booking confirmed",
+      "Reminder sent",
+      "No response followed up",
+      "No-show rebooked",
+      "Cancellation handled",
+    ],
+  },
+};
+
+/* ── Playbook summary ── */
+
+function PlaybookSummary({ categoryId, controlsSlot }: { categoryId: string; controlsSlot?: React.ReactNode }) {
+  const flow = PLAYBOOK_FLOWS[categoryId];
+  if (!flow) return null;
+
+  const lastIndex = flow.steps.length - 1;
+
+  return (
+    <div>
+      <h2 className="text-lg font-semibold text-text-primary">
+        {flow.heading}
+      </h2>
+
+      {controlsSlot}
+
+      {/* Desktop: horizontal flow */}
+      <div className="hidden sm:flex items-start mt-5">
+        {flow.steps.map((step, i) => (
+          <div key={step} className="flex items-start flex-1 min-w-0">
+            <div className="flex flex-col items-center w-full">
+              <div className="flex items-center w-full">
+                {/* Hollow circle */}
+                <div className="w-4 h-4 rounded-full border-2 border-fg-brand-primary shrink-0" />
+                {/* Connector line + arrow */}
+                {i < lastIndex && (
+                  <div className="flex items-center flex-1 min-w-0 mx-1">
+                    <div className="flex-1 h-px bg-fg-brand-primary" />
+                    <div className="w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-fg-brand-primary shrink-0" />
+                  </div>
+                )}
+                {/* End dot after last label */}
+                {i === lastIndex && (
+                  <div className="flex items-center flex-1 min-w-0 mx-1">
+                    <div className="flex-1 h-px bg-fg-brand-primary" />
+                    <div className="w-3.5 h-3.5 rounded-full bg-fg-brand-primary shrink-0" />
+                  </div>
+                )}
+              </div>
+              <span className="text-sm text-text-secondary mt-2 text-center">
+                {step}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Mobile: vertical flow */}
+      <div className="sm:hidden mt-5 flex flex-col">
+        {flow.steps.map((step, i) => (
+          <div key={step} className="flex items-start gap-3">
+            <div className="flex flex-col items-center">
+              <div
+                className={`shrink-0 rounded-full ${
+                  i === lastIndex
+                    ? "w-4 h-4 bg-fg-brand-primary"
+                    : "w-4 h-4 border-2 border-fg-brand-primary"
+                }`}
+              />
+              {i < lastIndex && (
+                <div className="w-px h-6 bg-fg-brand-primary" />
+              )}
+            </div>
+            <span className="text-sm text-text-secondary -mt-0.5">
+              {step}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-4 text-sm text-text-tertiary italic">
+        {flow.tagline}
+      </p>
+    </div>
+  );
+}
+
 /* ── localStorage personalization ── */
 
 const PERSONALIZE_KEY = "relaykit_personalize";
@@ -520,65 +616,63 @@ export default function AppMessagesPage() {
         onChange={handlePersonalizeChange}
       />
 
-      {/* AI prompts header row */}
-      <div className="mb-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-text-primary">AI prompts</h2>
-          <div className="flex items-center gap-4 text-sm text-text-tertiary">
-            <button
-              type="button"
-              onClick={() => setIsToolOpen((prev) => !prev)}
-              className="font-medium hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-            >
-              AI tool setup
-              <svg
-                className={`inline-block ml-0.5 size-3.5 transition-transform duration-150 ease-linear ${isToolOpen ? "rotate-180" : ""}`}
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+      {/* Playbook summary with controls — full-width gray band */}
+      <div className="bg-bg-secondary py-10 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+        <div className="mx-auto max-w-5xl px-6">
+          <PlaybookSummary categoryId={categoryId} controlsSlot={
+            <div className="flex items-center justify-end gap-4 text-sm text-text-tertiary mt-2 mb-1">
+              <button
+                type="button"
+                onClick={() => setIsToolOpen((prev) => !prev)}
+                className="font-medium hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
               >
-                <polyline points="6 9 12 15 18 9" />
-              </svg>
-            </button>
-            <span className="text-text-quaternary select-none">|</span>
-            <button
-              type="button"
-              onClick={() => console.log("Download triggered")}
-              className="font-medium hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-            >
-              Download RelayKit
-            </button>
-          </div>
+                AI tool setup
+                <svg
+                  className={`inline-block ml-0.5 size-3.5 transition-transform duration-150 ease-linear ${isToolOpen ? "rotate-180" : ""}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              <span className="text-text-quaternary select-none">|</span>
+              <button
+                type="button"
+                onClick={() => console.log("Download triggered")}
+                className="font-medium hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+              >
+                Download RelayKit
+              </button>
+            </div>
+          } />
         </div>
-        <p className="mt-1 text-sm text-text-secondary">Quick commands for your AI tool with RelayKit loaded in your project.</p>
+        {isToolOpen && <div className="mx-auto max-w-5xl px-6"><ToolPanel /></div>}
       </div>
 
-      <AiCommandsGrid />
-      {isToolOpen && <ToolPanel />}
-
       {/* Two-column layout */}
-      <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_300px]">
+      <div className="pt-6 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_376px]">
 
         {/* LEFT — messages */}
-        <div>
+        <div className="max-w-[500px]">
           {/* Messages header */}
           <div className="mb-3">
             <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
             <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
           </div>
 
-          {/* Style variant pills + marketing link */}
+          {/* Style variant pills + marketing pill */}
           {(variants && variants.length > 1 || expansionMessages.length > 0) && (
-            <div className="mt-4 mb-5 flex items-center gap-2">
+            <div className="mt-4 mb-5 flex flex-wrap items-center gap-2">
               {variants && variants.length > 1 && variants.map((v) => (
                 <button
                   key={v.id}
                   type="button"
                   onClick={() => setActiveVariant(v.id)}
-                  className={`rounded-full px-3 py-1 text-sm font-medium transition duration-100 ease-linear ${
+                  className={`rounded-full px-4 py-1.5 text-sm font-medium whitespace-nowrap transition duration-100 ease-linear ${
                     activeVariant === v.id
                       ? "bg-bg-brand-secondary text-text-brand-secondary"
                       : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
@@ -591,9 +685,9 @@ export default function AppMessagesPage() {
                 <button
                   type="button"
                   onClick={() => document.getElementById("marketing-section")?.scrollIntoView({ behavior: "smooth" })}
-                  className="ml-auto flex items-center gap-1 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                  className="rounded-full px-4 py-1.5 text-sm font-medium whitespace-nowrap bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover transition duration-100 ease-linear cursor-pointer inline-flex items-center gap-1"
                 >
-                  Marketing messages
+                  Marketing
                   <ArrowDown className="size-3.5" />
                 </button>
               )}
