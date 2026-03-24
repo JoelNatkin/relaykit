@@ -127,7 +127,7 @@ export function GoLiveCTA() {
     <Card className="border-border-brand bg-bg-brand-section_subtle">
       <CardTitle>Ready to go live?</CardTitle>
       <p className="mt-1 text-sm text-text-tertiary">
-        When you&apos;re ready to send to real users, register for carrier approval. Your sandbox stays active throughout the 2–3 week review.
+        When you&apos;re ready to send to real users, register for carrier approval. Your sandbox stays active throughout the review.
       </p>
       <div className="mt-4">
         <button

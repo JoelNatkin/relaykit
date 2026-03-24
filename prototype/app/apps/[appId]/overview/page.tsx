@@ -282,7 +282,7 @@ function RegistrationModal({ open, onConfirm, onCancel }: { open: boolean; onCon
       <div className="w-full max-w-md rounded-xl bg-bg-primary border border-border-secondary shadow-xl p-6">
         <h2 className="text-lg font-semibold text-text-primary">Submit your registration</h2>
         <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-          We&#39;ll submit your brand, messages, and compliance site to carriers for review. This typically takes 2–3 weeks.
+          We&#39;ll submit your brand, messages, and compliance site to carriers for review. Typically approved in a few days.
         </p>
         <p className="mt-4 text-sm font-semibold text-text-primary">$199 one-time setup fee</p>
         <div className="mt-6 flex items-center justify-end gap-3">
@@ -949,7 +949,7 @@ export default function OverviewPage() {
                   <>
                     {/* Pending: narrative status */}
                     <p className="text-sm text-text-secondary leading-relaxed">
-                      <span className="font-semibold">Your registration is submitted.</span> Carriers are reviewing your business, messages, and compliance site — we handle any follow-up questions on your behalf. Most registrations are approved within 2–3 weeks.
+                      <span className="font-semibold">Your registration is submitted.</span> Carriers are reviewing your business, messages, and compliance site — we handle any follow-up questions on your behalf. Most registrations are approved in a few days.
                     </p>
 
                     {/* Collapsible: What carriers review */}
@@ -1016,7 +1016,7 @@ export default function OverviewPage() {
                           <ClipboardCheck className="size-5 text-fg-brand-primary" />
                         </div>
                         <h4 className="text-sm font-semibold text-text-primary">The process is a hassle</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">Carrier portals, campaign vetting forms, compliance documentation, and a 2–3 week review cycle. It&#39;s not hard — it&#39;s just tedious enough that most people don&#39;t bother.</p>
+                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">Carrier portals, campaign vetting forms, compliance documentation. It&#39;s not hard — it&#39;s just tedious enough that most people don&#39;t bother.</p>
                       </div>
                       <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
                         <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
@@ -1410,7 +1410,7 @@ export default function OverviewPage() {
 
                 <div className="mt-4 space-y-1">
                   <p className="text-sm font-semibold text-text-secondary">Submitted March 17, 2026</p>
-                  <p className="text-sm text-text-tertiary">Typically approved within 2–3 weeks. We&#39;ll email you at <a href="mailto:jen@glowstudio.com" className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">jen@glowstudio.com</a>.</p>
+                  <p className="text-sm text-text-tertiary">Typically approved in a few days. We&#39;ll email you at <a href="mailto:jen@glowstudio.com" className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">jen@glowstudio.com</a>.</p>
                 </div>
 
                 <div className="my-5 border-t border-border-secondary" />
@@ -1430,7 +1430,7 @@ export default function OverviewPage() {
                 <h3 className="text-base font-semibold text-text-primary">Register your app</h3>
 
                 <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                  Carriers require SMS registration. It&#39;s a bureaucratic headache. We handle all of it. <span className="font-semibold">Review takes 2–3 weeks.</span>
+                  Carriers require SMS registration. It&#39;s a bureaucratic headache. We handle all of it. <span className="font-semibold">Approved in days, not weeks.</span>
                 </p>
 
                 <div className="mt-4 flex items-center gap-5">

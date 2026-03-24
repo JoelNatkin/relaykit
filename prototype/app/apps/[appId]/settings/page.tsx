@@ -325,7 +325,7 @@ export default function AppSettings() {
             </div>
             <div className="flex items-center justify-between">
               <dt className="text-sm text-text-tertiary">Estimated review</dt>
-              <dd className="text-sm font-medium text-text-primary">2–3 weeks</dd>
+              <dd className="text-sm font-medium text-text-primary">A few days</dd>
             </div>
           </dl>
           <p className="mt-4 text-sm text-text-tertiary">
