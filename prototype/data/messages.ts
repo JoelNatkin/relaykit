@@ -178,6 +178,23 @@ export const MESSAGES: Record<string, Message[]> = {
       },
     },
     {
+      id: "appointments_previsit",
+      categoryId: "appointments",
+      name: "Pre-visit instructions",
+      tier: "also_covered",
+      defaultEnabled: false,
+      template:
+        "{app_name}: Your {service_type} appointment is today at {time}. Please arrive 10 minutes early. Details: {website_url}. Reply STOP to opt out.",
+      trigger: "Morning of appointment",
+      requiresStop: true,
+      expansionType: null,
+      consentLabel: "pre-visit instructions",
+      variants: {
+        "action-first": "Today at {time} — your {service_type} appointment. Arrive 10 min early. Details: {website_url}. {app_name}. Reply STOP to opt out.",
+        "context-first": "It's the day of your {service_type} appointment. {app_name}: {time} today, arrive 10 minutes early. Details: {website_url}. Reply STOP to opt out.",
+      },
+    },
+    {
       id: "appointments_reschedule",
       categoryId: "appointments",
       name: "Reschedule notice",
@@ -192,6 +209,23 @@ export const MESSAGES: Record<string, Message[]> = {
       variants: {
         "action-first": "Rescheduled — your {service_type} appointment is now {date} at {time}. {app_name}. Reply STOP to opt out.",
         "context-first": "There's been a change to your {service_type} appointment. {app_name} has moved it to {date} at {time}. Reply STOP to opt out.",
+      },
+    },
+    {
+      id: "appointments_noshow",
+      categoryId: "appointments",
+      name: "No-show follow-up",
+      tier: "also_covered",
+      defaultEnabled: false,
+      template:
+        "{app_name}: We missed you at your {service_type} appointment today. To rebook, visit {website_url}. Reply STOP to opt out.",
+      trigger: "After a missed appointment",
+      requiresStop: true,
+      expansionType: null,
+      consentLabel: "no-show follow-ups",
+      variants: {
+        "action-first": "Missed today — your {service_type} appointment. Rebook at {website_url}. {app_name}. Reply STOP to opt out.",
+        "context-first": "Your {service_type} appointment was today. {app_name} noticed you couldn't make it — rebook at {website_url}. Reply STOP to opt out.",
       },
     },
     {

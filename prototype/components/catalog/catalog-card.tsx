@@ -202,6 +202,8 @@ export interface CatalogCardProps {
   onTogglePrompts: () => void;
   /** Called when preview is requested but personalization is empty */
   onRequestPersonalize?: () => void;
+  /** Optional card number displayed before the title */
+  cardNumber?: number;
 }
 
 export function CatalogCard({
@@ -213,6 +215,7 @@ export function CatalogCard({
   isPromptsOpen,
   onTogglePrompts,
   onRequestPersonalize,
+  cardNumber,
 }: CatalogCardProps) {
   const [localViewMode, setLocalViewMode] = useState<
     "preview" | "template" | null
@@ -307,8 +310,13 @@ export function CatalogCard({
     <div className="relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs overflow-visible">
       {/* Header row */}
       <div className="flex items-start justify-between gap-3">
-        {/* Left: name + badge */}
+        {/* Left: number + name + badge */}
         <div className="flex items-center gap-3 min-w-0">
+          {cardNumber != null && (
+            <span className="text-sm font-semibold text-text-brand-secondary tabular-nums shrink-0">
+              {cardNumber}
+            </span>
+          )}
           <span className="text-sm font-medium text-text-primary truncate">
             {message.name}
           </span>

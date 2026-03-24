@@ -23,24 +23,50 @@ import {
 
 /* ── Playbook flow data ── */
 
+interface PlaybookStep {
+  label: string;
+  tooltip: string;
+}
+
 const PLAYBOOK_FLOWS: Record<
   string,
-  { heading: string; tagline: string; steps: string[] }
+  { heading: string; tagline: string; steps: PlaybookStep[] }
 > = {
   appointments: {
     heading: "Your complete appointment SMS system",
     tagline: "One prompt. Your AI tool builds the whole flow.",
     steps: [
-      "Booking confirmed",
-      "Reminder sent",
-      "No response followed up",
-      "No-show rebooked",
-      "Cancellation handled",
+      { label: "Booking confirmed", tooltip: "Sent when a client books an appointment" },
+      { label: "Reminder sent", tooltip: "Sent 24 hours before the appointment" },
+      { label: "Pre-visit sent", tooltip: "Sent the morning of the appointment" },
+      { label: "Reschedule handled", tooltip: "Sent when a client reschedules" },
+      { label: "No-show followed up", tooltip: "Sent after a missed appointment" },
+      { label: "Cancellation handled", tooltip: "Sent when an appointment is cancelled" },
     ],
   },
 };
 
 /* ── Playbook summary ── */
+
+function FlowNode({ num, tooltip }: { num: number; tooltip: string }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <div
+      className="relative shrink-0"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <div className="w-6 h-6 rounded-full bg-fg-brand-primary text-white flex items-center justify-center text-xs font-semibold">
+        {num}
+      </div>
+      {hover && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 rounded-md bg-white px-2.5 py-1.5 text-[12px] text-text-secondary shadow-md whitespace-nowrap pointer-events-none">
+          {tooltip}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function PlaybookSummary({ categoryId, controlsSlot }: { categoryId: string; controlsSlot?: React.ReactNode }) {
   const flow = PLAYBOOK_FLOWS[categoryId];
@@ -50,20 +76,21 @@ function PlaybookSummary({ categoryId, controlsSlot }: { categoryId: string; con
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-text-primary">
-        {flow.heading}
-      </h2>
-
-      {controlsSlot}
+      {/* Heading + controls: side-by-side on desktop, stacked on mobile */}
+      <div className="sm:flex sm:items-baseline sm:justify-between mb-3">
+        <h2 className="text-lg font-semibold text-text-primary">
+          {flow.heading}
+        </h2>
+        {controlsSlot}
+      </div>
 
       {/* Desktop: horizontal flow */}
-      <div className="hidden sm:flex items-start mt-5">
+      <div className="hidden sm:flex items-start py-3">
         {flow.steps.map((step, i) => (
-          <div key={step} className="flex items-start flex-1 min-w-0">
-            <div className="flex flex-col items-center w-full">
+          <div key={step.label} className="flex items-start flex-1 min-w-0">
+            <div className="flex flex-col items-start w-full">
               <div className="flex items-center w-full">
-                {/* Hollow circle */}
-                <div className="w-4 h-4 rounded-full border-2 border-fg-brand-primary shrink-0" />
+                <FlowNode num={i + 1} tooltip={step.tooltip} />
                 {/* Connector line + arrow */}
                 {i < lastIndex && (
                   <div className="flex items-center flex-1 min-w-0 mx-1">
@@ -71,16 +98,9 @@ function PlaybookSummary({ categoryId, controlsSlot }: { categoryId: string; con
                     <div className="w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-fg-brand-primary shrink-0" />
                   </div>
                 )}
-                {/* End dot after last label */}
-                {i === lastIndex && (
-                  <div className="flex items-center flex-1 min-w-0 mx-1">
-                    <div className="flex-1 h-px bg-fg-brand-primary" />
-                    <div className="w-3.5 h-3.5 rounded-full bg-fg-brand-primary shrink-0" />
-                  </div>
-                )}
               </div>
-              <span className="text-sm text-text-secondary mt-2 text-center">
-                {step}
+              <span className="text-sm text-text-secondary mt-2 text-left max-w-[90px]">
+                {step.label}
               </span>
             </div>
           </div>
@@ -88,29 +108,23 @@ function PlaybookSummary({ categoryId, controlsSlot }: { categoryId: string; con
       </div>
 
       {/* Mobile: vertical flow */}
-      <div className="sm:hidden mt-5 flex flex-col">
+      <div className="sm:hidden py-3 flex flex-col">
         {flow.steps.map((step, i) => (
-          <div key={step} className="flex items-start gap-3">
+          <div key={step.label} className="flex items-start gap-3">
             <div className="flex flex-col items-center">
-              <div
-                className={`shrink-0 rounded-full ${
-                  i === lastIndex
-                    ? "w-4 h-4 bg-fg-brand-primary"
-                    : "w-4 h-4 border-2 border-fg-brand-primary"
-                }`}
-              />
+              <FlowNode num={i + 1} tooltip={step.tooltip} />
               {i < lastIndex && (
                 <div className="w-px h-6 bg-fg-brand-primary" />
               )}
             </div>
             <span className="text-sm text-text-secondary -mt-0.5">
-              {step}
+              {step.label}
             </span>
           </div>
         ))}
       </div>
 
-      <p className="mt-4 text-sm text-text-tertiary italic">
+      <p className="text-sm text-text-tertiary italic">
         {flow.tagline}
       </p>
     </div>
@@ -617,10 +631,10 @@ export default function AppMessagesPage() {
       />
 
       {/* Playbook summary with controls — full-width gray band */}
-      <div className="bg-bg-secondary py-10 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+      <div className="bg-bg-secondary py-8 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
         <div className="mx-auto max-w-5xl px-6">
           <PlaybookSummary categoryId={categoryId} controlsSlot={
-            <div className="flex items-center justify-end gap-4 text-sm text-text-tertiary mt-2 mb-1">
+            <div className="flex items-center gap-4 text-sm text-text-tertiary mt-2 sm:mt-0">
               <button
                 type="button"
                 onClick={() => setIsToolOpen((prev) => !prev)}
@@ -654,14 +668,14 @@ export default function AppMessagesPage() {
       </div>
 
       {/* Two-column layout */}
-      <div className="pt-6 grid grid-cols-1 gap-10 lg:grid-cols-[1fr_376px]">
+      <div className="pt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_376px]">
 
         {/* LEFT — messages */}
         <div className="max-w-[500px]">
           {/* Messages header */}
           <div className="mb-3">
             <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-            <p className="mt-1 text-sm text-text-secondary">Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant.</p>
+            <p className="mt-1 text-sm text-text-secondary">Every message is pre-written for your use case and formatted for carriers. Copy them, adapt them, or let your AI tool use them as a starting point.</p>
           </div>
 
           {/* Style variant pills + marketing pill */}
@@ -733,7 +747,7 @@ export default function AppMessagesPage() {
 
           {/* Core message cards */}
           <div className="space-y-3">
-            {coreMessages.map((message) => (
+            {coreMessages.map((message, i) => (
               <CatalogCard
                 key={message.id}
                 message={message}
@@ -748,6 +762,7 @@ export default function AppMessagesPage() {
                   )
                 }
                 onRequestPersonalize={() => setShowPersonalize(true)}
+                cardNumber={i + 1}
               />
             ))}
           </div>
@@ -792,7 +807,7 @@ export default function AppMessagesPage() {
         </div>
 
         {/* RIGHT — opt-in only */}
-        <div className="lg:self-start lg:sticky lg:top-20">
+        <div className="max-w-[376px] lg:ml-auto lg:self-start lg:sticky lg:top-20">
           <h2 className="text-lg font-semibold text-text-primary mb-1">
             Opt-in form
           </h2>

@@ -29,19 +29,25 @@ import { Footer } from "@/components/footer";
 
 /* ── Playbook flow data ── */
 
+interface PlaybookStep {
+  label: string;
+  tooltip: string;
+}
+
 const PLAYBOOK_FLOWS: Record<
   string,
-  { heading: string; tagline: string; steps: string[] }
+  { heading: string; tagline: string; steps: PlaybookStep[] }
 > = {
   appointments: {
     heading: "Your complete appointment SMS system",
     tagline: "One prompt. Your AI tool builds the whole flow.",
     steps: [
-      "Booking confirmed",
-      "Reminder sent",
-      "No response followed up",
-      "No-show rebooked",
-      "Cancellation handled",
+      { label: "Booking confirmed", tooltip: "Sent when a client books an appointment" },
+      { label: "Reminder sent", tooltip: "Sent 24 hours before the appointment" },
+      { label: "Pre-visit sent", tooltip: "Sent the morning of the appointment" },
+      { label: "Reschedule handled", tooltip: "Sent when a client reschedules" },
+      { label: "No-show followed up", tooltip: "Sent after a missed appointment" },
+      { label: "Cancellation handled", tooltip: "Sent when an appointment is cancelled" },
     ],
   },
 };
@@ -752,6 +758,26 @@ function PersonalizeSlideout({
 
 /* ── Playbook summary ── */
 
+function FlowNode({ num, tooltip }: { num: number; tooltip: string }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <div
+      className="relative shrink-0"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <div className="w-6 h-6 rounded-full bg-fg-brand-primary text-white flex items-center justify-center text-xs font-semibold">
+        {num}
+      </div>
+      {hover && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 rounded-md bg-white px-2.5 py-1.5 text-[12px] text-text-secondary shadow-md whitespace-nowrap pointer-events-none">
+          {tooltip}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PlaybookSummary({ categoryId }: { categoryId: string }) {
   const flow = PLAYBOOK_FLOWS[categoryId];
   if (!flow) return null;
@@ -768,11 +794,10 @@ function PlaybookSummary({ categoryId }: { categoryId: string }) {
         {/* Desktop: horizontal flow */}
         <div className="hidden sm:flex items-start mt-6">
           {flow.steps.map((step, i) => (
-            <div key={step} className="flex items-start flex-1 min-w-0">
-              <div className="flex flex-col items-center w-full">
+            <div key={step.label} className="flex items-start flex-1 min-w-0">
+              <div className="flex flex-col items-start w-full">
                 <div className="flex items-center w-full">
-                  {/* Hollow circle */}
-                  <div className="w-4 h-4 rounded-full border-2 border-fg-brand-primary shrink-0" />
+                  <FlowNode num={i + 1} tooltip={step.tooltip} />
                   {/* Connector line + arrow */}
                   {i < lastIndex && (
                     <div className="flex items-center flex-1 min-w-0 mx-1">
@@ -780,16 +805,9 @@ function PlaybookSummary({ categoryId }: { categoryId: string }) {
                       <div className="w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[6px] border-l-fg-brand-primary shrink-0" />
                     </div>
                   )}
-                  {/* End dot after last label's connector */}
-                  {i === lastIndex && (
-                    <div className="flex items-center flex-1 min-w-0 mx-1">
-                      <div className="flex-1 h-px bg-fg-brand-primary" />
-                      <div className="w-3.5 h-3.5 rounded-full bg-fg-brand-primary shrink-0" />
-                    </div>
-                  )}
                 </div>
-                <span className="text-sm text-text-secondary mt-2 text-center">
-                  {step}
+                <span className="text-sm text-text-secondary mt-2 text-left max-w-[90px]">
+                  {step.label}
                 </span>
               </div>
             </div>
@@ -799,21 +817,15 @@ function PlaybookSummary({ categoryId }: { categoryId: string }) {
         {/* Mobile: vertical flow */}
         <div className="sm:hidden mt-6 flex flex-col">
           {flow.steps.map((step, i) => (
-            <div key={step} className="flex items-start gap-3">
+            <div key={step.label} className="flex items-start gap-3">
               <div className="flex flex-col items-center">
-                <div
-                  className={`shrink-0 rounded-full ${
-                    i === lastIndex
-                      ? "w-4 h-4 bg-fg-brand-primary"
-                      : "w-4 h-4 border-2 border-fg-brand-primary"
-                  }`}
-                />
+                <FlowNode num={i + 1} tooltip={step.tooltip} />
                 {i < lastIndex && (
                   <div className="w-px h-6 bg-fg-brand-primary" />
                 )}
               </div>
               <span className="text-sm text-text-secondary -mt-0.5">
-                {step}
+                {step.label}
               </span>
             </div>
           ))}
@@ -925,7 +937,7 @@ function StepsLayout({
           <div className="mt-8 flex items-center gap-5">
             {tools.map((tool) => (
               <div key={tool.id} className="flex flex-col items-center gap-1.5 min-w-[56px]">
-                <div className="flex items-center justify-center w-12 h-12 rounded-full border border-[#999999]">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full border border-[#999999] bg-white">
                   <ToolLogo id={tool.id} />
                 </div>
                 <span className="text-[10px] font-medium text-text-tertiary whitespace-nowrap">
@@ -1207,7 +1219,7 @@ function StepsLayout({
 
             {/* Core message cards */}
             <div className="space-y-3">
-              {coreMessages.map((message) => (
+              {coreMessages.map((message, i) => (
                 <CatalogCard
                   key={message.id}
                   message={message}
@@ -1222,6 +1234,7 @@ function StepsLayout({
                     )
                   }
                   onRequestPersonalize={() => setShowPersonalize(true)}
+                  cardNumber={i + 1}
                 />
               ))}
             </div>
@@ -1512,7 +1525,7 @@ export default function PublicMessagesPage() {
 
             {/* Core message cards */}
             <div className="space-y-3">
-              {coreMessages.map((message) => (
+              {coreMessages.map((message, i) => (
                 <CatalogCard
                   key={message.id}
                   message={message}
@@ -1527,6 +1540,7 @@ export default function PublicMessagesPage() {
                     )
                   }
                   onRequestPersonalize={() => setShowPersonalize(true)}
+                  cardNumber={i + 1}
                 />
               ))}
             </div>
