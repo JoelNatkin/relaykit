@@ -16,8 +16,37 @@ import {
   StopCircle,
   Target01,
   BellRinging01,
+  Code02,
 } from "@untitledui/icons";
 import type { FC } from "react";
+
+/* ── Tool logos ── */
+
+const TOOLS = [
+  { id: "claude-code", label: "Claude Code" },
+  { id: "cursor", label: "Cursor" },
+  { id: "windsurf", label: "Windsurf" },
+  { id: "copilot", label: "GitHub Copilot" },
+  { id: "cline", label: "Cline" },
+  { id: "other", label: "Other" },
+];
+
+const TOOL_LOGO_MAP: Record<string, string> = {
+  "claude-code": "/logos/claude-logo.svg",
+  cursor: "/logos/cursor-logo.svg",
+  windsurf: "/logos/windsurf-logo.svg",
+  copilot: "/logos/github-copilot-logo.svg",
+  cline: "/logos/cline-logo.svg",
+};
+
+function ToolLogo({ id }: { id: string }) {
+  const logoSrc = TOOL_LOGO_MAP[id];
+  if (!logoSrc) return <Code02 className="w-6 h-6 text-text-quaternary" />;
+  const sizeClass = id === "windsurf" ? "w-[34px] h-[34px]" : "w-7 h-7";
+  return (
+    <img src={logoSrc} alt={id} className={`${sizeClass} object-contain`} draggable={false} />
+  );
+}
 
 interface Category {
   id: string;
@@ -110,29 +139,46 @@ function scrollTo(id: string) {
 
 export default function MarketingHome() {
   return (
-    <div className="py-16">
+    <div>
       {/* Hero */}
-      <div className="mx-auto max-w-5xl px-6 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-          Add SMS to your app<br />
-          in minutes, not months.
-        </h1>
-        <p className="mt-4 text-lg text-text-tertiary max-w-2xl mx-auto">
-          Two files. Your AI coding tool. A working SMS feature.
-        </p>
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <button
-            onClick={() => scrollTo("compliance")}
-            className="rounded-lg border border-border-primary px-5 py-2.5 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
-          >
-            Why RelayKit?
-          </button>
-          <button
-            onClick={() => scrollTo("categories")}
-            className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-          >
-            Pick your use case
-          </button>
+      <div className="bg-bg-tertiary py-16">
+        <div className="mx-auto max-w-5xl px-6 text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
+            Add SMS to your app<br />
+            in minutes, not months.
+          </h1>
+          <p className="mt-4 text-lg text-text-tertiary max-w-2xl mx-auto">
+            Two files. Your AI coding tool. A working SMS feature.
+          </p>
+
+          {/* Logo row */}
+          <div className="mt-8 flex items-center justify-center gap-5">
+            {TOOLS.map((tool) => (
+              <div key={tool.id} className="flex flex-col items-center gap-1.5 min-w-[56px]">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full border border-[#999999] bg-white">
+                  <ToolLogo id={tool.id} />
+                </div>
+                <span className="text-[10px] font-medium text-text-tertiary whitespace-nowrap">
+                  {tool.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 flex items-center justify-center gap-4">
+            <button
+              onClick={() => scrollTo("compliance")}
+              className="rounded-lg border border-border-primary bg-white px-5 py-2.5 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+            >
+              Why RelayKit?
+            </button>
+            <button
+              onClick={() => scrollTo("categories")}
+              className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+            >
+              Pick your use case
+            </button>
+          </div>
         </div>
       </div>
 
@@ -213,9 +259,9 @@ export default function MarketingHome() {
         </h2>
 
         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {/* Sandbox card */}
+          {/* Free card */}
           <div className="flex flex-col rounded-xl border border-border-primary p-6">
-            <h3 className="text-lg font-bold text-text-primary">Sandbox</h3>
+            <h3 className="text-lg font-bold text-text-primary">Free</h3>
             <div className="mt-3 flex items-baseline gap-2">
               <span className="text-3xl font-bold text-text-primary">$0</span>
               <span className="text-sm text-text-tertiary">forever</span>
@@ -228,60 +274,54 @@ export default function MarketingHome() {
                 "Test API key and sandbox phone number",
                 "Pre-written messages for your use case",
                 "Setup instructions your AI coding tool can follow",
-                "Works with Claude Code, Cursor, Windsurf",
+                "Works with Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, and others",
               ].map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-text-secondary">
-                  <CheckCircle className="size-4 shrink-0 text-fg-brand-primary mt-0.5" />
+                <li key={item} className="flex items-start gap-2 text-base text-text-secondary">
+                  <CheckCircle className="size-4 shrink-0 text-fg-brand-primary mt-1" />
                   {item}
                 </li>
               ))}
             </ul>
-            <div className="mt-auto pt-6">
-              <button
-                onClick={() => scrollTo("categories")}
-                className="w-full rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-              >
-                Start building &rarr;
-              </button>
-            </div>
           </div>
 
-          {/* Live card */}
+          {/* Go live card */}
           <div className="flex flex-col rounded-xl border border-border-primary p-6">
-            <h3 className="text-lg font-bold text-text-primary">Live</h3>
+            <h3 className="text-lg font-bold text-text-primary">Go live</h3>
             <div className="mt-3">
               <span className="text-3xl font-bold text-text-primary">$199</span>
-              <span className="text-sm text-text-tertiary ml-1">one-time setup</span>
+              <span className="text-sm text-text-tertiary ml-1">to register</span>
               <span className="text-sm text-text-tertiary mx-1.5">+</span>
               <span className="text-3xl font-bold text-text-primary">$19</span>
               <span className="text-sm text-text-tertiary">/mo</span>
             </div>
             <p className="mt-3 text-sm text-text-tertiary">
-              Real messages to real users. We handle the carrier registration.
+              Real messages to real users. Registration approved in days, not weeks.
             </p>
             <ul className="mt-5 flex flex-col gap-3">
               {[
+                "Carrier registration handled for you \u2014 approved in days",
+                "$49 to register. $150 only after you\u2019re approved. Full refund if not.",
                 "500 messages included per month",
                 "Dedicated phone number",
-                "Carrier registration handled for you (2\u20133 week process, we manage it all)",
                 "Compliance monitoring and drift detection included",
-                "Need more messages? $15 per 1,000. Scales with usage \u2014 up or down.",
+                "Need more messages? $15 per 1,000. Scales with usage.",
               ].map((item) => (
-                <li key={item} className="flex items-start gap-2 text-sm text-text-secondary">
-                  <CheckCircle className="size-4 shrink-0 text-fg-brand-primary mt-0.5" />
+                <li key={item} className="flex items-start gap-2 text-base text-text-secondary">
+                  <CheckCircle className="size-4 shrink-0 text-fg-brand-primary mt-1" />
                   {item}
                 </li>
               ))}
             </ul>
-            <div className="mt-auto pt-6">
-              <button
-                onClick={() => scrollTo("categories")}
-                className="w-full rounded-lg border border-border-brand px-5 py-2.5 text-sm font-semibold text-text-brand-secondary transition duration-100 ease-linear hover:bg-bg-brand-primary"
-              >
-                Start free, upgrade when ready
-              </button>
-            </div>
           </div>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => scrollTo("categories")}
+            className="w-full sm:w-[calc(50%-12px)] rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+          >
+            Start building free &rarr;
+          </button>
         </div>
 
         <p className="mt-4 text-center text-xs text-text-tertiary">
