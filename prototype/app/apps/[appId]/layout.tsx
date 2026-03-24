@@ -27,9 +27,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [period, setPeriod] = useState("this_month");
 
   return (
-    <div className="mx-auto max-w-5xl px-6">
+    <div>
       {/* App identity */}
-      <div className="pt-6 pb-4 flex items-center gap-3">
+      <div className="mx-auto max-w-5xl px-6 pt-6 pb-4 flex items-center gap-3">
         <h1 className="text-xl font-semibold text-text-primary">{appName}</h1>
         <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2.5 py-1 text-xs font-medium text-text-brand-secondary">
           Appointments
@@ -93,8 +93,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* Tab bar */}
-      <div className="flex items-center gap-1 border-b border-border-secondary mb-6">
+      {/* Tab bar — full-width border */}
+      <div className="border-b border-border-secondary">
+      <div className="mx-auto max-w-5xl px-6 flex items-center gap-1">
         {TABS.map((tab) => {
           const href = tab.href(appId);
           const isActive = pathname === href || pathname.startsWith(href + "/");
@@ -125,9 +126,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </select>
         )}
       </div>
+      </div>
 
       {/* Page content */}
-      <div className="pb-16">
+      <div className="mx-auto max-w-5xl px-6 pb-16">
         {children}
       </div>
     </div>
