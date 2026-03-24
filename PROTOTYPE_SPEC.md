@@ -72,7 +72,7 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **Hero:** Gray band (`bg-bg-tertiary`). Appointments pill + H1 ("Appointment messages, ready to send.") with subhead grouped below ("Everything your AI coding tool needs to add SMS — in two files."). Desktop CTA right-aligned with "Free to build and test. No lock-in." below. Mobile CTA full-width after logos. Logo row (6 tools, 48px circles with `border-[#999999]`). Pricing context below logos: "Free sandbox, no credit card. $199 + $19/mo when you're ready to go live." with line break before "You'll get two files and a sandbox API key." "How it works" link (Expand06 icon, brand purple semibold) opens full-page modal (D-218).
 
-**Playbook summary (D-217):** Between hero and messages. `bg-bg-secondary` band. Heading "Your complete appointment SMS system" + horizontal flow (hollow circles → arrows → filled end dot on desktop, vertical stepper on mobile) + tagline "One prompt. Your AI tool builds the whole flow." Data in `PLAYBOOK_FLOWS` keyed by category.
+**Playbook summary (D-217, D-224):** Between hero and messages. `bg-bg-secondary` band. Heading "Your complete appointment SMS system" + horizontal flow with 6 numbered nodes (24px filled purple circles, white numbers, CSS hover tooltips) connected by arrows. Labels left-aligned, max-width ~90px. Vertical stepper on mobile. Tagline "One prompt. Your AI tool builds the whole flow." Data in `PLAYBOOK_FLOWS` keyed by category. Node order: 1 Booking confirmed, 2 Reminder sent, 3 Pre-visit sent, 4 Reschedule handled, 5 No-show followed up, 6 Cancellation handled (D-223).
 
 **Layout:** StepsLayout is the default (D-113). Two-column grid (`lg:grid-cols-[1fr_376px]`) — messages on left (`max-w-[500px]`), opt-in on right. Old layout preserved at `?layout=default`.
 
@@ -83,7 +83,7 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 - Style variant pills (Brand-first / Action-first / Context-first / Marketing with ArrowDown icon) — `flex-wrap` with `whitespace-nowrap` for mobile wrapping. Marketing pill scrolls to marketing section.
 - Toolbar row (`mb-3`): Left: "Personalize" (brand purple semibold, Sliders04 icon — opens slideout). Right: "Show template"/"Show preview" toggle + "Copy all". (D-185)
 - Default view: template mode — variables render as brand-purple inline text (D-187). Clicking "Show preview" with empty personalization opens slideout (D-188).
-- `CatalogCard` components — no checkboxes (D-171), "Modify with AI ›" expander per card (D-174)
+- 6 numbered `CatalogCard` components (D-223) — brand purple number to left of title, no checkboxes (D-171), "Modify with AI ›" expander per card (D-174). Order: 1 Booking confirmation, 2 Appointment reminder, 3 Pre-visit instructions, 4 Reschedule notice, 5 No-show follow-up, 6 Cancellation notice.
 - "Need marketing messages too?" marketing callout
 
 **Personalization slideout (D-184):** Unchanged from prior session.
@@ -91,6 +91,8 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 **Right column (sticky, `lg:top-20`):**
 - "Opt-in form" (`text-lg font-semibold`) + body: "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."
 - `CatalogOptIn` (preview only, no copy — D-173). Placeholder fields: "Enter name", "Enter phone" (D-190).
+
+**Logo circles:** White backgrounds (`bg-white`) on hero logo row (D-227).
 
 **"Learn more about RelayKit →"** link below marketing section, before footer.
 
@@ -209,7 +211,7 @@ Badge: red "Not approved." Stepper shortened to 4 steps (red X on step 4). Refun
 
 #### Default state — post-download, pre-registration (STABLE)
 
-**Playbook summary (D-217, D-222):** Full-width gray band (`bg-bg-secondary`, `py-10`) immediately below tab bar — no gap. Contains `PlaybookSummary` component with `controlsSlot` prop. Layout top-to-bottom: heading ("Your complete appointment SMS system"), "AI tool setup ∨ | Download RelayKit" right-aligned on own line, horizontal flow visualization (same as public page), tagline. Content within `mx-auto max-w-5xl px-6`.
+**Playbook summary (D-217, D-222, D-224):** Full-width gray band (`bg-bg-secondary`, `py-8`) immediately below tab bar — no gap. Contains `PlaybookSummary` component with `controlsSlot` prop. Layout top-to-bottom: heading ("Your complete appointment SMS system"), "AI tool setup ∨ | Download RelayKit" right-aligned on own line, 6-node numbered flow visualization (same as public page — 24px filled purple circles, white numbers, CSS tooltips, left-aligned labels), tagline. Content within `mx-auto max-w-5xl px-6`.
 
 **AI tool setup panel** — toggled by the "AI tool setup" button (chevron rotates 180° when open). `isToolOpen` state in page component. Renders `<ToolPanel />` inside the gray band: 6-tool logo row (Code02 for "Other", D-192) + per-tool instruction + copyable command. Collapsed by default (D-160).
 
@@ -222,7 +224,7 @@ Badge: red "Not approved." Stepper shortened to 4 steps (red X on step 4). Refun
 - Style variant pills (Brand-first / Action-first / Context-first / Marketing with ArrowDown icon) — `flex-wrap` with `whitespace-nowrap`. Marketing pill scrolls to `#marketing-section`.
 - Toolbar row (`mb-3`): Left: "Personalize" (brand purple semibold, Sliders04 icon). Right: "Show template"/"Show preview" toggle + "Copy all".
 - Default view: template mode — variables render as brand-purple inline text (D-187).
-- `CatalogCard` components — no checkboxes (D-171), "Modify with AI ›" expander per card (D-174)
+- 6 numbered `CatalogCard` components (D-223) — brand purple number to left of title, no checkboxes (D-171), "Modify with AI ›" expander per card (D-174). Same order as public page.
 - "Need marketing messages too?" marketing callout
 
 *Right column (sticky, `lg:top-20`):*
@@ -334,6 +336,24 @@ Side-by-side layout: form fields on left, live message preview on right. Preview
 
 Current "Content blocked" modal has "Fix it with AI" section with copyable prompt — this is wrong (could generate messages outside registered set, causing drift). Replace with plain text guidance: two paths (remove promotional language, or register marketing campaign). Intelligence lives in SMS_GUIDELINES.md, not dashboard-generated prompts.
 
+### Registration Components — `/registration-test`
+**Files:** `prototype/components/catalog/registration-scope.tsx`, `prototype/components/registration/business-details-form.tsx`, `prototype/components/registration/review-confirm.tsx`
+**Test route:** `prototype/app/registration-test/page.tsx`
+**Status:** `[IMPORTED — VISUAL REVIEW NEEDED]`
+**Decision refs:** D-225
+
+Three production intake wizard screens imported as standalone components. All Zod validation, industry gating, conditional field logic, and error handling preserved. Untitled UI base components replaced with plain HTML + Tailwind. No Supabase/Stripe — mock data, console.log for checkout.
+
+**RegistrationScope:** Scope advisory section — "What your registration covers" (green checks), "What's not included" (amber X, flips to green when expansion selected), expansion checkboxes. Dynamic per use case. Controlled or uncontrolled expansion state.
+
+**BusinessDetailsForm:** Full business details form. Two fieldset sections (Your business / Contact information). Conditional EIN/sole prop path. Industry gating with 3-tier inline alerts (advisory/waitlist/blocked). Use-case-specific fields. Character counters. Auto-formatting (phone, EIN, URL). Zod validation on blur.
+
+**ReviewConfirm:** Two-column review. Left: business details summary with Edit button. Right: generated campaign description, 3 sample messages, FAQ accordion (3 questions), compliance site preview, "What happens next" (4 steps), plan summary. Below: pricing breakdown ($199 + $19/mo = $218), monitoring consent checkbox, "Start my registration" button with confirmation modal.
+
+**Supporting libs:** `prototype/lib/intake/` — use-case-data.ts, validation.ts, campaign-type.ts, industry-gating.ts, templates.ts. Pure logic, no component deps.
+
+---
+
 ### Download Confirmation Flow
 **Status:** `[NEEDS DESIGN]`
 
@@ -364,16 +384,27 @@ prototype/
 │   ├── sms/[category]/
 │   │   ├── page.tsx                      # Category landing (appointments)
 │   │   └── messages/page.tsx             # Public messages page (steps layout default)
+│   ├── registration-test/page.tsx         # Test route for imported registration components
 │   └── c/[categoryId]/                   # ORPHANED — legacy catalog routes, safe to delete
 ├── components/
 │   ├── top-nav.tsx                       # Context-aware nav (D-118)
 │   ├── footer.tsx                        # Shared footer (D-121)
 │   ├── category-modal.tsx                # Category picker
-│   ├── catalog/                          # Message cards, opt-in form
+│   ├── catalog/                          # Message cards, opt-in form, registration-scope.tsx
+│   ├── registration/                     # Imported registration components (D-225)
+│   │   ├── business-details-form.tsx     # Full business details form with Zod validation
+│   │   └── review-confirm.tsx            # Review & confirm with pricing modal
 │   └── dashboard/                        # ORPHANED — old A/B/C variants, safe to delete
 ├── public/logos/                          # SVG logos for tool selector
 ├── context/session-context.tsx           # State management (+ registrationState, complianceView)
-├── lib/catalog-helpers.ts                # Template interpolation
+├── lib/
+│   ├── catalog-helpers.ts                # Template interpolation
+│   └── intake/                           # Imported intake logic (D-225)
+│       ├── use-case-data.ts              # 9 use case definitions
+│       ├── validation.ts                 # Zod schemas, formatters, field definitions
+│       ├── campaign-type.ts              # Campaign type determination
+│       ├── industry-gating.ts            # 3-tier industry detection
+│       └── templates.ts                  # Campaign description + sample message generation
 └── data/messages.ts                      # Message library
 ```
 

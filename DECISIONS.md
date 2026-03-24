@@ -669,3 +669,23 @@ _Affects: `prototype/app/apps/[appId]/layout.tsx`, `prototype/app/apps/[appId]/m
 **D-222 — AI prompts section replaced by playbook summary on app Messages page** (Date: 2026-03-23)
 The four AI prompt cards (Compliance review, Write a message, Add a message type, Check opt-in copy) are removed from the logged-in Messages tab. Replaced by the same PlaybookSummary component used on the public page. "AI tool setup" and "Download RelayKit" controls retained, positioned on their own right-aligned line between the heading and flow visualization via a controlsSlot prop. AiCommandsGrid component is now unused on this page.
 _Affects: `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-223 — Appointment messages expanded to 6 base messages in chronological order** (Date: 2026-03-24)
+The appointments category now includes 6 non-expansion messages (up from 4): Booking confirmation, Appointment reminder, Pre-visit instructions, Reschedule notice, No-show follow-up, Cancellation notice. Ordered chronologically through an appointment lifecycle. No-show follow-up and Pre-visit instructions added as `also_covered` tier. Each card displays a numbered index (1–6) in brand purple to the left of the card title.
+_Affects: `prototype/data/messages.ts`, `prototype/components/catalog/catalog-card.tsx`, both Messages pages._
+
+**D-224 — Flow diagram: 6 numbered nodes, all filled purple, with CSS tooltips** (Date: 2026-03-24)
+Playbook flow diagrams on both Messages pages now show 6 numbered nodes matching the 6 message cards. All circles are 24px filled purple with white numbers (no hollow variant). Labels are left-aligned with max-width ~90px for natural wrapping. Native title attributes replaced with React hover-state CSS tooltips (white bg, shadow, 12px text, positioned above circle). Tooltips describe when each message is sent.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-225 — Production intake wizard imported to prototype as registration components** (Date: 2026-03-24)
+Three production intake wizard screens imported to prototype with all field logic, Zod validation, industry gating, and conditional states preserved. Untitled UI base components replaced with plain HTML + Tailwind. Supabase/Stripe removed (mock data, console.log). Components: RegistrationScope (scope advisory), BusinessDetailsForm (full business details form), ReviewConfirm (review & confirm with pricing modal). Supporting libs copied to `prototype/lib/intake/`. Test route at `/registration-test`.
+_Affects: `prototype/components/catalog/registration-scope.tsx`, `prototype/components/registration/`, `prototype/lib/intake/`, `prototype/app/registration-test/`._
+
+**D-226 — Dev bypass route for production intake wizard** (Date: 2026-03-24)
+Middleware matcher updated to exclude `/dev/*` routes from Supabase session checks. Dev route at `/dev/intake` provides a hub page with sessionStorage seeding and direct links to all 4 wizard screens for visual review without auth.
+_Affects: `src/middleware.ts`, `src/app/dev/intake/page.tsx`._
+
+**D-227 — Public Messages page logo circles have white backgrounds** (Date: 2026-03-24)
+Hero logo row circles on `/sms/[category]/messages` now have explicit `bg-white` to ensure visibility against the gray hero band.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
