@@ -1,6 +1,6 @@
 # BACKLOG.md — RelayKit
 ## Ideas, Deferred Work, and Future Features
-### Last updated: March 19, 2026
+### Last updated: March 23, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -69,7 +69,7 @@
 
 ### Infrastructure & Operations
 
-- **Sinch migration plan** — When Sinch is confirmed, create a focused PRD_04-equivalent mapping doc: each Twilio module mapped to its Sinch API equivalent. Registration API (brand + campaign), SMS API (send/receive), number provisioning, webhook handlers, credential model. Estimated 2–3 CC sessions. (Origin: March 22 brainstorming session, D-199)
+- **Sinch migration implementation** — Sinch confirmed (D-215). Create PRD_04-equivalent mapping doc: each Twilio module mapped to Sinch API equivalent. Registration API (brand + campaign), SMS API (send/receive), number provisioning, webhook handlers, credential model. Estimated 2–3 CC sessions. (Origin: March 22 brainstorming, D-199, confirmed D-215)
 
 - **Dev/prod environment split** — Half-day config task. Separate Supabase projects, Stripe test/live keys, Twilio sandbox/production. Deferred until approaching beta. (Origin: BUILD_HANDOFF.md, multiple sessions)
 
@@ -99,7 +99,15 @@
 
 ---
 
+- **How it works modal V2 — full marketing page render** — Current V1 renders summary content (What You Get cards, pricing, FAQ). V2 could render the full marketing category page component inside the modal for richer context. Deferred — V1 is sufficient for beta. (Origin: March 23 session, D-218)
+
+- **Playbook per-category expansion** — Add PLAYBOOK_FLOWS entries for verification, orders, support, and other categories. Currently only appointments is populated. Structure is ready (keyed by category slug). (Origin: March 23 session, D-217)
+
+- **Post-download playbook variant** — On public Messages page, after download, the playbook section could expand to show the full prompt, prerequisites checklist ("Your app needs: a way to store appointments..."), and a copy button. Deferred as separate task. (Origin: March 23 brainstorming)
+
 ## Maybe — Interesting ideas, not yet validated
+
+- **Two-tab marketing page** — Tab 1 = marketing pitch, Tab 2 = use case content. Dropped in favor of the playbook summary section + How it works modal which solves the same problem without adding tabs. May revisit if user testing reveals context gaps. (Origin: March 23 brainstorming, explicitly dropped)
 
 - **Variant-aware AI prompts** — Different per-card AI prompt suggestions based on Brand-first/Action-first/Context-first selection. Potentially overkill — prompts should focus on what the message does, not how it's styled. (Origin: March 19 session)
 

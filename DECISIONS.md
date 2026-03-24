@@ -914,3 +914,35 @@ _Affects: Settings page Billing section (Approved state)._
 **D-214 — Rejected state includes "What was submitted" section above debrief** (Date: 2026-03-23)
 The Rejected Registration section shows a "What was submitted" subsection above the debrief box: Business name, EIN (masked — last 4 digits only, e.g., "••-•••4567"), Business address, and Use case. All read-only display fields. This gives the developer context for understanding the rejection reason directly below it. Fields may expand based on carrier error code mapping in the future (backlogged).
 _Affects: Settings page Registration section (Rejected state)._
+
+**D-215 — Sinch confirmed as carrier — approval timeline drops to days** (Date: 2026-03-23)
+Sinch replaces Twilio as the carrier for 10DLC registration and SMS delivery. Standard use case campaigns are auto-approved for qualified brands in 3–5 days (vs. Twilio's 10–15 business day queue). All user-facing timeline references updated from "2–3 weeks" to "a few days" / "days, not weeks." **Supersedes D-17 and D-199.** Migration is contained to PRD_04's carrier API modules. Template engine, compliance site, dashboard, all UI unaffected.
+_Affects: All user-facing timeline copy, PRD_04 carrier integration, registration flow expectations._
+
+**D-216 — Registration fee display: $199 headline with $49/$150 split in details** (Date: 2026-03-23)
+Pricing cards and user-facing copy show `$199 to register + $19/mo` as the headline price. The $49/$150 split (D-193) is explained in a feature bullet: "$49 to register. $150 only after you're approved. Full refund if not." This keeps the headline scannable while the bullet handles the nuance. **Extends D-193 with display guidance.**
+_Affects: Home page pricing cards, How it works modal, marketing copy._
+
+**D-217 — Playbook summary section on Messages pages** (Date: 2026-03-23)
+Both the public Messages page and logged-in app Messages page include a "playbook summary" section showing the complete SMS system flow for the category. Appointments example: "Booking confirmed → Reminder sent → No response followed up → No-show rebooked → Cancellation handled." Flow labels describe system behavior, not message card titles. Horizontal on desktop (hollow circles, arrows, filled end dot), vertical stepper on mobile. Data keyed by category slug for easy extension. On the public page, sits between gray hero band (bg-bg-tertiary) and messages section with its own bg-bg-secondary band. On the app page, sits in a full-width gray band below the tab bar.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`, `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-218 — "How it works" full-page modal on public Messages page** (Date: 2026-03-23)
+A "How it works" link (Expand06 icon, brand purple semibold) in the hero area opens a full-page modal overlay. Modal contains: H1 heading, subhead, "What you get" 4-card grid, pricing section (full-width gray band with Free + Go live cards), and "Why registration matters" FAQ. URL does not change. V1 renders summary content; V2 could render the full marketing category page. Modal has sticky close button and "Back to messages" CTA at bottom.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-219 — Home page hero redesign: logo farm + gray band** (Date: 2026-03-23)
+Home page hero section wrapped in bg-bg-tertiary gray band. AI tool logo row (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other) added between subhead and CTA buttons. Logo circles have white background. "Why RelayKit?" button has white background to not blend with gray band. Subhead changed to "Two files. Your AI coding tool. A working SMS feature."
+_Affects: `prototype/app/page.tsx`._
+
+**D-220 — Pricing cards renamed: Free + Go live** (Date: 2026-03-23)
+Home page pricing cards renamed from "Sandbox"/"Live" to "Free"/"Go live". Per-card CTA buttons removed; single centered "Start building free →" CTA below both cards. Feature line text bumped to text-base (16px) for scannability. Go live card uses D-216 pricing display. Free card feature list includes all 6 supported AI tools.
+_Affects: `prototype/app/page.tsx`, How it works modal._
+
+**D-221 — App layout full-width tab bar and gray playbook band** (Date: 2026-03-23)
+App layout restructured: outer wrapper no longer constrains width. Tab bar border runs full page width edge to edge (tabs stay in max-w-5xl). On the Messages tab, playbook gray band extends full viewport width using CSS viewport trick. No gap between tab bar border and gray band. Content remains within max-w-5xl px-6 container throughout.
+_Affects: `prototype/app/apps/[appId]/layout.tsx`, `prototype/app/apps/[appId]/messages/page.tsx`._
+
+**D-222 — AI prompts section replaced by playbook summary on app Messages page** (Date: 2026-03-23)
+The four AI prompt cards (Compliance review, Write a message, Add a message type, Check opt-in copy) are removed from the logged-in Messages tab. Replaced by the same PlaybookSummary component used on the public page. "AI tool setup" and "Download RelayKit" controls retained, positioned on their own right-aligned line between the heading and flow visualization via a controlsSlot prop. AiCommandsGrid component is now unused on this page.
+_Affects: `prototype/app/apps/[appId]/messages/page.tsx`._

@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-23 (Settings page rebuild with full lifecycle state differentiation)
+**Date:** 2026-03-23 (Playbook summary, pricing redesign, copy/layout refinements across 4 pages)
 **Branch:** main
 
 ---
@@ -7,64 +7,78 @@
 ## Commits This Session
 
 ```
-7ec98f8  feat: add What was submitted subsection to Rejected registration state
-c52fc4b  fix: remove Plan row from Registration, disable live key copy button when masked
-78b2791  fix: add "additional" to billing includes copy
-f431f31  fix: add Includes row to Approved billing section
-6e2801d  fix: add copy button to live API key field
-3ce0b70  fix: remove Regenerate link from sandbox API key section
-7bba1db  fix: darken toggle off-state from gray-100 to gray-300 for visibility
-b7e70b2  fix: right-align all action buttons and links on Settings tab
-262da3c  fix: SMS compliance alerts heading to section header style
-8482511  fix: bump Settings type to 14px body, 18px section headers, add toggle gap
-b304173  docs: D-201–D-210, rewrite PROTOTYPE_SPEC Settings section, CC_HANDOFF update
-ebf2586  feat: rebuild Settings page with full lifecycle state differentiation
-05b4946  fix: rename Changes Requested to Extended Review in state switcher
-2b72335  fix: sk→rk sandbox prefix, TS errors, error token in settings
-f17afae  docs: append D-193 through D-200, add Sinch migration to BACKLOG
+4b2c3ed  docs: add playbook summary design spec
+15ee010  fix: update timeline references — days not weeks across prototype
+19a8dea  fix: app layout — full-width tab bar border, restructured containers
+39b5c13  feat: app Messages page — playbook port, gray band, layout restructure
+4a6840e  feat: Home page — logo farm, gray hero band, pricing card redesign
+975634a  feat: public Messages page — playbook refinements, layout, pricing iterations
+e94c27e  feat: Marketing category page — subhead, pricing context, What You Get card copy
+0c3ebcb  feat: Home page — subhead copy, pricing context line, reassurance line
+b334b79  feat: public Messages page — pricing context, copy updates, How it works modal, footer link
 ```
 
 Previous session commits (already on main before this session):
 ```
-f33ecc8  docs: session hygiene — D-183–D-192, rewrite PROTOTYPE_SPEC for Messages pages, CC_HANDOFF update
-894cc87  fix: use Untitled UI code-02 icon for Other tool logo
-9c00d0c  fix: marketing section heading and body copy
-0bc45c6  fix: generic placeholder text in opt-in form preview
-fe3c369  fix: generic placeholder text in personalization fields, add https:// prefix to URL field
+8d2dd42  docs: D-211–D-214, PROTOTYPE_SPEC Settings rewrite, BACKLOG additions, CC_HANDOFF
+7ec98f8  feat: add What was submitted subsection to Rejected registration state
+c52fc4b  fix: remove Plan row from Registration, disable live key copy button when masked
+78b2791  fix: add "additional" to billing includes copy
+f431f31  fix: add Includes row to Approved billing section
 ```
 
 ---
 
 ## What We Completed
 
-### Pre-session Decisions (D-193–D-200)
-- Registration fee split $49/$150 (D-193), customer-initiated second payment (D-194), RelayKit LLC entity change (D-195), beta pricing $49 flat (D-196), beta access requires user testing (D-197), production build strategy (D-198), Sinch evaluation pending (D-199), usability test instrument (D-200)
+### Decisions (D-215–D-222)
+- Sinch confirmed as carrier, timeline drops to days (D-215)
+- Registration fee display: $199 headline with $49/$150 split in details (D-216)
+- Playbook summary section on Messages pages (D-217)
+- "How it works" full-page modal on public Messages page (D-218)
+- Home page hero redesign: logo farm + gray band (D-219)
+- Pricing cards renamed: Free + Go live (D-220)
+- App layout full-width tab bar and gray playbook band (D-221)
+- AI prompts replaced by playbook summary on app Messages page (D-222)
 
-### Pre-work Fixes
-1. **`sk_sandbox_` → `rk_sandbox_`** and **`sk_live_` → `rk_live_`** — All API key prefixes in `sample-data.ts` updated
-2. **TS errors in settings/page.tsx** — Added explicit `<string>` type to 4 `useState` calls (literal types from `as const` SAMPLE data)
-3. **`bg-bg-error-solid_hover` token** — Doesn't exist in theme. Replaced with `hover:bg-[var(--color-error-700)]`
+### Public Messages Page (StepsLayout)
+1. **Playbook summary section** — "Your complete appointment SMS system" with horizontal flow visualization (hollow circles → arrows → filled end dot), vertical stepper on mobile. `PLAYBOOK_FLOWS` data keyed by category. `bg-bg-secondary` band between `bg-bg-tertiary` hero and white messages section.
+2. **Hero restructured** — H1 + subhead grouped, desktop CTA right-aligned with "Free to build and test. No lock-in." below, mobile CTA full-width after logos. Pricing context under logos. "How it works" link (brand purple, Expand06 icon).
+3. **How it works modal** — Full-page overlay with H1, What You Get cards, pricing section (gray band, Free + Go live cards), Why Registration Matters FAQ, Back to messages CTA.
+4. **Messages section** — Subhead copy updated. Marketing pill (was standalone link). `max-w-[500px]` messages column. `1fr_376px` grid. `flex-wrap` pills.
+5. **Footer link** — "Learn more about RelayKit →" before shared Footer.
 
-### State Switcher Rename (D-202)
-4. **"Changes Requested" → "Extended Review"** — Display label only, internal value remains `changes_requested`. Indicator dot changed from red to amber.
+### Home Page
+1. **Hero gray band** (`bg-bg-tertiary`) with AI tool logo row (6 tools, white circle backgrounds)
+2. **Subhead** → "Two files. Your AI coding tool. A working SMS feature."
+3. **Pricing cards** — "Free" (was Sandbox) + "Go live" (was Live). $199 to register + $19/mo headline. Feature lines at `text-base`. Single "Start building free →" CTA. Per-card buttons removed.
+4. **White backgrounds** on logo circles and Why RelayKit button
+5. **Pricing context line** between How it works and Explore use cases
+6. **Reassurance line** before footer
 
-### Settings Page Full Rebuild (D-201–D-214)
-5. **Full lifecycle state differentiation** across all 5 registration states (Default, Pending, Extended Review, Approved, Rejected)
-6. **5 sections:** SMS Compliance Alerts → Account Info → Registration → API Keys → Billing
-7. **Typography:** 14px body text (`text-sm`), 18px section headers (`text-lg font-semibold`) matching Messages tab
-8. **All action buttons/links right-aligned** (`flex justify-end`)
-9. **SMS alerts toggle off by default** (D-201), off-state uses `gray-300` for visibility
-10. **Account info varies by state** (D-210) — Default: email + personal phone. Pending onward: adds read-only business name + category
-11. **Registration section** — Pending (in review + timeline), Extended Review (carrier handling), Approved (active + details, no Plan row — D-212), Rejected (What was submitted + debrief box — D-206, D-214)
-12. **API keys** — Sandbox: always visible, copy button, no Regenerate (D-211). Live (Approved only): masked, copy button disabled (`opacity-30 cursor-not-allowed`), Regenerate with confirmation modal (D-205)
-13. **Billing reflects D-193 fee split** — $49 paid in Pending, $49 refunded in Rejected, $19/mo + Includes row (D-213) + cancel flow in Approved
-14. **Removed sections:** Developer tools (D-203, moves to Messages tab), Portability (D-204, backlogged)
+### Marketing Category Page
+1. **Subhead** → "Your AI coding tool builds the integration. RelayKit handles the carriers."
+2. **Pricing context line** between messages CTA and What You Get
+3. **What You Get cards** — Rewritten: Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself
+
+### App Messages Page
+1. **AI prompts section replaced** with PlaybookSummary component (same flow visualization)
+2. **`controlsSlot` prop** — "AI tool setup | Download RelayKit" on own line between heading and flow
+3. **Full-width gray band** (`bg-bg-secondary`, `py-10`) using viewport-width CSS trick
+4. **Marketing pill**, `max-w-[500px]` messages column, `1fr_376px` grid
+
+### App Layout
+1. **Full-width tab bar border** — outer wrapper no longer constrains width
+2. **No gap** between tab bar border and Messages tab gray band
+
+### Timeline Updates
+- All "2–3 weeks" / "10–15 business days" in prototype `.tsx` files → "a few days" / "days, not weeks" (6 instances across overview, settings, shared.tsx)
 
 ### Documentation
-15. **DECISIONS.md** — D-193–D-214 (22 new decisions)
-16. **PROTOTYPE_SPEC.md** — Settings section fully rewritten
-17. **BACKLOG.md** — 6 new items: Sinch migration plan, rejected state field expansion, privacy/legal baseline, developer tools on Messages tab, account-level settings, high-volume pricing tier
-18. **CC_HANDOFF.md** — This file
+- **DECISIONS.md** — D-215 through D-222 (8 new decisions)
+- **PROTOTYPE_SPEC.md** — Updated: Home page, Category Landing, Public Messages, App Messages, App Layout Shell
+- **BACKLOG.md** — 4 new items: How it works modal V2, playbook per-category expansion, post-download playbook variant, two-tab marketing page (dropped)
+- **Design spec** — `docs/superpowers/specs/2026-03-23-playbook-summary-design.md`
 
 ---
 
@@ -77,10 +91,10 @@ Not yet differentiated. Still renders Default layout. Planned per D-159:
 - No "registered" badges on individual cards
 
 ### Messages Tab — Pre-download State
-Not yet designed (D-162). The initial download happens on the public Messages page, not here. This tab doesn't exist until a project is created.
+Not yet designed (D-162). The initial download happens on the public Messages page, not here.
 
-### Default layout (`?layout=default`) — Synced
-The `?layout=default` variant of the public messages page was synced in a prior session with the same toolbar, slideout, and right column changes as StepsLayout.
+### Playbook Flows — Other Categories
+Only `appointments` has flow data in `PLAYBOOK_FLOWS`. Structure ready for verification, orders, support, etc. (Backlogged)
 
 ---
 
@@ -88,56 +102,54 @@ The `?layout=default` variant of the public messages page was synced in a prior 
 
 1. **Delete `.next` before every dev server start.** Always: `rm -rf prototype/.next` then restart. Port 3001.
 
-2. **Messages tab `categoryId`** derives from `state.selectedCategory`, falling back to `"appointments"`. Fine for prototype — production reads from actual app record.
+2. **DECISIONS.md now has 222 decisions** (D-01 through D-222).
 
-3. **`isToolOpen` state is in `AppMessagesPage`** — toggle button and panel in same component. `ToolPanel` manages its own internal state.
+3. **Timeline references cleared in prototype** — Zero instances of "2–3 weeks" remain in `.tsx` files. CLAUDE.md platform constraints and internal docs still reference the old timeline (intentionally not updated this session).
 
-4. **No Untitled UI base components in prototype** — plain Tailwind + semantic color tokens only.
+4. **App layout restructured (D-221)** — Outer wrapper is full-width. App identity, tab bar content, and page content each have their own `mx-auto max-w-5xl px-6` container. Child pages can break out to full viewport width.
 
-5. **`ShieldCheck` does NOT exist** in `@untitledui/icons` — use `ShieldTick`.
+5. **Playbook gray band uses viewport trick** — `relative left-1/2 -ml-[50vw] w-screen` on the app Messages page. Works but may cause horizontal scrollbar issues if `overflow-x: hidden` is not set on a parent. Watch for this.
 
-6. **"Appointments" pill in layout.tsx is hardcoded** — needs to be dynamic for multi-category.
+6. **`controlsSlot` prop on PlaybookSummary** — Only used on app Messages page. Public page version doesn't pass it. The prop is `React.ReactNode | undefined`.
 
-7. **`expandedCardId` state exists in 3 places** — `AppMessagesPage`, `StepsLayout` (internal), and `PublicMessagesPage`. Each manages its own "only one expanded at a time" scope independently.
+7. **AiCommandsGrid still defined** in app Messages page but no longer rendered. Could be cleaned up. Retained in case it's needed elsewhere.
 
-8. **Marketing section scroll targets** — Three different `id` attributes: `marketing-section` (apps page), `marketing-section-steps` (sms StepsLayout), `marketing-section-default` (sms default layout).
+8. **How it works modal content is hardcoded** — What You Get cards, pricing cards, and FAQ are duplicated between the modal and their source pages. If pricing changes, update in both places.
 
-9. **`hasDownloaded` state is component-level** — Post-download AI prompts band on public messages page resets on navigation/refresh. Production should persist this.
+9. **"Appointments" pill in layout.tsx is still hardcoded** — Needs to be dynamic for multi-category.
 
-10. **`InteractiveToolSelector` used in 2 places** — Inside files-only confirmation modal AND post-download AI prompts band. Both are independent instances.
+10. **Orphaned files still on disk** — `prototype/components/dashboard/` and `prototype/app/c/` are safe to delete.
 
-11. **`showPersonalize` state exists in 3 places** — `AppMessagesPage`, `StepsLayout`, and `PublicMessagesPage` default layout. Each manages its own slideout instance.
+11. **`expandedCardId` state exists in 3 places** — `AppMessagesPage`, `StepsLayout` (internal), and `PublicMessagesPage`. Each manages its own scope.
 
-12. **Default view mode is `"template"`** — Both pages initialize to template view, then auto-switch to preview on mount if localStorage has personalization data.
+12. **`showPersonalize` state exists in 3 places** — same pattern as expandedCardId.
 
-13. **`onRequestPersonalize` callback on CatalogCard** — Optional prop. Per-card preview toggle opens slideout when personalization is empty. Both pages pass `() => setShowPersonalize(true)`.
+13. **Overview page `changes_requested` copy may still say "Changes requested"** — The D-202 rename (Extended Review) was applied to layout.tsx but Overview page content may need alignment.
 
-14. **Orphaned files still on disk** — `prototype/components/dashboard/` and `prototype/app/c/` are safe to delete.
+14. **Settings alert phone Edit is a no-op** — Placeholder button.
 
-15. **DECISIONS.md now has 214 decisions** (D-01 through D-214).
+15. **Live key copy button disabled state** — Uses `opacity-30 cursor-not-allowed disabled` on a plain button.
 
-16. **Settings page `ConfirmModal` is local** — Reusable modal extracted within settings page (cancel plan, regen live key). Could be promoted to shared component if other pages need it.
-
-17. **Settings alert phone Edit is a no-op** — Placeholder button. In production, would navigate to account-level settings.
-
-18. **Overview page still says "Changes requested"** — The D-202 rename (Extended Review) was applied to layout.tsx status indicator and state switcher. Overview page Section 2 content for `changes_requested` state may still use old terminology — verify and align in a future session.
-
-19. **Live key copy button disabled state** — Uses `opacity-30 cursor-not-allowed disabled` on a plain button with inline SVG. When live key regeneration is implemented, swap to active `CopyButton` component with the real key value.
-
-20. **"What was submitted" in Rejected state uses mock data** — Business name, EIN, address, use case are hardcoded. Production will read from the registration record.
+16. **"What was submitted" in Rejected state uses mock data** — Business name, EIN, address, use case are hardcoded.
 
 ---
 
 ## Files Modified This Session
 
 ```
-prototype/app/apps/[appId]/settings/page.tsx   # Major: full lifecycle rebuild, typography, layout
-prototype/app/apps/[appId]/layout.tsx          # State switcher label + dot color
-prototype/components/dashboard/sample-data.ts  # sk→rk prefix, sk_live→rk_live
-DECISIONS.md                                   # D-193–D-214 appended
-PROTOTYPE_SPEC.md                              # Settings section fully rewritten
-BACKLOG.md                                     # 6 new items added
-CC_HANDOFF.md                                  # This file
+prototype/app/sms/[category]/messages/page.tsx   # Major: playbook, hero, modal, layout, copy
+prototype/app/page.tsx                           # Major: hero, logos, pricing cards
+prototype/app/sms/[category]/page.tsx            # Copy: subhead, pricing, What You Get cards
+prototype/app/apps/[appId]/messages/page.tsx     # Major: playbook port, gray band, layout
+prototype/app/apps/[appId]/layout.tsx            # Layout: full-width tab bar, container restructure
+prototype/app/apps/[appId]/overview/page.tsx     # Copy: timeline refs → days
+prototype/app/apps/[appId]/settings/page.tsx     # Copy: timeline ref → days
+prototype/components/dashboard/shared.tsx        # Copy: timeline ref removed
+docs/superpowers/specs/2026-03-23-playbook-summary-design.md  # New: design spec
+DECISIONS.md                                     # D-215–D-222 appended
+PROTOTYPE_SPEC.md                                # Multiple sections updated
+BACKLOG.md                                       # 4 new items
+CC_HANDOFF.md                                    # This file
 ```
 
 ---
@@ -146,8 +158,8 @@ CC_HANDOFF.md                                  # This file
 
 1. Differentiate Messages tab Approved state (read-only personalization per D-159)
 2. Align Overview page "changes_requested" copy with D-202 ("Extended Review" language)
-3. Design "Signed up, pre-download" Messages page state (D-162 — critical conversion moment)
-4. Registration form with live message preview (D-161)
+3. Add playbook flows for other categories (verification, orders, support)
+4. Post-download playbook variant (expanded prompt, prerequisites, copy button)
 5. Delete orphaned `/c/` routes and `components/dashboard/` files
 6. Make "Appointments" pill dynamic in layout.tsx
 7. Build /test usability instrument (D-200)
