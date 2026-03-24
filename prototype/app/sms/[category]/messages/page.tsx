@@ -15,6 +15,7 @@ import {
   ArrowDown,
   Code02,
   Expand06,
+  CheckCircle,
 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
@@ -897,12 +898,17 @@ function StepsLayout({
               {categoryLabel}
             </span>
           </div>
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-              Appointment messages, ready to send.
-            </h1>
+          <div className="mt-4 sm:flex sm:items-start sm:justify-between sm:gap-4">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+                Appointment messages, ready to send.
+              </h1>
+              <p className="mt-3 text-base text-text-tertiary max-w-2xl">
+                Everything your AI coding tool needs to add SMS — in two files.
+              </p>
+            </div>
             {/* Desktop CTA — hidden on mobile */}
-            <div className="hidden sm:flex sm:flex-col sm:items-end shrink-0">
+            <div className="hidden sm:flex sm:flex-col sm:items-end shrink-0 mt-1">
               <button
                 type="button"
                 onClick={() => setShowDownloadModal(true)}
@@ -911,16 +917,9 @@ function StepsLayout({
                 <Download01 className="size-4" />
                 Download RelayKit
               </button>
-              <div className="mt-2 text-right">
-                <p className="text-xs text-text-tertiary">Free to build and test. $199 + $19/mo when you go live.</p>
-                <p className="text-xs text-text-tertiary">No lock-in. Your code is yours.</p>
-                <p className="mt-1 text-xs text-text-tertiary">You&apos;ll get two files and a sandbox API key. Drop them into your AI tool and start building.</p>
-              </div>
+              <p className="mt-2 text-sm text-text-tertiary text-right">Free to build and test. No lock-in.</p>
             </div>
           </div>
-          <p className="mt-3 text-base text-text-tertiary max-w-2xl">
-            Everything your AI coding tool needs to add SMS — in two files.
-          </p>
 
           {/* Logo row */}
           <div className="mt-8 flex items-center gap-5">
@@ -936,6 +935,10 @@ function StepsLayout({
             ))}
           </div>
 
+          <p className="mt-5 text-sm text-text-tertiary">
+            Free sandbox, no credit card. $199 + $19/mo when you&apos;re ready to go live.<br />You&apos;ll get two files and a sandbox API key.
+          </p>
+
           {/* Mobile CTA — after logos, full width */}
           <div className="sm:hidden mt-6">
             <button
@@ -946,18 +949,14 @@ function StepsLayout({
               <Download01 className="size-4" />
               Download RelayKit
             </button>
-            <div className="mt-2 text-center">
-              <p className="text-xs text-text-tertiary">Free to build and test. $199 + $19/mo when you go live.</p>
-              <p className="text-xs text-text-tertiary">No lock-in. Your code is yours.</p>
-              <p className="mt-1 text-xs text-text-tertiary">You&apos;ll get two files and a sandbox API key. Drop them into your AI tool and start building.</p>
-            </div>
+            <p className="mt-2 text-sm text-text-tertiary text-center">Free to build and test. No lock-in.</p>
           </div>
 
           {/* How it works link */}
           <button
             type="button"
             onClick={() => setShowHowItWorks(true)}
-            className="mt-5 inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+            className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
           >
             <Expand06 className="size-4" />
             How it works
@@ -979,7 +978,7 @@ function StepsLayout({
             </button>
           </div>
           <div className="mx-auto max-w-4xl px-6 py-12">
-            <h2 className="text-2xl font-bold text-text-primary text-center">How it works</h2>
+            <h1 className="text-3xl font-bold tracking-tight text-text-primary text-center sm:text-4xl">How it works</h1>
             <p className="mt-3 text-base text-text-tertiary text-center max-w-2xl mx-auto">
               Your AI coding tool builds the integration. RelayKit handles the carriers.
             </p>
@@ -1003,22 +1002,78 @@ function StepsLayout({
               </div>
             </div>
 
-            {/* Why registration matters */}
-            <div className="mt-16">
-              <p className="text-center text-sm font-semibold text-text-brand-secondary">Why registration matters</p>
-              <h3 className="mt-2 text-center text-xl font-bold text-text-primary">Carriers require it. We handle it.</h3>
-              <div className="mt-8 space-y-4">
-                {[
-                  { q: "What is 10DLC?", a: "10DLC (10-Digit Long Code) is the carrier-mandated registration system for business SMS. Without it, your messages get filtered, throttled, or blocked entirely." },
-                  { q: "Why can\u2019t I just send texts from Twilio?", a: "You can — but unregistered traffic gets heavily filtered. Carriers treat unregistered numbers as potential spam. Registration is what makes your traffic trusted." },
-                  { q: "What does RelayKit handle?", a: "Brand verification with The Campaign Registry, campaign registration with carriers, compliance site hosting, ongoing compliance monitoring, and the proxy that enforces rules on every message." },
-                ].map((item) => (
-                  <div key={item.q} className="rounded-xl border border-border-secondary p-5">
-                    <h4 className="text-sm font-semibold text-text-primary">{item.q}</h4>
-                    <p className="mt-2 text-sm text-text-tertiary">{item.a}</p>
+          </div>
+
+          {/* Pricing — full-width gray band */}
+          <div className="mt-16 bg-bg-secondary py-12">
+            <div className="mx-auto max-w-4xl px-6">
+              <p className="text-center text-sm font-semibold text-text-brand-secondary">Simple pricing</p>
+              <h3 className="mt-1 text-center text-xl font-bold text-text-primary">Free to build. Pay when you go live.</h3>
+              <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
+                {/* Free card */}
+                <div className="flex flex-col rounded-xl border border-border-primary bg-bg-primary p-6">
+                  <h4 className="text-lg font-bold text-text-primary">Free</h4>
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-text-primary">$0</span>
+                    <span className="text-sm text-text-tertiary">forever</span>
                   </div>
-                ))}
+                  <p className="mt-3 text-sm text-text-tertiary">Build and test your SMS integration. No credit card, no time limit.</p>
+                  <ul className="mt-5 flex flex-col gap-3">
+                    {["Test API key and sandbox phone number", "Pre-written messages for your use case", "Setup instructions your AI coding tool can follow", "Works with Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, and others"].map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-base text-text-secondary">
+                        <CheckCircle className="size-4 shrink-0 text-fg-brand-primary mt-1" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                {/* Go live card */}
+                <div className="flex flex-col rounded-xl border border-border-primary bg-bg-primary p-6">
+                  <h4 className="text-lg font-bold text-text-primary">Go live</h4>
+                  <div className="mt-3">
+                    <span className="text-3xl font-bold text-text-primary">$199</span>
+                    <span className="text-sm text-text-tertiary ml-1">to register</span>
+                    <span className="text-sm text-text-tertiary mx-1.5">+</span>
+                    <span className="text-3xl font-bold text-text-primary">$19</span>
+                    <span className="text-sm text-text-tertiary">/mo</span>
+                  </div>
+                  <p className="mt-3 text-sm text-text-tertiary">Real messages to real users. Registration approved in days, not weeks.</p>
+                  <ul className="mt-5 flex flex-col gap-3">
+                    {[
+                      "Carrier registration handled for you \u2014 approved in days",
+                      "$49 to register. $150 only after you\u2019re approved. Full refund if not.",
+                      "500 messages included per month",
+                      "Dedicated phone number",
+                      "Compliance monitoring and drift detection included",
+                      "Need more messages? $15 per 1,000. Scales with usage.",
+                    ].map((item) => (
+                      <li key={item} className="flex items-start gap-2 text-base text-text-secondary">
+                        <CheckCircle className="size-4 shrink-0 text-fg-brand-primary mt-1" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
+              <p className="mt-4 text-center text-xs text-text-tertiary">Volume pricing available above 5,000 messages</p>
+            </div>
+          </div>
+
+          {/* Why registration matters */}
+          <div className="mx-auto max-w-4xl px-6 mt-16">
+            <p className="text-center text-sm font-semibold text-text-brand-secondary">Why registration matters</p>
+            <h3 className="mt-2 text-center text-xl font-bold text-text-primary">Carriers require it. We handle it.</h3>
+            <div className="mt-8 space-y-4">
+              {[
+                { q: "What is 10DLC?", a: "10DLC (10-Digit Long Code) is the carrier-mandated registration system for business SMS. Without it, your messages get filtered, throttled, or blocked entirely." },
+                { q: "Why can\u2019t I just send texts from Twilio?", a: "You can — but unregistered traffic gets heavily filtered. Carriers treat unregistered numbers as potential spam. Registration is what makes your traffic trusted." },
+                { q: "What does RelayKit handle?", a: "Brand verification with The Campaign Registry, campaign registration with carriers, compliance site hosting, ongoing compliance monitoring, and the proxy that enforces rules on every message." },
+              ].map((item) => (
+                <div key={item.q} className="rounded-xl border border-border-secondary p-5">
+                  <h4 className="text-sm font-semibold text-text-primary">{item.q}</h4>
+                  <p className="mt-2 text-sm text-text-tertiary">{item.a}</p>
+                </div>
+              ))}
             </div>
 
             <div className="mt-12 text-center">
