@@ -108,49 +108,46 @@ docs/                     # PRDs (reference only, not deployed)
 ## Build Discipline
 - Update PROGRESS.md after every commit — check off completed items, move "In Progress" forward
 
-## DECISIONS.md Protocol
+## DECISIONS Protocol
 
-`DECISIONS.md` is the authoritative log of every material product, architecture, UX, legal, and pricing decision made on this project. It is the single source of truth when something feels ambiguous.
+### Two-file system
+- **DECISIONS.md** — Active decisions (D-84+) with a compact index of archived decisions (D-01–D-83). Read this at every session start.
+- **DECISIONS_ARCHIVE.md** — Full text of D-01–D-83. Only read when Joel specifically directs you to check a decision in this file.
 
-### When Joel types `DECISIONS CHECK` at the start of a session:
-1. Read `DECISIONS.md` in full before reading any PRD or writing any code
-2. Confirm back: `"DECISIONS.md read. [N] decisions loaded. Ready to proceed."`
-3. Keep all entries active in working memory for the duration of the session
+### Session start
+When you see `DECISIONS CHECK`, read these three files in order:
+1. DECISIONS.md — confirm total decision count (archived index range + active entries)
+2. CC_HANDOFF.md — summarize what was completed, what's in progress, and gotchas
+3. PROTOTYPE_SPEC.md — acknowledge which screens are stable vs. in progress
 
-### During a session — before implementing anything that touches:
-- Architecture or data model
-- Pricing or billing logic
-- UX copy or status language
-- Compliance rules or enforcement logic
-- Registration pipeline behavior
-- Phase 2 scope boundaries
+Do NOT read DECISIONS_ARCHIVE.md at session start. It will be loaded on demand.
 
-...check DECISIONS.md for relevant entries first.
+### Before implementing
+Check DECISIONS.md (active section) before building anything that touches:
+- User-facing copy (D-31–D-39 index entries — if you need the full text, ask Joel or check the archive)
+- Data model or schema
+- Registration pipeline
+- Pricing or Stripe
+- Dashboard layout or navigation
 
-### When a conflict is detected:
-Stop immediately and surface it explicitly before writing any code:
+### When you encounter a conflict
+If what you're about to build contradicts a decision:
+⚠ DECISION CONFLICT: This contradicts D-[number]. Proceeding would mean [X]. Confirm override before I continue.
 
-> `⚠ DECISION CONFLICT: This contradicts D-[number] ("[decision title]"). The existing decision says [X]. What you've asked for would mean [Y]. Do you want to override D-[number], or should I proceed differently?`
-
-Wait for Joel to confirm before continuing. If Joel confirms an override, note it as a new decision entry.
-
-### When a new decision is made during a session:
-Append it to `DECISIONS.md` under `## New This Session` using this format:
-
-```
+### When a new decision is made
+Append to DECISIONS.md immediately. Format:
 **D-[next number] — [Title]** (Date: YYYY-MM-DD)
-[One paragraph: the decision, the reason, alternatives considered if any, files affected.]
-```
+[Decision text, reason, alternatives if any.]
+_Affects: [files/areas]._
 
-Do this at the moment the decision is confirmed — not as a batch at session end.
+Never batch decisions to session end. Append the moment Joel confirms a direction.
 
-### What counts as a new decision:
-- Any architectural choice not already in DECISIONS.md
-- Any pricing or scope change
-- Any copy rule or vocabulary constraint
-- Any explicit "we won't do X" or "we'll always do Y"
-- Any Phase 2 deferral that wasn't already listed in D-43
-- Any override of an existing DECISIONS.md entry
+### Session close-out
+When Joel says "session close-out":
+1. Commit all working code
+2. Append any unrecorded decisions to DECISIONS.md
+3. Update PROTOTYPE_SPEC.md for screens that changed
+4. Write CC_HANDOFF.md (overwrite) with: commits, completed work, in-progress work, gotchas, modified files, suggested next tasks
 
 ## UX & Copy Rules — MANDATORY
 **Before writing any user-facing strings** (UI labels, status text, error messages, email subjects/bodies, onboarding copy, empty states, button text, helper text, toast notifications) — read `docs/V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md` in full and apply:
