@@ -337,6 +337,88 @@ Heading: "API keys." Sub-copy: "Your AI coding tool reads this key from your Rel
 
 ---
 
+## Admin Dashboard (D-234)
+
+Operator/admin dashboard at `/admin` — separate from customer-facing app. Same design system but distinct layout and context. All mock data, no backend.
+
+### Admin Layout — `/admin/layout.tsx`
+**File:** `prototype/app/admin/layout.tsx`
+**Status:** Stable
+
+**Sidebar:** 240px fixed width, `bg-gray-900` dark background, white text. Shield icon + "RelayKit Admin" header with border-b separator. Four nav links with active state highlighting (bg-gray-800): Control Room, Registrations, Customers, Revenue. "View as customer →" footer link to `/apps`.
+
+**Main content:** `flex-1` with `bg-bg-primary`, `max-w-6xl px-8 py-8` inner container.
+
+### Control Room — `/admin`
+**File:** `prototype/app/admin/page.tsx`
+**Status:** Stable
+
+**Header:** "Control Room" h1 + subtitle. State switcher (Normal / Crisis) top-right. Manual review toggle (D-235) — purple toggle switch, defaults to Manual (on), shows "(reviewing before submission)" when active. Independent from state switcher.
+
+**4 KPI cards** in responsive grid (`sm:grid-cols-2 lg:grid-cols-4`):
+- **Platform Compliance:** Large % in green/amber, clean/blocked/warned breakdown, trend line
+- **Active Customers:** Count, approved/sandbox/new breakdown
+- **Registrations:** Pipeline count. Manual review on: shows "X awaiting your review" in brand purple + carrier review + submitted today. Manual review off: standard pipeline counts.
+- **Revenue:** MRR figure, subscriptions/overage breakdown, trend
+
+**State switcher modes:**
+- Normal: 99.1% compliance, 23 customers, 4-5 pipeline, $2,847 MRR
+- Crisis: 94.2% compliance (amber), 2 suspended customers, 7-9 pipeline, $2,614 MRR, downward trends in red
+
+**Attention queue:** Below KPI cards. List of operator action items with severity dots (red/orange/yellow), customer name, issue description, timestamps, action links. 5 items in Normal mode, 7 in Crisis (2 additional red items). Empty state: green dot + "All clear — no items need attention."
+
+### Registration Pipeline — `/admin/registrations`
+**File:** `prototype/app/admin/registrations/page.tsx`
+**Status:** Stable
+
+**Header:** "Registration Pipeline" h1 + subtitle.
+
+**Filter pills:** Active (default, excludes Approved + Closed), Awaiting Review, In Carrier Review, Extended Review, Rejected, Closed (Declined + Abandoned), All, Approved. Count badges on each. Active pill: `bg-gray-900 text-white`.
+
+**List view:** Each registration is a clickable row with: customer name + app name, time in status, use case pill (brand purple), status pill (color-coded), action link, expand chevron.
+
+**Status colors:**
+- Awaiting review: `bg-blue-100 text-blue-700`
+- In carrier review: `bg-gray-100 text-gray-600`
+- Approved: `bg-green-100 text-green-700`
+- Rejected: `bg-red-100 text-red-700`
+- Extended review: `bg-amber-100 text-amber-700`
+- Declined / Abandoned: `bg-gray-200 text-gray-700`
+
+**Submission tracking:** `attempt` field. Status pill shows "(2nd attempt)", "(3rd attempt)" suffix.
+
+**10 mock registrations:** GlowStudio (awaiting, clean), TechRepair (awaiting, amber flag), FreshCuts (rejected 2nd attempt, red flag), PetPals (in review), YogaFlow (extended review), BookWorm (in review), QuickFix Auto (approved), MealPrep Pro (approved), CannaBliss (declined — cannabis gating), SpamKing (abandoned 3rd attempt — spam).
+
+**Expanded detail — two-column grid:**
+Left: Business Details. Editable fields (awaiting/rejected): name, address, phone, email, website — transparent inline inputs with bottom border on focus, blue dot indicator when modified. Read-only always: type, EIN.
+Right: Campaign section — use case, message type pills, editable campaign description textarea (awaiting/rejected), compliance site link.
+
+**AI pre-review (D-236) — traffic light system** (awaiting/rejected only):
+- **Green:** Single line — green circle check + "Ready for submission". No box. (GlowStudio)
+- **Amber:** Left-border callout (`border-l-amber-400 bg-amber-50`). Warning icon + one sentence. "✉ Email customer" button right-aligned. (TechRepair: website 404)
+- **Red:** Left-border callout (`border-l-red-400 bg-red-50`). Alert icon + one sentence. Gray quoted block with AI suggested fix. "✉ Email customer" (secondary) + "✦ Apply fix" (primary, writes fix to description textarea) right-aligned. (FreshCuts: "same-day availability" flagged as promotional, suggests reframing as waitlist-triggered)
+
+**Carrier rejection reason:** Red callout (`bg-red-50 border border-red-200`) above AI pre-review for rejected registrations.
+
+**Sample messages:** Numbered labels ("1. Booking confirmation", "2. Appointment reminder"). Editable textareas on awaiting/rejected, read-only bubbles on other states.
+
+**Action buttons (right-aligned, three patterns):**
+- Awaiting review (green AI): "Submit to carrier" (primary) only
+- Awaiting review (amber AI): "✉ Email customer" only (in AI callout)
+- Rejected: "Resubmit to carrier" (primary) only — email is in AI callout above
+- Extended review: "✉ Email customer" + "✉ Email carrier" (both secondary with mail icons)
+
+**Terminal statuses (Declined/Abandoned):**
+- Resolution section: gray callout with reason + refund status ("$49 refunded" in green, or "Process refund →" button)
+- Email action section: expandable email preview with subject/body, "Send email" / "Cancel" buttons. Decline email: direct, respectful, specific reason. Closure email: we-tried tone, carrier feedback summary. "Not yet sent" indicator.
+
+### Placeholder Pages
+- `/admin/customers` — "Customer List — coming soon"
+- `/admin/customers/[customerId]` — "Customer Detail — coming soon"
+- `/admin/revenue` — "Revenue & Metrics — coming soon"
+
+---
+
 ## Screens Not Yet Built
 
 ### Registration Form — `/apps/[appId]/register`
@@ -416,6 +498,13 @@ prototype/
 │   ├── sms/[category]/
 │   │   ├── page.tsx                      # Category landing (appointments)
 │   │   └── messages/page.tsx             # Public messages page (steps layout default)
+│   ├── admin/
+│   │   ├── layout.tsx                    # Admin sidebar layout (dark, 240px)
+│   │   ├── page.tsx                      # Control Room (KPI cards + attention queue)
+│   │   ├── registrations/page.tsx        # Registration Pipeline (list + expandable detail)
+│   │   ├── customers/page.tsx            # Customer List (placeholder)
+│   │   ├── customers/[customerId]/page.tsx # Customer Detail (placeholder)
+│   │   └── revenue/page.tsx              # Revenue & Metrics (placeholder)
 │   ├── registration-test/page.tsx         # Test route for imported registration components
 │   └── c/[categoryId]/                   # ORPHANED — legacy catalog routes, safe to delete
 ├── components/
