@@ -51,6 +51,7 @@ interface RecentMessage {
 interface Billing {
   plan: "Free" | "Go Live";
   registrationFee: string;
+  goLiveFee: string;
   monthlyRate: string;
   periodStart: string;
   periodEnd: string;
@@ -202,6 +203,7 @@ const CUSTOMERS: Record<string, CustomerDetail> = {
     billing: {
       plan: "Go Live",
       registrationFee: "$49 paid Jan 10, 2026",
+      goLiveFee: "$150 paid Jan 18, 2026",
       monthlyRate: "$19/mo",
       periodStart: "Mar 1, 2026",
       periodEnd: "Mar 31, 2026",
@@ -239,6 +241,7 @@ const CUSTOMERS: Record<string, CustomerDetail> = {
     billing: {
       plan: "Go Live",
       registrationFee: "$49 paid Jan 22, 2026",
+      goLiveFee: "$150 paid Jan 30, 2026",
       monthlyRate: "$19/mo",
       periodStart: "Mar 1, 2026",
       periodEnd: "Mar 31, 2026",
@@ -274,6 +277,7 @@ const CUSTOMERS: Record<string, CustomerDetail> = {
     billing: {
       plan: "Go Live",
       registrationFee: "$49 paid Mar 10, 2026",
+      goLiveFee: "$150 due on approval",
       monthlyRate: "$19/mo (starts after approval)",
       periodStart: "—",
       periodEnd: "—",
@@ -306,7 +310,8 @@ const CUSTOMERS: Record<string, CustomerDetail> = {
     recentMessages: [],
     billing: {
       plan: "Free",
-      registrationFee: "—",
+      registrationFee: "N/A",
+      goLiveFee: "N/A",
       monthlyRate: "$0",
       periodStart: "—",
       periodEnd: "—",
@@ -577,6 +582,7 @@ export default function CustomerDetailPage() {
           <div className="grid grid-cols-2 gap-x-8 gap-y-1">
             <DetailRow label="Plan" value={customer.billing.plan} />
             <DetailRow label="Registration fee" value={customer.billing.registrationFee} />
+            <DetailRow label="Go-live fee" value={customer.billing.goLiveFee} />
             <DetailRow label="Monthly rate" value={customer.billing.monthlyRate} />
             <DetailRow
               label="Payment status"
