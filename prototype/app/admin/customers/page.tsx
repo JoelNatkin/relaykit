@@ -300,13 +300,13 @@ export default function CustomersPage() {
     const isActive = sortKey === sortKeyName;
     return (
       <th
-        className={`px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider cursor-pointer select-none hover:text-gray-200 transition duration-100 ease-linear ${className ?? ""}`}
+        className={`px-4 py-3 text-left text-xs font-medium text-text-tertiary uppercase tracking-wider cursor-pointer select-none hover:text-text-primary transition duration-100 ease-linear ${className ?? ""}`}
         onClick={() => handleSort(sortKeyName)}
       >
         <span className="inline-flex items-center gap-1">
           {label}
           {isActive && (
-            <span className="text-gray-300">{sortDir === "asc" ? "↑" : "↓"}</span>
+            <span className="text-text-secondary">{sortDir === "asc" ? "↑" : "↓"}</span>
           )}
         </span>
       </th>
@@ -327,14 +327,14 @@ export default function CustomersPage() {
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id)}
-            className={`px-3 py-1.5 rounded-full text-sm font-medium transition duration-100 ease-linear ${
+            className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition duration-100 ease-linear cursor-pointer ${
               filter === tab.id
-                ? "bg-white text-gray-900"
-                : "bg-gray-800 text-gray-400 hover:text-gray-200"
+                ? "bg-gray-900 text-white"
+                : "bg-gray-100 text-text-secondary hover:bg-gray-200"
             }`}
           >
             {tab.label}
-            <span className={`ml-1.5 ${filter === tab.id ? "text-gray-500" : "text-gray-500"}`}>
+            <span className={`${filter === tab.id ? "text-gray-400" : "text-text-tertiary"}`}>
               {counts[tab.id]}
             </span>
           </button>
@@ -342,10 +342,10 @@ export default function CustomersPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-x-auto">
+      <div className="rounded-lg border border-gray-200 overflow-x-auto">
         <table className="w-full min-w-[900px]">
           <thead>
-            <tr className="border-b border-gray-700">
+            <tr className="border-b border-gray-200 bg-gray-50">
               <SortHeader label="Customer" sortKeyName="name" />
               <SortHeader label="Status" sortKeyName="status" />
               <SortHeader label="Use case" sortKeyName="useCase" />
@@ -364,7 +364,7 @@ export default function CustomersPage() {
                   <tr
                     key={c.id}
                     onClick={() => router.push(`/admin/customers/${c.id}`)}
-                    className="border-b border-gray-700/50 hover:bg-gray-700/40 cursor-pointer transition duration-100 ease-linear"
+                    className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition duration-100 ease-linear"
                   >
                     {/* Customer name + app */}
                     <td className="px-4 py-3">
