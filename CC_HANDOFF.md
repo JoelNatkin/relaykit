@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-24 (messages expansion, flow diagram overhaul, registration component import)
+**Date:** 2026-03-25 (category page scope, Overview restructure, registration form flow, review simplification, pricing updates)
 **Branch:** main
 
 ---
@@ -7,83 +7,93 @@
 ## Commits This Session
 
 ```
-2d63a63  feat: import intake wizard components from production — scope advisory, business details form, review & confirm with all validation and field logic preserved
+9182d1d  feat: category page registration scope, Overview restructure (compliance card, simplified sidebar), registration form flow, review page simplification, pricing updates, copy refinements across all pages
 ```
-
-This single commit contains all session work (messages, flow diagram, logo fix, registration import, dev route).
 
 ---
 
 ## What We Completed
 
-### Messages Expanded to 6 (D-223)
-- Added "No-show follow-up" and "Pre-visit instructions" to appointments category in `messages.ts` (tier: `also_covered`, with all 3 style variants)
-- Reordered to chronological appointment lifecycle: Booking confirmation → Appointment reminder → Pre-visit instructions → Reschedule notice → No-show follow-up → Cancellation notice
-- Each card now displays a numbered index (1–6) in brand purple via new `cardNumber` prop on `CatalogCard`
-- Both app and public Messages pages updated
+### Decisions D-228–D-233 Recorded
+- D-228: Flow diagram strategy per category (diagram vs. sentence-only)
+- D-229: Orders flow diagram shape (linear + branch tags)
+- D-230: RegistrationScope on category landing pages (display-only, not wizard)
+- D-231: RegistrationScope renders as two sections (covers + marketing), no negative framing
+- D-232: Twilio-only registration service rejected
+- D-233: Overview restructure — sandbox compliance card, simplified sidebar, sections removed
 
-### Flow Diagram Overhaul (D-224)
-- 6 numbered nodes matching the 6 message cards, with matching tooltips
-- All circles filled purple (24px) with white numbers — no hollow variant
-- Labels left-aligned with max-width ~90px for natural two-line wrapping
-- Native `title` attributes replaced with React hover-state CSS tooltips (white bg, shadow, positioned above circle)
-- `FlowNode` component extracted for reuse in both pages
-- `PLAYBOOK_FLOWS` data structure changed from `string[]` to `PlaybookStep[]` (label + tooltip)
+### Category Landing Page — Registration Scope (D-230, D-231)
+- New "Your registration" section with eyebrow + "What's included from day one" heading
+- Block 1: "What your registration covers" — green check items from `USE_CASES[category].included`
+- Block 2: "Need marketing messages too?" — no negative framing, two example message cards (promotional offer, feedback request) with brand-purple variable styling
+- EIN/sole prop note added: "Note: adding a marketing campaign requires an EIN."
+- "What you get" section wrapped in full-width gray band (viewport-width CSS trick)
+- FAQ section reduced from 3 to 2 cards, body text capped at 600px
+- FAQ copy updated: "Why can't I just register myself?" and "What happens after I'm approved?"
 
-### Production Intake Wizard Imported to Prototype (D-225)
-Three production screens imported as standalone components:
+### Overview Page Restructure (D-233)
+- **Removed** "Register your app" expander (all states)
+- **Removed** "Monitor your compliance" expander (all states)
+- **Added** sandbox compliance card above Build steps — shows compliance rate (100% green or 97.2% amber), active issues with Fix → links, alert detail modal with `bg-black/50` backdrop
+- **Simplified** registration sidebar: "Ready to go live?" heading, one-sentence body, pricing "$49 to submit, $150 + $19/mo after approval", medium purple CTA button
+- Sidebar card: `bg-bg-tertiary` (neutral gray), no border, `rounded-xl p-6`
+- Grid changed from `lg:grid-cols-5` to `md:grid-cols-[1fr_320px]` — stacks at 768px not 1024px
+- SectionHeading: checkbox removed, chevron-only toggle
+- Left column capped at `max-w-[560px]`
+- Content top padding reduced from 32px to 24px (`pt-6`)
+- Mobile gap tightened from 48px to 24px
 
-**Import 1 — RegistrationScope** (`prototype/components/catalog/registration-scope.tsx`)
-- Scope advisory section with green check / amber X items
-- Expansion checkboxes with promo note
-- Supports controlled (`selectedExpansions` + `onExpansionsChange` props) or uncontrolled state
-- Dynamic per all 9 use cases
+### Registration Form Flow — NEW
+- **`/apps/[appId]/register`** — BusinessDetailsForm with left-aligned layout (`max-w-[640px]`), tab bar hidden
+- **`/apps/[appId]/register/review`** — ReviewConfirm, tab bar hidden, reads from sessionStorage
+- "Start registration" button on Overview links to `/apps/[appId]/register` (modal removed)
+- Info callout with `bg-indigo-50` explaining carrier comparison
+- Pre-fill state switcher (Empty / Pre-filled) with full GlowStudio mock data
+- Continue button always active — touches all fields + scrolls to top on invalid click
 
-**Import 2 — BusinessDetailsForm** (`prototype/components/registration/business-details-form.tsx`)
-- Full wholesale port with ALL field logic preserved
-- Zod validation on blur, character counters, auto-formatting (phone/EIN/URL)
-- EIN conditional path (sole prop note, business type, registered address)
-- Industry gating with 3-tier inline alerts
-- Use-case-specific fields (service_type, product_type, app_name, community_name, venue_type)
-- Untitled UI base components (Input, TextArea, Select, RadioGroup) replaced with plain HTML + Tailwind
+### Registration Form Copy Refinements
+- Business name placeholder: "Your app or brand name"
+- Business name helper: "This should match or be clearly associated with your registered business name"
+- Description label: "What does your app do?" — example: "Manages appointments and sends reminders for a hair salon"
+- Character counter removed from business name (kept on description)
+- EIN question: red asterisk added, helper text "independent developer" (not "hobbyist")
+- Sole prop note: warns about one-campaign limit, suggests EIN for marketing
+- Address label: "Business address (sole proprietors can use a home address)" inline
+- Phone label: "US mobile phone number"
+- Email helper: "We'll send your registration updates here"
+- EIN helper: "Must match the business name and address associated with this EIN"
+- Government added to business type options
+- Custom SVG chevrons on all select elements (`appearance-none` + background-image)
+- Phone helper: "We'll send a verification code to this number"
 
-**Import 3 — ReviewConfirm** (`prototype/components/registration/review-confirm.tsx`)
-- Two-column layout: details card (left) + submission preview (right)
-- Generated campaign description + 3 sample messages
-- FAQ accordion, compliance site preview, "What happens next", plan summary
-- Pricing breakdown ($199 + $19/mo = $218)
-- Monitoring consent checkbox + confirmation modal
-- Stripe checkout replaced with console.log
+### Review Page Simplification
+- Right column replaced: removed campaign description, sample messages, FAQ accordions, compliance site, what happens next, plan summary
+- New right column: compact "What happens next" card — 3 numbered steps
+- Pricing: $49 registration submission / $49 due today + post-approval details
+- CTA: "Start my registration — $49"
 
-**Supporting libs** copied to `prototype/lib/intake/`:
-- `use-case-data.ts` — 9 use case definitions with icons, scope items, expansions
-- `validation.ts` — Zod schema, formatters, US states, business type options, use-case field definitions
-- `campaign-type.ts` — campaign type determination, promo expansion detection
-- `industry-gating.ts` — 3-tier industry detection (cannabis/firearms/healthcare/legal/financial/restaurant)
-- `templates.ts` — campaign description + sample message generation, compliance slug
-
-**Test route** at `/registration-test` renders all three components in sequence with use case switcher.
-
-### Dev Bypass Route (D-226)
-- `src/middleware.ts` matcher updated to exclude `/dev/*` from Supabase session checks
-- `/dev/intake` hub page with sessionStorage seeding and direct links to all 4 wizard screens
-
-### Minor Fixes
-- Public Messages page logo circles now have `bg-white` (D-227)
-- Zod added to prototype `package.json` dependencies
+### Cross-Page Updates
+- EIN/sole prop marketing note added to all "Need marketing messages too?" sections (3 pages, 4 instances)
+- "How it works" modal: 32px bottom padding added below CTA
+- Flow diagram: mobile tooltips positioned right of circles (not above), labels vertically centered
+- AI tool setup panel: larger heading (`text-lg`), more top margin and padding
+- App layout: forces `isLoggedIn(true)` on mount
 
 ---
 
 ## In Progress / Partially Done
 
-### Registration Components — Visual Review Needed
-Components are imported and compile clean, but Joel hasn't reviewed them visually yet. The plain HTML form elements may need styling refinements to match Untitled UI's exact look.
+### Pricing Audit Needed
+$49/$150 split pricing updated on Overview sidebar and review page. Other pages (home page, category landing, public messages "How it works" modal) may still show $199. Need full audit.
 
 ### Messages Tab — Approved State
-Still not differentiated from Default. Planned per D-159: personalization fields read-only with registered values.
+Still not differentiated from Default. Planned per D-159.
 
-### Playbook Flows — Other Categories
-Only `appointments` has flow data in `PLAYBOOK_FLOWS`. Structure ready for verification, orders, support, etc.
+### Approved Dashboard Redesign (D-233)
+D-233 specifies replacing 6-card layout with message types table + 3 cards. Not built yet — separate task.
+
+### Build Steps Collapsed State (D-233)
+D-233 specifies Build steps expander collapses to "Sandbox setup complete" once all 4 steps done. Not built yet.
 
 ---
 
@@ -91,74 +101,76 @@ Only `appointments` has flow data in `PLAYBOOK_FLOWS`. Structure ready for verif
 
 1. **Delete `.next` before every dev server start.** Always: `rm -rf prototype/.next` then restart. Port 3001.
 
-2. **DECISIONS.md is a two-file system.** Active decisions (D-84–D-227) in DECISIONS.md. Archived (D-01–D-83) in DECISIONS_ARCHIVE.md.
+2. **DECISIONS.md is a two-file system.** Active decisions (D-84–D-233) in DECISIONS.md. Archived (D-01–D-83) in DECISIONS_ARCHIVE.md.
 
-3. **`PLAYBOOK_FLOWS` data shape changed.** Steps are now `{ label: string; tooltip: string }` objects, not plain strings. Both pages use the same `FlowNode` component for hover tooltips.
+3. **Registration form uses `touchAllRef` pattern.** Parent passes a `MutableRefObject<(() => void) | null>` — form populates it with a function that touches all fields and re-validates. Called on submit attempt when form is invalid.
 
-4. **CatalogCard has new `cardNumber` prop.** Optional — only passed on Messages pages. Renders brand purple number left of title.
+4. **Registration form pre-fill uses `key` prop remount.** Switching Empty/Pre-filled changes the `key` on `BusinessDetailsForm`, forcing full unmount/remount with new `initialValues`.
 
-5. **RegistrationScope supports controlled or uncontrolled mode.** Pass `selectedExpansions` + `onExpansionsChange` for controlled; omit for internal state.
+5. **Tab bar hidden for `/register` routes.** Layout checks `pathname.includes("/register")` and conditionally hides tabs. App header (name, pill, status) stays visible.
 
-6. **Registration components use plain HTML form elements.** No Untitled UI Input/Select/RadioGroup/Checkbox. Styling approximates Untitled UI but may need refinement.
+6. **Layout forces logged-in state.** `useEffect` calls `setLoggedIn(true)` on mount. Top nav always shows "Your Apps" / "Sign out" in app context.
 
-7. **Industry gating is live in the prototype form.** Typing "dental", "cannabis", "law firm" etc. in the business description will trigger gate alerts. This is intentional — it's ported behavior.
+7. **Messages page gray band offset changed.** Layout `pt-8` → `pt-6`, so Messages page `-mt-8` → `-mt-6` to keep flush with tab bar.
 
-8. **`/registration-test` is a dev-only route.** Not linked from nav. Switch use cases with the dropdown to see different field sets.
+8. **Registration components use plain HTML form elements.** No Untitled UI Input/Select. Custom SVG chevrons via `selectClass()` helper (`appearance-none` + background-image).
 
-9. **`/dev/intake` route bypasses middleware.** The `dev/` prefix is excluded from the Supabase session matcher. Don't put production routes under `/dev/`.
+9. **Review page reads from sessionStorage key `relaykit_registration`.** If no data found, shows fallback with link back to form.
 
-10. **Prototype now depends on `zod`.** Added to `prototype/package.json`.
+10. **Pricing is $49/$150 split (D-193).** Review page shows $49 due today. Overview sidebar shows "$49 to submit, $150 + $19/mo after approval". Other public pages may still show $199 — audit needed.
 
-11. **6 messages now render on both Messages pages.** The `coreMessages` filter (`tier !== "expansion"`) picks up all 6 non-expansion messages automatically.
+11. **Orphaned files still on disk** — `prototype/components/dashboard/` and `prototype/app/c/` are safe to delete.
 
-12. **Orphaned files still on disk** — `prototype/components/dashboard/` and `prototype/app/c/` are safe to delete.
-
-13. **Overview page `changes_requested` copy may still say "Changes requested"** — D-202 rename (Extended Review) may need alignment.
-
-14. **"Appointments" pill in layout.tsx is still hardcoded** — needs to be dynamic for multi-category.
+12. **"Appointments" pill in layout.tsx is still hardcoded** — needs to be dynamic for multi-category.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# Messages & flow diagram
-prototype/data/messages.ts                              # 2 new messages, reordered
-prototype/components/catalog/catalog-card.tsx            # cardNumber prop
-prototype/app/apps/[appId]/messages/page.tsx             # 6-node flow, numbered cards
-prototype/app/sms/[category]/messages/page.tsx           # 6-node flow, numbered cards, logo bg-white
+# Decisions
+DECISIONS.md                                              # D-228 through D-233
 
-# Registration import
-prototype/components/catalog/registration-scope.tsx      # NEW — scope advisory
-prototype/components/registration/business-details-form.tsx  # NEW — business details form
-prototype/components/registration/review-confirm.tsx     # NEW — review & confirm
-prototype/lib/intake/use-case-data.ts                    # NEW — use case definitions
-prototype/lib/intake/validation.ts                       # NEW — Zod schemas
-prototype/lib/intake/campaign-type.ts                    # NEW — campaign type logic
-prototype/lib/intake/industry-gating.ts                  # NEW — industry detection
-prototype/lib/intake/templates.ts                        # NEW — template generation
-prototype/app/registration-test/page.tsx                 # NEW — test route
-prototype/package.json                                   # zod dependency added
-prototype/package-lock.json                              # lockfile
+# Category landing page
+prototype/app/sms/[category]/page.tsx                     # Registration scope section, FAQ update, gray band, copy
 
-# Production dev route
-src/middleware.ts                                        # /dev/* excluded from matcher
-src/app/dev/intake/page.tsx                              # NEW — dev intake hub
+# Public messages page
+prototype/app/sms/[category]/messages/page.tsx             # Marketing EIN note, flow diagram mobile fixes, modal padding
+
+# App layout
+prototype/app/apps/[appId]/layout.tsx                      # Tab bar hidden for /register, logged-in force, pt-6
+
+# App messages page
+prototype/app/apps/[appId]/messages/page.tsx               # Marketing EIN note, gray band -mt-6, tool panel spacing, flow mobile fixes
+
+# Overview page
+prototype/app/apps/[appId]/overview/page.tsx               # D-233 restructure — compliance card, simplified sidebar, sections removed
+
+# Registration form flow (NEW)
+prototype/app/apps/[appId]/register/page.tsx               # NEW — registration form page
+prototype/app/apps/[appId]/register/review/page.tsx        # NEW — review & confirm page
+
+# Registration components
+prototype/components/registration/business-details-form.tsx # Copy refinements, touchAllRef, select chevrons, validation
+prototype/components/registration/review-confirm.tsx        # Simplified right column, $49 pricing
+
+# Validation
+prototype/lib/intake/validation.ts                         # Government added to business types
 
 # Session close-out
-DECISIONS.md                                             # D-223 through D-227
-PROTOTYPE_SPEC.md                                        # Messages, flow diagram, registration specs
-CC_HANDOFF.md                                            # This file (overwritten)
+PROTOTYPE_SPEC.md                                          # Overview, category landing, registration flow, layout, file map
+CC_HANDOFF.md                                              # This file (overwritten)
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. Visual review of registration components at `/registration-test` — adjust form styling if needed
-2. Wire RegistrationScope into category landing pages (`/sms/[category]/page.tsx`)
-3. Differentiate Messages tab Approved state (read-only personalization per D-159)
-4. Align Overview page "changes_requested" copy with D-202 ("Extended Review" language)
-5. Add playbook flows for other categories (verification, orders, support)
-6. Delete orphaned `/c/` routes and `components/dashboard/` files
-7. Make "Appointments" pill dynamic in layout.tsx
+1. **Pricing audit** — search all files for "$199", "$218", "one-time setup" and update to $49/$150 split where appropriate
+2. **Approved dashboard redesign** (D-233) — message types table + 3 cards
+3. **Build steps collapsed state** — "Sandbox setup complete" row once all 4 steps done
+4. **Messages tab Approved state** (D-159) — read-only personalization with registered values
+5. **Flow diagrams for other categories** — orders (linear + branch tags), support, waitlist (D-228, D-229)
+6. **Delete orphaned files** — `/c/` routes, `components/dashboard/`
+7. **Make "Appointments" pill dynamic** in layout.tsx
+8. **Align Overview `changes_requested` copy** with D-202 ("Extended Review")

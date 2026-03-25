@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: March 20, 2026
+### Last updated: March 25, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -60,9 +60,15 @@ All data is mocked. Session context provides state management. localStorage key:
 
 **Pricing context line:** Between "See all appointment messages" CTA and "What you get" section: "Free sandbox. No credit card. $199 + $19/mo when you're ready to go live."
 
-**What you get cards (updated D-220):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself.
+**What you get cards (updated D-220):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section wrapped in full-width gray band (`bg-bg-secondary`, viewport-width CSS trick). Cards have `bg-bg-primary` to pop against gray.
 
 Below-hero message preview section with three style pills (Brand-first / Action-first / Context-first) and three sample message cards. Variable values render in `font-medium text-text-brand-tertiary`. Trigger lines use "Sent when..." format. Demonstrates anti-cookie-cutter strategy (D-91, D-106).
+
+**Registration scope section (D-230, D-231):** Between "What you get" gray band and the "Preview the full message library" CTA band. Section eyebrow "Your registration" (brand purple, centered) + heading "What's included from day one." Two sub-sections (no bounding boxes, content breathes):
+- "What your registration covers" — green `CheckCircle` items pulled from `USE_CASES[category].included`. Body text capped at `max-w-[600px]`.
+- "Need marketing messages too?" — body text explaining separate registration + two example message cards (Promotional offer, Feedback request) using the same `interpolate()` + brand-purple variable styling as hero previews. EIN note: "Note: adding a marketing campaign requires an EIN. Sole proprietor registrations are limited to one campaign."
+
+**Why registration matters FAQ:** Two cards (down from three): "Why can't I just register myself?" and "What happens after I'm approved?" Body text capped at `max-w-[600px]`.
 
 ### Public Messages Page — `/sms/[category]/messages`
 **File:** `prototype/app/sms/[category]/messages/page.tsx`
@@ -134,50 +140,58 @@ Public-facing compliance information page. Not yet fully designed.
 
 **Period selector:** "This month" dropdown, right-aligned with `ml-auto` in tab row. Only visible when Approved + on Overview page. State lives in layout.tsx — display-only, doesn't change data. (D-150)
 
-**Layout structure (D-221):** Outer wrapper is full-width (no max-w constraint). App identity in `mx-auto max-w-5xl px-6`. Tab bar: full-width `border-b` wrapper with tabs inside `mx-auto max-w-5xl px-6`. Page content in `mx-auto max-w-5xl px-6 pb-16`. This allows child pages to break out to full viewport width (e.g., Messages tab playbook gray band).
+**Layout structure (D-221):** Outer wrapper is full-width (no max-w constraint). App identity in `mx-auto max-w-5xl px-6`. Tab bar: full-width `border-b` wrapper with tabs inside `mx-auto max-w-5xl px-6`. Page content in `mx-auto max-w-5xl px-6 pt-6 pb-16`. This allows child pages to break out to full viewport width (e.g., Messages tab playbook gray band).
+
+**Tab bar hidden on registration flow:** When pathname includes `/register`, the tab bar is hidden entirely. Registration is a focused flow with its own "← Back to Overview" navigation.
+
+**Logged-in state forced:** Layout calls `setLoggedIn(true)` on mount via `useEffect`, ensuring top nav shows "Your Apps" and "Sign out" instead of logged-out version.
 
 ---
 
 ### Overview — `/apps/[appId]/overview`
 **File:** `prototype/app/apps/[appId]/overview/page.tsx` + `approved-dashboard.tsx`
-**Status:** Stable across all states
+**Status:** Stable across all states (restructured D-233)
 
-Conditional render: `isApproved ? <ApprovedDashboard /> : <ThreeSectionAccordion />`
+Conditional render: `isApproved ? <ApprovedDashboard /> : <SandboxDashboard />`
 
 #### Non-Approved States (Default, Pending, Changes Requested, Rejected)
 
-**Layout:** Two-column. Left: three-section accordion. Right: persistent sidebar card.
+**Layout:** Two-column grid `md:grid-cols-[1fr_320px]` with `gap-6 md:gap-10`. Left column max-width 560px. Stacks on mobile below `md:` breakpoint.
 
-**Three sections (D-132):**
-1. **"Build your SMS feature"** — 4-step guided onboarding (D-119)
-2. **"Register your app"** — Registration narrative + pitch (D-136)
-3. **"Monitor your compliance"** — Placeholder cards (D-137)
+**Left column — Sandbox compliance card + Build steps:**
 
-Each section has checkbox heading — unchecked when incomplete, checked when done. First incomplete section auto-expands. Completing Section 1 auto-collapses it and auto-expands Section 2.
+**Sandbox compliance card (D-233):** `rounded-xl border` card at top of left column, visible in all non-approved states. Matches Approved dashboard card style:
+- "COMPLIANCE" heading (`uppercase tracking-wide text-text-tertiary`)
+- Large metric: "100%" green (all clear) or "97.2%" amber (has issues)
+- "compliance rate" label
+- All clear: green dot + "All clear"
+- Has issues: two alert rows with red/amber dots + "Fix →" links opening detail modal (`bg-black/50` backdrop)
+- "36 messages sent in sandbox" in small gray text
+- Prototype state switcher (All clear / Has issues) wired to session context `complianceView`
 
-**Onboarding steps (Section 1):**
-1. Verify phone — framed as "What number should we text?" (D-96)
+**"Build your SMS feature" expander:** Single section with chevron toggle (no checkbox — removed). Heading row only, no badge. Content at `pl-4 pt-3` for breathing room from heading and left edge.
+
+**Onboarding steps (4 steps):**
+1. Verify phone — framed as "Where should test messages go?" (D-96)
 2. Send test message from dashboard UI
-3. Send message from own code — pre-filled Node.js script, collapsed by default showing first 4 lines (D-124). Copy button always copies full script. `to` pre-filled from Step 1, `body` from Step 2. Troubleshooting in collapsible expander (D-127). Completion button: "I got the message ✓" (D-128).
+3. Send message from own code — pre-filled Node.js script, collapsed by default. Copy button copies full script. Troubleshooting in collapsible expander (D-127). Completion button: "I got the message ✓" (D-128).
 4. Build full SMS feature using downloaded files with AI coding tool
 
 Steps unlock sequentially. Each completed step shows "Redo" link (D-133). Phone number changes in Step 1 trigger amber warnings on Steps 2 and 3.
 
-**Right column — persistent registration action card (D-135):**
-"Register your app" heading, intro paragraph, "Learn more →" link (placeholder), "Start registration →" primary CTA, pricing ($199 setup + $19/mo), refund guarantee (D-105), "We handle everything" checklist (4 items), "Takes just a few minutes" checklist (3 items). All purple checkmarks.
+**Right column — registration sidebar card:**
+Calm, persistent reminder — not a sales pitch. `rounded-xl bg-bg-tertiary p-6 md:sticky md:top-20`. No border. Content:
+- Heading: "Ready to go live?" (`text-lg font-semibold`)
+- Body: "Carrier registration takes a few days. Start now so you're live when your app is ready."
+- Pricing: "$49 to submit, $150 + $19/mo after approval" (`text-sm font-semibold`)
+- Refund: "Not approved? Full refund." (`text-sm text-text-tertiary`)
+- CTA: "Start registration →" — medium purple button (`px-4 py-2.5`), links to `/apps/[appId]/register`
+- Pending/Changes Requested/Rejected states: sidebar transforms to status tracker with vertical stepper (unchanged from prior spec)
 
-#### Default State
-Standard three-section accordion. Section 1 expanded, others collapsed.
+**Sections removed (D-233):** "Register your app" expander and "Monitor your compliance" expander removed from left column. Registration pitch lives in sidebar. Compliance visibility handled by sandbox compliance card.
 
-#### Pending State (D-140, D-141)
-Section 2 replaces info cards with narrative: bold "Your registration is submitted," paragraph, "What carriers review" collapsed expandable (4 items), keep-building nudge. Badge: brand-colored "In review" — not amber/warning.
-Right column transforms to status tracker: "Registration status" heading, badge, submitted date, timeline estimate with email notification, 6-step vertical stepper (submitted → payment → compliance site → carrier review → phone number → live), support contact (hello@relaykit.ai).
-
-#### Changes Requested State (D-144)
-Brand colors, not error colors. Resubmission is normal (~20-30%). Stepper gains "Resubmission under review" step. Left column: detail card (what flagged, what we did, what happens next).
-
-#### Rejected State (D-145)
-Badge: red "Not approved." Stepper shortened to 4 steps (red X on step 4). Refund line in green (`text-success-primary`) — "$199 refund issued." Detail card: what flagged, what this means, options. "Start new registration" loops to Default.
+#### Approved State — Operational Dashboard (D-150)
+Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 
 #### Approved State — Operational Dashboard (D-150)
 
@@ -325,11 +339,32 @@ Heading: "API keys." Sub-copy: "Your AI coding tool reads this key from your Rel
 
 ## Screens Not Yet Built
 
-### Registration Form with Live Preview
-**Status:** `[NOT BUILT]`
-**Decision refs:** D-156, D-161
+### Registration Form — `/apps/[appId]/register`
+**File:** `prototype/app/apps/[appId]/register/page.tsx`
+**Status:** Stable
+**Decision refs:** D-225, D-233
 
-Side-by-side layout: form fields on left, live message preview on right. Preview updates as developer types business name, URL, service type. Open question: how much of the form lives on this screen vs. spread across wizard steps.
+Focused registration flow — tab bar hidden, "← Back to Overview" navigation. Left-aligned, `max-w-[640px]`.
+
+**Header:** "Register your app" h2 + subhead: "We use these details to register your app with carriers. The more accurate this is, the faster you get approved."
+
+**Info callout:** `bg-indigo-50` with info icon. Two sentences about carriers comparing registration against actual messages. No bold warnings.
+
+**Form:** `BusinessDetailsForm` component with `useCase="appointments"`. Email pre-filled with `dev@glowstudio.com`. Prototype state switcher (Empty / Pre-filled) at top right — pre-filled uses full GlowStudio mock data. Form remounts via `key` prop when switching.
+
+**Continue button:** Always active (never disabled). On click: if valid, stores form data in sessionStorage and navigates to review. If invalid, touches all fields (showing inline errors) and scrolls to top. Uses `touchAllRef` callback from form component.
+
+**Copy refinements:** Business name placeholder "Your app or brand name", description example "Manages appointments and sends reminders for a hair salon", EIN helper "Must match the business name and address associated with this EIN", phone label "US mobile phone number", sole prop address label "Business address (sole proprietors can use a home address)" inline. Custom SVG chevrons on all select elements (`appearance-none` + background-image).
+
+### Registration Review — `/apps/[appId]/register/review`
+**File:** `prototype/app/apps/[appId]/register/review/page.tsx`
+**Status:** Stable
+
+Tab bar hidden. "← Back to business details" navigation. Reads form data from sessionStorage.
+
+**Two-column layout:** Left: "Your details" card with business info rows + Edit button (navigates back to form). Right: compact "What happens next" card — three numbered steps (submit to carriers, get live key + number, swap sandbox for live).
+
+**Bottom:** Pricing breakdown: "Registration submission $49 / Due today $49". Below: "After approval, pay $150 + $19/mo to activate your live API key and dedicated phone number. 500 messages included monthly. Additional messages $15 per 1,000. Not approved? Full refund." Monitoring consent checkbox. CTA: "Start my registration — $49".
 
 ### Compliance Modal Revision
 **Status:** `[NEEDS REVISION]`
@@ -339,18 +374,12 @@ Current "Content blocked" modal has "Fix it with AI" section with copyable promp
 ### Registration Components — `/registration-test`
 **Files:** `prototype/components/catalog/registration-scope.tsx`, `prototype/components/registration/business-details-form.tsx`, `prototype/components/registration/review-confirm.tsx`
 **Test route:** `prototype/app/registration-test/page.tsx`
-**Status:** `[IMPORTED — VISUAL REVIEW NEEDED]`
+**Status:** `[INTEGRATED INTO REGISTRATION FLOW]`
 **Decision refs:** D-225
 
-Three production intake wizard screens imported as standalone components. All Zod validation, industry gating, conditional field logic, and error handling preserved. Untitled UI base components replaced with plain HTML + Tailwind. No Supabase/Stripe — mock data, console.log for checkout.
+Components now integrated into `/apps/[appId]/register` and `/apps/[appId]/register/review` routes. Test route at `/registration-test` still available for standalone testing.
 
-**RegistrationScope:** Scope advisory section — "What your registration covers" (green checks), "What's not included" (amber X, flips to green when expansion selected), expansion checkboxes. Dynamic per use case. Controlled or uncontrolled expansion state.
-
-**BusinessDetailsForm:** Full business details form. Two fieldset sections (Your business / Contact information). Conditional EIN/sole prop path. Industry gating with 3-tier inline alerts (advisory/waitlist/blocked). Use-case-specific fields. Character counters. Auto-formatting (phone, EIN, URL). Zod validation on blur.
-
-**ReviewConfirm:** Two-column review. Left: business details summary with Edit button. Right: generated campaign description, 3 sample messages, FAQ accordion (3 questions), compliance site preview, "What happens next" (4 steps), plan summary. Below: pricing breakdown ($199 + $19/mo = $218), monitoring consent checkbox, "Start my registration" button with confirmation modal.
-
-**Supporting libs:** `prototype/lib/intake/` — use-case-data.ts, validation.ts, campaign-type.ts, industry-gating.ts, templates.ts. Pure logic, no component deps.
+**Supporting libs:** `prototype/lib/intake/` — use-case-data.ts, validation.ts (Government added to business types), campaign-type.ts, industry-gating.ts, templates.ts. Pure logic, no component deps.
 
 ---
 
@@ -374,12 +403,15 @@ prototype/
 │   ├── apps/
 │   │   ├── page.tsx                      # Your Apps (project list)
 │   │   └── [appId]/
-│   │       ├── layout.tsx                # App shell (name, pill, tabs, state switchers, period selector)
+│   │       ├── layout.tsx                # App shell (name, pill, tabs, state switchers, logged-in force)
 │   │       ├── page.tsx                  # Redirects to /overview
 │   │       ├── overview/
-│   │       │   ├── page.tsx              # Conditional: approved dashboard OR three-section accordion
+│   │       │   ├── page.tsx              # Sandbox dashboard (compliance card + build steps + sidebar)
 │   │       │   └── approved-dashboard.tsx # Full 3×2 card grid (Approved state)
 │   │       ├── messages/page.tsx         # [IN PROGRESS] — state-based rendering needed
+│   │       ├── register/
+│   │       │   ├── page.tsx              # Registration form (BusinessDetailsForm)
+│   │       │   └── review/page.tsx       # Review & confirm (ReviewConfirm)
 │   │       └── settings/page.tsx         # 600px, 5 sections, full lifecycle state differentiation
 │   ├── sms/[category]/
 │   │   ├── page.tsx                      # Category landing (appointments)
@@ -421,3 +453,5 @@ prototype/
 | Compliance modal "Fix it with AI" generates risky prompts | Needs revision | PM_HANDOFF item 2 |
 | Bar thickness 8px consistency across row 2 cards | May need verification | PM_HANDOFF |
 | Overview page `changes_requested` copy may still say "Changes requested" | Needs alignment with D-202 | CC_HANDOFF gotcha #18 |
+| Registration form pre-fill: "Pre-filled" state may not auto-validate EIN path fields | Touch-all ref validates on click, but initial mount may not trigger | Register page |
+| Pricing inconsistency: public pages may still show $199 in some places | Need audit of all pricing references | D-193, D-196 |
