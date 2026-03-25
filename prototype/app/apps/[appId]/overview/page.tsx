@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight, MessageXCircle, ClipboardCheck, ShieldTick, BellRinging03, MessageCheckCircle, SlashCircle01, SearchRefraction, AlertTriangle } from "@untitledui/icons";
+import { useParams } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import ApprovedDashboard from "./approved-dashboard";
 
@@ -226,83 +226,24 @@ function getSnippetPreview() {
   },`;
 }
 
-/* ── Section checkbox ── */
-
-function SectionCheckbox({ checked }: { checked: boolean }) {
-  if (checked) {
-    return (
-      <div className="flex items-center justify-center w-5 h-5 rounded border-2 border-fg-success-primary bg-bg-success-secondary shrink-0">
-        <svg className="size-3 text-fg-success-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="20 6 9 17 4 12" />
-        </svg>
-      </div>
-    );
-  }
-  return (
-    <div className="w-5 h-5 rounded border-2 border-border-primary shrink-0" />
-  );
-}
-
 /* ── Section heading row ── */
 
-function SectionHeading({ title, checked, expanded, onToggle, onCheckboxToggle, badge }: { title: string; checked: boolean; expanded: boolean; onToggle: () => void; onCheckboxToggle?: () => void; badge?: React.ReactNode }) {
+function SectionHeading({ title, expanded, onToggle, badge }: { title: string; checked?: boolean; expanded: boolean; onToggle: () => void; onCheckboxToggle?: () => void; badge?: React.ReactNode }) {
   return (
-    <div className="flex items-center gap-3 py-3">
-      <button
-        type="button"
-        onClick={(e) => { e.stopPropagation(); onCheckboxToggle?.(); }}
-        className="cursor-pointer"
+    <button
+      type="button"
+      onClick={onToggle}
+      className="w-full flex items-center gap-3 py-3 cursor-pointer group"
+    >
+      <span className="text-base font-semibold text-text-primary">{title}</span>
+      {badge}
+      <svg
+        className={`ml-auto size-4 text-text-tertiary transition duration-150 ease-linear group-hover:text-text-secondary ${expanded ? "rotate-180" : ""}`}
+        viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
       >
-        <SectionCheckbox checked={checked} />
-      </button>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="flex-1 flex items-center gap-3 cursor-pointer group"
-      >
-        <span className={`text-base font-semibold ${checked ? "text-text-secondary" : "text-text-primary"}`}>{title}</span>
-        {badge}
-        <svg
-          className={`ml-auto size-4 text-text-tertiary transition duration-150 ease-linear group-hover:text-text-secondary ${expanded ? "rotate-180" : ""}`}
-          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-        >
-          <polyline points="6 9 12 15 18 9" />
-        </svg>
-      </button>
-    </div>
-  );
-}
-
-/* ── Registration modal ── */
-
-function RegistrationModal({ open, onConfirm, onCancel }: { open: boolean; onConfirm: () => void; onCancel: () => void }) {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-overlay">
-      <div className="w-full max-w-md rounded-xl bg-bg-primary border border-border-secondary shadow-xl p-6">
-        <h2 className="text-lg font-semibold text-text-primary">Submit your registration</h2>
-        <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-          We&#39;ll submit your brand, messages, and compliance site to carriers for review. Typically approved in a few days.
-        </p>
-        <p className="mt-4 text-sm font-semibold text-text-primary">$199 one-time setup fee</p>
-        <div className="mt-6 flex items-center justify-end gap-3">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-          >
-            Confirm &amp; pay $199
-          </button>
-        </div>
-      </div>
-    </div>
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
   );
 }
 
@@ -442,7 +383,8 @@ function RegistrationStepper({ steps }: { steps: StepperStep[] }) {
 /* ── Page ── */
 
 export default function OverviewPage() {
-  const { state: sessionState, setRegistrationState } = useSession();
+  const { appId } = useParams<{ appId: string }>();
+  const { state: sessionState, setRegistrationState, setComplianceView } = useSession();
   const registrationState = sessionState.registrationState;
   const complianceView = sessionState.complianceView;
   const hasAlerts = complianceView === "has_alerts";
@@ -460,12 +402,7 @@ export default function OverviewPage() {
   const [allDone, setAllDone] = useState(false);
   const [scriptExpanded, setScriptExpanded] = useState(false);
   const [troubleshootOpen, setTroubleshootOpen] = useState(false);
-  const [showRegModal, setShowRegModal] = useState(false);
-  const [whatCarriersOpen, setWhatCarriersOpen] = useState(false);
-  const [howComplianceOpen, setHowComplianceOpen] = useState(false);
-  const [alert1Open, setAlert1Open] = useState(false);
-  const [alert2Open, setAlert2Open] = useState(false);
-  const [compliancePeriod, setCompliancePeriod] = useState("this_month");
+  const [sandboxAlertDetail, setSandboxAlertDetail] = useState<number | null>(null);
   // Track the phone number at the time each step was completed
   const [phoneAtStep2, setPhoneAtStep2] = useState("");
   const [phoneAtStep3, setPhoneAtStep3] = useState("");
@@ -473,8 +410,6 @@ export default function OverviewPage() {
   const isPending = registrationState === "pending";
   const isApproved = registrationState === "approved";
   const section1Complete = allDone || sectionOverrides.has(1);
-  const section2Complete = isApproved || sectionOverrides.has(2);
-  const section3Complete = isApproved || sectionOverrides.has(3);
   const isChangesRequested = registrationState === "changes_requested";
   const isRejected = registrationState === "rejected";
   const isInReview = isPending || isChangesRequested;
@@ -488,23 +423,13 @@ export default function OverviewPage() {
     });
   }
 
-  // Auto-expand logic
-  const defaultExpanded = isApproved ? 3 : (isInReview || isRejected) && section1Complete ? 2 : !section1Complete ? 1 : !section2Complete ? 2 : !section3Complete ? 3 : 1;
-  const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set([defaultExpanded]));
+  // Auto-expand logic — only Section 1 remains
+  const [expandedSections, setExpandedSections] = useState<Set<number>>(new Set([1]));
 
-  // React to registration state changes
+  // Keep Section 1 expanded by default
   useEffect(() => {
-    if (isApproved) {
-      setExpandedSections(new Set([3]));
-    } else if ((isInReview || isRejected) && section1Complete) {
-      setExpandedSections((prev) => {
-        const next = new Set(prev);
-        next.delete(1);
-        next.add(2);
-        return next;
-      });
-    }
-  }, [isInReview, isRejected, isApproved, section1Complete]);
+    setExpandedSections(new Set([1]));
+  }, [registrationState]);
 
   function toggleSection(s: number) {
     setExpandedSections((prev) => {
@@ -580,20 +505,139 @@ export default function OverviewPage() {
 
   return (
     <div>
-      {/* Registration confirmation modal */}
-      <RegistrationModal
-        open={showRegModal}
-        onConfirm={() => { setShowRegModal(false); setRegistrationState("pending"); }}
-        onCancel={() => setShowRegModal(false)}
-      />
 
       {/* Approved state: full dashboard replacement */}
       {isApproved ? (
         <ApprovedDashboard />
       ) : (
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+      <div className="grid grid-cols-1 gap-6 md:gap-10 md:grid-cols-[1fr_320px]">
         {/* LEFT — Sections */}
-        <div className="lg:col-span-3">
+        <div className="min-w-0 max-w-[560px]">
+
+          {/* ════════════════════════════════════════════ */}
+          {/* Sandbox compliance card (D-233)              */}
+          {/* ════════════════════════════════════════════ */}
+          {!isApproved && (
+            <div className="mb-6 rounded-xl border border-border-secondary bg-bg-primary p-5">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-text-tertiary uppercase tracking-wide">Compliance</p>
+                {/* Toggle for prototype: all clear vs has issues */}
+                <select
+                  value={hasAlerts ? "issues" : "clear"}
+                  onChange={(e) => {
+                    const view = e.target.value === "issues" ? "has_alerts" : "all_clear";
+                    // Uses the session context complianceView
+                    setComplianceView(view as "all_clear" | "has_alerts");
+                  }}
+                  className="text-xs text-text-tertiary bg-transparent border-none cursor-pointer focus:outline-none"
+                >
+                  <option value="clear">All clear</option>
+                  <option value="issues">Has issues</option>
+                </select>
+              </div>
+
+              <div className="mt-3">
+                {hasAlerts ? (
+                  <>
+                    <span className="text-3xl font-semibold text-text-warning-primary">97.2%</span>
+                    <p className="mt-1 text-sm text-text-secondary">compliance rate</p>
+                    <div className="mt-4 space-y-2.5">
+                      <div className="flex items-start gap-2 text-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-fg-error-primary shrink-0 mt-1.5" />
+                        <span className="text-text-secondary flex-1">Content blocked — promotional language in transactional message</span>
+                        <button type="button" onClick={() => setSandboxAlertDetail(0)} className="text-text-brand-secondary font-medium shrink-0 cursor-pointer hover:text-text-brand-primary transition duration-100 ease-linear">Fix &rarr;</button>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-fg-warning-primary shrink-0 mt-1.5" />
+                        <span className="text-text-secondary flex-1">Drift — appointment reminders missing specific details</span>
+                        <button type="button" onClick={() => setSandboxAlertDetail(1)} className="text-text-brand-secondary font-medium shrink-0 cursor-pointer hover:text-text-brand-primary transition duration-100 ease-linear">Fix &rarr;</button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-3xl font-semibold text-text-success-primary">100%</span>
+                    <p className="mt-1 text-sm text-text-secondary">compliance rate</p>
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-fg-success-primary" />
+                      <span className="text-sm font-semibold text-text-success-primary">All clear</span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <p className="mt-4 text-xs text-text-tertiary">36 messages sent in sandbox</p>
+            </div>
+          )}
+
+          {/* Sandbox compliance alert detail modal */}
+          {sandboxAlertDetail !== null && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+              <div className="w-full max-w-lg rounded-xl bg-bg-primary border border-border-secondary shadow-xl p-6">
+                {sandboxAlertDetail === 0 ? (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center rounded-full bg-bg-error-secondary px-2.5 py-1 text-xs font-medium text-text-error-primary">Content blocked</span>
+                      <button type="button" onClick={() => setSandboxAlertDetail(null)} className="text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer">
+                        <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">Your message:</p>
+                        <div className="mt-1.5 rounded-lg bg-bg-secondary p-3">
+                          <p className="text-sm font-mono text-text-secondary">GlowStudio: Book your next appointment this week and get 15% off! Visit glowstudio.com. Reply STOP to opt out.</p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">What triggered it:</p>
+                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">This message contains promotional language (&quot;15% off&quot;) which is outside your registered transactional use case. Promotional messages need a separate marketing campaign registration.</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">What to do:</p>
+                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">
+                          Remove promotional language from transactional messages, or register a marketing campaign to send promotional content.{" "}
+                          <Link href={`/apps/${appId}/messages`} className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">
+                            View your messages &rarr;
+                          </Link>
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center rounded-full bg-bg-warning-secondary px-2.5 py-1 text-xs font-medium text-text-warning-primary">Drift warning</span>
+                      <button type="button" onClick={() => setSandboxAlertDetail(null)} className="text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer">
+                        <svg className="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12" /></svg>
+                      </button>
+                    </div>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">Your message:</p>
+                        <div className="mt-1.5 rounded-lg bg-bg-secondary p-3">
+                          <p className="text-sm font-mono text-text-secondary">Hey, your appointment is coming up soon! Don&#39;t miss it &#128522;</p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">What triggered it:</p>
+                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">This doesn&#39;t match your registered appointment reminder format. Registered messages include the specific service type, date, and time. Casual language and emoji increase the risk of carrier filtering.</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-text-primary">What to do:</p>
+                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">
+                          Update your message template to include specific appointment details.{" "}
+                          <Link href={`/apps/${appId}/messages`} className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">
+                            View your messages &rarr;
+                          </Link>
+                        </p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* ════════════════════════════════════════════ */}
           {/* SECTION 1: Build your SMS feature           */}
@@ -601,7 +645,7 @@ export default function OverviewPage() {
           <div className="border-b border-border-secondary">
             <SectionHeading title="Build your SMS feature" checked={section1Complete} expanded={expandedSections.has(1)} onToggle={() => toggleSection(1)} onCheckboxToggle={() => toggleSectionComplete(1)} />
             {expandedSections.has(1) && (
-              <div className="pb-6 pl-8">
+              <div className="pb-6 pl-4 pt-3">
                 {/* ── STEP 1: Verify phone ── */}
                 <div className="flex gap-4">
                   <div className="flex flex-col items-center">
@@ -860,462 +904,11 @@ export default function OverviewPage() {
             )}
           </div>
 
-          {/* ════════════════════════════════════════════ */}
-          {/* SECTION 2: Register your app                */}
-          {/* ════════════════════════════════════════════ */}
-          <div className="border-b border-border-secondary">
-            <SectionHeading
-              title="Register your app"
-              checked={section2Complete}
-              expanded={expandedSections.has(2)}
-              onToggle={() => toggleSection(2)}
-              onCheckboxToggle={() => toggleSectionComplete(2)}
-              badge={isChangesRequested ? <BrandBadge>Changes requested</BrandBadge> : isPending ? <BrandBadge>In review</BrandBadge> : isApproved ? <SuccessBadge>Approved</SuccessBadge> : isRejected ? <ErrorBadge>Not approved</ErrorBadge> : undefined}
-            />
-            {expandedSections.has(2) && (
-              <div className="pb-6 pl-8">
-                {isApproved ? (
-                  <>
-                    {/* Approved: confirmation narrative */}
-                    <p className="text-sm text-text-secondary leading-relaxed">
-                      Your registration is approved. Carriers have verified your business and messages — you&#39;re cleared to send live SMS. Your dedicated phone number is active and your code works with real messages immediately. No changes needed.
-                    </p>
-
-                    <div className="mt-5 space-y-2">
-                      <p className="text-sm text-text-secondary">
-                        <span className="font-semibold text-text-primary">Phone number:</span> +1 (555) 867-5309
-                      </p>
-                      <p className="text-sm text-text-secondary">
-                        <span className="font-semibold text-text-primary">Approved:</span> March 31, 2026
-                      </p>
-                      <p className="text-sm text-text-secondary">
-                        <span className="font-semibold text-text-primary">Campaign ID:</span> C-XXXXXX
-                      </p>
-                    </div>
-                  </>
-                ) : isChangesRequested ? (
-                  <>
-                    {/* Changes Requested: narrative + detail card */}
-                    <p className="text-sm text-text-secondary leading-relaxed">
-                      <span className="font-semibold">Carriers requested a change to your registration.</span> We&#39;ve already reviewed the feedback and are updating your submission. Most resubmissions are resolved within a few business days — you don&#39;t need to do anything.
-                    </p>
-
-                    <div className="mt-5 rounded-lg border border-border-secondary p-4 space-y-4">
-                      <div>
-                        <p className="text-sm font-semibold text-text-primary">What was flagged</p>
-                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">Opt-in language on your compliance site needed a small wording adjustment to match carrier requirements.</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-text-primary">What we did</p>
-                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">We updated the compliance site language and resubmitted your registration. No changes to your code or messages.</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-text-primary">What happens next</p>
-                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">Carriers will re-review your updated submission. We&#39;ll notify you when it&#39;s approved.</p>
-                      </div>
-                    </div>
-
-                    <p className="mt-5 text-sm text-text-tertiary leading-relaxed">
-                      Your sandbox stays fully live while this is resolved. Keep building — when approved, your code works with real messages immediately.
-                    </p>
-                  </>
-                ) : isRejected ? (
-                  <>
-                    {/* Rejected: debrief narrative + detail card */}
-                    <p className="text-sm text-text-secondary leading-relaxed">
-                      <span className="font-semibold">Carriers didn&#39;t approve this registration.</span> This is uncommon — most registrations are approved on the first or second review. We&#39;ve issued a full refund of $199 to your original payment method.
-                    </p>
-
-                    <div className="mt-5 rounded-lg border border-border-secondary p-4 space-y-4">
-                      <div>
-                        <p className="text-sm font-semibold text-text-primary">What carriers flagged</p>
-                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">Your described use case didn&#39;t align with the message samples submitted. Carriers require exact consistency between your campaign description and the messages you plan to send.</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-text-primary">What this means</p>
-                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">Your sandbox is still fully functional — nothing changes with your current development. Live SMS delivery requires an approved registration.</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-text-primary">Your options</p>
-                        <p className="mt-1 text-sm text-text-secondary leading-relaxed">You can adjust your use case description and register again at any time. The process and pricing are the same. If you&#39;d like help figuring out what to change, reach out — we&#39;ll review the feedback with you.</p>
-                      </div>
-                    </div>
-
-                    <p className="mt-5 text-sm text-text-tertiary leading-relaxed">
-                      Your sandbox works indefinitely — same API, same code, no expiration. You can register again whenever you&#39;re ready.
-                    </p>
-                  </>
-                ) : isPending ? (
-                  <>
-                    {/* Pending: narrative status */}
-                    <p className="text-sm text-text-secondary leading-relaxed">
-                      <span className="font-semibold">Your registration is submitted.</span> Carriers are reviewing your business, messages, and compliance site — we handle any follow-up questions on your behalf. Most registrations are approved in a few days.
-                    </p>
-
-                    {/* Collapsible: What carriers review */}
-                    <div className="mt-4">
-                      <button
-                        type="button"
-                        onClick={() => setWhatCarriersOpen(!whatCarriersOpen)}
-                        className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition duration-100 ease-linear cursor-pointer"
-                      >
-                        <svg
-                          className={`size-4 text-text-tertiary transition duration-150 ease-linear ${whatCarriersOpen ? "rotate-90" : ""}`}
-                          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                        >
-                          <polyline points="9 18 15 12 9 6" />
-                        </svg>
-                        What carriers review
-                      </button>
-                      {whatCarriersOpen && (
-                        <div className="mt-3 space-y-3 pl-6">
-                          <div>
-                            <span className="text-sm font-semibold text-text-primary">Business identity</span>
-                            <span className="text-sm text-text-tertiary"> — Your business name, EIN, and contact details were verified and submitted to the carrier registry.</span>
-                          </div>
-                          <div>
-                            <span className="text-sm font-semibold text-text-primary">Website &amp; digital presence</span>
-                            <span className="text-sm text-text-tertiary"> — Your compliance site is live with privacy policy, terms, and opt-in documentation.</span>
-                          </div>
-                          <div>
-                            <span className="text-sm font-semibold text-text-primary">Message content &amp; use case</span>
-                            <span className="text-sm text-text-tertiary"> — Your registered messages match your selected use case. Carriers confirm they align with your campaign type.</span>
-                          </div>
-                          <div>
-                            <span className="text-sm font-semibold text-text-primary">Opt-in &amp; consent flow</span>
-                            <span className="text-sm text-text-tertiary"> — Your opt-in language and consent collection method are documented and submitted.</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Keep building prompt */}
-                    <p className="mt-5 text-sm text-text-tertiary leading-relaxed">
-                      Your sandbox stays fully live while you wait. Keep building — when approved, your code works with real messages immediately.
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    {/* Default: info cards */}
-                    <h3 className="text-lg font-bold text-text-primary">Real SMS requires registration. We make it painless.</h3>
-                    <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                      Carriers require every app that sends text messages to be registered before they&#39;ll deliver them. It&#39;s a process most developers have never heard of — and the reason most apps don&#39;t have SMS. RelayKit handles the entire registration so you can focus on building.
-                    </p>
-
-                    {/* 2x2 card grid */}
-                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
-                          <MessageXCircle className="size-5 text-fg-brand-primary" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-text-primary">Without it, messages don&#39;t arrive</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">Carriers filter unregistered SMS traffic automatically. Your sandbox works fine, but production messages get throttled, blocked, or silently dropped.</p>
-                      </div>
-                      <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
-                          <ClipboardCheck className="size-5 text-fg-brand-primary" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-text-primary">The process is a hassle</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">Carrier portals, campaign vetting forms, compliance documentation. It&#39;s not hard — it&#39;s just tedious enough that most people don&#39;t bother.</p>
-                      </div>
-                      <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
-                          <ShieldTick className="size-5 text-fg-brand-primary" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-text-primary">We handle the whole thing</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">Brand verification, campaign submission, compliance site, carrier follow-up. You answer a few questions, we take care of the rest — and you keep building while carriers review.</p>
-                      </div>
-                      <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
-                          <BellRinging03 className="size-5 text-fg-brand-primary" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-text-primary">You stay protected after approval</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">Once you&#39;re live, we monitor your messages for compliance drift and handle opt-outs automatically. If something needs attention, you hear about it before carriers do.</p>
-                      </div>
-                    </div>
-
-                    <p className="mt-6 text-sm text-text-tertiary leading-relaxed">
-                      Not ready? No worries. Your sandbox works indefinitely — same API, same code, no expiration.
-                    </p>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* ════════════════════════════════════════════ */}
-          {/* SECTION 3: Monitor your compliance          */}
-          {/* ════════════════════════════════════════════ */}
-          <div>
-            <SectionHeading
-              title="Monitor your compliance"
-              checked={section3Complete}
-              expanded={expandedSections.has(3)}
-              onToggle={() => toggleSection(3)}
-              onCheckboxToggle={() => toggleSectionComplete(3)}
-              badge={isApproved ? <SuccessBadge>Active</SuccessBadge> : undefined}
-            />
-            {expandedSections.has(3) && (
-              <div className="pb-6 pl-8">
-                {isApproved ? (
-                  <>
-                    {/* ── Approved: live compliance dashboard ── */}
-
-                    {/* Period selector */}
-                    <div className="flex justify-end mb-4">
-                      <select
-                        value={compliancePeriod}
-                        onChange={(e) => setCompliancePeriod(e.target.value)}
-                        className="text-sm text-text-tertiary bg-transparent border-none cursor-pointer focus:outline-none"
-                      >
-                        <option value="this_week">This week</option>
-                        <option value="last_7">Last 7 days</option>
-                        <option value="this_month">This month</option>
-                        <option value="last_30">Last 30 days</option>
-                      </select>
-                    </div>
-
-                    {/* Three stat cards */}
-                    <div className="grid grid-cols-3 gap-4">
-                      {/* Card 1 — Message count */}
-                      <div className="rounded-lg border border-border-secondary p-4">
-                        <p className="text-2xl font-semibold text-text-primary">1,842</p>
-                        <p className="mt-1 text-sm text-text-secondary">Messages this period</p>
-                        <p className="mt-0.5 text-sm text-text-tertiary">1,831 clean · 8 blocked · 3 warned</p>
-                      </div>
-
-                      {/* Card 2 — Status */}
-                      <div className="rounded-lg border border-border-secondary p-4">
-                        {hasAlerts ? (
-                          <>
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-fg-warning-primary" />
-                              <p className="text-lg font-semibold text-text-warning-primary">Warnings</p>
-                            </div>
-                            <p className="mt-1 text-sm text-text-tertiary">2 items need attention</p>
-                          </>
-                        ) : (
-                          <>
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-fg-success-primary" />
-                              <p className="text-lg font-semibold text-text-success-primary">All clear</p>
-                            </div>
-                            <p className="mt-1 text-sm text-text-tertiary">No issues detected</p>
-                          </>
-                        )}
-                      </div>
-
-                      {/* Card 3 — Last scanned */}
-                      <div className="rounded-lg border border-border-secondary p-4">
-                        <p className="text-lg font-semibold text-text-primary">4 min ago</p>
-                        <p className="mt-1 text-sm text-text-tertiary">Monitoring is active</p>
-                      </div>
-                    </div>
-
-                    {/* Alert cards (Has Alerts mode only) */}
-                    {hasAlerts && (
-                      <div className="mt-6 space-y-4">
-                        {/* Alert 1 — Content blocked */}
-                        <div className="rounded-lg border border-border-secondary border-l-4 border-l-fg-error-primary bg-bg-primary p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <span className="inline-flex items-center rounded-full bg-bg-error-secondary px-2 py-0.5 text-xs font-medium text-text-error-primary">Content blocked</span>
-                              <p className="mt-2 text-sm text-text-primary">A message was blocked — it contained promotional language that requires a marketing registration.</p>
-                              <p className="mt-1 text-sm text-text-tertiary">Blocked before delivery. No carrier penalty.</p>
-                            </div>
-                            <span className="text-xs text-text-tertiary shrink-0 ml-4">3 hours ago</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setAlert1Open(!alert1Open)}
-                            className="mt-2 text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-                          >
-                            {alert1Open ? "Hide details" : "View details \u2192"}
-                          </button>
-                          {alert1Open && (
-                            <div className="mt-4 space-y-4">
-                              <div>
-                                <p className="text-sm font-semibold text-text-primary">Your message:</p>
-                                <div className="mt-1.5 rounded-lg bg-bg-secondary p-3">
-                                  <p className="text-sm font-mono text-text-secondary">GlowStudio: Book your next appointment this week and get 15% off! Visit glowstudio.com. Reply STOP to opt out.</p>
-                                </div>
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-text-primary">What triggered it:</p>
-                                <p className="mt-1 text-sm text-text-secondary leading-relaxed">This message contains promotional language (&quot;15% off&quot;) which requires a separate marketing campaign registration. Your current registration covers transactional appointment messages only.</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-text-primary">What to do:</p>
-                                <p className="mt-1 text-sm text-text-secondary leading-relaxed">
-                                  Remove promotional language from transactional messages, or register a marketing campaign to send promotional content.{" "}
-                                  <Link href="/apps/glowstudio/messages" className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">
-                                    View your registered messages &rarr;
-                                  </Link>
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Alert 2 — Drift warning */}
-                        <div className="rounded-lg border border-border-secondary border-l-4 border-l-fg-warning-primary bg-bg-primary p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <span className="inline-flex items-center rounded-full bg-bg-warning-secondary px-2 py-0.5 text-xs font-medium text-text-warning-primary">Drift warning</span>
-                              <p className="mt-2 text-sm text-text-primary">Some messages are drifting from your registered appointment reminders.</p>
-                              <p className="mt-1 text-sm text-text-tertiary">Not a violation yet — worth a look.</p>
-                            </div>
-                            <span className="text-xs text-text-tertiary shrink-0 ml-4">Yesterday</span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => setAlert2Open(!alert2Open)}
-                            className="mt-2 text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-                          >
-                            {alert2Open ? "Hide details" : "View details \u2192"}
-                          </button>
-                          {alert2Open && (
-                            <div className="mt-4 space-y-4">
-                              <div>
-                                <p className="text-sm font-semibold text-text-primary">Your message:</p>
-                                <div className="mt-1.5 rounded-lg bg-bg-secondary p-3">
-                                  <p className="text-sm font-mono text-text-secondary">Hey, your appointment is coming up soon! Don&#39;t miss it &#128522;</p>
-                                </div>
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-text-primary">What triggered it:</p>
-                                <p className="mt-1 text-sm text-text-secondary leading-relaxed">This doesn&#39;t match your registered appointment reminder format. Registered messages include the specific service type, date, and time. Casual language and emoji increase the risk of carrier filtering.</p>
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold text-text-primary">What to do:</p>
-                                <p className="mt-1 text-sm text-text-secondary leading-relaxed">
-                                  Update your message template to include specific appointment details. Example: &quot;GlowStudio: Your Salon appointment is confirmed for Mar 15, 2026 at 2:30 PM. Reply STOP to opt out.&quot;{" "}
-                                  <Link href="/apps/glowstudio/messages" className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">
-                                    View your registered messages &rarr;
-                                  </Link>
-                                </p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* All Clear / shared content below stat cards or alerts */}
-                    <div className="mt-6">
-                      {!hasAlerts && (
-                        <p className="text-sm text-text-secondary leading-relaxed">
-                          Everything looks good. Your messages are within your registered use case and no compliance issues were detected this period.
-                        </p>
-                      )}
-
-                      <Link
-                        href="/apps/glowstudio/messages"
-                        className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
-                      >
-                        View your registered messages
-                        <ArrowRight className="size-3.5" />
-                      </Link>
-
-                      {/* Collapsible: How compliance works */}
-                      <div className="mt-5">
-                        <button
-                          type="button"
-                          onClick={() => setHowComplianceOpen(!howComplianceOpen)}
-                          className="flex items-center gap-2 text-sm font-medium text-text-secondary hover:text-text-primary transition duration-100 ease-linear cursor-pointer"
-                        >
-                          <svg
-                            className={`size-4 text-text-tertiary transition duration-150 ease-linear ${howComplianceOpen ? "rotate-90" : ""}`}
-                            viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                          >
-                            <polyline points="9 18 15 12 9 6" />
-                          </svg>
-                          How compliance works
-                        </button>
-                        {howComplianceOpen && (
-                          <div className="mt-3 space-y-3 pl-6">
-                            <div>
-                              <span className="text-sm font-semibold text-text-primary">Every message scanned before delivery</span>
-                              <span className="text-sm text-text-tertiary"> — RelayKit&#39;s compliance layer checks every outbound message against carrier rules before it reaches Twilio. Violations are blocked automatically.</span>
-                            </div>
-                            <div>
-                              <span className="text-sm font-semibold text-text-primary">Opt-outs enforced automatically</span>
-                              <span className="text-sm text-text-tertiary"> — When someone replies STOP, their number is blocked immediately. If you accidentally try to text them again, we block it and return an error.</span>
-                            </div>
-                            <div>
-                              <span className="text-sm font-semibold text-text-primary">Drift detection on live traffic</span>
-                              <span className="text-sm text-text-tertiary"> — We compare your outbound messages against your registered use case. If messages start drifting, you&#39;ll hear about it before carriers flag your number.</span>
-                            </div>
-                            <div>
-                              <span className="text-sm font-semibold text-text-primary">Escalation with warning</span>
-                              <span className="text-sm text-text-tertiary"> — If a pattern of issues goes unresolved, we&#39;ll pause the affected message type — not your whole account. You&#39;ll always get advance notice and a clear deadline.</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-4">
-                        <Link
-                          href="#"
-                          className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
-                        >
-                          View full message log &rarr;
-                        </Link>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* ── Non-approved: informational 2x2 cards ── */}
-                    <h3 className="text-lg font-bold text-text-primary">Your messages keep delivering. We make sure of it.</h3>
-                    <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                      RelayKit checks every message before it reaches the carrier, watches for problems after delivery, and alerts you when something needs attention — before carriers do. Every compliance feature is included. No paid tiers. No add-ons.
-                    </p>
-
-                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
-                          <MessageCheckCircle className="size-5 text-fg-brand-primary" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-text-primary">Every message checked before sending</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">We scan outbound messages against carrier rules automatically. If something would cause a problem, we catch it before it reaches your users — not after.</p>
-                      </div>
-                      <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
-                          <SlashCircle01 className="size-5 text-fg-brand-primary" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-text-primary">Opt-outs handled for you</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">When someone replies STOP, their number is blocked immediately — no code on your end. If you accidentally try to text them again, we block it and tell you why.</p>
-                      </div>
-                      <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
-                          <SearchRefraction className="size-5 text-fg-brand-primary" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-text-primary">We notice when things drift</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">As your app evolves, the messages it sends can gradually shift from what was originally approved. We spot this early and tell you what to fix — before carriers flag your number.</p>
-                      </div>
-                      <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
-                        <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-bg-brand-secondary mb-3">
-                          <AlertTriangle className="size-5 text-fg-brand-primary" />
-                        </div>
-                        <h4 className="text-sm font-semibold text-text-primary">You&#39;ll know when something needs attention</h4>
-                        <p className="mt-1.5 text-sm text-text-tertiary leading-relaxed">If we block a message or detect a problem, you hear about it — dashboard alerts, email, or text. No issues sitting quietly on a dashboard waiting for you to notice.</p>
-                      </div>
-                    </div>
-
-                    <p className="mt-6 text-sm text-text-tertiary leading-relaxed">
-                      Compliance monitoring activates after carrier registration.
-                    </p>
-                  </>
-                )}
-              </div>
-            )}
-          </div>
         </div>
 
         {/* RIGHT — Registration card */}
-        <div className="lg:col-span-2 order-first lg:order-last">
-          <div className="rounded-lg bg-bg-brand-section_subtle border border-border-secondary p-6 lg:sticky lg:top-20">
+        <div id="registration-card" className="order-first md:order-last">
+          <div className="rounded-xl bg-bg-tertiary p-6 md:sticky md:top-20">
             {isApproved ? (
               <>
                 {/* ── Approved state: completed status tracker ── */}
@@ -1426,72 +1019,22 @@ export default function OverviewPage() {
               </>
             ) : (
               <>
-                {/* ── Default state: registration pitch ── */}
-                <h3 className="text-base font-semibold text-text-primary">Register your app</h3>
+                {/* ── Default state: calm registration reminder ── */}
+                <h3 className="text-lg font-semibold text-text-primary">Ready to go live?</h3>
 
-                <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                  Carriers require SMS registration. It&#39;s a bureaucratic headache. We handle all of it. <span className="font-semibold">Approved in days, not weeks.</span>
+                <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                  Carrier registration takes a few days. Start now so you&apos;re live when your app is ready.
                 </p>
 
-                <div className="mt-4 flex items-center gap-5">
-                  <Link
-                    href="#"
-                    className="inline-flex items-center gap-1 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:text-text-brand-primary"
-                  >
-                    Learn more
-                    <ArrowRight className="size-3.5" />
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => setShowRegModal(true)}
-                    className="inline-flex items-center rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                  >
-                    Start registration
-                  </button>
-                </div>
+                <p className="mt-4 text-sm font-semibold text-text-primary">$49 to submit, $150 + $19/mo after approval</p>
+                <p className="mt-1 text-sm text-text-tertiary">Not approved? Full refund.</p>
 
-                <div className="my-5 border-t border-border-secondary" />
-
-                <p className="text-lg font-bold text-text-primary">$199 one-time setup</p>
-                <p className="mt-1 text-sm text-text-secondary">then $19/mo, includes 500 messages/month. $15 for every additional 1,000, auto scaled</p>
-                <p className="mt-2 text-sm text-text-tertiary">Not approved? Full refund.</p>
-
-                <div className="my-5 border-t border-border-secondary" />
-
-                <h4 className="text-sm font-semibold text-text-primary mb-3">We handle everything</h4>
-                <ul className="space-y-2.5">
-                  {[
-                    "Carrier registration paperwork",
-                    "Campaign vetting and submission",
-                    "Your own dedicated phone number",
-                    "Compliance monitoring after approval",
-                  ].map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm text-text-secondary">
-                      <svg className="mt-0.5 size-4 shrink-0 text-fg-brand-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="my-5 border-t border-border-secondary" />
-
-                <h4 className="text-sm font-semibold text-text-primary mb-3">Takes just a few minutes</h4>
-                <ul className="space-y-2.5">
-                  {[
-                    "Your business name",
-                    "EIN (or phone verification if you\u2019re a sole prop)",
-                    "A short description of what your app does",
-                  ].map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm text-text-secondary">
-                      <svg className="mt-0.5 size-4 shrink-0 text-fg-brand-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+                <Link
+                  href={`/apps/${appId}/register`}
+                  className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                >
+                  Start registration &rarr;
+                </Link>
               </>
             )}
           </div>

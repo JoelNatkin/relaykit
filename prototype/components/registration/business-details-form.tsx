@@ -23,7 +23,7 @@ import {
 // ---------------------------------------------------------------------------
 
 const DESCRIPTION_EXAMPLES: Record<UseCaseId, string> = {
-  appointments: "A booking platform for pet groomers",
+  appointments: "Manages appointments and sends reminders for a hair salon",
   orders: "An online store that ships handmade candles",
   verification: "A SaaS app with two-factor login",
   support: "A help desk for a home repair service",
@@ -47,6 +47,13 @@ const INPUT_INVALID =
 
 function inputClass(isInvalid: boolean) {
   return `${INPUT_BASE} ${isInvalid ? INPUT_INVALID : INPUT_VALID}`;
+}
+
+const SELECT_EXTRA =
+  "appearance-none pr-10 bg-[length:16px_16px] bg-[position:right_0.75rem_center] bg-no-repeat bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E')]";
+
+function selectClass(isInvalid: boolean) {
+  return `${inputClass(isInvalid)} ${SELECT_EXTRA}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -148,6 +155,8 @@ interface BusinessDetailsFormProps {
   initialValues?: Partial<Record<string, string>>;
   onValid: (data: BusinessDetailsData) => void;
   onInvalid: () => void;
+  /** Ref that parent can call .current() to touch all fields and trigger validation */
+  touchAllRef?: React.MutableRefObject<(() => void) | null>;
 }
 
 type FieldErrors = Partial<Record<string, string>>;
@@ -162,6 +171,7 @@ export function BusinessDetailsForm({
   initialValues,
   onValid,
   onInvalid,
+  touchAllRef,
 }: BusinessDetailsFormProps) {
   const EMPTY_FORM: Record<string, string> = {
     business_name: "",
@@ -374,6 +384,20 @@ export function BusinessDetailsForm({
     [form, validateField],
   );
 
+  // Expose touch-all for parent submit attempt
+  useEffect(() => {
+    if (touchAllRef) {
+      touchAllRef.current = () => {
+        const allFields = new Set(Object.keys(form));
+        setTouched(allFields);
+        // Re-validate all fields
+        for (const field of allFields) {
+          validateField(field, form);
+        }
+      };
+    }
+  }, [touchAllRef, form, validateField]);
+
   const fieldError = (field: string) =>
     touched.has(field) ? errors[field] : undefined;
 
@@ -408,11 +432,14 @@ export function BusinessDetailsForm({
   // Address fields (DRY reuse)
   // ---------------------------------------------------------------------------
 
-  const addressFields = (streetLabel: string) => (
+  const addressFields = (streetLabel: string, labelSuffix?: string) => (
     <>
       {/* Street address */}
       <div>
-        {renderLabel(streetLabel, true)}
+        <p className="mb-1.5 text-sm font-medium text-text-secondary">
+          {streetLabel} <span className="text-red-500">*</span>
+          {labelSuffix && <span className="font-normal text-text-tertiary"> {labelSuffix}</span>}
+        </p>
         <input
           className={inputClass(!!fieldError("address_line1"))}
           placeholder="123 Main St"
@@ -448,7 +475,7 @@ export function BusinessDetailsForm({
         <div className="w-[35%]">
           {renderLabel("State", true)}
           <select
-            className={inputClass(!!fieldError("address_state"))}
+            className={selectClass(!!fieldError("address_state"))}
             name="address-level1"
             value={form.address_state}
             onChange={(e) => updateField("address_state", e.target.value)}
@@ -502,7 +529,7 @@ export function BusinessDetailsForm({
           {renderLabel("Business or app name", true)}
           <input
             className={inputClass(!!fieldError("business_name"))}
-            placeholder="The name your customers will see on texts"
+            placeholder="Your app or brand name"
             maxLength={100}
             spellCheck={false}
             autoCorrect="off"
@@ -512,21 +539,16 @@ export function BusinessDetailsForm({
           />
           {renderHint(
             fieldError("business_name"),
-            showEinFields
-              ? "Use your legal business name exactly as registered with the IRS"
-              : undefined,
+            "This should match or be clearly associated with your registered business name",
           )}
-          <p className="mt-1 text-right text-xs text-text-quaternary">
-            {form.business_name.length}/100
-          </p>
         </div>
 
         {/* Business description */}
         <div>
-          {renderLabel("What does your business/app do?", true)}
+          {renderLabel("What does your app do?", true)}
           <textarea
             className={inputClass(!!fieldError("business_description"))}
-            placeholder={`Describe your app in a sentence or two. Example: '${DESCRIPTION_EXAMPLES[useCase]}'`}
+            placeholder={`Describe what your app does in a sentence or two. Example: '${DESCRIPTION_EXAMPLES[useCase]}'`}
             maxLength={500}
             rows={3}
             value={form.business_description}
@@ -586,7 +608,7 @@ export function BusinessDetailsForm({
         {/* EIN radio group */}
         <div>
           <p className="mb-1.5 text-sm font-medium text-text-secondary">
-            Do you have a US business tax ID (EIN)?
+            Do you have a US business tax ID (EIN)? <span className="text-red-500">*</span>
           </p>
           <div className="flex flex-col gap-2">
             <label className="flex cursor-pointer items-center gap-2.5 rounded-lg border border-border-primary p-3 transition duration-100 ease-linear hover:bg-bg-secondary">
@@ -612,7 +634,7 @@ export function BusinessDetailsForm({
               <div>
                 <span className="text-sm text-text-primary">No</span>
                 <p className="mt-0.5 text-sm text-text-tertiary">
-                  If you&apos;re a sole proprietor or hobbyist without an EIN,
+                  If you&apos;re a sole proprietor or independent developer without an EIN,
                   select No.
                 </p>
               </div>
@@ -623,9 +645,7 @@ export function BusinessDetailsForm({
         {/* Sole proprietor reassurance note */}
         {showSolePropNote && (
           <p className="rounded-lg bg-bg-secondary p-3 text-sm text-text-tertiary">
-            No problem! We&apos;ll register you as a sole proprietor.
-            You&apos;re limited to one campaign and one phone number, which is
-            plenty for most apps.
+            No problem! We&apos;ll register you as a sole proprietor. Note: sole proprietor registrations are limited to one campaign, so you won&apos;t be able to add a marketing campaign later. If you think you&apos;ll want to send promotional messages, consider registering with an EIN.
           </p>
         )}
 
@@ -646,7 +666,7 @@ export function BusinessDetailsForm({
               />
               {renderHint(
                 fieldError("ein"),
-                "Must match the name and address on your IRS filing",
+                "Must match the business name and address associated with this EIN",
               )}
             </div>
 
@@ -654,7 +674,7 @@ export function BusinessDetailsForm({
             <div>
               {renderLabel("Business type", true)}
               <select
-                className={inputClass(!!fieldError("business_type"))}
+                className={selectClass(!!fieldError("business_type"))}
                 value={form.business_type}
                 onChange={(e) =>
                   updateField("business_type", e.target.value)
@@ -748,13 +768,13 @@ export function BusinessDetailsForm({
           />
           {renderHint(
             fieldError("email"),
-            "We'll send your registration updates and setup files here",
+            "We\u2019ll send your registration updates here",
           )}
         </div>
 
         {/* Phone */}
         <div>
-          {renderLabel("Mobile phone number", true)}
+          {renderLabel("US mobile phone number", true)}
           <input
             className={inputClass(!!fieldError("phone"))}
             type="tel"
@@ -769,12 +789,12 @@ export function BusinessDetailsForm({
           />
           {renderHint(
             fieldError("phone"),
-            "We may need to send a verification code to this number",
+            "We\u2019ll send a verification code to this number",
           )}
         </div>
 
         {/* Address fields for non-EIN path (sole prop) */}
-        {!showEinFields && addressFields("Your address")}
+        {!showEinFields && addressFields("Business address", "(sole proprietors can use a home address)")}
       </fieldset>
     </div>
   );

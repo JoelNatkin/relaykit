@@ -60,9 +60,16 @@ function FlowNode({ num, tooltip }: { num: number; tooltip: string }) {
         {num}
       </div>
       {hover && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 rounded-md bg-white px-2.5 py-1.5 text-[12px] text-text-secondary shadow-md whitespace-nowrap pointer-events-none">
-          {tooltip}
-        </div>
+        <>
+          {/* Mobile: tooltip to the right */}
+          <div className="sm:hidden absolute left-full top-1/2 -translate-y-1/2 ml-2 z-50 rounded-md bg-white px-2.5 py-1.5 text-[12px] text-text-secondary shadow-md whitespace-nowrap pointer-events-none">
+            {tooltip}
+          </div>
+          {/* Desktop: tooltip above */}
+          <div className="hidden sm:block absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 rounded-md bg-white px-2.5 py-1.5 text-[12px] text-text-secondary shadow-md whitespace-nowrap pointer-events-none">
+            {tooltip}
+          </div>
+        </>
       )}
     </div>
   );
@@ -77,7 +84,7 @@ function PlaybookSummary({ categoryId, controlsSlot }: { categoryId: string; con
   return (
     <div>
       {/* Heading + controls: side-by-side on desktop, stacked on mobile */}
-      <div className="sm:flex sm:items-baseline sm:justify-between mb-3">
+      <div className="sm:flex sm:items-baseline sm:justify-between mb-5">
         <h2 className="text-lg font-semibold text-text-primary">
           {flow.heading}
         </h2>
@@ -117,7 +124,7 @@ function PlaybookSummary({ categoryId, controlsSlot }: { categoryId: string; con
                 <div className="w-px h-6 bg-fg-brand-primary" />
               )}
             </div>
-            <span className="text-sm text-text-secondary -mt-0.5">
+            <span className="text-sm text-text-secondary leading-6">
               {step.label}
             </span>
           </div>
@@ -407,7 +414,8 @@ function ToolPanel() {
   }
 
   return (
-    <div className="mt-3 mb-8 rounded-xl border border-border-secondary bg-bg-primary p-4">
+    <div className="mt-8 mb-8 rounded-xl border border-border-secondary bg-bg-primary p-6">
+      <h3 className="text-lg font-semibold text-text-primary mb-4">AI tool setup</h3>
       <div className="flex items-center gap-4 overflow-x-auto">
         {TOOLS.map((tool) => (
           <button
@@ -630,8 +638,8 @@ export default function AppMessagesPage() {
         onChange={handlePersonalizeChange}
       />
 
-      {/* Playbook summary with controls — full-width gray band */}
-      <div className="bg-bg-secondary py-8 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
+      {/* Playbook summary with controls — full-width gray band, flush with tab bar */}
+      <div className="-mt-6 bg-bg-secondary py-10 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
         <div className="mx-auto max-w-5xl px-6">
           <PlaybookSummary categoryId={categoryId} controlsSlot={
             <div className="flex items-center gap-4 text-sm text-text-tertiary mt-2 sm:mt-0">
@@ -775,6 +783,9 @@ export default function AppMessagesPage() {
               </h3>
               <p className="mt-1 text-sm text-text-tertiary">
                 Promos and offers require a separate registration. Get your first registration approved, then add marketing from your dashboard.
+              </p>
+              <p className="mt-2 text-sm text-gray-500">
+                Note: adding a marketing campaign requires an EIN. Sole proprietor registrations are limited to one campaign.
               </p>
               <div className="mt-4 space-y-3">
                 {expansionMessages.map((msg) => {

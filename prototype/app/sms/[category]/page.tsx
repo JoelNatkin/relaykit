@@ -12,6 +12,7 @@ import {
   MessageSmileSquare,
   Monitor01,
 } from "@untitledui/icons";
+import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
 
 /* ── Appointments-specific content (stub 1 category as the primary example) ── */
 
@@ -134,21 +135,27 @@ function interpolate(text: string): React.ReactNode[] {
   return parts;
 }
 
+const MARKETING_EXAMPLES = [
+  {
+    name: "Promotional offer",
+    text: "{app_name}: Book your next {service_type} appointment this week and get 15% off! Visit {website_url}. Reply STOP to unsubscribe.",
+  },
+  {
+    name: "Feedback request",
+    text: "{app_name}: How was your {service_type} appointment? Rate your experience: {website_url}/review. Reply STOP to opt out.",
+  },
+];
+
 const WHY_10DLC = [
   {
-    question: "What is 10DLC?",
+    question: "Why can\u2019t I just register myself?",
     answer:
-      "10DLC (10-Digit Long Code) is the carrier-mandated registration system for business SMS. Without it, your messages get filtered, throttled, or blocked entirely.",
+      "You can \u2014 but most developers don\u2019t get it right the first time. Registration spans multiple systems, carrier reviewers reject vague or misformatted submissions, and each rejection costs money and weeks. RelayKit pre-formats everything carriers look for: business verification, campaign descriptions, sample messages, and a hosted compliance site. First-try approval is the goal.",
   },
   {
-    question: "Why can't I just send texts from Twilio?",
+    question: "What happens after I\u2019m approved?",
     answer:
-      "You can — but unregistered traffic gets heavily filtered. Carriers treat unregistered numbers as potential spam. Registration is what makes your traffic trusted.",
-  },
-  {
-    question: "What does RelayKit handle?",
-    answer:
-      "Brand verification with The Campaign Registry, campaign registration with carriers, compliance site hosting, ongoing compliance monitoring, and the proxy that enforces rules on every message.",
+      "Your messages flow through RelayKit\u2019s compliance layer on every send \u2014 opt-out enforcement, content scanning, quiet hours, and drift detection that catches messages gradually moving outside your approved use case. Registration gets you in the door. The proxy keeps you there.",
   },
 ];
 
@@ -176,7 +183,7 @@ export default function CategoryLanding() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16">
+    <div className="mx-auto max-w-4xl overflow-x-hidden px-6 py-16">
       {/* Hero */}
       <div className="text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-3 py-1 text-xs font-medium text-text-brand-secondary">
@@ -262,26 +269,91 @@ export default function CategoryLanding() {
         Free sandbox. No credit card. $199 + $19/mo when you&apos;re ready to go live.
       </p>
 
-      {/* What you get */}
-      <div className="mt-12">
-        <p className="text-center text-sm font-semibold text-text-brand-secondary">
-          What you get
-        </p>
-        <h2 className="mt-2 text-center text-2xl font-bold text-text-primary">
-          Everything you need to start sending.
-        </h2>
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {WHAT_YOU_GET.map((item, i) => (
-            <div key={i} className="rounded-xl border border-border-secondary p-5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-bg-brand-secondary">
-                <item.icon className="size-5 text-fg-brand-primary" />
+      {/* What you get — full-width gray band */}
+      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-12 w-screen bg-bg-secondary py-12">
+        <div className="mx-auto max-w-4xl px-6">
+          <p className="text-center text-sm font-semibold text-text-brand-secondary">
+            What you get
+          </p>
+          <h2 className="mt-2 text-center text-2xl font-bold text-text-primary">
+            Everything you need to start sending.
+          </h2>
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {WHAT_YOU_GET.map((item, i) => (
+              <div key={i} className="rounded-xl border border-border-secondary bg-bg-primary p-5">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-bg-brand-secondary">
+                  <item.icon className="size-5 text-fg-brand-primary" />
+                </div>
+                <h3 className="mt-4 text-sm font-semibold text-text-primary">{item.title}</h3>
+                <p className="mt-1 text-sm text-text-tertiary">{item.description}</p>
               </div>
-              <h3 className="mt-4 text-sm font-semibold text-text-primary">{item.title}</h3>
-              <p className="mt-1 text-sm text-text-tertiary">{item.description}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Registration scope — D-230, D-231 */}
+      {(() => {
+        const useCaseData = USE_CASES[category as UseCaseId];
+        if (!useCaseData) return null;
+        return (
+          <div className="mt-16">
+            {/* Section eyebrow + heading */}
+            <p className="text-center text-sm font-semibold text-text-brand-secondary">
+              Your registration
+            </p>
+            <h2 className="mt-2 text-center text-2xl font-bold text-text-primary">
+              What&apos;s included from day one.
+            </h2>
+
+            {/* Block 1: What your registration covers */}
+            <div className="mt-10">
+              <h3 className="text-base font-semibold text-text-primary">
+                What your registration covers
+              </h3>
+              <p className="mt-1 max-w-[600px] text-sm text-text-tertiary">
+                Your registration with carriers includes all of these message types from day one.
+              </p>
+              <ul className="mt-4 space-y-3">
+                {useCaseData.included.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <CheckCircle className="size-4 shrink-0 text-fg-success-primary mt-0.5" />
+                    <span className="text-sm text-text-secondary">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Block 2: Need marketing messages too? */}
+            <div className="mt-10">
+              <h3 className="text-base font-semibold text-text-primary">
+                Need marketing messages too?
+              </h3>
+              <p className="mt-1 max-w-[600px] text-sm text-text-tertiary">
+                Promos and offers are registered as a separate campaign. Get your first registration approved, then add marketing when you&apos;re ready.
+              </p>
+              <p className="mt-2 max-w-[600px] text-sm text-gray-500">
+                Note: adding a marketing campaign requires an EIN. Sole proprietor registrations are limited to one campaign.
+              </p>
+              <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {MARKETING_EXAMPLES.map((msg) => (
+                  <div
+                    key={msg.name}
+                    className="rounded-xl border border-border-secondary p-4"
+                  >
+                    <p className="text-xs font-medium text-text-tertiary">{msg.name}</p>
+                    <div className="mt-2 rounded-lg bg-bg-secondary p-3">
+                      <p className="text-sm text-text-secondary leading-relaxed">
+                        {interpolate(msg.text)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Message preview teaser */}
       <div className="mt-20 rounded-xl border border-border-secondary bg-bg-secondary p-6 text-center">
@@ -312,7 +384,7 @@ export default function CategoryLanding() {
           {WHY_10DLC.map((item, i) => (
             <div key={i} className="rounded-xl border border-border-secondary p-5">
               <h3 className="text-sm font-semibold text-text-primary">{item.question}</h3>
-              <p className="mt-2 text-sm text-text-tertiary">{item.answer}</p>
+              <p className="mt-2 max-w-[600px] text-sm text-text-tertiary">{item.answer}</p>
             </div>
           ))}
         </div>

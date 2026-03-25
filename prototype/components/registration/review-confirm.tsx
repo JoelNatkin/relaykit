@@ -358,119 +358,25 @@ export function ReviewConfirm({
           </div>
         </div>
 
-        {/* RIGHT COLUMN — What we'll submit */}
-        <div className="rounded-xl border border-border-secondary bg-bg-secondary">
-          <div className="border-b border-border-secondary px-5 py-3">
-            <h3 className="text-lg font-semibold text-text-primary">
-              What we&apos;ll submit
-            </h3>
-          </div>
-
-          <div className="flex flex-col gap-5 p-5">
-            {/* Campaign description */}
-            <div className="flex flex-col gap-2.5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-                Campaign description
-              </span>
-              <p className="text-sm text-text-primary">
-                {templates.campaign_description}
-              </p>
-            </div>
-
-            {/* Sample messages */}
-            <div className="flex flex-col gap-2.5">
-              <span className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-                Sample messages
-              </span>
-              <div className="flex flex-col gap-5">
-                {templates.sample_messages.map((msg, i) => (
-                  <div key={i} className="flex flex-col gap-1">
-                    <span className="text-sm text-text-tertiary">
-                      {templates.sample_message_labels[i]}
-                    </span>
-                    <p className="text-sm text-text-primary">{msg}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* FAQ accordion */}
-            <FaqAccordion
-              useCaseLabel={useCase.label}
-              includedItems={useCase.included}
-              notIncludedItems={useCase.notIncluded}
-              selectedExpansions={selectedExpansions}
-            />
-
-            {/* Compliance website */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-                Compliance website
-              </span>
-              <p className="text-sm text-text-tertiary">
-                We&apos;ll create a page at{" "}
-                <span className="font-medium text-text-primary">
-                  {complianceSlug}.msgverified.com
-                </span>{" "}
-                with:
-              </p>
-              <div className="flex flex-col gap-2">
-                {[
-                  "Privacy policy (with required mobile data language)",
-                  "Terms of service (with messaging disclosures)",
-                  "SMS opt-in form (with all carrier-required elements)",
-                ].map((item) => (
-                  <div key={item} className="flex items-start gap-2">
-                    <span className="mt-0.5 text-green-600">
-                      <CheckCircleIcon />
-                    </span>
-                    <span className="text-sm text-text-tertiary">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* What happens next */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-                What happens next
-              </span>
-              <ol className="flex flex-col gap-1">
-                {[
-                  "You pay $199 setup + $19/month",
-                  "We submit your registration to US carriers (usually a few days)",
-                  "You get an integration kit with live credentials and compliance co-pilot",
-                  "Your SMS infrastructure stays live, monitored, and compliant",
-                ].map((step, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-text-tertiary">
-                    <span className="shrink-0 font-medium text-text-primary">
-                      {i + 1}.
-                    </span>
-                    {step}
-                  </li>
-                ))}
-              </ol>
-            </div>
-
-            {/* Your plan */}
-            <div className="flex flex-col gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-                Your plan
-              </span>
-              <ul className="flex flex-col gap-1">
-                {[
-                  "$199 one-time setup",
-                  "$19/month includes 500 messages, phone number, compliance proxy & monitoring",
-                  "Additional messages: $15 per 1,000 (auto-scales, no interruption)",
-                ].map((item) => (
-                  <li key={item} className="flex gap-2 text-sm text-text-tertiary">
-                    <span className="shrink-0 text-text-tertiary">&bull;</span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+        {/* RIGHT COLUMN — What happens next */}
+        <div className="rounded-xl border border-border-secondary bg-bg-secondary p-5">
+          <h3 className="text-lg font-semibold text-text-primary">
+            What happens next
+          </h3>
+          <ol className="mt-4 flex flex-col gap-3">
+            <li className="flex gap-2.5 text-sm text-text-secondary">
+              <span className="shrink-0 font-semibold text-text-primary">1.</span>
+              We submit your registration to carriers — typically approved in a few days.
+            </li>
+            <li className="flex gap-2.5 text-sm text-text-secondary">
+              <span className="shrink-0 font-semibold text-text-primary">2.</span>
+              You&apos;ll get a live API key and a dedicated phone number.
+            </li>
+            <li className="flex gap-2.5 text-sm text-text-secondary">
+              <span className="shrink-0 font-semibold text-text-primary">3.</span>
+              Swap your sandbox key for your live key — same code, same endpoint.
+            </li>
+          </ol>
         </div>
       </div>
 
@@ -482,25 +388,20 @@ export function ReviewConfirm({
           </h3>
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-text-tertiary">One-time setup fee</span>
-              <span className="font-semibold text-text-primary">$199</span>
-            </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-text-tertiary">Monthly subscription</span>
-              <span className="font-semibold text-text-primary">$19/mo</span>
+              <span className="text-text-tertiary">Registration submission</span>
+              <span className="font-semibold text-text-primary">$49</span>
             </div>
             <div className="border-t border-border-secondary pt-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-semibold text-text-primary">
                   Due today
                 </span>
-                <span className="font-semibold text-text-primary">$218</span>
+                <span className="font-semibold text-text-primary">$49</span>
               </div>
             </div>
           </div>
-          <p className="text-xs text-text-tertiary">
-            500 messages included monthly. Additional messages $15 per 1,000,
-            auto-scales with no interruption. Money back if not approved.
+          <p className="mt-1 text-xs text-text-tertiary leading-relaxed">
+            After approval, pay $150 + $19/mo to activate your live API key and dedicated phone number. 500 messages included monthly. Additional messages $15 per 1,000. Not approved? Full refund.
           </p>
         </div>
       </div>
@@ -539,7 +440,7 @@ export function ReviewConfirm({
               : "bg-purple-300 cursor-not-allowed"
           }`}
         >
-          Start my registration — $218
+          Start my registration — $49
         </button>
       </div>
 

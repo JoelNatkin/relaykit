@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useSession } from "@/context/session-context";
@@ -19,11 +19,17 @@ const APP_NAMES: Record<string, string> = {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { appId } = useParams<{ appId: string }>();
   const pathname = usePathname();
-  const { state, setRegistrationState, setComplianceView } = useSession();
+  const { state, setRegistrationState, setComplianceView, setLoggedIn } = useSession();
+
+  // App pages are always logged-in
+  useEffect(() => {
+    if (!state.isLoggedIn) setLoggedIn(true);
+  }, [state.isLoggedIn, setLoggedIn]);
 
   const appName = APP_NAMES[appId] || appId;
   const isApproved = state.registrationState === "approved";
   const isOverview = pathname.endsWith("/overview");
+  const isRegisterFlow = pathname.includes("/register");
   const [period, setPeriod] = useState("this_month");
 
   return (
@@ -93,43 +99,45 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      {/* Tab bar — full-width border */}
-      <div className="border-b border-border-secondary">
-      <div className="mx-auto max-w-5xl px-6 flex items-center gap-1">
-        {TABS.map((tab) => {
-          const href = tab.href(appId);
-          const isActive = pathname === href || pathname.startsWith(href + "/");
-          return (
-            <Link
-              key={tab.id}
-              href={href}
-              className={`px-3 py-2.5 text-sm font-medium transition duration-100 ease-linear border-b-2 -mb-px ${
-                isActive
-                  ? "border-border-brand text-text-brand-secondary"
-                  : "border-transparent text-text-tertiary hover:text-text-secondary hover:border-border-primary"
-              }`}
+      {/* Tab bar — hidden on registration flow */}
+      {!isRegisterFlow && (
+        <div className="border-b border-border-secondary">
+        <div className="mx-auto max-w-5xl px-6 flex items-center gap-1">
+          {TABS.map((tab) => {
+            const href = tab.href(appId);
+            const isActive = pathname === href || pathname.startsWith(href + "/");
+            return (
+              <Link
+                key={tab.id}
+                href={href}
+                className={`px-3 py-2.5 text-sm font-medium transition duration-100 ease-linear border-b-2 -mb-px ${
+                  isActive
+                    ? "border-border-brand text-text-brand-secondary"
+                    : "border-transparent text-text-tertiary hover:text-text-secondary hover:border-border-primary"
+                }`}
+              >
+                {tab.label}
+              </Link>
+            );
+          })}
+          {isApproved && isOverview && (
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              className="ml-auto text-sm text-text-tertiary bg-transparent border-none cursor-pointer focus:outline-none"
             >
-              {tab.label}
-            </Link>
-          );
-        })}
-        {isApproved && isOverview && (
-          <select
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-            className="ml-auto text-sm text-text-tertiary bg-transparent border-none cursor-pointer focus:outline-none"
-          >
-            <option value="this_week">This week</option>
-            <option value="last_7">Last 7 days</option>
-            <option value="this_month">This month</option>
-            <option value="last_30">Last 30 days</option>
-          </select>
-        )}
-      </div>
-      </div>
+              <option value="this_week">This week</option>
+              <option value="last_7">Last 7 days</option>
+              <option value="this_month">This month</option>
+              <option value="last_30">Last 30 days</option>
+            </select>
+          )}
+        </div>
+        </div>
+      )}
 
       {/* Page content */}
-      <div className="mx-auto max-w-5xl px-6 pb-16">
+      <div className="mx-auto max-w-5xl px-6 pt-6 pb-16">
         {children}
       </div>
     </div>

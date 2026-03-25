@@ -69,6 +69,7 @@ export const BUSINESS_TYPE_OPTIONS = [
   { id: "Corporation", label: "Corporation" },
   { id: "Partnership", label: "Partnership" },
   { id: "Non-profit", label: "Non-profit" },
+  { id: "Government", label: "Government" },
 ];
 
 const phoneDigits = (val: string) => val.replace(/\D/g, "");

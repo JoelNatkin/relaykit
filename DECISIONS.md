@@ -689,3 +689,27 @@ _Affects: `src/middleware.ts`, `src/app/dev/intake/page.tsx`._
 **D-227 — Public Messages page logo circles have white backgrounds** (Date: 2026-03-24)
 Hero logo row circles on `/sms/[category]/messages` now have explicit `bg-white` to ensure visibility against the gray hero band.
 _Affects: `prototype/app/sms/[category]/messages/page.tsx`._
+
+**D-228 — Flow diagram strategy per category** (Date: 2026-03-24)
+Diagrams (numbered nodes matching message cards) for: appointments (linear, done), orders (linear with branch tags), support (linear with branch tags), waitlist (compact 4-node linear). Sentence-only treatment (heading + message count + tagline, no diagram) for: verification, marketing, team alerts, community.
+_Affects: `prototype/app/sms/[category]/messages/page.tsx`, `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/data/messages.ts`._
+
+**D-229 — Orders flow diagram shape** (Date: 2026-03-24)
+Linear spine: Order placed → Confirmed → Shipped → Delivered → Return processed. Branch tags under "Shipped" node for "delay notified" and "pickup ready." Validates hub-and-spoke pattern before building remaining categories.
+_Affects: Flow diagram data, Messages pages._
+
+**D-230 — RegistrationScope on category landing pages** (Date: 2026-03-24)
+The RegistrationScope content from the imported production intake wizard renders on public category landing pages as informational content, NOT as a registration wizard step. No expansion checkboxes — display-only mode. Placed between "Everything you need to start sending" and the "Preview the full message library" CTA band.
+_Affects: `prototype/app/sms/[category]/page.tsx`._
+
+**D-231 — RegistrationScope renders as two sections, not three** (Date: 2026-03-24)
+On category landing pages, the three production RegistrationScope cards (covers / not included / expansions) collapse into two display sections: (1) "What your registration covers" with green check items as-is, and (2) "Need marketing messages too?" which replaces both "What's not included" and the expansion checkboxes. The marketing section shows a brief explanation that promos require a separate registration plus two example message cards (promotional offer, feedback request). No red X items, no checkboxes. Framing: "Get your first registration approved, then add marketing when you're ready." The negative "not included" framing is eliminated from all marketing-context pages.
+_Affects: `prototype/app/sms/[category]/page.tsx`._
+
+**D-232 — Twilio-only registration service rejected** (Date: 2026-03-24)
+Decided not to build a standalone Twilio registration product. Intake wizard components remain for ISV registration flow only. RelayKit's value is the full stack (registration + proxy + compliance monitoring), not registration as an isolated service.
+_Affects: Product strategy, no code changes._
+
+**D-233 — Overview page restructure — sandbox build dashboard** (Date: 2026-03-24)
+Remove "Register your app" and "Monitor your compliance" expanders from the Overview page left column. Replace with a sandbox compliance card above the Build steps (visible once developer has sent at least one message). Card shows: messages sent count, compliance rate (green/amber/red), active issues with Fix/View links opening the existing compliance detail modal. Registration sidebar (right column) handles registration pitch. Build steps expander collapses to a single completed row once all 4 steps are done (follow-up task). Post-registration Approved state changes from 6 cards (3×2) to a full-width message types table plus 3 cards below (follow-up task). MESSAGE TYPES and SENDING PATTERNS cards replaced by the table.
+_Affects: `prototype/app/apps/[appId]/overview/page.tsx`, `prototype/app/apps/[appId]/overview/approved-dashboard.tsx`._
