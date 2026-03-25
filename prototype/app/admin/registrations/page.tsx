@@ -6,7 +6,14 @@ import { useState } from "react";
 // Types & data
 // ---------------------------------------------------------------------------
 
-type RegStatus = "awaiting_review" | "in_review" | "approved" | "rejected" | "extended_review";
+type RegStatus = "awaiting_review" | "in_review" | "approved" | "rejected" | "extended_review" | "declined" | "abandoned";
+type AiSignal = "green" | "amber" | "red";
+
+interface AiPreReview {
+  signal: AiSignal;
+  summary: string;
+  suggestedFix?: string;
+}
 
 interface Registration {
   id: string;
@@ -18,7 +25,11 @@ interface Registration {
   submitted: string;
   timeInStatus: string;
   rejectionReason?: string;
-  aiReview?: string[];
+  declineReason?: string;
+  abandonReason?: string;
+  refundStatus?: string;
+  emailSent?: boolean;
+  aiPreReview?: AiPreReview;
   business: {
     name: string;
     type: string;
@@ -47,25 +58,9 @@ const REGISTRATIONS: Registration[] = [
     attempt: 1,
     submitted: "2 hours ago",
     timeInStatus: "Submitted 2 hours ago",
-    aiReview: [
-      "Campaign description is specific and matches registered message types.",
-      "Sample messages demonstrate all 6 message types with consistent formatting.",
-      "No issues detected — ready for submission.",
-    ],
-    business: {
-      name: "GlowStudio LLC",
-      type: "LLC",
-      ein: "***-**-6789",
-      address: "456 Oak Street, Portland, OR 97201",
-      phone: "(503) 555-0142",
-      email: "dev@glowstudio.com",
-      website: "glowstudio.com",
-    },
-    campaign: {
-      description: "GlowStudio is a hair salon appointment management platform. Sends booking confirmations, appointment reminders (24h before), pre-visit instructions, reschedule/cancellation notices, and no-show follow-ups to customers who book through the platform.",
-      useCase: "Appointment reminders",
-      messageTypes: ["Booking confirmation", "Appointment reminder", "Pre-visit instructions", "Reschedule notice", "No-show follow-up", "Cancellation notice"],
-    },
+    aiPreReview: { signal: "green", summary: "Ready for submission" },
+    business: { name: "GlowStudio LLC", type: "LLC", ein: "***-**-6789", address: "456 Oak Street, Portland, OR 97201", phone: "(503) 555-0142", email: "dev@glowstudio.com", website: "glowstudio.com" },
+    campaign: { description: "GlowStudio is a hair salon appointment management platform. Sends booking confirmations, appointment reminders (24h before), pre-visit instructions, reschedule/cancellation notices, and no-show follow-ups to customers who book through the platform.", useCase: "Appointment reminders", messageTypes: ["Booking confirmation", "Appointment reminder", "Pre-visit instructions", "Reschedule notice", "No-show follow-up", "Cancellation notice"] },
     sampleMessages: [
       { label: "Booking confirmation", text: "GlowStudio: Your haircut appointment is confirmed for Mar 28, 2026 at 2:30 PM. Reply STOP to opt out." },
       { label: "Appointment reminder", text: "GlowStudio: Reminder — your haircut appointment is tomorrow at 2:30 PM. Reply STOP to opt out." },
@@ -84,25 +79,9 @@ const REGISTRATIONS: Registration[] = [
     attempt: 1,
     submitted: "yesterday",
     timeInStatus: "Submitted yesterday",
-    aiReview: [
-      "Campaign description is strong — specific service type and message triggers described.",
-      "Note: Message 4 (Satisfaction follow-up) could be interpreted as marketing by carriers — consider adding context about it being part of the service workflow.",
-      "All other messages are clearly transactional.",
-    ],
-    business: {
-      name: "TechRepair Inc",
-      type: "Corporation",
-      ein: "***-**-4321",
-      address: "789 Tech Blvd, Austin, TX 78701",
-      phone: "(512) 555-0198",
-      email: "ops@techrepair.io",
-      website: "techrepair.io",
-    },
-    campaign: {
-      description: "TechRepair is a device repair service. Sends support ticket acknowledgments, repair status updates, completion notifications, and customer satisfaction follow-ups via SMS.",
-      useCase: "Customer support",
-      messageTypes: ["Ticket acknowledgment", "Status update", "Repair complete", "Satisfaction follow-up", "Pickup reminder"],
-    },
+    aiPreReview: { signal: "amber", summary: "Satisfaction follow-up (Message 4) may be classified as marketing by carriers." },
+    business: { name: "TechRepair Inc", type: "Corporation", ein: "***-**-4321", address: "789 Tech Blvd, Austin, TX 78701", phone: "(512) 555-0198", email: "ops@techrepair.io", website: "techrepair.io" },
+    campaign: { description: "TechRepair is a device repair service. Sends support ticket acknowledgments, repair status updates, completion notifications, and customer satisfaction follow-ups via SMS.", useCase: "Customer support", messageTypes: ["Ticket acknowledgment", "Status update", "Repair complete", "Satisfaction follow-up", "Pickup reminder"] },
     sampleMessages: [
       { label: "Ticket acknowledgment", text: "TechRepair: We received your repair request #4821. A technician will review it within 2 hours. Reply STOP to opt out." },
       { label: "Status update", text: "TechRepair: Update on repair #4821 — your laptop screen replacement is in progress. Estimated completion: tomorrow by 3 PM. Reply STOP to opt out." },
@@ -122,25 +101,9 @@ const REGISTRATIONS: Registration[] = [
     submitted: "4 days ago",
     timeInStatus: "Rejected 6 hours ago (2nd attempt)",
     rejectionReason: "Campaign description is too vague. Carrier requires specific description of message types and when they are triggered. Current description says 'sends texts to customers about their appointments' without specifying appointment-related use case. This was also flagged on the first submission.",
-    aiReview: [
-      "Previous rejection cited vague description. Current description still says 'sends texts to customers about their appointments' — suggest specifying message types: 'Sends booking confirmations, appointment reminders, cancellation notices, and same-day availability alerts to customers who book appointments.'",
-      "Sample messages look good — specific appointment details included.",
-      "Sole proprietor registration — limited to one campaign.",
-    ],
-    business: {
-      name: "FreshCuts Barbershop",
-      type: "Sole Proprietor",
-      ein: "N/A (sole prop)",
-      address: "321 Main St, Denver, CO 80202",
-      phone: "(303) 555-0167",
-      email: "mike@freshcuts.co",
-      website: "freshcuts.co",
-    },
-    campaign: {
-      description: "FreshCuts is a barbershop that sends texts to customers about their appointments.",
-      useCase: "Appointment reminders",
-      messageTypes: ["Booking confirmation", "Appointment reminder", "Cancellation notice", "Same-day availability", "Reschedule confirmation"],
-    },
+    aiPreReview: { signal: "red", summary: "Campaign description too vague — same issue flagged on 1st attempt.", suggestedFix: "\"FreshCuts is a barbershop booking platform. Sends booking confirmations when customers schedule appointments, appointment reminders 24 hours before visits, cancellation notices, same-day availability alerts for open slots, and reschedule confirmations when appointments are moved.\"" },
+    business: { name: "FreshCuts Barbershop", type: "Sole Proprietor", ein: "N/A (sole prop)", address: "321 Main St, Denver, CO 80202", phone: "(303) 555-0167", email: "mike@freshcuts.co", website: "freshcuts.co" },
+    campaign: { description: "FreshCuts is a barbershop that sends texts to customers about their appointments.", useCase: "Appointment reminders", messageTypes: ["Booking confirmation", "Appointment reminder", "Cancellation notice", "Same-day availability", "Reschedule confirmation"] },
     sampleMessages: [
       { label: "Booking confirmation", text: "FreshCuts: Your haircut is booked for Saturday at 11 AM. Reply STOP to opt out." },
       { label: "Appointment reminder", text: "FreshCuts: Reminder — haircut tomorrow at 11 AM. Reply STOP to opt out." },
@@ -159,20 +122,8 @@ const REGISTRATIONS: Registration[] = [
     attempt: 1,
     submitted: "5 days ago",
     timeInStatus: "5 days in carrier review",
-    business: {
-      name: "PetPals LLC",
-      type: "LLC",
-      ein: "***-**-8901",
-      address: "567 Pet Lane, Seattle, WA 98101",
-      phone: "(206) 555-0134",
-      email: "hello@petpals.com",
-      website: "petpals.com",
-    },
-    campaign: {
-      description: "PetPals is an online pet supply store. Sends order confirmations, shipping notifications, delivery updates, and return/exchange status messages to customers.",
-      useCase: "Order & delivery updates",
-      messageTypes: ["Order confirmation", "Shipping notification", "Delivery update", "Return status", "Delivery ETA"],
-    },
+    business: { name: "PetPals LLC", type: "LLC", ein: "***-**-8901", address: "567 Pet Lane, Seattle, WA 98101", phone: "(206) 555-0134", email: "hello@petpals.com", website: "petpals.com" },
+    campaign: { description: "PetPals is an online pet supply store. Sends order confirmations, shipping notifications, delivery updates, and return/exchange status messages to customers.", useCase: "Order & delivery updates", messageTypes: ["Order confirmation", "Shipping notification", "Delivery update", "Return status", "Delivery ETA"] },
     sampleMessages: [
       { label: "Order confirmation", text: "PetPals: Order #PP-2847 confirmed! 2 items shipping to Seattle, WA. Track at petpals.com/orders. Reply STOP to opt out." },
       { label: "Shipping notification", text: "PetPals: Your order #PP-2847 has shipped! Tracking: 1Z999AA10123456784. Reply STOP to opt out." },
@@ -191,20 +142,8 @@ const REGISTRATIONS: Registration[] = [
     attempt: 1,
     submitted: "12 days ago",
     timeInStatus: "12 days — extended review",
-    business: {
-      name: "YogaFlow Wellness LLC",
-      type: "LLC",
-      ein: "***-**-5678",
-      address: "234 Zen Ave, Boulder, CO 80301",
-      phone: "(720) 555-0189",
-      email: "admin@yogaflow.co",
-      website: "yogaflow.co",
-    },
-    campaign: {
-      description: "YogaFlow is a yoga studio management platform. Sends class booking confirmations, session reminders, schedule changes, and waitlist notifications to members.",
-      useCase: "Appointment reminders",
-      messageTypes: ["Booking confirmation", "Class reminder", "Schedule change", "Waitlist notification", "Pass expiration"],
-    },
+    business: { name: "YogaFlow Wellness LLC", type: "LLC", ein: "***-**-5678", address: "234 Zen Ave, Boulder, CO 80301", phone: "(720) 555-0189", email: "admin@yogaflow.co", website: "yogaflow.co" },
+    campaign: { description: "YogaFlow is a yoga studio management platform. Sends class booking confirmations, session reminders, schedule changes, and waitlist notifications to members.", useCase: "Appointment reminders", messageTypes: ["Booking confirmation", "Class reminder", "Schedule change", "Waitlist notification", "Pass expiration"] },
     sampleMessages: [
       { label: "Booking confirmation", text: "YogaFlow: You're booked for Hot Yoga on Mar 25 at 6 PM. Bring a towel and water. Reply STOP to opt out." },
       { label: "Class reminder", text: "YogaFlow: Reminder — Hot Yoga tomorrow at 6 PM. Studio B. Reply STOP to opt out." },
@@ -223,20 +162,8 @@ const REGISTRATIONS: Registration[] = [
     attempt: 1,
     submitted: "2 days ago",
     timeInStatus: "2 days in carrier review",
-    business: {
-      name: "BookWorm Inc",
-      type: "Corporation",
-      ein: "***-**-3456",
-      address: "890 Library Dr, Chicago, IL 60601",
-      phone: "(312) 555-0145",
-      email: "dev@bookworm.app",
-      website: "bookworm.app",
-    },
-    campaign: {
-      description: "BookWorm is a reading and book-sharing app. Sends one-time passwords for account login, phone number verification codes, and password reset codes.",
-      useCase: "Verification codes",
-      messageTypes: ["OTP login", "Phone verification", "Password reset", "Security code", "Device confirmation"],
-    },
+    business: { name: "BookWorm Inc", type: "Corporation", ein: "***-**-3456", address: "890 Library Dr, Chicago, IL 60601", phone: "(312) 555-0145", email: "dev@bookworm.app", website: "bookworm.app" },
+    campaign: { description: "BookWorm is a reading and book-sharing app. Sends one-time passwords for account login, phone number verification codes, and password reset codes.", useCase: "Verification codes", messageTypes: ["OTP login", "Phone verification", "Password reset", "Security code", "Device confirmation"] },
     sampleMessages: [
       { label: "OTP login", text: "BookWorm: Your login code is 847291. Expires in 10 minutes. Reply STOP to opt out." },
       { label: "Phone verification", text: "BookWorm: Verify your phone number. Code: 553018. Reply STOP to opt out." },
@@ -255,20 +182,8 @@ const REGISTRATIONS: Registration[] = [
     attempt: 1,
     submitted: "4 weeks ago",
     timeInStatus: "Approved 3 weeks ago",
-    business: {
-      name: "QuickFix Auto Services LLC",
-      type: "LLC",
-      ein: "***-**-7890",
-      address: "1200 Motor Way, Houston, TX 77001",
-      phone: "(713) 555-0156",
-      email: "dispatch@quickfixauto.com",
-      website: "quickfixauto.com",
-    },
-    campaign: {
-      description: "QuickFix Auto is a mobile mechanic service. Sends service request acknowledgments, technician dispatch notifications, arrival updates, and invoice/receipt messages.",
-      useCase: "Customer support",
-      messageTypes: ["Service acknowledgment", "Technician dispatch", "Arrival update", "Invoice sent", "Follow-up"],
-    },
+    business: { name: "QuickFix Auto Services LLC", type: "LLC", ein: "***-**-7890", address: "1200 Motor Way, Houston, TX 77001", phone: "(713) 555-0156", email: "dispatch@quickfixauto.com", website: "quickfixauto.com" },
+    campaign: { description: "QuickFix Auto is a mobile mechanic service. Sends service request acknowledgments, technician dispatch notifications, arrival updates, and invoice/receipt messages.", useCase: "Customer support", messageTypes: ["Service acknowledgment", "Technician dispatch", "Arrival update", "Invoice sent", "Follow-up"] },
     sampleMessages: [
       { label: "Service acknowledgment", text: "QuickFix Auto: Service request received. A technician will be assigned within 30 minutes. Reply STOP to opt out." },
       { label: "Technician dispatch", text: "QuickFix Auto: Technician Mike is on the way. ETA: 25 minutes. Reply STOP to opt out." },
@@ -287,20 +202,8 @@ const REGISTRATIONS: Registration[] = [
     attempt: 1,
     submitted: "6 weeks ago",
     timeInStatus: "Approved 1 month ago",
-    business: {
-      name: "MealPrep Pro Inc",
-      type: "Corporation",
-      ein: "***-**-2345",
-      address: "456 Kitchen St, San Francisco, CA 94102",
-      phone: "(415) 555-0178",
-      email: "ops@mealpreppro.com",
-      website: "mealpreppro.com",
-    },
-    campaign: {
-      description: "MealPrep Pro is a meal delivery service. Sends order confirmations, preparation status, delivery notifications, and weekly menu updates to subscribers.",
-      useCase: "Order & delivery updates",
-      messageTypes: ["Order confirmation", "Prep status", "Delivery notification", "Delivery complete", "Menu update"],
-    },
+    business: { name: "MealPrep Pro Inc", type: "Corporation", ein: "***-**-2345", address: "456 Kitchen St, San Francisco, CA 94102", phone: "(415) 555-0178", email: "ops@mealpreppro.com", website: "mealpreppro.com" },
+    campaign: { description: "MealPrep Pro is a meal delivery service. Sends order confirmations, preparation status, delivery notifications, and weekly menu updates to subscribers.", useCase: "Order & delivery updates", messageTypes: ["Order confirmation", "Prep status", "Delivery notification", "Delivery complete", "Menu update"] },
     sampleMessages: [
       { label: "Order confirmation", text: "MealPrep Pro: Your weekly order is confirmed! 5 meals delivering Tuesday. Reply STOP to opt out." },
       { label: "Prep status", text: "MealPrep Pro: Your meals are being prepared. Chef Marco is on it today. Reply STOP to opt out." },
@@ -310,10 +213,55 @@ const REGISTRATIONS: Registration[] = [
     ],
     complianceSiteUrl: "mealpreppro.msgverified.com",
   },
+  {
+    id: "reg-9",
+    customer: "CannaBliss",
+    app: "CannaBliss Wellness",
+    useCase: "Marketing",
+    status: "declined",
+    attempt: 1,
+    submitted: "2 weeks ago",
+    timeInStatus: "Declined 1 week ago",
+    declineReason: "Industry gating: cannabis-adjacent business detected during website validation. Website promotes CBD products and references THC content. This falls under carrier-prohibited cannabis industry category.",
+    refundStatus: "$49 refunded",
+    emailSent: false,
+    business: { name: "CannaBliss LLC", type: "LLC", ein: "***-**-9012", address: "420 Green St, Denver, CO 80204", phone: "(303) 555-0420", email: "hello@cannabliss.co", website: "cannabliss.co" },
+    campaign: { description: "CannaBliss is a CBD wellness shop. Sends promotional offers, new product alerts, and order updates to customers.", useCase: "Marketing & promos", messageTypes: ["Promotional offer", "New product alert", "Order confirmation", "Delivery update"] },
+    sampleMessages: [
+      { label: "Promotional offer", text: "CannaBliss: 20% off all CBD tinctures this weekend! Shop at cannabliss.co. Reply STOP to opt out." },
+      { label: "New product alert", text: "CannaBliss: New arrival — Full Spectrum CBD Gummies now available. cannabliss.co/new. Reply STOP to opt out." },
+      { label: "Order confirmation", text: "CannaBliss: Your order #CB-1234 is confirmed. Shipping in 1-2 days. Reply STOP to opt out." },
+      { label: "Delivery update", text: "CannaBliss: Your order #CB-1234 has shipped! Track at cannabliss.co/orders. Reply STOP to opt out." },
+    ],
+    complianceSiteUrl: "cannabliss.msgverified.com",
+  },
+  {
+    id: "reg-10",
+    customer: "SpamKing Marketing",
+    app: "SpamKing Blaster",
+    useCase: "Marketing",
+    status: "abandoned",
+    attempt: 3,
+    submitted: "3 weeks ago",
+    timeInStatus: "Abandoned 2 days ago (3rd attempt)",
+    abandonReason: "Carrier rejected 3 times: campaign description inconsistent with website content. Business website promotes bulk SMS services and lead generation, which conflicts with the stated 'marketing notifications' use case. Carrier flagged as potential spam operation.",
+    refundStatus: "$49 refunded",
+    emailSent: false,
+    business: { name: "SpamKing Marketing LLC", type: "LLC", ein: "***-**-6666", address: "999 Blast Ave, Las Vegas, NV 89101", phone: "(702) 555-0999", email: "king@spamking.biz", website: "spamking.biz" },
+    campaign: { description: "SpamKing Marketing sends promotional notifications and special offers to opt-in subscribers.", useCase: "Marketing & promos", messageTypes: ["Promotional offer", "Flash sale", "New service alert", "Loyalty reward", "Re-engagement"] },
+    sampleMessages: [
+      { label: "Promotional offer", text: "SpamKing: HUGE DEALS this week! Up to 80% off everything. Shop now at spamking.biz. Reply STOP to opt out." },
+      { label: "Flash sale", text: "SpamKing: FLASH SALE — 24 hours only! Don't miss out. spamking.biz/sale. Reply STOP to opt out." },
+      { label: "New service alert", text: "SpamKing: We just launched SMS Blaster Pro — send 10,000 texts for $49. spamking.biz/blaster. Reply STOP to opt out." },
+      { label: "Loyalty reward", text: "SpamKing: You earned a reward! Claim your free credit at spamking.biz/rewards. Reply STOP to opt out." },
+      { label: "Re-engagement", text: "SpamKing: We miss you! Come back and get 50% off your next campaign. spamking.biz. Reply STOP to opt out." },
+    ],
+    complianceSiteUrl: "spamking.msgverified.com",
+  },
 ];
 
 // ---------------------------------------------------------------------------
-// Status rendering helpers
+// Status config
 // ---------------------------------------------------------------------------
 
 const STATUS_CONFIG: Record<RegStatus, { label: string; bg: string; text: string; action: string }> = {
@@ -322,9 +270,14 @@ const STATUS_CONFIG: Record<RegStatus, { label: string; bg: string; text: string
   approved: { label: "Approved", bg: "bg-green-100", text: "text-green-700", action: "Details →" },
   rejected: { label: "Rejected", bg: "bg-red-100", text: "text-red-700", action: "Resubmit →" },
   extended_review: { label: "Extended review", bg: "bg-amber-100", text: "text-amber-700", action: "Follow up →" },
+  declined: { label: "Declined", bg: "bg-gray-200", text: "text-gray-700", action: "Details →" },
+  abandoned: { label: "Abandoned", bg: "bg-gray-200", text: "text-gray-700", action: "Details →" },
 };
 
-type FilterTab = "active" | "awaiting_review" | "in_review" | "extended_review" | "rejected" | "all" | "approved";
+const CLOSED_STATUSES: RegStatus[] = ["declined", "abandoned"];
+const TERMINAL_STATUSES: RegStatus[] = ["approved", ...CLOSED_STATUSES];
+
+type FilterTab = "active" | "awaiting_review" | "in_review" | "extended_review" | "rejected" | "closed" | "all" | "approved";
 
 const FILTER_TABS: { id: FilterTab; label: string }[] = [
   { id: "active", label: "Active" },
@@ -332,14 +285,35 @@ const FILTER_TABS: { id: FilterTab; label: string }[] = [
   { id: "in_review", label: "In Carrier Review" },
   { id: "extended_review", label: "Extended Review" },
   { id: "rejected", label: "Rejected" },
+  { id: "closed", label: "Closed" },
   { id: "all", label: "All" },
   { id: "approved", label: "Approved" },
 ];
 
 function filterRegistrations(regs: Registration[], tab: FilterTab): Registration[] {
   if (tab === "all") return regs;
-  if (tab === "active") return regs.filter((r) => r.status !== "approved");
+  if (tab === "active") return regs.filter((r) => !TERMINAL_STATUSES.includes(r.status));
+  if (tab === "closed") return regs.filter((r) => CLOSED_STATUSES.includes(r.status));
   return regs.filter((r) => r.status === tab);
+}
+
+// ---------------------------------------------------------------------------
+// Email templates
+// ---------------------------------------------------------------------------
+
+function declineEmailPreview(reg: Registration) {
+  return {
+    subject: "Your RelayKit registration",
+    body: `We reviewed your registration for ${reg.app} and unfortunately we're not able to proceed.\n\n${reg.declineReason?.split(". ").slice(0, 1).join(". ")}.\n\nWe've refunded your $49 registration fee. If your situation changes, you're welcome to try again.\n\nBest,\nRelayKit Team`,
+  };
+}
+
+function abandonEmailPreview(reg: Registration) {
+  const reasonSummary = reg.abandonReason?.split(": ").slice(1).join(": ") ?? "multiple carrier rejections";
+  return {
+    subject: `Update on your ${reg.app} registration`,
+    body: `We submitted your registration to carriers ${reg.attempt} times but weren't able to get approval.\n\nThe carrier's feedback was: ${reasonSummary}\n\nWe've refunded your $49 registration fee. If you'd like to discuss options, reply to this email.\n\nBest,\nRelayKit Team`,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -351,21 +325,24 @@ export default function RegistrationPipelinePage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editableDescriptions, setEditableDescriptions] = useState<Record<string, string>>({});
   const [editableMessages, setEditableMessages] = useState<Record<string, string[]>>({});
+  const [showEmailPreview, setShowEmailPreview] = useState<string | null>(null);
 
   const filtered = filterRegistrations(REGISTRATIONS, filter);
 
   const counts: Record<FilterTab, number> = {
-    active: REGISTRATIONS.filter((r) => r.status !== "approved").length,
+    active: REGISTRATIONS.filter((r) => !TERMINAL_STATUSES.includes(r.status)).length,
     all: REGISTRATIONS.length,
     awaiting_review: REGISTRATIONS.filter((r) => r.status === "awaiting_review").length,
     in_review: REGISTRATIONS.filter((r) => r.status === "in_review").length,
     approved: REGISTRATIONS.filter((r) => r.status === "approved").length,
     rejected: REGISTRATIONS.filter((r) => r.status === "rejected").length,
     extended_review: REGISTRATIONS.filter((r) => r.status === "extended_review").length,
+    closed: REGISTRATIONS.filter((r) => CLOSED_STATUSES.includes(r.status)).length,
   };
 
   function toggleRow(id: string) {
     setExpandedId((prev) => (prev === id ? null : id));
+    setShowEmailPreview(null);
   }
 
   function getDescription(reg: Registration) {
@@ -402,7 +379,6 @@ export default function RegistrationPipelinePage() {
 
   return (
     <div>
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-text-primary">Registration Pipeline</h1>
@@ -418,25 +394,19 @@ export default function RegistrationPipelinePage() {
             type="button"
             onClick={() => setFilter(tab.id)}
             className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium transition duration-100 ease-linear cursor-pointer ${
-              filter === tab.id
-                ? "bg-gray-900 text-white"
-                : "bg-gray-100 text-text-secondary hover:bg-gray-200"
+              filter === tab.id ? "bg-gray-900 text-white" : "bg-gray-100 text-text-secondary hover:bg-gray-200"
             }`}
           >
             {tab.label}
-            <span className={`text-xs ${filter === tab.id ? "text-gray-400" : "text-text-tertiary"}`}>
-              {counts[tab.id]}
-            </span>
+            <span className={`text-xs ${filter === tab.id ? "text-gray-400" : "text-text-tertiary"}`}>{counts[tab.id]}</span>
           </button>
         ))}
       </div>
 
-      {/* Registration list */}
+      {/* List */}
       <div className="mt-6 rounded-xl border border-border-secondary bg-bg-primary divide-y divide-border-secondary">
         {filtered.length === 0 ? (
-          <div className="px-5 py-8 text-center text-sm text-text-tertiary">
-            No registrations in this status.
-          </div>
+          <div className="px-5 py-8 text-center text-sm text-text-tertiary">No registrations in this status.</div>
         ) : (
           filtered.map((reg) => {
             const cfg = STATUS_CONFIG[reg.status];
@@ -457,40 +427,21 @@ export default function RegistrationPipelinePage() {
                     </div>
                     <p className="mt-0.5 text-xs text-text-tertiary">{reg.timeInStatus}</p>
                   </div>
-                  <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-bg-brand-secondary text-text-brand-secondary shrink-0">
-                    {reg.useCase}
-                  </span>
-                  <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium shrink-0 ${cfg.bg} ${cfg.text}`}>
-                    {statusLabel(reg)}
-                  </span>
-                  <span className="text-sm font-medium text-text-brand-secondary shrink-0 w-24 text-right">
-                    {cfg.action}
-                  </span>
-                  <svg
-                    className={`size-4 text-text-tertiary shrink-0 transition duration-150 ease-linear ${isExpanded ? "rotate-180" : ""}`}
-                    viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                  >
-                    <polyline points="6 9 12 15 18 9" />
-                  </svg>
+                  <span className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium bg-bg-brand-secondary text-text-brand-secondary shrink-0">{reg.useCase}</span>
+                  <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium shrink-0 ${cfg.bg} ${cfg.text}`}>{statusLabel(reg)}</span>
+                  <span className="text-sm font-medium text-text-brand-secondary shrink-0 w-24 text-right">{cfg.action}</span>
+                  <svg className={`size-4 text-text-tertiary shrink-0 transition duration-150 ease-linear ${isExpanded ? "rotate-180" : ""}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9" /></svg>
                 </button>
 
                 {/* Expanded detail */}
                 {isExpanded && (
                   <div className="border-t border-border-secondary bg-bg-secondary px-5 py-6">
+                    {/* Business + Campaign grid */}
                     <div className="grid gap-6 lg:grid-cols-2">
-                      {/* Business details */}
                       <div>
                         <h4 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Business Details</h4>
                         <dl className="mt-3 space-y-2">
-                          {[
-                            ["Business", reg.business.name],
-                            ["Type", reg.business.type],
-                            ["EIN", reg.business.ein],
-                            ["Address", reg.business.address],
-                            ["Phone", reg.business.phone],
-                            ["Email", reg.business.email],
-                            ["Website", reg.business.website],
-                          ].map(([label, value]) => (
+                          {([["Business", reg.business.name], ["Type", reg.business.type], ["EIN", reg.business.ein], ["Address", reg.business.address], ["Phone", reg.business.phone], ["Email", reg.business.email], ["Website", reg.business.website]] as [string, string][]).map(([label, value]) => (
                             <div key={label} className="flex gap-3 text-sm">
                               <dt className="w-20 shrink-0 text-text-tertiary">{label}</dt>
                               <dd className="text-text-primary">{value}</dd>
@@ -498,8 +449,6 @@ export default function RegistrationPipelinePage() {
                           ))}
                         </dl>
                       </div>
-
-                      {/* Campaign details */}
                       <div>
                         <h4 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Campaign</h4>
                         <div className="mt-3 space-y-3">
@@ -518,21 +467,14 @@ export default function RegistrationPipelinePage() {
                           <div>
                             <p className="text-xs text-text-tertiary mb-1">Campaign description</p>
                             {isEditable(reg.status) ? (
-                              <textarea
-                                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary shadow-xs focus:outline-none focus:ring-1 focus:border-purple-500 focus:ring-purple-500"
-                                rows={4}
-                                value={getDescription(reg)}
-                                onChange={(e) => setDescription(reg.id, e.target.value)}
-                              />
+                              <textarea className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary shadow-xs focus:outline-none focus:ring-1 focus:border-purple-500 focus:ring-purple-500" rows={4} value={getDescription(reg)} onChange={(e) => setDescription(reg.id, e.target.value)} />
                             ) : (
                               <p className="text-sm text-text-primary">{reg.campaign.description}</p>
                             )}
                           </div>
                           <div>
                             <p className="text-xs text-text-tertiary mb-1">Compliance site</p>
-                            <a href="#" className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">
-                              {reg.complianceSiteUrl}
-                            </a>
+                            <a href="#" className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">{reg.complianceSiteUrl}</a>
                           </div>
                         </div>
                       </div>
@@ -546,23 +488,95 @@ export default function RegistrationPipelinePage() {
                       </div>
                     )}
 
-                    {/* AI pre-review */}
-                    {isEditable(reg.status) && reg.aiReview && reg.aiReview.length > 0 && (
-                      <div className="mt-6 rounded-lg bg-indigo-50 border border-indigo-200 p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <svg className="size-4 text-indigo-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                          </svg>
-                          <span className="text-sm font-semibold text-indigo-700">AI pre-review</span>
+                    {/* AI pre-review — traffic light */}
+                    {isEditable(reg.status) && reg.aiPreReview && (
+                      <div className="mt-6">
+                        {reg.aiPreReview.signal === "green" && (
+                          <div className="flex items-center gap-2">
+                            <svg className="size-5 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                            <span className="text-sm font-semibold text-green-600">{reg.aiPreReview.summary}</span>
+                          </div>
+                        )}
+                        {reg.aiPreReview.signal === "amber" && (
+                          <div className="rounded-lg border-l-4 border-l-amber-400 bg-amber-50 p-4">
+                            <div className="flex items-start gap-2">
+                              <svg className="size-5 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                              <p className="text-sm font-semibold text-amber-800">{reg.aiPreReview.summary}</p>
+                            </div>
+                            <div className="mt-3 flex items-center gap-3 pl-7">
+                              <button type="button" className="rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Revise message &rarr;</button>
+                              <button type="button" className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer">Submit anyway &rarr;</button>
+                            </div>
+                          </div>
+                        )}
+                        {reg.aiPreReview.signal === "red" && (
+                          <div className="rounded-lg border-l-4 border-l-red-400 bg-red-50 p-4">
+                            <div className="flex items-start gap-2">
+                              <svg className="size-5 text-red-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                              <p className="text-sm font-semibold text-red-700">{reg.aiPreReview.summary}</p>
+                            </div>
+                            {reg.aiPreReview.suggestedFix && (
+                              <div className="mt-3 ml-7 rounded-lg bg-gray-100 p-3">
+                                <p className="text-sm text-text-secondary italic">{reg.aiPreReview.suggestedFix}</p>
+                              </div>
+                            )}
+                            <div className="mt-3 flex items-center gap-3 pl-7">
+                              <button type="button" onClick={() => setDescription(reg.id, reg.aiPreReview!.suggestedFix ?? "")} className="rounded-lg bg-purple-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Apply fix &rarr;</button>
+                              <button type="button" className="rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Email customer &rarr;</button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Decline / Abandon resolution section */}
+                    {(reg.status === "declined" || reg.status === "abandoned") && (
+                      <div className="mt-6 space-y-4">
+                        <div className="rounded-lg bg-gray-100 border border-gray-200 p-4">
+                          <h4 className="text-sm font-semibold text-text-primary">Resolution</h4>
+                          <p className="mt-2 text-sm text-text-secondary">{reg.declineReason ?? reg.abandonReason}</p>
+                          {reg.refundStatus && (
+                            <div className="mt-3 flex items-center gap-3">
+                              <span className="text-sm text-text-success-primary font-medium">{reg.refundStatus}</span>
+                              {reg.refundStatus === "Refund pending" && (
+                                <button type="button" className="rounded-lg bg-purple-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Process refund &rarr;</button>
+                              )}
+                            </div>
+                          )}
                         </div>
-                        <ul className="space-y-1.5">
-                          {reg.aiReview.map((note, i) => (
-                            <li key={i} className="flex gap-2 text-sm text-indigo-700">
-                              <span className="shrink-0 mt-1">•</span>
-                              <span>{note}</span>
-                            </li>
-                          ))}
-                        </ul>
+
+                        {/* Email action */}
+                        <div className="rounded-lg border border-border-secondary bg-bg-primary p-4">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-semibold text-text-primary">{reg.status === "declined" ? "Decline notification" : "Closure notification"}</p>
+                              <p className="text-xs text-text-tertiary mt-0.5">{reg.emailSent ? "Email sent" : "Not yet sent"}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setShowEmailPreview(showEmailPreview === reg.id ? null : reg.id)}
+                              className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                            >
+                              {reg.status === "declined" ? "Send decline email →" : "Send closure email →"}
+                            </button>
+                          </div>
+
+                          {showEmailPreview === reg.id && (() => {
+                            const email = reg.status === "declined" ? declineEmailPreview(reg) : abandonEmailPreview(reg);
+                            return (
+                              <div className="mt-4 rounded-lg bg-bg-secondary border border-border-secondary p-4">
+                                <div className="text-sm">
+                                  <p className="text-text-tertiary">Subject: <span className="text-text-primary font-medium">{email.subject}</span></p>
+                                  <div className="mt-3 whitespace-pre-line text-text-secondary leading-relaxed">{email.body}</div>
+                                </div>
+                                <div className="mt-4 flex items-center gap-3">
+                                  <button type="button" onClick={() => console.log("Send email:", reg.id)} className="rounded-lg bg-purple-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Send email</button>
+                                  <button type="button" onClick={() => setShowEmailPreview(null)} className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer">Cancel</button>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                        </div>
                       </div>
                     )}
 
@@ -574,12 +588,7 @@ export default function RegistrationPipelinePage() {
                           <div key={i}>
                             <p className="text-xs font-medium text-text-tertiary mb-1">{msg.label}</p>
                             {isEditable(reg.status) ? (
-                              <textarea
-                                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary shadow-xs focus:outline-none focus:ring-1 focus:border-purple-500 focus:ring-purple-500"
-                                rows={2}
-                                value={msg.text}
-                                onChange={(e) => setMessage(reg.id, i, e.target.value)}
-                              />
+                              <textarea className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary shadow-xs focus:outline-none focus:ring-1 focus:border-purple-500 focus:ring-purple-500" rows={2} value={msg.text} onChange={(e) => setMessage(reg.id, i, e.target.value)} />
                             ) : (
                               <div className="rounded-lg bg-bg-primary border border-border-secondary p-3">
                                 <p className="text-sm text-text-secondary">{msg.text}</p>
@@ -590,61 +599,23 @@ export default function RegistrationPipelinePage() {
                       </div>
                     </div>
 
-                    {/* Action buttons */}
+                    {/* Action buttons for active statuses */}
                     {reg.status === "awaiting_review" && (
                       <div className="mt-6 flex items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => console.log("Submit to carrier:", reg.id)}
-                          className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Submit to carrier
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => console.log("Request changes:", reg.id)}
-                          className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Request changes from customer
-                        </button>
+                        <button type="button" onClick={() => console.log("Submit to carrier:", reg.id)} className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Submit to carrier</button>
+                        <button type="button" onClick={() => console.log("Request changes:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Request changes from customer</button>
                       </div>
                     )}
-
                     {reg.status === "rejected" && (
                       <div className="mt-6 flex items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => console.log("Resubmit to carrier:", reg.id)}
-                          className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Resubmit to carrier
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => console.log("Contact customer:", reg.id)}
-                          className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Contact customer
-                        </button>
+                        <button type="button" onClick={() => console.log("Resubmit:", reg.id)} className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Resubmit to carrier</button>
+                        <button type="button" onClick={() => console.log("Contact customer:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact customer</button>
                       </div>
                     )}
-
                     {reg.status === "extended_review" && (
                       <div className="mt-6 flex items-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => console.log("Contact carrier:", reg.id)}
-                          className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Contact carrier
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => console.log("Contact customer:", reg.id)}
-                          className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Contact customer
-                        </button>
+                        <button type="button" onClick={() => console.log("Contact carrier:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact carrier</button>
+                        <button type="button" onClick={() => console.log("Contact customer:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact customer</button>
                       </div>
                     )}
                   </div>
