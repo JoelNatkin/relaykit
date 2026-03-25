@@ -79,7 +79,7 @@ const REGISTRATIONS: Registration[] = [
     attempt: 1,
     submitted: "yesterday",
     timeInStatus: "Submitted yesterday",
-    aiPreReview: { signal: "amber", summary: "Satisfaction follow-up (Message 4) may be classified as marketing by carriers." },
+    aiPreReview: { signal: "amber", summary: "Website (techrepair.io) returns 404 — carrier may verify URL during review. Confirm site is live before submitting." },
     business: { name: "TechRepair Inc", type: "Corporation", ein: "***-**-4321", address: "789 Tech Blvd, Austin, TX 78701", phone: "(512) 555-0198", email: "ops@techrepair.io", website: "techrepair.io" },
     campaign: { description: "TechRepair is a device repair service. Sends support ticket acknowledgments, repair status updates, completion notifications, and customer satisfaction follow-ups via SMS.", useCase: "Customer support", messageTypes: ["Ticket acknowledgment", "Status update", "Repair complete", "Satisfaction follow-up", "Pickup reminder"] },
     sampleMessages: [
@@ -100,10 +100,10 @@ const REGISTRATIONS: Registration[] = [
     attempt: 2,
     submitted: "4 days ago",
     timeInStatus: "Rejected 6 hours ago (2nd attempt)",
-    rejectionReason: "Campaign description is too vague. Carrier requires specific description of message types and when they are triggered. Current description says 'sends texts to customers about their appointments' without specifying appointment-related use case. This was also flagged on the first submission.",
-    aiPreReview: { signal: "red", summary: "Campaign description too vague — same issue flagged on 1st attempt.", suggestedFix: "\"FreshCuts is a barbershop booking platform. Sends booking confirmations when customers schedule appointments, appointment reminders 24 hours before visits, cancellation notices, same-day availability alerts for open slots, and reschedule confirmations when appointments are moved.\"" },
+    rejectionReason: "Campaign description references 'same-day availability alerts' which carrier classified as promotional content. Carrier requires all message types to be directly triggered by customer action.",
+    aiPreReview: { signal: "red", summary: "Carrier flagged 'same-day availability alerts' as promotional. Remove from this campaign or reframe as waitlist-triggered.", suggestedFix: "FreshCuts is a barbershop booking platform. Sends booking confirmations when customers schedule appointments, appointment reminders 24 hours before visits, cancellation notices, waitlist notifications for customers who opted into availability updates, and reschedule confirmations when appointments are moved." },
     business: { name: "FreshCuts Barbershop", type: "Sole Proprietor", ein: "N/A (sole prop)", address: "321 Main St, Denver, CO 80202", phone: "(303) 555-0167", email: "mike@freshcuts.co", website: "freshcuts.co" },
-    campaign: { description: "FreshCuts is a barbershop that sends texts to customers about their appointments.", useCase: "Appointment reminders", messageTypes: ["Booking confirmation", "Appointment reminder", "Cancellation notice", "Same-day availability", "Reschedule confirmation"] },
+    campaign: { description: "FreshCuts is a barbershop booking platform. Sends booking confirmations when customers schedule appointments, appointment reminders 24 hours before visits, cancellation notices, same-day availability alerts for open slots, and reschedule confirmations when appointments are moved.", useCase: "Appointment reminders", messageTypes: ["Booking confirmation", "Appointment reminder", "Cancellation notice", "Same-day availability", "Reschedule confirmation"] },
     sampleMessages: [
       { label: "Booking confirmation", text: "FreshCuts: Your haircut is booked for Saturday at 11 AM. Reply STOP to opt out." },
       { label: "Appointment reminder", text: "FreshCuts: Reminder — haircut tomorrow at 11 AM. Reply STOP to opt out." },
@@ -503,9 +503,12 @@ export default function RegistrationPipelinePage() {
                               <svg className="size-5 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
                               <p className="text-sm font-semibold text-amber-800">{reg.aiPreReview.summary}</p>
                             </div>
-                            <div className="mt-3 flex items-center gap-3 pl-7">
-                              <button type="button" className="rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Revise message &rarr;</button>
-                              <button type="button" className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer">Submit anyway &rarr;</button>
+                            <div className="mt-3 flex items-center justify-end gap-3">
+                              <button type="button" className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer">Submit anyway</button>
+                              <button type="button" className="inline-flex items-center gap-1.5 rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">
+                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                                Revise message
+                              </button>
                             </div>
                           </div>
                         )}
@@ -520,9 +523,15 @@ export default function RegistrationPipelinePage() {
                                 <p className="text-sm text-text-secondary italic">{reg.aiPreReview.suggestedFix}</p>
                               </div>
                             )}
-                            <div className="mt-3 flex items-center gap-3 pl-7">
-                              <button type="button" onClick={() => setDescription(reg.id, reg.aiPreReview!.suggestedFix ?? "")} className="rounded-lg bg-purple-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Apply fix &rarr;</button>
-                              <button type="button" className="rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Email customer &rarr;</button>
+                            <div className="mt-3 flex items-center justify-end gap-3">
+                              <button type="button" className="inline-flex items-center gap-1.5 rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">
+                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                                Email customer
+                              </button>
+                              <button type="button" onClick={() => setDescription(reg.id, reg.aiPreReview!.suggestedFix ?? "")} className="inline-flex items-center gap-1.5 rounded-lg bg-purple-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">
+                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                                Apply fix
+                              </button>
                             </div>
                           </div>
                         )}
@@ -586,7 +595,7 @@ export default function RegistrationPipelinePage() {
                       <div className="mt-3 space-y-3">
                         {getMessages(reg).map((msg, i) => (
                           <div key={i}>
-                            <p className="text-xs font-medium text-text-tertiary mb-1">{msg.label}</p>
+                            <p className="text-xs font-medium text-text-tertiary mb-1">{i + 1}. {msg.label}</p>
                             {isEditable(reg.status) ? (
                               <textarea className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary shadow-xs focus:outline-none focus:ring-1 focus:border-purple-500 focus:ring-purple-500" rows={2} value={msg.text} onChange={(e) => setMessage(reg.id, i, e.target.value)} />
                             ) : (
@@ -601,21 +610,21 @@ export default function RegistrationPipelinePage() {
 
                     {/* Action buttons for active statuses */}
                     {reg.status === "awaiting_review" && (
-                      <div className="mt-6 flex items-center gap-3">
-                        <button type="button" onClick={() => console.log("Submit to carrier:", reg.id)} className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Submit to carrier</button>
+                      <div className="mt-6 flex items-center justify-end gap-3">
                         <button type="button" onClick={() => console.log("Request changes:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Request changes from customer</button>
+                        <button type="button" onClick={() => console.log("Submit to carrier:", reg.id)} className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Submit to carrier</button>
                       </div>
                     )}
                     {reg.status === "rejected" && (
-                      <div className="mt-6 flex items-center gap-3">
-                        <button type="button" onClick={() => console.log("Resubmit:", reg.id)} className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Resubmit to carrier</button>
+                      <div className="mt-6 flex items-center justify-end gap-3">
                         <button type="button" onClick={() => console.log("Contact customer:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact customer</button>
+                        <button type="button" onClick={() => console.log("Resubmit:", reg.id)} className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Resubmit to carrier</button>
                       </div>
                     )}
                     {reg.status === "extended_review" && (
-                      <div className="mt-6 flex items-center gap-3">
-                        <button type="button" onClick={() => console.log("Contact carrier:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact carrier</button>
+                      <div className="mt-6 flex items-center justify-end gap-3">
                         <button type="button" onClick={() => console.log("Contact customer:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact customer</button>
+                        <button type="button" onClick={() => console.log("Contact carrier:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact carrier</button>
                       </div>
                     )}
                   </div>
