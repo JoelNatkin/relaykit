@@ -491,7 +491,21 @@ export default function CustomerDetailPage() {
           )}
         </SectionCard>
 
-        {/* 2. Compliance Card */}
+        {/* 2. Message Volume */}
+        <SectionCard title="Message Volume — Last 30 Days">
+          {customer.volume.sent > 0 ? (
+            <div className="flex gap-4 flex-wrap">
+              <StatCard label="Sent" value={customer.volume.sent} sub={`${customer.volume.dailyAvg}/day avg`} />
+              <StatCard label="Delivered" value={customer.volume.delivered} />
+              <StatCard label="Failed" value={customer.volume.failed} />
+              <StatCard label="Blocked" value={customer.volume.blocked} sub="compliance" />
+            </div>
+          ) : (
+            <p className="text-sm text-text-tertiary">No messages sent yet.</p>
+          )}
+        </SectionCard>
+
+        {/* 3. Compliance */}
         <SectionCard title="Compliance">
           {customer.compliance.rate > 0 ? (
             <div className="flex items-center justify-between">
@@ -514,21 +528,44 @@ export default function CustomerDetailPage() {
           )}
         </SectionCard>
 
-        {/* 3. Message Volume */}
-        <SectionCard title="Message Volume — Last 30 Days">
-          {customer.volume.sent > 0 ? (
-            <div className="flex gap-4 flex-wrap">
-              <StatCard label="Sent" value={customer.volume.sent} sub={`${customer.volume.dailyAvg}/day avg`} />
-              <StatCard label="Delivered" value={customer.volume.delivered} />
-              <StatCard label="Failed" value={customer.volume.failed} />
-              <StatCard label="Blocked" value={customer.volume.blocked} sub="compliance" />
+        {/* 4. Attention Items */}
+        <SectionCard title="Attention Items">
+          {customer.attentionItems.length > 0 ? (
+            <div className="space-y-3">
+              {customer.attentionItems.map((item, i) => (
+                <div key={i} className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
+                  <span className={`mt-0.5 size-2.5 shrink-0 rounded-full ${SEVERITY_DOT[item.severity]}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-text-primary">{item.issue}</p>
+                    <p className="text-xs text-text-tertiary mt-0.5">{item.time}</p>
+                  </div>
+                  <span className="text-sm font-medium text-purple-600 shrink-0">{item.action}</span>
+                </div>
+              ))}
             </div>
           ) : (
-            <p className="text-sm text-text-tertiary">No messages sent yet.</p>
+            <p className="text-sm text-text-success-primary">No attention items — this customer is in good standing.</p>
           )}
         </SectionCard>
 
-        {/* 4. Recent Messages */}
+        {/* 5. Billing */}
+        <SectionCard title="Billing">
+          <div className="grid grid-cols-2 gap-x-8 gap-y-1">
+            <DetailRow label="Plan" value={customer.billing.plan} />
+            <DetailRow label="Registration fee" value={customer.billing.registrationFee} />
+            <DetailRow label="Go-live fee" value={customer.billing.goLiveFee} />
+            <DetailRow label="Monthly rate" value={customer.billing.monthlyRate} />
+            <DetailRow
+              label="Payment status"
+              value={<span className={paymentDisplay.color}>{paymentDisplay.label}</span>}
+            />
+            <DetailRow label="Current period" value={`${customer.billing.periodStart} – ${customer.billing.periodEnd}`} />
+            <DetailRow label="Messages this period" value={customer.billing.messagesThisPeriod > 0 ? customer.billing.messagesThisPeriod.toLocaleString() : "—"} />
+            <DetailRow label="Overage" value={customer.billing.overage} />
+          </div>
+        </SectionCard>
+
+        {/* 6. Recent Messages */}
         <SectionCard title="Recent Messages">
           {customer.recentMessages.length > 0 ? (
             <div className="overflow-x-auto -mx-6 px-6">
@@ -574,43 +611,6 @@ export default function CustomerDetailPage() {
             </div>
           ) : (
             <p className="text-sm text-text-tertiary">No messages sent yet.</p>
-          )}
-        </SectionCard>
-
-        {/* 5. Billing Summary */}
-        <SectionCard title="Billing">
-          <div className="grid grid-cols-2 gap-x-8 gap-y-1">
-            <DetailRow label="Plan" value={customer.billing.plan} />
-            <DetailRow label="Registration fee" value={customer.billing.registrationFee} />
-            <DetailRow label="Go-live fee" value={customer.billing.goLiveFee} />
-            <DetailRow label="Monthly rate" value={customer.billing.monthlyRate} />
-            <DetailRow
-              label="Payment status"
-              value={<span className={paymentDisplay.color}>{paymentDisplay.label}</span>}
-            />
-            <DetailRow label="Current period" value={`${customer.billing.periodStart} – ${customer.billing.periodEnd}`} />
-            <DetailRow label="Messages this period" value={customer.billing.messagesThisPeriod > 0 ? customer.billing.messagesThisPeriod.toLocaleString() : "—"} />
-            <DetailRow label="Overage" value={customer.billing.overage} />
-          </div>
-        </SectionCard>
-
-        {/* 6. Attention Items */}
-        <SectionCard title="Attention Items">
-          {customer.attentionItems.length > 0 ? (
-            <div className="space-y-3">
-              {customer.attentionItems.map((item, i) => (
-                <div key={i} className="flex items-start gap-3 rounded-lg bg-gray-50 p-3">
-                  <span className={`mt-0.5 size-2.5 shrink-0 rounded-full ${SEVERITY_DOT[item.severity]}`} />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-text-primary">{item.issue}</p>
-                    <p className="text-xs text-text-tertiary mt-0.5">{item.time}</p>
-                  </div>
-                  <span className="text-sm font-medium text-purple-600 shrink-0">{item.action}</span>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-text-success-primary">No attention items — this customer is in good standing.</p>
           )}
         </SectionCard>
       </div>
