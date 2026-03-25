@@ -325,6 +325,7 @@ export default function RegistrationPipelinePage() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editableDescriptions, setEditableDescriptions] = useState<Record<string, string>>({});
   const [editableMessages, setEditableMessages] = useState<Record<string, string[]>>({});
+  const [editableBusiness, setEditableBusiness] = useState<Record<string, Record<string, string>>>({});
   const [showEmailPreview, setShowEmailPreview] = useState<string | null>(null);
 
   const filtered = filterRegistrations(REGISTRATIONS, filter);
@@ -367,6 +368,19 @@ export default function RegistrationPipelinePage() {
       next[index] = value;
       return { ...prev, [id]: next };
     });
+  }
+
+  function getBusinessField(reg: Registration, field: string) {
+    return editableBusiness[reg.id]?.[field] ?? (reg.business as Record<string, string>)[field] ?? "";
+  }
+
+  function setBusinessField(id: string, field: string, value: string) {
+    setEditableBusiness((prev) => ({ ...prev, [id]: { ...prev[id], [field]: value } }));
+  }
+
+  function isBusinessEdited(reg: Registration, field: string) {
+    const override = editableBusiness[reg.id]?.[field];
+    return override !== undefined && override !== (reg.business as Record<string, string>)[field];
   }
 
   const isEditable = (status: RegStatus) => status === "awaiting_review" || status === "rejected";
@@ -441,10 +455,34 @@ export default function RegistrationPipelinePage() {
                       <div>
                         <h4 className="text-sm font-semibold text-text-primary uppercase tracking-wide">Business Details</h4>
                         <dl className="mt-3 space-y-2">
-                          {([["Business", reg.business.name], ["Type", reg.business.type], ["EIN", reg.business.ein], ["Address", reg.business.address], ["Phone", reg.business.phone], ["Email", reg.business.email], ["Website", reg.business.website]] as [string, string][]).map(([label, value]) => (
-                            <div key={label} className="flex gap-3 text-sm">
-                              <dt className="w-20 shrink-0 text-text-tertiary">{label}</dt>
-                              <dd className="text-text-primary">{value}</dd>
+                          {([
+                            { label: "Business", field: "name", editable: true },
+                            { label: "Type", field: "type", editable: false },
+                            { label: "EIN", field: "ein", editable: false },
+                            { label: "Address", field: "address", editable: true },
+                            { label: "Phone", field: "phone", editable: true },
+                            { label: "Email", field: "email", editable: true },
+                            { label: "Website", field: "website", editable: true },
+                          ]).map((row) => (
+                            <div key={row.label} className="flex gap-3 text-sm items-baseline">
+                              <dt className="w-20 shrink-0 text-text-tertiary">{row.label}</dt>
+                              <dd className="flex-1 flex items-baseline gap-1.5">
+                                {isEditable(reg.status) && row.editable ? (
+                                  <>
+                                    <input
+                                      type="text"
+                                      className="flex-1 bg-transparent border-b border-transparent text-text-primary focus:border-purple-400 focus:outline-none transition duration-100 ease-linear py-0.5"
+                                      value={getBusinessField(reg, row.field)}
+                                      onChange={(e) => setBusinessField(reg.id, row.field, e.target.value)}
+                                    />
+                                    {isBusinessEdited(reg, row.field) && (
+                                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" title="Edited" />
+                                    )}
+                                  </>
+                                ) : (
+                                  <span className="text-text-primary">{(reg.business as Record<string, string>)[row.field]}</span>
+                                )}
+                              </dd>
                             </div>
                           ))}
                         </dl>
@@ -503,8 +541,7 @@ export default function RegistrationPipelinePage() {
                               <svg className="size-5 text-amber-500 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
                               <p className="text-sm font-semibold text-amber-800">{reg.aiPreReview.summary}</p>
                             </div>
-                            <div className="mt-3 flex items-center justify-end gap-3">
-                              <button type="button" className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer">Submit anyway</button>
+                            <div className="mt-3 flex items-center justify-end">
                               <button type="button" className="inline-flex items-center gap-1.5 rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">
                                 <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
                                 Email customer
