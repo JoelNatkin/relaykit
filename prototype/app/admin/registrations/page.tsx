@@ -506,8 +506,8 @@ export default function RegistrationPipelinePage() {
                             <div className="mt-3 flex items-center justify-end gap-3">
                               <button type="button" className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer">Submit anyway</button>
                               <button type="button" className="inline-flex items-center gap-1.5 rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">
-                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
-                                Revise message
+                                <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                                Email customer
                               </button>
                             </div>
                           </div>
@@ -610,21 +610,25 @@ export default function RegistrationPipelinePage() {
 
                     {/* Action buttons for active statuses */}
                     {reg.status === "awaiting_review" && (
-                      <div className="mt-6 flex items-center justify-end gap-3">
-                        <button type="button" onClick={() => console.log("Request changes:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Request changes from customer</button>
+                      <div className="mt-6 flex items-center justify-end">
                         <button type="button" onClick={() => console.log("Submit to carrier:", reg.id)} className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Submit to carrier</button>
                       </div>
                     )}
                     {reg.status === "rejected" && (
-                      <div className="mt-6 flex items-center justify-end gap-3">
-                        <button type="button" onClick={() => console.log("Contact customer:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact customer</button>
+                      <div className="mt-6 flex items-center justify-end">
                         <button type="button" onClick={() => console.log("Resubmit:", reg.id)} className="rounded-lg bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition duration-100 ease-linear cursor-pointer">Resubmit to carrier</button>
                       </div>
                     )}
                     {reg.status === "extended_review" && (
                       <div className="mt-6 flex items-center justify-end gap-3">
-                        <button type="button" onClick={() => console.log("Contact customer:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact customer</button>
-                        <button type="button" onClick={() => console.log("Contact carrier:", reg.id)} className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">Contact carrier</button>
+                        <button type="button" onClick={() => console.log("Email customer:", reg.id)} className="inline-flex items-center gap-1.5 rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">
+                          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                          Email customer
+                        </button>
+                        <button type="button" onClick={() => console.log("Email carrier:", reg.id)} className="inline-flex items-center gap-1.5 rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary hover:bg-bg-secondary transition duration-100 ease-linear cursor-pointer">
+                          <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" /></svg>
+                          Email carrier
+                        </button>
                       </div>
                     )}
                   </div>
