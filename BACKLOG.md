@@ -1,6 +1,6 @@
 # BACKLOG.md — RelayKit
 ## Ideas, Deferred Work, and Future Features
-### Last updated: March 23, 2026
+### Last updated: March 25, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -104,6 +104,14 @@
 - **Playbook per-category expansion** — Add PLAYBOOK_FLOWS entries for verification, orders, support, and other categories. Currently only appointments is populated. Structure is ready (keyed by category slug). (Origin: March 23 session, D-217)
 
 - **Post-download playbook variant** — On public Messages page, after download, the playbook section could expand to show the full prompt, prerequisites checklist ("Your app needs: a way to store appointments..."), and a copy button. Deferred as separate task. (Origin: March 23 brainstorming)
+
+## Message Management (Deferred)
+
+- **Full message library editor** — The proxy classifies every message by type. Architecturally feasible to surface all message types in a browsable library with editing. Deliberately deferred: creates two sources of truth (code vs dashboard), becomes a crutch, customer has to keep app and dashboard in sync. Only build if beta users explicitly request it and the two-source-of-truth problem has a clean solution. (Origin: D-240 discussion, March 25)
+
+- **Marketing persona as dashboard user** — Developer builds the integration, marketing person edits message copy in the dashboard without touching code. Natural evolution of D-240 but not beta scope. Risk: slides toward Mailchimp territory (automations, audience management, campaign scheduling). The line is: RelayKit manages delivery and compliance, customer manages content. Everything beyond that is out of scope. (Origin: D-240 discussion, March 25)
+
+---
 
 ## Maybe — Interesting ideas, not yet validated
 

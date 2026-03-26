@@ -731,3 +731,29 @@ MODE 2 — Novel message detection (live traffic): The deterministic compliance 
 
 Deterministic proxy remains the real-time gatekeeper for all objective checks (opt-out language, message type registration, opt-out list, rate limits). AI handles judgment calls that deterministic rules can't.
 _Affects: PRD_09 compliance proxy architecture, admin registration pipeline, template engine output, admin attention queue, API response codes._
+
+**D-237 — Three-layer automated compliance enforcement model** (Date: 2026-03-25)
+Layer 1 (Proxy fixes): Mechanical issues (missing opt-out suffix, URL shorteners) fixed silently at proxy, indefinitely, no customer notification needed. AI-fixable issues (promotional language in transactional message, borderline content) rewritten at proxy with customer notified once via SMS (if compliance alerts enabled in Settings) + email showing original vs rewrite and what to update in their code. No deadline on rewrites — proxy override runs indefinitely at no meaningful cost.
+Layer 2 (Customer informed): Periodic email digest reminds customer of active rewrites: "RelayKit is still rewriting N of your messages. Here's what to update when you get a chance." SMS compliance alerts are the primary real-time notification channel. Digest is the passive channel for non-urgent accumulated items.
+Layer 3 (Disengaged customer backstop): Only activates when customer has SMS alerts off AND ignores emails AND same problematic pattern persists for extended period. Escalation sequence: final warning email with specific deadline → block the specific message type (other types unaffected) → suspend all sending (only for systemic/egregious patterns or external carrier flags). This layer almost never fires for good-faith customers. It protects the platform from customers who opted out of every lifeline offered to them.
+_Affects: PRD_09 compliance proxy, PRD_08 compliance monitoring, admin Control Room, customer Settings, email notifications._
+
+**D-238 — Control Room attention queue — inline expansion with enforcement state** (Date: 2026-03-25)
+Each queue item expands in place to show: flagged message content, recipient (masked), timestamp, what the compliance filter detected, current enforcement layer and state, time remaining until auto-escalation (Layer 3 only), and operator override buttons (Dismiss, Escalate, Suspend). No navigation to Customer Detail for daily resolution workflow — everything happens inline. Customer Detail remains for deep-dive context when needed (e.g., customer emails you).
+_Affects: Admin Control Room page, attention queue component._
+
+**D-239 — Compliance alerts toggle surfaced on Overview page** (Date: 2026-03-25)
+After phone verification step during onboarding, prompt customer to enable SMS compliance alerts to their verified number. Also visible on post-approval compliance card as status line: "Compliance alerts: On — (555) 123-4567" or amber nudge if off. Settings remains the canonical home for the toggle, but Overview surfaces it at strategic moments. Default: on. Framing: "This is how RelayKit tells you when it caught something for you" — not "enable notifications."
+_Affects: Overview page (compliance card, onboarding steps), Settings page, customer notifications._
+
+**D-240 — Dashboard message editor for flagged messages only** (Date: 2026-03-25)
+When the proxy rewrites a flagged message (D-237 Layer 1), the customer's dashboard shows the original message, the AI rewrite that's currently active, and an editable text field where the customer can write their own replacement. Customer can: accept the AI rewrite (already running), write their own custom replacement (proxy swaps it in), or dismiss and update their code instead. Editor ONLY surfaces for messages the proxy has flagged — it is a repair tool, not a message authoring tool. The customer's app still controls all sending logic (when, who, triggers, variables). RelayKit only substitutes the string content at the proxy layer. This eliminates the code-redeploy friction for simple text fixes. Important boundary: do NOT surface an editor for all messages — that creates two sources of truth and slides toward message management platform territory.
+_Affects: Customer dashboard (Messages tab or new Compliance section), PRD_09 proxy override mechanism, message data model._
+
+**D-241 — Compliance protection copy touchpoints across customer journey** (Date: 2026-03-25)
+Three strategic placement moments, all using Experience Principles tone:
+1. Marketing pages (Category Landing "What You Get" section): One line — "Every message is checked before it reaches the carrier. If something looks off, RelayKit fixes it automatically and lets you know." Home page Go Live pricing card: add "Automated message protection" bullet.
+2. Onboarding (Overview page pre-registration): Registration sidebar adds one line — "After approval, every message runs through RelayKit's compliance layer — issues are caught before carriers see them."
+3. Post-approval (Messages tab Approved state): Below registered message types, concrete marketing examples showing what needs separate registration: "'Get 20% off your next visit!' or 'We miss you — book today for a free add-on' are marketing messages and need their own registration. Your current registration covers [appointment reminders, confirmations, etc.] only."
+No enforcement ladder detail is ever exposed to the customer. Framing is always "RelayKit protects your messages" never compliance enforcement language.
+_Affects: Category landing pages, home page pricing card, Overview page sidebar, Messages tab Approved state._
