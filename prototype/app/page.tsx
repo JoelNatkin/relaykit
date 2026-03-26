@@ -209,7 +209,7 @@ export default function MarketingHome() {
 
       {/* Pricing context line */}
       <p className="py-8 text-center text-sm text-text-tertiary">
-        Free to build and test. $199 setup + $19/mo when you go live.
+        Free to build and test. $49 to register, $150 after approval, then $19/mo.
       </p>
 
       {/* Category grid — the product showcase */}
@@ -288,19 +288,19 @@ export default function MarketingHome() {
           <div className="flex flex-col rounded-xl border border-border-primary p-6">
             <h3 className="text-lg font-bold text-text-primary">Go live</h3>
             <div className="mt-3">
-              <span className="text-3xl font-bold text-text-primary">$199</span>
+              <span className="text-3xl font-bold text-text-primary">$49</span>
               <span className="text-sm text-text-tertiary ml-1">to register</span>
               <span className="text-sm text-text-tertiary mx-1.5">+</span>
               <span className="text-3xl font-bold text-text-primary">$19</span>
               <span className="text-sm text-text-tertiary">/mo</span>
             </div>
-            <p className="mt-3 text-sm text-text-tertiary">
-              Real messages to real users. Registration approved in days, not weeks.
+            <p className="mt-3 text-base text-text-tertiary">
+              <span className="font-semibold text-text-primary">$150 go-live fee</span> after approval. Full refund if not approved.
             </p>
             <ul className="mt-5 flex flex-col gap-3">
               {[
                 "Carrier registration handled for you \u2014 approved in days",
-                "$49 to register. $150 only after you\u2019re approved. Full refund if not.",
+                "No credit card to start building",
                 "500 messages included per month",
                 "Dedicated phone number",
                 "Compliance monitoring and drift detection included",

@@ -266,7 +266,7 @@ export default function CategoryLanding() {
 
       {/* Pricing context line */}
       <p className="mt-12 text-center text-sm text-text-tertiary">
-        Free sandbox. No credit card. $199 + $19/mo when you&apos;re ready to go live.
+        Free sandbox. No credit card. $49 to register, $150 + $19/mo after approval.
       </p>
 
       {/* What you get — full-width gray band */}

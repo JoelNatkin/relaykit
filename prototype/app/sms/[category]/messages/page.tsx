@@ -955,7 +955,7 @@ function StepsLayout({
           </div>
 
           <p className="mt-5 text-sm text-text-tertiary">
-            Free sandbox, no credit card. $199 + $19/mo when you&apos;re ready to go live.<br />You&apos;ll get two files and a sandbox API key.
+            Free sandbox, no credit card. $49 to register, $150 + $19/mo after approval.<br />You&apos;ll get two files and a sandbox API key.
           </p>
 
           {/* Mobile CTA — after logos, full width */}
@@ -1050,17 +1050,19 @@ function StepsLayout({
                 <div className="flex flex-col rounded-xl border border-border-primary bg-bg-primary p-6">
                   <h4 className="text-lg font-bold text-text-primary">Go live</h4>
                   <div className="mt-3">
-                    <span className="text-3xl font-bold text-text-primary">$199</span>
+                    <span className="text-3xl font-bold text-text-primary">$49</span>
                     <span className="text-sm text-text-tertiary ml-1">to register</span>
                     <span className="text-sm text-text-tertiary mx-1.5">+</span>
                     <span className="text-3xl font-bold text-text-primary">$19</span>
                     <span className="text-sm text-text-tertiary">/mo</span>
                   </div>
-                  <p className="mt-3 text-sm text-text-tertiary">Real messages to real users. Registration approved in days, not weeks.</p>
+                  <p className="mt-3 text-base text-text-tertiary">
+                    <span className="font-semibold text-text-primary">$150 go-live fee</span> after approval. Full refund if not approved.
+                  </p>
                   <ul className="mt-5 flex flex-col gap-3">
                     {[
                       "Carrier registration handled for you \u2014 approved in days",
-                      "$49 to register. $150 only after you\u2019re approved. Full refund if not.",
+                      "No credit card to start building",
                       "500 messages included per month",
                       "Dedicated phone number",
                       "Compliance monitoring and drift detection included",

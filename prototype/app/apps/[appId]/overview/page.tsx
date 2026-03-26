@@ -288,7 +288,7 @@ interface StepperStep {
 
 const PENDING_STEPS: StepperStep[] = [
   { label: "Registration submitted", detail: "Mar 17", status: "completed" },
-  { label: "Payment confirmed", detail: "$199 one-time setup", status: "completed" },
+  { label: "Registration fee paid", detail: "$49", status: "completed" },
   { label: "Compliance site published", detail: null, link: { text: "View site \u2192", href: "#" }, status: "completed" },
   { label: "Carrier review", detail: "Carriers verify your business and message content. We respond to any questions on your behalf.", status: "active" },
   { label: "Phone number assigned", detail: null, status: "upcoming" },
@@ -297,7 +297,7 @@ const PENDING_STEPS: StepperStep[] = [
 
 const APPROVED_STEPS: StepperStep[] = [
   { label: "Registration submitted", detail: "Mar 17", status: "completed" },
-  { label: "Payment confirmed", detail: "$199 one-time setup", status: "completed" },
+  { label: "Registration fee paid", detail: "$49", status: "completed" },
   { label: "Compliance site published", detail: null, link: { text: "View site \u2192", href: "#" }, status: "completed" },
   { label: "Carrier review", detail: "Approved Mar 31", status: "completed" },
   { label: "Phone number assigned", detail: "+1 (555) 867-5309", status: "completed" },
@@ -306,7 +306,7 @@ const APPROVED_STEPS: StepperStep[] = [
 
 const CHANGES_REQUESTED_STEPS: StepperStep[] = [
   { label: "Registration submitted", detail: "Mar 17", status: "completed" },
-  { label: "Payment confirmed", detail: "$199 one-time setup", status: "completed" },
+  { label: "Registration fee paid", detail: "$49", status: "completed" },
   { label: "Compliance site published", detail: null, link: { text: "View site \u2192", href: "#" }, status: "completed" },
   { label: "Carrier review", detail: "Changes requested Mar 22", status: "completed" },
   { label: "Resubmission under review", detail: "Updated and resubmitted Mar 24. Carriers re-reviewing.", status: "active" },
@@ -316,7 +316,7 @@ const CHANGES_REQUESTED_STEPS: StepperStep[] = [
 
 const REJECTED_STEPS: StepperStep[] = [
   { label: "Registration submitted", detail: "Mar 17", status: "completed" },
-  { label: "Payment confirmed", detail: "$199 refunded", detailClass: "text-text-success-primary", status: "completed" },
+  { label: "Registration fee refunded", detail: "$49 refunded", detailClass: "text-text-success-primary", status: "completed" },
   { label: "Compliance site published", detail: null, link: { text: "View site \u2192", href: "#" }, status: "completed" },
   { label: "Carrier review", detail: "Not approved Mar 28", status: "error" },
 ];
@@ -966,7 +966,7 @@ export default function OverviewPage() {
                   <ErrorBadge>Not approved</ErrorBadge>
                 </div>
 
-                <p className="mt-4 text-sm font-semibold text-text-success-primary">$199 refund issued March 28, 2026</p>
+                <p className="mt-4 text-sm font-semibold text-text-success-primary">$49 refund issued March 28, 2026</p>
 
                 <div className="my-5 border-t border-border-secondary" />
 
