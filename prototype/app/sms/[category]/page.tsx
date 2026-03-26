@@ -183,8 +183,9 @@ export default function CategoryLanding() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl overflow-x-hidden px-6 py-16">
+    <div className="py-16">
       {/* Hero */}
+      <div className="mx-auto max-w-4xl px-6">
       <div className="text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-3 py-1 text-xs font-medium text-text-brand-secondary">
           <Calendar className="size-3.5" />
@@ -262,15 +263,20 @@ export default function CategoryLanding() {
             <ArrowRight className="size-4" />
           </Link>
         </div>
+
+        {/* Pricing context line */}
+        <p className="mt-5 text-center text-base text-text-tertiary">
+          Free sandbox. No credit card.{" "}
+          <span className="font-semibold text-text-primary">$49</span> to register,{" "}
+          <span className="font-semibold text-text-primary">$150</span> +{" "}
+          <span className="font-semibold text-text-primary">$19/mo</span> after approval.
+        </p>
       </div>
 
-      {/* Pricing context line */}
-      <p className="mt-12 text-center text-sm text-text-tertiary">
-        Free sandbox. No credit card. $49 to register, $150 + $19/mo after approval.
-      </p>
+      </div>
 
       {/* What you get — full-width gray band */}
-      <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-12 w-screen bg-bg-secondary py-12">
+      <div className="mt-12 bg-bg-secondary py-12">
         <div className="mx-auto max-w-4xl px-6">
           <p className="text-center text-sm font-semibold text-text-brand-secondary">
             What you get
@@ -292,6 +298,7 @@ export default function CategoryLanding() {
         </div>
       </div>
 
+      <div className="mx-auto max-w-4xl px-6">
       {/* Registration scope — D-230, D-231 */}
       {(() => {
         const useCaseData = USE_CASES[category as UseCaseId];
@@ -405,6 +412,7 @@ export default function CategoryLanding() {
           Get started
           <ArrowRight className="size-4" />
         </Link>
+      </div>
       </div>
     </div>
   );
