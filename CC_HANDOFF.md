@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-25 (category page scope, Overview restructure, registration form flow, review simplification, pricing updates, admin dashboard)
+**Date:** 2026-03-25 (admin Customer List + Customer Detail, compliance enforcement decisions, section reorder)
 **Branch:** main
 
 ---
@@ -7,90 +7,57 @@
 ## Commits This Session
 
 ```
-9182d1d  feat: category page registration scope, Overview restructure (compliance card, simplified sidebar), registration form flow, review page simplification, pricing updates, copy refinements across all pages
-3807f53  docs: session close-out — D-228–D-233, PROTOTYPE_SPEC updates, CC_HANDOFF rewrite
-16a7063  feat: add manual review toggle and registration queue count to Control Room (D-235)
-0650966  feat: admin dashboard scaffold — layout, control room, placeholder pages, D-234–D-236
-3f03acc  feat: submission tracking, active filter, message type labels, AI pre-review on Registration Pipeline
-55dcf16  feat: AI pre-review traffic light, terminal statuses (Declined/Abandoned) with email actions and refund tracking
-38fecee  docs: expand D-236 — AI compliance layer with registration pre-review and novel message detection
-18d283d  fix: realistic AI pre-review flags, right-aligned buttons with icons, numbered messages
-5289993  fix: rationalize action buttons across Registration Pipeline — three patterns only
-c958c26  feat: inline-editable business details on Awaiting Review and Rejected registrations
+7e4663b  feat: admin Customer List page — table view with filters, sorting, mock data
+f07da61  fix: Customer List content area — light background matching other admin pages
+46e0639  feat: admin Customer Detail page — registration, compliance, messages, billing, attention items
+5436443  fix: Customer Detail billing — add $150 go-live fee to reflect full pricing structure
+62f4a43  fix: Customer Detail — reorder sections, add $150 go-live fee to billing
+48222b1  docs: D-237–D-241 compliance enforcement model and copy strategy, backlog additions
 ```
 
 ---
 
 ## What We Completed
 
-### Decisions D-228–D-236 Recorded
-- D-228: Flow diagram strategy per category
-- D-229: Orders flow diagram shape
-- D-230: RegistrationScope on category landing pages (display-only)
-- D-231: RegistrationScope renders as two sections, no negative framing
-- D-232: Twilio-only registration service rejected
-- D-233: Overview page restructure — sandbox compliance card, simplified sidebar
-- D-234: Admin dashboard in prototype
-- D-235: Manual registration review mode
-- D-236: AI compliance layer — registration pre-review + novel message detection (two modes)
+### Decisions D-237–D-241 Recorded
+- D-237: Three-layer automated compliance enforcement model (proxy fixes → email digest → disengaged backstop)
+- D-238: Control Room attention queue — inline expansion with enforcement state and operator overrides
+- D-239: Compliance alerts toggle surfaced on Overview page (default on, strategic moments)
+- D-240: Dashboard message editor for flagged messages only (repair tool, not authoring tool)
+- D-241: Compliance protection copy touchpoints across customer journey (marketing, onboarding, post-approval)
 
-### Category Landing Page Updates
-- Registration scope section with "Your registration" eyebrow + "What's included from day one"
-- Two sub-sections: green check items from use-case-data + "Need marketing messages too?" with example cards
-- EIN/sole prop marketing note on all "Need marketing messages too?" sections (3 pages, 4 instances)
-- "What you get" section in full-width gray band
-- FAQ reduced to 2 cards with realistic copy, body text capped at 600px
+### Admin — Customer List (`/admin/customers`)
+- Replaced placeholder with full table view: 12 mock customers, 9 columns
+- Filter pills: All, Sandbox, Pending, Active, Churned (matching Registration Pipeline visual pattern)
+- All columns sortable (default: last activity descending)
+- Row click navigates to Customer Detail
+- Light background matching other admin pages (not dark)
+- Responsive: compliance and MRR columns hidden below lg breakpoint
+- Reuses businesses from Registration Pipeline mock data + new entries
 
-### Overview Page Restructure (D-233)
-- Removed "Register your app" and "Monitor your compliance" expanders
-- Added sandbox compliance card (100% green / 97.2% amber with Fix → links + detail modal)
-- Simplified registration sidebar: "Ready to go live?" with $49/$150 pricing
-- Grid changed to `md:grid-cols-[1fr_320px]`, left column `max-w-[560px]`
-- Checkbox removed from SectionHeading, chevron-only
-- Layout forces `isLoggedIn(true)`, content `pt-6`
+### Admin — Customer Detail (`/admin/customers/[customerId]`)
+- Replaced placeholder with six-section single-customer view (max-width 900px)
+- Section order: Registration Summary → Message Volume → Compliance → Attention Items → Billing → Recent Messages
+- Registration Summary: business details grid, status with date, pipeline link for pending, campaign description, message type pills
+- Message Volume: 4 stat cards (sent/delivered/failed/blocked with daily avg)
+- Compliance: large percentage with color coding, flagged count
+- Attention Items: severity-coded items matching Control Room format
+- Billing: full three-part pricing (D-193) — $49 registration fee, $150 go-live fee, $19/mo monthly
+- Recent Messages: 20-row table with delivery status dots, compliance flag badges
+- 4 customer profiles mapped: GlowStudio (cust-1), TechRepair Pro (cust-2), FreshCuts (cust-3), QuickFix Plumbing (cust-5). Unknown IDs fall back to GlowStudio.
 
-### Registration Form Flow (NEW)
-- `/apps/[appId]/register` — BusinessDetailsForm, left-aligned, tab bar hidden
-- `/apps/[appId]/register/review` — ReviewConfirm with compact "What happens next" card
-- Info callout, pre-fill state switcher (Empty/Pre-filled), always-active Continue button with touchAllRef
-- Extensive copy refinements across all form fields
-- $49 pricing on review page, "Start my registration — $49" CTA
-
-### Admin Dashboard (D-234) — NEW
-- Dark sidebar layout (`bg-gray-900`, 240px) with 4 nav links + "View as customer" footer
-- **Control Room:** 4 KPI cards (compliance, customers, registrations, revenue), attention queue (5-7 items), Normal/Crisis state switcher, manual review toggle (D-235)
-- **Registration Pipeline:** Full operator workflow screen
-  - Filter pills: Active (default), Awaiting Review, In Carrier Review, Extended Review, Rejected, Closed, All, Approved
-  - 10 mock registrations across all statuses including Declined (CannaBliss) and Abandoned (SpamKing)
-  - Expandable detail rows with business details, campaign info, sample messages
-  - Inline-editable business fields (name, address, phone, email, website) on awaiting/rejected — blue dot "edited" indicator
-  - AI pre-review traffic light: green (ready), amber (website 404), red (promotional language fix with Apply button)
-  - Terminal statuses with resolution sections, refund tracking, expandable email previews
-  - Rationalized action buttons: three patterns (fix & submit, email, close/resolve)
-  - Submission attempt tracking ("2nd attempt", "3rd attempt")
-  - Numbered message type labels
-- Placeholder pages for Customers, Customer Detail, Revenue
-
-### Cross-Page Updates
-- Flow diagram mobile fixes (tooltip right-positioned, labels vertically centered)
-- AI tool setup panel spacing and heading improvements
-- "How it works" modal bottom padding
-- Messages page gray band flush with tab bar
-- All select elements have custom SVG chevrons
-- Government added to business type options
+### Backlog Additions
+- "Message Management (Deferred)" section: full message library editor, marketing persona as dashboard user. Both explicitly deferred with reasoning.
 
 ---
 
 ## In Progress / Partially Done
 
 ### Pricing Audit Needed
-$49/$150 split updated on Overview sidebar and review page. Public pages (home, category landing, "How it works" modal) may still show $199. Need full audit.
-
-### Admin — Customer List and Customer Detail
-Placeholder pages only. Customer detail should show: registration history, message volume, compliance status, billing, and a message log.
+$49/$150 split updated on Overview sidebar, review page, and Customer Detail billing. Public pages (home, category landing, "How it works" modal) may still show $199. Need full audit.
 
 ### Admin — Revenue & Metrics
-Placeholder only. Should show: MRR trend, customer count growth, registration conversion rate, churn, overage revenue.
+Placeholder only. Should show: MRR trend chart, customer count growth, registration conversion rate, churn, overage revenue.
 
 ### Messages Tab — Approved State
 Still not differentiated from Default. Planned per D-159.
@@ -98,79 +65,63 @@ Still not differentiated from Default. Planned per D-159.
 ### Approved Dashboard Redesign (D-233)
 D-233 specifies replacing 6-card layout with message types table + 3 cards. Not built yet.
 
+### Control Room Attention Queue — Inline Expansion (D-238)
+Decision recorded but not yet implemented. Currently queue items are static rows. Need expandable detail with enforcement state, operator override buttons.
+
+### Compliance Alerts Toggle on Overview (D-239)
+Decision recorded but not yet implemented. Overview page needs compliance alerts status line and Settings toggle.
+
+### Compliance Protection Copy (D-241)
+Decision recorded. Copy touchpoints not yet added to category landing, home page, Overview sidebar, or Messages tab.
+
 ---
 
 ## Gotchas for Next Session
 
 1. **Delete `.next` before every dev server start.** Always: `rm -rf prototype/.next` then restart. Port 3001.
 
-2. **DECISIONS.md is a two-file system.** Active decisions (D-84–D-236) in DECISIONS.md. Archived (D-01–D-83) in DECISIONS_ARCHIVE.md.
+2. **DECISIONS.md is a two-file system.** Active decisions (D-84–D-241) in DECISIONS.md. Archived (D-01–D-83) in DECISIONS_ARCHIVE.md.
 
 3. **Admin routes have their own layout.** `/admin/*` uses `prototype/app/admin/layout.tsx` — dark sidebar, completely separate from customer app layout. No session context dependency.
 
-4. **Registration Pipeline state is local to the page.** Editable descriptions, messages, and business fields are `useState` — no persistence. Refreshing the page resets all edits to mock data.
+4. **Customer List uses `useRouter` for row navigation, not Link.** `<tr>` elements can't be wrapped in `<a>` tags (invalid HTML). Rows use `onClick={() => router.push(...)}`.
 
-5. **AI pre-review `suggestedFix` is written to campaign description.** The "Apply fix" button calls `setDescription(reg.id, reg.aiPreReview.suggestedFix)` — it overwrites the textarea content. The FreshCuts fix replaces "same-day availability alerts" with "waitlist notifications for customers who opted into availability updates."
+5. **Customer Detail mock data keyed by route param.** Only cust-1, cust-2, cust-3, cust-5 have distinct profiles. All other IDs (including cust-4, cust-6 through cust-12) fall back to GlowStudio (cust-1). To add more distinct profiles, add entries to the `CUSTOMERS` record in the detail page.
 
-6. **Tab bar hidden for `/register` routes.** Layout checks `pathname.includes("/register")`. App header stays visible.
+6. **Customer Detail section order matters.** Joel explicitly ordered: Registration Summary → Message Volume → Compliance → Attention Items → Billing → Recent Messages. Recent Messages is last because it's the longest section.
 
-7. **Layout forces logged-in state.** `useEffect` calls `setLoggedIn(true)` on mount.
+7. **Three-part pricing: $49 / $150 / $19/mo.** Registration fee at submission, go-live fee after approval, monthly ongoing. Customer Detail billing section shows all three. Overview sidebar and review page also updated. Public pages need audit.
 
-8. **Messages page gray band offset is `-mt-6`.** Matches layout `pt-6`. If layout padding changes, update the offset.
+8. **Registration Pipeline state is local to the page.** Editable descriptions, messages, and business fields are `useState` — no persistence. Refreshing resets all edits.
 
-9. **Registration form `touchAllRef` pattern.** Parent passes `MutableRefObject<(() => void) | null>` — form populates with touch-all function. Called on Continue click when form invalid.
+9. **Tab bar hidden for `/register` routes.** Layout checks `pathname.includes("/register")`. App header stays visible.
 
-10. **Pricing is $49/$150 split (D-193).** Review: $49 due today. Overview sidebar: "$49 to submit, $150 + $19/mo after approval". Public pages need audit.
+10. **Layout forces logged-in state.** `useEffect` calls `setLoggedIn(true)` on mount.
 
 11. **Terminal registration statuses.** "Declined" = pre-submission (RelayKit rejected). "Abandoned" = post-submission (carrier rejected multiple times). Both show in "Closed" filter, excluded from "Active".
 
 12. **Orphaned files still on disk** — `prototype/components/dashboard/` and `prototype/app/c/` safe to delete.
+
+13. **D-237–D-241 are strategy decisions, not yet built.** Three-layer enforcement, inline queue expansion, compliance alerts, flagged message editor, copy touchpoints — all recorded as decisions, none implemented in prototype yet.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# Decisions
-DECISIONS.md                                              # D-228 through D-236
+# Admin Customer List (NEW)
+prototype/app/admin/customers/page.tsx              # Full table view with filters, sorting, 12 mock customers
 
-# Category landing page
-prototype/app/sms/[category]/page.tsx                     # Registration scope, FAQ, gray band, copy
+# Admin Customer Detail (REPLACED placeholder)
+prototype/app/admin/customers/[customerId]/page.tsx  # 6-section detail page, 4 mapped customer profiles
 
-# Public messages page
-prototype/app/sms/[category]/messages/page.tsx             # Marketing EIN note, flow mobile fixes, modal padding
-
-# App layout
-prototype/app/apps/[appId]/layout.tsx                      # Tab bar hidden for /register, logged-in force, pt-6
-
-# App messages page
-prototype/app/apps/[appId]/messages/page.tsx               # Marketing EIN note, gray band, tool panel, flow fixes
-
-# Overview page
-prototype/app/apps/[appId]/overview/page.tsx               # D-233 restructure
-
-# Registration form flow (NEW)
-prototype/app/apps/[appId]/register/page.tsx               # NEW — registration form
-prototype/app/apps/[appId]/register/review/page.tsx        # NEW — review & confirm
-
-# Registration components
-prototype/components/registration/business-details-form.tsx # Copy, touchAllRef, select chevrons, Government
-prototype/components/registration/review-confirm.tsx        # Simplified right column, $49 pricing
-
-# Validation
-prototype/lib/intake/validation.ts                         # Government business type
-
-# Admin dashboard (NEW)
-prototype/app/admin/layout.tsx                             # NEW — dark sidebar layout
-prototype/app/admin/page.tsx                               # NEW — Control Room
-prototype/app/admin/registrations/page.tsx                 # NEW — Registration Pipeline (full workflow)
-prototype/app/admin/customers/page.tsx                     # NEW — placeholder
-prototype/app/admin/customers/[customerId]/page.tsx        # NEW — placeholder
-prototype/app/admin/revenue/page.tsx                       # NEW — placeholder
+# Decisions & Backlog
+DECISIONS.md                                         # D-237 through D-241
+BACKLOG.md                                           # Message Management (Deferred) section
 
 # Session close-out
-PROTOTYPE_SPEC.md                                          # Admin specs, overview, category, registration, layout, file map
-CC_HANDOFF.md                                              # This file (overwritten)
+PROTOTYPE_SPEC.md                                    # Customer List + Customer Detail specs, file map update
+CC_HANDOFF.md                                        # This file (overwritten)
 ```
 
 ---
@@ -178,11 +129,11 @@ CC_HANDOFF.md                                              # This file (overwrit
 ## What's Next (suggested order)
 
 1. **Pricing audit** — search all files for "$199", "$218", "one-time setup" and update to $49/$150 split
-2. **Admin — Customer List** — table view with customer name, status, registration date, message volume, compliance rate, MRR contribution
-3. **Admin — Customer Detail** — registration history, message log, compliance timeline, billing
-4. **Admin — Revenue** — MRR trend chart, customer growth, registration funnel, churn
+2. **Admin — Revenue & Metrics** — MRR trend, customer growth, registration funnel, churn
+3. **Control Room attention queue inline expansion** (D-238) — expandable items with enforcement state and operator buttons
+4. **Compliance protection copy** (D-241) — add one-liners to category landing, home page, Overview sidebar
 5. **Approved dashboard redesign** (D-233) — message types table + 3 summary cards
-6. **Build steps collapsed state** — "Sandbox setup complete" row once all 4 steps done
-7. **Messages tab Approved state** (D-159) — read-only personalization with registered values
+6. **Messages tab Approved state** (D-159) — read-only personalization with registered values
+7. **Compliance alerts toggle on Overview** (D-239) — status line on compliance card + Settings link
 8. **Flow diagrams for other categories** — orders, support, waitlist (D-228, D-229)
 9. **Delete orphaned files** — `/c/` routes, `components/dashboard/`

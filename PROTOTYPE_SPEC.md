@@ -412,9 +412,55 @@ Right: Campaign section — use case, message type pills, editable campaign desc
 - Resolution section: gray callout with reason + refund status ("$49 refunded" in green, or "Process refund →" button)
 - Email action section: expandable email preview with subject/body, "Send email" / "Cancel" buttons. Decline email: direct, respectful, specific reason. Closure email: we-tried tone, carrier feedback summary. "Not yet sent" indicator.
 
+### Customer List — `/admin/customers`
+**File:** `prototype/app/admin/customers/page.tsx`
+**Status:** Stable
+**Decision refs:** D-234
+
+Table view of all customers — Joel's "see all customers at a glance" screen. Light background content area (matches Control Room and Registration Pipeline).
+
+**Header:** "Customers" h1 + "{N} customers" subtitle count.
+
+**Filter pills:** All (default), Sandbox, Pending, Active, Churned. Active pill: `bg-gray-900 text-white`. Inactive: `bg-gray-100 text-text-secondary`. Count shown after label. Same visual pattern as Registration Pipeline filters.
+
+**Table:** Rounded border container (`border-gray-200`), `bg-gray-50` header row. 9 columns: Customer (name bold + app name secondary), Status (badge: gray sandbox, amber pending, green active, red churned), Use case, Registered (formatted date), Messages (this month, with locale formatting), Compliance (color-coded: green ≥95%, amber 80-94%, red <80%, gray dash for 0), Plan (Free / Go Live), MRR (dollar amount, dash for $0), Last activity (relative time).
+
+**Sorting:** All columns sortable by click. Default: last activity descending (newest first). Active sort shows arrow indicator (↑/↓). Numeric columns default to descending, text columns to ascending.
+
+**Row interaction:** Click navigates to `/admin/customers/[customerId]` via `useRouter`. Hover state: `bg-gray-50`.
+
+**Responsive:** Compliance and MRR columns hidden below `lg` breakpoint.
+
+**Mock data:** 12 customers. Reuses businesses from Registration Pipeline (GlowStudio, TechRepair Pro, FreshCuts, PetPals, CannaBliss, SpamKing, YogaFlow) plus new entries (Bella's Nail Studio, QuickFix Plumbing, FitZone Gym, Downtown Deli, UrbanBites). Statuses: 8 active, 1 pending, 1 sandbox, 2 churned.
+
+### Customer Detail — `/admin/customers/[customerId]`
+**File:** `prototype/app/admin/customers/[customerId]/page.tsx`
+**Status:** Stable
+**Decision refs:** D-234, D-193 (pricing)
+
+Single-customer deep-dive — everything about one customer on one page. Max-width 900px. Light background.
+
+**Back navigation:** "← Back to Customers" link at top → `/admin/customers`.
+
+**Page header:** Customer name (h1) + app name (secondary). Right-aligned: use case category pill (`bg-gray-100`) + status badge (same colors as Customer List).
+
+**Six vertically-stacked sections (in this order):**
+
+1. **Registration Summary** — Two-column grid: business name, EIN (masked XX-XXX format), business type, website, phone, email. Below: registration status with date. "View in Registration Pipeline →" link (purple) shows for pending/review states only. Campaign description (if registered). Message type pills (`bg-gray-100 rounded-full`).
+
+2. **Message Volume — Last 30 Days** — Four stat cards in a row: Sent (with daily avg sub-text), Delivered, Failed, Blocked (with "compliance" sub-text). Cards: `border-gray-200 rounded-lg p-4`. Empty state: "No messages sent yet."
+
+3. **Compliance** — Large percentage with color coding + "compliance rate" label. Right side: flagged count with severity or "No compliance issues" (green). Empty state for sandbox/pending: "No messages sent yet — compliance tracking will begin after approval."
+
+4. **Attention Items** — Severity-coded items matching Control Room format (colored dot + issue text + time + action link). Items in `bg-gray-50 rounded-lg` rows. Empty state: "No attention items — this customer is in good standing." (green text).
+
+5. **Billing** — Two-column grid: Plan, Registration fee ("$49 paid [date]"), Go-live fee ("$150 paid [date]" for active, "$150 due on approval" for pending, "N/A" for sandbox), Monthly rate ($19/mo or $0), Payment status (green "Current" / red "Past due" / gray "N/A"), Current period, Messages this period, Overage.
+
+6. **Recent Messages** — 20-row table (longest section, at bottom). Columns: Time, Recipient (masked •••-••-XXXX), Type, Preview (truncated ~60 chars), Status (colored dot: green delivered, red failed, yellow pending), Flag (only shows for non-clean: amber "warned", red "blocked" badges). Empty state: "No messages sent yet."
+
+**Mock data mapping:** cust-1 → GlowStudio (active, high volume, 2 warned messages), cust-2 → TechRepair Pro (active, 1 blocked message, 1 attention item), cust-3 → FreshCuts (pending, no messages), cust-5 → QuickFix Plumbing (sandbox, empty). Unknown IDs fall back to GlowStudio.
+
 ### Placeholder Pages
-- `/admin/customers` — "Customer List — coming soon"
-- `/admin/customers/[customerId]` — "Customer Detail — coming soon"
 - `/admin/revenue` — "Revenue & Metrics — coming soon"
 
 ---
@@ -502,8 +548,8 @@ prototype/
 │   │   ├── layout.tsx                    # Admin sidebar layout (dark, 240px)
 │   │   ├── page.tsx                      # Control Room (KPI cards + attention queue)
 │   │   ├── registrations/page.tsx        # Registration Pipeline (list + expandable detail)
-│   │   ├── customers/page.tsx            # Customer List (placeholder)
-│   │   ├── customers/[customerId]/page.tsx # Customer Detail (placeholder)
+│   │   ├── customers/page.tsx            # Customer List (table, filters, sorting)
+│   │   ├── customers/[customerId]/page.tsx # Customer Detail (6 sections, mock data by ID)
 │   │   └── revenue/page.tsx              # Revenue & Metrics (placeholder)
 │   ├── registration-test/page.tsx         # Test route for imported registration components
 │   └── c/[categoryId]/                   # ORPHANED — legacy catalog routes, safe to delete
