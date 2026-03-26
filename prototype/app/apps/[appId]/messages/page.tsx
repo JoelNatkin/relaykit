@@ -675,8 +675,14 @@ export default function AppMessagesPage() {
         {isToolOpen && <div className="mx-auto max-w-5xl px-6"><ToolPanel /></div>}
       </div>
 
+      {/* Compliance status line */}
+      <div className="pt-4 pb-2 flex items-center gap-2 text-sm text-text-tertiary">
+        <ShieldTick className="size-4 text-fg-success-primary" />
+        <span>All messages scanned before delivery. <span className="text-text-secondary font-medium">2 issues caught and fixed this month.</span></span>
+      </div>
+
       {/* Two-column layout */}
-      <div className="pt-6 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_376px]">
+      <div className="pt-2 grid grid-cols-1 gap-8 lg:grid-cols-[1fr_376px]">
 
         {/* LEFT — messages */}
         <div className="max-w-[500px]">

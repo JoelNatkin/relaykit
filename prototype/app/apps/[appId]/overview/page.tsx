@@ -1025,6 +1025,9 @@ export default function OverviewPage() {
                 <p className="mt-2 text-sm text-text-secondary leading-relaxed">
                   Carrier registration takes a few days. Start now so you&apos;re live when your app is ready.
                 </p>
+                <p className="mt-2 text-sm text-text-tertiary leading-relaxed">
+                  After approval, every message is scanned before delivery. Issues are fixed automatically.
+                </p>
 
                 <p className="mt-4 text-sm font-semibold text-text-primary">$49 to submit, $150 + $19/mo after approval</p>
                 <p className="mt-1 text-sm text-text-tertiary">Not approved? Full refund.</p>

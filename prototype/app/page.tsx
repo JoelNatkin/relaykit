@@ -303,7 +303,7 @@ export default function MarketingHome() {
                 "No credit card to start building",
                 "500 messages included per month",
                 "Dedicated phone number",
-                "Compliance monitoring and drift detection included",
+                "Every message scanned — issues caught and fixed before they reach carriers",
                 "Need more messages? $15 per 1,000. Scales with usage.",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-base text-text-secondary">

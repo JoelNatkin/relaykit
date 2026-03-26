@@ -46,7 +46,7 @@ const WHAT_YOU_GET = [
     icon: Monitor01,
     title: "Compliance that runs itself",
     description:
-      "Every message scanned before delivery. Opt-out enforcement, content rules, drift detection. Included, not upsold.",
+      "Every message scanned before delivery. Opt-out enforcement, content rules, drift detection. Included, not upsold. Issues caught are fixed automatically — you get a heads-up, not an emergency.",
   },
 ];
 
