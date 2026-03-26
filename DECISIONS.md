@@ -757,3 +757,12 @@ Three strategic placement moments, all using Experience Principles tone:
 3. Post-approval (Messages tab Approved state): Below registered message types, concrete marketing examples showing what needs separate registration: "'Get 20% off your next visit!' or 'We miss you — book today for a free add-on' are marketing messages and need their own registration. Your current registration covers [appointment reminders, confirmations, etc.] only."
 No enforcement ladder detail is ever exposed to the customer. Framing is always "RelayKit protects your messages" never compliance enforcement language.
 _Affects: Category landing pages, home page pricing card, Overview page sidebar, Messages tab Approved state._
+
+**D-242 — AI-driven compliance enforcement — revised model (supersedes operator-centric parts of D-237)** (Date: 2026-03-25)
+Three severity tiers, all AI-classified, all automated. Operator queue is a monitoring feed, not a task list.
+**Minor:** AI spots fixable issue. Proxy rewrites automatically. Customer gets informational notification: what was wrong, what we changed, where to fix it permanently (Overview editor or code). "No rush." Never appears in operator queue.
+**Escalated:** AI judges message harmful enough that proxy fix shouldn't run indefinitely. Proxy rewrites AND customer gets notification with 30-day deadline. Sequence: initial alert → reminder at day 20 → final notice at day 27 → specific message type suspended at day 30. Only that message type is suspended, never all sending. Appears in operator queue for visibility but fires automatically.
+**Suspended:** AI judges message dangerous enough to block immediately. Message does not send. Customer notified: what was blocked, why, how to fix it (Overview editor or code). No time limit on the fix — their other message types keep working. Appears in operator queue for visibility but fires automatically.
+Operator can override any tier: dismiss, change severity, unsuspend. But default is fully automated.
+Tone at every step: "We caught this, we handled it, here's how to fix it." Knowledgeable colleague, not compliance cop. Liberal timeframes — risk is on customer's reputation with their own users, not on RelayKit's carrier score.
+_Affects: Admin Control Room, compliance proxy (PRD_09), customer notifications, Overview page editor (D-240), supersedes operator-centric parts of D-237._
