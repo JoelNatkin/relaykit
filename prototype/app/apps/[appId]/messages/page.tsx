@@ -566,12 +566,39 @@ function PersonalizeSlideout({
   );
 }
 
+/* ── Registered values display (Approved state) ── */
+
+const REGISTERED_VALUES: PersonalizeData = {
+  appName: "GlowStudio",
+  website: "glowstudio.com",
+  serviceType: "Beauty & wellness appointments",
+};
+
+function RegisteredValuesBar() {
+  return (
+    <div className="flex items-center gap-6 text-sm">
+      <span className="text-text-tertiary">
+        Registered as <span className="font-medium text-text-secondary">{REGISTERED_VALUES.appName}</span>
+      </span>
+      <span className="text-text-quaternary select-none">·</span>
+      <span className="text-text-tertiary">
+        <span className="font-medium text-text-secondary">{REGISTERED_VALUES.website}</span>
+      </span>
+      <span className="text-text-quaternary select-none">·</span>
+      <span className="text-text-tertiary">
+        <span className="font-medium text-text-secondary">{REGISTERED_VALUES.serviceType}</span>
+      </span>
+    </div>
+  );
+}
+
 /* ── Page ── */
 
 export default function AppMessagesPage() {
   const { appId } = useParams<{ appId: string }>();
   const { state, setField } = useSession();
 
+  const isApproved = state.registrationState === "approved";
   const categoryId = state.selectedCategory || "appointments";
   const allMessages = MESSAGES[categoryId] || [];
   const variants = CATEGORY_VARIANTS[categoryId];
@@ -585,16 +612,24 @@ export default function AppMessagesPage() {
   const { copy } = useCopyFeedback();
 
   // Load personalization from localStorage on mount — switch to preview if data exists
+  // In Approved state, use registered values instead
   useEffect(() => {
-    const saved = loadPersonalization();
-    if (saved.appName) setField("appName", saved.appName);
-    if (saved.website) setField("website", saved.website);
-    if (saved.serviceType) setField("serviceType", saved.serviceType);
-    if (saved.appName || saved.website || saved.serviceType) {
+    if (isApproved) {
+      setField("appName", REGISTERED_VALUES.appName);
+      setField("website", REGISTERED_VALUES.website);
+      setField("serviceType", REGISTERED_VALUES.serviceType);
       setViewMode("preview");
+    } else {
+      const saved = loadPersonalization();
+      if (saved.appName) setField("appName", saved.appName);
+      if (saved.website) setField("website", saved.website);
+      if (saved.serviceType) setField("serviceType", saved.serviceType);
+      if (saved.appName || saved.website || saved.serviceType) {
+        setViewMode("preview");
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isApproved]);
 
   function handlePersonalizeChange(data: PersonalizeData) {
     setField("appName", data.appName);
@@ -631,12 +666,14 @@ export default function AppMessagesPage() {
 
   return (
     <div>
-      <PersonalizeSlideout
-        isOpen={showPersonalize}
-        onClose={() => setShowPersonalize(false)}
-        data={personalizeData}
-        onChange={handlePersonalizeChange}
-      />
+      {!isApproved && (
+        <PersonalizeSlideout
+          isOpen={showPersonalize}
+          onClose={() => setShowPersonalize(false)}
+          data={personalizeData}
+          onChange={handlePersonalizeChange}
+        />
+      )}
 
       {/* Playbook summary with controls — full-width gray band, flush with tab bar */}
       <div className="-mt-6 bg-bg-secondary py-10 relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
@@ -667,7 +704,7 @@ export default function AppMessagesPage() {
                 onClick={() => console.log("Download triggered")}
                 className="font-medium hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
               >
-                Download RelayKit
+                {isApproved ? "Re-download RelayKit" : "Download RelayKit"}
               </button>
             </div>
           } />
@@ -689,7 +726,11 @@ export default function AppMessagesPage() {
           {/* Messages header */}
           <div className="mb-3">
             <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-            <p className="mt-1 text-sm text-text-secondary">Every message is pre-written for your use case and formatted for carriers. Copy them, adapt them, or let your AI tool use them as a starting point.</p>
+            <p className="mt-1 text-sm text-text-secondary">
+              {isApproved
+                ? "You're live. These are your registered messages — add new ones, adapt existing ones, or have your AI tool riff on them. Compliance scanning keeps everything clean."
+                : "Every message is pre-written for your use case and formatted for carriers. Copy them, adapt them, or let your AI tool use them as a starting point."}
+            </p>
           </div>
 
           {/* Style variant pills + marketing pill */}
@@ -723,41 +764,65 @@ export default function AppMessagesPage() {
           )}
 
           {/* Toolbar row */}
-          <div className="mb-3 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={() => setShowPersonalize(true)}
-              className="flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-            >
-              <Sliders04 className="size-4" />
-              Personalize
-            </button>
-            <div className="flex items-center gap-5">
-              <button
-                type="button"
-                onClick={() => {
-                  const hasData = !!(state.appName || state.website || state.serviceType);
-                  if (viewMode === "template" && !hasData) {
-                    setShowPersonalize(true);
-                    return;
-                  }
-                  setViewMode(viewMode === "preview" ? "template" : "preview");
-                }}
-                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-              >
-                {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
-                <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
-              </button>
-              <button
-                type="button"
-                onClick={handleCopyAll}
-                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-              >
-                <ClipboardIcon className="w-3.5 h-3.5" />
-                <span>Copy all</span>
-              </button>
+          {isApproved ? (
+            <div className="mb-3 flex items-center justify-between">
+              <RegisteredValuesBar />
+              <div className="flex items-center gap-5">
+                <button
+                  type="button"
+                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                  <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <ClipboardIcon className="w-3.5 h-3.5" />
+                  <span>Copy all</span>
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="mb-3 flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setShowPersonalize(true)}
+                className="flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+              >
+                <Sliders04 className="size-4" />
+                Personalize
+              </button>
+              <div className="flex items-center gap-5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const hasData = !!(state.appName || state.website || state.serviceType);
+                    if (viewMode === "template" && !hasData) {
+                      setShowPersonalize(true);
+                      return;
+                    }
+                    setViewMode(viewMode === "preview" ? "template" : "preview");
+                  }}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                  <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyAll}
+                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <ClipboardIcon className="w-3.5 h-3.5" />
+                  <span>Copy all</span>
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Core message cards */}
           <div className="space-y-3">
@@ -828,7 +893,11 @@ export default function AppMessagesPage() {
           <h2 className="text-lg font-semibold text-text-primary mb-1">
             Opt-in form
           </h2>
-          <p className="mb-3 text-sm text-text-secondary">Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours.</p>
+          <p className="mb-3 text-sm text-text-secondary">
+            {isApproved
+              ? "Your registered opt-in form. RelayKit keeps it current with your compliance site."
+              : "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."}
+          </p>
           <CatalogOptIn
             appName={state.appName}
             website={state.website}
