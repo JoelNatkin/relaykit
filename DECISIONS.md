@@ -766,3 +766,13 @@ Three severity tiers, all AI-classified, all automated. Operator queue is a moni
 Operator can override any tier: dismiss, change severity, unsuspend. But default is fully automated.
 Tone at every step: "We caught this, we handled it, here's how to fix it." Knowledgeable colleague, not compliance cop. Liberal timeframes — risk is on customer's reputation with their own users, not on RelayKit's carrier score.
 _Affects: Admin Control Room, compliance proxy (PRD_09), customer notifications, Overview page editor (D-240), supersedes operator-centric parts of D-237._
+
+**D-243 — Overview compliance attention section — customer-facing ledger** (Date: 2026-03-26)
+The Overview page (post-approval and sandbox) includes a compliance attention section showing ALL messages the system has adjusted or blocked — minor, escalated, and suspended. This is the customer's ledger of what needs fixing.
+Each item shows: message type, original message, what was changed (or that it was blocked), and a brief explanation tied to carrier rules (never RelayKit's opinion). Examples: "Carriers require opt-out language in every message", "Carrier filters flag promotional language in transactional campaigns", "This content type isn't permitted under your registered campaign." Explanations are one sentence, max two. Not grammar policing — carrier compliance.
+Customer actions per item: (1) Edit message — opens D-240 inline editor, fix it right here. (2) "Fixed in code" — dismiss from ledger, flag clears when proxy confirms next clean message; if code still sends bad message, item reappears as new occurrence. (3) No action needed for minor items — proxy handles it, item stays in ledger for visibility but no urgency.
+Visual treatment: Minor = neutral styling, no countdown, no warning colors, present but not alarming. Escalated = amber accent, countdown visible ("Update by [date] or this message will stop sending"). Suspended = red accent, "Blocked — edit to resume sending."
+Sandbox behavior: same UI pattern, advisory framing. "If this were live, carriers would [consequence]. Fix it now so you're clean at launch." Nothing actually blocked in sandbox — all items are educational.
+The attention section only shows messages that need action or acknowledgment. Clean messages don't appear. Dismissed items don't reappear unless the same issue recurs from code.
+Harmony with admin: same underlying compliance record. What the operator sees in Control Room, the customer sees here with customer-appropriate framing and editing controls instead of operator overrides.
+_Affects: Overview page (post-approval + sandbox), D-240 inline editor, compliance data model, Control Room (shared records)._
