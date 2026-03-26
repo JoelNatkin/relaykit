@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: March 25, 2026
+### Last updated: March 26, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -48,7 +48,9 @@ All data is mocked. Session context provides state management. localStorage key:
 
 **How it works:** Three-step grid (Pick / Hand it to your AI / Go live). Followed by centered pricing context line.
 
-**Pricing:** Two cards — "Free" ($0 forever, 4 features at text-base) and "Go live" ($199 to register + $19/mo, 6 features including split detail). No per-card buttons. Single centered "Start building free →" CTA below both. Volume pricing note. (D-216, D-220)
+**How it works pricing context:** "Free to build and test. $49 to register, $150 after approval, then $19/mo."
+
+**Pricing:** Two cards — "Free" ($0 forever, 4 features at text-base) and "Go live" ($49 to register + $19/mo headline, bridge line: "$150 go-live fee" in semibold text-text-primary + "after approval. Full refund if not approved." in regular weight, 6 feature bullets including "No credit card to start building"). No per-card buttons. Single centered "Start building free →" CTA below both. Volume pricing note. (D-216, D-220)
 
 **Why RelayKit / Problem framing / Footer:** Unchanged from prior session. Reassurance line ("No contracts. Cancel anytime. Your code stays yours.") before footer. Inline footer with scroll-to-section links.
 
@@ -58,9 +60,9 @@ All data is mocked. Session context provides state management. localStorage key:
 
 **Subhead:** "Your AI coding tool builds the integration. RelayKit handles the carriers." (updated from prior copy)
 
-**Pricing context line:** Between "See all appointment messages" CTA and "What you get" section: "Free sandbox. No credit card. $199 + $19/mo when you're ready to go live."
+**Pricing context line:** Below "See all appointment messages →" CTA link with `mt-5`. Styled: `text-base text-center text-text-tertiary`. "$49", "$150", and "$19/mo" in `font-semibold text-text-primary`. Full text: "Free sandbox. No credit card. $49 to register, $150 + $19/mo after approval."
 
-**What you get cards (updated D-220):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section wrapped in full-width gray band (`bg-bg-secondary`, viewport-width CSS trick). Cards have `bg-bg-primary` to pop against gray.
+**What you get cards (updated D-220):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section is a true full-width gray band (`bg-bg-secondary`) — outer page container is `py-16` with no max-width, content sections use `mx-auto max-w-4xl px-6`. Cards have `bg-bg-primary` to pop against gray.
 
 Below-hero message preview section with three style pills (Brand-first / Action-first / Context-first) and three sample message cards. Variable values render in `font-medium text-text-brand-tertiary`. Trigger lines use "Sent when..." format. Demonstrates anti-cookie-cutter strategy (D-91, D-106).
 
@@ -76,7 +78,7 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **This is the most important page in the product.** It's where strangers become users. The download happens here.
 
-**Hero:** Gray band (`bg-bg-tertiary`). Appointments pill + H1 ("Appointment messages, ready to send.") with subhead grouped below ("Everything your AI coding tool needs to add SMS — in two files."). Desktop CTA right-aligned with "Free to build and test. No lock-in." below. Mobile CTA full-width after logos. Logo row (6 tools, 48px circles with `border-[#999999]`). Pricing context below logos: "Free sandbox, no credit card. $199 + $19/mo when you're ready to go live." with line break before "You'll get two files and a sandbox API key." "How it works" link (Expand06 icon, brand purple semibold) opens full-page modal (D-218).
+**Hero:** Gray band (`bg-bg-tertiary`). Appointments pill + H1 ("Appointment messages, ready to send.") with subhead grouped below ("Everything your AI coding tool needs to add SMS — in two files."). Desktop CTA right-aligned with "Free to build and test. No lock-in." below. Mobile CTA full-width after logos. Logo row (6 tools, 48px circles with `border-[#999999]`). Pricing context below logos: "Free sandbox, no credit card. $49 to register, $150 + $19/mo after approval." with line break before "You'll get two files and a sandbox API key." "How it works" link (Expand06 icon, brand purple semibold) opens full-page modal (D-218).
 
 **Playbook summary (D-217, D-224):** Between hero and messages. `bg-bg-secondary` band. Heading "Your complete appointment SMS system" + horizontal flow with 6 numbered nodes (24px filled purple circles, white numbers, CSS hover tooltips) connected by arrows. Labels left-aligned, max-width ~90px. Vertical stepper on mobile. Tagline "One prompt. Your AI tool builds the whole flow." Data in `PLAYBOOK_FLOWS` keyed by category. Node order: 1 Booking confirmed, 2 Reminder sent, 3 Pre-visit sent, 4 Reschedule handled, 5 No-show followed up, 6 Cancellation handled (D-223).
 
@@ -102,7 +104,7 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **"Learn more about RelayKit →"** link below marketing section, before footer.
 
-**How it works modal (D-218):** Full-page overlay (z-50, bg-white, overflow-y-auto). Sticky close button. Content: H1 "How it works" (text-3xl/4xl), subhead, "What you get" 4-card grid, pricing section in gray band (Free + Go live cards, $199 headline per D-216), "Why registration matters" FAQ, "Back to messages" CTA.
+**How it works modal (D-218):** Full-page overlay (z-50, bg-white, overflow-y-auto). Sticky close button. Content: H1 "How it works" (text-3xl/4xl), subhead, "What you get" 4-card grid, pricing section in gray band (Free + Go live cards, $49 headline + $150 bridge line per pricing audit), "Why registration matters" FAQ, "Back to messages" CTA.
 
 **Download modal:** Unchanged from prior session.
 
@@ -365,7 +367,17 @@ Operator/admin dashboard at `/admin` — separate from customer-facing app. Same
 - Normal: 99.1% compliance, 23 customers, 4-5 pipeline, $2,847 MRR
 - Crisis: 94.2% compliance (amber), 2 suspended customers, 7-9 pipeline, $2,614 MRR, downward trends in red
 
-**Attention queue:** Below KPI cards. List of operator action items with severity dots (red/orange/yellow), customer name, issue description, timestamps, action links. 5 items in Normal mode, 7 in Crisis (2 additional red items). Empty state: green dot + "All clear — no items need attention."
+**Attention queue (D-238, D-242):** Below KPI cards. Monitoring feed with expandable inline detail. Severity dots (red/orange/yellow), customer name, issue description, timestamps. Compliance items show tier badge (Minor/Escalated/Suspended) and expand on click (one at a time). Non-compliance items (carrier suspension, registration rejection, payment) are static rows.
+
+**Expanded compliance detail:**
+- Tier badge (Minor = `text-text-tertiary`, Escalated = `text-text-warning-primary`, Suspended = `text-text-error-primary`)
+- Context grid: message type, "Rewriting since [date] (N messages)" — no redundant Customer field
+- Escalated: deadline countdown ("Day N of 30 — message suspends [date]"), original vs rewritten side by side, notification history
+- Suspended: "Blocked since [date] — awaiting customer fix", blocked message only (no rewrite), notification history
+- Minor: original vs rewritten side by side, no countdown
+- Operator buttons (right-aligned): Dismiss, Change severity dropdown (Minor/Escalated/Suspended), Unsuspend (Suspended only)
+
+**Queue items:** Normal mode: 6 items (1 Escalated PetPals, 1 Minor GlowStudio demo, 4 non-compliance). Crisis mode: 7 items (adds Suspended UrbanBites, promotes GlowStudio to Escalated). State switcher resets expanded state.
 
 ### Registration Pipeline — `/admin/registrations`
 **File:** `prototype/app/admin/registrations/page.tsx`
@@ -589,4 +601,4 @@ prototype/
 | Bar thickness 8px consistency across row 2 cards | May need verification | PM_HANDOFF |
 | Overview page `changes_requested` copy may still say "Changes requested" | Needs alignment with D-202 | CC_HANDOFF gotcha #18 |
 | Registration form pre-fill: "Pre-filled" state may not auto-validate EIN path fields | Touch-all ref validates on click, but initial mount may not trigger | Register page |
-| Pricing inconsistency: public pages may still show $199 in some places | Need audit of all pricing references | D-193, D-196 |
+| ~~Pricing inconsistency~~ | Resolved — $199 references updated to $49/$150 split across all prototype files (pricing audit, Mar 26 session). Only orphaned `shared.tsx` retains $199. | D-193, D-196 |
