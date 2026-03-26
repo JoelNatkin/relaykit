@@ -776,3 +776,7 @@ Sandbox behavior: same UI pattern, advisory framing. "If this were live, carrier
 The attention section only shows messages that need action or acknowledgment. Clean messages don't appear. Dismissed items don't reappear unless the same issue recurs from code.
 Harmony with admin: same underlying compliance record. What the operator sees in Control Room, the customer sees here with customer-appropriate framing and editing controls instead of operator overrides.
 _Affects: Overview page (post-approval + sandbox), D-240 inline editor, compliance data model, Control Room (shared records)._
+
+**D-244 — Approved dashboard layout supersedes D-233** (Date: 2026-03-26)
+The Approved Overview uses a 3-metric row (Delivery, Recipients, Usage & Billing) followed by a compliance attention section with per-message cards. This replaces the D-233 spec (message types table + 3 summary cards). The metric row + attention section layout is the canonical spec.
+_Affects: Overview page (Approved state), D-233 (superseded)._
