@@ -50,7 +50,7 @@ All data is mocked. Session context provides state management. localStorage key:
 
 **How it works pricing context:** "Free to build and test. $49 to register, $150 after approval, then $19/mo."
 
-**Pricing:** Two cards — "Free" ($0 forever, 4 features at text-base) and "Go live" ($49 to register + $19/mo headline, bridge line: "$150 go-live fee" in semibold text-text-primary + "after approval. Full refund if not approved." in regular weight, 6 feature bullets including "No credit card to start building"). No per-card buttons. Single centered "Start building free →" CTA below both. Volume pricing note. (D-216, D-220)
+**Pricing:** Two cards — "Free" ($0 forever, 4 features at text-base) and "Go live" ($49 to register + $19/mo headline, bridge line: "$150 go-live fee" in semibold text-text-primary + "after approval. Full refund if not approved." in regular weight, 6 feature bullets including "No credit card to start building" and "Every message scanned — issues caught and fixed before they reach carriers" (D-241)). No per-card buttons. Single centered "Start building free →" CTA below both. Volume pricing note. (D-216, D-220)
 
 **Why RelayKit / Problem framing / Footer:** Unchanged from prior session. Reassurance line ("No contracts. Cancel anytime. Your code stays yours.") before footer. Inline footer with scroll-to-section links.
 
@@ -62,7 +62,7 @@ All data is mocked. Session context provides state management. localStorage key:
 
 **Pricing context line:** Below "See all appointment messages →" CTA link with `mt-5`. Styled: `text-base text-center text-text-tertiary`. "$49", "$150", and "$19/mo" in `font-semibold text-text-primary`. Full text: "Free sandbox. No credit card. $49 to register, $150 + $19/mo after approval."
 
-**What you get cards (updated D-220):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section is a true full-width gray band (`bg-bg-secondary`) — outer page container is `py-16` with no max-width, content sections use `mx-auto max-w-4xl px-6`. Cards have `bg-bg-primary` to pop against gray.
+**What you get cards (updated D-220, D-241):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section is a true full-width gray band (`bg-bg-secondary`) — outer page container is `py-16` with no max-width, content sections use `mx-auto max-w-4xl px-6`. Cards have `bg-bg-primary` to pop against gray. "Compliance that runs itself" card has extended description: original text + "Issues caught are fixed automatically — you get a heads-up, not an emergency." (D-241)
 
 Below-hero message preview section with three style pills (Brand-first / Action-first / Context-first) and three sample message cards. Variable values render in `font-medium text-text-brand-tertiary`. Trigger lines use "Sent when..." format. Demonstrates anti-cookie-cutter strategy (D-91, D-106).
 
@@ -184,7 +184,7 @@ Steps unlock sequentially. Each completed step shows "Redo" link (D-133). Phone 
 **Right column — registration sidebar card:**
 Calm, persistent reminder — not a sales pitch. `rounded-xl bg-bg-tertiary p-6 md:sticky md:top-20`. No border. Content:
 - Heading: "Ready to go live?" (`text-lg font-semibold`)
-- Body: "Carrier registration takes a few days. Start now so you're live when your app is ready."
+- Body: "Carrier registration takes a few days. Start now so you're live when your app is ready." + second paragraph (text-tertiary): "After approval, every message is scanned before delivery. Issues are fixed automatically." (D-241)
 - Pricing: "$49 to submit, $150 + $19/mo after approval" (`text-sm font-semibold`)
 - Refund: "Not approved? Full refund." (`text-sm text-text-tertiary`)
 - CTA: "Start registration →" — medium purple button (`px-4 py-2.5`), links to `/apps/[appId]/register`
@@ -255,8 +255,9 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 All three states render the Default layout. Registration state doesn't change Messages tab content pre-approval (D-170).
 
 #### Approved state
-`[NOT YET DIFFERENTIATED]` — Currently renders Default layout. Planned per D-159:
-- Personalization fields read-only, showing registered values
+`[NOT YET DIFFERENTIATED]` — Currently renders Default layout with one addition (D-241):
+- **Compliance status line:** Between playbook band and two-column layout. `pt-4 pb-2`, flex row. ShieldTick icon (`size-4 text-fg-success-primary`) + "All messages scanned before delivery. **2 issues caught and fixed this month.**" (mock data). Text-tertiary base, count in `text-text-secondary font-medium`.
+- Planned per D-159: personalization fields read-only, showing registered values
 - AI commands still available
 - No "registered" badges on individual message cards
 
