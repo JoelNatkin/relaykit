@@ -95,13 +95,13 @@ export default function CompliancePage() {
             {[
               {
                 icon: Target01,
-                title: "Drift detection",
-                desc: "If your messages stray from approved types, our AI catches it and tells you what to fix \u2014 before carriers notice.",
+                title: "Automatic fixes",
+                desc: "If a message doesn\u2019t meet carrier rules, we rewrite it before it goes out. You get a notification with what changed and why.",
               },
               {
                 icon: BarChart07,
-                title: "Message quality monitoring",
-                desc: "We check for your business name and opt-out instructions \u2014 smart warnings, not hard blocks.",
+                title: "Continuous scanning",
+                desc: "Every message is checked for business name, opt-out language, and content rules. Issues are fixed in real time.",
               },
             ].map((card) => (
               <div
@@ -117,15 +117,6 @@ export default function CompliancePage() {
             ))}
           </div>
 
-        </div>
-      </div>
-
-      {/* Stat callout 2 */}
-      <div className="py-14">
-        <div className="mx-auto max-w-3xl px-6 text-center">
-          <p className="text-xl italic text-text-quaternary leading-snug">
-            Carrier suspensions don&apos;t come with a warning. By the time you find out, your number is already offline.
-          </p>
         </div>
       </div>
 
@@ -170,7 +161,7 @@ export default function CompliancePage() {
             When something needs attention
           </h2>
           <p className="mt-3 text-text-tertiary leading-relaxed max-w-2xl">
-            We don&apos;t let problems sit on a dashboard waiting for you to notice.
+            We fix problems automatically and keep you informed.
           </p>
 
           <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -179,22 +170,22 @@ export default function CompliancePage() {
                 icon: Target01,
                 iconColor: "text-fg-brand-primary",
                 bgColor: "bg-bg-brand-secondary",
-                title: "Drift detected",
-                desc: "Your messages are still delivering, but something\u2019s shifting. We email you what changed and how to bring it back in line.",
+                title: "Minor",
+                desc: "We fixed it automatically. You\u2019ll get a notification with what changed. Update your code when you get a chance.",
               },
               {
                 icon: AlertTriangle,
                 iconColor: "text-fg-warning-primary",
                 bgColor: "bg-bg-warning-secondary",
-                title: "Compliance warning",
-                desc: "A pattern needs attention \u2014 missing business name, opt-out gaps, or frequency spikes. Daily digest keeps you informed without spamming.",
+                title: "Escalated",
+                desc: "We fixed it, but this one needs your attention within 30 days. We\u2019ll remind you along the way.",
               },
               {
                 icon: Zap,
                 iconColor: "text-fg-error-primary",
                 bgColor: "bg-bg-error-secondary",
-                title: "Critical issue",
-                desc: "Something needs immediate action. You\u2019ll get a dashboard alert, email, and optional text to your phone. We don\u2019t wait for you to check a dashboard.",
+                title: "Suspended",
+                desc: "This message is blocked until you fix it. Edit it on your dashboard or update your code.",
               },
             ].map((card) => (
               <div
@@ -211,7 +202,7 @@ export default function CompliancePage() {
           </div>
 
           <p className="mt-8 text-sm font-medium text-text-secondary">
-            The goal: you should never be surprised by a carrier suspension.
+            The goal: compliance runs itself. You stay informed, not burdened.
           </p>
         </div>
       </div>
