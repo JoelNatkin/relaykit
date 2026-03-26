@@ -4,7 +4,7 @@ import {
   ArrowRight,
   ShieldTick,
   MessageCheckCircle,
-  Clock,
+  Stars02,
   Target01,
   BarChart07,
   Code01,
@@ -52,9 +52,9 @@ export default function CompliancePage() {
                 desc: "Every message is scanned before sending. Something wrong? Clear error, not a silent failure.",
               },
               {
-                icon: Clock,
-                title: "Quiet hours and rate limits",
-                desc: "Set your rules. We enforce them automatically \u2014 including timezone-aware delivery windows.",
+                icon: Stars02,
+                title: "Compliance that learns",
+                desc: "Our system gets smarter over time \u2014 adapting to carrier rule changes so your messages stay compliant without you tracking updates.",
               },
             ].map((card) => (
               <div
