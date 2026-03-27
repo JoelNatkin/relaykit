@@ -207,7 +207,7 @@ export function SignInModal({
                   We sent a 6-digit code to <span className="font-medium text-text-primary">{email}</span>.
                 </p>
               </div>
-              <div className="flex items-center justify-between gap-2" onPaste={handleOtpPaste}>
+              <div className="mt-4 mb-4 flex items-center justify-between gap-2" onPaste={handleOtpPaste}>
                 {otp.map((digit, i) => (
                   <input
                     key={i}
