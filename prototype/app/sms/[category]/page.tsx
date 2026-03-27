@@ -421,6 +421,7 @@ export default function CategoryLanding() {
       </div>
       </div>
 
+      <div className="mb-16" />
       <Footer />
     </div>
   );
