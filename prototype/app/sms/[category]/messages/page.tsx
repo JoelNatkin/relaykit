@@ -908,20 +908,18 @@ function StepsLayout({
         onChange={onPersonalizeChange}
       />
 
-      {/* Breadcrumb */}
-      <div className="mx-auto max-w-5xl px-6 mt-10 mb-6">
-        <nav className="text-sm text-text-tertiary">
-          <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
-          <span className="mx-1.5">/</span>
-          <Link href={`/sms/${categoryId}`} className="hover:text-text-secondary transition duration-100 ease-linear">{categoryLabel}</Link>
-          <span className="mx-1.5">/</span>
-          <span className="text-text-secondary">Messages</span>
-        </nav>
-      </div>
-
       {/* Header */}
-      <div className="bg-bg-tertiary py-12">
+      <div className="bg-bg-tertiary pt-6 pb-12">
         <div className="mx-auto max-w-5xl px-6">
+          {/* Breadcrumb */}
+          <nav className="text-sm text-text-tertiary mb-6">
+            <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
+            <span className="mx-1.5">/</span>
+            <Link href={`/sms/${categoryId}`} className="hover:text-text-secondary transition duration-100 ease-linear">{categoryLabel}</Link>
+            <span className="mx-1.5">/</span>
+            <span className="text-text-secondary">Messages</span>
+          </nav>
+
           <div className="sm:flex sm:items-start sm:justify-between sm:gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
@@ -1433,20 +1431,18 @@ export default function PublicMessagesPage() {
         onChange={handlePersonalizeChange}
       />
 
-      {/* Breadcrumb */}
-      <div className="mx-auto max-w-5xl px-6 mt-10 mb-6">
-        <nav className="text-sm text-text-tertiary">
-          <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
-          <span className="mx-1.5">/</span>
-          <Link href={`/sms/${categoryId}`} className="hover:text-text-secondary transition duration-100 ease-linear">{categoryLabel}</Link>
-          <span className="mx-1.5">/</span>
-          <span className="text-text-secondary">Messages</span>
-        </nav>
-      </div>
-
       {/* Hero */}
-      <div className="bg-bg-secondary py-12">
+      <div className="bg-bg-secondary pt-6 pb-12">
         <div className="mx-auto max-w-5xl px-6">
+          {/* Breadcrumb */}
+          <nav className="text-sm text-text-tertiary mb-6">
+            <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
+            <span className="mx-1.5">/</span>
+            <Link href={`/sms/${categoryId}`} className="hover:text-text-secondary transition duration-100 ease-linear">{categoryLabel}</Link>
+            <span className="mx-1.5">/</span>
+            <span className="text-text-secondary">Messages</span>
+          </nav>
+
           <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
             Appointment messages, ready to send.
           </h1>

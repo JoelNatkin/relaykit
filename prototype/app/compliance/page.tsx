@@ -17,7 +17,7 @@ export default function CompliancePage() {
   return (
     <div>
       {/* Breadcrumb */}
-      <div className="mx-auto max-w-4xl px-6 mt-10">
+      <div className="mx-auto max-w-4xl px-6 mt-6">
         <nav className="text-sm text-text-tertiary">
           <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
           <span className="mx-1.5">/</span>
