@@ -566,31 +566,13 @@ function PersonalizeSlideout({
   );
 }
 
-/* ── Registered values display (Approved state) ── */
+/* ── Registered values (Approved state) ── */
 
 const REGISTERED_VALUES: PersonalizeData = {
   appName: "GlowStudio",
   website: "glowstudio.com",
   serviceType: "Beauty & wellness appointments",
 };
-
-function RegisteredValuesBar() {
-  return (
-    <div className="flex items-center gap-6 text-sm">
-      <span className="text-text-tertiary">
-        Registered as <span className="font-medium text-text-secondary">{REGISTERED_VALUES.appName}</span>
-      </span>
-      <span className="text-text-quaternary select-none">·</span>
-      <span className="text-text-tertiary">
-        <span className="font-medium text-text-secondary">{REGISTERED_VALUES.website}</span>
-      </span>
-      <span className="text-text-quaternary select-none">·</span>
-      <span className="text-text-tertiary">
-        <span className="font-medium text-text-secondary">{REGISTERED_VALUES.serviceType}</span>
-      </span>
-    </div>
-  );
-}
 
 /* ── Page ── */
 
@@ -765,26 +747,23 @@ export default function AppMessagesPage() {
 
           {/* Toolbar row */}
           {isApproved ? (
-            <div className="mb-3 flex items-center justify-between">
-              <RegisteredValuesBar />
-              <div className="flex items-center gap-5">
-                <button
-                  type="button"
-                  onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
-                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                >
-                  {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
-                  <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCopyAll}
-                  className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                >
-                  <ClipboardIcon className="w-3.5 h-3.5" />
-                  <span>Copy all</span>
-                </button>
-              </div>
+            <div className="mb-3 flex items-center gap-5">
+              <button
+                type="button"
+                onClick={() => setViewMode(viewMode === "preview" ? "template" : "preview")}
+                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+              >
+                {viewMode === "preview" ? <CodeIcon /> : <EyeIcon />}
+                <span>{viewMode === "preview" ? "Show template" : "Show preview"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleCopyAll}
+                className="flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+              >
+                <ClipboardIcon className="w-3.5 h-3.5" />
+                <span>Copy all</span>
+              </button>
             </div>
           ) : (
             <div className="mb-3 flex items-center justify-between">
