@@ -45,6 +45,9 @@ export interface SessionState {
   // SMS compliance alerts toggle (D-239)
   alertsEnabled: boolean;
 
+  // EIN on file — gates marketing UI (D-247)
+  hasEIN: boolean;
+
   // Personalization
   appName: string;
   website: string;
@@ -92,6 +95,7 @@ const defaultState: SessionState = {
   registrationState: "default",
   complianceView: "all_clear",
   alertsEnabled: true,
+  hasEIN: true,
   appName: "",
   website: "",
   serviceType: "",

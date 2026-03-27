@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import { ShieldTick } from "@untitledui/icons";
 
@@ -140,6 +141,7 @@ const ALERT_DETAILS = [
 /* ── Main component ── */
 
 export default function ApprovedDashboard() {
+  const { appId } = useParams<{ appId: string }>();
   const { state: sessionState, setAlertsEnabled } = useSession();
   const hasAlerts = sessionState.complianceView === "has_alerts";
   const alertsEnabled = sessionState.alertsEnabled;
@@ -264,13 +266,13 @@ export default function ApprovedDashboard() {
               <line x1="12" y1="8" x2="12.01" y2="8" />
             </svg>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-text-primary">Want to send promotional messages?</p>
-              <p className="mt-0.5 text-sm text-text-secondary">Register a marketing campaign — same process, takes a few minutes.</p>
+              <p className="text-sm font-semibold text-text-primary">Want to send marketing messages?</p>
+              <p className="mt-0.5 text-sm text-text-secondary">Add marketing alongside your appointment reminders.</p>
               <Link
-                href="#"
+                href={`/apps/${appId}/marketing`}
                 className="mt-2 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
               >
-                Start marketing registration &rarr;
+                Learn more &rarr;
               </Link>
             </div>
             <button

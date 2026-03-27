@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   ShieldTick,
@@ -832,37 +833,14 @@ export default function AppMessagesPage() {
                 Need marketing messages too?
               </h3>
               <p className="mt-1 text-sm text-text-tertiary">
-                Promos and offers require a separate registration. Get your first registration approved, then add marketing from your dashboard.
+                Discount offers, re-engagement, birthday messages &mdash; add marketing alongside your appointment reminders.
               </p>
-              <p className="mt-2 text-sm text-gray-500">
-                Note: adding a marketing campaign requires an EIN. Sole proprietor registrations are limited to one campaign.
-              </p>
-              <div className="mt-4 space-y-3">
-                {expansionMessages.map((msg) => {
-                  const segments = interpolateTemplate(msg.template, categoryId, state);
-                  return (
-                    <div
-                      key={msg.id}
-                      className="rounded-xl border border-border-secondary bg-bg-primary p-4"
-                    >
-                      <span className="text-sm font-medium text-text-primary">
-                        {msg.name}
-                      </span>
-                      <p className="mt-2 text-sm text-text-tertiary leading-relaxed">
-                        {segments.map((seg, i) =>
-                          seg.isVariable ? (
-                            <span key={i} className="font-normal text-text-brand-secondary">
-                              {seg.text}
-                            </span>
-                          ) : (
-                            <span key={i}>{seg.text}</span>
-                          )
-                        )}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
+              <Link
+                href={`/apps/${appId}/marketing`}
+                className="mt-3 inline-flex items-center text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+              >
+                Learn more &rarr;
+              </Link>
             </div>
           )}
         </div>
