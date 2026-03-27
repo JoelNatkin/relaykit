@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "@/context/session-context";
-import { CopyButton } from "@/components/dashboard/shared";
+import { CopyButton } from "@/components/copy-button";
 
 /* ── Inline editable field ── */
 
