@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/context/session-context";
-import { Mail01 } from "@untitledui/icons";
+import { Mail01, XClose } from "@untitledui/icons";
 
 type Step = "email" | "otp";
 
@@ -19,6 +19,8 @@ export function SignInModal({
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
+  const [sending, setSending] = useState(false);
+  const [resendTimer, setResendTimer] = useState(30);
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Reset state when modal opens
@@ -27,7 +29,19 @@ export function SignInModal({
       setStep("email");
       setEmail("");
       setOtp(["", "", "", "", "", ""]);
+      setSending(false);
+      setResendTimer(30);
     }
+  }, [isOpen]);
+
+  // Prevent body scroll when open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
   // Close on Escape
@@ -40,6 +54,15 @@ export function SignInModal({
     return () => document.removeEventListener("keydown", handleKey);
   }, [isOpen, onClose]);
 
+  // Resend countdown timer
+  useEffect(() => {
+    if (step !== "otp" || resendTimer <= 0) return;
+    const interval = setInterval(() => {
+      setResendTimer((t) => t - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [step, resendTimer]);
+
   const handleComplete = useCallback(() => {
     setLoggedIn(true);
     onClose();
@@ -48,14 +71,30 @@ export function SignInModal({
 
   function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!email) return;
-    setStep("otp");
-    // Focus first OTP input after render
+    if (!email || sending) return;
+    setSending(true);
+    setTimeout(() => {
+      setSending(false);
+      setStep("otp");
+      setResendTimer(30);
+      setTimeout(() => otpRefs.current[0]?.focus(), 50);
+    }, 500);
+  }
+
+  function handleResend() {
+    if (resendTimer > 0) return;
+    setResendTimer(30);
+    setOtp(["", "", "", "", "", ""]);
     setTimeout(() => otpRefs.current[0]?.focus(), 50);
   }
 
+  function handleBackToEmail() {
+    setStep("email");
+    setOtp(["", "", "", "", "", ""]);
+    setSending(false);
+  }
+
   function handleOtpChange(index: number, value: string) {
-    // Only allow digits
     const digit = value.replace(/\D/g, "").slice(-1);
     const next = [...otp];
     next[index] = digit;
@@ -65,7 +104,6 @@ export function SignInModal({
       otpRefs.current[index + 1]?.focus();
     }
 
-    // Auto-complete when all 6 filled
     if (digit && next.every((d) => d !== "")) {
       setTimeout(() => handleComplete(), 200);
     }
@@ -99,25 +137,37 @@ export function SignInModal({
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 z-[100] bg-bg-overlay transition-opacity duration-200"
+        className="fixed inset-0 z-[100] bg-black/50 transition-opacity duration-200"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-[101] flex items-center justify-center px-6">
+      <div className="fixed inset-0 z-[101] flex items-center justify-center px-6" onClick={onClose}>
         <div
-          className="w-full max-w-md rounded-2xl bg-bg-primary p-8 shadow-xl"
+          className="relative w-full max-w-[400px] rounded-2xl bg-bg-primary p-8 shadow-xl"
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute top-4 right-4 p-1 text-text-quaternary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+            aria-label="Close"
+          >
+            <XClose className="size-5" />
+          </button>
+
           {step === "email" && (
             <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-bg-brand-secondary">
                 <Mail01 className="size-6 text-fg-brand-primary" />
               </div>
-              <h2 className="text-2xl font-bold text-text-primary">Sign in to RelayKit</h2>
-              <p className="text-sm text-text-tertiary">
-                Enter your email and we&rsquo;ll send you a code.
-              </p>
+              <div>
+                <h2 className="text-2xl font-bold text-text-primary">Sign in to RelayKit</h2>
+                <p className="mt-1 text-sm text-text-tertiary">
+                  Enter your email and we&rsquo;ll send you a code.
+                </p>
+              </div>
               <div>
                 <label htmlFor="signin-email" className="block text-sm font-medium text-text-secondary mb-1.5">
                   Email
@@ -134,9 +184,14 @@ export function SignInModal({
               </div>
               <button
                 type="submit"
-                className="w-full rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                disabled={sending}
+                className={`w-full rounded-lg px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear cursor-pointer ${
+                  sending
+                    ? "bg-bg-brand-solid/70 cursor-not-allowed"
+                    : "bg-bg-brand-solid hover:bg-bg-brand-solid_hover"
+                }`}
               >
-                Send code
+                {sending ? "Sending..." : "Send code"}
               </button>
             </form>
           )}
@@ -146,10 +201,12 @@ export function SignInModal({
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-bg-success-secondary">
                 <Mail01 className="size-6 text-fg-success-primary" />
               </div>
-              <h2 className="text-2xl font-bold text-text-primary">Check your email</h2>
-              <p className="text-sm text-text-tertiary">
-                We sent a 6-digit code to <span className="font-medium text-text-primary">{email}</span>.
-              </p>
+              <div>
+                <h2 className="text-2xl font-bold text-text-primary">Check your email</h2>
+                <p className="mt-1 text-sm text-text-tertiary">
+                  We sent a 6-digit code to <span className="font-medium text-text-primary">{email}</span>.
+                </p>
+              </div>
               <div className="flex items-center justify-between gap-2" onPaste={handleOtpPaste}>
                 {otp.map((digit, i) => (
                   <input
@@ -164,6 +221,28 @@ export function SignInModal({
                     className="h-12 w-12 rounded-lg border border-border-primary bg-bg-primary text-center text-lg font-semibold text-text-primary focus:border-border-brand focus:outline-none focus:ring-1 focus:ring-border-brand"
                   />
                 ))}
+              </div>
+              <div className="flex flex-col items-center gap-1.5">
+                {resendTimer > 0 ? (
+                  <p className="text-sm text-text-quaternary">
+                    Resend code in 0:{resendTimer.toString().padStart(2, "0")}
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Resend code
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={handleBackToEmail}
+                  className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                >
+                  Use a different email
+                </button>
               </div>
               <p className="text-center text-[11px] text-text-quaternary">
                 (Prototype: any 6 digits will work)
