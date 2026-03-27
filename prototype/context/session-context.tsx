@@ -42,6 +42,9 @@ export interface SessionState {
   // Compliance dashboard view toggle
   complianceView: ComplianceView;
 
+  // SMS compliance alerts toggle (D-239)
+  alertsEnabled: boolean;
+
   // Personalization
   appName: string;
   website: string;
@@ -79,6 +82,7 @@ interface SessionContextValue {
   setAppState: (state: AppState) => void;
   setRegistrationState: (state: RegistrationState) => void;
   setComplianceView: (view: ComplianceView) => void;
+  setAlertsEnabled: (enabled: boolean) => void;
 }
 
 const defaultState: SessionState = {
@@ -87,6 +91,7 @@ const defaultState: SessionState = {
   appState: "pre-download",
   registrationState: "default",
   complianceView: "all_clear",
+  alertsEnabled: false,
   appName: "",
   website: "",
   serviceType: "",
@@ -250,6 +255,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, complianceView }));
   }, []);
 
+  const setAlertsEnabled = useCallback((alertsEnabled: boolean) => {
+    setState((prev) => ({ ...prev, alertsEnabled }));
+  }, []);
+
   return (
     <SessionContext.Provider
       value={{
@@ -268,6 +277,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setAppState,
         setRegistrationState,
         setComplianceView,
+        setAlertsEnabled,
       }}
     >
       {children}
