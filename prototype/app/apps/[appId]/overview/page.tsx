@@ -700,22 +700,22 @@ export default function OverviewPage() {
                       <path d="M38.2655 18.9032C37.3631 18.0633 35.996 18.0516 35.0858 18.8837C34.035 19.8446 32.8631 20.6454 31.5936 21.2626C29.7342 22.1649 27.7264 22.6571 25.6288 22.7235C24.3397 22.7625 23.3319 23.8016 23.3319 25.0907V32.954C23.3319 34.6806 23.5506 36.3251 23.9842 37.8446C24.1717 38.5008 24.3905 39.1454 24.6444 39.7626C24.8905 40.3719 25.4764 40.7391 26.0936 40.7391C26.2889 40.7391 26.4881 40.7001 26.6795 40.6258C27.4803 40.3016 27.867 39.3914 27.5428 38.5906C27.3162 38.0281 27.1365 37.489 26.992 36.989C26.6405 35.7507 26.4608 34.3913 26.4608 32.9538V25.8093C28.7381 25.6453 30.9256 25.0632 32.9608 24.071C34.2889 23.4265 35.5311 22.6179 36.66 21.6608C38.0428 22.8522 39.5858 23.8092 41.2655 24.5163C43.1405 25.3054 45.1132 25.7507 47.1444 25.8483V26.8835C47.1444 27.7468 47.8436 28.446 48.7069 28.446C49.5701 28.446 50.2694 27.7468 50.2694 26.8835V25.1218C50.2694 23.8171 49.2147 22.7507 47.9217 22.7429C46.0389 22.7312 44.2069 22.3601 42.4803 21.6335C40.9295 20.9812 39.5115 20.0632 38.2694 18.903L38.2655 18.9032Z" fill="#7C5CFC"/>
                       <path d="M35.1605 38.9192C35.555 38.9192 35.9534 38.7707 36.2543 38.47L42.9301 31.9075C43.5434 31.302 43.5551 30.3137 42.9496 29.6966C42.3441 29.0794 41.3558 29.0716 40.7387 29.677L35.1567 35.1653L32.8559 32.9036C32.2387 32.2982 31.2504 32.306 30.645 32.9232C30.0395 33.5364 30.0473 34.5287 30.6645 35.1341L34.059 38.47C34.3637 38.7668 34.7583 38.9192 35.1528 38.9192H35.1605Z" fill="#7C5CFC"/>
                     </svg>
-                    <h3 className="mt-4 text-xl font-semibold text-text-primary">Messages look good</h3>
-                    <p className="mt-1 text-sm text-text-tertiary">No compliance issues. You&rsquo;re ready to register.</p>
-                    {/* D-239: Alerts nudge in empty state */}
                     {alertsEnabled ? (
-                      <p className="mt-3 text-sm text-text-tertiary">SMS alerts are on. We&rsquo;ll text you if anything changes.</p>
+                      <p className="mt-4 text-sm text-text-tertiary">No compliance issues. We&rsquo;ll text you if anything changes.</p>
                     ) : (
-                      <p className="mt-3 text-sm text-text-tertiary">
-                        Want a text when we catch something?{" "}
-                        <button
-                          type="button"
-                          onClick={() => setAlertsEnabled(true)}
-                          className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Enable alerts
-                        </button>
-                      </p>
+                      <>
+                        <p className="mt-4 text-sm text-text-tertiary">No compliance issues.</p>
+                        <p className="mt-2 text-sm text-text-tertiary">
+                          Want a text when we catch something?{" "}
+                          <button
+                            type="button"
+                            onClick={() => setAlertsEnabled(true)}
+                            className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                          >
+                            Enable alerts
+                          </button>
+                        </p>
+                      </>
                     )}
                   </div>
                 </>

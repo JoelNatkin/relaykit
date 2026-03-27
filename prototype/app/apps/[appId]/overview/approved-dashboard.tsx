@@ -387,23 +387,22 @@ export default function ApprovedDashboard() {
               <path d="M35.1605 38.9192C35.555 38.9192 35.9534 38.7707 36.2543 38.47L42.9301 31.9075C43.5434 31.302 43.5551 30.3137 42.9496 29.6966C42.3441 29.0794 41.3558 29.0716 40.7387 29.677L35.1567 35.1653L32.8559 32.9036C32.2387 32.2982 31.2504 32.306 30.645 32.9232C30.0395 33.5364 30.0473 34.5287 30.6645 35.1341L34.059 38.47C34.3637 38.7668 34.7583 38.9192 35.1528 38.9192H35.1605Z" fill="#7C5CFC"/>
             </svg>
 
-            <h2 className="mt-4 text-2xl font-semibold text-text-primary">You&rsquo;re live and sending</h2>
-            <p className="mt-2 text-base text-text-tertiary">Delivery is healthy. No compliance issues.</p>
-            <p className="mt-1 text-base text-text-tertiary">RelayKit is checking every message before it goes out.</p>
-            {/* D-239: Alerts nudge in empty state */}
             {alertsEnabled ? (
-              <p className="mt-3 text-sm text-text-tertiary">SMS alerts are on. We&rsquo;ll text you if anything changes.</p>
+              <p className="mt-4 text-sm text-text-tertiary">Delivery is healthy. We&rsquo;ll text you if anything changes.</p>
             ) : (
-              <p className="mt-3 text-sm text-text-tertiary">
-                Want a text when we catch something?{" "}
-                <button
-                  type="button"
-                  onClick={() => setAlertsEnabled(true)}
-                  className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-                >
-                  Enable alerts
-                </button>
-              </p>
+              <>
+                <p className="mt-4 text-sm text-text-tertiary">Delivery is healthy.</p>
+                <p className="mt-2 text-sm text-text-tertiary">
+                  Want a text when we catch something?{" "}
+                  <button
+                    type="button"
+                    onClick={() => setAlertsEnabled(true)}
+                    className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Enable alerts
+                  </button>
+                </p>
+              </>
             )}
           </div>
         )}
