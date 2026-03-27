@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/context/session-context";
 
 const USE_CASE_ITEMS = [
@@ -11,6 +11,7 @@ const USE_CASE_ITEMS = [
 
 export function TopNav() {
   const pathname = usePathname();
+  const router = useRouter();
   const { state, setLoggedIn } = useSession();
   const { isLoggedIn } = state;
 
@@ -103,7 +104,15 @@ export function TopNav() {
       {/* Right: auth toggle */}
       <button
         type="button"
-        onClick={() => setLoggedIn(!isLoggedIn)}
+        onClick={() => {
+          if (isLoggedIn) {
+            setLoggedIn(false);
+            router.push("/");
+          } else {
+            setLoggedIn(true);
+            router.push("/apps");
+          }
+        }}
         className={`text-sm transition duration-100 ease-linear cursor-pointer ${
           isLoggedIn
             ? "text-text-secondary hover:text-text-primary"
