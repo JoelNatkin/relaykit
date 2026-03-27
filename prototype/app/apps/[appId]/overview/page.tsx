@@ -771,11 +771,11 @@ export default function OverviewPage() {
 
                 {/* ── D-239: Wizard inline alerts card (between steps 1 & 2, sandbox default only) ── */}
                 {!isInReview && !isApproved && !isRejected && completedSteps.has(1) && !alertsCardDismissed && !alertsEnabled && (
-                  <div className="flex gap-4">
-                    <div className="flex flex-col items-center">
+                  <div className="flex gap-4 -mt-3">
+                    <div className="flex flex-col items-center w-8 shrink-0">
                       <div className="w-px flex-1 bg-fg-success-secondary" />
                     </div>
-                    <div className="flex-1 pb-4">
+                    <div className="flex-1 pb-5">
                       <div className="rounded-xl bg-bg-brand-secondary px-4 py-3.5 flex items-center gap-3">
                         <svg className="size-5 text-fg-brand-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
@@ -795,11 +795,11 @@ export default function OverviewPage() {
                 )}
                 {/* D-239: Brief confirmation after enabling from wizard card */}
                 {!isInReview && !isApproved && !isRejected && alertsJustEnabled && (
-                  <div className="flex gap-4">
-                    <div className="flex flex-col items-center">
+                  <div className="flex gap-4 -mt-3">
+                    <div className="flex flex-col items-center w-8 shrink-0">
                       <div className="w-px flex-1 bg-fg-success-secondary" />
                     </div>
-                    <div className="flex-1 pb-4">
+                    <div className="flex-1 pb-5">
                       <div className="rounded-xl bg-bg-success-secondary px-4 py-3.5 flex items-center gap-2">
                         <svg className="size-4 text-fg-success-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12" />
