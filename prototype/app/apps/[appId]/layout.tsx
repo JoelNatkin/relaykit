@@ -19,7 +19,7 @@ const APP_NAMES: Record<string, string> = {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { appId } = useParams<{ appId: string }>();
   const pathname = usePathname();
-  const { state, setRegistrationState, setComplianceView, setLoggedIn } = useSession();
+  const { state, setRegistrationState, setComplianceView, setAlertsEnabled, setLoggedIn } = useSession();
 
   // App pages are always logged-in
   useEffect(() => {
@@ -64,6 +64,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               >
                 <option value="all_clear">All clear</option>
                 <option value="has_alerts">Has alerts</option>
+              </select>
+            )}
+            {isOverview && (
+              <select
+                value={state.alertsEnabled ? "on" : "off"}
+                onChange={(e) => setAlertsEnabled(e.target.value === "on")}
+                className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
+              >
+                <option value="on">Alerts on</option>
+                <option value="off">Alerts off</option>
               </select>
             )}
           </div>
