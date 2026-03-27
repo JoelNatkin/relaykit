@@ -1,17 +1,12 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "@/context/session-context";
 
-const PUBLIC_LINKS = [
-  { href: "/", label: "Home" },
+const USE_CASE_ITEMS = [
   { href: "/sms/appointments", label: "Appointments" },
-  { href: "/sms/appointments/messages", label: "Messages" },
-];
-
-const LOGGED_IN_LINKS = [
-  { href: "/apps", label: "Your Apps" },
 ];
 
 export function TopNav() {
@@ -19,56 +14,104 @@ export function TopNav() {
   const { state, setLoggedIn } = useSession();
   const { isLoggedIn } = state;
 
-  const links = isLoggedIn ? LOGGED_IN_LINKS : PUBLIC_LINKS;
+  const [useCasesOpen, setUseCasesOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!useCasesOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setUseCasesOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [useCasesOpen]);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-border-secondary bg-bg-primary px-6">
-      {/* Left: wordmark */}
-      <div className="flex items-center gap-3">
+      {/* Left: wordmark + nav links */}
+      <div className="flex items-center gap-6">
         <Link href={isLoggedIn ? "/apps" : "/"} className="text-lg font-bold text-text-primary">
           RelayKit
         </Link>
-        <span className="rounded bg-bg-warning-secondary px-1.5 py-0.5 text-[10px] font-medium text-text-warning-primary">
-          Prototype
-        </span>
-      </div>
 
-      {/* Center: nav links */}
-      <div className="flex items-center gap-1">
-        {links.map((link) => {
-          const isActive =
-            pathname === link.href ||
-            (link.href !== "/" && pathname.startsWith(link.href));
-          return (
+        {isLoggedIn ? (
+          <Link
+            href="/apps"
+            className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
+          >
+            Your Apps
+          </Link>
+        ) : (
+          <>
+            {/* Use Cases dropdown */}
+            <div ref={dropdownRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setUseCasesOpen((prev) => !prev)}
+                className={`text-sm transition duration-100 ease-linear cursor-pointer ${
+                  pathname.startsWith("/sms")
+                    ? "text-text-secondary"
+                    : "text-text-tertiary hover:text-text-secondary"
+                }`}
+              >
+                Use Cases
+                <svg
+                  className={`inline-block ml-1 size-3 transition-transform duration-150 ease-linear ${useCasesOpen ? "rotate-180" : ""}`}
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+              {useCasesOpen && (
+                <div className="absolute top-full left-0 mt-1 min-w-[160px] rounded-lg border border-border-secondary bg-bg-primary py-1 shadow-lg">
+                  {USE_CASE_ITEMS.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setUseCasesOpen(false)}
+                      className="block px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Compliance link */}
             <Link
-              key={link.href}
-              href={link.href}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium transition duration-100 ease-linear ${
-                isActive
-                  ? "bg-bg-brand-primary text-text-brand-secondary"
-                  : "text-text-tertiary hover:text-text-secondary hover:bg-bg-primary_hover"
+              href="/compliance"
+              className={`text-sm transition duration-100 ease-linear ${
+                pathname === "/compliance"
+                  ? "text-text-secondary"
+                  : "text-text-tertiary hover:text-text-secondary"
               }`}
             >
-              {link.label}
+              Compliance
             </Link>
-          );
-        })}
+          </>
+        )}
       </div>
 
       {/* Right: auth toggle */}
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setLoggedIn(!isLoggedIn)}
-          className={`text-sm font-medium transition duration-100 ease-linear ${
-            isLoggedIn
-              ? "text-text-secondary hover:text-text-primary"
-              : "text-text-tertiary hover:text-text-secondary"
-          }`}
-        >
-          {isLoggedIn ? "Sign out" : "Sign in"}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={() => setLoggedIn(!isLoggedIn)}
+        className={`text-sm transition duration-100 ease-linear cursor-pointer ${
+          isLoggedIn
+            ? "text-text-secondary hover:text-text-primary"
+            : "text-text-tertiary hover:text-text-secondary"
+        }`}
+      >
+        {isLoggedIn ? "Sign out" : "Sign in"}
+      </button>
     </nav>
   );
 }
