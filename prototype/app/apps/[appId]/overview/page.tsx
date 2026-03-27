@@ -771,35 +771,42 @@ export default function OverviewPage() {
 
                 {/* ── D-239: Wizard inline alerts card (between steps 1 & 2, sandbox default only) ── */}
                 {!isInReview && !isApproved && !isRejected && completedSteps.has(1) && !alertsCardDismissed && !alertsEnabled && (
-                  <div className="ml-12 mb-4 rounded-xl bg-bg-brand-secondary px-4 py-3.5 flex items-center gap-3">
-                    <svg className="size-5 text-fg-brand-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                      <path d="M13.73 21a2 2 0 01-3.46 0" />
-                    </svg>
-                    <span className="flex-1 text-sm text-text-brand-secondary">Get a text when RelayKit catches something in your messages</span>
-                    <button
-                      type="button"
-                      onClick={handleEnableAlerts}
-                      className="rounded-lg bg-bg-brand-solid px-3 py-1.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer shrink-0"
-                    >
-                      Enable
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setAlertsCardDismissed(true)}
-                      className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer shrink-0"
-                    >
-                      Skip
-                    </button>
+                  <div className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-px flex-1 bg-fg-success-secondary" />
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <div className="rounded-xl bg-bg-brand-secondary px-4 py-3.5 flex items-center gap-3">
+                        <svg className="size-5 text-fg-brand-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                          <path d="M13.73 21a2 2 0 01-3.46 0" />
+                        </svg>
+                        <span className="flex-1 text-sm text-text-brand-secondary">We&rsquo;ll text you if a message would get flagged by carriers — before it causes problems</span>
+                        <button
+                          type="button"
+                          onClick={handleEnableAlerts}
+                          className="rounded-lg bg-bg-brand-solid px-3 py-1.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer shrink-0"
+                        >
+                          Enable
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
                 {/* D-239: Brief confirmation after enabling from wizard card */}
                 {!isInReview && !isApproved && !isRejected && alertsJustEnabled && (
-                  <div className="ml-12 mb-4 rounded-xl bg-bg-success-secondary px-4 py-3.5 flex items-center gap-2">
-                    <svg className="size-4 text-fg-success-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    <span className="text-sm text-text-success-primary">Alerts on — we&rsquo;ll text {displayPhone}</span>
+                  <div className="flex gap-4">
+                    <div className="flex flex-col items-center">
+                      <div className="w-px flex-1 bg-fg-success-secondary" />
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <div className="rounded-xl bg-bg-success-secondary px-4 py-3.5 flex items-center gap-2">
+                        <svg className="size-4 text-fg-success-primary shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <span className="text-sm text-text-success-primary">Alerts on — we&rsquo;ll text {displayPhone}</span>
+                      </div>
+                    </div>
                   </div>
                 )}
 
