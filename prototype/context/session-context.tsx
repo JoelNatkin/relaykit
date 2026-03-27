@@ -91,7 +91,7 @@ const defaultState: SessionState = {
   appState: "pre-download",
   registrationState: "default",
   complianceView: "all_clear",
-  alertsEnabled: false,
+  alertsEnabled: true,
   appName: "",
   website: "",
   serviceType: "",
