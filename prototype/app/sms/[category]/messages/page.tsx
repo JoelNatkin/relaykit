@@ -1431,6 +1431,15 @@ export default function PublicMessagesPage() {
       {/* Hero */}
       <div className="bg-bg-secondary py-12">
         <div className="mx-auto max-w-5xl px-6">
+          {/* Breadcrumb */}
+          <nav className="text-sm text-text-tertiary mb-4">
+            <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
+            <span className="mx-1.5">/</span>
+            <Link href={`/sms/${categoryId}`} className="hover:text-text-secondary transition duration-100 ease-linear">{categoryLabel}</Link>
+            <span className="mx-1.5">/</span>
+            <span className="text-text-secondary">Messages</span>
+          </nav>
+
           <div className="flex items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-3 py-1 text-xs font-medium text-text-brand-secondary">
               <Calendar className="size-3.5" />

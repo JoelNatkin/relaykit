@@ -184,6 +184,15 @@ export default function CategoryLanding() {
 
   return (
     <div className="py-16">
+      {/* Breadcrumb */}
+      <div className="mx-auto max-w-4xl px-6 mb-6">
+        <nav className="text-sm text-text-tertiary">
+          <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
+          <span className="mx-1.5">/</span>
+          <span className="text-text-secondary">{HERO.badge}</span>
+        </nav>
+      </div>
+
       {/* Hero */}
       <div className="mx-auto max-w-4xl px-6">
       <div className="text-center">

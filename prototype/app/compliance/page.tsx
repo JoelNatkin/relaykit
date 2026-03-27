@@ -16,8 +16,17 @@ import {
 export default function CompliancePage() {
   return (
     <div>
+      {/* Breadcrumb */}
+      <div className="mx-auto max-w-4xl px-6 pt-10">
+        <nav className="text-sm text-text-tertiary">
+          <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
+          <span className="mx-1.5">/</span>
+          <span className="text-text-secondary">Compliance</span>
+        </nav>
+      </div>
+
       {/* Hero */}
-      <div className="mx-auto max-w-4xl px-6 pt-20 pb-16 text-center">
+      <div className="mx-auto max-w-4xl px-6 pt-10 pb-16 text-center">
         <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
           Compliance, handled.
         </h1>
