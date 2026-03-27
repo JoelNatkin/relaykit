@@ -4,30 +4,88 @@ import { useState } from "react";
 import Link from "next/link";
 import { XClose } from "@untitledui/icons";
 
-/* ── Marketing message previews (D-254) ── */
+/* ── Marketing message style variants (D-254, same pattern as category landing) ── */
 
-const MARKETING_MESSAGES = [
+type MarketingStyleId = "brand-first" | "action-first" | "context-first";
+
+const MARKETING_STYLE_TABS: { id: MarketingStyleId; label: string }[] = [
+  { id: "brand-first", label: "Brand-first" },
+  { id: "action-first", label: "Action-first" },
+  { id: "context-first", label: "Context-first" },
+];
+
+const MARKETING_PREVIEW_MESSAGES: {
+  name: string;
+  trigger: string;
+  texts: Record<MarketingStyleId, string>;
+}[] = [
   {
-    id: "discount",
     name: "Discount offer",
-    body: "GlowStudio: Happy holidays! Enjoy 20% off your next Salon visit. Book at glowstudio.com. Reply STOP to opt out.",
+    trigger: "Sent during promotions",
+    texts: {
+      "brand-first":
+        "{app_name}: Happy holidays! Enjoy 20% off your next {service_type} visit. Book at {website_url}. Reply STOP to opt out.",
+      "action-first":
+        "20% off your next {service_type} visit \u2014 holiday special from {app_name}. Book at {website_url}. Reply STOP to opt out.",
+      "context-first":
+        "The holidays are here. {app_name} is offering 20% off your next {service_type} visit. Book at {website_url}. Reply STOP to opt out.",
+    },
   },
   {
-    id: "birthday",
-    name: "Birthday message",
-    body: "GlowStudio: Happy birthday! Here\u2019s a special treat \u2014 15% off your next appointment. Book at glowstudio.com. Reply STOP to unsubscribe.",
-  },
-  {
-    id: "reengagement",
     name: "Re-engagement",
-    body: "GlowStudio: We miss you! It\u2019s been a while since your last visit. Book your next Salon appointment at glowstudio.com. Reply STOP to opt out.",
+    trigger: "Sent after 30 days inactive",
+    texts: {
+      "brand-first":
+        "{app_name}: We miss you! It\u2019s been a while since your last visit. Book your next {service_type} appointment at {website_url}. Reply STOP to opt out.",
+      "action-first":
+        "Book your next {service_type} appointment \u2014 it\u2019s been a while. {app_name} at {website_url}. Reply STOP to opt out.",
+      "context-first":
+        "It\u2019s been a while since your last {service_type} visit. {app_name} would love to see you again. Book at {website_url}. Reply STOP to opt out.",
+    },
   },
   {
-    id: "review",
     name: "Review request",
-    body: "GlowStudio: Thanks for your visit today! We\u2019d love your feedback: glowstudio.com/review. Reply STOP to opt out.",
+    trigger: "Sent after appointment",
+    texts: {
+      "brand-first":
+        "{app_name}: Thanks for your visit today! We\u2019d love your feedback: {website_url}/review. Reply STOP to opt out.",
+      "action-first":
+        "Rate your {service_type} experience \u2014 {app_name} wants your feedback: {website_url}/review. Reply STOP to opt out.",
+      "context-first":
+        "You just visited {app_name} for a {service_type} appointment. We\u2019d love your feedback: {website_url}/review. Reply STOP to opt out.",
+    },
   },
 ];
+
+/** Swap variable placeholders for bold preview values */
+function interpolateMarketing(text: string): React.ReactNode[] {
+  const replacements: Record<string, string> = {
+    "{app_name}": "GlowStudio",
+    "{service_type}": "Salon",
+    "{website_url}": "glowstudio.com",
+  };
+
+  const pattern = /\{app_name\}|\{service_type\}|\{website_url\}/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <span key={match.index} className="font-medium text-text-brand-tertiary">
+        {replacements[match[0]]}
+      </span>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts;
+}
 
 /* ── Registration stepper for "In review" state ── */
 
@@ -106,6 +164,7 @@ interface MarketingModalProps {
 
 export default function MarketingModal({ onClose, appId }: MarketingModalProps) {
   const [marketingState, setMarketingState] = useState<"info" | "in_review" | "active">("info");
+  const [activeStyle, setActiveStyle] = useState<MarketingStyleId>("brand-first");
 
   /* ── Active state: brief confirmation ── */
   if (marketingState === "active") {
@@ -214,35 +273,53 @@ export default function MarketingModal({ onClose, appId }: MarketingModalProps) 
         <div className="flex items-center justify-center gap-16">
           <div className="text-center">
             <p className="text-3xl font-semibold text-text-primary">$29</p>
-            <p className="mt-1 text-sm text-text-tertiary">one-time registration</p>
-            <p className="mt-0.5 text-xs text-text-tertiary">Your brand is already verified</p>
+            <p className="mt-1 text-sm text-text-tertiary">one-time to register</p>
           </div>
           <div className="text-center">
             <p className="text-3xl font-semibold text-text-primary">+$10/mo</p>
-            <p className="mt-1 text-sm text-text-tertiary">250 marketing messages</p>
-            <p className="mt-0.5 text-xs text-text-tertiary">Same overage rates if you need more</p>
+            <p className="mt-1 text-sm text-text-tertiary">250 messages included</p>
+            <p className="mt-0.5 text-xs text-text-tertiary">$15 per 1,000 after that</p>
           </div>
         </div>
       </div>
 
-      {/* ── Section 3: Message previews (gray band) ── */}
+      {/* ── Section 3: Message previews with style pills (gray band) ── */}
       <div className="bg-bg-secondary">
         <div className="mx-auto max-w-3xl px-6 py-12">
           <p className="text-sm font-semibold text-text-brand-secondary uppercase tracking-wide">Messages you&rsquo;ll unlock</p>
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3">
-            {MARKETING_MESSAGES.map((msg) => (
-              <div
-                key={msg.id}
-                className="rounded-xl border border-border-secondary bg-bg-primary p-4"
+
+          {/* Style pills */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            {MARKETING_STYLE_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveStyle(tab.id)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition duration-100 ease-linear cursor-pointer ${
+                  activeStyle === tab.id
+                    ? "bg-bg-brand-secondary text-text-brand-secondary"
+                    : "bg-bg-primary text-text-secondary hover:bg-bg-primary_hover"
+                }`}
               >
-                <span className="text-sm font-medium text-text-primary">{msg.name}</span>
-                <p className="mt-2 text-sm text-text-tertiary leading-relaxed">
-                  {msg.body.split(/(GlowStudio|Salon|glowstudio\.com(?:\/review)?)/g).map((part, i) =>
-                    /^(GlowStudio|Salon|glowstudio\.com(?:\/review)?)$/.test(part)
-                      ? <span key={i} className="font-semibold text-text-secondary">{part}</span>
-                      : part
-                  )}
-                </p>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Message cards — 3 columns */}
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {MARKETING_PREVIEW_MESSAGES.map((msg) => (
+              <div
+                key={msg.name}
+                className="rounded-xl border border-border-secondary bg-bg-primary p-5"
+              >
+                <h3 className="text-sm font-semibold text-text-primary">{msg.name}</h3>
+                <p className="mt-1 text-xs text-text-tertiary">{msg.trigger}</p>
+                <div className="mt-3 rounded-lg bg-bg-secondary p-3">
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    {interpolateMarketing(msg.texts[activeStyle])}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -254,31 +331,40 @@ export default function MarketingModal({ onClose, appId }: MarketingModalProps) 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <StepNumber num={1} />
-            <p className="mt-3 text-sm font-semibold text-text-primary">We handle the carrier registration</p>
-            <p className="mt-1 text-sm text-text-tertiary">Your brand is already verified. Usually takes a few days.</p>
+            <p className="mt-3 text-sm font-semibold text-text-primary">We handle registration</p>
+            <p className="mt-1 text-sm text-text-tertiary">Same process as your first. Usually a few days.</p>
           </div>
           <div>
             <StepNumber num={2} />
-            <p className="mt-3 text-sm font-semibold text-text-primary">Your compliance site updates</p>
-            <p className="mt-1 text-sm text-text-tertiary">Marketing consent form activates automatically.</p>
+            <p className="mt-3 text-sm font-semibold text-text-primary">Consent forms update</p>
+            <p className="mt-1 text-sm text-text-tertiary">Recipients can opt in to marketing. No extra forms to build.</p>
           </div>
           <div>
             <StepNumber num={3} />
-            <p className="mt-3 text-sm font-semibold text-text-primary">Your files expand</p>
-            <p className="mt-1 text-sm text-text-tertiary">Your AI tool reads the updated config and knows marketing is available.</p>
+            <p className="mt-3 text-sm font-semibold text-text-primary">Nothing to reconfigure</p>
+            <p className="mt-1 text-sm text-text-tertiary">Your setup already knows marketing is available.</p>
           </div>
         </div>
       </div>
 
       {/* ── Section 5: Consent (gray band) ── */}
       <div className="bg-bg-secondary">
-        <div className="mx-auto max-w-3xl px-6 py-12">
+        <div className="mx-auto max-w-[500px] px-6 py-12">
           <h2 className="text-base font-semibold text-text-primary">How consent works</h2>
-          <div className="mt-3 space-y-2">
-            <p className="text-sm text-text-secondary">Marketing messages require separate recipient consent &mdash; that&rsquo;s federal law.</p>
-            <p className="text-sm text-text-secondary">RelayKit generates the consent language. Your app collects it through our consent API. We store it and enforce it at send time.</p>
-            <p className="text-sm text-text-secondary">If a recipient hasn&rsquo;t opted in to marketing, we block the message before it reaches carriers.</p>
-          </div>
+          <ul className="mt-3 space-y-2">
+            <li className="flex gap-2 text-sm text-text-secondary">
+              <span className="text-text-quaternary mt-1.5 shrink-0">&bull;</span>
+              Marketing messages require separate recipient consent &mdash; that&rsquo;s federal law.
+            </li>
+            <li className="flex gap-2 text-sm text-text-secondary">
+              <span className="text-text-quaternary mt-1.5 shrink-0">&bull;</span>
+              RelayKit generates the consent language, collects it through your app, and enforces it at send time.
+            </li>
+            <li className="flex gap-2 text-sm text-text-secondary">
+              <span className="text-text-quaternary mt-1.5 shrink-0">&bull;</span>
+              If a recipient hasn&rsquo;t opted in, we block the message before it reaches carriers.
+            </li>
+          </ul>
         </div>
       </div>
 
