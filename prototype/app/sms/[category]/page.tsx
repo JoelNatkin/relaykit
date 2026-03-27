@@ -186,7 +186,7 @@ export default function CategoryLanding() {
   return (
     <div className="py-16">
       {/* Breadcrumb */}
-      <div className="mx-auto max-w-4xl px-6 mb-6">
+      <div className="mx-auto max-w-4xl px-6 mt-10 mb-6">
         <nav className="text-sm text-text-tertiary">
           <Link href="/" className="hover:text-text-secondary transition duration-100 ease-linear">Home</Link>
           <span className="mx-1.5">/</span>
@@ -197,11 +197,7 @@ export default function CategoryLanding() {
       {/* Hero */}
       <div className="mx-auto max-w-4xl px-6">
       <div className="text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-3 py-1 text-xs font-medium text-text-brand-secondary">
-          <Calendar className="size-3.5" />
-          {HERO.badge}
-        </span>
-        <h1 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
           {HERO.headline}
         </h1>
         <p className="mt-4 text-base text-text-tertiary max-w-2xl mx-auto">
