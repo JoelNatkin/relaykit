@@ -48,7 +48,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <select
               value={state.registrationState}
               onChange={(e) => setRegistrationState(e.target.value as RegistrationState)}
-              className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none appearance-none pr-3 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%226%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M1%201l4%204%204-4%22%20stroke%3D%22%239DA4AE%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_6px] bg-[right_0_center] bg-no-repeat"
+              className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
             >
               <option value="default">Default</option>
               <option value="pending">Pending</option>
@@ -60,7 +60,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <select
                 value={state.complianceView}
                 onChange={(e) => setComplianceView(e.target.value as ComplianceView)}
-                className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none appearance-none pr-3 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%226%22%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M1%201l4%204%204-4%22%20stroke%3D%22%239DA4AE%22%20stroke-width%3D%221.5%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:10px_6px] bg-[right_0_center] bg-no-repeat"
+                className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
               >
                 <option value="all_clear">All clear</option>
                 <option value="has_alerts">Has alerts</option>
