@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: March 26, 2026
+### Last updated: March 27, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -16,17 +16,38 @@
 
 ### Navigation
 
-**Logged-out top nav:** Home | Appointments | Messages | Sign in
-**Logged-in top nav:** Your Apps | Sign out
+**Logged-out (marketing) nav:** RelayKit wordmark (left) → Use Cases (dropdown: Appointments → `/sms/appointments`) → Compliance (`/compliance`) → Sign in (right, opens sign-in modal). No Prototype badge. (D-118, updated March 27 2026)
+
+**Logged-in (app) nav:** RelayKit wordmark (left) → "Your Apps" (plain text link to `/apps`, left-aligned after wordmark) → Sign out (right, toggles state + navigates to `/`). No Prototype badge, no pill styling.
+
 Per-project tabs live exclusively in the app layout shell, not in top nav. (D-118)
+
+**Breadcrumbs:** All marketing/public pages except Home have breadcrumbs. Styled: `text-sm text-text-tertiary`, " / " separator, last item is current page (not a link). 24px below nav (`mt-6`). Placement:
+- Category landing (`/sms/appointments`): Home / Appointments — above hero, inside page content area.
+- Messages page (`/sms/appointments/messages`): Home / Appointments / Messages — inside gray hero band as first element, `pt-6 pb-12` on band.
+- Compliance (`/compliance`): Home / Compliance — above hero, inside page content area.
+
+### Sign-In Modal
+
+**File:** `prototype/components/sign-in-modal.tsx`
+Two-step modal triggered by "Sign in" in top nav. Semi-transparent backdrop (`bg-black/50`). Max-width 400px. XClose button top-right. Escape key and backdrop click close without signing in. Body scroll locked when open.
+
+**Step 1 (Email):** Mail01 icon (brand secondary), "Sign in to RelayKit" h2, "Enter your email and we'll send you a code." body, email input, "Send code" button. Button shows "Sending..." disabled state for 500ms before advancing.
+
+**Step 2 (OTP):** Mail01 icon (success secondary), "Check your email" h2, shows submitted email. 6-digit OTP input boxes (auto-advance, paste support, backspace navigates back). Extra 16px margin above and below input row. "Resend code in 0:30" countdown → clickable "Resend code" when timer hits zero. "Use a different email" link returns to Step 1. Auto-submit when all 6 digits entered → `setLoggedIn(true)` + `router.push("/apps")`. Prototype hint: "(Prototype: any 6 digits will work)".
 
 ### State Switchers (Prototype Only)
 
-Every page that has multiple lifecycle states includes a small dropdown selector (text-tertiary, text-sm) for switching between states during development. These are prototype controls — production state comes from server data. Retain these throughout prototype work; strip when porting to production.
+Every page that has multiple lifecycle states includes small dropdown selectors (`text-xs text-text-quaternary`) for switching between states during development. Positioned LEFT of the status indicator (colored dot + label) with 40px gap (`ml-10`) between last switcher and status indicator. Native browser chevrons (no custom icons). These are prototype controls — production state comes from server data. Retain throughout prototype work; strip when porting to production.
+
+### Footer
+
+**File:** `prototype/components/footer.tsx`
+Present on all marketing pages: Home, Category Landing, Messages, Compliance. Two-column grid: Product (How it works, Use cases, Compliance — clickable links) and Legal (Terms, Privacy, Acceptable Use — plain `<span>` text, not clickable, no pages exist yet). Copyright: "© 2026 RelayKit LLC" (D-195).
 
 ### Auth
 
-Fully mocked in prototype. "Sign in" toggle in top nav flips `isLoggedIn` in session context. No Supabase integration. Production uses email OTP (D-59).
+Sign-in modal provides email → OTP flow (see Sign-In Modal above). "Sign out" in top nav calls `setLoggedIn(false)` + `router.push("/")`. Production uses email OTP (D-59).
 
 ### Design System
 
@@ -58,6 +79,8 @@ All data is mocked. Session context provides state management. localStorage key:
 **File:** `prototype/app/sms/[category]/page.tsx`
 **Status:** Stable (appointments only)
 
+**Breadcrumb:** Home / Appointments (see Global Patterns > Breadcrumbs). No Appointments pill badge in hero — breadcrumb handles category identification.
+
 **Subhead:** "Your AI coding tool builds the integration. RelayKit handles the carriers." (updated from prior copy)
 
 **Pricing context line:** Below "See all appointment messages →" CTA link with `mt-5`. Styled: `text-base text-center text-text-tertiary`. "$49", "$150", and "$19/mo" in `font-semibold text-text-primary`. Full text: "Free sandbox. No credit card. $49 to register, $150 + $19/mo after approval."
@@ -78,7 +101,9 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **This is the most important page in the product.** It's where strangers become users. The download happens here.
 
-**Hero:** Gray band (`bg-bg-tertiary`). Appointments pill + H1 ("Appointment messages, ready to send.") with subhead grouped below ("Everything your AI coding tool needs to add SMS — in two files."). Desktop CTA right-aligned with "Free to build and test. No lock-in." below. Mobile CTA full-width after logos. Logo row (6 tools, 48px circles with `border-[#999999]`). Pricing context below logos: "Free sandbox, no credit card. $49 to register, $150 + $19/mo after approval." with line break before "You'll get two files and a sandbox API key." "How it works" link (Expand06 icon, brand purple semibold) opens full-page modal (D-218).
+**Breadcrumb:** Home / Appointments / Messages — inside gray hero band as first element (see Global Patterns > Breadcrumbs). No Appointments pill badge — breadcrumb handles category identification.
+
+**Hero:** Gray band (`bg-bg-tertiary`, `pt-6 pb-12`). H1 ("Appointment messages, ready to send.") with subhead grouped below ("Everything your AI coding tool needs to add SMS — in two files."). Desktop CTA right-aligned with "Free to build and test. No lock-in." below. Mobile CTA full-width after logos. Logo row (6 tools, 48px circles with `border-[#999999]`). Pricing context below logos: "Free sandbox, no credit card. $49 to register, $150 + $19/mo after approval." with line break before "You'll get two files and a sandbox API key." "How it works" link (Expand06 icon, brand purple semibold) opens full-page modal (D-218).
 
 **Playbook summary (D-217, D-224):** Between hero and messages. `bg-bg-secondary` band. Heading "Your complete appointment SMS system" + horizontal flow with 6 numbered nodes (24px filled purple circles, white numbers, CSS hover tooltips) connected by arrows. Labels left-aligned, max-width ~90px. Vertical stepper on mobile. Tagline "One prompt. Your AI tool builds the whole flow." Data in `PLAYBOOK_FLOWS` keyed by category. Node order: 1 Booking confirmed, 2 Reminder sent, 3 Pre-visit sent, 4 Reschedule handled, 5 No-show followed up, 6 Cancellation handled (D-223).
 
@@ -219,7 +244,7 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 
 ### Messages Tab — `/apps/[appId]/messages`
 **File:** `prototype/app/apps/[appId]/messages/page.tsx`
-**Status:** Default state STABLE; registration lifecycle states not yet differentiated
+**Status:** Default state STABLE; Approved state DIFFERENTIATED (D-159)
 
 **Signed up, pre-download:** `[NOT YET DESIGNED]` — Initial download happens on the public Messages page. Overview and Settings don't exist until project is created at download time (D-162).
 
@@ -254,12 +279,19 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 #### Pending / Changes Requested / Rejected states
 All three states render the Default layout. Registration state doesn't change Messages tab content pre-approval (D-170).
 
-#### Approved state
-`[NOT YET DIFFERENTIATED]` — Currently renders Default layout with one addition (D-241):
-- **Compliance status line:** Between playbook band and two-column layout. `pt-4 pb-2`, flex row. ShieldTick icon (`size-4 text-fg-success-primary`) + "All messages scanned before delivery. **2 issues caught and fixed this month.**" (mock data). Text-tertiary base, count in `text-text-secondary font-medium`.
-- Planned per D-159: personalization fields read-only, showing registered values
-- AI commands still available
-- No "registered" badges on individual message cards
+#### Approved state (D-159, D-244)
+
+**Differentiated from Default.** Key changes:
+- **No Personalize button or slideout.** Personalization is locked after registration.
+- **No metadata line.** Developer already knows their registration details from Overview/Settings.
+- **Toolbar row:** Show template / Copy all controls LEFT-aligned (`flex items-center gap-5`), no `justify-between`. No Personalize button.
+- **Registered values baked in:** Messages render in preview mode with registered values (GlowStudio, glowstudio.com, Beauty & wellness appointments) from `REGISTERED_VALUES` constant. `useEffect` forces preview mode and sets registered values on mount when `isApproved`.
+- **Messages header copy:** "You're live. These are your registered messages — add new ones, adapt existing ones, or have your AI tool riff on them. Compliance scanning keeps everything clean."
+- **Opt-in copy:** "Your registered opt-in form. RelayKit keeps it current with your compliance site."
+- **Download button:** "Re-download RelayKit" (instead of "Download RelayKit").
+- **Compliance status line:** Between playbook band and two-column layout. `pt-4 pb-2`, flex row. ShieldTick icon (`size-4 text-fg-success-primary`) + "All messages scanned before delivery. **2 issues caught and fixed this month.**" (mock data). Text-tertiary base, count in `text-text-secondary font-medium`. (D-241)
+- AI commands, variant pills, message cards, marketing callout all unchanged from Default.
+- No "registered" badges on individual message cards.
 
 ---
 
