@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import { ShieldTick } from "@untitledui/icons";
+import MarketingModal from "@/components/marketing-modal";
 
 /* ── Compliance attention section types & mock data (D-243) ── */
 
@@ -148,6 +149,7 @@ export default function ApprovedDashboard() {
 
   const [alertDetail, setAlertDetail] = useState<number | null>(null);
   const [upsellDismissed, setUpsellDismissed] = useState(false);
+  const [showMarketingModal, setShowMarketingModal] = useState(false);
   const [dismissedItems, setDismissedItems] = useState<Set<string>>(new Set());
 
   const visibleItems = COMPLIANCE_ITEMS.filter((item) => !dismissedItems.has(item.id));
@@ -268,12 +270,13 @@ export default function ApprovedDashboard() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-text-primary">Want to send marketing messages?</p>
               <p className="mt-0.5 text-sm text-text-secondary">Add marketing alongside your appointment reminders.</p>
-              <Link
-                href={`/apps/${appId}/marketing`}
-                className="mt-2 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+              <button
+                type="button"
+                onClick={() => setShowMarketingModal(true)}
+                className="mt-2 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
               >
                 Learn more &rarr;
-              </Link>
+              </button>
             </div>
             <button
               type="button"
@@ -411,6 +414,11 @@ export default function ApprovedDashboard() {
         )}
 
       </div>
+
+      {/* Marketing modal */}
+      {showMarketingModal && (
+        <MarketingModal appId={appId} onClose={() => setShowMarketingModal(false)} />
+      )}
     </>
   );
 }
