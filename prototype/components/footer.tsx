@@ -23,7 +23,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-10 border-t border-border-tertiary pt-6">
-          <p className="text-xs text-text-quaternary">&copy; 2026 Vaulted Press LLC</p>
+          <p className="text-xs text-text-quaternary">&copy; 2026 RelayKit LLC</p>
         </div>
       </div>
     </footer>

@@ -13,6 +13,7 @@ import {
   Monitor01,
 } from "@untitledui/icons";
 import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
+import { Footer } from "@/components/footer";
 
 /* ── Appointments-specific content (stub 1 category as the primary example) ── */
 
@@ -423,6 +424,8 @@ export default function CategoryLanding() {
         </Link>
       </div>
       </div>
+
+      <Footer />
     </div>
   );
 }

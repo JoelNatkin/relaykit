@@ -62,56 +62,56 @@ const CATEGORIES: Category[] = [
     label: "Appointments",
     icon: Calendar,
     examples: "Confirmations, reminders, reschedules, cancellations, no-show follow-ups",
-    ctaLabel: "View appointment messages",
+    ctaLabel: "Explore appointments",
   },
   {
     id: "verification",
     label: "Verification codes",
     icon: Shield01,
     examples: "Login OTPs, signup codes, password resets, MFA, new device alerts",
-    ctaLabel: "View verification messages",
+    ctaLabel: "Explore verification",
   },
   {
     id: "orders",
     label: "Order updates",
     icon: Package,
     examples: "Shipping confirmations, delivery alerts, return status, refund notices",
-    ctaLabel: "View order messages",
+    ctaLabel: "Explore orders",
   },
   {
     id: "support",
     label: "Customer support",
     icon: MessageChatCircle,
     examples: "Ticket updates, resolution notices, satisfaction follow-ups",
-    ctaLabel: "View support messages",
+    ctaLabel: "Explore support",
   },
   {
     id: "marketing",
     label: "Marketing",
     icon: Announcement02,
     examples: "Promos, re-engagement, product launches, seasonal campaigns",
-    ctaLabel: "View marketing messages",
+    ctaLabel: "Explore marketing",
   },
   {
     id: "internal",
     label: "Team alerts",
     icon: Users01,
     examples: "Shift reminders, system alerts, escalation pings, on-call notifications",
-    ctaLabel: "View team alert messages",
+    ctaLabel: "Explore team alerts",
   },
   {
     id: "community",
     label: "Community",
     icon: Globe01,
     examples: "Event reminders, group updates, membership alerts, RSVP confirmations",
-    ctaLabel: "View community messages",
+    ctaLabel: "Explore community",
   },
   {
     id: "waitlist",
     label: "Waitlist",
     icon: ClipboardCheck,
     examples: "Spot available, queue position, reservation holds, invite codes",
-    ctaLabel: "View waitlist messages",
+    ctaLabel: "Explore waitlist",
   },
 ];
 
@@ -144,8 +144,8 @@ export default function MarketingHome() {
       <div className="bg-bg-tertiary py-16">
         <div className="mx-auto max-w-5xl px-6 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-            Add SMS to your app<br />
-            in minutes, not months.
+            Add SMS to your app in<br />
+            minutes, not months.
           </h1>
           <p className="mt-4 text-lg text-text-tertiary max-w-2xl mx-auto">
             Two files. Your AI coding tool. A working SMS feature.
@@ -513,7 +513,7 @@ export default function MarketingHome() {
             </div>
           </div>
           <div className="mt-10 border-t border-border-tertiary pt-6">
-            <p className="text-xs text-text-quaternary">&copy; 2026 Vaulted Press LLC</p>
+            <p className="text-xs text-text-quaternary">&copy; 2026 RelayKit LLC</p>
           </div>
         </div>
       </footer>
