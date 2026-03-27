@@ -184,7 +184,7 @@ export default function CategoryLanding() {
   }
 
   return (
-    <div className="py-16">
+    <div className="pb-16">
       {/* Breadcrumb */}
       <div className="mx-auto max-w-4xl px-6 mt-10 mb-6">
         <nav className="text-sm text-text-tertiary">

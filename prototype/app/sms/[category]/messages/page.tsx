@@ -1442,13 +1442,7 @@ export default function PublicMessagesPage() {
       {/* Hero */}
       <div className="bg-bg-secondary py-12">
         <div className="mx-auto max-w-5xl px-6">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-3 py-1 text-xs font-medium text-text-brand-secondary">
-              <Calendar className="size-3.5" />
-              {categoryLabel}
-            </span>
-          </div>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+          <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
             Appointment messages, ready to send.
           </h1>
           <p className="mt-3 text-base text-text-tertiary max-w-2xl">
