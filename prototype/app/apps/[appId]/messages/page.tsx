@@ -706,7 +706,7 @@ export default function AppMessagesPage() {
         {/* LEFT — messages */}
         <div className="max-w-[500px]">
           {/* Messages header */}
-          <div className="mb-3">
+          <div className="mb-6">
             <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
             <p className="mt-1 text-sm text-text-secondary">
               {isApproved
@@ -872,7 +872,7 @@ export default function AppMessagesPage() {
           <h2 className="text-lg font-semibold text-text-primary mb-1">
             Opt-in form
           </h2>
-          <p className="mb-3 text-sm text-text-secondary">
+          <p className="mb-6 text-sm text-text-secondary">
             {isApproved
               ? "Your registered opt-in form. RelayKit keeps it current with your compliance site."
               : "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."}

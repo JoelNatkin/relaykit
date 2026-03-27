@@ -1157,7 +1157,7 @@ function StepsLayout({
           {/* LEFT COLUMN — messages */}
           <div className="max-w-[500px]">
             {/* Messages header */}
-            <div className="mb-3">
+            <div className="mb-6">
               <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
               <p className="mt-1 text-sm text-text-secondary">Every message is pre-written for your use case and formatted for carriers. Copy them, adapt them, or let your AI tool use them as a starting point.</p>
             </div>
@@ -1298,7 +1298,7 @@ function StepsLayout({
             <h2 className="text-lg font-semibold text-text-primary mb-1">
               Opt-in form
             </h2>
-            <p className="mb-3 text-sm text-text-secondary">Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours.</p>
+            <p className="mb-6 text-sm text-text-secondary">Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours.</p>
             <CatalogOptIn
               appName={state.appName}
               website={state.website}
@@ -1610,7 +1610,7 @@ export default function PublicMessagesPage() {
             <h2 className="mb-1 text-lg font-semibold text-text-primary">
               Opt-in form
             </h2>
-            <p className="mb-3 text-sm text-text-secondary">Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours.</p>
+            <p className="mb-6 text-sm text-text-secondary">Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours.</p>
             <CatalogOptIn
               appName={state.appName}
               website={state.website}
