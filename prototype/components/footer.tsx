@@ -16,9 +16,9 @@ export function Footer() {
           <div>
             <p className="text-sm font-semibold text-text-primary">Legal</p>
             <ul className="mt-3 flex flex-col gap-2">
-              <li><Link href="#" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Terms</Link></li>
-              <li><Link href="#" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Privacy</Link></li>
-              <li><Link href="#" className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">Acceptable Use</Link></li>
+              <li><span className="text-sm text-text-tertiary">Terms</span></li>
+              <li><span className="text-sm text-text-tertiary">Privacy</span></li>
+              <li><span className="text-sm text-text-tertiary">Acceptable Use</span></li>
             </ul>
           </div>
         </div>
