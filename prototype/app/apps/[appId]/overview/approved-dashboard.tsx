@@ -389,7 +389,7 @@ export default function ApprovedDashboard() {
 
             <h2 className="mt-4 text-2xl font-semibold text-text-primary">You&rsquo;re live and sending</h2>
             {alertsEnabled ? (
-              <p className="mt-2 text-sm text-text-tertiary">Delivery is healthy. We&rsquo;ll text you if anything changes.</p>
+              <p className="mt-2 text-sm text-text-tertiary">Delivery is healthy.<br />We&rsquo;ll text you if anything changes.</p>
             ) : (
               <>
                 <p className="mt-2 text-sm text-text-tertiary">Delivery is healthy.</p>

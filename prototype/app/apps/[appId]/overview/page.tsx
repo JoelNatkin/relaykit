@@ -702,7 +702,7 @@ export default function OverviewPage() {
                     </svg>
                     <h3 className="mt-4 text-xl font-semibold text-text-primary">Messages look good</h3>
                     {alertsEnabled ? (
-                      <p className="mt-1 text-sm text-text-tertiary">No compliance issues. We&rsquo;ll text you if anything changes.</p>
+                      <p className="mt-1 text-sm text-text-tertiary">No compliance issues.<br />We&rsquo;ll text you if anything changes.</p>
                     ) : (
                       <>
                         <p className="mt-1 text-sm text-text-tertiary">No compliance issues.</p>
