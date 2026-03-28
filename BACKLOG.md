@@ -1,6 +1,6 @@
 # BACKLOG.md — RelayKit
 ## Ideas, Deferred Work, and Future Features
-### Last updated: March 25, 2026
+### Last updated: March 28, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -67,6 +67,20 @@
 
 - **Toll-free number path** — Alternative to 10DLC for certain use cases. (Origin: D-43 Phase 2 list)
 
+- **UX simplicity audit / "naive eyes" pass** — Fresh CC session, no project context. Screenshots or live prototype only. Instructions: be ruthlessly honest about information density, jargon, unnecessary complexity. Evaluate every page against "would a developer who just wants to add SMS feel overwhelmed?" Consider A/B testing current vs simplified version. (Origin: March 27 bike ride conversation, D-262)
+
+- **FAQ sections on key pages** — Move inline explanations to FAQ sections. Main content becomes confident claims. FAQ catches edge cases and "how does it work" questions. Applies to: marketing modal, category landing, home page, compliance page. (Origin: March 27 conversation, D-263)
+
+- **Marketing page copy pass for "two files" removal** — Update all marketing pages to remove references to "two files" per D-257. Replace with outcome-focused language. Affects: home page hero, category landing, messages page hero, How it Works modal. (Origin: D-257, March 27 session)
+
+- **Category landing "What's included" vocabulary update** — The "Need marketing messages too?" section on category landing uses "campaign" and "promotional" language. Update per D-254. Also update "Sole proprietor registrations are limited to one campaign." (Origin: March 27 session)
+
+- **Marketing message style pills on category landing** — Add marketing message style pill treatment (Brand-first / Action-first / Context-first) alongside existing transactional messages on category landing page. Shows marketing messages as cross-sell surface in pre-signup flow. (Origin: March 27 session)
+
+- **Build spec empirical testing program** — Write a real build spec by hand for appointments use case. Test with Claude Code, Cursor, Windsurf, Copilot, Cline against a fresh project. Record what works, what breaks, what questions the AI asks. Then test with 5-8 real developers at different skill levels. Then test across frameworks (Next.js, Flask, React Native, Node). Highest-priority validation activity. (Origin: March 27 conversation, D-260)
+
+- **Sandbox API (mock mode)** — Build a sandbox API endpoint that accepts message requests, validates format, returns mock responses. No carrier integration needed. Enables build spec testing immediately. (Origin: March 27 conversation, D-261)
+
 ### Infrastructure & Operations
 
 - **Sinch migration implementation** — Sinch confirmed (D-215). Create PRD_04-equivalent mapping doc: each Twilio module mapped to Sinch API equivalent. Registration API (brand + campaign), SMS API (send/receive), number provisioning, webhook handlers, credential model. Estimated 2–3 CC sessions. (Origin: March 22 brainstorming, D-199, confirmed D-215)
@@ -114,6 +128,12 @@
 ---
 
 ## Maybe — Interesting ideas, not yet validated
+
+- **Embeddable opt-in form (revisitable)** — Script tag or iframe that renders a branded opt-in form hosted by RelayKit. Rejected in favor of D-256 (AI-tool-built native forms) but could be a "zero effort" tier for developers who truly don't want to touch their code. (Origin: March 27 brainstorming)
+
+- **Consent API as competitive differentiator on marketing pages** — "RelayKit handles opt-in and opt-out" as headline claim. Consent audit logging (D-255) is a strong story: timestamped, 4-year retention, legally defensible. Could be a section on home page or compliance page. (Origin: March 27 conversation)
+
+- **Build spec as a new product category** — The pattern of "files written for AI tools to execute" may be a new class of developer tool — distinct from SDKs, starter kits, or documentation. Worth articulating as positioning if the pattern proves effective. Not actionable until build spec testing validates it works. (Origin: March 27 conceptual discussion)
 
 - **Two-tab marketing page** — Tab 1 = marketing pitch, Tab 2 = use case content. Dropped in favor of the playbook summary section + How it works modal which solves the same problem without adding tabs. May revisit if user testing reveals context gaps. (Origin: March 23 brainstorming, explicitly dropped)
 
@@ -177,6 +197,7 @@
 | Paid compliance tier | ISV liability without visibility | D-19, D-29 |
 | Healthcare/HIPAA support | No BAA, no PHI routing capability | D-18 |
 | MIXED campaign on initial registration | Muddied story for TCR reviewers | D-89 |
+| MIXED campaign type (any use) | Never used — not at intake, not as expansion. Marketing is always a second MARKETING campaign. | D-245, D-251 |
 | In-app message composer v1 | AI tools + SMS_GUIDELINES.md is the authoring layer | D-79 |
 | Plan builder / message curation UI | Category selection is sufficient for scope | D-85 |
 | Model 3 BYO Twilio (subaccount + direct creds) | Unmonitorable ISV risk | D-26 |

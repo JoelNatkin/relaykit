@@ -780,3 +780,75 @@ _Affects: Overview page (post-approval + sandbox), D-240 inline editor, complian
 **D-244 — Approved dashboard layout supersedes D-233** (Date: 2026-03-26)
 The Approved Overview uses a 3-metric row (Delivery, Recipients, Usage & Billing) followed by a compliance attention section with per-message cards. This replaces the D-233 spec (message types table + 3 summary cards). The metric row + attention section layout is the canonical spec.
 _Affects: Overview page (Approved state), D-233 (superseded)._
+
+**D-245 — Marketing expansion is always a second MARKETING campaign, never MIXED** (Date: 2026-03-27)
+Marketing capability is added post-registration by registering a second MARKETING campaign on the existing subaccount. Initial registration is always the narrow transactional type for the category (e.g., CUSTOMER_CARE for appointments). The MIXED campaign type is never used — not at intake, not as an expansion. Mixed Campaign Addendum A2 (MIXED registration option at intake) is superseded by the Vision Implementation Memo direction. The proxy routes messages to the correct campaign transparently. Supersedes: Addendum A2.
+_Affects: Intake wizard, registration pipeline, pricing tiers, proxy routing, V4 Addendum A2 (superseded)._
+
+**D-246 — Marketing campaign pricing** (Date: 2026-03-27)
+Second campaign registration fee: $29 flat (no go-live fee — brand already verified). Monthly: $10/mo for 250 marketing messages (separate pool from transactional). Overage pricing same rate as transactional. Total with marketing: $29/mo (base $19 + $10 marketing add-on).
+_Affects: Pricing, Stripe checkout, billing dashboard, marketing registration flow._
+
+**D-247 — Marketing campaign UI gated on EIN** (Date: 2026-03-27)
+All marketing campaign UI (Overview banner, Messages section, info page) hidden for non-EIN users. Sole proprietor registrations are limited to one campaign. No marketing expansion path shown if no EIN on file.
+_Affects: Overview page (marketing upsell), Messages tab, registration pipeline, customer data model._
+
+**D-248 — Marketing consent handled by RelayKit infrastructure** (Date: 2026-03-27)
+Marketing requires separate express written consent (TCPA/FCC). RelayKit handles this at the infrastructure level: compliance site opt-in form, deliverable files, and SMS_GUIDELINES.md all include marketing consent language and form markup, gated behind campaign scope. Developer does not write consent language or design consent forms.
+_Affects: Compliance site generator (PRD_03), deliverable generator (PRD_05), SMS_GUIDELINES.md, template engine._
+
+**D-249 — Marketing campaign unlocks existing content, no file swap** (Date: 2026-03-27)
+When marketing campaign is approved, RelayKit expands the developer's campaign scope. Compliance site updates automatically (marketing consent checkbox activates). Deliverable files already contain marketing content gated behind scope — approval unlocks it. No new files to download, no repo changes needed. Developer's AI tool reads scope from config/API key and sees marketing is available. Same pattern as Tier 3 message unlocking.
+_Affects: Compliance site generator, deliverable generator, API key scope, developer experience._
+
+**D-250 — Marketing consent flag required on API calls** (Date: 2026-03-27)
+Proxy requires marketing_consent: true flag on every marketing message API call. No flag = blocked. Developer's app tracks which recipients opted in to marketing via the RelayKit-generated consent form. RelayKit controls consent collection (form), developer controls consent state per recipient (their database), proxy enforces at send time.
+_Affects: Messaging proxy (PRD_09), API schema, SMS_GUIDELINES.md, deliverable files._
+
+**D-251 — Marketing expansion is second MARKETING campaign, never MIXED (reinforces D-245)** (Date: 2026-03-27)
+Initial registration always narrow transactional type. Marketing added as second MARKETING campaign on same subaccount. Proxy routes messages to correct campaign transparently. Developer never sees two campaigns — RelayKit abstracts it completely.
+_Affects: Registration pipeline, proxy routing, dashboard abstraction, D-245 (reinforced)._
+
+**D-252 — Dual consent storage via consent API** (Date: 2026-03-27)
+Developer's app collects consent using RelayKit-provided language and their own UI design. On consent collection, developer's app calls RelayKit consent API (POST /v1/consent) with recipient phone number and consent type (transactional/marketing). Both sides store the record — developer's database for app logic, RelayKit's database for proxy enforcement. Proxy checks RelayKit's consent ledger before delivering marketing messages. Opt-outs (STOP replies) already flow through RelayKit; consent API extends the same pattern to opt-ins. Supersedes the "developer-only storage" model in PRD_03. Consent API is a production infrastructure requirement, not a prototype item.
+_Affects: Messaging proxy (PRD_09), API schema, consent data model, SMS_GUIDELINES.md, deliverable files, PRD_03 (superseded on consent storage)._
+
+**D-253 — Consent API is V1 launch requirement** (Date: 2026-03-27)
+The consent API (POST /v1/consent, DELETE /v1/consent) ships at launch, not as a post-launch addition. Proxy enforcement depends on it — marketing messages are blocked unless RelayKit's consent ledger shows marketing opt-in for that recipient. This is core infrastructure, not a nice-to-have. Builds on D-252.
+_Affects: V1 launch scope, API infrastructure, messaging proxy, D-252 (dependency)._
+
+**D-254 — Customer-facing vocabulary: "marketing messages", never "campaign" or "promotional"** (Date: 2026-03-27)
+Customer-facing copy uses "marketing messages" and "marketing registration" (when referring to the carrier process). Never use "campaign" — it's carrier jargon that RelayKit abstracts away. Never use "promotional" or "promos" — dated language. Message type labels use descriptive names: "Discount offer", "Re-engagement", "Birthday message", "Review request". Internal docs and carrier-facing artifacts can still use "campaign" and "promotional" where technically required.
+_Affects: All customer-facing copy, Experience Principles vocabulary table, message type labels, dashboard UI, marketing pages._
+
+Append the following decisions to DECISIONS.md:
+
+**D-255 — RelayKit provides full consent audit logging**
+The consent API (D-252, D-253) stores legally defensible consent records: phone number, consent type (transactional/marketing), timestamp, consent language version shown, and collection method. Records retained for 4 years (TCPA requirement). Developer's only responsibility is calling POST /v1/consent when someone opts in — RelayKit handles storage, audit trail, and retention. Applies to both transactional and marketing consent. Eliminates consent record infrastructure as a developer responsibility. The compliance site opt-in form also feeds the same consent API.
+
+**D-256 — Opt-in form built natively by developer's AI tool from RelayKit spec**
+No embeds, no iframes. RelayKit's deliverable files include the complete opt-in form specification: TCPA-compliant consent language, form structure, required fields, and the POST /v1/consent API call. The developer's AI coding tool reads the spec and builds the form natively in their app's own framework and styling. RelayKit controls compliance (the spec dictates consent language, the API stores the record, the proxy enforces at send time). The form looks and feels native because it IS native — built by their tool, in their codebase, with their components.
+
+**D-257 — Do not reference "two files" in marketing or public-facing copy**
+The delivery mechanism (files dropped into AI coding tools) is not advertised. Marketing copy references the outcome ("your AI tool builds your SMS integration") not the method. The developer discovers the mechanism when they use the product. Applies to: home page, category landing, messages page hero, How it Works modal, and any future marketing surfaces.
+
+**D-258 — Thin spec file in repo, intelligence behind the wall**
+The deliverable file dropped into the developer's repo is small and focused — just enough for the AI tool to execute (messages, API endpoint, consent form spec, wiring instructions). Comprehensive content (full compliance guidelines, carrier rules, edge cases, message library, consent mechanics) lives on RelayKit's servers, accessible via dashboard or authenticated API. Keeps the repo clean, protects IP, enables continuous improvement without developer repo changes.
+
+**D-259 — Living service architecture**
+RelayKit improves for all customers simultaneously without developer action. Template updates, consent language changes, compliance rule refinements, and new message types flow through the API and proxy. The developer's code calls RelayKit's API; the intelligence behind it evolves continuously. The spec file in the repo is a thin pointer; the service behind it is alive.
+
+**D-260 — Build spec is the highest-priority production deliverable**
+The build spec (PRD_05 deliverable) that the developer's AI tool reads is the single most important artifact RelayKit produces. It must be tested empirically with real AI tools (Claude Code, Cursor, Windsurf, Copilot, Cline) before launch. Every failure mode becomes a spec improvement. The spec is a product to iterate, not a document to ship.
+
+**D-261 — Build spec testing does not require carrier integration**
+RelayKit's build spec can be tested and iterated using mock API endpoints and placeholder credentials. Real Sinch integration is not needed to validate whether AI tools can read the spec and produce working integration code. This unblocks the highest-priority validation work (D-260) immediately.
+
+**D-262 — UX simplicity audit required before launch**
+A dedicated review pass with naive eyes — no project context, just the prototype — evaluating every page for information density, jargon, and unnecessary complexity. Standard: would a developer who just wants to add SMS feel overwhelmed? Inline explanations that exist "just in case" move to FAQ sections. Main content should be confident, simple, unequivocal claims. Apple-level user friendliness is the bar.
+
+**D-263 — Unequivocal claims principle**
+Marketing copy makes confident, simple claims without asterisks. "We handle opt-in and opt-out." "We handle carrier registration." The less we hedge, the stronger the message. Detailed explanations belong in FAQs, not primary content flow. If a claim needs a paragraph to explain, the feature isn't simple enough yet or the claim needs reframing. Over-explaining creates the same problem as under-explaining.
+
+**D-264 — Single deliverable file, not two**
+The developer gets one file dropped into their repo. It contains everything the AI tool needs: messages, API endpoint, consent form spec, wiring instructions, and lean compliance guidance. Comprehensive reference material lives on RelayKit's servers. One file is simpler to explain, simpler to deliver, and eliminates the question of which file to read first. Supersedes any prior references to "two files" in PRDs and decisions.

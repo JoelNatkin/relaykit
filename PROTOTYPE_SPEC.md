@@ -165,6 +165,8 @@ Public-facing compliance information page. Not yet fully designed.
 
 **Compliance sub-switcher:** Second dropdown, only visible in Approved state (D-146). Options: "All clear" / "Has alerts."
 
+**Alerts switcher (D-239):** Third dropdown, only visible on Overview tab. Options: "Alerts on" (default) / "Alerts off". Controls `alertsEnabled` in session context. Used to test all three D-239 placements without going through the wizard.
+
 **Period selector:** "This month" dropdown, right-aligned with `ml-auto` in tab row. Only visible when Approved + on Overview page. State lives in layout.tsx — display-only, doesn't change data. (D-150)
 
 **Layout structure (D-221):** Outer wrapper is full-width (no max-w constraint). App identity in `mx-auto max-w-5xl px-6`. Tab bar: full-width `border-b` wrapper with tabs inside `mx-auto max-w-5xl px-6`. Page content in `mx-auto max-w-5xl px-6 pt-6 pb-16`. This allows child pages to break out to full viewport width (e.g., Messages tab playbook gray band).
@@ -206,6 +208,14 @@ Conditional render: `isApproved ? <ApprovedDashboard /> : <SandboxDashboard />`
 
 Steps unlock sequentially. Each completed step shows "Redo" link (D-133). Phone number changes in Step 1 trigger amber warnings on Steps 2 and 3.
 
+**D-239 Compliance alerts toggle — three placements:**
+
+*Placement 1 — Wizard inline card:* Between steps 1 and 2, only when step 1 is complete AND `alertsEnabled` is false. Light purple card (`bg-bg-brand-secondary`) with bell icon. Copy: "We'll text you if a message would get flagged by carriers — before it causes problems." Single "Enable" button (no Skip). Card uses the same flex+connector layout as stepper steps so the vertical progress line flows through it continuously. Enable sets `alertsEnabled=true`, shows 3-second confirmation ("Alerts on — we'll text [phone]"), then auto-dismisses.
+
+*Placement 2 — Compliance header row:* Right-aligned on the "Message compliance" h2 row, between heading and the all clear/has issues dropdown. Alerts on: green 8x8 dot + "SMS alerts: On" (`text-sm text-tertiary`). Alerts off: amber 8x8 dot + "SMS alerts: Off" (`text-sm text-warning-primary`, clickable — sets `alertsEnabled=true`). Visible in Default and Approved states only (not Pending/Review).
+
+*Placement 3 — Compliance empty state:* Below the shield icon. Alerts on: heading "Messages look good" + "No compliance issues. [br] We'll text you if anything changes." Alerts off: heading "Messages look good" + "No compliance issues." + "Want a text when we catch something? Enable alerts" (purple text link).
+
 **Right column — registration sidebar card:**
 Calm, persistent reminder — not a sales pitch. `rounded-xl bg-bg-tertiary p-6 md:sticky md:top-20`. No border. Content:
 - Heading: "Ready to go live?" (`text-lg font-semibold`)
@@ -238,7 +248,13 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 
 **Alert detail modal:** Flagged message in code block, what triggered it, what to do, copyable AI prompt for fixing.
 
-**Marketing upsell banner:** Between row 1 and row 2. Contained message bar (border, info icon, heading + body, brand link, dismiss X). Only visible when "Has alerts" compliance view selected. Dismissible per session.
+**Marketing upsell banner (D-254):** Between row 1 and compliance section. Contained message bar (border, info icon, heading + body, brand link, dismiss X). Only visible when "Has alerts" compliance view selected. Dismissible per session. Copy: "Want to send marketing messages?" + "Add marketing alongside your appointment reminders." + "Learn more →" button opens marketing modal.
+
+**D-239 Compliance alerts on Approved empty state:** Same pattern as sandbox. Alerts on: heading "You're live and sending" + "Delivery is healthy. [br] We'll text you if anything changes." Alerts off: heading "You're live and sending" + "Delivery is healthy." + "Want a text when we catch something? Enable alerts" link. Alerts status indicator also shown on compliance header row (same as sandbox Placement 2).
+
+**Marketing modal:** Full-screen overlay (z-50, bg-white, overflow-y-auto). Sticky header with state switcher (Info/In review/Active) + X close. Opened from Overview banner "Learn more →" and Messages tab marketing CTA. Content in Info state: gray hero band with headline/subhead/purple CTA at top → white pricing ($29 one-time / +$10/mo) → gray "Messages you'll unlock" band with style pills (Brand-first/Action-first/Context-first) and 3-column message cards (Discount offer, Re-engagement, Review request with personalized values) → white "How it works" numbered steps (1-2-3) → gray "How consent works" bullet list (max-w-500px centered) → white bottom CTA repeat. In review: hero CTA replaced by registration stepper card. Active: centered confirmation "Marketing messages are live" + link to Messages tab.
+
+**File:** `prototype/components/marketing-modal.tsx`
 
 ---
 
@@ -266,7 +282,7 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 - Toolbar row (`mb-3`): Left: "Personalize" (brand purple semibold, Sliders04 icon). Right: "Show template"/"Show preview" toggle + "Copy all".
 - Default view: template mode — variables render as brand-purple inline text (D-187).
 - 6 numbered `CatalogCard` components (D-223) — brand purple number to left of title, no checkboxes (D-171), "Modify with AI ›" expander per card (D-174). Same order as public page.
-- "Need marketing messages too?" marketing callout
+- "Need marketing messages too?" marketing callout — updated copy: "Discount offers, re-engagement, birthday messages — add marketing alongside your appointment reminders." + "Learn more →" button opens marketing modal (D-254).
 
 *Right column (sticky, `lg:top-20`):*
 - "Opt-in form" (`text-lg font-semibold`) + body: "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."

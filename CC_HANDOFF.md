@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-27 (nav audit, sign-in modal, Messages Approved state, D-244)
+**Date:** 2026-03-28 (D-239 alerts, marketing modal, D-245–D-264, Experience Principles v1.1)
 **Branch:** main
 
 ---
@@ -7,99 +7,94 @@
 ## Commits This Session
 
 ```
-d238b24  fix: restore CopyButton after orphaned file cleanup broke Settings
-74c696e  fix: restore state switcher chevron icon
-0bbf6b8  chore: delete orphaned files, fix sandbox key prefix
-4e8dc7c  fix: category landing footer spacing
-5dd9e4a  fix: footer legal links — plain text placeholders
-5840de3  fix: state switcher chevron spacing and gap refinement
-a608b82  fix: OTP code input spacing
-e672058  fix: sign in modal — overlay, close button, resend timer, back link
-dd3bd72  feat: sign-in modal with email + OTP flow from production auth page
-a596cdf  fix: messages page section subhead spacing
-3bb97bf  fix: breadcrumb spacing 24px, messages breadcrumb inside gray band
-965c038  fix: messages page breadcrumb + remove badge
-2e7974e  fix: breadcrumb spacing and messages page breadcrumb + badge removal
-0fc0725  fix: breadcrumb spacing, messages page breadcrumb, remove category hero badge
-b7f142e  fix: sign in/out navigates to appropriate home page
-e488022  fix: state switcher position and sizing refinement
-f19c9c2  fix: category landing footer + copyright update to RelayKit LLC (D-195)
-c7e81f5  fix: marketing breadcrumbs on all public pages
-cfdf580  fix: marketing nav — use cases dropdown, compliance link, remove prototype badge
-f3ebf15  fix: Messages tab Approved state — remove metadata line, clean layout (D-159)
-a8805b0  feat: Messages tab Approved state — read-only personalization with registered values (D-159)
-47c2259  docs: D-244 — Approved dashboard layout supersedes D-233
-41b2086  fix: compliance page — remove hallucinated timezone feature, replace with real capability
+65cd7a8  fix: marketing modal polish — pricing specifics, benefit framing, consent layout, pill selector for messages
+9fc8416  feat: marketing messages modal with lifecycle states, replaces page route (D-245-D-254)
+10332b3  feat: marketing messages info page with lifecycle states, update banner and Messages CTAs (D-245-D-254)
+6e96960  fix: compliance empty state — line break between sentences
+32e4112  fix: restore compliance empty state headings
+fb66e35  fix: D-239 wizard alerts card — align with step content, fix vertical spacing
+65b7c2d  fix: compliance empty state — single line copy, remove redundant heading
+54d33cd  fix: D-239 wizard alerts card — progress line, remove Skip, update copy
+79ef249  fix: D-239 wizard inline alerts enable card between steps 1 and 2
+2321de9  feat: alerts on/off state switcher for Overview prototype testing
+f94c810  feat: D-239 compliance alerts toggle surfaced on Overview — wizard, header, empty state
 ```
+
+Plus one docs commit (this session close-out).
 
 ---
 
 ## What We Completed
 
-### Navigation Overhaul
-- **Marketing nav:** RelayKit wordmark + "Use Cases" dropdown (Appointments) + "Compliance" link + "Sign in" (right). Removed "Prototype" badge from both logged-in and logged-out states.
-- **App nav:** "Your Apps" as plain text link (no pill styling), left-aligned after wordmark. "Sign out" right-aligned.
-- **Sign in/out routing:** Sign in opens modal → navigates to `/apps`. Sign out navigates to `/`.
+### D-239 — Compliance Alerts Toggle on Overview
+Three placements surfacing the SMS alerts toggle:
+1. **Wizard inline card** — Between steps 1 and 2 after phone verification. Light purple card with bell icon, "Enable" button. Vertical progress line flows through the card continuously. Shows when `alertsEnabled` is false.
+2. **Compliance header row** — Right-aligned on "Message compliance" heading. Green dot + "On" when enabled, amber dot + clickable "Off" when disabled. Visible in Default and Approved states.
+3. **Compliance empty state** — Below shield icon. Alerts on: heading + two-line body with alerts confirmation. Alerts off: heading + single line + "Enable alerts" purple link.
 
-### Breadcrumbs
-Added breadcrumbs to all marketing/public pages (except Home):
-- Category landing: Home / Appointments (above hero)
-- Messages page: Home / Appointments / Messages (inside gray hero band)
-- Compliance: Home / Compliance (above hero)
-- 24px spacing below nav (`mt-6`)
+**Alerts state switcher** added to layout (Overview tab only) for prototype testing: "Alerts on" / "Alerts off".
 
-### Sign-In Modal
-New component (`prototype/components/sign-in-modal.tsx`). Two-step flow: email → 6-digit OTP. Semi-transparent backdrop, X close button, escape/backdrop close. "Send code" shows 500ms loading state. OTP auto-submits on 6 digits. Resend timer (30s countdown). "Use a different email" back link. Body scroll locked. Prototype accepts any 6 digits.
+Session context updated with `alertsEnabled: boolean` (default `true`) and `hasEIN: boolean` (default `true`).
 
-### Messages Tab Approved State (D-159)
-- Personalize button/slideout hidden in Approved state
-- Registered values (GlowStudio, glowstudio.com, Beauty & wellness appointments) baked into message previews
-- Show template + Copy all controls left-aligned (no metadata line)
-- Copy updated: "You're live. These are your registered messages..." / "Your registered opt-in form..."
-- Download button: "Re-download RelayKit"
+### Marketing Messages Modal (D-245–D-254)
+Full-screen modal component replacing the page route `/apps/[appId]/marketing`:
+- **Hero** gray band with headline, subhead, prominent "Add marketing" CTA
+- **Pricing** clean typography: $29 one-time / +$10/mo 250 messages / $15 per 1,000 after
+- **Message previews** with interactive style pills (Brand-first / Action-first / Context-first) and 3-column cards (Discount offer, Re-engagement, Review request) with personalized GlowStudio/Salon values
+- **How it works** three numbered steps in horizontal row
+- **Consent** bullet list at max-w-500px centered
+- **Bottom CTA** repeat
 
-### State Switcher Refinement
-- Moved switcher dropdowns LEFT of status indicator
-- Text-xs, text-quaternary styling
-- 40px gap (`ml-10`) between last switcher and status indicator
-- Native browser chevrons (custom SVG approach was broken)
+Three lifecycle states via switcher: Info, In review (registration stepper replaces hero CTA), Active (centered confirmation).
 
-### Footer & Copyright
-- Added `<Footer />` to category landing page (was missing)
-- Updated copyright: "Vaulted Press LLC" → "RelayKit LLC" (D-195) across footer component and home page inline footer
-- Legal links (Terms, Privacy, Acceptable Use) changed to plain `<span>` text — no pages exist yet
+Opened from: Overview banner "Learn more" and Messages tab marketing section CTA.
 
-### Category Landing & Messages Page Cleanup
-- Removed Appointments pill badge from category landing hero (breadcrumb handles category ID)
-- Removed Appointments pill badge from messages page hero (both StepsLayout and fallback paths)
-- Messages section subhead spacing increased (`mb-3` → `mb-6`) on both public and app messages pages
+### Overview Banner Vocabulary Update (D-254)
+"Want to send promotional messages?" changed to "Want to send marketing messages?". "Start marketing registration" changed to "Learn more". Link replaced with button opening marketing modal.
 
-### Compliance Page Fix
-- Replaced "Quiet hours and rate limits" card with "Compliance that learns" (Stars02 icon)
-- Removed hallucinated "timezone-aware delivery windows" feature
+### Messages Tab Marketing Section Update (D-254)
+Simplified from inline message cards to: heading + one-line copy + "Learn more" button opening marketing modal. Added `Link` import, then replaced with button for modal.
 
-### Orphaned File Cleanup
-- Deleted `prototype/components/dashboard/` (6 files) and `prototype/app/c/` (3 files)
-- Extracted `CopyButton` to standalone `prototype/components/copy-button.tsx` (Settings page depended on it)
+### Decisions Recorded (D-245–D-264)
+20 new decisions covering marketing expansion architecture, pricing, consent infrastructure, vocabulary rules, deliverable strategy, and UX principles. All appended to DECISIONS.md with dates and affects lines.
 
-### D-244 Recorded
-Approved dashboard layout (3-metric row + compliance attention section) supersedes D-233 (message types table + 3 summary cards).
+### Experience Principles v1.1
+New file `docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md` created outside CC session with:
+- Words We Use: "Marketing messages", "Your AI tool builds it", "We handle the rest"
+- Words We Avoid: "Campaign" (customer-facing), "Promotional/promos", "Two files" (marketing)
+- New section: The Unequivocal Claims Principle (D-263)
+- Framing Shift table: 2 new rows (consent, marketing registration)
+- Emotional States table: marketing expansion row
+
+Note: The original `V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md` still exists. The v1.1 file is untracked. CLAUDE.md references point to the original filename. Joel should decide whether to replace or keep both.
+
+### BACKLOG.md Updated
+7 Likely items added (UX simplicity audit, FAQ sections, "two files" removal, category landing vocab update, marketing pills on category landing, build spec testing, sandbox API). 3 Maybe items added. MIXED campaign type added to Rejected table.
+
+### PROTOTYPE_SPEC.md Updated
+- App Layout Shell: alerts switcher documented
+- Overview non-approved: D-239 three placements documented
+- Overview Approved: marketing banner copy/link, alerts empty state, marketing modal documented
+- Messages tab: marketing section CTA updated
 
 ---
 
 ## In Progress / Partially Done
 
+### Experience Principles File Rename
+`V4_EXPERIENCE_PRINCIPLES_v1.1.md` exists as untracked file with D-254/D-257/D-263 updates. Original file still tracked. CLAUDE.md references point to original. Needs Joel decision on file strategy.
+
+### Category Landing Vocabulary (D-254)
+"Need marketing messages too?" section on category landing still uses "campaign" and "promotional" language. Backlogged for update.
+
+### "Two Files" Copy Removal (D-257)
+Home page hero, category landing, messages page hero, How it Works modal still reference "two files". Backlogged for update.
+
 ### Overview Compliance Attention Section (D-243)
-Decision recorded. Not yet built. Customer-facing ledger showing adjusted/blocked messages with edit and "Fixed in code" actions.
-
-### Compliance Alerts Toggle on Overview (D-239)
-Decision recorded but not yet implemented. Needs: wizard inline enable, compliance header status, empty state nudge.
-
-### Admin — Revenue & Metrics
-Placeholder only. Should show: MRR trend chart, customer count growth, registration conversion rate, churn, overage revenue.
+Decision recorded but not yet built. Customer-facing ledger showing adjusted/blocked messages.
 
 ### How It Works Modal Pricing
-The modal on the Messages page still uses the old pricing card structure internally — needs the same $49/$150 bridge line treatment as the main pricing cards.
+Still needs $49/$150 bridge line audit.
 
 ---
 
@@ -107,66 +102,58 @@ The modal on the Messages page still uses the old pricing card structure interna
 
 1. **Delete `.next` before every dev server start.** Always: `rm -rf prototype/.next` then restart. Port 3001.
 
-2. **DECISIONS.md is a two-file system.** Active decisions (D-84–D-244) in DECISIONS.md. Archived (D-01–D-83) in DECISIONS_ARCHIVE.md.
+2. **DECISIONS.md is a two-file system.** Active decisions (D-84–D-264) in DECISIONS.md. Archived (D-01–D-83) in DECISIONS_ARCHIVE.md.
 
-3. **CopyButton extracted to standalone component.** `prototype/components/copy-button.tsx` — was in deleted `dashboard/shared.tsx`. Settings page imports from new location. Any future component that needs clipboard copy should import from here.
+3. **Experience Principles has two files.** Original at `docs/V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md` (tracked, CLAUDE.md references it). Updated v1.1 at `docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md` (untracked). Resolve before writing new copy.
 
-4. **Messages page has TWO render paths.** `StepsLayout` (default, no query param) and fallback layout (`?layout=default`). Both need changes when modifying the messages page. Most users see `StepsLayout`.
+4. **Marketing modal is a component, not a page route.** `prototype/components/marketing-modal.tsx`. Opened via state in both `approved-dashboard.tsx` and `messages/page.tsx`. The page route `/apps/[appId]/marketing` was deleted.
 
-5. **Admin routes have their own layout.** `/admin/*` uses `prototype/app/admin/layout.tsx` — dark sidebar, completely separate from customer app layout.
+5. **`alertsEnabled` defaults to `true`.** Switcher shows "Alerts on" by default. To test the wizard inline card, switch to "Alerts off" and complete step 1.
 
-6. **State switcher uses native browser chevrons.** Custom SVG background-image approach was broken (Tailwind v4 arbitrary value issue). Reverted to native `<select>` styling.
+6. **`hasEIN` defaults to `true`.** Gates marketing UI visibility (D-247). Currently only used conceptually — marketing modal doesn't check it yet. The deleted page route had the gate; modal doesn't.
 
-7. **Sign-in modal z-index is 100/101.** Backdrop at z-[100], modal at z-[101]. Top nav is z-50.
+7. **Messages page has TWO render paths.** StepsLayout (default) and fallback (`?layout=default`). Both need changes when modifying messages page.
 
-8. **Three-part pricing: $49 / $150 / $19/mo.** Registration fee at submission, go-live fee after approval, monthly ongoing.
+8. **Three-part pricing: $49 / $150 / $19/mo.** Marketing add-on: $29 one-time + $10/mo.
 
-9. **Terminal registration statuses.** "Declined" = pre-submission (RelayKit rejected). "Abandoned" = post-submission (carrier rejected multiple times). Both show in "Closed" filter, excluded from "Active".
+9. **Sign-in modal z-index is 100/101.** Marketing modal is z-50 (same as How it Works modal).
 
 10. **Layout forces logged-in state.** App layout `useEffect` calls `setLoggedIn(true)` on mount.
+
+11. **Uncommitted files from outside this session:** `.claude/settings.json`, `prototype/components/registration/review-confirm.tsx`, `prototype/images/` directory. These predate this session.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# Navigation overhaul
-prototype/components/top-nav.tsx                    # Marketing + app nav rewrite, sign-in modal wiring
-prototype/components/sign-in-modal.tsx              # NEW — email + OTP sign-in modal
+# D-239 Compliance alerts toggle
+prototype/app/apps/[appId]/overview/page.tsx           # Wizard inline card, header indicator, empty state
+prototype/app/apps/[appId]/overview/approved-dashboard.tsx  # Header indicator, empty state, marketing banner/modal
+prototype/app/apps/[appId]/layout.tsx                   # Alerts state switcher
+prototype/context/session-context.tsx                   # alertsEnabled, hasEIN added
 
-# Breadcrumbs
-prototype/app/sms/[category]/page.tsx               # Breadcrumb, badge removal, footer addition, spacing
-prototype/app/sms/[category]/messages/page.tsx       # Breadcrumb (StepsLayout + fallback), badge removal, subhead spacing
-prototype/app/compliance/page.tsx                    # Breadcrumb, compliance card replacement
+# Marketing modal
+prototype/components/marketing-modal.tsx                # NEW — full-screen marketing messages modal
+prototype/app/apps/[appId]/marketing/page.tsx           # DELETED — replaced by modal
+prototype/app/apps/[appId]/messages/page.tsx            # Marketing section CTA → modal, Link import added/removed
 
-# Messages tab Approved state
-prototype/app/apps/[appId]/messages/page.tsx         # Approved state: read-only personalization, copy changes
-
-# State switcher + layout
-prototype/app/apps/[appId]/layout.tsx                # Switcher position, sizing, chevron fix, gap
-
-# Footer
-prototype/components/footer.tsx                      # Legal links → plain text, copyright → RelayKit LLC
-prototype/app/page.tsx                               # Copyright → RelayKit LLC
-
-# Orphaned file cleanup
-prototype/components/copy-button.tsx                 # NEW — extracted from deleted dashboard/shared.tsx
-prototype/app/apps/[appId]/settings/page.tsx         # Import path fix for CopyButton
-prototype/components/dashboard/                      # DELETED (6 files)
-prototype/app/c/                                     # DELETED (3 files)
-
-# Decisions
-DECISIONS.md                                         # D-244 appended
-PROTOTYPE_SPEC.md                                    # Updated: nav, breadcrumbs, sign-in modal, state switchers, footer, Messages Approved, category landing
-CC_HANDOFF.md                                        # This file (overwritten)
+# Decisions & docs
+DECISIONS.md                                            # D-245–D-264 appended (D-255–D-264 were pre-existing)
+docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md                   # UNTRACKED — created outside session
+BACKLOG.md                                              # 10 new items, date updated
+PROTOTYPE_SPEC.md                                       # D-239, marketing modal, alerts documented
+CC_HANDOFF.md                                           # This file (overwritten)
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. **Compliance alerts toggle** (D-239) — wizard inline enable, compliance header status, empty state nudge on Overview
-2. **Overview compliance attention section** (D-243) — customer-facing ledger with edit/dismiss actions
-3. **How It Works modal pricing audit** — verify $49/$150 bridge line in modal pricing cards
-4. **Legal pages** — Terms, Privacy, Acceptable Use (currently plain text in footer)
-5. **Admin — Revenue & Metrics** — MRR trend, customer growth, registration funnel, churn
+1. **Experience Principles file resolution** — Decide on v1.0 vs v1.1, update CLAUDE.md references
+2. **Category landing vocabulary audit (D-254)** — Remove "campaign"/"promotional" language
+3. **"Two files" copy removal (D-257)** — Update home, category landing, messages hero, How it Works modal
+4. **Overview compliance attention section (D-243)** — Customer-facing ledger with edit/dismiss actions
+5. **How It Works modal pricing audit** — Verify $49/$150 bridge line in modal pricing cards
+6. **UX simplicity audit (D-262)** — Fresh session, naive eyes, every page evaluated
+7. **Build spec empirical testing (D-260)** — Write real build spec, test with AI tools
