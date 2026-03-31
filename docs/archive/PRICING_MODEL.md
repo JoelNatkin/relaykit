@@ -1,10 +1,8 @@
 # PRICING MODEL UPDATE
 ## RelayKit — Managed SMS Compliance Infrastructure with Free Sandbox
-### Version 4.0 — March 31, 2026
+### Version 3.0 — Mar 3, 2026
 
 > **This document replaces pricing sections in PROJECT_OVERVIEW.md, PRD_01 Section 5, and PRD_07 Sections 2 & 4. Feed this to CC alongside the relevant PRD when building Stripe integration.**
->
-> **CHANGE LOG (v4.0):** Registration fee restructured: $49 at submission + $150 customer-initiated at approval (D-193, D-194, D-216). Beta pricing added: $49 flat, capped slots (D-196). Carrier layer changed from Twilio to Sinch (D-215). Delivery model locked: SDK (`npm install relaykit`) replaces file downloads (D-266). Website is message authoring surface (D-279). Sandbox tier updated to reflect SDK-first experience. Unit economics updated for fee split and Sinch. All references to "build spec" and "deliverable file" updated to reflect SDK delivery model.
 >
 > **CHANGE LOG (v3.0):** Free sandbox tier updated with message plan builder, build spec generator, sandbox SMS_GUIDELINES.md, and message library. BYO Twilio tier rewritten as Model 2 (registration submitted to customer's own Twilio account, not through our ISV). Platform tier pricing direction added (Phase 2 placeholder). All core pricing numbers unchanged: $199/$19/$15.
 >
@@ -18,16 +16,13 @@ RelayKit has four tiers, one pricing structure, and no paywalled compliance feat
 
 | Tier | Price | What it is |
 |------|-------|-----------|
-| **Sandbox** | Free | Instant API key, SDK access, full testing, message authoring, no time limit |
-| **Full-Stack Setup** | $49 at submission + $150 at approval | 10DLC registration via Sinch, compliance site, all artifacts |
+| **Sandbox** | Free | Instant API key, full testing, message plan builder, build spec, no time limit |
+| **Full-Stack Setup** | $199 one-time | 10DLC registration, compliance site, all artifacts, subaccount under our ISV |
 | **Full-Stack Monthly** | $19/month | Live messaging through compliance proxy, 500 messages included |
 | **BYO Twilio** (Phase 2) | $199 one-time | Registration submitted to customer's own Twilio account, no monthly |
 | **Platform** (Phase 2) | Per-tenant pricing | SaaS platforms registering their tenants (see Section 3B) |
 
 Everything a customer needs to stay compliant is included in full-stack. No upsells, no tiered protection.
-
-### Beta Pricing (D-196)
-Beta users pay **$49 flat** for registration — no $150 approval payment. Framed as early access pricing. Beta users keep their registration at full pricing launch. Capped at 25–50 slots for natural urgency and clean cutover. Beta access requires completing a prototype user test session (D-197).
 
 ---
 
@@ -36,52 +31,43 @@ Beta users pay **$49 flat** for registration — no $150 approval payment. Frame
 ### What's included (no credit card, no time limit)
 
 - Sandbox API key (`rk_sandbox_` prefix) — instant on signup
-- **SDK access** — `npm install relaykit` with sandbox key, same API surface as production
 - Full API access (same endpoints as production)
 - Outbound messages to one verified phone number (100/day limit)
 - Inbound message forwarding (replies from verified number)
 - Opt-out testing (STOP/START keyword handling)
 - Same compliance checks as production (content scanning, opt-out enforcement)
 - Dashboard with API key, verified phone, usage counter
-- **Message authoring on website** — use case selection, 5–8 compliant message templates per use case, inline editing with compliance indicators, expansion message visibility (D-279, D-281)
-- **Custom message authoring** — developer-authored messages beyond curated library, compliance pre-review on save (D-280)
-- **SMS_GUIDELINES.md** — compliance co-pilot document for the developer's project, use-case-specific (D-283)
+- **Message plan builder** — use case selection, 5–8 compliant message templates per use case, inline editing, expansion message visibility
+- **Build spec generator** — SMS_BUILD_SPEC.md generated from message plan, consumable by AI coding tools (Claude Code, Cursor, Copilot)
+- **Sandbox SMS_GUIDELINES.md** — compliance co-pilot document for the developer's project, use-case-specific
 - **Message library** — curated messages with copy icons and compliance indicators
-
-### How it works with the SDK (D-266, D-279)
-
-The sandbox experience is SDK-first. Developer picks a use case on the website, previews and optionally edits messages, then runs `npm install relaykit` in their project. The SDK reads the sandbox API key from `.env` and provides per-vertical namespace functions (e.g., `relaykit.appointments.sendConfirmation()`). Message content lives on RelayKit's servers, tied to the developer's API key — the SDK sends semantic events, the server composes the actual SMS from the developer's saved templates. The developer's codebase never contains message text.
 
 ### Purpose
 
-The sandbox is customer acquisition. Developers build their entire SMS integration for free, with a real working SDK, before paying anything. By the time they register, they've already invested time in the integration — the payment is to go live, not to start building.
+The sandbox is customer acquisition. Developers build their entire SMS integration for free, with a real working API, before paying anything. By the time they register, they've already invested time in the integration — the payment is to go live, not to start building.
 
-The SDK + curated message library captures domain knowledge (compliance rules, message patterns, trigger logic) that developers would otherwise spend hours researching. It's the reason they choose RelayKit over direct Sinch/Twilio integration, even before they know about the compliance proxy.
+The build spec captures domain knowledge (compliance rules, message patterns, trigger logic) that developers would otherwise spend hours researching. It's the reason they choose RelayKit over direct Twilio integration, even before they know about the compliance proxy.
 
 ### Costs to RelayKit
 
 - Shared sandbox phone number: ~$1.15/month
 - Per-message carrier cost: ~$0.0079/segment
-- SDK hosting/npm: negligible
+- Build spec generation: server-side string interpolation, negligible compute cost
 - At 100 active sandbox developers sending 50 messages/day: ~$40/day carrier cost
 - This is customer acquisition cost, cheaper than any paid channel
 
 ### Conversion path
 
-Sandbox → Use case selection → Message authoring on website → `npm install relaykit` → Integration built → Engagement signals met → Registration CTA → Intake wizard (pre-populated from dashboard work) → Stripe checkout ($49) → Registration pipeline begins → Approval → Developer-initiated $150 payment → Live
+Sandbox → Use case selection → Message plan builder → Build spec generation → Integration built → Engagement signals met → Registration CTA → Intake wizard (pre-populated from dashboard work) → Stripe checkout → Registration pipeline begins
 
-> **Conversion psychology:** The SDK + message library is what makes the sandbox sticky. Developers invest time customizing messages and wiring up namespace functions. By the time they want to go live, switching to another provider means rebuilding the entire integration. The SDK is the moat.
+> **Conversion psychology:** The build spec is what makes the sandbox sticky. Developers invest time curating messages and building from the spec. By the time they want to go live, switching to another provider means redoing all that work.
 
 ---
 
 ## 2. PRICING STRUCTURE (Full-Stack Tier)
 
-### Registration Fee — Two-Part Payment (D-193, D-194, D-216)
-- **$49 at registration submission** — covers brand + campaign submission to Sinch/TCR
-- **$150 at carrier approval** — customer-initiated, not auto-charged (D-194)
-- **Full $49 refund if registration is rejected**
-- **User-facing display (D-216):** Pricing cards show "$199 to register + $19/mo" as the headline. Feature bullet explains: "$49 to register. $150 only after you're approved. Full refund if not."
-- **Total registration cost: $199** ($49 + $150)
+### One-Time Setup Fee
+- **$199** — covers 10DLC registration, compliance site generation, all artifacts, Twilio subaccount creation, Twilio submission, rejection handling, and integration kit delivery
 
 ### Monthly Subscription (Required)
 - **$19/month** — Transactional tier. Billed monthly, starts after registration approval.
@@ -103,7 +89,7 @@ Sandbox → Use case selection → Message authoring on website → `npm install
 
 ### Multi-Project Billing (Phase 2 — PRD_11)
 Each registered project carries its own subscription. One customer with multiple registered projects pays per project:
-- $49 + $150 registration fees per project
+- $199 setup fee per project at registration time
 - $19 or $29/month per registered project (Transactional or Mixed respectively)
 - Overages tracked and billed per project
 - All subscriptions managed under one Stripe Customer record — one billing portal, all projects visible
@@ -137,14 +123,14 @@ At higher volumes, block pricing decreases slightly:
 ### Abuse Safeguard Ceiling
 - Hard daily cap: 20,000 messages/day (invisible to normal users)
 - Triggers automatic review + alert to RelayKit admin
-- Protects master Sinch account from runaway loops or abuse
+- Protects master Twilio account from runaway loops or abuse
 - Customer notified if ceiling hit: "Unusual activity detected. Contact support."
 
 ---
 
 ## 3. BYO TWILIO TIER
 
-> **Phase 2 — do not build.** Registration-as-a-service for developers who have their own Twilio account and want to handle messaging directly through Twilio. Retained as a future entry point and upgrade path.
+Registration-as-a-service for developers who have their own Twilio account and want to handle messaging directly through Twilio.
 
 ### Model 2: Registration to Customer's Own Twilio Account
 
@@ -188,10 +174,10 @@ We submit the 10DLC registration to the customer's own Twilio account, using the
 
 BYO customer's upgrade path to full RelayKit:
 1. Sign up for sandbox (free — they already have the email from BYO registration)
-2. Experience the SDK, message authoring, compliance tools
+2. Experience the message plan builder, build spec, compliance tools
 3. Upgrade to full RelayKit: $19/month
-4. We create a subaccount under our Sinch ISV, port their number, issue RelayKit API key
-5. They swap their Twilio credentials for the RelayKit SDK (`npm install relaykit`)
+4. We create a subaccount under our ISV, port their number, issue RelayKit API key
+5. They swap their Twilio credentials for the RelayKit API key
 6. The $199 they already paid covers the setup — no second setup fee
 
 > **Key revenue insight:** BYO is an entry point, not a dead end. The $199 is the same whether they go full-stack or BYO. Upgrading adds the monthly subscription. Dashboard upsell: "Want automatic compliance protection? Switch to RelayKit's managed API — same code, one key swap."
@@ -244,43 +230,20 @@ Compare to 100 individual full-stack customers: $19,900 setup + $22,800 annual r
 
 ## 4. STRIPE IMPLEMENTATION (Replaces PRD_01 Section 5)
 
-### Checkout Flow (Full-Stack) — Two-Part Payment (D-193, D-194)
-
-**Part 1: Registration Submission ($49)**
-1. Customer clicks "Register now" on dashboard
-2. Frontend calls `POST /api/checkout` with `{ step: 'submission' }`
-3. Backend creates a **Stripe Checkout Session** in `payment` mode:
-   - **Line item:** Registration submission fee — $49.00 one-time
-   - Customer email pre-filled from sandbox account
-   - `payment_method_collection: 'always'` (card saved for future $150 + subscription)
-   - Success URL: `relaykit.ai/dashboard?session_id={CHECKOUT_SESSION_ID}`
-   - Cancel URL: `relaykit.ai/register`
-   - Metadata: `{ customer_id: "{id}", step: "submission" }`
-4. Customer completes payment — **$49 charged at checkout**
-5. Redirects to dashboard — registration pipeline begins
-
-**Part 2: Approval Payment ($150 + subscription start)**
-1. Developer receives approval notification (email + dashboard)
-2. Developer clicks "Go live" on dashboard (customer-initiated, not auto-charged — D-194)
-3. Frontend calls `POST /api/checkout` with `{ step: 'approval' }`
-4. Backend creates a **Stripe Checkout Session** in `subscription` mode:
-   - **Line item 1:** Go-live fee — $150.00 one-time
-   - **Line item 2:** Monthly subscription — $19.00/month recurring
-   - Card pre-filled from saved payment method
-   - Success URL: `relaykit.ai/dashboard?session_id={CHECKOUT_SESSION_ID}`
-   - Metadata: `{ customer_id: "{id}", step: "approval" }`
-5. Stripe charges $150 + first month $19 = **$169 at approval checkout**
-6. Redirects to dashboard — sandbox key swaps for live key
-
-**Rejection: $49 refund**
-- If registration is rejected, full $49 refund issued automatically
-- Dashboard shows rejection debrief with resubmission guidance
-- Resubmission follows the same $49 checkout flow
-
-**Beta checkout (D-196):**
-- Single payment: $49 flat, no second payment
-- No subscription created until post-beta conversion
-- Metadata: `{ customer_id: "{id}", step: "submission", beta: true }`
+### Checkout Flow (Full-Stack)
+1. Customer clicks "Register now" on dashboard (or "Start my registration" on intake Screen 3)
+2. Frontend calls `POST /api/checkout`
+3. Backend creates a **Stripe Checkout Session** in `subscription` mode with:
+   - **Line item 1:** Setup fee — $199.00 one-time (using `price_data` with `recurring: null` or a one-time Stripe Price)
+   - **Line item 2:** Monthly subscription — $19.00/month recurring (Stripe Price object)
+   - Customer email pre-filled from intake (or from sandbox account)
+   - `payment_method_collection: 'always'` (required for future overage billing)
+   - Success URL: `relaykit.com/dashboard?session_id={CHECKOUT_SESSION_ID}`
+   - Cancel URL: `relaykit.com/start/review`
+   - Metadata: `{ intake_session_id: "{id}", customer_id: "{id}" }`
+4. Customer completes payment on Stripe's hosted checkout
+5. Stripe charges $199 + first month $19 = **$218 at checkout**
+6. Redirects to dashboard
 
 ### Checkout Flow (BYO Twilio) — Phase 2 (do not build)
 
@@ -292,57 +255,42 @@ Compare to 100 individual full-stack customers: $19,900 setup + $22,800 annual r
    - **Line item:** Setup fee — $199.00 one-time
    - Customer email pre-filled
    - `payment_method_collection: 'if_required'`
-   - Success URL: `relaykit.ai/dashboard?session_id={CHECKOUT_SESSION_ID}`
-   - Cancel URL: `relaykit.ai/start/review`
+   - Success URL: `relaykit.com/dashboard?session_id={CHECKOUT_SESSION_ID}`
+   - Cancel URL: `relaykit.com/start/review`
    - Metadata: `{ intake_session_id: "{id}", customer_id: "{id}", tier: "byo" }`
 4. Stripe charges **$199 at checkout** — no recurring billing
 5. Redirects to dashboard
 
 ### Stripe Product Configuration
 ```
-Product: "RelayKit Registration Submission"
-  Price 1: $49.00 USD — one-time submission fee
-
-Product: "RelayKit Go Live"
-  Price 1: $150.00 USD — one-time approval fee
-
-Product: "RelayKit SMS Infrastructure"
+Product: "RelayKit SMS Registration"
+  Price 1: $199.00 USD — one-time setup fee (used by both full-stack and BYO)
+  
+Product: "RelayKit SMS Infrastructure"  
   Price 1: $19.00 USD/month — base subscription (full-stack only)
-
+  
 Product: "RelayKit Message Block"
   Price 1: $15.00 USD — one-time (used for metered overage billing)
   Price 2: $13.00 USD — one-time (volume tier, 5k+)
-
-Product: "RelayKit BYO Registration" (Phase 2)
-  Price 1: $199.00 USD — one-time (BYO Twilio setup)
 ```
 
 ### Webhook Handling
-
-**`checkout.session.completed` (submission step):**
+**`checkout.session.completed`** — same as current PRD_01 spec:
 1. Verify signature
-2. Look up customer_id from metadata
-3. Mark registration as `submitted`, store payment reference
-4. Trigger registration pipeline (brand registration → campaign submission via Sinch)
-5. Store Stripe customer_id on customer record, save payment method for future charges
-
-**`checkout.session.completed` (approval step):**
-1. Verify signature
-2. Look up customer_id from metadata
-3. Mark registration as `live`
-4. Store subscription_id on customer record
-5. Swap sandbox API key for live key
-6. Enable production message delivery
+2. Look up intake_session_id
+3. Create customer + registration records (or link to existing sandbox customer)
+4. Trigger artifact generation pipeline (starts with subaccount creation — PRD_04 for full-stack, or direct Trust Hub submission for BYO)
+5. Store Stripe customer_id and subscription_id on customer record (subscription_id null for BYO)
 
 **`invoice.payment_failed`** — full-stack only:
 1. Mark customer as `payment_past_due`
 2. Send email: "Your payment failed. Update your card to keep SMS active."
 3. Grace period: 7 days before suspension
-4. After grace: pause messaging (messages queue but don't send)
+4. After grace: pause Messaging Service (messages queue but don't send)
 
 **`customer.subscription.deleted`** — full-stack only:
 1. Mark customer as `churned`
-2. Pause messaging
+2. Pause Messaging Service
 3. Compliance site remains live for 30 days (carrier audit protection)
 4. Send email with reactivation link
 
@@ -356,24 +304,18 @@ Product: "RelayKit BYO Registration" (Phase 2)
 ### Subscription Lifecycle
 ```
 SANDBOX (free, no Stripe involvement)
-  → SUBMISSION CHECKOUT → submitted ($49 charged, registration pipeline starts)
-    → APPROVED → APPROVAL CHECKOUT → live ($150 + $19/mo charged)
-      → payment_past_due (card fails on renewal)
-        → 7-day grace period
-        → suspended (messaging paused)
-        → reactivated (card updated) OR churned (30 days no payment)
-      → cancelled (customer cancels)
-        → messaging paused immediately
-        → compliance site stays live 30 days
-        → data retained 90 days
-        → sandbox continues to work (they can still test)
-    → REJECTED → $49 refunded
-      → resubmission available (another $49 checkout)
+  → FULL-STACK CHECKOUT → active (subscription created, $199 + $19 charged)
+    → payment_past_due (card fails on renewal)
+      → 7-day grace period
+      → suspended (messaging paused)
+      → reactivated (card updated) OR churned (30 days no payment)
+    → cancelled (customer cancels)
+      → messaging paused immediately  
+      → compliance site stays live 30 days
+      → data retained 90 days
+      → sandbox continues to work (they can still test)
 
-  → BETA CHECKOUT → submitted ($49 charged, no approval payment)
-    → APPROVED → live (no $150, no subscription until post-beta)
-
-  → BYO CHECKOUT (Phase 2) → byo_active ($199 charged, no subscription)
+  → BYO CHECKOUT → byo_active ($199 charged, no subscription)
     → registration pipeline runs against customer's Twilio account
     → on completion: deliverables generated, customer self-sufficient
     → compliance site hosted indefinitely (negligible cost)
@@ -387,61 +329,49 @@ SANDBOX (free, no Stripe involvement)
 The Review & Confirm screen (Screen 3) preview card:
 ```
 WHAT HAPPENS NEXT
-1. You pay $49 to submit your registration
-2. We submit to US carriers — usually a few days (via Sinch)
+1. You pay $199 setup + $19/month
+2. We submit your registration to US carriers (usually 3–10 days)
 3. Your sandbox keeps working while you wait
-4. On approval, pay $150 to go live — same code, same API
-   Full refund on the $49 if not approved.
+4. On approval, swap your sandbox key for your live key — same code, same API
 
 YOUR PLAN
-$49 registration fee (now) + $150 go-live fee (after approval)
+$199 one-time setup
 $19/month includes 500 messages, phone number, compliance proxy & monitoring
 Additional messages: $15 per 1,000 (auto-scales, no interruption)
 ```
 
-> Updated from v3.0 to reflect D-193 fee split, D-215 Sinch timeline, and D-194 customer-initiated second payment.
+> No change from v2.0. The build spec is a sandbox feature, not a paid feature. The preview card describes what payment buys.
 
 ---
 
 ## 6. UPDATED UNIT ECONOMICS
 
-### Sinch Fee Schedule (estimated, pending ISV tier confirmation — D-271)
-| Item | Estimated Cost | Notes |
-|------|---------------|-------|
-| Brand registration | ~$4.50 | TCR fee, same regardless of carrier |
-| Campaign vetting | ~$15.00 | TCR fee |
-| Phone number | ~$1.00/mo | Sinch pricing may differ slightly from Twilio |
-| Campaign monthly fee | ~$1.50–$10/mo | Varies by use case |
+### Twilio Fee Schedule (as of Aug 2025)
+| Brand Type | Brand Fee | Campaign Vetting | Phone Number | Campaign Monthly Fee |
+|------------|----------|-----------------|-------------|---------------------|
+| Sole Proprietor | $4.50 | $15.00 | ~$1.15/mo | $1.50–$10/mo |
+| Low Volume Standard (EIN, <6k msgs/day) | $4.50 | $15.00 | ~$1.15/mo | $1.50–$10/mo |
+| Standard (EIN, high volume) | $46.00* | $15.00 | ~$1.15/mo | $1.50–$10/mo |
 
-> **Note:** Sinch fee schedule needs confirmation once ISV/reseller account is upgraded from trial (D-271). TCR fees are carrier-agnostic. Phone number and platform fees may differ. Update this section when Sinch production pricing is confirmed.
+*Standard Brand $46 now includes secondary vetting (previously a separate $41.50 charge).
 
-### Full-Stack Registration (two-part payment)
+Campaign monthly fee varies by use case: $1.50 (transactional) to $10 (marketing/mixed). Most indie dev use cases (notifications, verification, appointments) are on the low end.
+
+> **Key insight:** Most RelayKit customers will be Sole Prop or Low Volume Standard. Initial Twilio cost is ~$20 for the vast majority, not $62.
+
+### Full-Stack Registration (one-time)
 | Item | Typical Customer | High Volume Standard |
 |------|-----------------|---------------------|
-| Revenue ($49 + $150) | $199 | $199 |
-| Sinch/TCR brand + campaign | ~$19.50 | ~$61.00 |
-| Stripe processing (3% × 2 transactions) | ~$7.11 | ~$7.11 |
+| Revenue | $199 | $199 |
+| Twilio brand + campaign | ~$19.50 | ~$61.00 |
+| Stripe processing (3%) | ~$6.54 | ~$6.54 |
 | Support/review time | $7.50–15 | $7.50–15 |
-| **Gross profit** | **~$162–170** | **~$116–124** |
-| **Gross margin** | **~81–85%** | **~58–62%** |
+| **Gross profit** | **~$163–170** | **~$116–124** |
+| **Gross margin** | **~82–85%** | **~58–62%** |
 
-> **Note on two-transaction Stripe fees:** Two separate charges ($49 + $169) have slightly higher total processing cost than a single $218 charge (~$7.11 vs ~$6.54). The ~$0.57 difference is trivial relative to the conversion benefit of the split payment structure.
+> **Re-vetting fee policy:** Campaign resubmissions after rejection incur a non-refundable $15 Twilio/TCR vetting fee per event. RelayKit absorbs this cost as part of the rejection handling service included in the $199 setup fee. Each resubmission adds ~$15 to COGS for that registration. Monitor `resubmission_count` per registration — use cases or intake patterns with high rejection rates are both a template quality signal and a margin risk flag. Target: <5% of registrations require resubmission.
 
-> **Re-vetting fee policy:** Campaign resubmissions after rejection incur a non-refundable $15 TCR vetting fee per event. RelayKit absorbs this cost as part of the rejection handling service. Each resubmission adds ~$15 to COGS for that registration. Monitor `resubmission_count` per registration — use cases or intake patterns with high rejection rates are both a template quality signal and a margin risk flag. Target: <5% of registrations require resubmission.
-
-### Beta Registration (D-196)
-| Item | Amount |
-|------|--------|
-| Revenue | $49 |
-| Sinch/TCR brand + campaign | ~$19.50 |
-| Stripe processing (3%) | ~$1.47 |
-| Support/review time | $7.50–15 |
-| **Gross profit** | **~$13–21** |
-| **Gross margin** | **~27–42%** |
-
-> Beta is intentionally low-margin. The value is user testing feedback and early proof points, not revenue. Capped at 25–50 slots.
-
-### BYO Twilio Registration (one-time) — Phase 2
+### BYO Twilio Registration (one-time)
 | Item | Amount |
 |------|--------|
 | Revenue | $199 |
@@ -452,21 +382,21 @@ Additional messages: $15 per 1,000 (auto-scales, no interruption)
 | **Gross profit** | **~$178–185** |
 | **Gross margin** | **~89–93%** |
 
-> BYO has BETTER margins than full-stack because carrier registration fees are charged to their account (not ours), no phone number rental, no proxy infrastructure, no ongoing monitoring. Only cost is Stripe processing, compliance site hosting (minimal), and one-time support time.
+> BYO has BETTER margins than full-stack because Twilio registration fees are charged to their account (not ours), no phone number rental, no proxy infrastructure, no ongoing monitoring. Only cost is Stripe processing, compliance site hosting (minimal), and one-time support time.
 
 ### Full-Stack Monthly Subscription
 | Item | Low Use Case | Marketing/Mixed Use Case |
 |------|-------------|------------------------|
 | Revenue (base) | $19.00 | $19.00 |
-| Phone number rental | ~$1.00 | ~$1.00 |
-| Sinch campaign monthly fee | ~$1.50 | ~$10.00 |
+| Phone number rental | ~$1.15 | ~$1.15 |
+| Twilio campaign monthly fee | ~$1.50 | ~$10.00 |
 | Compliance site hosting | ~$0.50 | ~$0.50 |
 | Proxy + Redis infrastructure | ~$1.00 | ~$1.00 |
 | Drift detection (Claude API sampling) | ~$0.25 | ~$0.25 |
 | Message cost (500 × $0.01 blended) | ~$5.00 | ~$5.00 |
 | Stripe processing (3%) | ~$0.57 | ~$0.57 |
-| **Monthly gross profit** | **~$9.18** | **~$0.68** |
-| **Monthly gross margin** | **~48%** | **~4%** |
+| **Monthly gross profit** | **~$9.03** | **~$0.53** |
+| **Monthly gross margin** | **~48%** | **~3%** |
 
 > **⚠️ Note:** Marketing/mixed use cases are roughly breakeven on the base tier at 500 included messages. Margin comes from: (1) most customers won't use all 500 messages every month, and (2) overage kicks in earlier, generating block revenue sooner. The move from 1,000 to 500 included significantly improves base tier economics.
 
@@ -479,13 +409,12 @@ Additional messages: $15 per 1,000 (auto-scales, no interruption)
 | **Gross margin** | **~33%** |
 
 ### Customer LTV Model (12-month retention)
-| Scenario | Setup ($49+$150) | Monthly × 12 | Overage | Total LTV |
-|----------|-----------------|-------------|---------|-----------|
+| Scenario | Setup | Monthly × 12 | Overage | Total LTV |
+|----------|-------|-------------|---------|-----------|
 | Light user (250 msg/mo) | $199 | $228 | $0 | $427 |
 | Typical user (1,000 msg/mo) | $199 | $228 | $90 | $517 |
 | Growth user (3,000 msg/mo) | $199 | $228 | $360 | $787 |
 | Scale user (10,000 msg/mo) | $199 | $228 | $1,620* | $2,047 |
-| Beta user (12-month, typical) | $49 | $228 | $90 | $367 |
 | BYO (no monthly) | $199 | $0 | $0 | $199 |
 | BYO → full-stack upgrade (month 3) | $199 | $171** | $68 | $438 |
 
@@ -506,38 +435,31 @@ Additional messages: $15 per 1,000 (auto-scales, no interruption)
 ## 7. CC IMPLEMENTATION NOTES
 
 ### What CC needs to build for Stripe (in order):
-1. Stripe product + price creation (can be done via Stripe Dashboard or API seed script) — note: now 4 products instead of 3 (submission fee, go-live fee, monthly, message block)
-2. `POST /api/checkout` — accepts `{ step: 'submission' | 'approval', beta?: boolean }` for full-stack, `{ tier: 'byo' }` for BYO (Phase 2)
-3. `POST /api/webhooks/stripe` — handles `checkout.session.completed` (with step differentiation), `invoice.payment_failed`, `customer.subscription.deleted`
-4. Customer record stores: `stripe_customer_id`, `stripe_subscription_id` (nullable until approval), `subscription_status`, `tier` ('full_stack' | 'byo'), `registration_step` ('submitted' | 'approved' | 'rejected' | 'live')
-5. Refund logic: auto-refund $49 on registration rejection
-6. Basic usage counter: increment on each outbound message (proxy integration point, full-stack only)
-7. **v1 decision point:** If metered billing is complex, launch with hard cap at 500 and manual upgrade. Add auto-scaling in phase 2.
+1. Stripe product + price creation (can be done via Stripe Dashboard or API seed script)
+2. `POST /api/checkout` — creates Subscription checkout session (full-stack) OR Payment checkout session (BYO) based on tier parameter
+3. `POST /api/webhooks/stripe` — handles `checkout.session.completed`, `invoice.payment_failed`, `customer.subscription.deleted`
+4. Customer record stores: `stripe_customer_id`, `stripe_subscription_id` (nullable for BYO), `subscription_status`, `tier` ('full_stack' | 'byo')
+5. Basic usage counter: increment on each outbound message (proxy integration point, full-stack only)
+6. **v1 decision point:** If metered billing is complex, launch with hard cap at 500 and manual upgrade. Add auto-scaling in phase 2.
 
 ### Environment Variables (add to .env)
 ```
 STRIPE_SECRET_KEY=sk_...
 STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_SUBMISSION_PRICE_ID=price_...     # $49 one-time
-STRIPE_GOLIVE_PRICE_ID=price_...         # $150 one-time
-STRIPE_MONTHLY_PRICE_ID=price_...        # $19/month
-STRIPE_MESSAGE_BLOCK_PRICE_ID=price_...  # $15 per 1k
+STRIPE_SETUP_PRICE_ID=price_...
+STRIPE_MONTHLY_PRICE_ID=price_...
+STRIPE_MESSAGE_BLOCK_PRICE_ID=price_...
 ```
 
 ### Database Additions
 ```sql
 -- Add to customers table
 stripe_customer_id TEXT,
-stripe_subscription_id TEXT,       -- NULL until approval payment
-subscription_status TEXT DEFAULT 'sandbox',
--- CHECK (subscription_status IN ('sandbox', 'submitted', 'approved', 'live', 'past_due', 'suspended', 'cancelled', 'churned', 'byo_active'))
-tier TEXT DEFAULT 'sandbox',
+stripe_subscription_id TEXT,       -- NULL for BYO customers
+subscription_status TEXT DEFAULT 'active',
+-- CHECK (subscription_status IN ('active', 'past_due', 'suspended', 'cancelled', 'churned', 'byo_active'))
+tier TEXT DEFAULT 'full_stack',
 -- CHECK (tier IN ('sandbox', 'full_stack', 'byo'))
-registration_step TEXT,
--- CHECK (registration_step IN ('submitted', 'approved', 'rejected', 'live'))
-is_beta BOOLEAN DEFAULT FALSE,
-submission_payment_id TEXT,        -- Stripe PaymentIntent ID for $49
-approval_payment_id TEXT,          -- Stripe PaymentIntent ID for $150
 
 -- New table for usage tracking (full-stack only)
 CREATE TABLE message_usage (

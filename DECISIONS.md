@@ -427,6 +427,7 @@ _Affects: Registration intake wizard UI._
 **D-162 — Initial download happens on Messages page, not Overview** (Date: 2026-03-19)
 The initial RelayKit download always happens on the public Messages page (`/sms/[category]/messages`). Overview and Settings pages don't exist until after download — they are created as part of the project that gets created at download/signup time. Flow: stranger → Messages page → "Download RelayKit" → auth gate → download → project created → directed to `/apps/[appId]/overview`. The Messages page is both the public marketing page and the conversion/download point. This is the correct flow — the download confirmation should orient users toward their new project's Overview, not keep them on Messages.
 _Affects: Messages page states, download confirmation flow, project creation logic, PROTOTYPE_SPEC.md._
+**⚠ Updated by D-279:** With SDK as delivery mechanism, the "download" concept changes. The Messages page becomes the message authoring/editing surface. The "download" is now `npm install relaykit` + a sandbox API key shown in the dashboard. SMS_GUIDELINES.md may still be downloadable (D-283) but is secondary to the SDK. The flow becomes: stranger → Messages page → auth gate → sandbox API key issued → `npm install relaykit` → build.
 
 **D-163 — Prototype is the UI source of truth for production** (Date: 2026-03-19)
 The prototype at `/prototype` (port 3001) is the authoritative source for all UI decisions. Production code will be ported from prototype screens, not built from PRDs. PRDs are historical context. When porting to production, CC builds from prototype code + PROTOTYPE_SPEC.md + DECISIONS.md. D-104 (PRD update gate) is superseded for screens being ported directly from prototype code.
@@ -649,6 +650,7 @@ _Affects: Home page pricing cards, How it works modal, marketing copy._
 **D-217 — Playbook summary section on Messages pages** (Date: 2026-03-23)
 Both the public Messages page and logged-in app Messages page include a "playbook summary" section showing the complete SMS system flow for the category. Appointments example: "Booking confirmed → Reminder sent → No response followed up → No-show rebooked → Cancellation handled." Flow labels describe system behavior, not message card titles. Horizontal on desktop (hollow circles, arrows, filled end dot), vertical stepper on mobile. Data keyed by category slug for easy extension. On the public page, sits between gray hero band (bg-bg-tertiary) and messages section with its own bg-bg-secondary band. On the app page, sits in a full-width gray band below the tab bar.
 _Affects: `prototype/app/sms/[category]/messages/page.tsx`, `prototype/app/apps/[appId]/messages/page.tsx`._
+**⚠ Updated by D-279:** Playbook summary remains but its role shifts. It describes the messaging system for the developer's use case (which messages, when they fire, what data they need) rather than being a gateway to file downloads. It's the "what you're building" context, not the "what you're downloading" context.
 
 **D-218 — "How it works" full-page modal on public Messages page** (Date: 2026-03-23)
 A "How it works" link (Expand06 icon, brand purple semibold) in the hero area opens a full-page modal overlay. Modal contains: H1 heading, subhead, "What you get" 4-card grid, pricing section (full-width gray band with Free + Go live cards), and "Why registration matters" FAQ. URL does not change. V1 renders summary content; V2 could render the full marketing category page. Modal has sticky close button and "Back to messages" CTA at bottom.
@@ -852,3 +854,79 @@ Marketing copy makes confident, simple claims without asterisks. "We handle opt-
 
 **D-264 — Single deliverable file, not two**
 The developer gets one file dropped into their repo. It contains everything the AI tool needs: messages, API endpoint, consent form spec, wiring instructions, and lean compliance guidance. Comprehensive reference material lives on RelayKit's servers. One file is simpler to explain, simpler to deliver, and eliminates the question of which file to read first. Supersedes any prior references to "two files" in PRDs and decisions.
+
+**D-265 — Build spec validation confirms working module as delivery format** (Date: 2026-03-31)
+25 rounds across 8 phases tested spec files, working modules, repo reports, no-trigger prompts, consent forms, and cross-vertical generalization. Working module is 58% faster than spec file with equivalent reliability, reducing AI tool decisions from ~15 to ~3. Spec file format retired as delivery mechanism. Full results in `docs/BUILD_SPEC_VALIDATION_LOG.md`.
+_Affects: PRD_05, delivery model, SDK architecture._
+
+**D-266 — SDK (`npm install relaykit`) is the production delivery form factor** (Date: 2026-03-31)
+The working module experiments validated the pattern — the SDK is the polished version. Per-vertical namespaces with thin functions wrapping API calls. Intelligence lives on RelayKit's servers, not in the SDK. Validated in Round 12: CC scored 20/20, Windsurf scored 19/20. Both tools used `new RelayKit()` with zero-config and namespace pattern (`relaykit.appointments.sendConfirmation()`) without hesitation. Supersedes the "under active validation" status of the deliverable format in RELAYKIT_PRD_CONSOLIDATED.md.
+_Affects: PRD_05, delivery model, production infrastructure, developer experience._
+
+**D-267 — Repo report concept viable with Cursor hallucination mitigation** (Date: 2026-03-31)
+CC and Windsurf produced accurate structured JSON codebase analysis. Cursor hallucinated a phone field 3 times across 3 attempts (read-level hallucination, not reasoning). Mitigation: website cross-references contradictions (e.g., phone_field set but collected=false → ask developer to confirm).
+_Affects: Future onboarding UX, repo analysis tooling._
+
+**D-268 — Function names carry intent — trigger descriptions are developer documentation, not AI instructions** (Date: 2026-03-31)
+Round 7 (no-trigger) confirmed AI tools infer integration points from function names like `sendBookingConfirmation` without being told when to call them. Trigger descriptions remain in docs and on the website for developer understanding but are not needed in the SDK or deliverable files for AI tool comprehension.
+_Affects: SDK design, PRD_05 content, SMS_GUIDELINES.md._
+
+**D-269 — Consent + SMS two-module pattern validated** (Date: 2026-03-31)
+Round 3 tested two files (consent + SMS), 6 tasks in one prompt. All three tools scored 18/18. Full integration loop: TCPA-compliant consent checkbox, conditional phone validation, consent API, and SMS sending. Proves the SDK can handle both consent and messaging in a single integration pass.
+_Affects: SDK architecture, consent API design, PRD_05._
+
+**D-270 — Windsurf .env fix: enable "Allow Cascade Access to Gitignore Files"** (Date: 2026-03-31)
+Resolves all .env creation failures observed across experiments. Note in production setup instructions for Windsurf users.
+_Affects: Setup documentation, developer onboarding._
+
+**D-271 — Sinch account created** (Date: 2026-03-31)
+Dashboard: dashboard.sinch.com. Project ID: `6bf3a837-d11d-486c-81db-fa907adc4dd4`. Trial account, $2.00 test credits, 22-day trial. Reseller status toggle found but errors on trial — likely needs upgrade. Project-based isolation model confirmed.
+_Affects: Carrier integration, PRD_04 Sinch migration._
+
+**D-272 — SDK ships dual format: ESM (default) + CJS fallback + TypeScript declarations** (Date: 2026-03-31)
+Round 8 experiments showed all three AI tools had to create wrapper files to bridge CJS modules into TS/ESM apps. Dual publish via `tsup` eliminates this friction. AI tools import correctly with zero adapter code regardless of the target app's module system.
+_Affects: SDK build pipeline, package.json configuration._
+
+**D-273 — SDK uses per-vertical namespaces** (Date: 2026-03-31)
+`relaykit.appointments.sendConfirmation()`, `relaykit.orders.sendShipping()`, etc. 8 namespaces matching PRD_02 use cases: appointments, orders, verification, support, marketing, internal, community, waitlist. Validated in Round 12 — both CC and Windsurf used the namespace pattern correctly on first attempt. Namespaces organize 40-64 functions across 8 verticals without losing the self-documenting quality that made experiment modules work.
+_Affects: SDK source code, TypeScript declarations, developer documentation._
+
+**D-274 — Consent functions are top-level on the client instance, not namespaced** (Date: 2026-03-31)
+`relaykit.recordConsent()`, `relaykit.checkConsent()`, `relaykit.revokeConsent()`. Consent is cross-cutting (not a vertical), called in different code paths than messaging (registration forms vs. business logic handlers), and was a separate module file in the experiments. Builds on D-252, D-253.
+_Affects: SDK source code, TypeScript declarations._
+
+**D-275 — No namespace for the `exploring` use case** (Date: 2026-03-31)
+Developers using `exploring` call `relaykit.send({ to, messageType, data })` directly. The exploring use case has no domain semantics for function names to carry. `relaykit.send()` is also the escape hatch for custom messages (D-280). When an exploring developer picks a real vertical, they naturally migrate from `relaykit.send()` to namespace functions.
+_Affects: SDK source code, exploring use case documentation._
+
+**D-276 — Single API endpoint for all message sends: `POST /v1/messages`** (Date: 2026-03-31)
+SDK abstracts the URL — AI tools never see it. Server routes internally by `message_type` field. Adding verticals, changing compliance rules, or adjusting rate limits requires no SDK update. Five total API endpoints: `POST /v1/messages` (send), `POST /v1/consent` (record), `GET /v1/consent/:phone` (check), `DELETE /v1/consent/:phone` (revoke), `POST /v1/messages/preview` (validate before sending).
+_Affects: API server design, SDK internal client, messaging proxy._
+
+**D-277 — SDK defaults to graceful failure mode** (Date: 2026-03-31)
+Missing phone → null + console warning. Missing API key → null + console warning. Network error → null + console warning. Compliance blocks → structured result: `{ id: null, status: 'blocked', reason: 'recipient_opted_out' }`. Optional strict mode (`new RelayKit({ strict: true })`) throws `RelayKitError` instead. Default graceful ensures SMS never crashes the developer's app.
+_Affects: SDK source code, error handling documentation._
+
+**D-278 — SDK uses zero-config initialization by default** (Date: 2026-03-31)
+`new RelayKit()` reads `RELAYKIT_API_KEY` and `BUSINESS_NAME` from `process.env`. Explicit config available via `new RelayKit({ apiKey, businessName })`. Both CC and Windsurf used zero-config in Round 12, matching the .env pattern every AI tool naturally creates.
+_Affects: SDK source code, setup documentation._
+
+**D-279 — Website is the message authoring surface, not the delivery mechanism** (Date: 2026-03-31)
+SDK (`npm install relaykit`) replaces file download as the delivery mechanism. The website remains the onboarding and personalization surface: developer picks use case, previews messages, edits if desired. Message content is saved server-side, tied to the developer's API key. The SDK sends semantic events (`relaykit.appointments.sendConfirmation(phone, { date, time })`); the server composes actual SMS from the developer's saved templates. The developer's codebase never contains message text. **Updates D-162 and D-217** — see annotations on those entries.
+_Affects: Website UX, Messages page, PRD_05, PRD_06, download flow, developer experience._
+
+**D-280 — Custom messages: developers author additional messages on the website beyond the curated library** (Date: 2026-03-31)
+Developer gives the message a name, writes the text with `{variables}`, and it becomes callable via `relaykit.send({ to, messageType: 'custom_post_visit_thankyou', data })`. Custom messages go through the same compliance pre-review on the website at authoring time. Gives flexibility on top of the curated library without putting the compliance burden back on the developer. The curated library covers the 80% case; custom messages cover the 20%.
+_Affects: Website Messages page, API server, message storage schema, compliance pre-review._
+
+**D-281 — Message editing uses inline editing on the website with real-time compliance indicators** (Date: 2026-03-31)
+Template engine provides defaults; developer refines. Edits saved server-side. Compliance checks run on save (prevention), not on send (cure). Indicators show: missing business name, missing opt-out language, SHAFT-C content flags. When the message hits the SDK pipeline, it's already clean. No drag-and-drop editor, no version history, no approval workflows for v1. Just: message cards, editable text, compliance check, save.
+_Affects: Website Messages page, template engine, compliance pre-review._
+
+**D-282 — Curated messages use namespace functions; custom messages use `relaykit.send()`** (Date: 2026-03-31)
+The curated message library (per-use-case templates from PRD_02) maps to SDK namespace functions (`relaykit.appointments.sendConfirmation`). Custom messages map to `relaykit.send()` with a developer-defined `messageType` string. Same API endpoint underneath, same compliance checks, same proxy. Namespace functions are the blessed paths with maximum guardrails; `relaykit.send()` is the flexible path.
+_Affects: SDK documentation, API server routing, message type resolution._
+
+**D-283 — SMS_GUIDELINES.md remains a separate artifact from the SDK** (Date: 2026-03-31)
+It sits in the developer's project root as a compliance co-pilot for AI coding tools. Whether it's downloaded from the website or generated by a CLI command (`npx relaykit init`) is deferred to PRD_05 production build. The SDK handles message sending; SMS_GUIDELINES.md handles compliance context for the AI tool writing the integration code.
+_Affects: PRD_05, developer onboarding, setup documentation._

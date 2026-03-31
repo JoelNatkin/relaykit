@@ -335,101 +335,82 @@ export function ReviewConfirm({
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Two-column layout */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* LEFT COLUMN — Your details */}
-        <div className="rounded-xl border border-border-secondary bg-bg-primary">
-          <div className="flex items-center justify-between border-b border-border-secondary px-5 py-3">
-            <h3 className="text-lg font-semibold text-text-primary">
-              Your details
-            </h3>
-            <button
-              type="button"
-              onClick={onEditDetails}
-              className="text-sm font-semibold text-text-brand-secondary transition duration-100 ease-linear hover:text-text-brand-primary"
-            >
-              Edit
-            </button>
-          </div>
-          <div className="flex flex-col divide-y divide-border-secondary px-5">
-            {detailRows.map((row) => (
-              <DetailRow key={row.label} label={row.label} value={row.value} />
-            ))}
-          </div>
-        </div>
+      {/* Two-column layout: details+pricing left, "what happens next" right */}
+      <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-8 items-start">
 
-        {/* RIGHT COLUMN — What happens next */}
-        <div className="rounded-xl border border-border-secondary bg-bg-secondary p-5">
-          <h3 className="text-lg font-semibold text-text-primary">
-            What happens next
-          </h3>
-          <ol className="mt-4 flex flex-col gap-3">
-            <li className="flex gap-2.5 text-sm text-text-secondary">
-              <span className="shrink-0 font-semibold text-text-primary">1.</span>
-              We submit your registration to carriers — typically approved in a few days.
-            </li>
-            <li className="flex gap-2.5 text-sm text-text-secondary">
-              <span className="shrink-0 font-semibold text-text-primary">2.</span>
-              You&apos;ll get a live API key and a dedicated phone number.
-            </li>
-            <li className="flex gap-2.5 text-sm text-text-secondary">
-              <span className="shrink-0 font-semibold text-text-primary">3.</span>
-              Swap your sandbox key for your live key — same code, same endpoint.
-            </li>
-          </ol>
-        </div>
-      </div>
-
-      {/* Pricing breakdown card */}
-      <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <div className="flex flex-col gap-3">
-          <h3 className="text-md font-semibold text-text-primary">
-            Pricing breakdown
-          </h3>
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-text-tertiary">Registration submission</span>
-              <span className="font-semibold text-text-primary">$49</span>
+        {/* LEFT COLUMN — Your details + Pricing + Checkbox + Button */}
+        <div className="flex flex-col gap-6 order-last md:order-first">
+          {/* Your details card */}
+          <div className="rounded-xl border border-border-secondary bg-bg-primary">
+            <div className="flex items-center justify-between border-b border-border-secondary px-5 py-3">
+              <h3 className="text-lg font-semibold text-text-primary">
+                Your details
+              </h3>
+              <button
+                type="button"
+                onClick={onEditDetails}
+                className="text-sm font-semibold text-text-brand-secondary transition duration-100 ease-linear hover:text-text-brand-primary"
+              >
+                Edit
+              </button>
             </div>
-            <div className="border-t border-border-secondary pt-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-semibold text-text-primary">
-                  Due today
-                </span>
-                <span className="font-semibold text-text-primary">$49</span>
+            <div className="flex flex-col divide-y divide-border-secondary px-5">
+              {detailRows.map((row) => (
+                <DetailRow key={row.label} label={row.label} value={row.value} />
+              ))}
+            </div>
+          </div>
+
+          {/* Pricing breakdown card */}
+          <div className="rounded-xl border border-border-secondary bg-bg-primary p-5 max-w-[600px]">
+            <div className="flex flex-col gap-3">
+              <h3 className="text-md font-semibold text-text-primary">
+                Pricing breakdown
+              </h3>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-text-tertiary">Registration submission</span>
+                  <span className="font-semibold text-text-primary">$49</span>
+                </div>
+                <div className="border-t border-border-secondary pt-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-text-primary">
+                      Due today
+                    </span>
+                    <span className="text-text-primary">$49</span>
+                  </div>
+                </div>
               </div>
+              <p className="mt-1 text-sm text-text-tertiary leading-relaxed">
+                <span className="font-semibold">After approval, pay $150 + $19/mo to activate your live API key and dedicated phone number.</span> 500 messages included monthly. Additional messages $15 per 1,000. Not approved? Full refund.
+              </p>
             </div>
           </div>
-          <p className="mt-1 text-xs text-text-tertiary leading-relaxed">
-            After approval, pay $150 + $19/mo to activate your live API key and dedicated phone number. 500 messages included monthly. Additional messages $15 per 1,000. Not approved? Full refund.
-          </p>
-        </div>
-      </div>
 
-      {/* Monitoring consent checkbox */}
-      <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <label className="flex items-start gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={monitoringConsent}
-            onChange={(e) => setMonitoringConsent(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-          />
-          <div className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-text-primary">
-              I understand that RelayKit monitors outbound messages
-            </span>
-            <span className="text-sm text-text-tertiary">
-              RelayKit enforces compliance on outbound messages to protect your
-              phone number from carrier suspension and maintain platform
-              integrity for all users.
-            </span>
+          {/* Monitoring consent checkbox */}
+          <div className="rounded-xl border border-border-secondary bg-bg-primary p-5 max-w-[600px]">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={monitoringConsent}
+                onChange={(e) => setMonitoringConsent(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+              />
+              <div className="flex flex-col gap-1">
+                <span className="text-sm font-medium text-text-primary">
+                  I understand that RelayKit monitors outbound messages
+                </span>
+                <span className="text-sm text-text-tertiary">
+                  RelayKit enforces compliance on outbound messages to protect your
+                  phone number from carrier suspension and maintain platform
+                  integrity for all users.
+                </span>
+              </div>
+            </label>
           </div>
-        </label>
-      </div>
 
-      {/* Start registration button */}
-      <div className="flex justify-end">
+          {/* Start registration button */}
+          <div className="flex justify-end max-w-[600px]">
         <button
           type="button"
           disabled={!monitoringConsent}
@@ -442,6 +423,31 @@ export function ReviewConfirm({
         >
           Start my registration — $49
         </button>
+      </div>
+        </div>
+
+        {/* RIGHT COLUMN — What happens next (sticky on desktop, first on mobile) */}
+        <div className="order-first md:order-last md:sticky md:top-24 p-5">
+          <h3 className="text-xl font-semibold text-text-primary">
+            What happens next
+          </h3>
+          <ol className="mt-4 flex flex-col gap-3">
+            <li className="flex gap-2.5 text-base text-text-secondary">
+              <span className="shrink-0 font-semibold text-text-primary">1.</span>
+              We submit your registration to carriers — typically approved in a few days.
+            </li>
+            <li className="flex gap-2.5 text-base text-text-secondary">
+              <span className="shrink-0 font-semibold text-text-primary">2.</span>
+              You&apos;ll get a live API key and a dedicated phone number.
+            </li>
+            <li className="flex gap-2.5 text-base text-text-secondary">
+              <span className="shrink-0 font-semibold text-text-primary">3.</span>
+              Your code stays the same — just swap one key and you&apos;re live.
+            </li>
+          </ol>
+          <p className="mt-4 text-base font-medium text-text-tertiary">You built it, we handle the rest.</p>
+        </div>
+
       </div>
 
       {/* Confirmation modal */}

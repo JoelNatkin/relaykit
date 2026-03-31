@@ -150,7 +150,7 @@ When Joel says "session close-out":
 4. Write CC_HANDOFF.md (overwrite) with: commits, completed work, in-progress work, gotchas, modified files, suggested next tasks
 
 ## UX & Copy Rules — MANDATORY
-**Before writing any user-facing strings** (UI labels, status text, error messages, email subjects/bodies, onboarding copy, empty states, button text, helper text, toast notifications) — read `docs/V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md` in full and apply:
+**Before writing any user-facing strings** (UI labels, status text, error messages, email subjects/bodies, onboarding copy, empty states, button text, helper text, toast notifications) — read `docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md` in full and apply:
 1. The **Vocabulary table** — use the "Words We Use" column, avoid the "Words We Avoid" column
 2. The **Framing Shift table** — if a screen communicates a constraint or requirement, use the "Trusted Guide" column, never the "Nagging Parent" column
 3. The **Emotional States map** — know what emotional state the user is in at that screen and write copy to meet them there
@@ -173,7 +173,7 @@ These decisions are resolved. Do not re-litigate them or suggest alternatives.
 - Healthcare/HIPAA: decline at intake. No BAA. No PHI routing through the proxy. This is a hard platform constraint, not a feature gap.
 
 **Campaign review timing:**
-- Current baseline is **10–15 business days** (approximately 2–3 weeks). Never write "5–7 days" anywhere. The sandbox remains live and usable throughout this window — lean into that in copy.
+- Current baseline is **a few days** via Sinch (D-215). Never write specific day counts. The sandbox remains live and usable throughout this window — lean into that in copy.
 
 **Multi-project architecture (V1 guardrails):**
 - V1 ships single-project (one registration per customer). PRD_11 defines Phase 2 multi-project.
@@ -209,7 +209,7 @@ Read the relevant PRD before building each component. PRDs are in the /docs dire
 **Strategy and design reference (read before UX/copy decisions):**
 | File | Purpose |
 |------|---------|
-| V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md | **Mandatory before writing any user-facing copy** |
+| V4_EXPERIENCE_PRINCIPLES_v1.1.md | **Mandatory before writing any user-facing copy** |
 | V4_-_ADDENDUM_MIXED_CAMPAIGN_AND_PRICING.md | Mixed campaign mechanics, three-tier message library, pricing |
 | ONBOARDING_UX_DECISIONS_v2.md | Full UX decision record — consult for any dashboard UX question |
 
@@ -261,7 +261,7 @@ State switcher dropdowns (e.g., Default/Pending/Approved/Rejected on Overview) a
 
 1. Read PROTOTYPE_SPEC.md for the screen you're about to touch
 2. Read relevant DECISIONS.md entries (the spec references them)
-3. Read V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md if writing any user-facing copy
+3. Read V4_EXPERIENCE_PRINCIPLES_v1.1.md if writing any user-facing copy
 4. Check CC_HANDOFF.md for gotchas about the current state
 
 If PROTOTYPE_SPEC.md and the prototype code disagree, the code wins (it's more current). Flag the discrepancy so the spec can be updated.

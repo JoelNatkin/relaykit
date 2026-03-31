@@ -211,10 +211,12 @@ Developers receive three documents across two stages:
 2. `SMS_GUIDELINES.md` (sandbox edition) — sandbox, pre-payment
 3. `MESSAGING_SETUP.md` + `SMS_GUIDELINES.md` (production) — post-registration approval
 _Affects: PRD_05, PRD_06 build spec generator, dashboard Resources card_
+**⚠ Superseded by D-266, D-279:** The SDK (`npm install relaykit`) replaces the build spec and messaging setup files as the delivery mechanism. SMS_GUIDELINES.md survives as a compliance co-pilot artifact (D-283). The three-document model collapses to: SDK (delivery) + SMS_GUIDELINES.md (compliance context). Message content lives server-side, not in files.
 
 **D-41 — Build spec is primary sandbox deliverable and conversion mechanism**
 The build spec is designed to be good enough that even experienced developers choose it over manual integration. It creates investment (real time building) before any money changes hands, which is the primary conversion mechanism.
 _Affects: PRD_05, PRD_06 Section 5_
+**⚠ Updated by D-266, D-279:** The SDK replaces the build spec as the primary deliverable. The conversion mechanism remains the same principle: developer invests time building their SMS integration in sandbox before paying. The SDK + sandbox API key creates the same stickiness the build spec was designed to create.
 
 **D-42 — generateArtifacts() selects exactly 3 messages for TCR**
 `generateArtifacts()` selects exactly 3 messages from the full template set for Twilio/TCR campaign submission. `getMessageTemplates()` returns the full library for the dashboard plan builder. These are two separate functions with separate purposes.
