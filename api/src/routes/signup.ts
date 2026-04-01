@@ -1,4 +1,4 @@
-import { randomBytes, randomUUID } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 import type { Context } from 'hono';
 import { hashApiKey } from '../middleware/auth.js';
 import { getSupabaseClient } from '../supabase/client.js';
@@ -17,11 +17,10 @@ export async function handlePostSignupSandbox(c: Context) {
   const rawKey = `rk_sandbox_${randomBytes(16).toString('hex')}`;
   const keyHash = hashApiKey(rawKey);
   const keyPrefix = rawKey.slice(0, 12);
-  const userId = randomUUID();
 
   const supabase = getSupabaseClient();
   const { error } = await supabase.from('api_keys').insert({
-    user_id: userId,
+    user_id: null,
     key_hash: keyHash,
     key_prefix: keyPrefix,
     environment: 'sandbox',

@@ -1,6 +1,6 @@
 export interface ApiKeyRecord {
   id: string;
-  user_id: string;
+  user_id: string | null;
   key_hash: string;
   key_prefix: string;
   environment: 'sandbox' | 'live';
