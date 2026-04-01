@@ -104,6 +104,30 @@ describe('auth middleware', () => {
     });
   });
 
+  it('sets user_id to null for sandbox keys with no linked customer (D-292)', async () => {
+    mockLookup.mockResolvedValueOnce({
+      id: 'key_anon',
+      user_id: null,
+      key_hash: 'doesntmatter',
+      key_prefix: 'rk_sandbox_ab',
+      environment: 'sandbox',
+      status: 'active',
+      created_at: '2026-01-01T00:00:00Z',
+      revoked_at: null,
+      last_used_at: null,
+      label: null,
+      raw_key: 'rk_sandbox_abc123',
+    });
+    const app = buildApp(mockLookup);
+    const res = await app.request('/v1/messages', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer rk_sandbox_abc123' },
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body).toEqual({ user_id: null, environment: 'sandbox' });
+  });
+
   it('hashes the key before calling lookup (lookup receives SHA-256 hash, not raw key)', async () => {
     const rawKey = 'rk_sandbox_testkey999';
     const expectedHash = createHash('sha256').update(rawKey).digest('hex');

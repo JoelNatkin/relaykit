@@ -248,3 +248,47 @@ describe('consent lifecycle: record → revoke → check', () => {
     expect(checkBody.consented).toBe(false);
   });
 });
+
+describe('consent endpoints with unlinked sandbox key (D-292)', () => {
+  const unlinkedKey: ApiKeyRecord = {
+    ...validKey,
+    id: 'key_anon',
+    user_id: null,
+    raw_key: 'rk_sandbox_anonkey',
+  };
+  const anonLookup = vi.fn<(keyHash: string) => Promise<ApiKeyRecord | null>>();
+  anonLookup.mockResolvedValue(unlinkedKey);
+  const anonApp = createApp(anonLookup, mockStore);
+  const ANON_AUTH = { Authorization: 'Bearer rk_sandbox_anonkey' };
+
+  it('POST /v1/consent returns 403 sandbox_not_linked', async () => {
+    const res = await anonApp.request('/v1/consent', {
+      method: 'POST',
+      headers: { ...ANON_AUTH, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: '+15551234567', source: 'opt_in_form' }),
+    });
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error.code).toBe('sandbox_not_linked');
+  });
+
+  it('GET /v1/consent/:phone returns 403 sandbox_not_linked', async () => {
+    const res = await anonApp.request('/v1/consent/+15551234567', {
+      method: 'GET',
+      headers: ANON_AUTH,
+    });
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error.code).toBe('sandbox_not_linked');
+  });
+
+  it('DELETE /v1/consent/:phone returns 403 sandbox_not_linked', async () => {
+    const res = await anonApp.request('/v1/consent/+15551234567', {
+      method: 'DELETE',
+      headers: ANON_AUTH,
+    });
+    expect(res.status).toBe(403);
+    const body = await res.json();
+    expect(body.error.code).toBe('sandbox_not_linked');
+  });
+});

@@ -1,6 +1,13 @@
 import type { Context } from 'hono';
 import type { AppVariables, ConsentStore } from '../types.js';
 
+const notLinked = {
+  error: {
+    code: 'sandbox_not_linked',
+    message: 'Sandbox key must be linked to a customer account before using consent endpoints. This happens automatically when you authenticate.',
+  },
+} as const;
+
 export function createConsentHandlers(store: ConsentStore) {
   async function handleRecord(c: Context<{ Variables: AppVariables }>) {
     let body: { phone?: string; source?: string };
@@ -23,6 +30,7 @@ export function createConsentHandlers(store: ConsentStore) {
     }
 
     const userId = c.get('user_id');
+    if (!userId) return c.json(notLinked, 403);
     const ip = c.req.header('x-forwarded-for') ?? null;
     const record = await store.record(userId, phone, source, ip);
 
@@ -36,6 +44,7 @@ export function createConsentHandlers(store: ConsentStore) {
   async function handleCheck(c: Context<{ Variables: AppVariables }>) {
     const phone = c.req.param('phone') as string;
     const userId = c.get('user_id');
+    if (!userId) return c.json(notLinked, 403);
     const record = await store.check(userId, phone);
 
     if (record) {
@@ -52,6 +61,7 @@ export function createConsentHandlers(store: ConsentStore) {
   async function handleRevoke(c: Context<{ Variables: AppVariables }>) {
     const phone = c.req.param('phone') as string;
     const userId = c.get('user_id');
+    if (!userId) return c.json(notLinked, 403);
     const record = await store.revoke(userId, phone);
 
     if (!record) {

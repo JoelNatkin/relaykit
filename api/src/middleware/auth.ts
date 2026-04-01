@@ -25,7 +25,7 @@ export function createAuthMiddleware(lookup: KeyLookup): MiddlewareHandler<{ Var
       return c.json(reject, 401);
     }
 
-    c.set('user_id', record.user_id ?? '');
+    c.set('user_id', record.user_id ?? null);
     c.set('environment', record.environment);
 
     await next();

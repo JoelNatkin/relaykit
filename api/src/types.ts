@@ -20,7 +20,7 @@ export interface ErrorResponse {
 }
 
 export type AppVariables = {
-  user_id: string;
+  user_id: string | null;
   environment: 'sandbox' | 'live';
 };
 
