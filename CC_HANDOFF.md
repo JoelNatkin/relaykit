@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-01 (SDK tests, API server scaffold, full API surface build)
+**Date:** 2026-04-01 (Supabase integration — api_keys + consent tables, real KeyLookup + ConsentStore)
 **Branch:** main
 
 ---
@@ -7,77 +7,67 @@
 ## Commits This Session
 
 ```
-30dc4bc  test(sdk): add contract test suite with Vitest
-b9bd011  docs: add TDD skill for CC
-aafa65a  docs: record D-284 through D-290
-77db4dd  feat(api): initialize Hono API server with quality tooling
-55d5c90  test(api): add health check endpoint test
-0d91e2e  feat(api): add API key validation middleware with dependency-injected lookup
-bdb5b1a  feat(api): add static template registry with lookup and interpolation (D-286)
-1646a8b  feat(api): implement POST /v1/messages with template lookup and interpolation
-3293b72  feat(api): add consent API endpoints with dependency-injected store (D-276)
-7d522b3  feat(api): add POST /v1/messages/preview with shared validation
+abeb637  chore(api): add api_keys table migration (D-285)
+7718d19  fix(api): align ApiKeyRecord with DB schema — environment 'live' not 'production', add status/last_used_at/label
+7c2eb58  chore(api): add @supabase/supabase-js dependency
+8c83da0  feat(api): add Supabase client module with env var initialization
+05a8c6e  feat(api): implement Supabase KeyLookup with last_used_at tracking (D-285)
+3755246  feat(api): wire Supabase KeyLookup into server, fall back to stub without env vars
+a333dd5  fix(api): resolve eslint unused-vars in key-lookup tests
+3ce374c  chore(api): add consent table migration (D-252, D-253)
+a786fbd  feat(api): implement Supabase ConsentStore with upsert and revocation (D-252)
+f7c3275  feat(api): wire Supabase ConsentStore into server
 ```
 
 ---
 
 ## What We Completed
 
-### SDK Test Suite
-22 Vitest tests covering the SDK's public API: core initialization (4), graceful failure mode (3), strict mode (3), namespace structure (9 — method counts for all 8 namespaces + send escape hatch), type contracts (3). Global fetch mock prevents real HTTP calls.
+### api_keys Table + Real KeyLookup
+- Created `api_keys` table in Supabase with SHA-256 hashed keys, environment prefix (`rk_sandbox_`, `rk_live_`), status tracking, and `last_used_at` timestamp.
+- Fixed `ApiKeyRecord` type: `environment` changed from `'sandbox' | 'production'` to `'sandbox' | 'live'` to match DB schema. Added `status`, `last_used_at`, `label` fields.
+- Implemented `createSupabaseKeyLookup()` — queries `api_keys` where `key_hash` matches AND `status = 'active'`, fires non-blocking `last_used_at` update on hit.
+- Added `@supabase/supabase-js` as dependency in `/api`.
+- Created shared Supabase client singleton (`getSupabaseClient()`) that accepts both `SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_URL`.
+- 4 new tests covering: valid key lookup, missing key, revoked key, `last_used_at` update.
 
-### TDD Skill
-`.claude/skills/tdd/SKILL.md` — Red-Green-Refactor workflow for CC. Vitest, co-located tests, mock external deps, one module per test file.
+### consent Table + Real ConsentStore
+- Created `consent` table in Supabase with `UNIQUE(user_id, phone)` constraint — one consent record per phone per customer.
+- Implemented `createSupabaseConsentStore()` with three methods:
+  - `record()`: UPSERT on `(user_id, phone)`. Re-consenting clears `revoked_at` and updates `consented_at`, `source`, `ip_address`.
+  - `check()`: SELECT where `revoked_at IS NULL`. Returns record or null.
+  - `revoke()`: UPDATE sets `revoked_at` only on active consent. Returns updated record or null.
+- 6 new tests covering all ConsentStore methods.
 
-### Decisions D-284–D-290
-- D-284: API server is Hono in /api, standalone deployment target
-- D-285: API keys hashed (SHA-256), environment-prefixed (rk_sandbox_, rk_live_), shown once
-- D-286: Static JSON template registry for sandbox, Supabase for production
-- D-287: API response contract — msg_ IDs, structured errors, standard HTTP codes
-- D-288: Starter Kit Program — post-launch, after Priorities 1-3
-- D-289: Starters supersede message reference page as lead magnet
-- D-290: Starters are not gated — open source, no signup to clone
+### Server Wiring
+- `index.ts` conditionally creates real KeyLookup + ConsentStore when `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`) and `SUPABASE_SERVICE_ROLE_KEY` are present.
+- Falls back to stub lookup (all requests 401) and no consent routes when env vars are missing — tests work without Supabase.
+- Startup log reports auth mode: `[auth: supabase]` or `[auth: stub (no SUPABASE_URL)]`.
+- Removed default `app` export from `app.ts` — `index.ts` now creates its own app instance.
 
-### API Server — Full Scaffold and API Surface
-Built `/api` from scratch with Hono + @hono/node-server. All 5 endpoints from D-276 are implemented:
-
-1. **GET /** — Health check. Returns `{ status: "ok", service: "relaykit-api" }`. No auth.
-2. **POST /v1/messages** — Send a message. Auth required. Validates body (`namespace`, `event`, `to`, `data`), looks up template from static registry, interpolates variables, returns `{ id: "msg_...", status: "sent", timestamp }`. Send step is a console.log stub.
-3. **POST /v1/messages/preview** — Validate without sending. Same validation, returns `{ valid: true, message, template_id, namespace, event }`. No msg_ ID generated.
-4. **POST /v1/consent** — Record consent. Body: `{ phone, source }`. Captures IP from x-forwarded-for. Returns `{ phone, status: "recorded", consented_at }`.
-5. **GET /v1/consent/:phone** — Check consent. Returns `{ phone, consented: true/false, consented_at? }`. Always 200 (privacy — no 404 leakage).
-6. **DELETE /v1/consent/:phone** — Revoke consent. Idempotent: returns `{ phone, status: "revoked", revoked_at }` or `{ phone, status: "not_found" }`. Always 200.
-
-### Architecture Patterns Established
-- **Auth middleware** (`src/middleware/auth.ts`): SHA-256 hashes Bearer token, calls injected `KeyLookup` function, rejects missing/invalid/revoked keys with 401, sets `user_id` + `environment` on Hono context.
-- **Dependency injection**: `createApp(lookup, consentStore?)` accepts a key lookup function and optional ConsentStore interface. Real Supabase implementations get wired in later.
-- **Shared validation** (`src/routes/shared.ts`): `validateMessageRequest()` returns discriminated union `{ ok: true, value }` or `{ ok: false, response }`. Used by both messages and preview handlers — zero duplicated validation.
-- **Static template registry** (`src/templates/registry.ts`): 18 templates across 8 namespaces (appointments: 3, orders: 3, verification: 2, support: 2, marketing: 2, internal: 2, community: 2, waitlist: 2). All default-ON base messages from PRD_02.
-- **Template lookup + interpolation** (`src/templates/lookup.ts`): `lookupTemplate(namespace, event)` and `interpolate(template, data)` with missing-variable error.
+### Implementation Plan
+- Created `docs/superpowers/plans/2026-04-01-api-keys-supabase-keylookup.md` — full 7-task plan used for the api_keys implementation. Untracked (not committed).
 
 ---
 
 ## Quality Checks Passed
 
-- `tsc --noEmit` — clean (both /sdk and /api)
-- `eslint src/` — clean (/api)
-- `vitest run` — 50 tests passing (/api), 22 tests passing (/sdk)
-- Dev server verified: `GET /` returns health check JSON on port 3002
+- `tsc --noEmit` — clean (`/api`)
+- `eslint src/` — clean (`/api`)
+- `vitest run` — 60 tests passing across 8 test files (`/api`)
+- Both `api_keys` and `consent` tables verified accessible via Supabase JS client
 
 ---
 
 ## In Progress / Partially Done
 
-### Real Supabase Integration
-ConsentStore and KeyLookup are interfaces with no Supabase implementation yet. The API server uses dependency injection — real implementations get wired into `createApp()` when Supabase is connected.
-
 ### Sinch Carrier Integration
-POST /v1/messages logs to console instead of sending via Sinch. The msg_ ID and response contract are ready — just needs the carrier send call.
+POST /v1/messages still logs to console instead of sending via Sinch. The msg_ ID and response contract are ready — just needs the carrier send call.
 
 ### Custom Messages
 `namespace: "custom", event: "send"` returns 422 "not yet supported". Placeholder for D-280 (website authoring surface).
 
-### Experience Principles File Rename (from prior session)
+### Experience Principles File Rename
 `V4_EXPERIENCE_PRINCIPLES_v1.1.md` exists as untracked file. Original still tracked. CLAUDE.md references point to original. Needs Joel decision.
 
 ---
@@ -88,74 +78,67 @@ POST /v1/messages logs to console instead of sending via Sinch. The msg_ ID and 
 
 2. **API server runs on port 3002.** Prototype is port 3001, Next.js dev is default port 3000.
 
-3. **`createApp()` takes two params.** `createApp(lookup, consentStore?)` — the consent store is optional. Tests that don't need consent pass only the lookup. The default `app` export uses a stub lookup that always returns null (all requests get 401).
+3. **`createApp()` takes two params.** `createApp(lookup, consentStore?)` — the consent store is optional. Tests that don't need consent pass only the lookup.
 
-4. **Shared validation returns a Response object.** `validateMessageRequest()` returns `{ ok: false, response }` where `response` is already a Hono Response. Handlers just `return result.response`.
+4. **`index.ts` creates its own app instance now.** The default `app` export was removed from `app.ts`. Tests use `createApp()` directly with mocks.
 
-5. **DELETE /v1/consent is idempotent.** Returns 200 with `status: "not_found"` when no consent exists — NOT 404. Privacy reasoning: 404 leaks whether a phone number has ever had consent.
+5. **`hasSupabase` guard in `index.ts`.** Both KeyLookup and ConsentStore are created behind the same `Boolean(supabaseUrl && supabaseKey)` check. Without env vars, the server runs with stub auth (all 401) and no consent routes.
 
-6. **Template registry is static.** 18 templates from PRD_02 default-ON base messages. Production will add Supabase lookup for user-customized templates (D-286).
+6. **Environment type is `'sandbox' | 'live'`, not `'production'`.** This was fixed this session to match the DB schema. All test mocks updated.
 
-7. **SDK and API are sibling directories at repo root.** `/sdk` and `/api` — separate package.json, separate node_modules, separate test suites. Run tests from the correct directory.
+7. **Consent UPSERT on `(user_id, phone)`.** Re-recording consent for an existing phone clears `revoked_at` — this is intentional. The DB UNIQUE constraint enforces one record per user+phone.
 
-8. **ESLint config is `.mjs` in /api, `.js` in /sdk.** Both use flat config with @typescript-eslint strict rules.
+8. **DELETE /v1/consent is idempotent.** Returns 200 with `status: "not_found"` when no active consent exists — NOT 404. Privacy reasoning.
 
-9. **Two Experience Principles files still exist.** Original tracked, v1.1 untracked. Resolve before writing new copy.
+9. **Fire-and-forget `last_used_at` on KeyLookup.** The update is non-blocking (`.then(() => {})`) — doesn't slow down auth. If it fails silently, that's acceptable.
 
-10. **`api/node_modules/` is untracked.** This is expected — it's gitignored. The `docs/STARTER_KIT_PROGRAM.md` is also untracked from outside this session.
+10. **SDK and API are sibling directories at repo root.** `/sdk` and `/api` — separate package.json, separate node_modules, separate test suites. Run tests from the correct directory.
+
+11. **Two Experience Principles files still exist.** Original tracked, v1.1 untracked. Resolve before writing new copy.
+
+12. **`api/node_modules/` and `docs/superpowers/plans/` are untracked.** Both expected — `node_modules` is gitignored, plans directory is new.
+
+13. **Supabase MCP has permission issues.** The MCP OAuth scope didn't include write access to this project's database. Migrations were run manually via the Supabase dashboard SQL editor. This may need fixing for future sessions.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# SDK tests
-sdk/package.json                              # Added vitest devDep + test script
-sdk/package-lock.json                         # Updated
-sdk/src/__tests__/relaykit.test.ts             # NEW — 22 contract tests
+# API keys — migration + implementation
+api/supabase/migrations/001_api_keys.sql          # NEW — api_keys DDL
+api/src/types.ts                                   # MODIFIED — environment 'live', added fields
+api/src/app.ts                                     # MODIFIED — removed default app export
+api/src/index.ts                                   # MODIFIED — conditional Supabase wiring
+api/src/supabase/client.ts                         # NEW — shared Supabase client singleton
+api/src/supabase/key-lookup.ts                     # NEW — real KeyLookup implementation
+api/src/__tests__/key-lookup.test.ts               # NEW — 4 tests
+api/src/__tests__/auth.test.ts                     # MODIFIED — updated mock records
+api/src/__tests__/consent.test.ts                  # MODIFIED — updated mock records
+api/src/__tests__/messages.test.ts                 # MODIFIED — updated mock records
+api/src/__tests__/preview.test.ts                  # MODIFIED — updated mock records
+api/src/__tests__/health.test.ts                   # MODIFIED — uses createApp() directly
+api/package.json                                   # MODIFIED — added @supabase/supabase-js
+api/package-lock.json                              # MODIFIED — updated
 
-# TDD skill
-.claude/skills/tdd/SKILL.md                   # NEW — Red-Green-Refactor workflow
+# Consent — migration + implementation
+api/supabase/migrations/002_consent.sql            # NEW — consent DDL
+api/src/supabase/consent-store.ts                  # NEW — real ConsentStore implementation
+api/src/__tests__/consent-store.test.ts            # NEW — 6 tests
 
-# Decisions
-DECISIONS.md                                  # D-284–D-290 appended
-
-# API server (all NEW)
-api/package.json                              # relaykit-api, private, all scripts
-api/package-lock.json                         # Dependencies
-api/tsconfig.json                             # Strict, ES2022, NodeNext
-api/eslint.config.mjs                         # Flat config, typescript-eslint
-api/.prettierrc                               # Matches SDK settings
-api/tsup.config.ts                            # ESM, dts, clean
-api/src/index.ts                              # Server entry — Hono on port 3002
-api/src/app.ts                                # createApp factory + route wiring
-api/src/types.ts                              # ApiKeyRecord, AppVariables, ConsentRecord, ConsentStore
-api/src/middleware/auth.ts                     # Auth middleware — SHA-256 hash, DI lookup
-api/src/routes/messages.ts                    # POST /v1/messages handler
-api/src/routes/preview.ts                     # POST /v1/messages/preview handler
-api/src/routes/consent.ts                     # Consent CRUD handlers
-api/src/routes/shared.ts                      # Shared validation for messages + preview
-api/src/templates/registry.ts                 # 18 static templates from PRD_02
-api/src/templates/lookup.ts                   # lookupTemplate + interpolate
-api/src/__tests__/health.test.ts              # Health check + auth integration tests
-api/src/__tests__/auth.test.ts                # Auth middleware tests (6)
-api/src/__tests__/templates.test.ts           # Template registry + lookup tests (14)
-api/src/__tests__/messages.test.ts            # Message endpoint tests (10)
-api/src/__tests__/consent.test.ts             # Consent endpoint tests (11)
-api/src/__tests__/preview.test.ts             # Preview endpoint tests (6)
+# Plans (untracked)
+docs/superpowers/plans/2026-04-01-api-keys-supabase-keylookup.md  # NEW — implementation plan
 
 # Session docs
-CC_HANDOFF.md                                 # This file (overwritten)
+CC_HANDOFF.md                                      # This file (overwritten)
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. **Supabase integration for API keys** — Implement real `KeyLookup` that queries `api_keys` table. Create migration for the table (D-285 schema).
-2. **Supabase integration for consent** — Implement real `ConsentStore` that queries consent table. Create migration.
-3. **Sinch carrier integration** — Replace console.log stub in POST /v1/messages with real Sinch API call. Wire msg_ ID as correlation ID.
-4. **Sandbox signup flow** — API key creation endpoint or dashboard integration. Key shown once, hashed for storage.
-5. **SDK → API server wiring** — Point SDK's fetch calls at the real API server. Verify end-to-end: `npm install relaykit` → `new RelayKit()` → `sendConfirmation()` → real text message.
-6. **Experience Principles file resolution** — Decide on v1.0 vs v1.1, update CLAUDE.md references.
-7. **Remaining prototype work** — Category landing vocabulary (D-254), "two files" copy removal (D-257), compliance attention section (D-243).
+1. **Sinch carrier integration** — Replace console.log stub in POST /v1/messages with real Sinch API call. Wire msg_ ID as correlation ID. D-271 (Sinch account created).
+2. **Sandbox signup flow** — API key creation endpoint or dashboard integration. Key shown once, hashed with SHA-256 for storage (D-285).
+3. **SDK → API server wiring** — Point SDK's fetch calls at the real API server. Verify end-to-end: `npm install relaykit` → `new RelayKit()` → `sendConfirmation()` → real text message.
+4. **Experience Principles file resolution** — Decide on v1.0 vs v1.1, update CLAUDE.md references.
+5. **Remaining prototype work** — Category landing vocabulary (D-254), "two files" copy removal (D-257), compliance attention section (D-243).
