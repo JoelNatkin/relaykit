@@ -1,11 +1,12 @@
 import { Hono } from 'hono';
 import { createAuthMiddleware } from './middleware/auth.js';
+import { createConsentHandlers } from './routes/consent.js';
 import { handlePostMessages } from './routes/messages.js';
-import type { ApiKeyRecord, AppVariables } from './types.js';
+import type { ApiKeyRecord, AppVariables, ConsentStore } from './types.js';
 
 export type KeyLookup = (keyHash: string) => Promise<ApiKeyRecord | null>;
 
-export function createApp(lookup: KeyLookup) {
+export function createApp(lookup: KeyLookup, consentStore?: ConsentStore) {
   const app = new Hono<{ Variables: AppVariables }>();
 
   app.get('/', (c) => {
@@ -16,6 +17,13 @@ export function createApp(lookup: KeyLookup) {
   v1.use('*', createAuthMiddleware(lookup));
 
   v1.post('/messages', handlePostMessages);
+
+  if (consentStore) {
+    const consent = createConsentHandlers(consentStore);
+    v1.post('/consent', consent.handleRecord);
+    v1.get('/consent/:phone', consent.handleCheck);
+    v1.delete('/consent/:phone', consent.handleRevoke);
+  }
 
   app.route('/v1', v1);
 
