@@ -41,7 +41,7 @@ describe('createSupabaseKeyLookup', () => {
     // SELECT query
     mockFrom.mockReturnValueOnce({
       select: () => ({
-        eq: (col: string, val: string) => ({
+        eq: () => ({
           eq: () => ({
             single: () => Promise.resolve({ data: record, error: null }),
           }),
@@ -67,7 +67,7 @@ describe('createSupabaseKeyLookup', () => {
   it('returns null when no key matches', async () => {
     mockFrom.mockReturnValueOnce({
       select: () => ({
-        eq: (col: string, val: string) => ({
+        eq: () => ({
           eq: () => ({
             single: () => Promise.resolve({ data: null, error: { code: 'PGRST116' } }),
           }),
@@ -86,7 +86,7 @@ describe('createSupabaseKeyLookup', () => {
     // The query filters by status = 'active', so a revoked key returns no rows
     mockFrom.mockReturnValueOnce({
       select: () => ({
-        eq: (col: string, val: string) => ({
+        eq: () => ({
           eq: () => ({
             single: () => Promise.resolve({ data: null, error: { code: 'PGRST116' } }),
           }),
