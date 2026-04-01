@@ -83,6 +83,8 @@
 
 ### Infrastructure & Operations
 
+- **Rate limiting on POST /v1/signup/sandbox** — Public endpoint with no auth gate, needs rate limiting before launch. (Origin: PM review, April 1 session)
+
 - **Sinch migration implementation** — Sinch confirmed (D-215). Create PRD_04-equivalent mapping doc: each Twilio module mapped to Sinch API equivalent. Registration API (brand + campaign), SMS API (send/receive), number provisioning, webhook handlers, credential model. Estimated 2–3 CC sessions. (Origin: March 22 brainstorming, D-199, confirmed D-215)
 
 - **Dev/prod environment split** — Half-day config task. Separate Supabase projects, Stripe test/live keys, Twilio sandbox/production. Deferred until approaching beta. (Origin: BUILD_HANDOFF.md, multiple sessions)
