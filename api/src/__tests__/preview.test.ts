@@ -13,6 +13,7 @@ const validKey: ApiKeyRecord = {
   revoked_at: null,
   last_used_at: null,
   label: null,
+  raw_key: null,
 };
 
 const alwaysValidLookup = vi.fn<(keyHash: string) => Promise<ApiKeyRecord | null>>();

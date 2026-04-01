@@ -66,6 +66,7 @@ describe('auth middleware', () => {
       revoked_at: null,
       last_used_at: null,
       label: null,
+      raw_key: null,
     });
     const app = buildApp(mockLookup);
     const res = await app.request('/v1/messages', {
@@ -89,6 +90,7 @@ describe('auth middleware', () => {
       revoked_at: '2026-03-15T00:00:00Z',
       last_used_at: null,
       label: null,
+      raw_key: null,
     });
     const app = buildApp(mockLookup);
     const res = await app.request('/v1/messages', {

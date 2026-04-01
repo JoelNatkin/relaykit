@@ -9,6 +9,7 @@ export interface ApiKeyRecord {
   revoked_at: string | null;
   last_used_at: string | null;
   label: string | null;
+  raw_key: string | null;
 }
 
 export interface ErrorResponse {

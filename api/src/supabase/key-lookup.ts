@@ -9,7 +9,7 @@ export function createSupabaseKeyLookup(): KeyLookup {
 
     const { data, error } = await supabase
       .from('api_keys')
-      .select('id, user_id, key_hash, key_prefix, environment, status, created_at, revoked_at, last_used_at, label')
+      .select('id, user_id, key_hash, key_prefix, environment, status, created_at, revoked_at, last_used_at, label, raw_key')
       .eq('key_hash', keyHash)
       .eq('status', 'active')
       .single();
