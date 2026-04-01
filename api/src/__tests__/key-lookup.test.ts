@@ -2,8 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { createHash } from 'node:crypto';
 
 // Mock the Supabase client module before importing key-lookup
-const mockSelect = vi.fn();
-const mockUpdate = vi.fn();
 const mockFrom = vi.fn();
 
 vi.mock('../supabase/client.js', () => ({

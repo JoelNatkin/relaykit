@@ -31,6 +31,3 @@ export function createApp(lookup: KeyLookup, consentStore?: ConsentStore) {
 
   return app;
 }
-
-// Default app instance with a stub lookup for dev/health-check use
-export const app = createApp(() => Promise.resolve(null));

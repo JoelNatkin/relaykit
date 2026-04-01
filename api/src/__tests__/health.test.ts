@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest';
-import { app } from '../app.js';
+import { createApp } from '../app.js';
+
+const app = createApp(() => Promise.resolve(null));
 
 describe('GET /', () => {
   it('returns 200 with status ok and service name', async () => {
