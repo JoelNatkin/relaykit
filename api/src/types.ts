@@ -3,9 +3,12 @@ export interface ApiKeyRecord {
   user_id: string;
   key_hash: string;
   key_prefix: string;
-  environment: 'sandbox' | 'production';
+  environment: 'sandbox' | 'live';
+  status: 'active' | 'revoked';
   created_at: string;
   revoked_at: string | null;
+  last_used_at: string | null;
+  label: string | null;
 }
 
 export interface ErrorResponse {
@@ -17,7 +20,7 @@ export interface ErrorResponse {
 
 export type AppVariables = {
   user_id: string;
-  environment: 'sandbox' | 'production';
+  environment: 'sandbox' | 'live';
 };
 
 export interface ConsentRecord {

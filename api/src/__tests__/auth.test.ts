@@ -61,8 +61,11 @@ describe('auth middleware', () => {
       key_hash: 'doesntmatter',
       key_prefix: 'rk_sandbox_ab',
       environment: 'sandbox',
+      status: 'active',
       created_at: '2026-01-01T00:00:00Z',
       revoked_at: null,
+      last_used_at: null,
+      label: null,
     });
     const app = buildApp(mockLookup);
     const res = await app.request('/v1/messages', {
@@ -81,8 +84,11 @@ describe('auth middleware', () => {
       key_hash: 'doesntmatter',
       key_prefix: 'rk_sandbox_ab',
       environment: 'sandbox',
+      status: 'active',
       created_at: '2026-01-01T00:00:00Z',
       revoked_at: '2026-03-15T00:00:00Z',
+      last_used_at: null,
+      label: null,
     });
     const app = buildApp(mockLookup);
     const res = await app.request('/v1/messages', {

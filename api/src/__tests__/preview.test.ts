@@ -8,8 +8,11 @@ const validKey: ApiKeyRecord = {
   key_hash: 'anything',
   key_prefix: 'rk_sandbox_ab',
   environment: 'sandbox',
+  status: 'active',
   created_at: '2026-01-01T00:00:00Z',
   revoked_at: null,
+  last_used_at: null,
+  label: null,
 };
 
 const alwaysValidLookup = vi.fn<(keyHash: string) => Promise<ApiKeyRecord | null>>();
