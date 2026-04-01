@@ -962,3 +962,7 @@ _Affects: Starter Kit repos, README content, developer onboarding._
 **D-291 — Sandbox API keys store raw_key for dashboard re-display** (Date: 2026-04-01)
 Sandbox environment keys are always visible in the developer dashboard (Settings screen). Store both the SHA-256 hash (for auth lookup) and the plaintext key in a `raw_key` column on `api_keys`. Only populated when environment = 'sandbox'. Live keys are never stored in plaintext — only the hash. This aligns with the Settings PRD where sandbox keys are shown in full.
 _Affects: api_keys Supabase schema, dashboard Settings page, API key creation flow._
+
+**D-292 — Sandbox API keys allow NULL user_id, live keys require it** (Date: 2026-04-01)
+api_keys.user_id is nullable with a CHECK constraint: NULL is allowed when environment = 'sandbox', NOT NULL required when environment = 'live'. The FK to customers(id) is preserved for live keys. Sandbox keys are anonymous until the developer authenticates, at which point user_id is updated to link the key to their customer record. This avoids polluting the customers table with placeholder rows.
+_Affects: api_keys Supabase schema, signup handler, API key lifecycle._
