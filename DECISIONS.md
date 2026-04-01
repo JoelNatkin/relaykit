@@ -958,3 +958,7 @@ _Affects: Marketing strategy, backlog prioritization._
 **D-290 — Starters are not gated** (Date: 2026-04-01)
 Fully open source on GitHub, no signup required to clone. Conversion happens when the developer wants to send real messages — same sandbox funnel as the SDK-first path. README includes plaintext pricing (consistent with D-216). No signup walls, no email gates.
 _Affects: Starter Kit repos, README content, developer onboarding._
+
+**D-291 — Sandbox API keys store raw_key for dashboard re-display** (Date: 2026-04-01)
+Sandbox environment keys are always visible in the developer dashboard (Settings screen). Store both the SHA-256 hash (for auth lookup) and the plaintext key in a `raw_key` column on `api_keys`. Only populated when environment = 'sandbox'. Live keys are never stored in plaintext — only the hash. This aligns with the Settings PRD where sandbox keys are shown in full.
+_Affects: api_keys Supabase schema, dashboard Settings page, API key creation flow._
