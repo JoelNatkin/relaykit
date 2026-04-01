@@ -3,6 +3,7 @@ import { createAuthMiddleware } from './middleware/auth.js';
 import { createConsentHandlers } from './routes/consent.js';
 import { handlePostMessages } from './routes/messages.js';
 import { handlePostPreview } from './routes/preview.js';
+import { handlePostSignupSandbox } from './routes/signup.js';
 import type { ApiKeyRecord, AppVariables, ConsentStore } from './types.js';
 
 export type KeyLookup = (keyHash: string) => Promise<ApiKeyRecord | null>;
@@ -13,6 +14,9 @@ export function createApp(lookup: KeyLookup, consentStore?: ConsentStore) {
   app.get('/', (c) => {
     return c.json({ status: 'ok', service: 'relaykit-api' });
   });
+
+  // Public endpoints (no auth required)
+  app.post('/v1/signup/sandbox', handlePostSignupSandbox);
 
   const v1 = new Hono<{ Variables: AppVariables }>();
   v1.use('*', createAuthMiddleware(lookup));
