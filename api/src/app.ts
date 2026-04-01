@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { createAuthMiddleware } from './middleware/auth.js';
 import { createConsentHandlers } from './routes/consent.js';
 import { handlePostMessages } from './routes/messages.js';
+import { handlePostPreview } from './routes/preview.js';
 import type { ApiKeyRecord, AppVariables, ConsentStore } from './types.js';
 
 export type KeyLookup = (keyHash: string) => Promise<ApiKeyRecord | null>;
@@ -17,6 +18,7 @@ export function createApp(lookup: KeyLookup, consentStore?: ConsentStore) {
   v1.use('*', createAuthMiddleware(lookup));
 
   v1.post('/messages', handlePostMessages);
+  v1.post('/messages/preview', handlePostPreview);
 
   if (consentStore) {
     const consent = createConsentHandlers(consentStore);
