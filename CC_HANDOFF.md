@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-03-28 (D-239 alerts, marketing modal, D-245–D-264, Experience Principles v1.1)
+**Date:** 2026-04-01 (SDK tests, API server scaffold, full API surface build)
 **Branch:** main
 
 ---
@@ -7,153 +7,155 @@
 ## Commits This Session
 
 ```
-65cd7a8  fix: marketing modal polish — pricing specifics, benefit framing, consent layout, pill selector for messages
-9fc8416  feat: marketing messages modal with lifecycle states, replaces page route (D-245-D-254)
-10332b3  feat: marketing messages info page with lifecycle states, update banner and Messages CTAs (D-245-D-254)
-6e96960  fix: compliance empty state — line break between sentences
-32e4112  fix: restore compliance empty state headings
-fb66e35  fix: D-239 wizard alerts card — align with step content, fix vertical spacing
-65b7c2d  fix: compliance empty state — single line copy, remove redundant heading
-54d33cd  fix: D-239 wizard alerts card — progress line, remove Skip, update copy
-79ef249  fix: D-239 wizard inline alerts enable card between steps 1 and 2
-2321de9  feat: alerts on/off state switcher for Overview prototype testing
-f94c810  feat: D-239 compliance alerts toggle surfaced on Overview — wizard, header, empty state
+30dc4bc  test(sdk): add contract test suite with Vitest
+b9bd011  docs: add TDD skill for CC
+aafa65a  docs: record D-284 through D-290
+77db4dd  feat(api): initialize Hono API server with quality tooling
+55d5c90  test(api): add health check endpoint test
+0d91e2e  feat(api): add API key validation middleware with dependency-injected lookup
+bdb5b1a  feat(api): add static template registry with lookup and interpolation (D-286)
+1646a8b  feat(api): implement POST /v1/messages with template lookup and interpolation
+3293b72  feat(api): add consent API endpoints with dependency-injected store (D-276)
+7d522b3  feat(api): add POST /v1/messages/preview with shared validation
 ```
-
-Plus one docs commit (this session close-out).
 
 ---
 
 ## What We Completed
 
-### D-239 — Compliance Alerts Toggle on Overview
-Three placements surfacing the SMS alerts toggle:
-1. **Wizard inline card** — Between steps 1 and 2 after phone verification. Light purple card with bell icon, "Enable" button. Vertical progress line flows through the card continuously. Shows when `alertsEnabled` is false.
-2. **Compliance header row** — Right-aligned on "Message compliance" heading. Green dot + "On" when enabled, amber dot + clickable "Off" when disabled. Visible in Default and Approved states.
-3. **Compliance empty state** — Below shield icon. Alerts on: heading + two-line body with alerts confirmation. Alerts off: heading + single line + "Enable alerts" purple link.
+### SDK Test Suite
+22 Vitest tests covering the SDK's public API: core initialization (4), graceful failure mode (3), strict mode (3), namespace structure (9 — method counts for all 8 namespaces + send escape hatch), type contracts (3). Global fetch mock prevents real HTTP calls.
 
-**Alerts state switcher** added to layout (Overview tab only) for prototype testing: "Alerts on" / "Alerts off".
+### TDD Skill
+`.claude/skills/tdd/SKILL.md` — Red-Green-Refactor workflow for CC. Vitest, co-located tests, mock external deps, one module per test file.
 
-Session context updated with `alertsEnabled: boolean` (default `true`) and `hasEIN: boolean` (default `true`).
+### Decisions D-284–D-290
+- D-284: API server is Hono in /api, standalone deployment target
+- D-285: API keys hashed (SHA-256), environment-prefixed (rk_sandbox_, rk_live_), shown once
+- D-286: Static JSON template registry for sandbox, Supabase for production
+- D-287: API response contract — msg_ IDs, structured errors, standard HTTP codes
+- D-288: Starter Kit Program — post-launch, after Priorities 1-3
+- D-289: Starters supersede message reference page as lead magnet
+- D-290: Starters are not gated — open source, no signup to clone
 
-### Marketing Messages Modal (D-245–D-254)
-Full-screen modal component replacing the page route `/apps/[appId]/marketing`:
-- **Hero** gray band with headline, subhead, prominent "Add marketing" CTA
-- **Pricing** clean typography: $29 one-time / +$10/mo 250 messages / $15 per 1,000 after
-- **Message previews** with interactive style pills (Brand-first / Action-first / Context-first) and 3-column cards (Discount offer, Re-engagement, Review request) with personalized GlowStudio/Salon values
-- **How it works** three numbered steps in horizontal row
-- **Consent** bullet list at max-w-500px centered
-- **Bottom CTA** repeat
+### API Server — Full Scaffold and API Surface
+Built `/api` from scratch with Hono + @hono/node-server. All 5 endpoints from D-276 are implemented:
 
-Three lifecycle states via switcher: Info, In review (registration stepper replaces hero CTA), Active (centered confirmation).
+1. **GET /** — Health check. Returns `{ status: "ok", service: "relaykit-api" }`. No auth.
+2. **POST /v1/messages** — Send a message. Auth required. Validates body (`namespace`, `event`, `to`, `data`), looks up template from static registry, interpolates variables, returns `{ id: "msg_...", status: "sent", timestamp }`. Send step is a console.log stub.
+3. **POST /v1/messages/preview** — Validate without sending. Same validation, returns `{ valid: true, message, template_id, namespace, event }`. No msg_ ID generated.
+4. **POST /v1/consent** — Record consent. Body: `{ phone, source }`. Captures IP from x-forwarded-for. Returns `{ phone, status: "recorded", consented_at }`.
+5. **GET /v1/consent/:phone** — Check consent. Returns `{ phone, consented: true/false, consented_at? }`. Always 200 (privacy — no 404 leakage).
+6. **DELETE /v1/consent/:phone** — Revoke consent. Idempotent: returns `{ phone, status: "revoked", revoked_at }` or `{ phone, status: "not_found" }`. Always 200.
 
-Opened from: Overview banner "Learn more" and Messages tab marketing section CTA.
+### Architecture Patterns Established
+- **Auth middleware** (`src/middleware/auth.ts`): SHA-256 hashes Bearer token, calls injected `KeyLookup` function, rejects missing/invalid/revoked keys with 401, sets `user_id` + `environment` on Hono context.
+- **Dependency injection**: `createApp(lookup, consentStore?)` accepts a key lookup function and optional ConsentStore interface. Real Supabase implementations get wired in later.
+- **Shared validation** (`src/routes/shared.ts`): `validateMessageRequest()` returns discriminated union `{ ok: true, value }` or `{ ok: false, response }`. Used by both messages and preview handlers — zero duplicated validation.
+- **Static template registry** (`src/templates/registry.ts`): 18 templates across 8 namespaces (appointments: 3, orders: 3, verification: 2, support: 2, marketing: 2, internal: 2, community: 2, waitlist: 2). All default-ON base messages from PRD_02.
+- **Template lookup + interpolation** (`src/templates/lookup.ts`): `lookupTemplate(namespace, event)` and `interpolate(template, data)` with missing-variable error.
 
-### Overview Banner Vocabulary Update (D-254)
-"Want to send promotional messages?" changed to "Want to send marketing messages?". "Start marketing registration" changed to "Learn more". Link replaced with button opening marketing modal.
+---
 
-### Messages Tab Marketing Section Update (D-254)
-Simplified from inline message cards to: heading + one-line copy + "Learn more" button opening marketing modal. Added `Link` import, then replaced with button for modal.
+## Quality Checks Passed
 
-### Decisions Recorded (D-245–D-264)
-20 new decisions covering marketing expansion architecture, pricing, consent infrastructure, vocabulary rules, deliverable strategy, and UX principles. All appended to DECISIONS.md with dates and affects lines.
-
-### Experience Principles v1.1
-New file `docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md` created outside CC session with:
-- Words We Use: "Marketing messages", "Your AI tool builds it", "We handle the rest"
-- Words We Avoid: "Campaign" (customer-facing), "Promotional/promos", "Two files" (marketing)
-- New section: The Unequivocal Claims Principle (D-263)
-- Framing Shift table: 2 new rows (consent, marketing registration)
-- Emotional States table: marketing expansion row
-
-Note: The original `V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md` still exists. The v1.1 file is untracked. CLAUDE.md references point to the original filename. Joel should decide whether to replace or keep both.
-
-### BACKLOG.md Updated
-7 Likely items added (UX simplicity audit, FAQ sections, "two files" removal, category landing vocab update, marketing pills on category landing, build spec testing, sandbox API). 3 Maybe items added. MIXED campaign type added to Rejected table.
-
-### PROTOTYPE_SPEC.md Updated
-- App Layout Shell: alerts switcher documented
-- Overview non-approved: D-239 three placements documented
-- Overview Approved: marketing banner copy/link, alerts empty state, marketing modal documented
-- Messages tab: marketing section CTA updated
+- `tsc --noEmit` — clean (both /sdk and /api)
+- `eslint src/` — clean (/api)
+- `vitest run` — 50 tests passing (/api), 22 tests passing (/sdk)
+- Dev server verified: `GET /` returns health check JSON on port 3002
 
 ---
 
 ## In Progress / Partially Done
 
-### Experience Principles File Rename
-`V4_EXPERIENCE_PRINCIPLES_v1.1.md` exists as untracked file with D-254/D-257/D-263 updates. Original file still tracked. CLAUDE.md references point to original. Needs Joel decision on file strategy.
+### Real Supabase Integration
+ConsentStore and KeyLookup are interfaces with no Supabase implementation yet. The API server uses dependency injection — real implementations get wired into `createApp()` when Supabase is connected.
 
-### Category Landing Vocabulary (D-254)
-"Need marketing messages too?" section on category landing still uses "campaign" and "promotional" language. Backlogged for update.
+### Sinch Carrier Integration
+POST /v1/messages logs to console instead of sending via Sinch. The msg_ ID and response contract are ready — just needs the carrier send call.
 
-### "Two Files" Copy Removal (D-257)
-Home page hero, category landing, messages page hero, How it Works modal still reference "two files". Backlogged for update.
+### Custom Messages
+`namespace: "custom", event: "send"` returns 422 "not yet supported". Placeholder for D-280 (website authoring surface).
 
-### Overview Compliance Attention Section (D-243)
-Decision recorded but not yet built. Customer-facing ledger showing adjusted/blocked messages.
-
-### How It Works Modal Pricing
-Still needs $49/$150 bridge line audit.
+### Experience Principles File Rename (from prior session)
+`V4_EXPERIENCE_PRINCIPLES_v1.1.md` exists as untracked file. Original still tracked. CLAUDE.md references point to original. Needs Joel decision.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **Delete `.next` before every dev server start.** Always: `rm -rf prototype/.next` then restart. Port 3001.
+1. **Delete `.next` before every dev server start** (prototype). API server has no `.next` — it uses tsx directly.
 
-2. **DECISIONS.md is a two-file system.** Active decisions (D-84–D-264) in DECISIONS.md. Archived (D-01–D-83) in DECISIONS_ARCHIVE.md.
+2. **API server runs on port 3002.** Prototype is port 3001, Next.js dev is default port 3000.
 
-3. **Experience Principles has two files.** Original at `docs/V4_-_RELAYKIT_EXPERIENCE_PRINCIPLES.md` (tracked, CLAUDE.md references it). Updated v1.1 at `docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md` (untracked). Resolve before writing new copy.
+3. **`createApp()` takes two params.** `createApp(lookup, consentStore?)` — the consent store is optional. Tests that don't need consent pass only the lookup. The default `app` export uses a stub lookup that always returns null (all requests get 401).
 
-4. **Marketing modal is a component, not a page route.** `prototype/components/marketing-modal.tsx`. Opened via state in both `approved-dashboard.tsx` and `messages/page.tsx`. The page route `/apps/[appId]/marketing` was deleted.
+4. **Shared validation returns a Response object.** `validateMessageRequest()` returns `{ ok: false, response }` where `response` is already a Hono Response. Handlers just `return result.response`.
 
-5. **`alertsEnabled` defaults to `true`.** Switcher shows "Alerts on" by default. To test the wizard inline card, switch to "Alerts off" and complete step 1.
+5. **DELETE /v1/consent is idempotent.** Returns 200 with `status: "not_found"` when no consent exists — NOT 404. Privacy reasoning: 404 leaks whether a phone number has ever had consent.
 
-6. **`hasEIN` defaults to `true`.** Gates marketing UI visibility (D-247). Currently only used conceptually — marketing modal doesn't check it yet. The deleted page route had the gate; modal doesn't.
+6. **Template registry is static.** 18 templates from PRD_02 default-ON base messages. Production will add Supabase lookup for user-customized templates (D-286).
 
-7. **Messages page has TWO render paths.** StepsLayout (default) and fallback (`?layout=default`). Both need changes when modifying messages page.
+7. **SDK and API are sibling directories at repo root.** `/sdk` and `/api` — separate package.json, separate node_modules, separate test suites. Run tests from the correct directory.
 
-8. **Three-part pricing: $49 / $150 / $19/mo.** Marketing add-on: $29 one-time + $10/mo.
+8. **ESLint config is `.mjs` in /api, `.js` in /sdk.** Both use flat config with @typescript-eslint strict rules.
 
-9. **Sign-in modal z-index is 100/101.** Marketing modal is z-50 (same as How it Works modal).
+9. **Two Experience Principles files still exist.** Original tracked, v1.1 untracked. Resolve before writing new copy.
 
-10. **Layout forces logged-in state.** App layout `useEffect` calls `setLoggedIn(true)` on mount.
-
-11. **Uncommitted files from outside this session:** `.claude/settings.json`, `prototype/components/registration/review-confirm.tsx`, `prototype/images/` directory. These predate this session.
+10. **`api/node_modules/` is untracked.** This is expected — it's gitignored. The `docs/STARTER_KIT_PROGRAM.md` is also untracked from outside this session.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# D-239 Compliance alerts toggle
-prototype/app/apps/[appId]/overview/page.tsx           # Wizard inline card, header indicator, empty state
-prototype/app/apps/[appId]/overview/approved-dashboard.tsx  # Header indicator, empty state, marketing banner/modal
-prototype/app/apps/[appId]/layout.tsx                   # Alerts state switcher
-prototype/context/session-context.tsx                   # alertsEnabled, hasEIN added
+# SDK tests
+sdk/package.json                              # Added vitest devDep + test script
+sdk/package-lock.json                         # Updated
+sdk/src/__tests__/relaykit.test.ts             # NEW — 22 contract tests
 
-# Marketing modal
-prototype/components/marketing-modal.tsx                # NEW — full-screen marketing messages modal
-prototype/app/apps/[appId]/marketing/page.tsx           # DELETED — replaced by modal
-prototype/app/apps/[appId]/messages/page.tsx            # Marketing section CTA → modal, Link import added/removed
+# TDD skill
+.claude/skills/tdd/SKILL.md                   # NEW — Red-Green-Refactor workflow
 
-# Decisions & docs
-DECISIONS.md                                            # D-245–D-264 appended (D-255–D-264 were pre-existing)
-docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md                   # UNTRACKED — created outside session
-BACKLOG.md                                              # 10 new items, date updated
-PROTOTYPE_SPEC.md                                       # D-239, marketing modal, alerts documented
-CC_HANDOFF.md                                           # This file (overwritten)
+# Decisions
+DECISIONS.md                                  # D-284–D-290 appended
+
+# API server (all NEW)
+api/package.json                              # relaykit-api, private, all scripts
+api/package-lock.json                         # Dependencies
+api/tsconfig.json                             # Strict, ES2022, NodeNext
+api/eslint.config.mjs                         # Flat config, typescript-eslint
+api/.prettierrc                               # Matches SDK settings
+api/tsup.config.ts                            # ESM, dts, clean
+api/src/index.ts                              # Server entry — Hono on port 3002
+api/src/app.ts                                # createApp factory + route wiring
+api/src/types.ts                              # ApiKeyRecord, AppVariables, ConsentRecord, ConsentStore
+api/src/middleware/auth.ts                     # Auth middleware — SHA-256 hash, DI lookup
+api/src/routes/messages.ts                    # POST /v1/messages handler
+api/src/routes/preview.ts                     # POST /v1/messages/preview handler
+api/src/routes/consent.ts                     # Consent CRUD handlers
+api/src/routes/shared.ts                      # Shared validation for messages + preview
+api/src/templates/registry.ts                 # 18 static templates from PRD_02
+api/src/templates/lookup.ts                   # lookupTemplate + interpolate
+api/src/__tests__/health.test.ts              # Health check + auth integration tests
+api/src/__tests__/auth.test.ts                # Auth middleware tests (6)
+api/src/__tests__/templates.test.ts           # Template registry + lookup tests (14)
+api/src/__tests__/messages.test.ts            # Message endpoint tests (10)
+api/src/__tests__/consent.test.ts             # Consent endpoint tests (11)
+api/src/__tests__/preview.test.ts             # Preview endpoint tests (6)
+
+# Session docs
+CC_HANDOFF.md                                 # This file (overwritten)
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. **Experience Principles file resolution** — Decide on v1.0 vs v1.1, update CLAUDE.md references
-2. **Category landing vocabulary audit (D-254)** — Remove "campaign"/"promotional" language
-3. **"Two files" copy removal (D-257)** — Update home, category landing, messages hero, How it Works modal
-4. **Overview compliance attention section (D-243)** — Customer-facing ledger with edit/dismiss actions
-5. **How It Works modal pricing audit** — Verify $49/$150 bridge line in modal pricing cards
-6. **UX simplicity audit (D-262)** — Fresh session, naive eyes, every page evaluated
-7. **Build spec empirical testing (D-260)** — Write real build spec, test with AI tools
+1. **Supabase integration for API keys** — Implement real `KeyLookup` that queries `api_keys` table. Create migration for the table (D-285 schema).
+2. **Supabase integration for consent** — Implement real `ConsentStore` that queries consent table. Create migration.
+3. **Sinch carrier integration** — Replace console.log stub in POST /v1/messages with real Sinch API call. Wire msg_ ID as correlation ID.
+4. **Sandbox signup flow** — API key creation endpoint or dashboard integration. Key shown once, hashed for storage.
+5. **SDK → API server wiring** — Point SDK's fetch calls at the real API server. Verify end-to-end: `npm install relaykit` → `new RelayKit()` → `sendConfirmation()` → real text message.
+6. **Experience Principles file resolution** — Decide on v1.0 vs v1.1, update CLAUDE.md references.
+7. **Remaining prototype work** — Category landing vocabulary (D-254), "two files" copy removal (D-257), compliance attention section (D-243).
