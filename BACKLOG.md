@@ -1,6 +1,6 @@
 # BACKLOG.md — RelayKit
 ## Ideas, Deferred Work, and Future Features
-### Last updated: March 28, 2026
+### Last updated: April 2, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -85,6 +85,8 @@
 
 - **Rate limiting on POST /v1/signup/sandbox** — Public endpoint with no auth gate, needs rate limiting before launch. (Origin: PM review, April 1 session)
 
+- **Multi-user / team access and project ownership transfer** — Single project_members join table keyed off project_id (D-299). Enables co-founder access, freelancer-to-client handoff, agency multi-client management, app sale/transfer. Build when a paying customer asks. Post-launch. (Origin: April 2 strategy session, D-299)
+
 - **Sinch migration implementation** — Sinch confirmed (D-215). Create PRD_04-equivalent mapping doc: each Twilio module mapped to Sinch API equivalent. Registration API (brand + campaign), SMS API (send/receive), number provisioning, webhook handlers, credential model. Estimated 2–3 CC sessions. (Origin: March 22 brainstorming, D-199, confirmed D-215)
 
 - **Dev/prod environment split** — Half-day config task. Separate Supabase projects, Stripe test/live keys, Twilio sandbox/production. Deferred until approaching beta. (Origin: BUILD_HANDOFF.md, multiple sessions)
@@ -97,6 +99,10 @@
 
 - **Autonomous build experiment** — Small self-contained project (no SMS) on secondary Mac to validate agentic pipeline end-to-end. (Origin: browser chat planning)
 
+### Marketing & Growth
+
+- **Lovable/Bolt/Replit connector exploration** — Investigate Lovable's connector program. Build a dead-simple landing page aimed at no-code builders. Measure signup interest. API endpoint already exists — connector is a distribution play. Post-launch, after SDK path has paying customers. (Origin: April 2 strategy session, D-296/D-297)
+
 ### Content & Marketing
 
 - **Message reference page as lead magnet** — Pick use case, get full message reference with copyable blocks and opt-in language, no signup required. Content from PRD_02 template engine. Decision pending: fully public vs. gated. (Origin: PM_HANDOFF memory, multiple sessions)
@@ -106,6 +112,12 @@
 - **Landing page SEO keywords** — AI SMS integration, 10DLC registration service, SMS compliance for developers. PRD_07 has initial list. (Origin: PRD_07)
 
 - **Live TCR registration smoke test** — Manually seed Supabase records, trigger PRD_04 state machine directly, bypass intake UI. Validates template engine produces TCR-approved campaigns. ~$50 for 2–3 runs. (Origin: planning sessions)
+
+- **Constraint demolition framework as blog post / methodology** — Formalized design approach: define ideal experience, list every assumed constraint, classify as real vs inherited, demolish inherited ones. Could use AI to extract constraints from competitor docs. Potential post: "How we designed RelayKit by demolishing inherited constraints." Post-launch content marketing. (Origin: April 2 strategy session)
+
+### Pricing & Business Model
+
+- **Explore lower barriers to entry between free and $199** — Options explored: middle pricing tiers, usage-triggered registration credits, monthly installments, per-message pricing. No decision reached. Current $49/$150 split already provides a low entry point. Keep same pricing for all audiences (D-296). Revisit with real conversion data. Post-launch, data-driven. (Origin: April 2 strategy session, D-296)
 
 ### Legal & Compliance
 
@@ -126,6 +138,20 @@
 - **Full message library editor** — The proxy classifies every message by type. Architecturally feasible to surface all message types in a browsable library with editing. Deliberately deferred: creates two sources of truth (code vs dashboard), becomes a crutch, customer has to keep app and dashboard in sync. Only build if beta users explicitly request it and the two-source-of-truth problem has a clean solution. (Origin: D-240 discussion, March 25)
 
 - **Marketing persona as dashboard user** — Developer builds the integration, marketing person edits message copy in the dashboard without touching code. Natural evolution of D-240 but not beta scope. Risk: slides toward Mailchimp territory (automations, audience management, campaign scheduling). The line is: RelayKit manages delivery and compliance, customer manages content. Everything beyond that is out of scope. (Origin: D-240 discussion, March 25)
+
+---
+
+## Sandbox Demo Features (High Priority — builds value that justifies $199)
+
+- **Multiple verified phone numbers (1 primary + up to 5 demo slots)** — Expand from 1 verified phone to 1 primary + up to 5 demo list phones. Primary for developer iteration ("Send to my phone" on website). Demo list for stakeholder demos. Each demo phone verified via OTP. Per-session selection — nobody receives messages unless explicitly included. 100/day cap shared across all numbers. No "send to all" button. STOP works for everyone. (Origin: April 2 strategy session)
+
+- **"Send to my phone" button on website authoring surface** — Every message preview on the website has a send button that delivers to the developer's primary verified phone. Closes the authoring loop physically. No SMS platform offers this today. (Origin: April 2 strategy session)
+
+- **Manual message send from website to demo list (Mode 1)** — Developer picks a message on the website, selects demo list recipients, hits send. For collaborative message review with stakeholders. Independent from app-triggered sends. (Origin: April 2 strategy session)
+
+- **App-triggered send to demo list (Mode 2)** — When the developer's app fires an event in sandbox mode, messages deliver to primary phone plus selected demo list members. The boardroom demo scenario. Requires per-session recipient selection in dashboard. (Origin: April 2 strategy session)
+
+- **Shareable invite link for demo list** — Developer gets a unique URL from dashboard. Recipient opens link, sees branded page, enters phone, verifies via OTP, joins demo list. Capped at 10 unique recipients per day. Developer can revoke link. Lower priority — fast follow after demo list core. (Origin: April 2 strategy session)
 
 ---
 
