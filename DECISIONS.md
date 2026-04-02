@@ -966,3 +966,33 @@ _Affects: api_keys Supabase schema, dashboard Settings page, API key creation fl
 **D-292 — Sandbox API keys allow NULL user_id, live keys require it** (Date: 2026-04-01)
 api_keys.user_id is nullable with a CHECK constraint: NULL is allowed when environment = 'sandbox', NOT NULL required when environment = 'live'. The FK to customers(id) is preserved for live keys. Sandbox keys are anonymous until the developer authenticates, at which point user_id is updated to link the key to their customer record. This avoids polluting the customers table with placeholder rows.
 _Affects: api_keys Supabase schema, signup handler, API key lifecycle._
+
+**D-293 — Compliance enforcement collapses to authoring time; runtime enforcement removed** (Date: 2026-04-02)
+All messages are authored or edited on the RelayKit website with real-time compliance checking. Non-compliant messages cannot be saved, therefore cannot reach production. The three-tier runtime enforcement system (D-242) — silent rewrite, escalated notification, suspended — is removed. The messaging proxy is a delivery engine (template lookup → interpolation → carrier send), not an enforcement engine. Dashboard compliance attention cards, operator queue, 30-day escalation timelines, and per-message-type suspension mechanics are removed. PRD_08 (compliance monitoring) is largely obsoleted — the only surviving concern is carrier rule changes, handled as a RelayKit internal ops process. Preserves D-242's tone principle: "knowledgeable colleague, not compliance cop" still governs website authoring feedback.
+Supersedes: D-242 (three-tier enforcement). Reframes D-19 (compliance checking is non-optional at authoring time, not send time).
+_Affects: Consolidated PRD, PRD_08, prototype compliance cards, messaging proxy design._
+
+**D-294 — Marketing and transactional registration are bundled; both submit at registration** (Date: 2026-04-02)
+Marketing is not a separate registration step or upsell. When a developer registers, both transactional and marketing campaigns are submitted simultaneously at one price. Transactional goes live on approval. Marketing goes live when its campaign approval clears — may take slightly longer. UI communicates: "Your transactional messages are live. Marketing messages are being reviewed." No extra button, no expansion modal, no "add marketing when you're ready." Marketing messages are visible and usable in sandbox from day one. The separate marketing add-on pricing ($29 one-time + $10/mo) is absorbed into base registration and subscription. Final pricing TBD.
+Supersedes: D-15 (expansion = second campaign — now both submit together), D-37, D-89 (transactional-only first registration — now both at once).
+_Affects: Registration pipeline, pricing model, consolidated PRD, prototype expansion modals/banners, intake wizard, compliance site generator._
+
+**D-295 — Remove marketing upsell cards from dashboard Overview and Messages pages** (Date: 2026-04-02)
+Marketing promotional cards removed. Marketing is just another namespace in the message library — visible from sandbox onward, live after its campaign approval clears. No CTAs, no "coming soon" badges, no sales copy in the developer's dashboard.
+_Affects: Prototype dashboard, consolidated PRD dashboard section._
+
+**D-296 — One product, multiple entry points — SDK and raw API are equal paths** (Date: 2026-04-02)
+The SDK (npm install relaykit) and the raw API (POST /v1/messages) deliver the same experience. The SDK is a developer convenience wrapper, not a separate product. Technical vibe coders use the SDK. No-code/low-code users (Lovable, Bolt, Replit) call the API directly or through platform connectors. Same backend, same templates, same compliance, same pricing. No feature flags, no conditional onboarding, no diverging dashboards.
+_Affects: Marketing copy, documentation, onboarding flow._
+
+**D-297 — No-code vibe coders are an unserved market; full product experience for all users** (Date: 2026-04-02)
+Lovable, Bolt, and Replit all have Twilio integrations but none handle compliance. RelayKit's API endpoint is already the product for this audience. These users get the same website authoring surface as SDK users — curated message library plus custom message authoring with compliance checking. The website must be fail-proof for both technical and non-technical users. Minimize differentiation between audiences. Only difference is entry point: SDK vs direct API. This audience is served after SDK launch validates revenue.
+_Affects: Marketing strategy, website UX, backlog prioritization._
+
+**D-298 — Free tier sends to verified phones only; no shared-number sending to real end users** (Date: 2026-04-02)
+Carrier research confirms every business needs its own registered brand and campaign. A shared RelayKit number sending on behalf of unregistered businesses is not compliant regardless of volume. 10DLC was created to end number-sharing. Free tier stays as-is: real API, real delivery, verified phones only. Upgrade to paid = send to real users.
+_Affects: Pricing model, free tier framing, sandbox design._
+
+**D-299 — Data model: use project_id as ownership key for new tables going forward** (Date: 2026-04-02)
+New tables should use project-scoped ownership so multi-user, ownership transfer, and agency handoff all resolve to the same schema change later. API keys, message templates, registrations, demo lists, and billing conceptually belong to a project. A project currently has one user. When multi-user is needed, add a project_members join table. This is a principle for new tables, NOT a migration of existing tables. Existing api_keys table keeps user_id for now.
+_Affects: New table schemas going forward._
