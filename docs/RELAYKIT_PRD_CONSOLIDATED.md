@@ -94,7 +94,7 @@ Verification code, password reset, new device alert, account recovery, welcome/o
 Ticket acknowledgment, status update, resolution confirmation, satisfaction follow-up, escalation notice, information request.
 
 ### Marketing
-Weekly promotion, new arrivals, loyalty reward, seasonal sale, back-in-stock, abandoned cart. Included in every registration — both transactional and marketing campaigns submit together (D-294).
+Weekly promotion, new arrivals, loyalty reward, seasonal sale, back-in-stock, abandoned cart. Available in sandbox from day one. Registers automatically at registration (if used in sandbox) or on-demand when the developer first enables it in production (D-294).
 
 ### Team Alerts
 Meeting reminder, schedule change, shift confirmation, emergency broadcast, policy update, system status.
@@ -107,11 +107,17 @@ Position update, spot available, reservation confirmation, wait time update, can
 
 ---
 
-## Marketing Messages — Bundled at Registration
+## Marketing Messages
 
 Marketing messages are available to every developer from day one. In sandbox, the marketing namespace is fully usable — same as transactional. The developer can author, customize, and test marketing messages against their verified phones throughout development (D-294).
 
-When the developer registers, RelayKit submits both transactional and marketing campaigns to carriers simultaneously. Transactional goes live on approval. Marketing goes live when its campaign approval clears — which may take slightly longer. The developer sees: "Your transactional messages are live. Marketing messages are being reviewed — usually a few more days." No extra step, no upsell, no separate registration (D-294).
+**At registration:** If the developer used marketing messages in sandbox (detected from send history), RelayKit auto-submits both transactional and marketing campaigns. If they didn't, only transactional submits. Either way, the developer pays $199. RelayKit absorbs the ~$15 TCR campaign vetting fee for the marketing campaign — it's invisible to the customer.
+
+**On-demand activation:** If a developer registered transactional-only and later wants marketing, they send their first marketing message in production or toggle it on from the Messages page. RelayKit auto-submits the marketing campaign in the background — no extra fee, no modal, no checkout. The developer sees: "Marketing messages are being registered — usually a few days." Monthly subscription adjusts from $19 to $29 when the marketing campaign activates (D-294).
+
+**Stepping down:** Developer can turn off marketing in Settings. Takes effect next billing cycle — subscription drops to $19, marketing campaign is suspended with the carrier. Re-enabling later requires re-submission (~few days for approval).
+
+**Constraint:** Transactional is the base. Cannot have marketing without transactional. Cancellation cancels everything.
 
 Marketing messages require separate recipient consent — federal law (TCPA). RelayKit handles this: the SDK includes top-level consent functions (`relaykit.recordConsent()`, `relaykit.checkConsent()`, `relaykit.revokeConsent()` — D-274), the consent API stores records, and the proxy blocks marketing messages to recipients who haven't opted in.
 
@@ -136,7 +142,7 @@ Sinch account: dashboard.sinch.com, Project ID `6bf3a837-d11d-486c-81db-fa907adc
 ### Compliance Site
 RelayKit generates and hosts a live, carrier-compliant website for each developer at a neutral domain (e.g., glowstudio.msgverified.com). Four pages: home (business info), privacy policy (with mandatory mobile data non-sharing language), terms of service, and SMS opt-in form. The site looks like the developer's own — no RelayKit branding. Carriers verify this site exists during registration review.
 
-The compliance site includes both transactional and marketing consent language from day one, since both campaigns are submitted at registration (D-294).
+When marketing is active, the compliance site includes marketing consent language. For developers who register with marketing from the start, this is included from day one. For developers who activate marketing later, the compliance site updates automatically (D-294).
 
 ### Messaging Proxy
 Every outbound message passes through RelayKit's delivery proxy before reaching carriers. The proxy handles: template lookup and data interpolation, consent status verification (marketing messages require explicit opt-in), opt-out enforcement (STOP replies honored automatically), quiet hours, and rate limits.
@@ -221,15 +227,14 @@ Key findings:
 $0 forever. Build and test the full SMS integration — all namespaces including marketing. No credit card, no time limit. SDK access, full API access, curated message library, message authoring on website, custom message authoring, sandbox API key, verified phone number. Sends to verified phones only (D-298).
 
 ### Go Live (D-193, D-216, D-294)
-- **$49 registration fee** at submission — both transactional and marketing campaigns submitted
+- **$49 registration fee** at submission — transactional campaign always submitted; marketing campaign also submitted if developer used marketing in sandbox
 - **$150 go-live fee** after carrier approval (customer-initiated — D-194; full $49 refund if rejected)
-- **$19/month** — 500 messages included, dedicated phone number, compliance proxy, compliance site hosting
+- **$19/month** — transactional messages. 500 messages included, dedicated phone number, delivery proxy, compliance site hosting
+- **$29/month** — transactional + marketing. Same 500-message combined pool. Applies automatically when marketing campaign is active. The $10/month increase covers additional carrier infrastructure.
 - **$15 per additional 1,000 messages** (auto-scales, no interruption)
 - Volume pricing available above 5,000 messages
-- **Display:** "$199 to register + $19/mo" headline, with "$49 to register. $150 only after you're approved. Full refund if not." in feature details
-- Transactional messages go live on approval. Marketing messages go live when their campaign clears (may take slightly longer).
-
-> **Pricing note (D-294):** The separate marketing add-on ($29 one-time + $10/mo) has been eliminated. Marketing is bundled into the base registration. The $199 + $19/mo price point may need adjustment to absorb the second campaign submission cost — TBD pending Sinch fee confirmation. Monthly subscription may move to a single combined message pool rather than separate transactional/marketing pools.
+- **Display:** "$199 to register + $19/mo" headline, with "$49 to register. $150 only after you're approved. Full refund if not. Marketing adds $10/month when you use it." in feature details
+- Marketing can be activated or deactivated at any time from Settings. Subscription adjusts on next billing cycle.
 
 ### Beta (D-196)
 - **$49 flat** — no $150 approval payment, no monthly until post-beta conversion
@@ -247,10 +252,10 @@ Adapts to five lifecycle states: Default (sandbox, building), Pending (registrat
 
 Default state: compliance status section (message scanning results, SMS alerts toggle), onboarding wizard (verify phone → send test → send from code → build full feature), and registration sidebar with pricing and CTA.
 
-Approved state: three metric cards (delivery rate, recipients, usage & billing), message delivery health (messages sent, delivered, failed with failure reasons). No compliance enforcement cards — compliance is handled at authoring time (D-293). No marketing expansion banner — marketing is bundled at registration (D-294, D-295).
+Approved state: three metric cards (delivery rate, recipients, usage & billing), message delivery health (messages sent, delivered, failed with failure reasons). No compliance enforcement cards — compliance is handled at authoring time (D-293). No marketing expansion banner — marketing is available from sandbox and activates seamlessly (D-294, D-295).
 
 ### Messages
-The developer's message library and authoring surface. All namespaces including marketing are visible from sandbox onward. In sandbox: full message library with personalization, style variants (brand-first, action-first, context-first), inline editing with compliance indicators, and custom message authoring. After approval: registered messages shown with their approved values. Marketing messages show approval status (live or being reviewed) inline — no separate expansion section (D-294, D-295).
+The developer's message library and authoring surface. All namespaces including marketing are visible from sandbox onward. In sandbox: full message library with personalization, style variants (brand-first, action-first, context-first), inline editing with compliance indicators, and custom message authoring. After approval: registered messages shown with their approved values. Marketing messages show status inline — 'live', 'being reviewed', or 'activate marketing' toggle if not yet registered (D-294, D-295).
 
 The Messages page is where developers preview, edit, and extend their message library. Message content saved here is what the SDK delivers — the website is the authoring surface, the SDK is the delivery mechanism (D-279).
 
@@ -309,7 +314,7 @@ RelayKit's compliance value proposition. How the proxy works, what gets caught, 
 - Settings page with lifecycle state differentiation
 - Sign-in modal with email + OTP flow
 - Compliance alerts system (three enforcement tiers) — **to be removed per D-293**
-- Marketing expansion modal with lifecycle states — **to be removed per D-294, D-295**
+- Marketing expansion modal with lifecycle states — **to be removed per D-294, D-295; replaced with inline marketing status and toggle**
 - Admin pages (control room, registration pipeline, customer list/detail)
 
 ### Validated (experiments complete, ready for production build)
