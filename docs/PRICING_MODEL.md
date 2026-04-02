@@ -4,7 +4,7 @@
 
 > **This document replaces pricing sections in PROJECT_OVERVIEW.md, PRD_01 Section 5, and PRD_07 Sections 2 & 4. Feed this to CC alongside the relevant PRD when building Stripe integration.**
 >
-> **CHANGE LOG (v5.0):** Marketing registration bundled with transactional — both campaigns submit at registration, no separate add-on (D-294). Marketing add-on pricing removed. Monthly tier distinction ($19 transactional vs $29 mixed) collapsed — single subscription tier, final price TBD. Compliance enforcement moved to authoring time; runtime three-tier enforcement removed (D-293). Proxy reframed as delivery engine. Sandbox updated: all namespaces including marketing available, sends to verified phones only (D-294, D-298). SDK and raw API documented as equal entry points (D-296). New tables use project_id, not user_id (D-299).
+> **CHANGE LOG (v5.0):** Marketing available in sandbox from day one. Smart registration: both campaigns auto-submit if developer used marketing in sandbox, transactional-only otherwise. On-demand marketing activation post-registration with no extra fee. Monthly tiers: $19/mo transactional, $29/mo transactional+marketing — auto-adjusts when marketing activates. Separate $29 one-time marketing add-on eliminated (D-294). Compliance enforcement moved to authoring time; runtime three-tier enforcement removed (D-293). Proxy reframed as delivery engine. Sandbox sends to verified phones only (D-298). SDK and raw API documented as equal entry points (D-296). New tables use project_id, not user_id (D-299).
 >
 > **CHANGE LOG (v4.0):** Registration fee restructured: $49 at submission + $150 customer-initiated at approval (D-193, D-194, D-216). Beta pricing added: $49 flat, capped slots (D-196). Carrier layer changed from Twilio to Sinch (D-215). Delivery model locked: SDK (`npm install relaykit`) replaces file downloads (D-266). Website is message authoring surface (D-279). Sandbox tier updated to reflect SDK-first experience. Unit economics updated for fee split and Sinch. All references to "build spec" and "deliverable file" updated to reflect SDK delivery model.
 >
@@ -20,13 +20,13 @@ RelayKit has four tiers, one pricing structure, and no paywalled compliance feat
 
 | Tier | Price | What it is |
 |------|-------|-----------|
-| **Sandbox** | Free | Instant API key, SDK or API access, full testing including marketing, message authoring, no time limit. Verified phones only (D-298). |
-| **Full-Stack Setup** | $49 at submission + $150 at approval | 10DLC registration via Sinch — both transactional and marketing campaigns submitted (D-294), compliance site, all artifacts |
-| **Full-Stack Monthly** | $19/month (TBD — may adjust for bundled marketing) | Live messaging through delivery proxy, 500 messages included |
+| **Sandbox** | Free | Instant API key, SDK or API access, all namespaces including marketing, message authoring, no time limit. Verified phones only (D-298). |
+| **Full-Stack Setup** | $49 at submission + $150 at approval | 10DLC registration via Sinch — transactional campaign always submitted; marketing auto-submitted if used in sandbox (D-294). Compliance site, all artifacts. |
+| **Full-Stack Monthly** | $19/month (transactional) or $29/month (transactional + marketing) | Live messaging through delivery proxy, 500 messages included. Marketing tier activates automatically when developer enables marketing (D-294). |
 | **BYO Twilio** (Phase 2) | $199 one-time | Registration submitted to customer's own Twilio account, no monthly |
 | **Platform** (Phase 2) | Per-tenant pricing | SaaS platforms registering their tenants (see Section 3B) |
 
-Everything a customer needs to stay compliant is included in full-stack. No upsells, no tiered protection. Marketing is bundled, not an add-on.
+Everything a customer needs to stay compliant is included in full-stack. Marketing is not an upsell — it's available from sandbox and activates seamlessly when the developer is ready.
 
 ### Beta Pricing (D-196)
 Beta users pay **$49 flat** for registration — no $150 approval payment. Framed as early access pricing. Beta users keep their registration at full pricing launch. Capped at 25–50 slots for natural urgency and clean cutover. Beta access requires completing a prototype user test session (D-197).
@@ -40,7 +40,7 @@ Beta users pay **$49 flat** for registration — no $150 approval payment. Frame
 - Sandbox API key (`rk_sandbox_` prefix) — instant on signup
 - **SDK access** — `npm install relaykit` with sandbox key, same API surface as production
 - **Raw API access** — `POST /v1/messages` with sandbox key, same endpoints as SDK. SDK and API are equal paths (D-296).
-- **All namespaces including marketing** — full message library available from day one, not gated (D-294)
+- **All namespaces including marketing** — full message library available from day one, not gated (D-294). Marketing usage in sandbox is tracked to determine whether the marketing campaign auto-submits at registration.
 - Outbound messages to verified phone numbers only (100/day limit) — no sending to real end users without registration (D-298)
 - Inbound message forwarding (replies from verified number)
 - Opt-out testing (STOP/START keyword handling)
@@ -73,41 +73,53 @@ The SDK + curated message library captures domain knowledge (compliance rules, m
 
 ### Conversion path
 
-Sandbox → Use case selection → Message authoring on website (all namespaces including marketing) → `npm install relaykit` or direct API integration → Integration built → Engagement signals met → Registration CTA → Intake wizard (pre-populated from dashboard work) → Stripe checkout ($49) → Both transactional and marketing campaigns submitted (D-294) → Transactional approval → Developer-initiated $150 payment → Live (marketing follows when its campaign clears)
+Sandbox → Use case selection → Message authoring on website (all namespaces including marketing) → `npm install relaykit` or direct API integration → Integration built → Engagement signals met → Registration CTA → Intake wizard (pre-populated from dashboard work) → Stripe checkout ($49) → Transactional campaign submitted (+ marketing if used in sandbox) → Approval → Developer-initiated $150 payment → Live at $19/month (or $29/month if marketing active)
 
 > **Conversion psychology:** The SDK + message library is what makes the sandbox sticky. Developers invest time customizing messages (including marketing messages) and wiring up namespace functions. By the time they want to go live, switching to another provider means rebuilding the entire integration. The SDK is the moat. For no-code builders, the website authoring surface and API key are the equivalent lock-in (D-296, D-297).
+>
+> **Marketing conversion psychology (D-294):** Developers who use marketing in sandbox have already committed to it as a feature. Auto-submitting both campaigns removes a decision point and gets them to full production faster. Developers who didn't use marketing in sandbox aren't paying for it — but when they're ready, activation is seamless.
 
 ---
 
 ## 2. PRICING STRUCTURE (Full-Stack Tier)
 
 ### Registration Fee — Two-Part Payment (D-193, D-194, D-216)
-- **$49 at registration submission** — covers brand + both campaign submissions (transactional + marketing) to Sinch/TCR (D-294)
+- **$49 at registration submission** — covers brand + transactional campaign submission to Sinch/TCR. If the developer used marketing messages in sandbox, the marketing campaign is also submitted automatically at no additional fee to the customer (RelayKit absorbs ~$15 TCR cost) (D-294).
 - **$150 at carrier approval** — customer-initiated, not auto-charged (D-194)
 - **Full $49 refund if registration is rejected**
 - **User-facing display (D-216):** Pricing cards show "$199 to register + $19/mo" as the headline. Feature bullet explains: "$49 to register. $150 only after you're approved. Full refund if not."
 - **Total registration cost: $199** ($49 + $150)
 
 ### Monthly Subscription (Required)
-- **$19/month** — starts after registration approval. Billed monthly.
 
-> **Pricing note (D-294):** The previous $19/month (transactional) vs $29/month (mixed) distinction has been eliminated. Marketing is bundled at registration — every customer gets both campaigns. The base monthly price may need adjustment to absorb the additional carrier costs of a second campaign. TBD pending Sinch fee confirmation. For now, assume $19/month as the floor.
+Two tiers based on marketing usage — auto-adjusting, transparent (D-294):
 
-- Includes:
-  - 500 SMS segments per month (combined pool — transactional + marketing)
+- **$19/month** — Transactional tier. Applies when marketing campaign is not active. Billed monthly, starts after registration approval.
+- **$29/month** — Transactional + Marketing tier. Applies automatically when the developer's marketing campaign is active and they have sent at least one marketing message in production. The $10/month increase covers additional carrier infrastructure (TCR marketing campaign monthly fee).
+
+Tier changes are seamless:
+- **$19 → $29:** Happens automatically when marketing activates. Developer is informed upfront on pricing page and during registration: "Marketing messages add $10/month when you use them."
+- **$29 → $19:** Developer toggles off marketing in Settings. Takes effect next billing cycle. Marketing campaign suspended with carrier. Re-enabling later requires campaign re-submission (~few days, no fee to developer).
+
+Both tiers include:
+  - 500 SMS segments per month (combined pool if marketing is active — transactional and marketing draw from the same pool)
   - Phone number rental
   - Delivery proxy (template lookup, interpolation, carrier send, opt-out enforcement, quiet hours, rate limiting) (D-293)
-  - Recipient-level marketing consent enforcement at proxy (marketing messages to recipients without explicit opt-in are blocked)
   - Message preview endpoint (validate templates before sending)
-  - Compliance site hosting (kept live and audit-ready, includes marketing consent language from day one)
+  - Compliance site hosting (kept live and audit-ready)
   - Trust score monitoring
   - Campaign status visibility
   - Carrier regulation change tracking
 
+$29 tier additionally includes:
+  - Active marketing campaign registration with carrier
+  - Recipient-level marketing consent enforcement at proxy (marketing messages to recipients without explicit opt-in are blocked at infrastructure level)
+  - Marketing consent language on compliance site
+
 ### Multi-Project Billing (Phase 2 — PRD_11)
 Each registered project carries its own subscription. One customer with multiple registered projects pays per project:
 - $49 + $150 registration fees per project
-- $19/month per registered project (marketing included — D-294, final price TBD)
+- $19 or $29/month per registered project (depending on whether marketing is active for that project — D-294)
 - Overages tracked and billed per project
 - All subscriptions managed under one Stripe Customer record — one billing portal, all projects visible
 - Sandbox projects are always free regardless of project count
@@ -129,7 +141,7 @@ Each registered project carries its own subscription. One customer with multiple
 | 5,000 | $86 | 1.7¢/msg |
 | 10,000 | $161 | 1.6¢/msg |
 
-> **Note (D-294):** These numbers assume $19/month base. If the monthly price adjusts to absorb bundled marketing costs, update this table accordingly.
+> **Note (D-294):** These numbers show the $19/month transactional tier. For developers with active marketing ($29/month), add $10 to the base: 0–500 messages = $29, 501–1,500 = $44, etc. The message pool is combined — transactional and marketing messages draw from the same 500 included and the same overage blocks.
 
 ### Volume Tapering (Gentle, Not Aggressive)
 At higher volumes, block pricing decreases slightly:
@@ -270,7 +282,7 @@ Compare to 100 individual full-stack customers: $19,900 setup + $22,800 annual r
 3. Frontend calls `POST /api/checkout` with `{ step: 'approval' }`
 4. Backend creates a **Stripe Checkout Session** in `subscription` mode:
    - **Line item 1:** Go-live fee — $150.00 one-time
-   - **Line item 2:** Monthly subscription — $19.00/month recurring (includes both transactional and marketing — D-294)
+   - **Line item 2:** Monthly subscription — $19.00/month recurring (transactional tier; auto-upgrades to $29/month if marketing activates — D-294)
    - Card pre-filled from saved payment method
    - Success URL: `relaykit.ai/dashboard?session_id={CHECKOUT_SESSION_ID}`
    - Metadata: `{ customer_id: "{id}", step: "approval" }`
@@ -312,7 +324,8 @@ Product: "RelayKit Go Live"
   Price 1: $150.00 USD — one-time approval fee
 
 Product: "RelayKit SMS Infrastructure"
-  Price 1: $19.00 USD/month — base subscription, includes transactional + marketing (D-294, final price TBD)
+  Price 1: $19.00 USD/month — transactional tier (full-stack only)
+  Price 2: $29.00 USD/month — transactional + marketing tier (full-stack only, auto-applied when marketing activates — D-294)
 
 Product: "RelayKit Message Block"
   Price 1: $15.00 USD — one-time (used for metered overage billing)
@@ -362,13 +375,18 @@ Product: "RelayKit BYO Registration" (Phase 2)
 ```
 SANDBOX (free, no Stripe involvement)
   → SUBMISSION CHECKOUT → submitted ($49 charged, registration pipeline starts)
+    → If marketing used in sandbox: both campaigns submitted
+    → If marketing not used: transactional campaign only
     → APPROVED → APPROVAL CHECKOUT → live ($150 + $19/mo charged)
+      → Marketing activated later → subscription adjusts to $29/mo next cycle
+      → Marketing deactivated → subscription adjusts to $19/mo next cycle, campaign suspended
       → payment_past_due (card fails on renewal)
         → 7-day grace period
         → suspended (messaging paused)
         → reactivated (card updated) OR churned (30 days no payment)
       → cancelled (customer cancels)
         → messaging paused immediately
+        → both campaigns suspended/deleted
         → compliance site stays live 30 days
         → data retained 90 days
         → sandbox continues to work (they can still test)
@@ -401,7 +419,7 @@ WHAT HAPPENS NEXT
 YOUR PLAN
 $49 registration fee (now) + $150 go-live fee (after approval)
 $19/month includes 500 messages, phone number, delivery proxy
-Transactional messages go live first. Marketing follows shortly.
+Marketing messages add $10/month when you use them
 Additional messages: $15 per 1,000 (auto-scales, no interruption)
 ```
 
@@ -433,7 +451,7 @@ Additional messages: $15 per 1,000 (auto-scales, no interruption)
 
 > **Note on two-transaction Stripe fees:** Two separate charges ($49 + $169) have slightly higher total processing cost than a single $218 charge (~$7.11 vs ~$6.54). The ~$0.57 difference is trivial relative to the conversion benefit of the split payment structure.
 
-> **Note (D-294):** These economics now include a second campaign submission (marketing). Estimated additional TCR cost: ~$15 campaign vetting fee. This slightly reduces gross margin on registration. Updated numbers TBD pending Sinch fee confirmation. Estimated impact: gross profit drops by ~$15 per registration, gross margin drops ~7-8 percentage points.
+> **Note (D-294):** For customers who used marketing in sandbox, registration includes a second campaign submission. Estimated additional TCR cost: ~$15 campaign vetting fee absorbed by RelayKit. This reduces gross profit by ~$15 and gross margin by ~7-8 percentage points for those registrations. Not all customers trigger this — only those who used marketing in sandbox. Monitor the percentage to track margin impact.
 
 > **Re-vetting fee policy:** Campaign resubmissions after rejection incur a non-refundable $15 TCR vetting fee per event. RelayKit absorbs this cost as part of the rejection handling service. Each resubmission adds ~$15 to COGS for that registration. Monitor `resubmission_count` per registration — use cases or intake patterns with high rejection rates are both a template quality signal and a margin risk flag. Target: <5% of registrations require resubmission.
 
@@ -463,20 +481,20 @@ Additional messages: $15 per 1,000 (auto-scales, no interruption)
 > BYO has BETTER margins than full-stack because carrier registration fees are charged to their account (not ours), no phone number rental, no proxy infrastructure, no ongoing monitoring. Only cost is Stripe processing, compliance site hosting (minimal), and one-time support time.
 
 ### Full-Stack Monthly Subscription
-| Item | Low Use Case | High Use Case |
+| Item | $19/month (Transactional) | $29/month (Transactional + Marketing) |
 |------|-------------|------------------------|
-| Revenue (base) | $19.00 | $19.00 |
+| Revenue (base) | $19.00 | $29.00 |
 | Phone number rental | ~$1.00 | ~$1.00 |
 | Sinch campaign monthly fee | ~$1.50 | ~$10.00 |
 | Compliance site hosting | ~$0.50 | ~$0.50 |
 | Proxy + Redis infrastructure | ~$1.00 | ~$1.00 |
 | Drift detection (Claude API sampling) | ~$0.25 | ~$0.25 |
 | Message cost (500 × $0.01 blended) | ~$5.00 | ~$5.00 |
-| Stripe processing (3%) | ~$0.57 | ~$0.57 |
-| **Monthly gross profit** | **~$9.18** | **~$0.68** |
-| **Monthly gross margin** | **~48%** | **~4%** |
+| Stripe processing (3%) | ~$0.57 | ~$0.87 |
+| **Monthly gross profit** | **~$9.18** | **~$10.38** |
+| **Monthly gross margin** | **~48%** | **~36%** |
 
-> **⚠️ Note (D-294):** All customers now have marketing included. The higher carrier cost column (previously "mixed") applies to any customer actively using marketing messages, which increases Sinch campaign monthly fees (~$10 vs ~$1.50). At 500 included messages, high-use marketing customers are roughly breakeven. Margin comes from: (1) most customers won't use all 500 messages every month, (2) overage kicks in earlier, and (3) many customers will use marketing lightly or not at all, staying in the low-cost column despite having access.
+> **Note (D-294):** The $29/month marketing tier resolves the previous near-breakeven problem. At $19/month, marketing-heavy customers were roughly breakeven (~4% margin) due to higher Sinch campaign fees. The $10/month marketing surcharge restores healthy margin (~36%). Transactional-only customers at $19/month maintain ~48% margin. Both tiers benefit from: (1) most customers not using all 500 messages monthly, and (2) overage revenue kicking in earlier.
 
 ### Message Block Revenue
 | Item | Amount |
@@ -496,11 +514,13 @@ Additional messages: $15 per 1,000 (auto-scales, no interruption)
 | Beta user (12-month, typical) | $49 | $228 | $90 | $367 |
 | BYO (no monthly) | $199 | $0 | $0 | $199 |
 | BYO → full-stack upgrade (month 3) | $199 | $171** | $68 | $438 |
+| Marketing user (1,000 msg/mo) | $199 | $348 | $90 | $637 |
+| Marketing user (3,000 msg/mo) | $199 | $348 | $360 | $907 |
 
 *Scale user benefits from volume tapering at 5k+
 **9 months at $19/month after upgrade
 
-> **Note (D-294):** LTV model assumes $19/month base. If monthly price adjusts for bundled marketing, update accordingly. Marketing-heavy customers may have higher carrier costs but the same subscription revenue — monitor margin per customer segment.
+> **Note (D-294):** Marketing user rows assume $29/month × 12 = $348 annual subscription. Same overage rates apply. Marketing users have higher LTV due to the $10/month premium, partially offset by higher carrier costs.
 
 ### Revenue Targets
 | Milestone | Full-Stack Customers | BYO Customers | Setup Rev | MRR (base) | Est. Overage MRR | Total Annual |
@@ -544,7 +564,8 @@ subscription_status TEXT DEFAULT 'sandbox',
 -- NOTE (D-299): New tables should use project_id instead of customer_id for ownership. Existing schema is acceptable but will be migrated when multi-user support is built.
 tier TEXT DEFAULT 'sandbox',
 -- CHECK (tier IN ('sandbox', 'full_stack', 'byo'))
--- NOTE (D-294): 'mixed' tier eliminated. All full_stack customers have marketing included.
+marketing_active BOOLEAN DEFAULT FALSE,
+-- When TRUE, subscription is $29/month. When FALSE, $19/month. Toggled by marketing campaign activation/deactivation (D-294).
 registration_step TEXT,
 -- CHECK (registration_step IN ('submitted', 'approved', 'rejected', 'live'))
 is_beta BOOLEAN DEFAULT FALSE,
