@@ -33,7 +33,7 @@ Full text in DECISIONS_ARCHIVE.md. One-line summaries for quick reference:
 - D-14: recipient_consents table for MIXED marketing consent
 
 **Registration & Compliance (D-15–D-26)**
-- D-15: Campaign registration static after approval — expansion = second campaign ⚠ Superseded by D-294: marketing and transactional now register together at signup, not as a later expansion.
+- D-15: Campaign registration static after approval — expansion = second campaign ⚠ Superseded by D-294: marketing auto-submits at registration (if used in sandbox) or on-demand, not as a separate expansion step.
 - D-16: MIXED tier registered from day one (⚠ superseded by D-89)
 - D-17: Review timing 2–3 weeks (⚠ superseded by D-215 — now "a few days")
 - D-18: Healthcare/HIPAA hard decline
@@ -140,7 +140,7 @@ _Affects: PRD_05 template content and framing._
 **D-89 — Marketing is always a separate campaign — never MIXED on initial registration** (Date: 2026-03-13)
 **Supersedes D-16.** Initial registration is always transactional-only. This is a strategy, not a limitation: a transactional-only submission tells a tight, coherent story to the TCR reviewer. Marketing capability is added via a second campaign registration when the developer is ready. `determineCampaignType()` should never return MIXED for initial registration. The $29/mo mixed price point only applies when the developer adds marketing later. "Add marketing campaign" — never "upgrade." Strengthens D-15 and D-37.
 _Affects: PRD_01, PRD_02, PRD_04, PRD_06, PRICING_MODEL._
-⚠ Superseded by D-294: registration always submits both transactional and marketing campaigns, not transactional-only first.
+⚠ Superseded by D-294: registration submits both campaigns if developer used marketing in sandbox; otherwise transactional only, with on-demand marketing activation later.
 
 **D-90 — 5 sample messages to TCR, all transactional for initial registration** (Date: 2026-03-13)
 **Supersedes D-42 (was "exactly 3"). Updates D-82 (also referenced 3).** TCR accepts 2–5 samples; RelayKit always submits 5 (the maximum) because more samples give the reviewer a fuller picture. For transactional campaigns, all 5 samples are transactional messages from the category library. No marketing messages consume sample slots. Selection follows the anti-cookie-cutter strategy (D-91).
@@ -974,10 +974,21 @@ All messages are authored or edited on the RelayKit website with real-time compl
 Supersedes: D-242 (three-tier enforcement). Reframes D-19 (compliance checking is non-optional at authoring time, not send time).
 _Affects: Consolidated PRD, PRD_08, prototype compliance cards, messaging proxy design._
 
-**D-294 — Marketing and transactional registration are bundled; both submit at registration** (Date: 2026-04-02)
-Marketing is not a separate registration step or upsell. When a developer registers, both transactional and marketing campaigns are submitted simultaneously at one price. Transactional goes live on approval. Marketing goes live when its campaign approval clears — may take slightly longer. UI communicates: "Your transactional messages are live. Marketing messages are being reviewed." No extra button, no expansion modal, no "add marketing when you're ready." Marketing messages are visible and usable in sandbox from day one. The separate marketing add-on pricing ($29 one-time + $10/mo) is absorbed into base registration and subscription. Final pricing TBD.
-Supersedes: D-15 (expansion = second campaign — now both submit together), D-37, D-89 (transactional-only first registration — now both at once).
-_Affects: Registration pipeline, pricing model, consolidated PRD, prototype expansion modals/banners, intake wizard, compliance site generator._
+**D-294 — Marketing available from day one; smart registration, on-demand activation, $19/$29 monthly tiers** (Date: 2026-04-02)
+Marketing namespace is visible and fully usable in sandbox from day one — not gated, not an upsell. No expansion modal, no "Add marketing" CTA.
+
+Registration behavior: If the developer has used marketing messages in sandbox (detected from send history), both transactional and marketing campaigns auto-submit at registration. If they haven't, only transactional submits. Either way, the developer pays $199. RelayKit absorbs the ~$15 TCR campaign vetting fee for the marketing campaign.
+
+On-demand activation: If a developer registered transactional-only and later enables marketing (first marketing send in production, or toggle in Messages page), RelayKit auto-submits the marketing campaign in the background. No extra registration fee, no modal, no checkout. Developer sees: "Marketing messages are being registered — usually a few days."
+
+Monthly pricing: $19/month for transactional only. $29/month when marketing is active (transactional + marketing). Same 500-message combined pool. The $10/month increase covers additional carrier infrastructure (TCR campaign monthly fee). Upgrade from $19 → $29 happens automatically when the marketing campaign activates; developer is informed upfront on the pricing page and during registration. No separate $29 one-time marketing add-on fee — that's eliminated.
+
+Stepping down: If a developer wants to stop marketing, they toggle it off in Settings. Takes effect next billing cycle. RelayKit suspends the marketing campaign with TCR (stops monthly carrier fee). Subscription drops to $19. Re-enabling later requires re-submitting the campaign (~$15 cost absorbed by RelayKit, few days for approval).
+
+Constraint: Transactional is the base. Cannot have marketing without transactional. Cancellation cancels everything.
+
+Supersedes: D-15 (expansion = second campaign — now: marketing auto-submits at registration if used in sandbox, or on-demand, not as a separate expansion step), D-37, D-89 (transactional-only first registration — now: both submit if developer signals intent via sandbox usage).
+_Affects: Registration pipeline, pricing model, Stripe subscription management, consolidated PRD, prototype expansion modals/banners, sandbox send history tracking._
 
 **D-295 — Remove marketing upsell cards from dashboard Overview and Messages pages** (Date: 2026-04-02)
 Marketing promotional cards removed. Marketing is just another namespace in the message library — visible from sandbox onward, live after its campaign approval clears. No CTAs, no "coming soon" badges, no sales copy in the developer's dashboard.
