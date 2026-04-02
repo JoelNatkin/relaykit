@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-01 (Supabase integration — api_keys + consent tables, real KeyLookup + ConsentStore)
+**Date:** 2026-04-02 (Sandbox signup endpoint, D-291–D-299, PRD/pricing/CLAUDE.md updates)
 **Branch:** main
 
 ---
@@ -7,46 +7,63 @@
 ## Commits This Session
 
 ```
-abeb637  chore(api): add api_keys table migration (D-285)
-7718d19  fix(api): align ApiKeyRecord with DB schema — environment 'live' not 'production', add status/last_used_at/label
-7c2eb58  chore(api): add @supabase/supabase-js dependency
-8c83da0  feat(api): add Supabase client module with env var initialization
-05a8c6e  feat(api): implement Supabase KeyLookup with last_used_at tracking (D-285)
-3755246  feat(api): wire Supabase KeyLookup into server, fall back to stub without env vars
-a333dd5  fix(api): resolve eslint unused-vars in key-lookup tests
-3ce374c  chore(api): add consent table migration (D-252, D-253)
-a786fbd  feat(api): implement Supabase ConsentStore with upsert and revocation (D-252)
-f7c3275  feat(api): wire Supabase ConsentStore into server
+e95b30c  docs: record D-291 — raw_key column for sandbox API keys
+c744d93  chore(api): add raw_key column migration (D-291)
+ba6ea37  fix(api): add raw_key to ApiKeyRecord type (D-291)
+48e419c  feat(api): POST /v1/signup/sandbox — sandbox API key creation (D-285, D-291)
+e864905  test(api): signup endpoint validation and happy path
+676940c  fix(api): simplify signup endpoint — remove email/phone, add error logging
+be1f07d  docs: record D-292 — nullable user_id for sandbox API keys
+d199799  feat(api): nullable user_id for sandbox keys with CHECK constraint (D-292)
+68346c4  fix(api): auth middleware and consent guards for nullable user_id (D-292)
+919919a  docs: record D-293–D-299 (original D-294 — bundled marketing)
+53a6755  docs: add supersedes notes to D-15, D-37, D-89, D-242, D-19 index entry
+a2c5767  docs: update consolidated PRD for D-293–D-299 (original D-294)
+e56dc3f  docs: update PRICING_MODEL.md v5.0 (original D-294)
+db295e8  docs: record D-293–D-299 (REVISED D-294 — smart marketing registration)
+beee173  docs: update consolidated PRD for D-293–D-299 (revised D-294)
+7da4d86  docs: update PRICING_MODEL.md v5.0 (revised D-294)
+c20040f  docs: update CLAUDE.md to reference Voice & Product Principles v2.0
 ```
 
 ---
 
 ## What We Completed
 
-### api_keys Table + Real KeyLookup
-- Created `api_keys` table in Supabase with SHA-256 hashed keys, environment prefix (`rk_sandbox_`, `rk_live_`), status tracking, and `last_used_at` timestamp.
-- Fixed `ApiKeyRecord` type: `environment` changed from `'sandbox' | 'production'` to `'sandbox' | 'live'` to match DB schema. Added `status`, `last_used_at`, `label` fields.
-- Implemented `createSupabaseKeyLookup()` — queries `api_keys` where `key_hash` matches AND `status = 'active'`, fires non-blocking `last_used_at` update on hit.
-- Added `@supabase/supabase-js` as dependency in `/api`.
-- Created shared Supabase client singleton (`getSupabaseClient()`) that accepts both `SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_URL`.
-- 4 new tests covering: valid key lookup, missing key, revoked key, `last_used_at` update.
+### Sandbox Signup Endpoint (POST /v1/signup/sandbox)
+- Migration 003: `raw_key` column on `api_keys` with CHECK constraint (sandbox NOT NULL, live NULL) — D-291
+- Migration 004: `user_id` DROP NOT NULL with CHECK (sandbox allows NULL, live requires NOT NULL) — D-292
+- `POST /v1/signup/sandbox` — public endpoint (no auth required), accepts `{}`, generates `rk_sandbox_` + 32 hex chars, SHA-256 hashes, inserts with `user_id: null` and `raw_key: <plaintext>`, returns key + environment + message
+- Auth middleware: `user_id` flows as `string | null`; `AppVariables.user_id` is `string | null`
+- Consent route guards: all three handlers (record/check/revoke) return 403 `sandbox_not_linked` when `user_id` is null
+- Messages handler: unchanged — sandbox keys with null user_id can send test messages
+- 69 tests passing across 9 test files
 
-### consent Table + Real ConsentStore
-- Created `consent` table in Supabase with `UNIQUE(user_id, phone)` constraint — one consent record per phone per customer.
-- Implemented `createSupabaseConsentStore()` with three methods:
-  - `record()`: UPSERT on `(user_id, phone)`. Re-consenting clears `revoked_at` and updates `consented_at`, `source`, `ip_address`.
-  - `check()`: SELECT where `revoked_at IS NULL`. Returns record or null.
-  - `revoke()`: UPDATE sets `revoked_at` only on active consent. Returns updated record or null.
-- 6 new tests covering all ConsentStore methods.
+### Decisions D-291 through D-299
+- **D-291:** Sandbox API keys store `raw_key` for dashboard re-display
+- **D-292:** Sandbox API keys allow NULL `user_id`, live keys require it
+- **D-293:** Compliance enforcement collapses to authoring time; runtime enforcement removed
+- **D-294:** Marketing available from day one; smart registration (auto-submit if used in sandbox), on-demand activation, $19/$29 monthly tiers
+- **D-295:** Remove marketing upsell cards from dashboard
+- **D-296:** SDK and raw API are equal entry points
+- **D-297:** No-code vibe coders are an unserved market
+- **D-298:** Free tier sends to verified phones only
+- **D-299:** New tables use `project_id` as ownership key
 
-### Server Wiring
-- `index.ts` conditionally creates real KeyLookup + ConsentStore when `SUPABASE_URL` (or `NEXT_PUBLIC_SUPABASE_URL`) and `SUPABASE_SERVICE_ROLE_KEY` are present.
-- Falls back to stub lookup (all requests 401) and no consent routes when env vars are missing — tests work without Supabase.
-- Startup log reports auth mode: `[auth: supabase]` or `[auth: stub (no SUPABASE_URL)]`.
-- Removed default `app` export from `app.ts` — `index.ts` now creates its own app instance.
+### Supersedes Notes Added
+- D-15: superseded by D-294 (smart marketing registration)
+- D-19: reframed by D-293 (authoring time, not send time)
+- D-37: superseded by D-294
+- D-89: superseded by D-294 (conditional both-campaign submission)
+- D-242: superseded by D-293 (runtime enforcement removed)
 
-### Implementation Plan
-- Created `docs/superpowers/plans/2026-04-01-api-keys-supabase-keylookup.md` — full 7-task plan used for the api_keys implementation. Untracked (not committed).
+### Document Updates
+- **RELAYKIT_PRD_CONSOLIDATED.md** — v April 2, 2026. Compliance collapse, smart marketing, SDK+API equal paths, $19/$29 tiers, no-code audience, verified-only sandbox
+- **PRICING_MODEL.md** — v5.0. Two monthly tiers ($19/$29), smart registration economics, recalculated unit economics ($29 fixes the 4% margin → 36%), marketing LTV rows, `marketing_active` boolean in DB schema, subscription lifecycle with marketing activate/deactivate
+- **CLAUDE.md** — Voice doc references updated: `V4_EXPERIENCE_PRINCIPLES_v1.1.md` → `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` (5 references)
+
+### BACKLOG.md Addition
+- Rate limiting on `POST /v1/signup/sandbox` — public endpoint needs rate limiting before launch
 
 ---
 
@@ -54,8 +71,7 @@ f7c3275  feat(api): wire Supabase ConsentStore into server
 
 - `tsc --noEmit` — clean (`/api`)
 - `eslint src/` — clean (`/api`)
-- `vitest run` — 60 tests passing across 8 test files (`/api`)
-- Both `api_keys` and `consent` tables verified accessible via Supabase JS client
+- `vitest run` — 69 tests passing across 9 test files (`/api`)
 
 ---
 
@@ -67,8 +83,11 @@ POST /v1/messages still logs to console instead of sending via Sinch. The msg_ I
 ### Custom Messages
 `namespace: "custom", event: "send"` returns 422 "not yet supported". Placeholder for D-280 (website authoring surface).
 
-### Experience Principles File Rename
-`V4_EXPERIENCE_PRINCIPLES_v1.1.md` exists as untracked file. Original still tracked. CLAUDE.md references point to original. Needs Joel decision.
+### Voice & Product Principles File
+`VOICE_AND_PRODUCT_PRINCIPLES_v2.md` exists as untracked file. `V4_EXPERIENCE_PRINCIPLES_v1.1.md` shows as deleted in git status but the archive copy exists at `docs/archive/V4_EXPERIENCE_PRINCIPLES_v1.1.md`. CLAUDE.md references now point to the v2 file. Need to `git add` the new file and archive move, and `git rm` the old file.
+
+### D-294 Revision History
+D-294 was revised mid-session. The original version ("bundled marketing, both always submit") was recorded, propagated to PRD and pricing, then replaced with the revised version ("smart registration, on-demand activation, $19/$29 tiers"). Both PRD and pricing were updated twice — the final versions reflect the revised D-294. Commits 919919a/a2c5767/e56dc3f contain the original; db295e8/beee173/7da4d86 contain the revision.
 
 ---
 
@@ -80,65 +99,78 @@ POST /v1/messages still logs to console instead of sending via Sinch. The msg_ I
 
 3. **`createApp()` takes two params.** `createApp(lookup, consentStore?)` — the consent store is optional. Tests that don't need consent pass only the lookup.
 
-4. **`index.ts` creates its own app instance now.** The default `app` export was removed from `app.ts`. Tests use `createApp()` directly with mocks.
+4. **`index.ts` creates its own app instance.** The default `app` export was removed from `app.ts`. Tests use `createApp()` directly with mocks.
 
 5. **`hasSupabase` guard in `index.ts`.** Both KeyLookup and ConsentStore are created behind the same `Boolean(supabaseUrl && supabaseKey)` check. Without env vars, the server runs with stub auth (all 401) and no consent routes.
 
-6. **Environment type is `'sandbox' | 'live'`, not `'production'`.** This was fixed this session to match the DB schema. All test mocks updated.
+6. **Environment type is `'sandbox' | 'live'`, not `'production'`.** Fixed in previous session.
 
-7. **Consent UPSERT on `(user_id, phone)`.** Re-recording consent for an existing phone clears `revoked_at` — this is intentional. The DB UNIQUE constraint enforces one record per user+phone.
+7. **`user_id` is `string | null` everywhere (D-292).** `ApiKeyRecord.user_id`, `AppVariables.user_id` are both `string | null`. Auth middleware passes `null` through for unlinked sandbox keys. Consent endpoints return 403 `sandbox_not_linked` when null.
 
-8. **DELETE /v1/consent is idempotent.** Returns 200 with `status: "not_found"` when no active consent exists — NOT 404. Privacy reasoning.
+8. **Signup endpoint is PUBLIC.** `POST /v1/signup/sandbox` is mounted on the main `app` before the auth middleware sub-router. It accepts `{}` and returns a sandbox key. No rate limiting yet — in BACKLOG.md.
 
-9. **Fire-and-forget `last_used_at` on KeyLookup.** The update is non-blocking (`.then(() => {})`) — doesn't slow down auth. If it fails silently, that's acceptable.
+9. **`api_keys` table has FK on `user_id` to `customers(id)`.** The FK is preserved but `user_id` is nullable for sandbox keys (D-292). Live keys still require a valid `customers` reference.
 
-10. **SDK and API are sibling directories at repo root.** `/sdk` and `/api` — separate package.json, separate node_modules, separate test suites. Run tests from the correct directory.
+10. **Consent UPSERT on `(user_id, phone)`.** Re-recording consent for an existing phone clears `revoked_at`.
 
-11. **Two Experience Principles files still exist.** Original tracked, v1.1 untracked. Resolve before writing new copy.
+11. **DELETE /v1/consent is idempotent.** Returns 200 with `status: "not_found"` — NOT 404.
 
-12. **`api/node_modules/` and `docs/superpowers/plans/` are untracked.** Both expected — `node_modules` is gitignored, plans directory is new.
+12. **Fire-and-forget `last_used_at` on KeyLookup.** Non-blocking, silent failure acceptable.
 
-13. **Supabase MCP has permission issues.** The MCP OAuth scope didn't include write access to this project's database. Migrations were run manually via the Supabase dashboard SQL editor. This may need fixing for future sessions.
+13. **SDK and API are sibling directories at repo root.** `/sdk` and `/api` — separate package.json, separate node_modules, separate test suites.
+
+14. **Voice doc files in transition.** `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` is untracked. Old file shows as deleted. Archive copy exists. Needs cleanup commit.
+
+15. **Supabase MCP had permission issues last session.** Migrations were run manually via dashboard SQL editor. May need fixing.
+
+16. **`STARTER_KIT_PROGRAM.md` is untracked.** New doc from this or previous session, not yet committed.
+
+17. **Migrations 003 and 004 need to be run in Supabase.** `003_raw_key.sql` (ADD COLUMN raw_key + CHECK) and `004_nullable_user_id.sql` (DROP NOT NULL + CHECK) are committed but may not be applied to the live database yet. Run via Supabase dashboard SQL editor if MCP permissions aren't fixed.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# API keys — migration + implementation
-api/supabase/migrations/001_api_keys.sql          # NEW — api_keys DDL
-api/src/types.ts                                   # MODIFIED — environment 'live', added fields
-api/src/app.ts                                     # MODIFIED — removed default app export
-api/src/index.ts                                   # MODIFIED — conditional Supabase wiring
-api/src/supabase/client.ts                         # NEW — shared Supabase client singleton
-api/src/supabase/key-lookup.ts                     # NEW — real KeyLookup implementation
-api/src/__tests__/key-lookup.test.ts               # NEW — 4 tests
-api/src/__tests__/auth.test.ts                     # MODIFIED — updated mock records
-api/src/__tests__/consent.test.ts                  # MODIFIED — updated mock records
-api/src/__tests__/messages.test.ts                 # MODIFIED — updated mock records
-api/src/__tests__/preview.test.ts                  # MODIFIED — updated mock records
-api/src/__tests__/health.test.ts                   # MODIFIED — uses createApp() directly
-api/package.json                                   # MODIFIED — added @supabase/supabase-js
-api/package-lock.json                              # MODIFIED — updated
+# Migrations
+api/supabase/migrations/003_raw_key.sql               # NEW — raw_key column (D-291)
+api/supabase/migrations/004_nullable_user_id.sql       # NEW — nullable user_id (D-292)
 
-# Consent — migration + implementation
-api/supabase/migrations/002_consent.sql            # NEW — consent DDL
-api/src/supabase/consent-store.ts                  # NEW — real ConsentStore implementation
-api/src/__tests__/consent-store.test.ts            # NEW — 6 tests
+# API source
+api/src/types.ts                                       # MODIFIED — raw_key, user_id nullable
+api/src/app.ts                                         # MODIFIED — signup route wired
+api/src/middleware/auth.ts                              # MODIFIED — user_id ?? null
+api/src/routes/signup.ts                               # NEW — POST /v1/signup/sandbox
+api/src/routes/consent.ts                              # MODIFIED — 403 guard for null user_id
+api/src/supabase/key-lookup.ts                         # MODIFIED — raw_key in SELECT
 
-# Plans (untracked)
-docs/superpowers/plans/2026-04-01-api-keys-supabase-keylookup.md  # NEW — implementation plan
+# Tests
+api/src/__tests__/signup.test.ts                       # NEW — 5 tests
+api/src/__tests__/auth.test.ts                         # MODIFIED — null user_id test
+api/src/__tests__/consent.test.ts                      # MODIFIED — 3 sandbox_not_linked tests
+api/src/__tests__/messages.test.ts                     # MODIFIED — raw_key in mock
+api/src/__tests__/preview.test.ts                      # MODIFIED — raw_key in mock
+api/src/__tests__/key-lookup.test.ts                   # UNCHANGED (untyped mocks, still valid)
+
+# Decisions and docs
+DECISIONS.md                                           # MODIFIED — D-291–D-299, supersedes notes
+CLAUDE.md                                              # MODIFIED — voice doc references
+BACKLOG.md                                             # MODIFIED — rate limiting item
+docs/RELAYKIT_PRD_CONSOLIDATED.md                      # MODIFIED — D-293–D-299 updates
+docs/PRICING_MODEL.md                                  # MODIFIED — v5.0
 
 # Session docs
-CC_HANDOFF.md                                      # This file (overwritten)
+CC_HANDOFF.md                                          # This file (overwritten)
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. **Sinch carrier integration** — Replace console.log stub in POST /v1/messages with real Sinch API call. Wire msg_ ID as correlation ID. D-271 (Sinch account created).
-2. **Sandbox signup flow** — API key creation endpoint or dashboard integration. Key shown once, hashed with SHA-256 for storage (D-285).
-3. **SDK → API server wiring** — Point SDK's fetch calls at the real API server. Verify end-to-end: `npm install relaykit` → `new RelayKit()` → `sendConfirmation()` → real text message.
-4. **Experience Principles file resolution** — Decide on v1.0 vs v1.1, update CLAUDE.md references.
-5. **Remaining prototype work** — Category landing vocabulary (D-254), "two files" copy removal (D-257), compliance attention section (D-243).
+1. **Voice doc file cleanup** — `git add` the new v2 file, `git rm` the old v1.1, commit the archive move. Quick cleanup.
+2. **Run migrations 003 + 004 in Supabase** — raw_key column and nullable user_id. Either fix MCP permissions or run via dashboard SQL editor.
+3. **Sinch carrier integration** — Replace console.log stub in POST /v1/messages with real Sinch API call. Wire msg_ ID as correlation ID.
+4. **Sandbox signup flow integration** — API key creation endpoint exists; now wire it into the dashboard or a signup page. Key shown once at creation, always visible in dashboard for sandbox (D-291).
+5. **SDK → API server wiring** — Point SDK's fetch calls at the real API server. Verify end-to-end: `npm install relaykit` → `new RelayKit()` → `sendConfirmation()` → real text message.
+6. **Marketing sandbox usage tracking (D-294)** — Track which namespaces a sandbox key has used, so registration can auto-submit marketing campaign if marketing was used.
+7. **Prototype cleanup** — Remove compliance alerts system (D-293) and marketing expansion modal (D-294, D-295) from prototype. Replace with inline marketing status/toggle.
