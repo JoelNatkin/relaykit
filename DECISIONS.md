@@ -33,11 +33,11 @@ Full text in DECISIONS_ARCHIVE.md. One-line summaries for quick reference:
 - D-14: recipient_consents table for MIXED marketing consent
 
 **Registration & Compliance (D-15–D-26)**
-- D-15: Campaign registration static after approval — expansion = second campaign
+- D-15: Campaign registration static after approval — expansion = second campaign ⚠ Superseded by D-294: marketing and transactional now register together at signup, not as a later expansion.
 - D-16: MIXED tier registered from day one (⚠ superseded by D-89)
 - D-17: Review timing 2–3 weeks (⚠ superseded by D-215 — now "a few days")
 - D-18: Healthcare/HIPAA hard decline
-- D-19: Compliance monitoring non-optional for all
+- D-19: Compliance monitoring non-optional for all (reframed by D-293: at authoring time, not send time)
 - D-20: $15 re-vetting fee absorbed by RelayKit
 - D-21: Rejection surfaces as debrief, not error
 - D-22: Sole prop OTP 3-use lifetime limit
@@ -59,7 +59,7 @@ Full text in DECISIONS_ARCHIVE.md. One-line summaries for quick reference:
 - D-34: Read-only campaign content in review screen
 - D-35: Three-tier message library structure
 - D-36: Canon = "registered messages" in UI
-- D-37: Expansion = "second campaign," never "upgrade"
+- D-37: Expansion = "second campaign," never "upgrade" ⚠ Superseded by D-294.
 - D-38: Never guarantee compliance outcomes
 - D-39: Field annotations one sentence max
 
@@ -140,6 +140,7 @@ _Affects: PRD_05 template content and framing._
 **D-89 — Marketing is always a separate campaign — never MIXED on initial registration** (Date: 2026-03-13)
 **Supersedes D-16.** Initial registration is always transactional-only. This is a strategy, not a limitation: a transactional-only submission tells a tight, coherent story to the TCR reviewer. Marketing capability is added via a second campaign registration when the developer is ready. `determineCampaignType()` should never return MIXED for initial registration. The $29/mo mixed price point only applies when the developer adds marketing later. "Add marketing campaign" — never "upgrade." Strengthens D-15 and D-37.
 _Affects: PRD_01, PRD_02, PRD_04, PRD_06, PRICING_MODEL._
+⚠ Superseded by D-294: registration always submits both transactional and marketing campaigns, not transactional-only first.
 
 **D-90 — 5 sample messages to TCR, all transactional for initial registration** (Date: 2026-03-13)
 **Supersedes D-42 (was "exactly 3"). Updates D-82 (also referenced 3).** TCR accepts 2–5 samples; RelayKit always submits 5 (the maximum) because more samples give the reviewer a fuller picture. For transactional campaigns, all 5 samples are transactional messages from the category library. No marketing messages consume sample slots. Selection follows the anti-cookie-cutter strategy (D-91).
@@ -768,6 +769,7 @@ Three severity tiers, all AI-classified, all automated. Operator queue is a moni
 Operator can override any tier: dismiss, change severity, unsuspend. But default is fully automated.
 Tone at every step: "We caught this, we handled it, here's how to fix it." Knowledgeable colleague, not compliance cop. Liberal timeframes — risk is on customer's reputation with their own users, not on RelayKit's carrier score.
 _Affects: Admin Control Room, compliance proxy (PRD_09), customer notifications, Overview page editor (D-240), supersedes operator-centric parts of D-237._
+⚠ Superseded by D-293: compliance enforcement moved to authoring time on the website. Runtime three-tier enforcement removed. Tone principle preserved.
 
 **D-243 — Overview compliance attention section — customer-facing ledger** (Date: 2026-03-26)
 The Overview page (post-approval and sandbox) includes a compliance attention section showing ALL messages the system has adjusted or blocked — minor, escalated, and suspended. This is the customer's ledger of what needs fixing.
