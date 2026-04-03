@@ -79,7 +79,7 @@
 
 - **Build spec empirical testing program** — Write a real build spec by hand for appointments use case. Test with Claude Code, Cursor, Windsurf, Copilot, Cline against a fresh project. Record what works, what breaks, what questions the AI asks. Then test with 5-8 real developers at different skill levels. Then test across frameworks (Next.js, Flask, React Native, Node). Highest-priority validation activity. (Origin: March 27 conversation, D-260)
 
-- **Sandbox API (mock mode)** — Build a sandbox API endpoint that accepts message requests, validates format, returns mock responses. No carrier integration needed. Enables build spec testing immediately. (Origin: March 27 conversation, D-261) (Partially superseded by D-300 — the intake interview changes how sandbox context is generated. The mock API endpoint concept is still valid for build spec testing.)
+- **Sandbox API endpoint** — API endpoint exists and works. POST /v1/messages returns real msg_ IDs, validates templates across 30 templates in 8 namespaces, interpolates variables. Carrier send is a console.log stub until Sinch account confirms. Not mock mode — this is the real API with a carrier stub. (Origin: March 27 conversation, D-261, updated April 3)
 
 - **Website intake interview per vertical** — Business context questions (business name, appointment types, booking lead time, cancellation policy, etc.) asked on the website before message customization. Powered by Claude on the backend (~20% of interactions, 80% deterministic branching logic). Answers personalize message templates and feed into the contextualized spec file delivered via `npx relaykit init`. Per-vertical question sets needed for each category. (Origin: April 3 noodling session, D-300)
 
@@ -89,7 +89,7 @@
 
 ### Infrastructure & Operations
 
-- **Rate limiting on POST /v1/signup/sandbox** — Public endpoint with no auth gate, needs rate limiting before launch. (Origin: PM review, April 1 session)
+- ~~**Rate limiting on POST /v1/signup/sandbox** — Public endpoint with no auth gate, needs rate limiting before launch. (Origin: PM review, April 1 session)~~ ✅ **Done** (April 3, 2026). In-memory IP-based, 5 req/IP/hour, applied to signup route only.
 
 - **Multi-user / team access and project ownership transfer** — Single project_members join table keyed off project_id (D-299). Enables co-founder access, freelancer-to-client handoff, agency multi-client management, app sale/transfer. Build when a paying customer asks. Post-launch. (Origin: April 2 strategy session, D-299)
 
@@ -101,11 +101,23 @@
 
 - **Migrate pre-reg API key auth from listUsers() scan** — Current O(n) scan (D-55) needs optimization before scale. Options: key hash lookup table, or migrate sandbox keys to api_keys table at generation time. (Origin: D-55)
 
-- **Testing strategy** — Unit tests for template engine, integration tests for Twilio pipeline, E2E for critical flows. Not yet designed. (Origin: general)
+- **Testing strategy** — 109 tests across SDK (22) and API (87). Vitest, TDD, dependency-injected mocks via createApp(). Quality gates: tsc --noEmit + eslint + vitest before every commit. No UI tests — manual testing for prototype. Integration tests cover full SDK-to-API chain. Substantially complete for current scope. (Origin: general, updated April 3)
 
 - **Autonomous build experiment** — Small self-contained project (no SMS) on secondary Mac to validate agentic pipeline end-to-end. (Origin: browser chat planning)
 
 - **Claude API integration for website backend** — Server-side Claude calls for: intake interview edge cases, edited message compliance evaluation, AI fix button rewrites, custom message authoring guidance, transactional-vs-marketing content classification. Deterministic code handles: template registry, variable validation, message length, opt-out language detection, SHAFT screening, required elements, segment counting. Target: ~80/20 deterministic-to-Claude ratio. (Origin: April 3 noodling session, D-300)
+
+- **Message pipeline refactor (pre-Sinch)** — Refactor `handlePostMessages` from a single function into a pipeline of discrete steps: validate → checkConsent → checkQuietHours → normalizePhone → interpolate → send → logDelivery → respond. Each step is a separate testable function that receives message context and can short-circuit. Required before Sinch integration to avoid a monolithic handler. Awareness items: sandbox keys (null user_id) should bypass consent enforcement; marketing namespace triggers both consent check and quiet hours. (Origin: April 3 architecture audit, D-309)
+
+- **Messages table for delivery tracking and metering** — Create a `messages` table: id, user_id, api_key_id, namespace, event, to_phone, composed_text, status (queued/sent/delivered/failed), carrier_message_id, created_at, delivered_at, failed_at, queued_until (for quiet hours). Foundation for: usage metering (PRICING_MODEL), delivery analytics (backlog), sandbox usage tracking (D-294), quiet hours queue (D-309). Build alongside Sinch integration. (Origin: April 3 architecture audit)
+
+- **Phone number normalization utility** — Add `normalizePhone(to)` that strips formatting and ensures E.164 format (+1XXXXXXXXXX). Apply in shared validation before consent lookup, quiet hours check, or carrier send. Prevents mismatches between SDK input format and consent record format. Small but prevents a class of bugs. (Origin: April 3 architecture audit)
+
+- **Registration data injection for template variables** — Templates use `{business_name}` and similar registration-level variables. Currently passed by developer in `data` field. In production, merge server-side registration data (from intake/EIN) with developer-provided data, developer takes precedence. Requires a `CustomerLookup` or `RegistrationStore` service alongside existing KeyLookup and ConsentStore. Build when intake interview (D-300) or EIN verification (D-302) lands. (Origin: April 3 architecture audit)
+
+- **Sandbox consent bypass** — Sandbox keys have null user_id (D-292). Consent enforcement requires user_id. When building proxy-level consent checks for marketing messages, sandbox keys should bypass consent enforcement entirely (they're testing, not sending to real opt-in lists). Explicit decision needed before proxy build. (Origin: April 3 architecture audit, D-292)
+
+- **Custom template database lookup path (D-280)** — Current `lookupTemplate(namespace, event)` only checks the static TypeScript registry. Custom messages (D-280) will live in a database. When built, lookupTemplate falls through: static registry first, then `custom_templates` table query with user_id scope. Current function signature is fine — don't couple anything to the assumption that all templates are static. (Origin: April 3 architecture audit, D-280)
 
 ### Marketing & Growth
 
