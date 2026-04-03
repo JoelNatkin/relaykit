@@ -1,5 +1,5 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-02 (Sandbox signup endpoint, D-291–D-299, PRD/pricing/CLAUDE.md updates)
+**Date:** 2026-04-03 (D-300–D-305, PRD v April 3, pricing v5.1, backlog updates, voice doc cleanup — docs-only session)
 **Branch:** main
 
 ---
@@ -7,87 +7,85 @@
 ## Commits This Session
 
 ```
-e95b30c  docs: record D-291 — raw_key column for sandbox API keys
-c744d93  chore(api): add raw_key column migration (D-291)
-ba6ea37  fix(api): add raw_key to ApiKeyRecord type (D-291)
-48e419c  feat(api): POST /v1/signup/sandbox — sandbox API key creation (D-285, D-291)
-e864905  test(api): signup endpoint validation and happy path
-676940c  fix(api): simplify signup endpoint — remove email/phone, add error logging
-be1f07d  docs: record D-292 — nullable user_id for sandbox API keys
-d199799  feat(api): nullable user_id for sandbox keys with CHECK constraint (D-292)
-68346c4  fix(api): auth middleware and consent guards for nullable user_id (D-292)
-919919a  docs: record D-293–D-299 (original D-294 — bundled marketing)
-53a6755  docs: add supersedes notes to D-15, D-37, D-89, D-242, D-19 index entry
-a2c5767  docs: update consolidated PRD for D-293–D-299 (original D-294)
-e56dc3f  docs: update PRICING_MODEL.md v5.0 (original D-294)
-db295e8  docs: record D-293–D-299 (REVISED D-294 — smart marketing registration)
-beee173  docs: update consolidated PRD for D-293–D-299 (revised D-294)
-7da4d86  docs: update PRICING_MODEL.md v5.0 (revised D-294)
-c20040f  docs: update CLAUDE.md to reference Voice & Product Principles v2.0
+0bb2860  docs: add backlog items from April 2 strategy session — sandbox demos, connectors, multi-user, pricing exploration
+f114523  docs: append D-300–D-305 — intake interview, variable schema, EIN verification, symmetrical pricing, marketing standalone
+efc4093  docs: update consolidated PRD for D-300–D-305 — intake interview, symmetrical pricing, EIN verification, marketing standalone
+6d2ebca  docs: update PRICING_MODEL.md v5.1 — symmetrical pricing, marketing-only tier, EIN requirement, direction-agnostic economics
+7bf3648  docs: add backlog items from April 3 noodling session — intake interview, EIN verification, message editing UX, Claude API backend
+ed1b7f9  docs: track voice principles v2, archive v1.1, add starter kit program
 ```
 
 ---
 
-## What We Completed
+## What Was Completed
 
-### Sandbox Signup Endpoint (POST /v1/signup/sandbox)
-- Migration 003: `raw_key` column on `api_keys` with CHECK constraint (sandbox NOT NULL, live NULL) — D-291
-- Migration 004: `user_id` DROP NOT NULL with CHECK (sandbox allows NULL, live requires NOT NULL) — D-292
-- `POST /v1/signup/sandbox` — public endpoint (no auth required), accepts `{}`, generates `rk_sandbox_` + 32 hex chars, SHA-256 hashes, inserts with `user_id: null` and `raw_key: <plaintext>`, returns key + environment + message
-- Auth middleware: `user_id` flows as `string | null`; `AppVariables.user_id` is `string | null`
-- Consent route guards: all three handlers (record/check/revoke) return 403 `sandbox_not_linked` when `user_id` is null
-- Messages handler: unchanged — sandbox keys with null user_id can send test messages
-- 69 tests passing across 9 test files
+### Decisions D-300 through D-305
+- **D-300:** Website intake interview replaces spec file prompt. Claude-powered on backend (~80/20 deterministic-to-Claude). Generates contextualized spec file delivered via `npx relaykit init` or API endpoint. Per-vertical business questions. Supersedes old download flow prompt. Extends D-279.
+- **D-301:** Curated messages have locked variable schemas (editing can't break SDK calls). Custom messages (D-280) define their own variables.
+- **D-302:** EIN required for marketing messages. Verified at sandbox access. Auto-populates business identity fields from authoritative sources (~$1-3/lookup).
+- **D-303:** Business identity pre-validation from EIN lookup — registration form becomes "confirm what we found." Reduces TCR rejections, saves ~$15/rejection in vetting fees.
+- **D-304:** Pricing is symmetrical — first campaign $19/month, second campaign $29/month, regardless of direction. Amends D-294.
+- **D-305:** Marketing-only is a valid standalone use case at $19/month. Requires EIN (D-302). Amends D-294.
 
-### Decisions D-291 through D-299
-- **D-291:** Sandbox API keys store `raw_key` for dashboard re-display
-- **D-292:** Sandbox API keys allow NULL `user_id`, live keys require it
-- **D-293:** Compliance enforcement collapses to authoring time; runtime enforcement removed
-- **D-294:** Marketing available from day one; smart registration (auto-submit if used in sandbox), on-demand activation, $19/$29 monthly tiers
-- **D-295:** Remove marketing upsell cards from dashboard
-- **D-296:** SDK and raw API are equal entry points
-- **D-297:** No-code vibe coders are an unserved market
-- **D-298:** Free tier sends to verified phones only
-- **D-299:** New tables use `project_id` as ownership key
+### D-294 Amendment
+Inline note added: "⚠ Amended by D-304 (symmetrical pricing) and D-305 (marketing standalone valid). The 'transactional is the base' constraint is removed."
 
-### Supersedes Notes Added
-- D-15: superseded by D-294 (smart marketing registration)
-- D-19: reframed by D-293 (authoring time, not send time)
-- D-37: superseded by D-294
-- D-89: superseded by D-294 (conditional both-campaign submission)
-- D-242: superseded by D-293 (runtime enforcement removed)
+### RELAYKIT_PRD_CONSOLIDATED.md (dated April 3, 2026)
+- Step 2 rewritten: intake interview before message preview (D-300)
+- Step 3 rewritten: `npx relaykit init` delivers contextualized spec file, no copy-paste (D-300)
+- SMS_GUIDELINES.md section: generated from intake, delivered via init command (D-300)
+- Marketing Messages: constraint replaced with symmetrical pricing (D-304), EIN requirement (D-302/D-303), reverse direction on-demand activation (D-305)
+- Compliance Site: marketing-only note added
+- Pricing: direction-agnostic $19/$29 (D-304/D-305)
+- "Not Yet Built": intake interview and EIN verification added
+- Key Principles: "Website gathers context, AI tool executes" (D-300)
+- Decision count: 305+
 
-### Document Updates
-- **RELAYKIT_PRD_CONSOLIDATED.md** — v April 2, 2026. Compliance collapse, smart marketing, SDK+API equal paths, $19/$29 tiers, no-code audience, verified-only sandbox
-- **PRICING_MODEL.md** — v5.0. Two monthly tiers ($19/$29), smart registration economics, recalculated unit economics ($29 fixes the 4% margin → 36%), marketing LTV rows, `marketing_active` boolean in DB schema, subscription lifecycle with marketing activate/deactivate
-- **CLAUDE.md** — Voice doc references updated: `V4_EXPERIENCE_PRINCIPLES_v1.1.md` → `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` (5 references)
+### PRICING_MODEL.md v5.1
+- Direction-agnostic tier naming ("single-campaign" / "dual-campaign")
+- Three-column monthly economics table: transactional $19 (~48% margin), marketing-only $19 (~30% margin), dual $29 (~36% margin)
+- Marketing-only LTV row ($517, same as transactional-only)
+- Bidirectional subscription lifecycle paths
+- Screen 3 Preview Card updated
+- Stripe Product Config: updated naming
+- v5.1 change log entry
 
-### BACKLOG.md Addition
-- Rate limiting on `POST /v1/signup/sandbox` — public endpoint needs rate limiting before launch
+### BACKLOG.md Updates
+**April 2 strategy session (5 new sections/items):**
+- Sandbox Demo Features section (high priority — 5 items: multiple verified phones, "Send to my phone," manual demo send, app-triggered demo send, shareable invite link)
+- Marketing & Growth: Lovable/Bolt/Replit connector exploration
+- Infrastructure & Operations: multi-user / team access and project ownership transfer
+- Pricing & Business Model: lower barrier-to-entry exploration
+- Content & Marketing: constraint demolition framework blog post
+
+**April 3 noodling session (4 new items + 2 updates):**
+- Product Features: website intake interview per vertical, EIN verification, message editing UX with locked variables
+- Infrastructure & Operations: Claude API integration for website backend
+- Updated: marketing campaign registration flow (reverse direction note), sandbox API mock mode (D-300 partial supersession note)
+
+### Voice Doc File Cleanup
+- `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` — now tracked
+- `docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md` — git rm'd from root, archived at `docs/archive/`
+- `docs/STARTER_KIT_PROGRAM.md` — now tracked
 
 ---
 
 ## Quality Checks Passed
 
+- `tsc --noEmit` — clean (root project)
 - `tsc --noEmit` — clean (`/api`)
 - `eslint src/` — clean (`/api`)
-- `vitest run` — 69 tests passing across 9 test files (`/api`)
+- No code changes this session — docs only
 
 ---
 
-## In Progress / Partially Done
+## In Progress / Partially Done (Carried Forward)
 
 ### Sinch Carrier Integration
 POST /v1/messages still logs to console instead of sending via Sinch. The msg_ ID and response contract are ready — just needs the carrier send call.
 
 ### Custom Messages
 `namespace: "custom", event: "send"` returns 422 "not yet supported". Placeholder for D-280 (website authoring surface).
-
-### Voice & Product Principles File
-`VOICE_AND_PRODUCT_PRINCIPLES_v2.md` exists as untracked file. `V4_EXPERIENCE_PRINCIPLES_v1.1.md` shows as deleted in git status but the archive copy exists at `docs/archive/V4_EXPERIENCE_PRINCIPLES_v1.1.md`. CLAUDE.md references now point to the v2 file. Need to `git add` the new file and archive move, and `git rm` the old file.
-
-### D-294 Revision History
-D-294 was revised mid-session. The original version ("bundled marketing, both always submit") was recorded, propagated to PRD and pricing, then replaced with the revised version ("smart registration, on-demand activation, $19/$29 tiers"). Both PRD and pricing were updated twice — the final versions reflect the revised D-294. Commits 919919a/a2c5767/e56dc3f contain the original; db295e8/beee173/7da4d86 contain the revision.
 
 ---
 
@@ -97,67 +95,50 @@ D-294 was revised mid-session. The original version ("bundled marketing, both al
 
 2. **API server runs on port 3002.** Prototype is port 3001, Next.js dev is default port 3000.
 
-3. **`createApp()` takes two params.** `createApp(lookup, consentStore?)` — the consent store is optional. Tests that don't need consent pass only the lookup.
+3. **D-294 is amended, not superseded.** D-304 and D-305 amend specific constraints (symmetrical pricing, marketing standalone). Core D-294 mechanics (smart registration, on-demand activation, sandbox usage tracking) remain valid.
 
-4. **`index.ts` creates its own app instance.** The default `app` export was removed from `app.ts`. Tests use `createApp()` directly with mocks.
+4. **Marketing-only margin is ~30%.** Lower than transactional-only (~48%) due to estimated higher Sinch marketing campaign monthly fee (~$5 vs ~$1.50). Exact Sinch fee schedule pending ISV tier confirmation (D-271).
 
-5. **`hasSupabase` guard in `index.ts`.** Both KeyLookup and ConsentStore are created behind the same `Boolean(supabaseUrl && supabaseKey)` check. Without env vars, the server runs with stub auth (all 401) and no consent routes.
+5. **EIN verification data sources not yet chosen.** D-302/D-303 list options (IRS BMF, state SOS, Middesk, Enigma at ~$1-3/lookup) but no decision on which to use. Needs research.
 
-6. **Environment type is `'sandbox' | 'live'`, not `'production'`.** Fixed in previous session.
+6. **`user_id` is `string | null` everywhere (D-292).** Unchanged from prior session.
 
-7. **`user_id` is `string | null` everywhere (D-292).** `ApiKeyRecord.user_id`, `AppVariables.user_id` are both `string | null`. Auth middleware passes `null` through for unlinked sandbox keys. Consent endpoints return 403 `sandbox_not_linked` when null.
+7. **Signup endpoint is PUBLIC.** `POST /v1/signup/sandbox` — no rate limiting yet (in BACKLOG.md).
 
-8. **Signup endpoint is PUBLIC.** `POST /v1/signup/sandbox` is mounted on the main `app` before the auth middleware sub-router. It accepts `{}` and returns a sandbox key. No rate limiting yet — in BACKLOG.md.
+8. **Migrations 003 and 004 may not be applied to live DB.** Run via Supabase dashboard SQL editor if MCP permissions aren't fixed.
 
-9. **`api_keys` table has FK on `user_id` to `customers(id)`.** The FK is preserved but `user_id` is nullable for sandbox keys (D-292). Live keys still require a valid `customers` reference.
+9. **SDK and API are sibling directories at repo root.** `/sdk` and `/api` — separate package.json, separate node_modules, separate test suites.
 
-10. **Consent UPSERT on `(user_id, phone)`.** Re-recording consent for an existing phone clears `revoked_at`.
+10. **Supabase MCP had permission issues last session.** May need fixing.
 
-11. **DELETE /v1/consent is idempotent.** Returns 200 with `status: "not_found"` — NOT 404.
+11. **`createApp()` takes two params.** `createApp(lookup, consentStore?)` — consent store optional. Tests that don't need consent pass only the lookup.
 
-12. **Fire-and-forget `last_used_at` on KeyLookup.** Non-blocking, silent failure acceptable.
+12. **`index.ts` creates its own app instance.** The default `app` export was removed from `app.ts`. Tests use `createApp()` directly with mocks.
 
-13. **SDK and API are sibling directories at repo root.** `/sdk` and `/api` — separate package.json, separate node_modules, separate test suites.
+13. **`hasSupabase` guard in `index.ts`.** Both KeyLookup and ConsentStore are created behind `Boolean(supabaseUrl && supabaseKey)` check. Without env vars, the server runs with stub auth (all 401) and no consent routes.
 
-14. **Voice doc files in transition.** `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` is untracked. Old file shows as deleted. Archive copy exists. Needs cleanup commit.
-
-15. **Supabase MCP had permission issues last session.** Migrations were run manually via dashboard SQL editor. May need fixing.
-
-16. **`STARTER_KIT_PROGRAM.md` is untracked.** New doc from this or previous session, not yet committed.
-
-17. **Migrations 003 and 004 need to be run in Supabase.** `003_raw_key.sql` (ADD COLUMN raw_key + CHECK) and `004_nullable_user_id.sql` (DROP NOT NULL + CHECK) are committed but may not be applied to the live database yet. Run via Supabase dashboard SQL editor if MCP permissions aren't fixed.
+14. **Environment type is `'sandbox' | 'live'`, not `'production'`.** Fixed in a prior session.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# Migrations
-api/supabase/migrations/003_raw_key.sql               # NEW — raw_key column (D-291)
-api/supabase/migrations/004_nullable_user_id.sql       # NEW — nullable user_id (D-292)
+# Decisions
+DECISIONS.md                                           # MODIFIED — D-300–D-305, D-294 amendment note
 
-# API source
-api/src/types.ts                                       # MODIFIED — raw_key, user_id nullable
-api/src/app.ts                                         # MODIFIED — signup route wired
-api/src/middleware/auth.ts                              # MODIFIED — user_id ?? null
-api/src/routes/signup.ts                               # NEW — POST /v1/signup/sandbox
-api/src/routes/consent.ts                              # MODIFIED — 403 guard for null user_id
-api/src/supabase/key-lookup.ts                         # MODIFIED — raw_key in SELECT
+# PRD and pricing
+docs/RELAYKIT_PRD_CONSOLIDATED.md                      # MODIFIED — D-300–D-305 updates, dated April 3
+docs/PRICING_MODEL.md                                  # MODIFIED — v5.1
 
-# Tests
-api/src/__tests__/signup.test.ts                       # NEW — 5 tests
-api/src/__tests__/auth.test.ts                         # MODIFIED — null user_id test
-api/src/__tests__/consent.test.ts                      # MODIFIED — 3 sandbox_not_linked tests
-api/src/__tests__/messages.test.ts                     # MODIFIED — raw_key in mock
-api/src/__tests__/preview.test.ts                      # MODIFIED — raw_key in mock
-api/src/__tests__/key-lookup.test.ts                   # UNCHANGED (untyped mocks, still valid)
+# Backlog
+BACKLOG.md                                             # MODIFIED — April 2 + April 3 items, 2 existing items updated
 
-# Decisions and docs
-DECISIONS.md                                           # MODIFIED — D-291–D-299, supersedes notes
-CLAUDE.md                                              # MODIFIED — voice doc references
-BACKLOG.md                                             # MODIFIED — rate limiting item
-docs/RELAYKIT_PRD_CONSOLIDATED.md                      # MODIFIED — D-293–D-299 updates
-docs/PRICING_MODEL.md                                  # MODIFIED — v5.0
+# Voice doc cleanup
+docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md                # NEW (tracked)
+docs/archive/V4_EXPERIENCE_PRINCIPLES_v1.1.md          # MOVED from docs/ root
+docs/V4_EXPERIENCE_PRINCIPLES_v1.1.md                  # DELETED (git rm)
+docs/STARTER_KIT_PROGRAM.md                            # NEW (tracked)
 
 # Session docs
 CC_HANDOFF.md                                          # This file (overwritten)
@@ -167,10 +148,11 @@ CC_HANDOFF.md                                          # This file (overwritten)
 
 ## What's Next (suggested order)
 
-1. **Voice doc file cleanup** — `git add` the new v2 file, `git rm` the old v1.1, commit the archive move. Quick cleanup.
-2. **Run migrations 003 + 004 in Supabase** — raw_key column and nullable user_id. Either fix MCP permissions or run via dashboard SQL editor.
-3. **Sinch carrier integration** — Replace console.log stub in POST /v1/messages with real Sinch API call. Wire msg_ ID as correlation ID.
-4. **Sandbox signup flow integration** — API key creation endpoint exists; now wire it into the dashboard or a signup page. Key shown once at creation, always visible in dashboard for sandbox (D-291).
-5. **SDK → API server wiring** — Point SDK's fetch calls at the real API server. Verify end-to-end: `npm install relaykit` → `new RelayKit()` → `sendConfirmation()` → real text message.
-6. **Marketing sandbox usage tracking (D-294)** — Track which namespaces a sandbox key has used, so registration can auto-submit marketing campaign if marketing was used.
-7. **Prototype cleanup** — Remove compliance alerts system (D-293) and marketing expansion modal (D-294, D-295) from prototype. Replace with inline marketing status/toggle.
+1. **Run migrations 003 + 004 in Supabase** — raw_key column and nullable user_id. Either fix MCP permissions or run via dashboard SQL editor.
+2. **Sinch carrier integration** — Replace console.log stub in POST /v1/messages with real Sinch API call. Wire msg_ ID as correlation ID.
+3. **Sandbox signup flow integration** — API key creation endpoint exists; wire it into the dashboard or a signup page. Key shown once at creation, always visible in dashboard for sandbox (D-291).
+4. **SDK → API server wiring** — Point SDK's fetch calls at the real API server. Verify end-to-end: `npm install relaykit` → `new RelayKit()` → `sendConfirmation()` → real text message.
+5. **EIN verification data source research** — Investigate IRS BMF, state SOS, Middesk, Enigma. Pick a source and estimate integration effort (D-302/D-303).
+6. **Prototype cleanup** — Remove compliance alerts system (D-293) and marketing expansion modal (D-294, D-295). Replace with inline marketing status/toggle.
+7. **Marketing sandbox usage tracking (D-294)** — Track which namespaces a sandbox key has used, so registration can auto-submit marketing campaign if marketing was used.
+8. **Website intake interview design (D-300)** — Per-vertical question sets, Claude API integration architecture, spec file generation pipeline.
