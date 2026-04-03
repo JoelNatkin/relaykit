@@ -13,6 +13,9 @@ export function createCommunity(options: ClientOptions): CommunityNamespace {
     sendEventReminder(phone: string, data: CommunityEventData): Promise<SendResult | null> {
       return sendMessage(options, 'community', 'sendEventReminder', phone, data as unknown as Record<string, unknown>);
     },
+    sendWelcome(phone: string, data: CommunityGroupUpdateData): Promise<SendResult | null> {
+      return sendMessage(options, 'community', 'sendWelcome', phone, data as unknown as Record<string, unknown>);
+    },
     sendGroupUpdate(phone: string, data: CommunityGroupUpdateData): Promise<SendResult | null> {
       return sendMessage(options, 'community', 'sendGroupUpdate', phone, data as unknown as Record<string, unknown>);
     },

@@ -10,6 +10,9 @@ import type {
 
 export function createWaitlist(options: ClientOptions): WaitlistNamespace {
   return {
+    sendConfirmation(phone: string, data: WaitlistSpotData): Promise<SendResult | null> {
+      return sendMessage(options, 'waitlist', 'sendConfirmation', phone, data as unknown as Record<string, unknown>);
+    },
     sendSpotAvailable(phone: string, data: WaitlistSpotData): Promise<SendResult | null> {
       return sendMessage(options, 'waitlist', 'sendSpotAvailable', phone, data as unknown as Record<string, unknown>);
     },

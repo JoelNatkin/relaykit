@@ -7,6 +7,9 @@ export function createMarketing(options: ClientOptions): MarketingNamespace {
     sendPromotion(phone: string, data: MarketingContentData): Promise<SendResult | null> {
       return sendMessage(options, 'marketing', 'sendPromotion', phone, data as unknown as Record<string, unknown>);
     },
+    sendLoyaltyReward(phone: string, data: MarketingContentData): Promise<SendResult | null> {
+      return sendMessage(options, 'marketing', 'sendLoyaltyReward', phone, data as unknown as Record<string, unknown>);
+    },
     sendNewArrivals(phone: string, data: MarketingContentData): Promise<SendResult | null> {
       return sendMessage(options, 'marketing', 'sendNewArrivals', phone, data as unknown as Record<string, unknown>);
     },

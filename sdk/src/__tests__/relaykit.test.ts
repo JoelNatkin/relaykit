@@ -158,10 +158,10 @@ describe('Namespace structure', () => {
     ['orders', rk.orders, 5],
     ['verification', rk.verification, 3],
     ['support', rk.support, 3],
-    ['marketing', rk.marketing, 2],
+    ['marketing', rk.marketing, 3],
     ['internal', rk.internal, 3],
-    ['community', rk.community, 3],
-    ['waitlist', rk.waitlist, 3],
+    ['community', rk.community, 4],
+    ['waitlist', rk.waitlist, 4],
   ];
 
   it.each(namespaceMethods)(

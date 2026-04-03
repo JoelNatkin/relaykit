@@ -153,6 +153,7 @@ export interface SupportNamespace {
 
 export interface MarketingNamespace {
   sendPromotion(phone: string, data: MarketingContentData): Promise<SendResult | null>;
+  sendLoyaltyReward(phone: string, data: MarketingContentData): Promise<SendResult | null>;
   sendNewArrivals(phone: string, data: MarketingContentData): Promise<SendResult | null>;
 }
 
@@ -164,11 +165,13 @@ export interface InternalNamespace {
 
 export interface CommunityNamespace {
   sendEventReminder(phone: string, data: CommunityEventData): Promise<SendResult | null>;
+  sendWelcome(phone: string, data: CommunityGroupUpdateData): Promise<SendResult | null>;
   sendGroupUpdate(phone: string, data: CommunityGroupUpdateData): Promise<SendResult | null>;
   sendRenewalNotice(phone: string, data: CommunityRenewalData): Promise<SendResult | null>;
 }
 
 export interface WaitlistNamespace {
+  sendConfirmation(phone: string, data: WaitlistSpotData): Promise<SendResult | null>;
   sendSpotAvailable(phone: string, data: WaitlistSpotData): Promise<SendResult | null>;
   sendReservationConfirmed(phone: string, data: WaitlistReservationData): Promise<SendResult | null>;
   sendWaitTimeUpdate(phone: string, data: WaitlistWaitTimeData): Promise<SendResult | null>;
