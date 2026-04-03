@@ -1,6 +1,6 @@
 # BACKLOG.md — RelayKit
 ## Ideas, Deferred Work, and Future Features
-### Last updated: April 2, 2026
+### Last updated: April 3, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -37,7 +37,7 @@
 
 - **BYO Twilio tier (Model 2)** — $199 one-time, registration submitted to customer's own Twilio account. No proxy, no monitoring. Entry point to full RelayKit. (Origin: D-26, PRICING_MODEL Section 3, D-43 Phase 2)
 
-- **Marketing campaign registration flow** — "Start marketing registration" action on Messages tab (Approved state). Short form/modal reusing existing registration data, price change $19→$29/mo, second campaign submission, compliance site update. Includes updating the marketing messages section copy per lifecycle state (pre-reg vs. approved). Permanent affordance location TBD. (Origin: March 19 session, marketing section discussion)
+- **Marketing campaign registration flow** — "Start marketing registration" action on Messages tab (Approved state). Short form/modal reusing existing registration data, price change $19→$29/mo, second campaign submission, compliance site update. Includes updating the marketing messages section copy per lifecycle state (pre-reg vs. approved). Permanent affordance location TBD. (Origin: March 19 session, marketing section discussion) (D-304/D-305: also applies in reverse — marketing-only developer adding transactional)
 
 - **Messages tab lifecycle state differentiation** — Approved state: personalization fields become read-only with registered values, no "registered" badges on individual messages (D-159). Pending/Changes Requested/Rejected states need their own Messages tab rendering. (Origin: PM_HANDOFF, March 19 planning)
 
@@ -79,7 +79,13 @@
 
 - **Build spec empirical testing program** — Write a real build spec by hand for appointments use case. Test with Claude Code, Cursor, Windsurf, Copilot, Cline against a fresh project. Record what works, what breaks, what questions the AI asks. Then test with 5-8 real developers at different skill levels. Then test across frameworks (Next.js, Flask, React Native, Node). Highest-priority validation activity. (Origin: March 27 conversation, D-260)
 
-- **Sandbox API (mock mode)** — Build a sandbox API endpoint that accepts message requests, validates format, returns mock responses. No carrier integration needed. Enables build spec testing immediately. (Origin: March 27 conversation, D-261)
+- **Sandbox API (mock mode)** — Build a sandbox API endpoint that accepts message requests, validates format, returns mock responses. No carrier integration needed. Enables build spec testing immediately. (Origin: March 27 conversation, D-261) (Partially superseded by D-300 — the intake interview changes how sandbox context is generated. The mock API endpoint concept is still valid for build spec testing.)
+
+- **Website intake interview per vertical** — Business context questions (business name, appointment types, booking lead time, cancellation policy, etc.) asked on the website before message customization. Powered by Claude on the backend (~20% of interactions, 80% deterministic branching logic). Answers personalize message templates and feed into the contextualized spec file delivered via `npx relaykit init`. Per-vertical question sets needed for each category. (Origin: April 3 noodling session, D-300)
+
+- **EIN verification and business identity pre-validation** — When developer enters EIN (for marketing access or registration), look up and auto-populate legal business name, address, entity type, state of registration. Investigate data sources: IRS Business Master File, state SOS databases, Middesk, Enigma (~$1-3/lookup). ROI: $15 saved per prevented TCR rejection + ISV trust score protection. (Origin: April 3 noodling session, D-302, D-303)
+
+- **Message editing UX: curated messages with locked variables** — Default curated set per vertical displayed on website. Individual messages show pill variants (tone/style). Click to edit opens inline editor with live compliance checking and AI fix button. Variables are locked per curated message type — editing changes copy only, never the data contract with the SDK. Custom messages (D-280) define their own variable schema. (Origin: April 3 noodling session, D-301)
 
 ### Infrastructure & Operations
 
@@ -98,6 +104,8 @@
 - **Testing strategy** — Unit tests for template engine, integration tests for Twilio pipeline, E2E for critical flows. Not yet designed. (Origin: general)
 
 - **Autonomous build experiment** — Small self-contained project (no SMS) on secondary Mac to validate agentic pipeline end-to-end. (Origin: browser chat planning)
+
+- **Claude API integration for website backend** — Server-side Claude calls for: intake interview edge cases, edited message compliance evaluation, AI fix button rewrites, custom message authoring guidance, transactional-vs-marketing content classification. Deterministic code handles: template registry, variable validation, message length, opt-out language detection, SHAFT screening, required elements, segment counting. Target: ~80/20 deterministic-to-Claude ratio. (Origin: April 3 noodling session, D-300)
 
 ### Marketing & Growth
 
