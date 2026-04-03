@@ -169,7 +169,6 @@ export default function AppSettings() {
   const isRejected = rs === "rejected";
   const hasRegistered = !isDefault; // post-registration = any non-default state
 
-  const [smsNotify, setSmsNotify] = useState(false);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
 
@@ -181,7 +180,6 @@ export default function AppSettings() {
   // Editable field values (prototype local state)
   const [email, setEmail] = useState("joel@radarlove.app");
   const [phone, setPhone] = useState("+1 (512) 555-0147");
-  const [alertPhone] = useState("+1 (512) 555-0147");
 
   function startEdit(key: string, value: string) {
     setEditingField(key);
@@ -230,45 +228,7 @@ export default function AppSettings() {
         onConfirm={() => setRegenLiveModalOpen(false)}
       />
 
-      {/* ── Section 1: SMS Compliance Alerts ── */}
-      <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <div className="flex items-start justify-between gap-10">
-          <div>
-            <h3 className="text-lg font-semibold text-text-primary">SMS compliance alerts</h3>
-            <p className="text-sm text-text-tertiary mt-0.5">
-              Get a text when live messages are blocked or your content drifts from your registered use case. You&apos;ll always get email alerts.
-            </p>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            aria-checked={smsNotify}
-            onClick={() => setSmsNotify(!smsNotify)}
-            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition duration-100 ease-linear mt-0.5 ${
-              smsNotify ? "bg-bg-brand-solid" : "bg-[var(--color-gray-300)]"
-            }`}
-          >
-            <span
-              className={`pointer-events-none inline-block size-5 rounded-full bg-bg-primary shadow-xs ring-0 transition duration-100 ease-linear ${
-                smsNotify ? "translate-x-[22px]" : "translate-x-[2px]"
-              } mt-[2px]`}
-            />
-          </button>
-        </div>
-        {smsNotify && (
-          <p className="mt-3 text-sm text-text-quaternary">
-            Alerts go to {alertPhone}{" "}
-            <button
-              type="button"
-              className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-            >
-              Edit
-            </button>
-          </p>
-        )}
-      </div>
-
-      {/* ── Section 2: Account Info ── */}
+      {/* ── Section 1: Account Info ── */}
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
         <h3 className="text-lg font-semibold text-text-primary mb-4">Account info</h3>
         <dl className="space-y-3">

@@ -14,7 +14,6 @@ import {
 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
-import MarketingModal from "@/components/marketing-modal";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { CatalogOptIn } from "@/components/catalog/catalog-opt-in";
 import {
@@ -588,7 +587,6 @@ export default function AppMessagesPage() {
 
   const [isToolOpen, setIsToolOpen] = useState(false);
   const [showPersonalize, setShowPersonalize] = useState(false);
-  const [showMarketingModal, setShowMarketingModal] = useState(false);
   const [activeVariant, setActiveVariant] = useState("standard");
   const [viewMode, setViewMode] = useState<"preview" | "template">("template");
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
@@ -827,24 +825,6 @@ export default function AppMessagesPage() {
             ))}
           </div>
 
-          {/* Marketing callout */}
-          {expansionMessages.length > 0 && (
-            <div id="marketing-section" className="mt-8 rounded-xl border border-border-secondary bg-bg-secondary p-6">
-              <h3 className="text-base font-semibold text-text-primary">
-                Need marketing messages too?
-              </h3>
-              <p className="mt-1 text-sm text-text-tertiary">
-                Discount offers, re-engagement, birthday messages &mdash; add marketing alongside your appointment reminders.
-              </p>
-              <button
-                type="button"
-                onClick={() => setShowMarketingModal(true)}
-                className="mt-3 inline-flex items-center text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-              >
-                Learn more &rarr;
-              </button>
-            </div>
-          )}
         </div>
 
         {/* RIGHT — opt-in only */}
@@ -865,10 +845,6 @@ export default function AppMessagesPage() {
         </div>
       </div>
 
-      {/* Marketing modal */}
-      {showMarketingModal && (
-        <MarketingModal appId={appId} onClose={() => setShowMarketingModal(false)} />
-      )}
     </div>
   );
 }

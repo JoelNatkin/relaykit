@@ -24,8 +24,6 @@ export interface CustomMessage {
 export type DashboardVersion = "a" | "b" | "c";
 export type AppState = "pre-download" | "sandbox" | "live";
 export type RegistrationState = "default" | "pending" | "approved" | "changes_requested" | "rejected";
-export type ComplianceView = "all_clear" | "has_alerts";
-
 export interface SessionState {
   // Auth mock
   isLoggedIn: boolean;
@@ -38,12 +36,6 @@ export interface SessionState {
 
   // Registration lifecycle state
   registrationState: RegistrationState;
-
-  // Compliance dashboard view toggle
-  complianceView: ComplianceView;
-
-  // SMS compliance alerts toggle (D-239)
-  alertsEnabled: boolean;
 
   // EIN on file — gates marketing UI (D-247)
   hasEIN: boolean;
@@ -84,8 +76,6 @@ interface SessionContextValue {
   setDashboardVersion: (version: DashboardVersion) => void;
   setAppState: (state: AppState) => void;
   setRegistrationState: (state: RegistrationState) => void;
-  setComplianceView: (view: ComplianceView) => void;
-  setAlertsEnabled: (enabled: boolean) => void;
 }
 
 const defaultState: SessionState = {
@@ -93,8 +83,6 @@ const defaultState: SessionState = {
   dashboardVersion: "b",
   appState: "pre-download",
   registrationState: "default",
-  complianceView: "all_clear",
-  alertsEnabled: true,
   hasEIN: true,
   appName: "",
   website: "",
@@ -255,14 +243,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setState((prev) => ({ ...prev, registrationState }));
   }, []);
 
-  const setComplianceView = useCallback((complianceView: ComplianceView) => {
-    setState((prev) => ({ ...prev, complianceView }));
-  }, []);
-
-  const setAlertsEnabled = useCallback((alertsEnabled: boolean) => {
-    setState((prev) => ({ ...prev, alertsEnabled }));
-  }, []);
-
   return (
     <SessionContext.Provider
       value={{
@@ -280,8 +260,6 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         setDashboardVersion,
         setAppState,
         setRegistrationState,
-        setComplianceView,
-        setAlertsEnabled,
       }}
     >
       {children}

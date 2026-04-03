@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useSession } from "@/context/session-context";
-import type { RegistrationState, ComplianceView } from "@/context/session-context";
+import type { RegistrationState } from "@/context/session-context";
 
 const TABS = [
   { id: "overview", label: "Overview", href: (appId: string) => `/apps/${appId}/overview` },
@@ -19,7 +19,7 @@ const APP_NAMES: Record<string, string> = {
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { appId } = useParams<{ appId: string }>();
   const pathname = usePathname();
-  const { state, setRegistrationState, setComplianceView, setAlertsEnabled, setLoggedIn } = useSession();
+  const { state, setRegistrationState, setLoggedIn } = useSession();
 
   // App pages are always logged-in
   useEffect(() => {
@@ -56,26 +56,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <option value="changes_requested">Extended Review</option>
               <option value="rejected">Rejected</option>
             </select>
-            {state.registrationState === "approved" && (
-              <select
-                value={state.complianceView}
-                onChange={(e) => setComplianceView(e.target.value as ComplianceView)}
-                className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
-              >
-                <option value="all_clear">All clear</option>
-                <option value="has_alerts">Has alerts</option>
-              </select>
-            )}
-            {isOverview && (
-              <select
-                value={state.alertsEnabled ? "on" : "off"}
-                onChange={(e) => setAlertsEnabled(e.target.value === "on")}
-                className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
-              >
-                <option value="on">Alerts on</option>
-                <option value="off">Alerts off</option>
-              </select>
-            )}
           </div>
 
           {/* Status indicator */}
