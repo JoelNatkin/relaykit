@@ -72,7 +72,7 @@ describe('POST /v1/messages', () => {
   });
 
   it('returns 422 template_not_found for unknown namespace/event', async () => {
-    const res = await post({ namespace: 'nonexistent', event: 'nope', to: '+1555', data: {} });
+    const res = await post({ namespace: 'nonexistent', event: 'nope', to: '+15551234567', data: {} });
     expect(res.status).toBe(422);
     const body = await res.json();
     expect(body.error.code).toBe('template_not_found');
@@ -118,7 +118,7 @@ describe('POST /v1/messages', () => {
     const res = await post({
       namespace: 'custom',
       event: 'send',
-      to: '+1555',
+      to: '+15551234567',
       data: {},
     });
     expect(res.status).toBe(422);
@@ -135,8 +135,8 @@ describe('POST /v1/messages', () => {
       time: '10:00 AM',
     };
     const [res1, res2] = await Promise.all([
-      post({ namespace: 'appointments', event: 'sendConfirmation', to: '+1555', data }),
-      post({ namespace: 'appointments', event: 'sendConfirmation', to: '+1555', data }),
+      post({ namespace: 'appointments', event: 'sendConfirmation', to: '+15551234567', data }),
+      post({ namespace: 'appointments', event: 'sendConfirmation', to: '+15551234567', data }),
     ]);
     const body1 = await res1.json();
     const body2 = await res2.json();

@@ -22,6 +22,7 @@ export interface ErrorResponse {
 export type AppVariables = {
   user_id: string | null;
   environment: 'sandbox' | 'live';
+  api_key_id: string;
 };
 
 export interface ConsentRecord {

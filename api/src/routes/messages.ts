@@ -1,18 +1,65 @@
-import { randomUUID } from 'node:crypto';
 import type { Context } from 'hono';
 import type { AppVariables } from '../types.js';
-import { validateMessageRequest } from './shared.js';
+import type { MessageContext } from '../pipeline/types.js';
+import { runPipeline } from '../pipeline/run.js';
+import { normalize } from '../pipeline/steps/normalize.js';
+import { interpolateStep } from '../pipeline/steps/interpolate.js';
+import { send } from '../pipeline/steps/send.js';
+import { logDelivery } from '../pipeline/steps/log-delivery.js';
+
+interface MessageBody {
+  namespace?: string;
+  event?: string;
+  to?: string;
+  data?: Record<string, string>;
+}
 
 export async function handlePostMessages(c: Context<{ Variables: AppVariables }>) {
-  const result = await validateMessageRequest(c);
-  if (!result.ok) return result.response;
+  let body: MessageBody;
+  try {
+    body = await c.req.json<MessageBody>();
+  } catch {
+    return c.json(
+      { error: { code: 'invalid_data', message: 'Invalid or missing request body' } },
+      400,
+    );
+  }
 
-  const { to, message } = result.value;
-  const id = `msg_${randomUUID()}`;
-  const timestamp = new Date().toISOString();
+  const { namespace, event, to, data } = body;
 
-  // Stub: log the composed message. Real Sinch integration comes later.
-  console.log(`[send] ${id} → ${to}: ${message}`);
+  if (!namespace || !event || !to || !data) {
+    const missing = [
+      !namespace && 'namespace',
+      !event && 'event',
+      !to && 'to',
+      !data && 'data',
+    ].filter(Boolean);
+    return c.json(
+      { error: { code: 'invalid_data', message: `Missing required fields: ${missing.join(', ')}` } },
+      400,
+    );
+  }
 
-  return c.json({ id, status: 'sent', timestamp });
+  const initialCtx: MessageContext = {
+    userId: c.get('user_id'),
+    environment: c.get('environment'),
+    apiKeyId: c.get('api_key_id'),
+    namespace,
+    event,
+    toPhone: to,
+    data,
+  };
+
+  const result = await runPipeline(
+    [normalize, interpolateStep, send, logDelivery],
+    initialCtx,
+  );
+
+  if (result instanceof Response) return result;
+
+  return c.json({
+    id: result.messageId,
+    status: result.status,
+    timestamp: result.timestamp,
+  });
 }

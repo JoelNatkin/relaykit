@@ -27,6 +27,7 @@ export function createAuthMiddleware(lookup: KeyLookup): MiddlewareHandler<{ Var
 
     c.set('user_id', record.user_id ?? null);
     c.set('environment', record.environment);
+    c.set('api_key_id', record.id);
 
     await next();
   };
