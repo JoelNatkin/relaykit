@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { createAuthMiddleware } from './middleware/auth.js';
+import { createRateLimiter } from './middleware/rate-limit.js';
 import { createConsentHandlers } from './routes/consent.js';
 import { handlePostMessages } from './routes/messages.js';
 import { handlePostPreview } from './routes/preview.js';
@@ -16,7 +17,7 @@ export function createApp(lookup: KeyLookup, consentStore?: ConsentStore) {
   });
 
   // Public endpoints (no auth required)
-  app.post('/v1/signup/sandbox', handlePostSignupSandbox);
+  app.post('/v1/signup/sandbox', createRateLimiter(5, 60 * 60 * 1000), handlePostSignupSandbox);
 
   const v1 = new Hono<{ Variables: AppVariables }>();
   v1.use('*', createAuthMiddleware(lookup));
