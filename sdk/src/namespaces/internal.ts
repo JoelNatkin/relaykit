@@ -11,16 +11,16 @@ import type {
 export function createInternal(options: ClientOptions): InternalNamespace {
   return {
     sendMeetingReminder(phone: string, data: InternalMeetingData): Promise<SendResult | null> {
-      return sendMessage(options, 'internal_meeting_reminder', phone, data as unknown as Record<string, unknown>);
+      return sendMessage(options, 'internal', 'sendMeetingReminder', phone, data as unknown as Record<string, unknown>);
     },
     sendScheduleChange(
       phone: string,
       data: InternalScheduleChangeData,
     ): Promise<SendResult | null> {
-      return sendMessage(options, 'internal_schedule_change', phone, data as unknown as Record<string, unknown>);
+      return sendMessage(options, 'internal', 'sendScheduleChange', phone, data as unknown as Record<string, unknown>);
     },
     sendShiftConfirmation(phone: string, data: InternalShiftData): Promise<SendResult | null> {
-      return sendMessage(options, 'internal_shift_confirmation', phone, data as unknown as Record<string, unknown>);
+      return sendMessage(options, 'internal', 'sendShiftConfirmation', phone, data as unknown as Record<string, unknown>);
     },
   };
 }

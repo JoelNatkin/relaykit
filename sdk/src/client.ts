@@ -1,7 +1,7 @@
 import { RelayKitError } from './errors.js';
 import type { ConsentRecord, SendResult } from './types.js';
 
-const RELAYKIT_API_URL = 'https://api.relaykit.ai/v1';
+const RELAYKIT_API_URL = process.env.RELAYKIT_API_URL ?? 'https://api.relaykit.ai/v1';
 
 export interface ClientOptions {
   apiKey: string | null;
@@ -20,7 +20,8 @@ function warn(message: string): null {
  */
 export async function sendMessage(
   options: ClientOptions,
-  messageType: string,
+  namespace: string,
+  event: string,
   to: string,
   data: Record<string, unknown>,
 ): Promise<SendResult | null> {
@@ -41,7 +42,7 @@ export async function sendMessage(
         'Content-Type': 'application/json',
         Authorization: `Bearer ${options.apiKey}`,
       },
-      body: JSON.stringify({ to, message_type: messageType, data }),
+      body: JSON.stringify({ namespace, event, to, data }),
     });
 
     if (!response.ok) {

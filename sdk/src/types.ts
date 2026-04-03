@@ -31,8 +31,9 @@ export interface RecordConsentParams {
 
 /** Parameters for the generic send() escape hatch. */
 export interface SendParams {
+  namespace: string;
+  event: string;
   to: string;
-  messageType: string;
   data: Record<string, unknown>;
 }
 

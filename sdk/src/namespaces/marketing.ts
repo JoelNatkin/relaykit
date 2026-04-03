@@ -5,10 +5,10 @@ import type { MarketingContentData, MarketingNamespace, SendResult } from '../ty
 export function createMarketing(options: ClientOptions): MarketingNamespace {
   return {
     sendPromotion(phone: string, data: MarketingContentData): Promise<SendResult | null> {
-      return sendMessage(options, 'marketing_weekly_promotion', phone, data as unknown as Record<string, unknown>);
+      return sendMessage(options, 'marketing', 'sendPromotion', phone, data as unknown as Record<string, unknown>);
     },
     sendNewArrivals(phone: string, data: MarketingContentData): Promise<SendResult | null> {
-      return sendMessage(options, 'marketing_new_arrivals', phone, data as unknown as Record<string, unknown>);
+      return sendMessage(options, 'marketing', 'sendNewArrivals', phone, data as unknown as Record<string, unknown>);
     },
   };
 }

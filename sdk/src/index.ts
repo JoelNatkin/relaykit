@@ -85,11 +85,11 @@ export class RelayKit {
   }
 
   /**
-   * Send a message directly by message type.
+   * Send a message directly by namespace and event.
    * Use for custom messages or the 'exploring' use case.
    */
   send(params: SendParams): Promise<SendResult | null> {
-    return sendMessage(this.options, params.messageType, params.to, params.data);
+    return sendMessage(this.options, params.namespace, params.event, params.to, params.data);
   }
 }
 

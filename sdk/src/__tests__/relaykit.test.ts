@@ -99,7 +99,8 @@ describe('Graceful failure (default mode)', () => {
     const rk = new RelayKit();
     const result = await rk.send({
       to: '+1555',
-      messageType: 'custom',
+      namespace: 'custom',
+      event: 'send',
       data: { foo: 'bar' },
     });
     expect(result).toBeNull();
@@ -142,7 +143,7 @@ describe('Strict mode', () => {
   it('send() with no API key throws RelayKitError', async () => {
     const rk = new RelayKit({ strict: true });
     await expect(
-      rk.send({ to: '+1555', messageType: 'custom', data: {} }),
+      rk.send({ to: '+1555', namespace: 'custom', event: 'send', data: {} }),
     ).rejects.toThrow(RelayKitError);
   });
 });
@@ -179,8 +180,9 @@ describe('Namespace structure', () => {
       json: async () => ({ id: 'msg_2', status: 'queued' }),
     });
     const params: SendParams = {
+      namespace: 'custom',
+      event: 'sendNotification',
       to: '+15551234567',
-      messageType: 'custom_notification',
       data: { content: 'Hello' },
     };
     const result = await rk.send(params);
@@ -216,14 +218,15 @@ describe('Type contracts (compile-time)', () => {
     expect(result).toBeDefined();
   });
 
-  it('send() accepts { to, messageType, data: Record<string, unknown> }', async () => {
+  it('send() accepts { namespace, event, to, data: Record<string, unknown> }', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ id: 'msg_5', status: 'sent' }),
     });
     const result = await rk.send({
+      namespace: 'test',
+      event: 'sendTest',
       to: '+1555',
-      messageType: 'test',
       data: { key: 'value', nested: { a: 1 } },
     });
     expect(result).toBeDefined();

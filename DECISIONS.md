@@ -1036,3 +1036,7 @@ _Affects: Pricing model, Stripe subscription management, marketing copy, registr
 Marketing is already a selectable vertical on the category landing page. A local boutique sending only promotions and sale announcements is a legitimate use case with no transactional events. Forcing a transactional campaign registration for a business that will never send transactional messages is unnecessary cost and complexity. Marketing-only registers one marketing campaign at $19/month. Requires EIN (D-302). If the developer later wants to add transactional messages (e.g., order confirmations), on-demand activation submits the transactional campaign and subscription adjusts to $29/month — same D-294 mechanics, reversed direction.
 Amends D-294: removes the constraint that marketing requires transactional as a prerequisite.
 _Affects: Registration pipeline, pricing model, category landing page, intake flow._
+
+**D-306 — SDK sends namespace + event, not message_type** (Date: 2026-04-03)
+The SDK request body changes from `{ to, message_type, data }` to `{ namespace, event, to, data }` to match the API server's validated contract (shared.ts). The flat `message_type` field (e.g. `appointments_booking_confirmation`) is removed. Each namespace function passes its namespace and event name directly. No migration needed — no production consumers exist yet.
+_Affects: SDK client.ts, SDK namespace files, API routes/messages.ts._
