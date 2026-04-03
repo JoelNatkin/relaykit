@@ -19,14 +19,14 @@ describe('template registry', () => {
   });
 
   const expectedCounts: [string, number][] = [
-    ['appointments', 3],
-    ['orders', 3],
-    ['verification', 2],
-    ['support', 2],
-    ['marketing', 2],
-    ['internal', 2],
-    ['community', 2],
-    ['waitlist', 2],
+    ['appointments', 5],
+    ['orders', 5],
+    ['verification', 3],
+    ['support', 3],
+    ['marketing', 3],
+    ['internal', 3],
+    ['community', 4],
+    ['waitlist', 4],
   ];
 
   it.each(expectedCounts)(

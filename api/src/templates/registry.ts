@@ -27,6 +27,15 @@ export const registry: Record<string, Record<string, MessageTemplate>> = {
       variables: ['business_name', 'service_type', 'time'],
       description: '24 hours before appointment',
     },
+    sendReschedule: {
+      id: 'appointments_reschedule_confirmation',
+      namespace: 'appointments',
+      event: 'sendReschedule',
+      template:
+        '{business_name}: Your {service_type} appointment has been rescheduled to {date} at {time}. Reply STOP to unsubscribe.',
+      variables: ['business_name', 'service_type', 'date', 'time'],
+      description: 'When appointment is rescheduled',
+    },
     sendCancellation: {
       id: 'appointments_cancellation',
       namespace: 'appointments',
@@ -35,6 +44,15 @@ export const registry: Record<string, Record<string, MessageTemplate>> = {
         '{business_name}: Your appointment on {date} has been cancelled. To rebook, visit {website_url} or call us. Reply STOP to unsubscribe.',
       variables: ['business_name', 'date', 'website_url'],
       description: 'When appointment is cancelled',
+    },
+    sendNoShow: {
+      id: 'appointments_noshow_followup',
+      namespace: 'appointments',
+      event: 'sendNoShow',
+      template:
+        '{business_name}: We missed you at your {service_type} appointment today. To rebook, visit {website_url} or call us. Reply STOP to unsubscribe.',
+      variables: ['business_name', 'service_type', 'website_url'],
+      description: 'Follow-up after a no-show',
     },
   },
 
@@ -57,14 +75,32 @@ export const registry: Record<string, Record<string, MessageTemplate>> = {
       variables: ['business_name', 'order_id', 'tracking_url'],
       description: 'When order ships',
     },
-    sendDelivery: {
+    sendDelivered: {
       id: 'orders_delivered',
       namespace: 'orders',
-      event: 'sendDelivery',
+      event: 'sendDelivered',
       template:
         '{business_name}: Your order #{order_id} was delivered today. We hope you love it! Reply STOP to opt out.',
       variables: ['business_name', 'order_id'],
       description: 'When delivery is confirmed',
+    },
+    sendReturn: {
+      id: 'orders_return_confirmation',
+      namespace: 'orders',
+      event: 'sendReturn',
+      template:
+        '{business_name}: Your return for order #{order_id} has been received. We\'ll process your refund within 5-7 business days. Reply STOP to opt out.',
+      variables: ['business_name', 'order_id'],
+      description: 'When return is received',
+    },
+    sendRefund: {
+      id: 'orders_refund_confirmation',
+      namespace: 'orders',
+      event: 'sendRefund',
+      template:
+        '{business_name}: Your refund for order #{order_id} has been processed. Please allow 3-5 business days for it to appear. Reply STOP to opt out.',
+      variables: ['business_name', 'order_id'],
+      description: 'When refund is processed',
     },
   },
 
@@ -87,17 +123,35 @@ export const registry: Record<string, Record<string, MessageTemplate>> = {
       variables: ['app_name', 'code'],
       description: 'When user requests password reset',
     },
+    sendNewDevice: {
+      id: 'verification_new_device',
+      namespace: 'verification',
+      event: 'sendNewDevice',
+      template:
+        '{app_name}: A new device ({device}) just signed into your account. If this wasn\'t you, secure your account immediately.',
+      variables: ['app_name', 'device'],
+      description: 'When login from unrecognized device',
+    },
   },
 
   support: {
-    sendAcknowledgment: {
+    sendTicketCreated: {
       id: 'support_acknowledgment',
       namespace: 'support',
-      event: 'sendAcknowledgment',
+      event: 'sendTicketCreated',
       template:
         '{business_name}: Thanks for reaching out! A support agent will respond shortly. Your ticket: #{ticket_id}. Reply STOP to opt out of messages.',
       variables: ['business_name', 'ticket_id'],
       description: 'When support request received',
+    },
+    sendStatusUpdate: {
+      id: 'support_status_update',
+      namespace: 'support',
+      event: 'sendStatusUpdate',
+      template:
+        '{business_name} Support: Your ticket #{ticket_id} has been updated — status is now {status}. Reply STOP to unsubscribe.',
+      variables: ['business_name', 'ticket_id', 'status'],
+      description: 'When ticket status changes',
     },
     sendResolution: {
       id: 'support_resolution',
@@ -129,6 +183,15 @@ export const registry: Record<string, Record<string, MessageTemplate>> = {
       variables: ['business_name', 'website_url'],
       description: 'Loyalty program triggers',
     },
+    sendNewArrivals: {
+      id: 'marketing_new_arrivals',
+      namespace: 'marketing',
+      event: 'sendNewArrivals',
+      template:
+        '{business_name}: New arrivals just dropped! Check out what\'s new at {website_url}. Reply STOP to unsubscribe.',
+      variables: ['business_name', 'website_url'],
+      description: 'New product announcements',
+    },
   },
 
   internal: {
@@ -149,6 +212,15 @@ export const registry: Record<string, Record<string, MessageTemplate>> = {
         '{business_name} Alert: Schedule change — your shift on {date} has been moved to {time}. Please confirm by replying OK. Reply STOP to unsubscribe.',
       variables: ['business_name', 'date', 'time'],
       description: 'When schedule is updated',
+    },
+    sendShiftConfirmation: {
+      id: 'internal_shift_confirmation',
+      namespace: 'internal',
+      event: 'sendShiftConfirmation',
+      template:
+        '{business_name}: Your shift on {date} at {time} is confirmed. Reply STOP to opt out.',
+      variables: ['business_name', 'date', 'time'],
+      description: 'When shift is assigned or confirmed',
     },
   },
 
@@ -171,6 +243,24 @@ export const registry: Record<string, Record<string, MessageTemplate>> = {
       variables: ['community_name'],
       description: 'When member joins',
     },
+    sendGroupUpdate: {
+      id: 'community_group_update',
+      namespace: 'community',
+      event: 'sendGroupUpdate',
+      template:
+        '{community_name}: {content} Reply STOP to opt out of updates.',
+      variables: ['community_name', 'content'],
+      description: 'General group announcement',
+    },
+    sendRenewalNotice: {
+      id: 'community_renewal_notice',
+      namespace: 'community',
+      event: 'sendRenewalNotice',
+      template:
+        '{community_name}: Your membership renews on {renewal_date}. Questions? Reply HELP. Reply STOP to unsubscribe.',
+      variables: ['community_name', 'renewal_date'],
+      description: 'Membership renewal reminder',
+    },
   },
 
   waitlist: {
@@ -191,6 +281,24 @@ export const registry: Record<string, Record<string, MessageTemplate>> = {
         '{business_name}: Your table is ready! Please check in at the host stand within 10 minutes. Reply STOP to unsubscribe.',
       variables: ['business_name'],
       description: 'When spot opens',
+    },
+    sendReservationConfirmed: {
+      id: 'waitlist_reservation_confirmed',
+      namespace: 'waitlist',
+      event: 'sendReservationConfirmed',
+      template:
+        '{business_name}: Your reservation is confirmed for {date} at {time}. See you then! Reply STOP to opt out.',
+      variables: ['business_name', 'date', 'time'],
+      description: 'When reservation is confirmed',
+    },
+    sendWaitTimeUpdate: {
+      id: 'waitlist_wait_time_update',
+      namespace: 'waitlist',
+      event: 'sendWaitTimeUpdate',
+      template:
+        '{business_name}: Updated wait time — approximately {estimated_wait}. We\'ll text when your spot is ready. Reply STOP to opt out.',
+      variables: ['business_name', 'estimated_wait'],
+      description: 'When wait time estimate changes',
     },
   },
 };

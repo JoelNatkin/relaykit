@@ -1040,3 +1040,7 @@ _Affects: Registration pipeline, pricing model, category landing page, intake fl
 **D-306 — SDK sends namespace + event, not message_type** (Date: 2026-04-03)
 The SDK request body changes from `{ to, message_type, data }` to `{ namespace, event, to, data }` to match the API server's validated contract (shared.ts). The flat `message_type` field (e.g. `appointments_booking_confirmation`) is removed. Each namespace function passes its namespace and event name directly. No migration needed — no production consumers exist yet.
 _Affects: SDK client.ts, SDK namespace files, API routes/messages.ts._
+
+**D-307 — SDK method names are the public API; registry keys align to them** (Date: 2026-04-03)
+When SDK method names and registry event keys differ, the registry is renamed to match the SDK. The SDK was validated in 25 experiment rounds and represents what developers expect. Registry event keys are internal. Missing templates are added for all SDK-exposed methods so no method produces a 422. Extends D-306.
+_Affects: API templates/registry.ts._
