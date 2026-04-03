@@ -1044,3 +1044,7 @@ _Affects: SDK client.ts, SDK namespace files, API routes/messages.ts._
 **D-307 — SDK method names are the public API; registry keys align to them** (Date: 2026-04-03)
 When SDK method names and registry event keys differ, the registry is renamed to match the SDK. The SDK was validated in 25 experiment rounds and represents what developers expect. Registry event keys are internal. Missing templates are added for all SDK-exposed methods so no method produces a 422. Extends D-306.
 _Affects: API templates/registry.ts._
+
+**D-308 — API error responses use { error: { code, message } } format; SDK reads from this structure** (Date: 2026-04-03)
+The SDK's error parsing is updated to read `response.error.message` instead of top-level `reason`. The `SendResult.reason` field is populated from `error.message` on failure. The API error format is the source of truth. Extends D-287.
+_Affects: SDK client.ts._

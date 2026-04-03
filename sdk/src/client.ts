@@ -46,8 +46,8 @@ export async function sendMessage(
     });
 
     if (!response.ok) {
-      const err: { reason?: string } = await response.json().catch(() => ({}));
-      const reason = err.reason ?? 'unknown';
+      const err = await response.json().catch(() => ({})) as { error?: { code?: string; message?: string } };
+      const reason = err.error?.message ?? 'unknown';
 
       if (options.strict) {
         throw new RelayKitError(`Message failed (${response.status}): ${reason}`, 'SEND_FAILED');
@@ -94,8 +94,8 @@ export async function consentRequest(
     const response = await fetch(`${RELAYKIT_API_URL}${path}`, init);
 
     if (!response.ok) {
-      const err: { reason?: string } = await response.json().catch(() => ({}));
-      const reason = err.reason ?? 'unknown';
+      const err = await response.json().catch(() => ({})) as { error?: { code?: string; message?: string } };
+      const reason = err.error?.message ?? 'unknown';
 
       if (options.strict) {
         throw new RelayKitError(
