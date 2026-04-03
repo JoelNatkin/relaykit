@@ -1048,3 +1048,7 @@ _Affects: API templates/registry.ts._
 **D-308 — API error responses use { error: { code, message } } format; SDK reads from this structure** (Date: 2026-04-03)
 The SDK's error parsing is updated to read `response.error.message` instead of top-level `reason`. The `SendResult.reason` field is populated from `error.message` on failure. The API error format is the source of truth. Extends D-287.
 _Affects: SDK client.ts._
+
+**D-309 — Quiet hours enforcement at the proxy level** (Date: 2026-04-03)
+Marketing messages are blocked/queued outside 8 AM–9 PM recipient local time (determined by area code NPA-NXX lookup). Transactional messages are allowed through with an optional warning. This protects customers from TCPA quiet hours liability automatically. Implementation is proxy-level — developers never think about it. Queued messages are delivered when the recipient's quiet hours end.
+_Affects: Messaging proxy, message queue, NPA-NXX timezone lookup._
