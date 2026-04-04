@@ -7,7 +7,6 @@ import {
   interpolateTemplate,
   getMessageNature,
   getTooltipText,
-  getAiPrompts,
 } from "@/lib/catalog-helpers";
 
 /* ── Inline variable styling ── */
@@ -28,7 +27,7 @@ function InfoIcon({ className }: { className?: string }) {
 
 function PencilIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
     </svg>
   );
@@ -52,13 +51,11 @@ interface ComplianceResult {
 }
 
 function checkCompliance(text: string, message: Message): ComplianceResult {
-  // Check for missing opt-out language
   const hasOptOut = /stop|opt.?out|unsubscribe/i.test(text);
   if (message.requiresStop && !hasOptOut) {
     const fixed = text.trimEnd().replace(/\.?$/, ". Reply STOP to opt out.");
     return { isCompliant: false, issue: "Missing opt-out language", fixedText: fixed };
   }
-  // Check for missing business name
   const hasBusinessName = /\{app_name\}|GlowStudio|glowstudio/i.test(text);
   if (!hasBusinessName && text.length > 20) {
     const fixed = `GlowStudio: ${text}`;
@@ -99,7 +96,6 @@ export function CatalogCard({
   const nature = getMessageNature(message);
   const isMarketing = nature === "Marketing";
   const tooltipText = getTooltipText(message);
-  const aiSuggestions = getAiPrompts(message, categoryId);
 
   const currentTemplate = savedText ?? message.template;
 
@@ -121,7 +117,6 @@ export function CatalogCard({
     }, 2000);
   }, [message]);
 
-  // Clean up timer on unmount
   useEffect(() => {
     return () => {
       if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
@@ -144,7 +139,6 @@ export function CatalogCard({
   }
 
   function handleSave() {
-    // Save is disabled while non-compliant — this shouldn't fire, but guard
     if (!compliance.isCompliant) return;
     setSavedText(editText);
     setSuggestionText(null);
@@ -176,7 +170,6 @@ export function CatalogCard({
       const interpolated = getInterpolatedText(template);
       setSuggestionText(interpolated);
       setActiveVariantId(variantId);
-      // Pill/AI changes are pre-validated — clear compliance state
       setCompliance({ isCompliant: true, issue: null, fixedText: null });
       setShowComplianceHint(false);
     }
@@ -207,8 +200,6 @@ export function CatalogCard({
     setEditText(newText);
     checkComplianceDebounced(newText);
   }
-
-  /* ── Render interpolated preview ── */
 
   function renderPreview(template: string) {
     const segments = interpolateTemplate(template, categoryId, state);
@@ -278,8 +269,8 @@ export function CatalogCard({
 
         {/* Message body */}
         {isEditing ? (
-          <div className="mt-2">
-            {/* Textarea — same font as preview text */}
+          <div className="mt-4">
+            {/* Textarea */}
             <textarea
               ref={textareaRef}
               value={displayText}
@@ -288,11 +279,20 @@ export function CatalogCard({
               rows={3}
             />
 
-            {/* Compliance hint — quiet grey text */}
+            {/* Compliance hint + Fix — below textarea, above pills */}
             {showFix && compliance.issue && (
-              <p className="mt-1.5 text-xs text-text-quaternary">
-                {compliance.issue}
-              </p>
+              <div className="mt-1.5 flex items-center justify-between gap-3">
+                <p className="text-xs text-[#F97066]">
+                  {compliance.issue}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleFix}
+                  className="flex-shrink-0 rounded-md border border-border-primary px-2.5 py-1 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer"
+                >
+                  Fix
+                </button>
+              </div>
             )}
 
             {/* Accept / Revert for suggestions */}
@@ -315,9 +315,9 @@ export function CatalogCard({
               </div>
             )}
 
-            {/* Edit controls panel */}
-            <div className="mt-4 space-y-4 border-t border-border-secondary pt-4">
-              {/* Style pills — badge-style, matching vertical badge design */}
+            {/* Edit controls — no divider, closer to textarea */}
+            <div className="mt-3 space-y-3">
+              {/* Style pills */}
               {variants && variants.length > 1 && (
                 <div className="flex flex-wrap items-center gap-2">
                   <button
@@ -357,47 +357,23 @@ export function CatalogCard({
                 className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
               />
 
-              {/* Contextual AI suggestions — per-message from catalog-helpers */}
-              <div className="flex flex-wrap gap-x-4 gap-y-1.5">
-                {aiSuggestions.map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    className="text-xs text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-                    onClick={() => {/* stubbed — future AI rewrite */}}
-                  >
-                    {suggestion}
-                  </button>
-                ))}
-              </div>
-
               {/* Save / Cancel — right-aligned */}
               <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="rounded-lg border border-border-primary px-4 py-2 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer"
+                  className="px-3 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary cursor-pointer"
                 >
                   Cancel
                 </button>
-                {showFix ? (
-                  <button
-                    type="button"
-                    onClick={handleFix}
-                    className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                  >
-                    Fix
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={!compliance.isCompliant}
-                    className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Save
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={!compliance.isCompliant}
+                  className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Save
+                </button>
               </div>
             </div>
           </div>
