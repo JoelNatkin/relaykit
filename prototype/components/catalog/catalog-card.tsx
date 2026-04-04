@@ -72,6 +72,7 @@ export interface CatalogCardProps {
   state: SessionState;
   variants?: VariantSet[];
   onSend?: (messageId: string) => void;
+  sendIcon?: React.ReactNode;
 }
 
 export function CatalogCard({
@@ -80,6 +81,7 @@ export function CatalogCard({
   state,
   variants,
   onSend,
+  sendIcon,
 }: CatalogCardProps) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -395,10 +397,14 @@ export function CatalogCard({
         <button
           type="button"
           onClick={handleSend}
-          className="flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-secondary_hover cursor-pointer"
+          className={`flex items-center justify-center transition duration-100 ease-linear cursor-pointer ${
+            sendIcon
+              ? "text-fg-tertiary hover:text-fg-secondary"
+              : "w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs hover:bg-bg-secondary_hover"
+          }`}
           aria-label="Send to my phone"
         >
-          <SendIcon />
+          {sendIcon ?? <SendIcon />}
         </button>
       </div>
     </div>

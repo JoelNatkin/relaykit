@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import { Phone01 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
@@ -41,7 +42,7 @@ export default function AppMessagesPage() {
   const { appId } = useParams<{ appId: string }>();
   const { state, setField } = useSession();
 
-  const isSandbox = state.registrationState === "default";
+  const isWizard = state.registrationState === "default";
   const isApproved = state.registrationState === "approved";
   const categoryId = state.selectedCategory || "appointments";
   const allMessages = MESSAGES[categoryId] || [];
@@ -72,23 +73,29 @@ export default function AppMessagesPage() {
 
   const continueHref = `/apps/${appId}/opt-in`;
 
+  const phoneIcon = <Phone01 className="size-[18px]" />;
+
   return (
     <div>
       {/* Header with optional top Continue (D-318) */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className={`mb-6 flex items-center ${isWizard ? "justify-center" : "justify-between"}`}>
+        {/* Spacer for centering when wizard has Continue */}
+        {isWizard && <div className="w-[88px]" />}
         <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-        {isSandbox && (
+        {isWizard ? (
           <Link
             href={continueHref}
             className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
           >
             Continue
           </Link>
+        ) : (
+          <div />
         )}
       </div>
 
-      {/* Message cards — full width (D-317) */}
-      <div className="max-w-[540px]">
+      {/* Message cards */}
+      <div className={isWizard ? "" : "max-w-[540px]"}>
         <div className="space-y-5">
           {coreMessages.map((message) => (
             <CatalogCard
@@ -98,13 +105,14 @@ export default function AppMessagesPage() {
               state={state}
               variants={variants}
               onSend={handleSend}
+              sendIcon={isWizard ? phoneIcon : undefined}
             />
           ))}
         </div>
 
-        {/* Bottom Continue (D-318) */}
-        {isSandbox && (
-          <div className="mt-8">
+        {/* Bottom Continue (D-318) — wizard only */}
+        {isWizard && (
+          <div className="mt-8 flex justify-center">
             <Link
               href={continueHref}
               className="inline-flex rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
