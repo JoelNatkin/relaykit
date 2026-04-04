@@ -1,23 +1,24 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { Message, VariantSet } from "@/data/messages";
 import type { SessionState } from "@/context/session-context";
 import {
   interpolateTemplate,
   getMessageNature,
   getTooltipText,
+  getAiPrompts,
 } from "@/lib/catalog-helpers";
 
 /* ── Inline variable styling ── */
 
-const VAR_CLASSES = "font-normal text-text-brand-secondary";
+const VAR_CLASSES = "text-text-brand-secondary";
 
 /* ── Icons ── */
 
 function InfoIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <svg className={className} width="14" height="14" viewBox="0 0 16 16" fill="none">
       <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
       <path d="M8 7V11" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
       <circle cx="8" cy="5.25" r="0.75" fill="currentColor" />
@@ -25,22 +26,45 @@ function InfoIcon({ className }: { className?: string }) {
   );
 }
 
-function EditIcon({ className }: { className?: string }) {
+function PencilIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
+    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 3a2.828 2.828 0 114 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
     </svg>
   );
 }
 
 function SendIcon({ className }: { className?: string }) {
   return (
-    <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg className={className} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <line x1="22" y1="2" x2="11" y2="13" />
       <polygon points="22 2 15 22 11 13 2 9 22 2" />
     </svg>
   );
+}
+
+/* ── Compliance check (stub) ── */
+
+interface ComplianceResult {
+  isCompliant: boolean;
+  issue: string | null;
+  fixedText: string | null;
+}
+
+function checkCompliance(text: string, message: Message): ComplianceResult {
+  // Check for missing opt-out language
+  const hasOptOut = /stop|opt.?out|unsubscribe/i.test(text);
+  if (message.requiresStop && !hasOptOut) {
+    const fixed = text.trimEnd().replace(/\.?$/, ". Reply STOP to opt out.");
+    return { isCompliant: false, issue: "Missing opt-out language", fixedText: fixed };
+  }
+  // Check for missing business name
+  const hasBusinessName = /\{app_name\}|GlowStudio|glowstudio/i.test(text);
+  if (!hasBusinessName && text.length > 20) {
+    const fixed = `GlowStudio: ${text}`;
+    return { isCompliant: false, issue: "Missing business name", fixedText: fixed };
+  }
+  return { isCompliant: true, issue: null, fixedText: null };
 }
 
 /* ── CatalogCard component ── */
@@ -49,9 +73,7 @@ export interface CatalogCardProps {
   message: Message;
   categoryId: string;
   state: SessionState;
-  /** Style variants available for this category */
   variants?: VariantSet[];
-  /** Called when send button is clicked */
   onSend?: (messageId: string) => void;
 }
 
@@ -69,13 +91,16 @@ export function CatalogCard({
   const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
   const [suggestionText, setSuggestionText] = useState<string | null>(null);
   const [aiInput, setAiInput] = useState("");
+  const [compliance, setCompliance] = useState<ComplianceResult>({ isCompliant: true, issue: null, fixedText: null });
+  const [showComplianceHint, setShowComplianceHint] = useState(false);
+  const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const nature = getMessageNature(message);
   const isMarketing = nature === "Marketing";
   const tooltipText = getTooltipText(message);
+  const aiSuggestions = getAiPrompts(message, categoryId);
 
-  // The working template — saved edits take precedence
   const currentTemplate = savedText ?? message.template;
 
   // Auto-resize textarea
@@ -84,41 +109,76 @@ export function CatalogCard({
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
-  }, [isEditing, editText]);
+  }, [isEditing, editText, suggestionText]);
+
+  // Compliance check with 2-second debounce on manual edits
+  const checkComplianceDebounced = useCallback((text: string) => {
+    if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
+    complianceTimerRef.current = setTimeout(() => {
+      const result = checkCompliance(text, message);
+      setCompliance(result);
+      setShowComplianceHint(!result.isCompliant);
+    }, 2000);
+  }, [message]);
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
+    };
+  }, []);
+
+  function getInterpolatedText(template: string): string {
+    return interpolateTemplate(template, categoryId, state).map(s => s.text).join("");
+  }
 
   function enterEdit() {
-    setEditText(currentTemplate);
+    const interpolated = getInterpolatedText(currentTemplate);
+    setEditText(interpolated);
     setActiveVariantId(null);
     setSuggestionText(null);
     setAiInput("");
+    setCompliance({ isCompliant: true, issue: null, fixedText: null });
+    setShowComplianceHint(false);
     setIsEditing(true);
   }
 
   function handleSave() {
-    const textToSave = suggestionText ?? editText;
-    setSavedText(textToSave);
+    // Save is disabled while non-compliant — this shouldn't fire, but guard
+    if (!compliance.isCompliant) return;
+    setSavedText(editText);
     setSuggestionText(null);
     setActiveVariantId(null);
     setIsEditing(false);
+  }
+
+  function handleFix() {
+    if (compliance.fixedText) {
+      setEditText(compliance.fixedText);
+      setCompliance({ isCompliant: true, issue: null, fixedText: null });
+      setShowComplianceHint(false);
+    }
   }
 
   function handleCancel() {
     setSuggestionText(null);
     setActiveVariantId(null);
+    setCompliance({ isCompliant: true, issue: null, fixedText: null });
+    setShowComplianceHint(false);
     setIsEditing(false);
   }
 
   function handlePillClick(variantId: string) {
-    if (variantId === "current") {
-      // "Current" pill — restore saved/original text as suggestion
-      setSuggestionText(currentTemplate);
-      setActiveVariantId("current");
-      return;
-    }
-    const variantTemplate = message.variants?.[variantId];
-    if (variantTemplate) {
-      setSuggestionText(variantTemplate);
+    const template = variantId === "current"
+      ? currentTemplate
+      : message.variants?.[variantId];
+    if (template) {
+      const interpolated = getInterpolatedText(template);
+      setSuggestionText(interpolated);
       setActiveVariantId(variantId);
+      // Pill/AI changes are pre-validated — clear compliance state
+      setCompliance({ isCompliant: true, issue: null, fixedText: null });
+      setShowComplianceHint(false);
     }
   }
 
@@ -139,6 +199,15 @@ export function CatalogCard({
     onSend?.(message.id);
   }
 
+  function handleTextChange(newText: string) {
+    if (suggestionText !== null) {
+      setSuggestionText(null);
+      setActiveVariantId(null);
+    }
+    setEditText(newText);
+    checkComplianceDebounced(newText);
+  }
+
   /* ── Render interpolated preview ── */
 
   function renderPreview(template: string) {
@@ -156,20 +225,37 @@ export function CatalogCard({
     );
   }
 
-  // The text shown in the textarea — suggestion takes precedence for display
   const displayText = suggestionText ?? editText;
   const hasSuggestion = suggestionText !== null && suggestionText !== editText;
+  const showFix = !compliance.isCompliant && showComplianceHint;
 
   return (
-    <div className="relative flex items-start gap-3">
+    <div className="relative flex items-stretch gap-3">
       {/* Card */}
       <div className="flex-1 rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
         {/* Header row */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-sm font-semibold text-text-primary truncate">
               {message.name}
             </span>
+            {/* Info tooltip — inline with title */}
+            <div className="relative flex-shrink-0">
+              <button
+                type="button"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                className="text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
+                aria-label={tooltipText}
+              >
+                <InfoIcon />
+              </button>
+              {showTooltip && (
+                <div className="absolute left-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed pointer-events-none">
+                  {tooltipText}
+                </div>
+              )}
+            </div>
             {isMarketing && (
               <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0 bg-[#F9F5FF] border border-[#E9D7FE] text-[#7C3AED]">
                 Marketing
@@ -177,57 +263,37 @@ export function CatalogCard({
             )}
           </div>
 
-          <div className="flex items-center gap-1 flex-shrink-0">
-            {/* Info tooltip */}
-            <div className="relative">
-              <button
-                type="button"
-                onMouseEnter={() => setShowTooltip(true)}
-                onMouseLeave={() => setShowTooltip(false)}
-                className="p-1 text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
-                aria-label={tooltipText}
-              >
-                <InfoIcon />
-              </button>
-              {showTooltip && (
-                <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed pointer-events-none">
-                  {tooltipText}
-                </div>
-              )}
-            </div>
-
-            {/* Edit button — hidden during edit */}
-            {!isEditing && (
-              <button
-                type="button"
-                onClick={enterEdit}
-                className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                aria-label="Edit message"
-              >
-                <EditIcon />
-              </button>
-            )}
-          </div>
+          {/* Edit button — right side of header, hidden during edit */}
+          {!isEditing && (
+            <button
+              type="button"
+              onClick={enterEdit}
+              className="flex-shrink-0 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+              aria-label="Edit message"
+            >
+              <PencilIcon />
+            </button>
+          )}
         </div>
 
         {/* Message body */}
         {isEditing ? (
           <div className="mt-2">
-            {/* Textarea */}
+            {/* Textarea — same font as preview text */}
             <textarea
               ref={textareaRef}
               value={displayText}
-              onChange={(e) => {
-                if (suggestionText !== null) {
-                  // If typing while a suggestion is shown, accept it and continue editing
-                  setSuggestionText(null);
-                  setActiveVariantId(null);
-                }
-                setEditText(e.target.value);
-              }}
-              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-secondary leading-relaxed font-mono shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear resize-none"
+              onChange={(e) => handleTextChange(e.target.value)}
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-secondary leading-relaxed shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear resize-none"
               rows={3}
             />
+
+            {/* Compliance hint — quiet grey text */}
+            {showFix && compliance.issue && (
+              <p className="mt-1.5 text-xs text-text-quaternary">
+                {compliance.issue}
+              </p>
+            )}
 
             {/* Accept / Revert for suggestions */}
             {hasSuggestion && (
@@ -235,14 +301,14 @@ export function CatalogCard({
                 <button
                   type="button"
                   onClick={acceptSuggestion}
-                  className="rounded-lg bg-bg-brand-solid px-3 py-1.5 text-xs font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                  className="rounded-full bg-bg-brand-secondary px-3.5 py-1.5 text-xs font-medium text-text-brand-secondary transition duration-100 ease-linear hover:bg-bg-brand-primary_alt cursor-pointer"
                 >
                   Accept
                 </button>
                 <button
                   type="button"
                   onClick={revertSuggestion}
-                  className="rounded-lg border border-border-primary px-3 py-1.5 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer"
+                  className="rounded-full border border-border-primary px-3.5 py-1.5 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer"
                 >
                   Revert
                 </button>
@@ -251,16 +317,16 @@ export function CatalogCard({
 
             {/* Edit controls panel */}
             <div className="mt-4 space-y-4 border-t border-border-secondary pt-4">
-              {/* Style pills */}
+              {/* Style pills — badge-style, matching vertical badge design */}
               {variants && variants.length > 1 && (
                 <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
                     onClick={() => handlePillClick("current")}
-                    className={`rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
+                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
                       activeVariantId === "current"
                         ? "bg-bg-brand-secondary text-text-brand-secondary"
-                        : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
+                        : "border border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
                     }`}
                   >
                     Current
@@ -270,10 +336,10 @@ export function CatalogCard({
                       key={v.id}
                       type="button"
                       onClick={() => handlePillClick(v.id)}
-                      className={`rounded-full px-3 py-1 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
+                      className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
                         activeVariantId === v.id
                           ? "bg-bg-brand-secondary text-text-brand-secondary"
-                          : "bg-bg-secondary text-text-secondary hover:bg-bg-secondary_hover"
+                          : "border border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
                       }`}
                     >
                       {v.label}
@@ -283,19 +349,17 @@ export function CatalogCard({
               )}
 
               {/* AI help input */}
-              <div>
-                <input
-                  type="text"
-                  value={aiInput}
-                  onChange={(e) => setAiInput(e.target.value)}
-                  placeholder="How should we change this?"
-                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-                />
-              </div>
+              <input
+                type="text"
+                value={aiInput}
+                onChange={(e) => setAiInput(e.target.value)}
+                placeholder="How should we change this?"
+                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+              />
 
-              {/* Contextual AI suggestions — stubbed */}
-              <div className="flex flex-wrap gap-x-4 gap-y-1">
-                {getContextualSuggestions(message).map((suggestion) => (
+              {/* Contextual AI suggestions — per-message from catalog-helpers */}
+              <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+                {aiSuggestions.map((suggestion) => (
                   <button
                     key={suggestion}
                     type="button"
@@ -307,15 +371,8 @@ export function CatalogCard({
                 ))}
               </div>
 
-              {/* Save / Cancel */}
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                >
-                  Save
-                </button>
+              {/* Save / Cancel — right-aligned */}
+              <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={handleCancel}
@@ -323,6 +380,24 @@ export function CatalogCard({
                 >
                   Cancel
                 </button>
+                {showFix ? (
+                  <button
+                    type="button"
+                    onClick={handleFix}
+                    className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                  >
+                    Fix
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={!compliance.isCompliant}
+                    className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Save
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -339,37 +414,17 @@ export function CatalogCard({
         )}
       </div>
 
-      {/* Send button — floats outside the card on the right */}
-      <button
-        type="button"
-        onClick={handleSend}
-        className="mt-4 flex-shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-bg-brand-solid text-white shadow-sm transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-        aria-label="Send to my phone"
-      >
-        <SendIcon />
-      </button>
+      {/* Send button — centered vertically, tertiary styling */}
+      <div className="flex items-center flex-shrink-0">
+        <button
+          type="button"
+          onClick={handleSend}
+          className="flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-secondary_hover cursor-pointer"
+          aria-label="Send to my phone"
+        >
+          <SendIcon />
+        </button>
+      </div>
     </div>
   );
-}
-
-/* ── Contextual AI suggestions per message type ── */
-
-function getContextualSuggestions(message: Message): string[] {
-  const id = message.id;
-  if (id.includes("booking") || id.includes("confirmation")) {
-    return ["Add a reschedule link", "Include preparation instructions"];
-  }
-  if (id.includes("reminder")) {
-    return ["Add directions or parking info", "Include cancellation policy"];
-  }
-  if (id.includes("reschedule")) {
-    return ["Add a rebooking link"];
-  }
-  if (id.includes("cancel")) {
-    return ["Add a rebooking prompt"];
-  }
-  if (id.includes("no_show") || id.includes("noshow")) {
-    return ["Soften the tone", "Add a rebooking link"];
-  }
-  return ["Make it shorter", "Make it more casual"];
 }

@@ -79,15 +79,10 @@ export default function AppMessagesPage() {
           {/* Messages header */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-            <p className="mt-1 text-sm text-text-secondary">
-              {isApproved
-                ? "Your registered messages. Edit copy, add new messages, or adapt existing ones."
-                : "Pre-written for your use case. Edit any message, or click send to test it on your phone."}
-            </p>
           </div>
 
           {/* Message cards */}
-          <div className="space-y-3">
+          <div className="space-y-5">
             {coreMessages.map((message) => (
               <CatalogCard
                 key={message.id}
