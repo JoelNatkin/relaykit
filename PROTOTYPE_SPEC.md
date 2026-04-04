@@ -260,27 +260,30 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 
 ### Messages Page — `/apps/[appId]/messages`
 **File:** `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/components/catalog/catalog-card.tsx`
-**Status:** REDESIGNED — Phase 2 card redesign (WORKSPACE_DESIGN_SPEC.md)
+**Status:** REDESIGNED — Phase 2 card redesign + wizard skeleton (WORKSPACE_DESIGN_SPEC.md)
 
 ---
 
 #### Layout
 
-**Two-column layout** (`lg:grid-cols-[1fr_376px]`) — messages left (`max-w-[500px]`), opt-in right.
+**Full-width layout (D-317):** No opt-in column. Messages get the full viewport. Opt-in form is a separate wizard step at `/apps/[appId]/opt-in`.
+
+**Wizard mode (sandbox/Default):**
+- Header: "Messages" h2 left, "Continue" button right (D-318)
+- Message cards full-width (`max-w-[540px]`)
+- Second "Continue" button below last message card (D-318 — dual Continue, only wizard step with this treatment)
+- Continue navigates to `/apps/[appId]/opt-in`
+- No Settings gear, no Sandbox indicator, no state switcher label in header (layout hides these via `isWizardMode`)
+- State switcher dropdown preserved (dev tool only)
+
+**Post-registration states:** Same full-width card layout, no Continue buttons, no wizard chrome. Header shows only "Messages" h2.
 
 **Page-level controls removed (Phase 2a):**
-- Global style pill bar (Brand-first / Action-first / Context-first / Marketing) — gone, pills live inside card edit state
-- Personalize button + slideout — gone, replaced by intake summary panel (Phase 3)
+- Global style pill bar — gone, pills live inside card edit state
+- Personalize button + slideout — gone
 - Show template / Show preview toggle — gone
 - Copy all — gone
-
-*Left column — Messages:*
-- "Messages" h2 + body copy (state-dependent — sandbox vs approved)
-- Message cards (`CatalogCard`) — no card numbers, no global variant controls
-
-*Right column (sticky, `lg:top-20`):*
-- "Opt-in form" (`text-lg font-semibold`) + body copy
-- `CatalogOptIn` — unchanged from prior design
+- Opt-in right column — gone (D-317, moved to own page)
 
 ---
 
@@ -318,7 +321,25 @@ All render the same Messages page content as Default/sandbox. Registration state
 Same card redesign. Key differences:
 - Registered values baked in (GlowStudio, glowstudio.com, etc.) — `REGISTERED_VALUES` constant sets personalization on mount.
 - Messages header copy: "Your registered messages. Edit copy, add new messages, or adapt existing ones."
-- Opt-in copy: "Your registered opt-in form. RelayKit keeps it current with your compliance site."
+- No opt-in column (moved to own page). No Continue buttons in approved state.
+
+---
+
+### Opt-in Form Preview — `/apps/[appId]/opt-in`
+**File:** `prototype/app/apps/[appId]/opt-in/page.tsx`
+**Status:** NEW — wizard Step 5.5 (D-317)
+
+Wizard step between messages and signup. Read-only opt-in form preview.
+
+**Layout:** Single column, `max-w-[500px]`.
+- Heading: "Your opt-in form" (`text-lg font-semibold`)
+- Context line: "RelayKit generates and maintains this for you. Your AI tool builds it into your app." (`text-sm text-text-secondary`, `mb-8`)
+- `CatalogOptIn` component — populated with GlowStudio demo data from session state (appName, website, coreMessages). Read-only.
+- "Continue" button below opt-in form (`mt-8`). Same primary purple treatment as other wizard advances.
+- Continue target: placeholder — signup page not built yet. Currently links back to messages.
+- Stub note: "Signup page coming soon" in `text-xs text-text-quaternary` below Continue.
+
+**Wizard chrome:** Same as messages page — no Sandbox indicator, no Settings gear. Layout `isWizardMode` detection covers `/opt-in` path.
 
 ---
 
@@ -608,7 +629,8 @@ prototype/
 │   │       ├── overview/
 │   │       │   ├── page.tsx              # Sandbox dashboard (compliance card + build steps + sidebar)
 │   │       │   └── approved-dashboard.tsx # Full 3×2 card grid (Approved state)
-│   │       ├── messages/page.tsx         # [IN PROGRESS] — state-based rendering needed
+│   │       ├── messages/page.tsx         # Messages workspace — full width, dual Continue in wizard
+│   │       ├── opt-in/page.tsx          # Opt-in form preview — wizard Step 5.5 (D-317)
 │   │       ├── register/
 │   │       │   ├── page.tsx              # Registration form (BusinessDetailsForm)
 │   │       │   └── review/page.tsx       # Review & confirm (ReviewConfirm)
