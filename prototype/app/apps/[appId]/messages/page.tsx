@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
-import { CatalogOptIn } from "@/components/catalog/catalog-opt-in";
 
 /* ── localStorage personalization ── */
 
@@ -41,6 +41,7 @@ export default function AppMessagesPage() {
   const { appId } = useParams<{ appId: string }>();
   const { state, setField } = useSession();
 
+  const isSandbox = state.registrationState === "default";
   const isApproved = state.registrationState === "approved";
   const categoryId = state.selectedCategory || "appointments";
   const allMessages = MESSAGES[categoryId] || [];
@@ -69,49 +70,49 @@ export default function AppMessagesPage() {
     console.log("Send message:", messageId);
   }
 
+  const continueHref = `/apps/${appId}/opt-in`;
+
   return (
     <div>
-      {/* Two-column layout */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_376px]">
+      {/* Header with optional top Continue (D-318) */}
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
+        {isSandbox && (
+          <Link
+            href={continueHref}
+            className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+          >
+            Continue
+          </Link>
+        )}
+      </div>
 
-        {/* LEFT — messages */}
-        <div className="max-w-[540px]">
-          {/* Messages header */}
-          <div className="mb-6">
-            <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-          </div>
-
-          {/* Message cards */}
-          <div className="space-y-5">
-            {coreMessages.map((message) => (
-              <CatalogCard
-                key={message.id}
-                message={message}
-                categoryId={categoryId}
-                state={state}
-                variants={variants}
-                onSend={handleSend}
-              />
-            ))}
-          </div>
+      {/* Message cards — full width (D-317) */}
+      <div className="max-w-[540px]">
+        <div className="space-y-5">
+          {coreMessages.map((message) => (
+            <CatalogCard
+              key={message.id}
+              message={message}
+              categoryId={categoryId}
+              state={state}
+              variants={variants}
+              onSend={handleSend}
+            />
+          ))}
         </div>
 
-        {/* RIGHT — opt-in only */}
-        <div className="max-w-[376px] lg:ml-auto lg:self-start lg:sticky lg:top-20">
-          <h2 className="text-lg font-semibold text-text-primary mb-1">
-            Opt-in form
-          </h2>
-          <p className="mb-6 text-sm text-text-secondary">
-            {isApproved
-              ? "Your registered opt-in form. RelayKit keeps it current with your compliance site."
-              : "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."}
-          </p>
-          <CatalogOptIn
-            appName={state.appName}
-            website={state.website}
-            allMessages={coreMessages}
-          />
-        </div>
+        {/* Bottom Continue (D-318) */}
+        {isSandbox && (
+          <div className="mt-8">
+            <Link
+              href={continueHref}
+              className="inline-flex rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+            >
+              Continue
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -32,6 +32,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isApproved = state.registrationState === "approved";
   const isOverview = pathname.endsWith("/overview");
   const isRegisterFlow = pathname.includes("/register");
+  const isMessages = pathname.endsWith("/messages");
+  const isOptIn = pathname.endsWith("/opt-in");
+  const isWizardMode = isSandbox && (isMessages || isOptIn);
   const [period, setPeriod] = useState("this_month");
 
   return (
@@ -86,7 +89,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 Registration rejected
               </span>
             )}
-            {state.registrationState === "default" && (
+            {state.registrationState === "default" && !isWizardMode && (
               <span className="flex items-center gap-1.5 text-sm text-text-secondary">
                 <span className="inline-block h-2 w-2 rounded-full bg-[#98A2B3]" />
                 Sandbox
@@ -94,8 +97,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             )}
           </div>
 
-          {/* Settings gear — sandbox only (post-registration uses Settings tab) */}
-          {isSandbox && (
+          {/* Settings gear — sandbox only, hidden in wizard mode */}
+          {isSandbox && !isWizardMode && (
             <Link
               href={`/apps/${appId}/settings`}
               className="ml-4 p-1.5 text-fg-tertiary hover:text-fg-secondary transition duration-100 ease-linear"

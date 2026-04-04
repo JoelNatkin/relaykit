@@ -24,12 +24,12 @@ export interface VariantSet {
 
 export const CATEGORY_VARIANTS: Record<string, VariantSet[]> = {
   appointments: [
-    { id: "standard", label: "Standard" },
+    { id: "standard", label: "Brand-first" },
     { id: "action-first", label: "Action-first" },
     { id: "context-first", label: "Context-first" },
   ],
   verification: [
-    { id: "standard", label: "Standard" },
+    { id: "standard", label: "Brand-first" },
     { id: "action-first", label: "Action-first" },
   ],
 };
