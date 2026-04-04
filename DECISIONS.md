@@ -1084,7 +1084,7 @@ Signup (Step 6) is triggered by a "Continue" button at the bottom of the message
 _Affects: Wizard flow UX, Step 6 design, WORKSPACE_DESIGN_SPEC.md._
 
 **D-317 — Opt-in form is a wizard step between messages and signup, not on the messages page** (Date: 2026-04-04)
-The opt-in form preview moves from the messages page right column to its own wizard step between messages and signup. Read-only, populated with developer's business name and message types from intake. "Continue" advances to signup. Messages page gets full viewport for message cards. Supersedes the two-column layout with opt-in on the right.
+The opt-in form preview moves from the messages page right column to its own wizard step between messages and signup. Read-only, populated with developer's business name and message types from intake. "Continue" advances to signup. Messages page gets full viewport for message cards. Post-onboarding, the opt-in form is viewable on demand from the messages page (modal or slideout — design TBD). Supersedes the two-column layout with opt-in on the right.
 _Affects: Messages page layout, wizard flow, opt-in form component._
 
 **D-318 — Messages wizard step has Continue at top and bottom** (Date: 2026-04-04)
