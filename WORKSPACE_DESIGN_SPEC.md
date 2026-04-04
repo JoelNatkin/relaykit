@@ -200,10 +200,33 @@ In addition to per-card send buttons, a floating or bottom-anchored button: "Sen
 - All interactions are inline. No modals for editing. No modals for sending. The page is the workspace.
 - The global style pill bar above the cards is removed — pills live inside each card's edit state
 - The global "Personalize," "Show template," and "Copy all" controls are removed — personalization is handled by the intake summary panel; template view and copy are not needed in the new flow
+- **Full-width layout (D-317):** No opt-in column on the right. Messages get the full viewport. Opt-in form preview is its own wizard step (Step 5.5).
+- **Dual Continue (D-318):** "Continue" button in both the top header area and below the last message card. Only wizard step with this treatment — the page is long enough that developers may not scroll. All other steps use bottom-only.
+- **No workspace chrome in wizard mode:** No Settings gear, no state switcher dropdown, no Sandbox indicator. These only appear after signup when the page becomes the workspace.
+- **Style pill rename:** First variant is "Brand-first" (not "Standard"). Naming is placeholder pending future review. Pill order in edit state: Current, Brand-first, Action-first, Context-first.
+
+### Step 5.5: `/start/[vertical]/opt-in` — Opt-in Form Preview (D-317)
+
+**URL:** `relaykit.ai/start/[vertical]/opt-in`
+**Auth required:** No
+**Inserted between messages and signup.**
+
+The developer sees their opt-in form — read-only, auto-generated from their business name and message types. This is not a form they fill out. It's a preview of something RelayKit builds and maintains for them.
+
+**Layout:**
+- Heading: "Your opt-in form"
+- Context line: "RelayKit generates and maintains this for you. Your AI tool builds it into your app."
+- Rendered opt-in form preview — populated with business name and all message types from the selected category. Same `CatalogOptIn` component used previously in the messages right column.
+- "Continue" button at bottom — same wizard treatment as other steps.
+
+**Design notes:**
+- This is a fast screen — the developer glances, sees it looks right, hits Continue.
+- The opt-in form is read-only. No editing. Editing business name happens in the intake summary panel on the messages page (or later in Settings).
+- Content-centered layout, max-width ~500px. Not two-column.
 
 ### Step 6: Signup
 
-**Triggered by:** "Continue" button at the bottom of the messages step — same visual treatment as every other wizard advance. Not a separate decision moment. Not triggered by send-to-phone. The developer has looked at their messages, maybe edited a couple, maybe sent a test. When they're ready, they scroll down and hit the same kind of button they've been hitting since the vertical picker.
+**Triggered by:** "Continue" button at the bottom of the opt-in form step — same visual treatment as every other wizard advance. Not a separate decision moment. Not triggered by send-to-phone. The developer has looked at their messages, maybe edited a couple, maybe sent a test, seen their opt-in form. When they're ready, they hit Continue.
 
 **Appears as:** The next step in the wizard flow, not a modal or gate. Same page structure as prior steps.
 
