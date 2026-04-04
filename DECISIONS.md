@@ -1021,6 +1021,7 @@ _Affects: Website message editing UX, SDK type generation, custom message author
 
 **D-302 — EIN required for marketing messages, verified at sandbox access** (Date: 2026-04-03)
 Marketing messages require an EIN — this is a carrier constraint (sole props are limited to one transactional campaign and cannot register a second marketing campaign). When a developer wants to access marketing messages in the website authoring surface, they enter their EIN. RelayKit verifies the EIN and auto-populates business identity fields (legal name, address, entity type, state of registration) from authoritative sources. Developer confirms or corrects. This catches EIN/business-name mismatches before TCR submission — every prevented rejection saves ~$15 in vetting fees and protects RelayKit's ISV trust score. Transactional-only users are not affected — EIN is only required when marketing messages are accessed. Data sources to investigate: IRS Business Master File, state Secretary of State databases, commercial APIs (Middesk, Enigma) at ~$1-3 per lookup.
+AMENDED: EIN is required for any second campaign of any type, not just marketing. Sole props without EIN are limited to one campaign of any type. A developer wanting appointments + orders needs an EIN just as much as one wanting appointments + marketing.
 _Affects: Website intake flow, sandbox experience, registration pipeline, TCR submission quality._
 
 **D-303 — Business identity pre-validation: auto-populate registration fields from EIN lookup** (Date: 2026-04-03)
@@ -1052,3 +1053,32 @@ _Affects: SDK client.ts._
 **D-309 — Quiet hours enforcement at the proxy level** (Date: 2026-04-03)
 Marketing messages are blocked/queued outside 8 AM–9 PM recipient local time (determined by area code NPA-NXX lookup). Transactional messages are allowed through with an optional warning. This protects customers from TCPA quiet hours liability automatically. Implementation is proxy-level — developers never think about it. Queued messages are delivered when the recipient's quiet hours end.
 _Affects: Messaging proxy, message queue, NPA-NXX timezone lookup._
+
+**D-310 — EIN and business identity are per-app, not per-account** (Date: 2026-04-04)
+Business identity (EIN, legal name, address, entity type) is scoped to the app, not the user account. A developer with two apps can have two different business identities. This supports the multi-app future (PRD_11) and matches the "everything scoped to app" design principle. URL structure uses /app/[appId]/.
+_Affects: Data model, Settings page, registration pipeline, intake wizard._
+
+**D-311 — Multiple categories submit simultaneously at registration — no sequencing** (Date: 2026-04-04)
+When a developer has two categories (e.g., appointments + marketing), both submit as separate TCR campaigns in a single registration action. No "primary first, second later" sequencing. One submission, one fee, all campaigns reviewed together. Simplifies the go-live experience and matches the "one action" pricing model (D-314).
+_Affects: Registration pipeline, go-live screen, TCR submission logic._
+
+**D-312 — TCR allows up to 5 campaigns per brand; v1 supports max 2** (Date: 2026-04-04)
+TCR's limit is 5 campaigns per registered brand. RelayKit v1 supports a maximum of 2 campaigns per app (one primary + one secondary). Additional campaigns beyond 2 are backlogged for future consideration. This keeps pricing simple (D-304) while leaving room to grow.
+_Affects: Category selection UI, registration pipeline, future pricing tiers._
+
+**D-313 — Pre-auth message send requires special endpoint or session token** (Date: 2026-04-04)
+Before signup, the developer has a verified phone (Step 4) but no API key. Sending test messages from the website in this pre-auth state requires either a special unauthenticated endpoint scoped to the verified phone and session, or a temporary session token. The mechanism must prevent abuse while allowing the "send to my phone" hook moment before any commitment. Design TBD.
+_Affects: API design, pre-auth messages page, rate limiting, abuse prevention._
+
+**D-314 — Single $99 go-live fee replaces the two-fee split ($49 submission + $150 approval)** (Date: 2026-04-04)
+The two-fee structure ($49 at submission, $150 at approval) mapped to internal process steps the developer shouldn't know about. The wizard-to-workspace flow presents "Go live" as a single action — pricing matches. $99 one-time + $19/mo ongoing. Full refund if registration is rejected. $99 stays in impulse range for indie developers while filtering uncommitted signups. The monthly subscription is the real revenue model; the setup fee is cost recovery and a quality filter.
+Supersedes: D-193 ($49 at submission), D-216 ($150 at approval). Amends: D-196 (beta pricing — update to $99 flat, capped slots).
+_Affects: Pricing model, Stripe configuration, go-live screen copy, PRICING_MODEL.md, marketing site._
+
+**D-315 — Price revealed at signup step, not at go-live or on arrival** (Date: 2026-04-04)
+Pricing is shown at the signup step (Step 6 in the wizard): "Free while you build. $99 + $19/mo when you're ready for real delivery." The developer has completed intake, seen their messages, and optionally sent a test — they understand the value before seeing the cost. No pricing on the arrival/landing frame (premature, they haven't felt the value). No deferring to go-live (surprise after hours of building). Signup itself is free. The line is informational, not a gate. The developer builds with full knowledge of the cost from signup onward.
+_Affects: Signup screen copy, WORKSPACE_DESIGN_SPEC.md Step 6, marketing site pricing page._
+
+**D-316 — Signup is a wizard step, not a separate decision moment** (Date: 2026-04-04)
+Signup (Step 6) is triggered by a "Continue" button at the bottom of the messages step — same visual treatment as every other wizard advance. Not a modal. Not triggered by send-to-phone. Not a "Sign up" or "Create account" CTA. The developer scrolls down and hits the same kind of button they've been hitting since the vertical picker. This prevents the "committal CTA that people skip" problem — if signup feels like a gate, developers will avoid it and build without knowing the price. As a natural wizard step, they flow into it and see the pricing (D-315) before investing engineering time.
+_Affects: Wizard flow UX, Step 6 design, WORKSPACE_DESIGN_SPEC.md._

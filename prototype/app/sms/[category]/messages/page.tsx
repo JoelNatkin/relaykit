@@ -1237,16 +1237,7 @@ function StepsLayout({
                   message={message}
                   categoryId={categoryId}
                   state={state}
-                  globalViewMode={viewMode}
-                  activeTemplate={getActiveTemplate(message)}
-                  isPromptsOpen={expandedCardId === message.id}
-                  onTogglePrompts={() =>
-                    setExpandedCardId((prev) =>
-                      prev === message.id ? null : message.id
-                    )
-                  }
-                  onRequestPersonalize={() => setShowPersonalize(true)}
-                  cardNumber={i + 1}
+                  variants={variants}
                 />
               ))}
             </div>
@@ -1549,16 +1540,7 @@ export default function PublicMessagesPage() {
                   message={message}
                   categoryId={categoryId}
                   state={state}
-                  globalViewMode={viewMode}
-                  activeTemplate={getActiveTemplate(message)}
-                  isPromptsOpen={expandedCardId === message.id}
-                  onTogglePrompts={() =>
-                    setExpandedCardId((prev) =>
-                      prev === message.id ? null : message.id
-                    )
-                  }
-                  onRequestPersonalize={() => setShowPersonalize(true)}
-                  cardNumber={i + 1}
+                  variants={variants}
                 />
               ))}
             </div>

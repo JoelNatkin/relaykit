@@ -258,56 +258,67 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 
 ---
 
-### Messages Tab — `/apps/[appId]/messages`
-**File:** `prototype/app/apps/[appId]/messages/page.tsx`
-**Status:** Default state STABLE; Approved state DIFFERENTIATED (D-159)
-
-**Signed up, pre-download:** `[NOT YET DESIGNED]` — Initial download happens on the public Messages page. Overview and Settings don't exist until project is created at download time (D-162).
+### Messages Page — `/apps/[appId]/messages`
+**File:** `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/components/catalog/catalog-card.tsx`
+**Status:** REDESIGNED — Phase 2 card redesign (WORKSPACE_DESIGN_SPEC.md)
 
 ---
 
-#### Default state — post-download, pre-registration (STABLE)
+#### Layout
 
-**Playbook summary (D-217, D-222, D-224):** Full-width gray band (`bg-bg-secondary`, `py-8`) immediately below tab bar — no gap. Contains `PlaybookSummary` component with `controlsSlot` prop. Layout top-to-bottom: heading ("Your complete appointment SMS system"), "AI tool setup ∨ | Download RelayKit" right-aligned on own line, 6-node numbered flow visualization (same as public page — 24px filled purple circles, white numbers, CSS tooltips, left-aligned labels), tagline. Content within `mx-auto max-w-5xl px-6`.
+**Two-column layout** (`lg:grid-cols-[1fr_376px]`) — messages left (`max-w-[500px]`), opt-in right.
 
-**AI tool setup panel** — toggled by the "AI tool setup" button (chevron rotates 180° when open). `isToolOpen` state in page component. Renders `<ToolPanel />` inside the gray band: 6-tool logo row (Code02 for "Other", D-192) + per-tool instruction + copyable command. Collapsed by default (D-160).
-
-**Personalization slideout (D-184):** Unchanged — right-side overlay panel, identical to public page.
-
-**Two-column layout** (`lg:grid-cols-[1fr_376px]`, `pt-6`) — messages left (`max-w-[500px]`), opt-in right:
+**Page-level controls removed (Phase 2a):**
+- Global style pill bar (Brand-first / Action-first / Context-first / Marketing) — gone, pills live inside card edit state
+- Personalize button + slideout — gone, replaced by intake summary panel (Phase 3)
+- Show template / Show preview toggle — gone
+- Copy all — gone
 
 *Left column — Messages:*
-- "Messages" h2 + body copy: "Copy, adapt, or have your AI tool riff. RelayKit keeps them compliant."
-- Style variant pills (Brand-first / Action-first / Context-first / Marketing with ArrowDown icon) — `flex-wrap` with `whitespace-nowrap`. Marketing pill scrolls to `#marketing-section`.
-- Toolbar row (`mb-3`): Left: "Personalize" (brand purple semibold, Sliders04 icon). Right: "Show template"/"Show preview" toggle + "Copy all".
-- Default view: template mode — variables render as brand-purple inline text (D-187).
-- 6 numbered `CatalogCard` components (D-223) — brand purple number to left of title, no checkboxes (D-171), "Modify with AI ›" expander per card (D-174). Same order as public page.
-- "Need marketing messages too?" marketing callout — updated copy: "Discount offers, re-engagement, birthday messages — add marketing alongside your appointment reminders." + "Learn more →" button opens marketing modal (D-254).
+- "Messages" h2 + body copy (state-dependent — sandbox vs approved)
+- Message cards (`CatalogCard`) — no card numbers, no global variant controls
 
 *Right column (sticky, `lg:top-20`):*
-- "Opt-in form" (`text-lg font-semibold`) + body: "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."
-- `CatalogOptIn` (preview only, no copy — D-173). Placeholder fields: "Enter name", "Enter phone" (D-190).
+- "Opt-in form" (`text-lg font-semibold`) + body copy
+- `CatalogOptIn` — unchanged from prior design
 
-**All 5 registration states render the same content.** (D-170)
+---
+
+#### CatalogCard — Default State
+
+Each card shows the full message text, not truncated.
+
+- **Title row:** Message name (bold), info icon (i) with hover tooltip, edit button (pencil icon). No card numbers. No template/preview toggle. No copy button. No "Modify with AI" in default state.
+- **Message text:** Full message below title. Variables highlighted in brand color (`text-text-brand-secondary font-normal`). Always shows interpolated preview (not raw template).
+- **Send button:** Round icon button (paper plane), floats outside the card on the right side via absolute positioning. Always one tap to send to primary phone. `bg-bg-brand-solid text-white` with hover state. Vertically centered on the card.
+- **Marketing badge:** Shown on marketing-tier messages, same as before.
+
+---
+
+#### CatalogCard — Edit State
+
+Triggered by edit button click or by clicking into the message text.
+
+- **Title row:** Unchanged (name + info icon). Edit button hidden (already in edit mode).
+- **Textarea:** Replaces static message text. Full-width, auto-height, monospace-ish. Variables still highlighted where possible (plain text in textarea, variables shown as `{var_name}` syntax).
+- **Send button:** Still available on the right during edit — developer can test changes before saving.
+- **Edit controls panel** (bottom of card, expands on edit):
+  - **Style pills row:** "Current" pill (always first — restores saved version without canceling edit), then style variants from `CATEGORY_VARIANTS` data. Tapping a pill swaps textarea content to that variant. Accept/Revert buttons appear below textarea when pill content differs from current text.
+  - **AI help input:** Freeform text field with placeholder "How should we change this?" Stubbed — shows input but no AI call yet.
+  - **Contextual AI suggestions:** Per-message suggested modifications (links). Stubbed — tapping shows "Coming soon" or similar non-intrusive feedback.
+- **Save / Cancel buttons:** At bottom of card. Save commits textarea content. Cancel reverts to original and exits edit mode.
+- **Compliance stub:** Save always works for now. Future: manual edits that break compliance show quiet grey text after pause, Save swaps to "Fix."
 
 ---
 
 #### Pending / Changes Requested / Rejected states
-All three states render the Default layout. Registration state doesn't change Messages tab content pre-approval (D-170).
+All render the same Messages page content as Default/sandbox. Registration state doesn't change message card behavior.
 
-#### Approved state (D-159, D-244)
-
-**Differentiated from Default.** Key changes:
-- **No Personalize button or slideout.** Personalization is locked after registration.
-- **No metadata line.** Developer already knows their registration details from Overview/Settings.
-- **Toolbar row:** Show template / Copy all controls LEFT-aligned (`flex items-center gap-5`), no `justify-between`. No Personalize button.
-- **Registered values baked in:** Messages render in preview mode with registered values (GlowStudio, glowstudio.com, Beauty & wellness appointments) from `REGISTERED_VALUES` constant. `useEffect` forces preview mode and sets registered values on mount when `isApproved`.
-- **Messages header copy:** "You're live. These are your registered messages — add new ones, adapt existing ones, or have your AI tool riff on them. Compliance scanning keeps everything clean."
-- **Opt-in copy:** "Your registered opt-in form. RelayKit keeps it current with your compliance site."
-- **Download button:** "Re-download RelayKit" (instead of "Download RelayKit").
-- **Compliance status line:** Between playbook band and two-column layout. `pt-4 pb-2`, flex row. ShieldTick icon (`size-4 text-fg-success-primary`) + "All messages scanned before delivery. **2 issues caught and fixed this month.**" (mock data). Text-tertiary base, count in `text-text-secondary font-medium`. (D-241)
-- AI commands, variant pills, message cards, marketing callout all unchanged from Default.
-- No "registered" badges on individual message cards.
+#### Approved state
+Same card redesign. Key differences:
+- Registered values baked in (GlowStudio, glowstudio.com, etc.) — `REGISTERED_VALUES` constant sets personalization on mount.
+- Messages header copy: "Your registered messages. Edit copy, add new messages, or adapt existing ones."
+- Opt-in copy: "Your registered opt-in form. RelayKit keeps it current with your compliance site."
 
 ---
 
@@ -593,7 +604,7 @@ prototype/
 │   │   ├── page.tsx                      # Your Apps (project list)
 │   │   └── [appId]/
 │   │       ├── layout.tsx                # App shell (name, pill, tabs, state switchers, logged-in force)
-│   │       ├── page.tsx                  # Redirects to /overview
+│   │       ├── page.tsx                  # Redirects to /messages
 │   │       ├── overview/
 │   │       │   ├── page.tsx              # Sandbox dashboard (compliance card + build steps + sidebar)
 │   │       │   └── approved-dashboard.tsx # Full 3×2 card grid (Approved state)
