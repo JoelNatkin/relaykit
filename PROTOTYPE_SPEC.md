@@ -288,10 +288,11 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 
 Each card shows the full message text, not truncated.
 
-- **Title row:** Message name (bold), info icon (i) with hover tooltip, edit button (pencil icon). No card numbers. No template/preview toggle. No copy button. No "Modify with AI" in default state.
-- **Message text:** Full message below title. Variables highlighted in brand color (`text-text-brand-secondary font-normal`). Always shows interpolated preview (not raw template).
-- **Send button:** Round icon button (paper plane), floats outside the card on the right side via absolute positioning. Always one tap to send to primary phone. `bg-bg-brand-solid text-white` with hover state. Vertically centered on the card.
+- **Title row:** Message name (bold) + info icon (i) inline with 1.5 gap after title + pencil edit button right-aligned. Info icon shows tooltip on hover. No card numbers. No template/preview toggle. No copy button. No "Modify with AI" in default state.
+- **Message text:** Full message below title. Variables highlighted in brand color (`text-text-brand-secondary`). Always shows interpolated preview with real values (GlowStudio, etc.), not raw template syntax. Clicking text enters edit state.
+- **Send button:** Round icon button (paper plane, 15px), floats outside the card on the right side. Tertiary styling: `bg-bg-secondary text-fg-secondary`, `w-8 h-8`. Vertically centered on the card via `items-stretch` + `items-center` wrapper.
 - **Marketing badge:** Shown on marketing-tier messages, same as before.
+- **Card spacing:** `space-y-5` (20px) between cards.
 
 ---
 
@@ -300,14 +301,13 @@ Each card shows the full message text, not truncated.
 Triggered by edit button click or by clicking into the message text.
 
 - **Title row:** Unchanged (name + info icon). Edit button hidden (already in edit mode).
-- **Textarea:** Replaces static message text. Full-width, auto-height, monospace-ish. Variables still highlighted where possible (plain text in textarea, variables shown as `{var_name}` syntax).
+- **Textarea:** Replaces static message text. Full-width, auto-height, body font (not monospace). Shows personalized values (GlowStudio, etc.), not raw `{var_name}` template syntax. 8px spacing (`mt-4`) between title row and textarea.
 - **Send button:** Still available on the right during edit — developer can test changes before saving.
-- **Edit controls panel** (bottom of card, expands on edit):
-  - **Style pills row:** "Current" pill (always first — restores saved version without canceling edit), then style variants from `CATEGORY_VARIANTS` data. Tapping a pill swaps textarea content to that variant. Accept/Revert buttons appear below textarea when pill content differs from current text.
-  - **AI help input:** Freeform text field with placeholder "How should we change this?" Stubbed — shows input but no AI call yet.
-  - **Contextual AI suggestions:** Per-message suggested modifications (links). Stubbed — tapping shows "Coming soon" or similar non-intrusive feedback.
-- **Save / Cancel buttons:** At bottom of card. Save commits textarea content. Cancel reverts to original and exits edit mode.
-- **Compliance stub:** Save always works for now. Future: manual edits that break compliance show quiet grey text after pause, Save swaps to "Fix."
+- **Compliance feedback** (below textarea, above pills): After 2 seconds of inactivity on manual edits, if content is non-compliant (missing opt-out language, missing business name), a muted red hint line appears: text on left ("Missing opt-out language"), compact secondary Fix button on right. Fix auto-corrects the issue. Save button greys out (disabled) while non-compliant. When the developer fixes manually or clicks Fix, Save re-enables automatically. AI/pill changes are pre-validated — compliance feedback never appears on those.
+- **Edit controls panel** (bottom of card, no divider — `mt-3 space-y-3`):
+  - **Style pills row:** Badge-styled (`rounded-full px-3.5 py-1.5`). "Current" pill first (restores saved version), then category variants from `CATEGORY_VARIANTS`. Active: brand fill (`bg-bg-brand-secondary text-text-brand-secondary`). Inactive: outlined border (`border border-border-secondary text-text-tertiary`). Tapping a pill swaps textarea content as suggestion — Accept/Revert buttons appear.
+  - **AI help input:** Freeform text field with placeholder "How should we change this?" Stubbed — no AI call yet. No contextual suggestion links (removed — freeform input is sufficient).
+- **Save / Cancel buttons:** Right-aligned at bottom of card. Save is primary purple, Cancel is tertiary text-only. Save disabled while non-compliant.
 
 ---
 
