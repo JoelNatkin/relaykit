@@ -384,7 +384,7 @@ function RegistrationStepper({ steps }: { steps: StepperStep[] }) {
 
 export default function OverviewPage() {
   const { appId } = useParams<{ appId: string }>();
-  const { state: sessionState } = useSession();
+  const { state: sessionState, setRegistrationState } = useSession();
   const registrationState = sessionState.registrationState;
 
   const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());

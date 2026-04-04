@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
+import { Settings01 } from "@untitledui/icons";
 import { useSession } from "@/context/session-context";
 import type { RegistrationState } from "@/context/session-context";
 
-const TABS = [
+const ALL_TABS = [
   { id: "overview", label: "Overview", href: (appId: string) => `/apps/${appId}/overview` },
   { id: "messages", label: "Messages", href: (appId: string) => `/apps/${appId}/messages` },
   { id: "settings", label: "Settings", href: (appId: string) => `/apps/${appId}/settings` },
@@ -27,6 +28,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }, [state.isLoggedIn, setLoggedIn]);
 
   const appName = APP_NAMES[appId] || appId;
+  const isSandbox = state.registrationState === "default";
   const isApproved = state.registrationState === "approved";
   const isOverview = pathname.endsWith("/overview");
   const isRegisterFlow = pathname.includes("/register");
@@ -91,14 +93,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               </span>
             )}
           </div>
+
+          {/* Settings gear — sandbox only (post-registration uses Settings tab) */}
+          {isSandbox && (
+            <Link
+              href={`/apps/${appId}/settings`}
+              className="ml-4 p-1.5 text-fg-tertiary hover:text-fg-secondary transition duration-100 ease-linear"
+              aria-label="Settings"
+            >
+              <Settings01 className="size-5" />
+            </Link>
+          )}
         </div>
       </div>
 
-      {/* Tab bar — hidden on registration flow */}
-      {!isRegisterFlow && (
+      {/* Tab bar — hidden in sandbox (no navigational value) and registration flow */}
+      {!isRegisterFlow && !isSandbox && (
         <div className="border-b border-border-secondary">
         <div className="mx-auto max-w-5xl px-6 flex items-center gap-1">
-          {TABS.map((tab) => {
+          {ALL_TABS.map((tab) => {
             const href = tab.href(appId);
             const isActive = pathname === href || pathname.startsWith(href + "/");
             return (
