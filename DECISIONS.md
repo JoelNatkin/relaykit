@@ -1082,3 +1082,11 @@ _Affects: Signup screen copy, WORKSPACE_DESIGN_SPEC.md Step 6, marketing site pr
 **D-316 — Signup is a wizard step, not a separate decision moment** (Date: 2026-04-04)
 Signup (Step 6) is triggered by a "Continue" button at the bottom of the messages step — same visual treatment as every other wizard advance. Not a modal. Not triggered by send-to-phone. Not a "Sign up" or "Create account" CTA. The developer scrolls down and hits the same kind of button they've been hitting since the vertical picker. This prevents the "committal CTA that people skip" problem — if signup feels like a gate, developers will avoid it and build without knowing the price. As a natural wizard step, they flow into it and see the pricing (D-315) before investing engineering time.
 _Affects: Wizard flow UX, Step 6 design, WORKSPACE_DESIGN_SPEC.md._
+
+**D-317 — Opt-in form is a wizard step between messages and signup, not on the messages page** (Date: 2026-04-04)
+The opt-in form preview moves from the messages page right column to its own wizard step between messages and signup. Read-only, populated with developer's business name and message types from intake. "Continue" advances to signup. Messages page gets full viewport for message cards. Supersedes the two-column layout with opt-in on the right.
+_Affects: Messages page layout, wizard flow, opt-in form component._
+
+**D-318 — Messages wizard step has Continue at top and bottom** (Date: 2026-04-04)
+The messages page in wizard context has a Continue button in both the top header area and below the last message card. Only wizard step with dual Continue — the page is long enough that developers may not scroll. All other wizard steps use bottom-only.
+_Affects: Messages page layout, wizard navigation pattern._
