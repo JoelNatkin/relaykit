@@ -27,7 +27,7 @@ export default function BusinessNamePage() {
         What&apos;s your business called?
       </h1>
       <p className="mt-2 text-sm text-text-tertiary">
-        This is how your name appears in every text message.
+        You can change any of this later.
       </p>
 
       <div className="mt-8">
@@ -40,7 +40,7 @@ export default function BusinessNamePage() {
           autoFocus
           value={businessName}
           onChange={(e) => setBusinessName(e.target.value)}
-          placeholder="GlowStudio"
+          placeholder="Your business name"
           className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none focus:ring-2 focus:ring-border-brand/20"
         />
       </div>
