@@ -20,9 +20,9 @@ function getPageConfig(pathname: string, appId: string): WizardPageConfig {
       dualContinue: false,
     };
   }
-  // Messages is the first wizard step — dual Continue (D-318)
+  // Messages: Back to the final /start intake step, dual Continue (D-318)
   return {
-    backHref: null,
+    backHref: "/start/context",
     continueHref: `/apps/${appId}/opt-in`,
     dualContinue: true,
   };
