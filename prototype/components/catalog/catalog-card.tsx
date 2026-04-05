@@ -42,6 +42,10 @@ function SendIcon({ className }: { className?: string }) {
   );
 }
 
+/* ── Pill types ── */
+
+type PillId = "standard" | "action-first" | "context-first" | "custom";
+
 /* ── Compliance check (stub) ── */
 
 interface ComplianceResult {
@@ -87,8 +91,9 @@ export function CatalogCard({
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState("");
   const [savedText, setSavedText] = useState<string | null>(null);
-  const [activeVariantId, setActiveVariantId] = useState<string | null>(null);
-  const [suggestionText, setSuggestionText] = useState<string | null>(null);
+  const [savedPillId, setSavedPillId] = useState<PillId>("standard");
+  const [activePillId, setActivePillId] = useState<PillId>("standard");
+  const [customTextBuffer, setCustomTextBuffer] = useState<string | null>(null);
   const [aiInput, setAiInput] = useState("");
   const [compliance, setCompliance] = useState<ComplianceResult>({ isCompliant: true, issue: null, fixedText: null });
   const [showComplianceHint, setShowComplianceHint] = useState(false);
@@ -107,7 +112,7 @@ export function CatalogCard({
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
-  }, [isEditing, editText, suggestionText]);
+  }, [isEditing, editText]);
 
   // Compliance check with 2-second debounce on manual edits
   const checkComplianceDebounced = useCallback((text: string) => {
@@ -129,11 +134,24 @@ export function CatalogCard({
     return interpolateTemplate(template, categoryId, state).map(s => s.text).join("");
   }
 
+  function getPillTemplate(id: PillId): string | null {
+    if (id === "standard") return message.template;
+    if (id === "custom") return null;
+    return message.variants?.[id] ?? null;
+  }
+
   function enterEdit() {
-    const interpolated = getInterpolatedText(currentTemplate);
-    setEditText(interpolated);
-    setActiveVariantId(null);
-    setSuggestionText(null);
+    if (savedText !== null) {
+      // Restore saved state
+      setEditText(savedText);
+      setActivePillId(savedPillId);
+      setCustomTextBuffer(savedPillId === "custom" ? savedText : customTextBuffer);
+    } else {
+      // First edit: Brand-first (standard) default
+      setEditText(getInterpolatedText(message.template));
+      setActivePillId("standard");
+      setCustomTextBuffer(null);
+    }
     setAiInput("");
     setCompliance({ isCompliant: true, issue: null, fixedText: null });
     setShowComplianceHint(false);
@@ -143,51 +161,50 @@ export function CatalogCard({
   function handleSave() {
     if (!compliance.isCompliant) return;
     setSavedText(editText);
-    setSuggestionText(null);
-    setActiveVariantId(null);
+    setSavedPillId(activePillId);
+    if (activePillId === "custom") {
+      setCustomTextBuffer(editText);
+    }
     setIsEditing(false);
   }
 
   function handleFix() {
     if (compliance.fixedText) {
       setEditText(compliance.fixedText);
+      setCustomTextBuffer(compliance.fixedText);
+      setActivePillId("custom");
       setCompliance({ isCompliant: true, issue: null, fixedText: null });
       setShowComplianceHint(false);
     }
   }
 
   function handleCancel() {
-    setSuggestionText(null);
-    setActiveVariantId(null);
     setCompliance({ isCompliant: true, issue: null, fixedText: null });
     setShowComplianceHint(false);
     setIsEditing(false);
   }
 
-  function handlePillClick(variantId: string) {
-    const template = variantId === "current"
-      ? currentTemplate
-      : message.variants?.[variantId];
+  function handlePillClick(id: PillId) {
+    if (id === "custom") {
+      if (customTextBuffer !== null) {
+        setEditText(customTextBuffer);
+        setActivePillId("custom");
+        setCompliance({ isCompliant: true, issue: null, fixedText: null });
+        setShowComplianceHint(false);
+      }
+      return;
+    }
+    // Canned pill — if leaving custom, preserve the current text in buffer
+    if (activePillId === "custom") {
+      setCustomTextBuffer(editText);
+    }
+    const template = getPillTemplate(id);
     if (template) {
-      const interpolated = getInterpolatedText(template);
-      setSuggestionText(interpolated);
-      setActiveVariantId(variantId);
+      setEditText(getInterpolatedText(template));
+      setActivePillId(id);
       setCompliance({ isCompliant: true, issue: null, fixedText: null });
       setShowComplianceHint(false);
     }
-  }
-
-  function acceptSuggestion() {
-    if (suggestionText) {
-      setEditText(suggestionText);
-      setSuggestionText(null);
-      setActiveVariantId(null);
-    }
-  }
-
-  function revertSuggestion() {
-    setSuggestionText(null);
-    setActiveVariantId(null);
   }
 
   function handleSend() {
@@ -195,11 +212,11 @@ export function CatalogCard({
   }
 
   function handleTextChange(newText: string) {
-    if (suggestionText !== null) {
-      setSuggestionText(null);
-      setActiveVariantId(null);
-    }
     setEditText(newText);
+    setCustomTextBuffer(newText);
+    if (activePillId !== "custom") {
+      setActivePillId("custom");
+    }
     checkComplianceDebounced(newText);
   }
 
@@ -218,9 +235,8 @@ export function CatalogCard({
     );
   }
 
-  const displayText = suggestionText ?? editText;
-  const hasSuggestion = suggestionText !== null && suggestionText !== editText;
   const showFix = !compliance.isCompliant && showComplianceHint;
+  const showCustomPill = customTextBuffer !== null;
 
   return (
     <div className="relative flex items-stretch gap-3">
@@ -275,15 +291,15 @@ export function CatalogCard({
             {/* Textarea */}
             <textarea
               ref={textareaRef}
-              value={displayText}
+              value={editText}
               onChange={(e) => handleTextChange(e.target.value)}
               className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-secondary leading-relaxed shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear resize-none"
               rows={3}
             />
 
-            {/* Compliance hint + Fix — below textarea, above pills */}
+            {/* Compliance hint + Fix — right-aligned, 16px gap */}
             {showFix && compliance.issue && (
-              <div className="mt-1.5 flex items-center justify-between gap-3">
+              <div className="mt-1.5 flex items-center justify-end gap-4">
                 <p className="text-xs text-[#F97066]">
                   {compliance.issue}
                 </p>
@@ -297,56 +313,43 @@ export function CatalogCard({
               </div>
             )}
 
-            {/* Accept / Revert for suggestions */}
-            {hasSuggestion && (
-              <div className="mt-2 flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={acceptSuggestion}
-                  className="rounded-full bg-bg-brand-secondary px-3.5 py-1.5 text-xs font-medium text-text-brand-secondary transition duration-100 ease-linear hover:bg-bg-brand-primary_alt cursor-pointer"
-                >
-                  Accept
-                </button>
-                <button
-                  type="button"
-                  onClick={revertSuggestion}
-                  className="rounded-full border border-border-primary px-3.5 py-1.5 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer"
-                >
-                  Revert
-                </button>
-              </div>
-            )}
-
             {/* Edit controls — no divider, closer to textarea */}
             <div className="mt-3 space-y-3">
-              {/* Style pills */}
+              {/* Style pills: Brand-first, Action-first, Context-first, (Custom on far right) */}
               {variants && variants.length > 1 && (
                 <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handlePillClick("current")}
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
-                      activeVariantId === "current"
-                        ? "bg-bg-brand-secondary text-text-brand-secondary"
-                        : "border border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
-                    }`}
-                  >
-                    Current
-                  </button>
-                  {variants.map((v) => (
+                  {variants.map((v) => {
+                    const pillId = v.id as PillId;
+                    const isActive = activePillId === pillId;
+                    return (
+                      <button
+                        key={v.id}
+                        type="button"
+                        onClick={() => handlePillClick(pillId)}
+                        className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
+                          isActive
+                            ? "bg-bg-brand-secondary text-text-brand-secondary"
+                            : "border border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
+                        }`}
+                      >
+                        {v.label}
+                      </button>
+                    );
+                  })}
+                  {/* Custom pill — far right, visually separated */}
+                  {showCustomPill && (
                     <button
-                      key={v.id}
                       type="button"
-                      onClick={() => handlePillClick(v.id)}
-                      className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
-                        activeVariantId === v.id
+                      onClick={() => handlePillClick("custom")}
+                      className={`ml-auto rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
+                        activePillId === "custom"
                           ? "bg-bg-brand-secondary text-text-brand-secondary"
-                          : "border border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
+                          : "border border-dashed border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
                       }`}
                     >
-                      {v.label}
+                      Custom
                     </button>
-                  ))}
+                  )}
                 </div>
               )}
 
