@@ -143,6 +143,74 @@ Public-facing compliance information page. Not yet fully designed.
 
 ---
 
+## Wizard Entry Flow — `/start/*`
+
+Six net-new pages that form the onboarding wizard (Steps 1–4 of WORKSPACE_DESIGN_SPEC.md). Standalone routes — live outside `/apps/` because the app identity does not exist yet. All `/start/*` pages render with a wordmark-only TopNav (no Sign in, no Your Apps, no Sign out). On `/start/*` routes after the picker, TopNav shows the selected vertical as a pill next to the wordmark (read from sessionStorage). The layout wrapper (`prototype/app/start/layout.tsx`) is a minimal min-h viewport wrapper.
+
+### Shared components
+- **`WizardStepShell`** (`prototype/components/wizard-step-shell.tsx`): centered `max-w-[540px]` column with top ← Back link (optional `backHref`), children, and full-width bottom Continue button. Continue is disabled when `canContinue=false`; `onBeforeContinue` fires to persist values before navigation; Back uses `router.push(backHref)`.
+- **`wizard-storage`** (`prototype/lib/wizard-storage.ts`): sessionStorage helpers under key `relaykit_wizard`. `WizardData` fields: `vertical`, `businessName`, `industry`, `serviceType`, `website`, `context`, `verifiedPhone`, `ein`, `businessIdentity` (+ `VERTICAL_LABELS` id→label map).
+
+### Step 1 — Vertical picker — `/start`
+**File:** `prototype/app/start/page.tsx`
+**Status:** Stable
+- Full-height, flex-centered container. Heading: "What's the main reason your app sends texts?" (`text-2xl font-bold`, centered).
+- 2-column grid (`sm:grid-cols-2`, `max-w-3xl`, `gap-4`) of 8 cards (Appointments, Verification codes, Order updates, Customer support, Marketing, Team alerts, Community, Waitlist). Each card: `@untitledui/icons` icon in `bg-bg-brand-secondary` rounded square, label (semibold), examples line (`text-text-tertiary`). Hover: `border-border-brand` + subtle shadow, icon container → `bg-bg-brand-primary`.
+- Entire card is the click target — no "Explore →" CTA. Click saves `vertical` to sessionStorage and navigates to `/start/business`.
+
+### Step 2 — Business name + EIN — `/start/business`
+**File:** `prototype/app/start/business/page.tsx`
+**Status:** Stable (includes EIN verification)
+- Heading: "What's your business called?" Body: "You can change any of this later."
+- **Business name input** (autoFocus, placeholder "Your business name"). Continue disabled until non-empty.
+- **EIN section** below (D-302, D-303): Collapsed by default (transactional verticals) behind a brand-purple toggle link "I have a business tax ID (EIN)" with inline ⓘ info tooltip ("A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases."). Clicking expands the form via a `wizardFadeIn` keyframe (200ms). Expanded state shows the toggle replaced by a "Cancel" link (text-tertiary) inline after the "Business tax ID (EIN)" label — clicking collapses and clears all EIN state.
+- **EIN input** (live-formatted `XX-XXXXXXX`) + inline purple "Verify" button (disabled until 9 digits). Verify triggers a two-phase stub: button reads "Verifying…" for 1s (primary lookup), then "Checking sources…" for 1.5s (AI deep dive), then resolves.
+- **Verify states:**
+  - `idle`: format error on blur if digits present but not 9 — "EIN should be 9 digits (XX-XXXXXXX)".
+  - `verifying`: input disabled, button shows phase text.
+  - `verified`: input+Verify row replaced by a bordered `bg-bg-secondary` card with legal name, address, entity type · state. Card top-right ✕ button dismisses (clears EIN, resets checkbox, refocuses input). Inside the card below a top border: "This is my business" checkbox with separate ⓘ tooltip ("Misrepresenting business identity will result in account termination.").
+  - `failed` (transactional): single line — "We couldn't verify this EIN. You can try again or continue without it." Input + Verify button stay editable.
+  - `failed` (marketing-primary): stricter copy + "Choose a different use case" link (navigates to `/start`).
+- **Marketing-primary vertical:** section is expanded by default, no toggle trigger, no Cancel, no collapse. Helper line above label: "Marketing messages require a verified business identity." Continue stays disabled unless `einState === "verified"` AND checkbox checked.
+- **Transactional Continue gating:** business name filled + not mid-verifying; if verified, also requires checkbox checked.
+- **Prototype state cycler** (Default / Verified / Failed) — text-xs text-quaternary select in the label row when the EIN section is expanded. Seeds demo EIN values and jumps directly to the selected state.
+- Unverified / failed EINs are never saved. Verified EINs + auto-populated identity persist to sessionStorage.
+
+### Step 3 — Service context — `/start/details`
+**File:** `prototype/app/start/details/page.tsx`
+**Status:** Stable (appointments vertical only)
+- Heading: "Tell us about your business" Body: "This helps us write messages that sound like they're from you."
+- **Industry dropdown** (11 options: Salon & beauty, Dental, Medical, Fitness & wellness, Tutoring & education, Consulting, Auto service, Home services, Pet care, Photography, Other). Styled with `appearance-none` + custom SVG chevron background image + `pr-10` to match the registration form selects.
+- **Service type text input** — appears after industry is selected via a `wizardFadeIn` keyframe animation (global in `globals.css`). Placeholder is industry-specific (e.g., Salon & beauty → "e.g., nail appointments, haircuts").
+- Continue disabled until both fields have values.
+
+### Step 3b — Website — `/start/website`
+**File:** `prototype/app/start/website/page.tsx`
+**Status:** Stable
+- Heading: "Do you have a website?" Body: "We'll link to it in your messages so customers can find you online."
+- URL input (autoFocus, placeholder "glowstudio.com") + "Skip" link below (text-tertiary). Continue always enabled (field is optional). Skip clears the stored website and advances.
+
+### Step 3c — Context — `/start/context`
+**File:** `prototype/app/start/context/page.tsx`
+**Status:** Stable
+- Heading: "Anything else we should know?" Body: "This helps us tailor your messages. You can always adjust later."
+- 4-row textarea (optional) + "Skip" link. Continue always enabled. Advances to `/start/verify`.
+
+### Step 4 — Phone verification — `/start/verify`
+**File:** `prototype/app/start/verify/page.tsx`
+**Status:** Stable
+- Heading: "Verify your phone number" Body: "Your phone is your test device for messages."
+- **Three states:**
+  - `input` / `sending`: `+1` prefix pill + phone input (live-formats digits to `(555) 123-4567`) + inline purple "Send code" button (disabled until 10 digits). On tap: 1.5s stub → `code` state.
+  - `code`: "We sent a code to +1 (555) 123-4567" + 6 OTP digit boxes (auto-advance, paste, backspace nav). Auto-submits on 6th digit. "Use a different number" link. Prototype hint: "(Prototype: any 6 digits will work)".
+  - `done`: Green check + "Verified · +1 (555) 123-4567" card + "Change" link (resets to input state, clears stored phone).
+- Continue disabled until verified. Advances to `/apps/glowstudio/messages` (hardcoded destination for prototype). Hydrates from sessionStorage on mount — returning via Back restores the Verified state.
+
+### Prototype nav helper for /start
+The `ProtoNavHelper` (bottom-left "Nav ↑" pill) is mounted globally and also includes jump links into the `/start/*` wizard pages for design review.
+
+---
+
 ## Authenticated Pages
 
 ### Your Apps — `/apps`
@@ -162,10 +230,11 @@ Public-facing compliance information page. Not yet fully designed.
 
 Minimal, focused layout for the pre-signup wizard flow.
 
-**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + Sign out (right). No "Your Apps" link, no Use Cases/Compliance links. TopNav detects the wizard context via pathname + registrationState.
-**Back / Continue row:** Full-width row below the nav bar aligned with nav edges (`px-6`, no max-width). Back (`ArrowLeft` icon + "Back") on the left, Continue button on the right. Page config in `getPageConfig()` drives both: messages has disabled Back + `/opt-in` Continue + dualContinue=true; opt-in has `/messages` Back + `/messages` Continue (placeholder for signup) + dualContinue=false.
+**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + Sign out (right). No "Your Apps" link, no Use Cases/Compliance links. TopNav detects the wizard context via pathname + registrationState — regex matches `/apps/[appId]/(messages|ready|signup)$`.
+**Back / Continue row:** Full-width row below the nav bar aligned with nav edges (`px-6`, no max-width). Back (`ArrowLeft` icon + "Back") on the left, Continue button on the right. Page config in `getPageConfig()` drives both: messages has `/start/context` Back + `/ready` Continue + `continueLabel: "Start building"` + dualContinue=true; ready has `/messages` Back + no header Continue (the page owns its own "Create account" CTA); signup has `/ready` Back + no static continueHref (the page registers a custom Continue via `WizardContinueContext`).
+**Continue button customization:** Pages can override the header Continue button by consuming `WizardContinueContext` from `wizard-layout.tsx` and registering `{ onClick, disabled }`. Signup uses this to set `registrationState="pending"` and navigate to `/overview` in a single click handler while staying disabled until OTP is verified. WizardLayout renders: override button > static continueHref Link > nothing.
 **Centered content:** `max-w-[540px] mx-auto` container.
-**Bottom Continue:** When `dualContinue` is true (messages only, D-318), WizardLayout renders a second Continue right-aligned at `px-6` below the content.
+**Bottom Continue:** When `dualContinue` is true (messages only, D-318), WizardLayout renders a second full-width Continue spanning the 540px content column below the content. Uses the same `continueLabel` as the header Continue.
 **Not shown in wizard layout:** app name (h1), tabs, status indicator dot.
 
 #### Dashboard Layout (Pending, Approved, Extended Review, Rejected)
@@ -180,11 +249,12 @@ Full dashboard with app identity, tabs, and status.
 **Content:** `mx-auto max-w-5xl px-6 pt-6 pb-16`.
 
 #### State Switcher (both layouts)
-Five states: Default, Pending, Approved, Extended Review, Rejected. `text-xs text-text-quaternary`. Switching from Default to any other: wizard → dashboard, redirect if on opt-in → messages. Switching to Default: dashboard → wizard, redirect if on overview/settings → messages.
+Five states: Default, Pending, Approved, Extended Review, Rejected. `text-xs text-text-quaternary`. Switching from Default to any other: wizard → dashboard, redirect if on overview/settings stays valid, wizard-only pages (ready/signup) get the transition redirect. Switching to Default: dashboard → wizard, redirect if on overview/settings → messages.
 
 #### Route Redirects
-- **Default (wizard):** `/overview` and `/settings` redirect to `/messages`. Only `/messages` and `/opt-in` are valid.
-- **Non-default (dashboard):** `/opt-in` redirects to `/messages`. `/overview`, `/messages`, `/settings` are valid.
+- **`/opt-in`:** Always redirects to `/messages` regardless of state. The opt-in step was removed from the wizard flow (D-317 tabled).
+- **Default (wizard):** `/overview` and `/settings` redirect to `/messages`. Valid wizard pages under `/apps/[appId]/`: `/messages`, `/ready`, `/signup`.
+- **Non-default (dashboard):** `/signup` and `/ready` redirect to `/overview` (they are wizard-only). `/overview`, `/messages`, `/settings` are valid.
 - **Register flow:** No wrapper — content renders in bare `max-w-5xl` container.
 
 #### Prototype Navigation Helper
@@ -287,11 +357,12 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 **Full-width layout (D-317):** No opt-in column. Messages get the full viewport. Opt-in form is a separate wizard step at `/apps/[appId]/opt-in`.
 
 **Wizard mode (Default state — rendered inside WizardLayout):**
-- WizardLayout renders a full-width Back/Continue row aligned with the top-nav edges (`px-6`). Back (left) is disabled on messages — no previous wizard step yet. Continue (right) navigates to `/apps/[appId]/opt-in`.
+- WizardLayout renders a full-width Back/Continue row aligned with the top-nav edges (`px-6`). Back (left) navigates to `/start/context` (the final intake step). Continue (right) is labeled **"Start building"** and navigates to `/apps/[appId]/ready`.
+- Body text below the "Messages" heading: "These are your messages — ready to use. Edit any message to match your voice." (`text-text-tertiary`).
 - "Messages" heading left-aligned inside the `max-w-[540px]` centered content container.
 - Message cards fill the wizard container.
 - Send icons: `Phone01` from `@untitledui/icons` — no circle background, no container. Replaces paper airplane in wizard context.
-- Bottom Continue: full-width right-aligned at `px-6` edge, rendered by WizardLayout (D-318 — dual Continue, only wizard step with this treatment).
+- Bottom "Start building": full-width purple button spanning the 540px content column, rendered by WizardLayout (D-318 — dual Continue, only wizard step with this treatment).
 
 **Dashboard mode (Pending/Approved/Extended Review/Rejected — rendered inside DashboardLayout):**
 - "Messages" heading left-aligned, no Continue buttons.
@@ -353,19 +424,46 @@ Same card redesign. Key differences:
 
 ### Opt-in Form Preview — `/apps/[appId]/opt-in`
 **File:** `prototype/app/apps/[appId]/opt-in/page.tsx`
-**Status:** Stable — wizard Step 5.5 (D-317)
+**Status:** REMOVED from wizard flow (D-317 tabled). All access redirects to `/messages` via AppLayout. The page file is retained — the component returns `null` and the original implementation is preserved inside a reference comment for future redesign. The `CatalogOptIn` component (`prototype/components/catalog/catalog-opt-in.tsx`) is still used by the public marketing pages.
 
-Wizard step between messages and signup. Read-only opt-in form preview. Only accessible in Default (wizard) state — other states redirect to `/messages`.
+### Ready-to-build Confirmation — `/apps/[appId]/ready`
+**File:** `prototype/app/apps/[appId]/ready/page.tsx`
+**Status:** Stable — wizard step between messages and signup
 
-**Layout:** Page content is wrapped in `max-w-[400px] mx-auto` so the heading, context line, and form share a single centered 400px column inside WizardLayout's 540px container. Text is left-aligned within that column.
-- Heading: "Message opt-in" (`text-lg font-semibold`)
-- Context: "Opt-in, opt-out, and consent records — all handled for you." (`text-sm text-text-secondary`, `mb-8`)
-- `CatalogOptIn` component — populated from session state (appName, website, coreMessages). Read-only.
-- WizardLayout renders Back → `/messages` on the left and Continue on the right at the top nav edges. Opt-in gets single top Continue (not dual — D-318 applies only to the messages step). Continue currently loops to `/messages` as a placeholder; real target is the signup page once it exists.
+Conversion moment. Sits between the messages workspace ("Start building" button) and the signup page. Only valid in Default (wizard) state; non-wizard states redirect to `/overview`.
 
-**CatalogOptIn component** (`prototype/components/catalog/catalog-opt-in.tsx`):
+**Layout:** Rendered inside WizardLayout's 540px content column. WizardLayout config: Back → `/messages`, no header Continue, no dual — the page owns its own "Create account" CTA.
+- Heading: "Skip the hard part" (`text-2xl font-bold text-text-primary`)
+- Body: "Create a free account and start building." (`text-sm text-text-tertiary`)
+- **Benefit list** (`ul` with `space-y-7`, `mt-10`): Five `CheckCircle` icons (success-green, `size-5`) + paragraph with bold lead sentence (`font-semibold text-text-primary`) followed by tertiary detail (`font-normal text-text-tertiary`):
+  1. One prompt gets you started. — Your business details, your messages, ready to paste into your AI tool.
+  2. Test with real people, real phones. — Send to up to 5 people — your team, your co-founder, a client you want to impress.
+  3. An expert in your corner. — A full AI assistant that knows your business, your messages, and how SMS works.
+  4. Change a message here, your app updates automatically. — Edit copy on the website. No code changes, no redeployment.
+  5. You never think about compliance. — Opt-in forms, carrier rules, message formatting — all handled.
+- **Pricing block** (`mt-12`): "Free while you build and test." (`text-lg font-semibold text-text-primary`) followed by "When you're ready for real delivery: **$49** registration + **$19/mo**." (`text-base text-text-tertiary`, dollar amounts emphasized `font-semibold text-text-primary`). See D-320.
+- **CTA** (`mt-10`): Full-width purple button "Create account" → `/apps/[appId]/signup`.
+
+### Signup — `/apps/[appId]/signup`
+**File:** `prototype/app/apps/[appId]/signup/page.tsx`
+**Status:** Stable — final wizard step (D-316)
+
+Email + OTP account creation. Only valid in Default (wizard) state; non-wizard states redirect to `/overview`.
+
+**Layout:** Inside WizardLayout 540px column. Config: Back → `/ready`, no static continueHref. The page registers a custom Continue handler via `WizardContinueContext` — header Continue stays disabled until OTP verified, on click: `setRegistrationState("pending")` + `router.push("/apps/[appId]/overview")`.
+
+- Heading: "Create your account" (`text-2xl font-bold`)
+- Body: "Free while you build. $49 + $19/mo when you're ready for real delivery." (`text-sm text-text-tertiary`) — pricing per D-320.
+- **Three states** (`SignupStep` union):
+  - `email` + `sending`: Email input (`type="email"`, `autoFocus`, placeholder `you@company.com`) + right-aligned compact purple "Send code" button (disabled until valid email). Click → `sending` (1.5s stub, button shows "Sending…", input disabled) → `code`.
+  - `code`: "We sent a code to {email}" + 6 OTP digit boxes (`w-11 h-12 rounded-xl border`, auto-advance, paste support, backspace navigation). Auto-submits on 6th digit. "Use a different email" link returns to email step. Prototype hint: "(Prototype: any 6 digits will work)".
+  - `done`: Green checkmark + "Email verified · {email}" in subtle `bg-bg-secondary` card + "Change" link (resets to email step). Below: unchecked "Send me product updates" checkbox (optional, local state only).
+
+### Opt-in form component
+**File:** `prototype/components/catalog/catalog-opt-in.tsx`
+**Status:** Retained — used only by public marketing pages (not the wizard flow).
 - Consent checkbox label is the singular category + business name only (e.g., "I agree to receive appointment text messages from GlowStudio."). `CATEGORY_CONSENT_WORD` map converts categoryId → singular consent word. Fine print carries the TCPA disclosure details. Matches PRD_02 opt-in language pattern.
-- Checkbox labels and fine print use `leading-snug` (tightened from `leading-relaxed`).
+- Checkbox labels and fine print use `leading-snug`.
 - Sign-up CTA button uses `bg-[#98A2B3]` (hover `bg-[#7A808A]`) — a lighter mid-gray than the previous `bg-[#61656C]`.
 - "Continue" button below opt-in form (`mt-8`). Same primary purple treatment as other wizard advances.
 - Continue target: placeholder — signup page not built yet. Currently links back to messages.
