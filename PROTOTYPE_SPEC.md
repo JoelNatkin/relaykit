@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: April 4, 2026
+### Last updated: April 5, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -162,10 +162,11 @@ Public-facing compliance information page. Not yet fully designed.
 
 Minimal, focused layout for the pre-signup wizard flow.
 
-**App bar:** "Appointments" category label (left) → state switcher dropdown (right) → "Sign out" (far right).
-**Back button row:** Below app bar, left-aligned. `ArrowLeft` icon + "Back" text. Links to previous wizard step (opt-in → messages). Disabled on messages page (no previous step yet).
-**Content:** Centered in `max-w-[540px]` container.
-**Not shown:** "Your Apps" link, app name, tabs, status indicator dot.
+**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + Sign out (right). No "Your Apps" link, no Use Cases/Compliance links. TopNav detects the wizard context via pathname + registrationState.
+**Back / Continue row:** Full-width row below the nav bar aligned with nav edges (`px-6`, no max-width). Back (`ArrowLeft` icon + "Back") on the left, Continue button on the right. Page config in `getPageConfig()` drives both: messages has disabled Back + `/opt-in` Continue + dualContinue=true; opt-in has `/messages` Back + `/messages` Continue (placeholder for signup) + dualContinue=false.
+**Centered content:** `max-w-[540px] mx-auto` container.
+**Bottom Continue:** When `dualContinue` is true (messages only, D-318), WizardLayout renders a second Continue right-aligned at `px-6` below the content.
+**Not shown in wizard layout:** app name (h1), tabs, status indicator dot.
 
 #### Dashboard Layout (Pending, Approved, Extended Review, Rejected)
 **File:** `prototype/components/dashboard-layout.tsx`
@@ -286,12 +287,11 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 **Full-width layout (D-317):** No opt-in column. Messages get the full viewport. Opt-in form is a separate wizard step at `/apps/[appId]/opt-in`.
 
 **Wizard mode (Default state — rendered inside WizardLayout):**
-- "Messages" heading centered, with "Continue" button right-aligned (D-318). Spacer div balances centering.
-- Message cards fill wizard container (`max-w-[540px]` from WizardLayout).
+- WizardLayout renders a full-width Back/Continue row aligned with the top-nav edges (`px-6`). Back (left) is disabled on messages — no previous wizard step yet. Continue (right) navigates to `/apps/[appId]/opt-in`.
+- "Messages" heading left-aligned inside the `max-w-[540px]` centered content container.
+- Message cards fill the wizard container.
 - Send icons: `Phone01` from `@untitledui/icons` — no circle background, no container. Replaces paper airplane in wizard context.
-- Second "Continue" button below last card, centered (D-318 — dual Continue, only wizard step with this treatment).
-- Continue navigates to `/apps/[appId]/opt-in`.
-- Back button in WizardLayout header navigates nowhere (disabled — no previous wizard step yet).
+- Bottom Continue: full-width right-aligned at `px-6` edge, rendered by WizardLayout (D-318 — dual Continue, only wizard step with this treatment).
 
 **Dashboard mode (Pending/Approved/Extended Review/Rejected — rendered inside DashboardLayout):**
 - "Messages" heading left-aligned, no Continue buttons.
@@ -311,11 +311,13 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 
 Each card shows the full message text, not truncated.
 
-- **Title row:** Message name (bold) + info icon (i) inline with 1.5 gap after title + pencil edit button right-aligned. Info icon shows tooltip on hover. No card numbers. No template/preview toggle. No copy button. No "Modify with AI" in default state.
+- **Title row:** Message name (bold) + info icon (i) inline with 1.5 gap after title + pencil edit button right-aligned. No card numbers. No template/preview toggle. No copy button. No "Modify with AI" in default state.
+- **Tooltips:** Info icon, pencil, and phone buttons all use a custom dark tooltip matching styling: `rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg leading-relaxed pointer-events-none`, positioned above the button (`bottom-full mb-1`). Info tooltip anchors left; pencil and phone tooltips anchor right (`right-0`) to avoid overflowing the card.
 - **Message text:** Full message below title. Variables highlighted in brand color (`text-text-brand-secondary`). Always shows interpolated preview with real values (GlowStudio, etc.), not raw template syntax. Clicking text enters edit state.
 - **Send button:** Floats outside the card on the right side, vertically centered via `items-stretch` + `items-center` wrapper. Accepts optional `sendIcon` prop for context-specific icons. Dashboard: round icon button (paper plane, 15px) in `bg-bg-secondary text-fg-secondary w-8 h-8` circle. Wizard: `Phone01` icon (18px) with no circle background (`text-fg-tertiary hover:text-fg-secondary`).
 - **Marketing badge:** Shown on marketing-tier messages, same as before.
 - **Card spacing:** `space-y-5` (20px) between cards.
+- **Single-card editing:** Only one card can be in edit state at a time. `CatalogCard` accepts optional controlled props (`isEditing`, `onEditRequest`). When the parent provides them, clicking a new card's pencil closes any open edit — unsaved changes are discarded, no confirmation dialog. `savedText`/`savedPillId` persist across edit sessions. When props are absent, the card falls back to local state (used by the public messages page).
 
 ---
 
@@ -324,13 +326,17 @@ Each card shows the full message text, not truncated.
 Triggered by edit button click or by clicking into the message text.
 
 - **Title row:** Unchanged (name + info icon). Edit button hidden (already in edit mode).
-- **Textarea:** Replaces static message text. Full-width, auto-height, body font (not monospace). Shows personalized values (GlowStudio, etc.), not raw `{var_name}` template syntax. 8px spacing (`mt-4`) between title row and textarea.
+- **Textarea:** Replaces static message text. Full-width, auto-height, body font (not monospace). Shows personalized values (GlowStudio, etc.), not raw `{var_name}` template syntax. 8px spacing (`mt-4`) between title row and textarea. Disabled during AI/Restore loading.
 - **Send button:** Still available on the right during edit — developer can test changes before saving.
-- **Compliance feedback** (below textarea, above pills): After 2 seconds of inactivity on manual edits, if content is non-compliant (missing opt-out language, missing business name), a muted red hint line appears: text on left ("Missing opt-out language"), compact secondary Fix button on right. Fix auto-corrects the issue. Save button greys out (disabled) while non-compliant. When the developer fixes manually or clicks Fix, Save re-enables automatically. AI/pill changes are pre-validated — compliance feedback never appears on those.
+- **Compliance feedback** (below textarea, above pills): Runs on every keystroke via `useEffect` on editText. Non-compliant hint reveal is debounced 2s to avoid nagging mid-type. Once text becomes compliant, hint + Restore button hide immediately. Hint stack is right-aligned with 16px gap from the Restore button (`justify-end gap-4`); multiple issues stack vertically (`flex-col items-end`). Save is disabled while non-compliant or while AI/Restore loading.
+  - **Opt-out check:** passes if text contains `STOP` (case-insensitive) AND one of `opt out` / `opt-out` / `unsubscribe`. Issue label: "Needs opt-out language".
+  - **Variable deletion check:** for each `{var}` in `message.template`, substring-matches (case-insensitive) the interpolated demo value against the edited text. Missing variables are grouped via `VARIABLE_LABELS` (date/time/service_type → "appointment details", app_name → "business name", website_url → "website link", etc.). Issue label: "Needs {label}".
+  - **Restore button:** clicking it replaces the entire textarea with the last canned pill's clean interpolated text (tracked via `lastCannedPillId`). This restores compliance wholesale rather than patching fragments (D-319). Button shows Spinner + "Restoring…" during 1.5s stubbed AI delay.
+  - **Prototype stub** — production compliance is server-side with full TCPA/10DLC rule evaluation. Client-side checks are intentionally loose.
 - **Edit controls panel** (bottom of card, no divider — `mt-3 space-y-3`):
-  - **Style pills row:** Badge-styled (`rounded-full px-3.5 py-1.5`). "Current" pill first (restores saved version), then category variants from `CATEGORY_VARIANTS`. Active: brand fill (`bg-bg-brand-secondary text-text-brand-secondary`). Inactive: outlined border (`border border-border-secondary text-text-tertiary`). Tapping a pill swaps textarea content as suggestion — Accept/Revert buttons appear.
-  - **AI help input:** Freeform text field with placeholder "How should we change this?" Stubbed — no AI call yet. No contextual suggestion links (removed — freeform input is sufficient).
-- **Save / Cancel buttons:** Right-aligned at bottom of card. Save is primary purple, Cancel is tertiary text-only. Save disabled while non-compliant.
+  - **Style pills row:** Badge-styled (`rounded-full px-3.5 py-1.5`). Canned variants in left cluster: Standard, Friendly, Brief (labels display-only; ids still `standard` / `action-first` / `context-first` for data stability). Custom pill appears on the far right (`ml-auto`, dashed border) only after the developer has made a custom edit. Active: brand fill (`bg-bg-brand-secondary text-text-brand-secondary`). Canned pill taps swap textarea instantly — no preview, no Accept/Revert. Typing or AI help switches activePillId to Custom. `customTextBuffer` preserves custom text across pill clicks. Canned pill swaps are instant — pre-validated and zero-latency by design.
+  - **AI help input:** Prefix Stars02 sparkle icon (brand color, swaps to Spinner while loading). Placeholder is contextual: canned pill active → "Ask AI: make it more casual"; Custom pill active → "Ask AI: polish my edit"; loading → "Rewriting…". Enter submits. 1.5s stubbed delay; on complete, textarea updates with rewritten text, activePillId → Custom. AI call is stubbed — no backend call yet.
+- **Save / Cancel buttons:** Right-aligned at bottom of card. Save is primary purple, Cancel is tertiary text-only. Save disabled while non-compliant or during AI/Restore loading.
 
 ---
 
@@ -351,10 +357,16 @@ Same card redesign. Key differences:
 
 Wizard step between messages and signup. Read-only opt-in form preview. Only accessible in Default (wizard) state — other states redirect to `/messages`.
 
-**Layout:** Centered in WizardLayout's `max-w-[540px]` container. All content centered (`text-center`).
-- Heading: "Your opt-in form" (`text-lg font-semibold`, centered)
-- Context line: "RelayKit generates and maintains this for you. Your AI tool builds it into your app." (`text-sm text-text-secondary`, centered, `mb-8`)
+**Layout:** Page content is wrapped in `max-w-[400px] mx-auto` so the heading, context line, and form share a single centered 400px column inside WizardLayout's 540px container. Text is left-aligned within that column.
+- Heading: "Message opt-in" (`text-lg font-semibold`)
+- Context: "Opt-in, opt-out, and consent records — all handled for you." (`text-sm text-text-secondary`, `mb-8`)
 - `CatalogOptIn` component — populated from session state (appName, website, coreMessages). Read-only.
+- WizardLayout renders Back → `/messages` on the left and Continue on the right at the top nav edges. Opt-in gets single top Continue (not dual — D-318 applies only to the messages step). Continue currently loops to `/messages` as a placeholder; real target is the signup page once it exists.
+
+**CatalogOptIn component** (`prototype/components/catalog/catalog-opt-in.tsx`):
+- Consent checkbox label is the singular category + business name only (e.g., "I agree to receive appointment text messages from GlowStudio."). `CATEGORY_CONSENT_WORD` map converts categoryId → singular consent word. Fine print carries the TCPA disclosure details. Matches PRD_02 opt-in language pattern.
+- Checkbox labels and fine print use `leading-snug` (tightened from `leading-relaxed`).
+- Sign-up CTA button uses `bg-[#98A2B3]` (hover `bg-[#7A808A]`) — a lighter mid-gray than the previous `bg-[#61656C]`.
 - "Continue" button below opt-in form (`mt-8`). Same primary purple treatment as other wizard advances.
 - Continue target: placeholder — signup page not built yet. Currently links back to messages.
 - Stub note: "Signup page coming soon" in `text-xs text-text-quaternary` below Continue.
