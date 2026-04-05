@@ -1,6 +1,6 @@
 # RelayKit Workspace Design Spec
 ## From wizard to workspace — the new developer experience
-### April 4, 2026
+### Updated: April 5, 2026 (Session 23)
 
 ---
 
@@ -24,232 +24,257 @@ This is a phased rebuild. Not everything ships in one session. Each phase is ind
 
 ---
 
+## Prototype Architecture
+
+### Two Layout Systems
+
+The wizard flow spans two route trees with two layout systems that produce the same visual result (540px centered column, minimal chrome):
+
+**`/start/*` pages** use `WizardStepShell` (per-page component) inside `prototype/app/start/layout.tsx`:
+- Top nav: RelayKit wordmark only (no Sign in, no Sign out, no Your Apps)
+- Vertical pill appears next to wordmark on all `/start/*` pages after the picker (read from sessionStorage)
+- Back/Continue provided by WizardStepShell — each page passes `backHref`, `continueHref`, `canContinue`, `onBeforeContinue`
+- Content: centered in `max-w-[540px]` container
+
+**`/apps/[appId]/*` wizard pages** use `WizardLayout` (shared wrapper via AppLayout state check):
+- Top nav: RelayKit wordmark → Appointments pill → state switcher dropdown → Sign out
+- Below nav: ← Back and Continue on the same row, aligned with nav edges
+- Content: centered in `max-w-[540px]` container
+- `WizardContinueContext` lets pages override header Continue with custom `{onClick, disabled}`
+- `getPageConfig(pathname, appId)` drives Back/Continue targets per page
+
+**Route behavior by state:**
+
+Default (wizard):
+- `/apps/[appId]/messages` → wizard messages page
+- `/apps/[appId]/ready` → benefit-led pre-signup page
+- `/apps/[appId]/signup` → email + OTP account creation
+- `/apps/[appId]/opt-in` → redirects to `/messages` (removed from flow, page returns null)
+- `/apps/[appId]/overview` → redirects to `/messages`
+- `/apps/[appId]/settings` → redirects to `/messages`
+
+Pending / Extended Review / Rejected:
+- `/apps/[appId]/overview` → existing Overview page
+- `/apps/[appId]/messages` → existing Messages tab
+- `/apps/[appId]/settings` → existing Settings page
+- `/apps/[appId]/ready` → redirects to `/overview`
+- `/apps/[appId]/signup` → redirects to `/overview`
+
+Approved:
+- `/apps/[appId]/overview` → approved Overview (metrics cards)
+- `/apps/[appId]/messages` → existing Messages tab
+- `/apps/[appId]/settings` → existing Settings page
+
+**ProtoNavHelper:** Floating bottom-left "Nav ↑" pill for non-linear design review. Expands to jump links for every page in every state. Prototype-only, strip on port.
+
+**TopNav has three distinct modes** (pathname regex + conditionals):
+- `/start` and `/start/*` → wordmark-only, with vertical pill on `/start/*`
+- `/apps/*/messages|ready|signup` + `registrationState === "default"` → wordmark + Appointments pill + state switcher + Sign out
+- Everything else → full marketing or dashboard nav
+
+---
+
 ## The Flow
 
-### Step 1: `/start` — Vertical Picker
+### Step 1: Vertical Picker ✅ BUILT
 
-**URL:** `relaykit.ai/start`
-**Auth required:** No
+**Route:** `/start`
 
-A single screen. One heading: "What's the main reason your app sends texts?" Below it, eight cards — one per vertical. Each card has the category name and a one-line description of what's included:
+**Heading:** "What's the main reason your app sends texts?"
 
-- **Appointments** — Confirmations, reminders, reschedules, cancellations
-- **Orders** — Order updates, shipping, delivery, returns
-- **Verification** — Login codes, password resets, 2FA
-- **Support** — Ticket updates, resolution notices, follow-ups
-- **Marketing** — Promotions, new arrivals, loyalty rewards
-- **Team alerts** — Meeting reminders, schedule changes, incidents
-- **Community** — Event updates, group announcements, renewals
-- **Waitlist** — Position updates, spot available, reservations
+**Eight cards** in 2-column grid (single column mobile):
+- **Appointments** — Confirmations, reminders, reschedules, cancellations, no-show follow-ups
+- **Verification codes** — Login OTPs, signup codes, password resets, MFA, new device alerts
+- **Order updates** — Shipping confirmations, delivery alerts, return status, refund notices
+- **Customer support** — Ticket updates, resolution notices, satisfaction follow-ups
+- **Marketing** — Promos, re-engagement, product launches, seasonal campaigns
+- **Team alerts** — Shift reminders, system alerts, escalation pings, on-call notifications
+- **Community** — Event reminders, group updates, membership alerts, RSVP confirmations
+- **Waitlist** — Spot available, queue position, reservation holds, invite codes
 
-One click advances. The "main reason" framing signals this is a starting point, not a final commitment — other categories can be added later.
+Cards are click targets — no CTA text, no "Explore →". Clicking saves `vertical` to sessionStorage and navigates to `/start/business`.
 
-Nothing else on the screen. No nav bar, no sign-in link, no marketing copy. Pure focus.
+Nothing else on the screen. RelayKit wordmark only. No nav items, no sign-in link, no marketing copy. Pure focus.
 
-**Design notes:**
-- Full viewport height, content centered vertically and horizontally
-- Cards are large tap targets with category name (bold) and description (muted). 2-column grid on desktop, single column on mobile.
-- Selecting a card immediately navigates to Step 2 — no "Next" button
-- Use existing Untitled UI brand colors
+### Step 2: Business Name + EIN ✅ BUILT
 
-### Step 2: `/start/[vertical]` — Intake Questions
+**Route:** `/start/business`
 
-**URL:** `relaykit.ai/start/appointments` (etc.)
-**Auth required:** No
+**Heading:** "What's your business called?"
+**Body:** "You can change any of this later."
 
-A conversational intake flow. Not a form — questions appear one at a time, building downward as the developer answers. 3-6 questions depending on vertical.
+**Business name input:** Full width, placeholder "Your business name", autofocus. Continue disabled until filled.
 
-**Full intake question list (all verticals):**
-1. "What's your business called?" → text input (all verticals)
-2. Vertical-specific context (1-2 questions depending on vertical):
-   - Appointments: "What do people book with you?" (e.g., "nail appointments," "dental cleanings," "tutoring sessions")
-   - Orders: product type, shipping methods, return window
-   - Verification: app name (if different from business name)
-   - Support: (business name + website may be sufficient — no extra question)
-   - Marketing: (no vertical-specific context needed beyond business name)
-   - Team alerts / Internal: (business name may be sufficient)
-   - Community: community name (if different from business name), venue type
-   - Waitlist: venue type
-3. "Do you have a website?" → optional URL input (all verticals)
-4. Vertical-specific follow-ups (conditional):
-   - Appointments: "Do you have a cancellation policy?" → yes/no, if yes → brief text input
-5. EIN collection (conditional — see below)
-6. "Anything else we should know?" → optional freeform text input. This field feeds into the AI summary (Step 3) and is available as context for AI help suggestions on the messages page. It does not directly modify message templates. Psychologically, it signals "we're listening" and lets developers add context we didn't think to ask about ("we're mobile-only," "we serve Spanish-speaking clients," "we call them sessions not appointments").
+**EIN section (expandable, optional for transactional primary):**
+- Collapsed state: "I have a business tax ID (EIN)" as brand purple text link with ⓘ tooltip ("A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases.")
+- Expanded state: link changes to "Cancel" (text-text-tertiary, right-aligned on same line as label) which collapses and clears. EIN input (XX-XXXXXXX format, auto-dash), "Verify" button inline right.
+- **Verification:** Two-phase spinner — "Verifying..." (1s) → "Checking sources..." (1.5s). Simulates primary lookup + AI fallback.
+- **Verified state:** Business identity card (name, address, entity type · state) with ✕ dismiss in top-right. Checkbox inside card: "This is my business" with ⓘ tooltip ("Misrepresenting business identity will result in account termination."). Continue disabled until checkbox checked.
+- **Failed state:** "We couldn't verify this EIN. You can try again or continue without it." Continue stays enabled. EIN data not saved.
+- **Format error:** "EIN should be 9 digits (XX-XXXXXXX)" — inline, on blur.
+- **Marketing-primary:** EIN section expanded by default, no collapse option. Required — Continue disabled without verified EIN. Failed state: "We couldn't verify this EIN. Marketing messages require a verified business identity. You can switch to a different use case to get started, or try a different EIN."
 
-**Appointments example flow:**
-1. "What's your business called?" → text input
-2. "What do people book with you?" → text input
-3. "Do you have a website?" → optional URL input
-4. "Do you have a cancellation policy?" → yes/no, if yes → brief text input
-5. EIN (conditional)
-6. "Anything else we should know?" → optional freeform
+**Prototype state cycler** (Default/Verified/Failed) for design review — strip on port.
 
-**EIN collection (triggers for any second campaign, not just marketing):**
-EIN is required for any developer who wants more than one campaign — whether that's transactional + marketing, or two different transactional categories (e.g., orders + appointments). Sole props without EIN are limited to one campaign of any type.
+Back → `/start`. Continue → `/start/details`.
 
-- If the developer picked marketing as primary: EIN is required during intake (marketing always requires EIN for carrier registration).
-- If the developer picked a transactional primary: EIN is asked if they indicate interest in marketing or a second category. "Do you have an EIN? It unlocks marketing messages and additional use cases." Not required to proceed — they can skip and add later from Settings.
-- On EIN entry: inline verification, business identity fields auto-populate (D-303), developer confirms.
-- If no EIN: single campaign path. No dead-end UI, no "you can't do this." The option for a second category simply isn't offered.
+### Step 3: Service Context ✅ BUILT
 
-**As the developer answers,** the right side of the screen (or below on mobile) shows a live preview of their first message materializing with their real business context. Business name populates, service type fills in. The message appears to write itself from their answers.
+**Route:** `/start/details`
 
-**Design notes:**
-- Left column: questions, building downward. Right column: live message preview (desktop). Single column with preview below on mobile.
-- Each question has generous spacing. Feels like a conversation, not a form.
-- Inputs auto-focus on reveal. Enter key advances to next question.
-- Message preview uses the same card treatment as the messages page (continuity)
-- Back button available but unobtrusive
+**Heading:** "Tell us about your business"
+**Body:** "This helps us write messages that sound like they're from you."
 
-### Step 3: Intake Summary
+**Two inputs, sequential (second appears after first is answered):**
 
-**Still on:** `relaykit.ai/start/[vertical]` (or a sub-step)
-**Auth required:** No
+Input 1 — Dropdown (native select, custom chevron via `appearance: none` + SVG background):
+Label: "What kind of business?"
+Options: Salon & beauty, Dental, Medical, Fitness & wellness, Tutoring & education, Consulting, Auto service, Home services, Pet care, Photography, Other
 
-After the last question, the screen transitions to a summary. This is AI-powered — not just echoing back their inputs, but synthesizing: "You're building appointment SMS for GlowStudio, a nail salon. We'll set up booking confirmations, reminders, reschedule and cancellation notices, no-show follow-ups, and pre-visit instructions — all with your business name and service details already filled in."
+Input 2 — Text input (fades in after dropdown selection):
+Label: "What do people book with you?"
+Contextual placeholder based on dropdown (e.g., Salon → "e.g., nail appointments, haircuts"; Dental → "e.g., dental cleanings, checkups"; Other → "e.g., appointments, sessions")
 
-The summary feels like RelayKit understood them, not like a form recap.
+Both required. Continue disabled until both filled.
 
-**Below the summary:** Editable fields showing the structured data (business name, service type, vertical, EIN if provided). The developer can correct anything before proceeding.
+Back → `/start/business`. Continue → `/start/website`.
 
-**CTA:** "See your messages →"
+### Step 4: Website ✅ BUILT
 
-**If EIN was verified:** Before advancing to messages, offer: "Want to add another category?" Shows the vertical picker again (minus the one they already picked). If they select a second category, a brief 1-2 question intake for that vertical (we already have their business name, EIN, etc. — just need category-specific context). Both categories' messages appear on the messages page. If they skip, they can always add from Settings later.
+**Route:** `/start/website`
 
-**Design notes:**
-- This is a moment of delight. The AI summary should feel warm and specific, not templated.
-- The editable fields below are compact — inline edit on tap, not a full form
-- This data becomes the foundation of Settings after signup
-- The "add another category" offer should feel like a bonus, not a required step. Small, secondary CTA below the primary "See your messages" button.
+**Heading:** "Do you have a website?"
+**Body:** "We'll link to it in your messages so customers can find you online."
 
-### Step 4: Verify Phone
+**URL input:** Placeholder "glowstudio.com". Optional.
+**Skip link** below input (text-text-tertiary) — advances without entering a URL.
+Continue always enabled.
 
-**Inline step** — could be a modal or an inline expansion on the summary page.
+**Note:** If no website provided, messages that reference `{website_url}` omit that line entirely. The compliance site URL (`msgverified.com`) is never shown to end customers — it's infrastructure for carrier review only.
 
-"Where should we send test messages?" Phone input, send OTP, verify. Developer now has a primary test phone.
+Back → `/start/details`. Continue → `/start/context`.
 
-**Design notes:**
-- This should feel lightweight, not like a separate step. One input, one button, one OTP field.
-- After verification: "Verified ✓" with the number displayed. Immediate transition to messages.
+### Step 5: Context ✅ BUILT
 
-### Step 5: `/start/[vertical]/messages` — Messages (The Destination)
+**Route:** `/start/context`
 
-**URL:** `relaykit.ai/start/[vertical]/messages`
-**Auth required:** No (but messages are session-scoped until signup)
+**Heading:** "Anything else we should know?"
+**Body:** "This helps us tailor your messages. You can always adjust later."
+
+**Textarea:** 4 rows, no placeholder, optional. Label: "Notes for us"
+**Skip link** below textarea.
+Continue always enabled.
+
+Feeds into AI summary (future Step 3 if built) and AI help context on messages page. Does not directly modify templates.
+
+Back → `/start/website`. Continue → `/start/verify`.
+
+### Step 6: Phone Verification ✅ BUILT
+
+**Route:** `/start/verify`
+
+**Heading:** "Verify your phone number"
+**Body:** "Your phone is your test device for messages."
+
+**Phone input state:** +1 prefix (non-editable), placeholder "(555) 123-4567". "Send code" button (compact purple, inline right). 1.5s stub delay → OTP state.
+
+**OTP state:** "We sent a code to +1 (555) 123-4567". 6 digit boxes (auto-advance, paste, backspace). Any 6 digits work in prototype. "Use a different number" link → returns to phone input.
+
+**Verified state:** Green checkmark + "Verified" + formatted phone. "Change" link (text-text-tertiary) → resets to phone input.
+
+Continue disabled until verified.
+
+Back → `/start/context`. Continue → `/apps/glowstudio/messages` (hardcoded for prototype).
+
+### Step 7: Messages ✅ BUILT
+
+**Route:** `/apps/[appId]/messages` (Default state)
 **This is the most important screen in the product.**
 
-The developer lands here and sees their complete message set for the vertical. All messages, pre-populated with their business context from intake. Every message has a send button from the start (phone is verified from Step 4).
+The developer lands here and sees their complete message set for the vertical. All messages, pre-populated with their business context from intake. Every message has a send button.
 
-**Layout:**
+**Body text (wizard mode only):** "These are your messages — ready to use. Edit any message to match your voice."
 
-**Intake summary panel:**
-A summary on the page showing the key data collected during intake. Displays all collected information — business name, service type, website, EIN (if provided), phone number, vertical-specific context, and freeform notes. "Edit" opens a panel where all fields are editable. Editing message-affecting fields (business name, service type, website) updates message previews live — this reuses the existing Personalize functionality as its foundation. If the developer enters or edits their EIN in the panel, offer a second category to add.
+**Wizard header:** RelayKit + Appointments pill (top nav), ← Back + "Start building" (below nav). "Start building" appears at top AND bottom of the page — dual Continue (D-318). Bottom Continue is full-width purple in the 540px column.
 
-This panel replaces the current Personalize slide-over. Same data, same live-preview behavior, but reframed from "see how messages look" to "here's what you told us" — the source of truth that feeds messages and eventually Settings.
+**Message cards, edit state, style pills, AI help, compliance checks:** See PROTOTYPE_SPEC.md for full card anatomy. Key behaviors unchanged from Session 22.
 
-The summary is always accessible on the messages page (not just first visit). After signup, the same data lives in Settings but remains accessible from the messages page for quick reference and edits.
+Back → `/start/context`. "Start building" → `/apps/[appId]/ready`.
 
-**Message cards:**
+### Step 7.5: Opt-in Form Preview — REMOVED FROM FLOW
 
-Each message is a card showing the full message text — not truncated, not collapsed to a single row.
+**Route:** `/apps/[appId]/opt-in` — page returns `null`, all traffic redirects to `/messages`.
 
-**Default state:**
-- Title ("Booking confirmation") — bold, top of card
-- Info icon (i) — in the title row, right side. Taps to show what this message is for.
-- Edit button — in the title row, right side (where copy icon was). Opens the edit state.
-- Full message text below the title, with personalized variables highlighted (business name, service type, dates, etc.)
-- Send button — round icon button, floats outside the card on the right side. Always one tap to send to primary phone.
+Joel flagged this page as unsatisfying. Removed from wizard flow. File retained with original implementation in a reference comment. D-317 specifies opt-in form should be viewable post-onboarding on demand from messages page (modal or slideout). Design TBD.
 
-No card numbers. No template/preview toggle. No copy button. No "Modify with AI" in default state.
+### Step 8: Ready ✅ BUILT
 
-**Edit state** (triggered by Edit button, or possibly by clicking into the message text — discoverability TBD in prototype):
-- Title + info icon unchanged
-- Message text becomes an editable textarea, variables still highlighted
-- Send button remains available on the right (developer can send mid-edit to test changes)
-- Bottom of card expands to reveal edit controls:
-  - **Style pills:** "Current" (always first — shows the saved version for reference without canceling), then style variants (names TBD — current "Brand-first / Action-first / Context-first" labels need more evocative names; park for later). Tapping a pill swaps textarea content to that variant as a suggestion — Accept/Revert buttons appear. AI pre-validates pill swaps before showing.
-  - **AI help input:** Freeform text field — "How should we change this?" Developer types a request ("make it more casual," "add my cancellation policy"), AI rewrites and shows result in textarea as a suggestion — same Accept/Revert flow as pills. AI pre-validates before showing. For now, wire the UI only — no actual AI call.
-  - **Contextual AI suggestions:** Per-message suggested modifications (e.g., "Add a reschedule option with a link," "Include preparation instructions"). Tapping one triggers the same AI rewrite flow.
-- **Save / Cancel buttons** at the bottom of the card (inside the card, not floating)
-- **Compliance feedback on manual edits only:** If the developer manually types changes AND the edit breaks compliance, quiet grey helper text appears after a few seconds of inactivity with a brief explanation. Save button swaps to "Fix" (or similar — CTA name TBD). Fix triggers auto-correction. If the developer fixes the issue themselves, Save returns automatically. Save is disabled while non-compliant. No green checkmarks. No yellow warnings. No scare colors. The developer never learns about compliance rules — they just can't save a broken message, and there's always a one-click fix.
-- AI-generated changes (pill swap, AI help, Fix) are always pre-validated — compliance feedback never appears on our own output.
+**Route:** `/apps/[appId]/ready`
 
-**Edit interaction model — preview before commit:**
-All text changes from pills or AI help follow the same pattern: new text appears in the textarea as a suggestion, Accept/Revert buttons appear below. The developer sees the result before it's applied. Accept keeps the new text. Revert returns to what was there before. This applies equally to pill swaps, freeform AI rewrites, and Fix auto-corrections. The developer stays in control throughout.
+**Heading:** "Skip the hard part"
+**Body:** "Create a free account and start building."
 
-**Message grouping:**
-Messages are grouped by category (namespace). If the developer selected one category, all messages for that category are shown. If they selected two categories (e.g., appointments + marketing, or orders + appointments), messages are grouped under category headers.
+**Five benefit lines** with green CheckCircle icons. Bold lead sentence + tertiary detail. Generous spacing (space-y-7):
 
-If the developer has an EIN but only selected one category, a subtle affordance at the bottom of the messages: "Add another category" — opens the vertical picker to add a second. Second category's messages appear in a new group.
+✓ **One prompt gets you started.** Your business details, your messages, ready to paste into your AI tool.
 
-If the developer does NOT have an EIN, no "add another category" affordance. They have one category, it's complete, no dead ends.
+✓ **Test with real people, real phones.** Send to up to 5 people — your team, your co-founder, a client you want to impress.
 
-**Pricing note within multi-category view:** If two categories are present, a brief note near the top: "Two categories register as separate campaigns. $29/mo instead of $19/mo when you go live." Factual, not pushy.
+✓ **An expert in your corner.** A full AI assistant that knows your business, your messages, and how SMS works.
 
-**"Send to my phone" as a persistent action:**
-In addition to per-card send buttons, a floating or bottom-anchored button: "Send to my phone." Tapping it opens a quick picker — select a message, tap send, phone buzzes. This is the hook moment for first-time visitors who want to see a real text before committing.
+✓ **Change a message here, your app updates automatically.** Edit copy on the website. No code changes, no redeployment.
 
-**Design notes:**
-- Message cards show full message text in default state — no truncation, no collapsed single-row view
-- Clear visual hierarchy: title is bold/medium weight, message text is regular, variables highlighted in brand color
-- Send button floats outside the card on the right as a round icon button — immediately recognizable (paper plane or similar), always one tap
-- Edit button lives in the title row icon area — replaces the old copy/template icons
-- Edit state expands the bottom of the card to reveal controls; the card itself doesn't change shape otherwise
-- Keep vertical rhythm comfortable — developer should see 3-5 cards without scrolling on a standard viewport (cards are taller now with full message text)
-- Marketing section should feel like part of the same page, not a separate tab or section that feels bolted on
-- All interactions are inline. No modals for editing. No modals for sending. The page is the workspace.
-- The global style pill bar above the cards is removed — pills live inside each card's edit state
-- The global "Personalize," "Show template," and "Copy all" controls are removed — personalization is handled by the intake summary panel; template view and copy are not needed in the new flow
-- **Full-width layout (D-317):** No opt-in column on the right. Messages get the full viewport. Opt-in form preview is its own wizard step (Step 5.5).
-- **Dual Continue (D-318):** "Continue" button in both the top header area and below the last message card. Only wizard step with this treatment — the page is long enough that developers may not scroll. All other steps use bottom-only.
-- **No workspace chrome in wizard mode:** No Settings gear, no state switcher dropdown, no Sandbox indicator. These only appear after signup when the page becomes the workspace.
-- **Style pill rename:** First variant is "Brand-first" (not "Standard"). Naming is placeholder pending future review. Pill order in edit state: Current, Brand-first, Action-first, Context-first.
+✓ **You never think about compliance.** Opt-in forms, carrier rules, message formatting — all handled.
 
-### Step 5.5: `/start/[vertical]/opt-in` — Opt-in Form Preview (D-317)
+**Pricing:**
+"Free while you build and test." — text-lg font-semibold
+"When you're ready for real delivery: **$49** registration + **$19/mo**." — dollar amounts semibold (D-320)
 
-**URL:** `relaykit.ai/start/[vertical]/opt-in`
-**Auth required:** No
-**Inserted between messages and signup.**
+**CTA:** Full-width purple "Create account" → `/apps/[appId]/signup`
 
-The developer sees their opt-in form — read-only, auto-generated from their business name and message types. This is not a form they fill out. It's a preview of something RelayKit builds and maintains for them.
+No Continue button in WizardLayout header — the CTA button is the only forward action. Back → `/apps/[appId]/messages`.
 
-**Layout:**
-- Heading: "Your opt-in form"
-- Context line: "RelayKit generates and maintains this for you. Your AI tool builds it into your app."
-- Rendered opt-in form preview — populated with business name and all message types from the selected category. Same `CatalogOptIn` component used previously in the messages right column.
-- "Continue" button at bottom — same wizard treatment as other steps.
+### Step 9: Signup ✅ BUILT
 
-**Design notes:**
-- This is a fast screen — the developer glances, sees it looks right, hits Continue.
-- The opt-in form is read-only. No editing. Editing business name happens in the intake summary panel on the messages page (or later in Settings).
-- Content-centered layout, max-width ~500px. Not two-column.
+**Route:** `/apps/[appId]/signup`
 
-### Step 6: Signup
+**Heading:** "Create your account"
+**Body:** "Free while you build. $49 + $19/mo when you're ready for real delivery." (D-320)
 
-**Triggered by:** "Continue" button at the bottom of the opt-in form step — same visual treatment as every other wizard advance. Not a separate decision moment. Not triggered by send-to-phone. The developer has looked at their messages, maybe edited a couple, maybe sent a test, seen their opt-in form. When they're ready, they hit Continue.
+**Email input:** Full width, placeholder "you@company.com", autofocus. "Send code" button (compact purple, right-aligned below input). 1.5s stub → OTP state.
 
-**Appears as:** The next step in the wizard flow, not a modal or gate. Same page structure as prior steps.
+**OTP state:** "We sent a code to you@company.com". 6 digit boxes (reuses sign-in modal pattern). Any 6 digits work. "Use a different email" link → returns to email input.
 
-**Price reveal:** This is where the developer learns what it costs. A single line above the signup inputs: "Free while you build. $99 + $19/mo when you're ready for real delivery." Informational, not a gate — signup itself is free. The developer has experienced the product (intake, messages, test send) but invested zero engineering time. If the price doesn't work, they close the tab and lost nothing. No sunk cost, no surprise later. Every developer who proceeds builds with full knowledge of the cost. The go-live button is never a surprise. (D-314, D-315)
+**Verified state:** Green checkmark + "Email verified" + email displayed. "Change" link to reset. Optional checkbox: "Send me product updates" (unchecked by default). Continue enables.
 
-**Signup inputs:** Email input. OTP verification. One optional checkbox: "Send me product updates" (unchecked by default — we build opt-in compliance software). That's it.
+**Continue behavior:** Sets registrationState to "Pending", navigates to `/apps/glowstudio/overview`. Wizard chrome dissolves — DashboardLayout renders.
 
-On signup:
-- API key generated (`rk_sandbox_` prefix)
-- If they came from `npx relaykit init` earlier: they already have the CLI installed. After signup, the instructions say "Go back to your terminal and run `npx relaykit init` again — it'll pull your messages and API key automatically now that you're signed up." The developer initiates, stays in control. No background session linking, no browser-to-terminal magic.
-- If web-only (no CLI session): "What do you build with?" — show tool icons (Claude Code, Cursor, Windsurf, Copilot, Cline, Other). One tap. Then show setup instructions tailored to that tool — the right command, the right way to feed it the spec file. API key shown once, copy button. This also gives us useful audience data without making it feel like a survey.
-- Wizard chrome dissolves. Setup context card gets a "Looks good" / dismiss affordance if not already dismissed. The messages page is now the workspace.
+Continue controlled via `WizardContinueContext` (disabled until email verified). Back → `/apps/[appId]/ready`.
 
-**What changes after signup:**
-- Messages are saved to the developer's account (no longer session-scoped)
-- The URL shifts from `/start/[vertical]/messages` to `/app/[appId]/messages` (scoped to app, not user — supports multi-app future)
-- Demo list functionality will appear after first SDK send (see Progressive Disclosure below)
+**Future:** Continue should route to `/apps/[appId]/get-started` (tool picker + API key + setup prompt) before dashboard. Not yet built.
+
+### Step 10: Get Started — NOT YET BUILT
+
+**Route:** `/apps/[appId]/get-started` (planned)
+
+**Heading:** "Start building"
+**Body:** "Paste this into your AI coding tool and it handles the rest."
+
+**Tool picker:** "What do you build with?" — row of tool name cards (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other). One selected at a time. Brand purple border + light bg on selection.
+
+**API key:** Readonly input showing stubbed key `rk_sandbox_abc123def456`. Copy button. "This is shown once. Save it somewhere safe."
+
+**Setup prompt (appears after tool selection):** Code block with ready-to-paste prompt tailored by tool. Includes `npm install relaykit`, API key, business name, industry, use case, message list. Copy button.
+
+**CTA:** Full-width purple "Go to your dashboard" — sets registrationState to "Pending", navigates to dashboard overview.
+
+This is the momentum bridge — instead of dumping them on a dashboard, we hand them the exact next action.
 
 ---
 
 ## The Workspace (Post-Signup)
 
-After signup, the wizard is done. The developer's workspace is the messages page. It's the same page they were just on, minus the wizard framing.
+After signup, the wizard is done. The developer's workspace is the messages page.
 
 ### Navigation
 
@@ -257,100 +282,69 @@ After signup, the wizard is done. The developer's workspace is the messages page
 
 No tabs in sandbox. The messages page IS the app. Settings is accessible via icon/link in the top bar, not as a tab.
 
-**After registration (pending/approved):** Add an "Overview" link in the top bar. Overview shows registration status (the existing timeline stepper, which is good) and, after approval, delivery metrics. Overview is not visible before registration because there's nothing to overview.
+**After registration (pending/approved):** Add an "Overview" link. Overview shows registration status and, after approval, delivery metrics.
 
 ### Messages Page (Workspace)
 
-Same layout as Step 5, minus setup context card (which was dismissed or auto-removed at signup). All message cards, all editable, all sendable.
+Same layout as Step 7, minus wizard framing. All message cards, all editable, all sendable.
 
 **Additions that appear over time (progressive disclosure):**
 
 **After first SDK send detected:**
-- "Demo phones" section appears below the messages. Collapsed by default: "Your phone: +1 (555) 123-4567"
-- Expandable to show: primary phone (always active), "Add someone" button
+- "Demo phones" section appears below messages. Collapsed by default.
+- Expandable to show: primary phone, "Add someone" button
 - Adding a person: enter phone + name label, OTP verification, added to list
-- Invite link: secondary action within the demo section, generates branded link
-- Per-card send action now shows recipient picker: primary phone pre-checked, demo list members as checkboxes
-- Note in demo section: "Checked phones also receive messages when your app sends in sandbox."
-- Per-session selection: every page load starts with only primary phone checked
-
-**After demo list has members:**
-- Demo section shows: "Your phone + 2 others" when collapsed
-- Expanded: list with labels ("Sarah — shop owner"), masked numbers, checkboxes, remove button per person
-- Mode 1 (manual website send): per-card send action with recipient picker
-- Mode 2 (app-triggered): checked phones receive sandbox sends from the app
+- Invite link: secondary action within the demo section
+- Per-card send action shows recipient picker
 
 **Test activity log:**
-- Appears after first successful send (website or SDK)
-- Below messages, above demo section (or collapsible panel)
+- Appears after first successful send
 - Simple chronological list: message name, recipient, timestamp, delivery status
-- "Booking confirmation → +1 (555) 123-4567 — delivered, 2 min ago"
-- SDK-triggered sends are labeled: "From your app" badge
-- Capped at last 20 entries, no pagination needed
+- SDK-triggered sends labeled: "From your app" badge
+- Capped at last 20 entries
 
 **Integration test checklist (appears after signup):**
-A collapsible "Test your integration" section. Vertical-specific checklist mapping app actions to expected messages:
-
-For appointments:
-- ☐ Book an appointment → Booking confirmation
-- ☐ Wait for reminder window → Reminder sent
-- ☐ Reschedule → Reschedule confirmation
-- ☐ Cancel → Cancellation notice
-
-Each item auto-completes when the API detects the corresponding send. The developer watches the list fill up in real time as they test their app.
-
-When an item doesn't fire, offer a contextual prompt they can paste into their AI tool: "The booking confirmation sends but the cancellation handler isn't firing. Here's what to tell your tool:" with a copy button containing something like "When an appointment is cancelled, call `relaykit.appointments.sendCancellation(phone, { date })`. It's not firing — find where cancellations are handled and wire it in."
-
-We're not debugging their app. We're telling them which SDK call should fire and letting their tool figure out where it goes. Stays in our lane.
-
-The checklist disappears (or collapses to "All messages verified ✓") once every item is checked. Gone when it's done its job.
+Vertical-specific checklist mapping app actions to expected messages. Auto-completes when API detects corresponding sends. Disappears when all items checked.
 
 ### "Go Live" CTA
 
-A banner or persistent element on the workspace (not in the way, but visible):
-"Ready for real delivery? Go live →"
+Banner or persistent element: "Ready for real delivery? Go live →"
 
-Clicking opens a pre-filled registration confirmation. NOT a form. A review screen:
-- Business name: GlowStudio ✓
-- Business type: LLC ✓ (from EIN lookup if available)
-- EIN: ••••4567 ✓ (if provided)
-- Address: [pre-filled from EIN lookup, or fields to fill]
-- Categories to register: Appointments, Marketing (each submits as a separate TCR campaign)
-- Messages per category: 6 appointment, 3 marketing ✓
-- Contact: their email ✓
-- Pricing: $99 one-time + $19/mo (one category) or $99 one-time + $29/mo (two categories)
+Clicking opens a pre-filled registration confirmation (NOT a form — a review screen):
+- Business name, type, EIN, address (pre-filled from intake/EIN lookup)
+- Categories to register
+- Messages per category
+- Pricing: $49 one-time + $19/mo (one category) or $49 one-time + $29/mo (two categories) (D-320)
 
-Only fields we don't already have are empty inputs. For many developers, this is a "Confirm and pay $99" button. No pricing surprise — the developer saw the cost at signup (D-315) and has been building with full knowledge since. Full refund if registration is rejected.
-
-**Registration logic:** We submit all categories the developer used in sandbox as separate TCR campaigns simultaneously. No sequencing, no "primary first, second later." One submission, one $99 fee, all campaigns reviewed together.
+Only fields we don't already have are empty inputs. No pricing surprise. Full refund if rejected.
 
 ---
 
 ## Message Edit Lifecycle
 
-**The website authors, the SDK delivers (D-279).** This has concrete UX implications:
+**The website authors, the SDK delivers (D-279).**
 
-**Message copy edits are zero-code.** When a developer edits a message on the website, the next send from their app uses the new copy automatically. No code change, no redeployment, no new spec file. The website should confirm this after every save: "Saved. Your app will use this version on the next send."
+**Message copy edits are zero-code.** Edit on the website → next send from the app uses the new copy automatically. Confirm after every save: "Saved. Your app will use this version on the next send."
 
-**New messages don't require return trips.** The spec file tells the AI tool to build handlers for ALL messages from day one. If the developer enables a new message type on the website later, the handler likely already exists in their code. The SDK call just starts working because the server has the template.
+**New messages don't require return trips.** The spec file tells the AI tool to build handlers for ALL messages from day one.
 
-**We don't generate new prompts for the tool on return visits.** By the second visit, the developer's AI tool has vastly more context about their app than we do. Any guidance we give about where to put new code would be guessing. After changes on the website, we show what changed (e.g., "2 new messages available") and the function signatures. The developer tells their tool what to do. We show available functions, not integration instructions.
+**We don't generate new prompts for the tool on return visits.** After changes, we show what changed and the function signatures. The developer tells their tool what to do.
 
-**SMS_GUIDELINES.md updates via API.** When messages change or categories are added, the guidelines file updates automatically. The developer's tool fetches the latest version when asked — no manual download.
+**SMS_GUIDELINES.md updates via API.** When messages change or categories are added, the guidelines file updates automatically.
 
 ---
+
+## Settings
 
 ### In Sandbox (pre-registration)
 
 Settings is the intake data in editable form. Accessed from top bar icon/link.
 
 **Sections:**
-- **Your business:** Business name, service type, website, EIN (add or edit). This is the intake data. Editing business name here updates it in all message previews.
-- **Categories:** Shows active categories (e.g., "Appointments"). If EIN is on file, "Add another category" affordance. If no EIN, "Add your EIN to unlock additional categories" with inline EIN input.
-- **API key:** Sandbox key, copyable. Note: "Your AI tool reads this from your .env file."
-- **Your phone:** Primary verified number. "Change" to re-verify a different number.
-
-That's it. Clean, minimal, directly useful.
+- **Your business:** Business name, service type, website, EIN (add or edit)
+- **Categories:** Active categories. EIN on file → "Add another category." No EIN → "Add your EIN to unlock additional categories."
+- **API key:** Sandbox key, copyable. "Your AI tool reads this from your .env file."
+- **Your phone:** Primary verified number. "Change" to re-verify.
 
 ### After Registration
 
@@ -359,6 +353,20 @@ Settings grows:
 - **Billing:** Plan, usage, next billing date, manage billing link (Stripe portal)
 - **API keys:** Sandbox key + live key (shown once at generation, masked after)
 - **Danger zone:** Cancel plan, delete account
+
+---
+
+## Shared Wizard Infrastructure
+
+**`prototype/app/start/layout.tsx`** — min-h viewport wrapper for all `/start/*` pages.
+
+**`prototype/components/wizard-step-shell.tsx`** — reusable shell. Pages pass `backHref`, `continueHref`, `canContinue`, `onBeforeContinue`. Renders Back link + children + full-width Continue button.
+
+**`prototype/lib/wizard-storage.ts`** — sessionStorage under `relaykit_wizard` key. `WizardData` fields: `vertical`, `businessName`, `industry`, `serviceType`, `website`, `context`, `verifiedPhone`, `ein`, `businessIdentity`. Exposes `VERTICAL_LABELS` for the nav pill.
+
+**`wizardFadeIn` keyframe** in `globals.css` — shared by `/start/business` (EIN expand) and `/start/details` (service type reveal).
+
+**`WizardContinueContext`** — lets `/apps/[appId]/*` pages register `{onClick, disabled}` to override WizardLayout's header Continue button. Register inside a `useEffect` and `return () => setOverride(null)` on unmount.
 
 ---
 
@@ -371,95 +379,82 @@ Settings grows:
 - D-296: SDK and API are equal paths
 - D-300: Intake interview with Claude on backend
 - D-301: Locked variable schemas per message type
-- D-302: EIN required for any second campaign (AMENDED — was "marketing only," now any second campaign of any type. Sole props limited to one campaign.)
+- D-302: EIN required for any second campaign (amended — any second campaign, not just marketing)
 - D-303: Business identity pre-validation from EIN lookup
 - D-304: Symmetrical pricing — first campaign $19, second $29
 - D-305: Marketing-only is valid standalone
 - D-310: EIN and business identity are per-app, not per-account
 - D-311: Multiple categories submit simultaneously at registration — no sequencing
-- D-312: TCR allows up to 5 campaigns per brand; v1 supports max 2, additional campaigns backlogged
-- D-313: Pre-auth message send — a special endpoint or temporary session token allowing message sends before signup, scoped to verified phone only
-- D-314: Single $99 go-live fee replaces $49 submission + $150 approval split
-- D-315: Price revealed at signup step, not at go-live or on arrival
-- D-316: Signup is a wizard step, not a separate decision moment — same "Continue" treatment as other wizard advances
-- D-317: Opt-in form is a wizard step between messages and signup, not on the messages page
-- D-318: Messages wizard step has Continue at top and bottom
+- D-312: TCR allows up to 5 campaigns per brand; v1 supports max 2
+- D-313: Pre-auth message send requires special endpoint or session token
+- D-314: ~~Single $99 go-live fee~~ — superseded by D-320
+- D-315: Price revealed at signup step
+- D-316: Signup is a wizard step, not a separate decision moment
+- D-317: Opt-in form removed from wizard flow. Post-onboarding viewable on demand (modal or slideout). Design TBD.
+- D-318: Messages wizard step has Continue ("Start building") at top and bottom
+- D-319: Compliance restore replaces full message with clean variant, not a partial patch
+- D-320: Registration fee $49 flat. No split, no go-live fee. $19/mo unchanged. Supersedes D-314 and D-193/D-216.
 
 ---
 
 ## What This Replaces in the Current Prototype
 
-**Removed (already done this session):**
+**Removed (done):**
 - Compliance alerts system (D-293)
 - Marketing expansion modal (D-294, D-295)
+- Global style pill bar, Personalize slideout, Show template, Copy all
+- PlaybookSummary flow diagram, AI tool setup dropdown, ToolPanel
+- Download/Re-download CTAs
+- Card numbers, per-card copy/template toggle, "Modify with AI" accordion
+- Opt-in form right column on messages page (D-317)
+- "Current" pill + Accept/Revert preview flow
+- Opt-in wizard step (removed from flow, page returns null)
+- Old 4-step "Build your SMS feature" onboarding wizard
 
-**To be removed/replaced:**
-- Overview tab as default landing → Messages is default, Overview appears after registration
-- Onboarding wizard (4-step "Build your SMS feature") → Replaced by the `/start` wizard flow
-- Three-tab dashboard (Overview, Messages, Settings) in sandbox → Single messages workspace + Settings via top bar
-- "Download RelayKit" / "Re-download RelayKit" buttons → Replaced by `npx relaykit init` with session linking
-- "AI tool setup" dropdown on Messages tab → Removed; the tool integration happens via CLI, not the website
-- Message flow diagram (numbered 1-6 step visualization) → Removed; the developer already knows what messages they have because they just set them up
-- "All messages scanned before delivery" compliance line → Removed per D-293
-- Period selector dropdown on Overview → Only appears post-approval when metrics exist
-
-**To be preserved:**
-- Registration status timeline stepper (screenshot 6) — good design, moves to post-registration Overview
-- Approved-state metrics cards (Delivery, Recipients, Usage & Billing) — moves to post-registration Overview
-- Settings page structure for post-registration (Account info, Registration, API keys, Billing) — grows from sandbox Settings
-- Message card styling foundation — adapt for new collapsed/expanded states
-- Style variant pills (Brand-first, Action-first, Context-first) — inside expanded edit state
+**Preserved:**
+- Registration status timeline stepper — good design, stays in post-registration Overview
+- Approved-state metrics cards (Delivery, Recipients, Usage & Billing) — stays in Overview
+- Settings page structure for post-registration — grows from sandbox Settings
 
 ---
 
 ## Build Phases
 
-### Phase 1: Workspace Reshape (do first)
-Reshape the existing dashboard into the messages-first workspace. Remove Overview tab in sandbox. Remove onboarding wizard. Messages page becomes the landing page. Settings accessible from top bar. This is surgery on existing code, not net-new pages.
+### Phase 1: Workspace Reshape ✅ DONE
+Messages-first workspace. Overview tab removed in sandbox. Tab bar hidden in Default state.
 
-### Phase 2: Message Card Redesign
-New collapsed/expanded card states. Per-card send button. Inline editing with style pills, AI help placeholder, and validation indicators. This can use the existing Messages tab content as a starting point.
+### Phase 2: Message Card Redesign ✅ DONE
+New default/edit card states. Style pills (Standard/Friendly/Brief/Custom). AI help input with sparkle icon. Compliance checks with Restore. Single-card editing. Phone01 send icons in wizard.
 
 ### Phase 2.5: Error States Design Session (PM + Joel, no CC)
-Before building the wizard flow, walk through every interaction that can fail and design the recovery. Prevention first — flows should be designed so errors are hard to trigger (progressive disclosure, inline validation on delay, smart defaults). Then for failures that can still happen, design what the developer sees.
+Walk through every interaction that can fail before locking in copy. Key interactions: EIN verification, phone OTP, AI rewrite, compliance, network errors, signup OTP.
 
-Key interactions to cover:
-- EIN verification fails (bad number, no match, service unavailable)
-- EIN/business name mismatch (lookup returns a different name)
-- Phone OTP expires or wrong code entered
-- AI summary generation fails or returns nonsense
-- Message edit fails validation and developer tries to save anyway
-- Message edit AI rewrite produces non-compliant output
-- Network errors during any async operation
-- Pre-auth send fails (before signup, no API key)
-- Signup OTP fails or email already exists
+### Phase 3: Wizard Flow ✅ DONE
+Full wizard entry flow: vertical picker → business name + EIN → service context → website → context → phone verify → messages → ready → signup. Layout architecture, shared infrastructure, sessionStorage persistence, all verification states.
 
-Output: error state designs added to this spec before Phase 3 begins.
+### Phase 3.5: Get Started Page (NEXT)
+Tool picker, API key, setup prompt. The momentum bridge between signup and dashboard.
 
-### Phase 3: `/start` Wizard Flow
-Net-new pages: vertical picker, intake questions, summary, phone verification, and pre-auth messages view. This is the top-of-funnel that doesn't exist yet. Requires the most new code.
+### Phase 3.6: Wire Wizard Data Into Messages
+Read sessionStorage business name and service type, interpolate into message card templates. Currently messages show hardcoded demo data.
 
 ### Phase 4: Demo Functionality
-Demo list management, per-session selection, recipient picker on send, invite link, test activity log. Progressive disclosure based on SDK send detection.
+Demo list management, per-session selection, recipient picker, invite link, test activity log.
 
 ### Phase 5: Go Live Flow
-Pre-filled registration confirmation screen. Replaces the current multi-field registration form. Depends on EIN verification backend (D-302, D-303) for full auto-population.
+Pre-filled registration confirmation screen. Depends on EIN verification backend (D-302, D-303).
 
 ---
 
 ## Visual Design Strategy
 
-Untitled UI is being used as a wireframe kit, not as the final visual identity. The current prototype uses Untitled UI for component structure, spacing, interaction patterns, and data hierarchy — but the visual design is not final. A dedicated visual design sprint will happen after the product shape stabilizes.
+Untitled UI is being used as a wireframe kit, not as the final visual identity. A dedicated visual design sprint will happen after the product shape stabilizes.
 
-**What this means for CC right now:**
-
-- **Use Untitled UI components for structure and behavior.** They give us consistent layouts, accessibility, and interaction patterns. That's their job.
-- **Do not treat Untitled UI's visual style as the brand.** It's generic SaaS. RelayKit will have its own visual identity. The design sprint will define typography, color palette, spacing refinements, and motion.
-- **Prepare for a clean reskin.** This is the critical requirement. Every visual decision must be easy to change later:
-  - Use semantic color tokens aliased through theme config, not hardcoded hex values or Untitled UI color names baked into className strings. `text-brand-primary` is good. `text-purple-600` baked everywhere is a painful redesign.
-  - Name components after their function, not their appearance. `RegistrationStatusStepper` not `PurpleTimelineCard`.
-  - Keep the token layer thin and remappable. If all brand colors flow through a theme.css config, reskinning is an afternoon. If they're scattered across 50 files, it's a week.
-- **Animations come last.** The design sprint will define motion and micro-interactions after the visual identity is set. Do not add animations now — they'll be thrown away. The exception is functional transitions (expand/collapse, loading states) which should use simple CSS transitions (`transition duration-100 ease-linear` per Untitled UI defaults).
+**What this means for CC:**
+- Use Untitled UI components for structure and behavior
+- Do not treat Untitled UI's visual style as the brand
+- Prepare for a clean reskin — semantic color tokens, functional component names, thin remappable token layer
+- Animations come last — no animations now except functional transitions
 
 ---
 
@@ -469,9 +464,14 @@ Untitled UI is being used as a wireframe kit, not as the final visual identity. 
 - Read UNTITLED_UI_REFERENCE.md for component patterns, color tokens, and icon usage
 - The prototype uses Untitled UI components, Tailwind v4.1, React Aria foundations — use them
 - Do not invent new color tokens or typography scales — use the existing system
-- The frontend-design skill is available — use it for layout creativity within the Untitled UI system, not against it
-- The aesthetic should be clean, confident, and minimal — not "bold" in the sense of the design skill's maximalist suggestions. RelayKit is a developer tool. Precision over flair.
+- The aesthetic should be clean, confident, and minimal. Precision over flair.
 - Every screen should feel like less than the current prototype, not more. We are subtracting.
-- **No explaining our process in UI copy.** Do not write helper text, tooltips, or descriptions that teach the developer about compliance, TCR, carrier registration, or campaign mechanics. Questions ask. Previews show. If you're tempted to add an explanation, cut it.
-- **Multi-tenant aware.** All state is scoped to `appId`, not `userId`. The URL structure uses `/app/[appId]/`. The current prototype already has `/apps/[appId]/` — maintain this pattern. Do not hardcode anything to assume one app per account. When multi-project ships (PRD_11), each app gets its own workspace with zero changes to the workspace itself — just a project list page and switcher added on top.
-- **The spec file builds everything.** The AI tool receives all messages across all categories and builds handlers for all of them on day one. The developer's app grows into the message set over time. This means the messages page is not about "enabling" individual messages — they're all available. The page is for reviewing copy, editing, and testing.
+- **No explaining our process in UI copy.** Questions ask. Previews show. If you're tempted to add an explanation, cut it.
+- **Multi-tenant aware.** All state scoped to `appId`, not `userId`. URL structure: `/apps/[appId]/`.
+- **The spec file builds everything.** All messages available from day one. The messages page is for reviewing, editing, and testing — not enabling.
+- **TopNav wizard detection** uses pathname regex. `/start` and `/start/*` get wordmark-only. `/apps/*/messages|ready|signup` in Default state get wizard nav. New wizard pages need to update both patterns.
+- **WizardLayout's getPageConfig** is pathname-driven. New wizard steps under `/apps/[appId]/` need entries (backHref, continueHref, continueLabel, dualContinue).
+- **`/start/*` pages use WizardStepShell**, not WizardLayout. Different plumbing, same visual result.
+- **Variant IDs are stable** (standard / action-first / context-first) even though labels changed. Don't rename the IDs.
+- **Public marketing page** at `/sms/[category]/page.tsx` has its own variant data with old labels — separate from in-app pills.
+- **OTP is inlined in 3 places** (`/start/verify`, `/apps/[appId]/signup`, sign-in modal). Extract to shared component when touching any of them.
