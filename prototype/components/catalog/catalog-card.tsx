@@ -104,6 +104,8 @@ export function CatalogCard({
 }: CatalogCardProps) {
   const isControlled = controlledIsEditing !== undefined;
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showEditTooltip, setShowEditTooltip] = useState(false);
+  const [showSendTooltip, setShowSendTooltip] = useState(false);
   const [localIsEditing, setLocalIsEditing] = useState(false);
   const isEditing = isControlled ? controlledIsEditing : localIsEditing;
   const prevIsEditingRef = useRef(false);
@@ -342,15 +344,23 @@ export function CatalogCard({
 
           {/* Edit button — right side of header, hidden during edit */}
           {!isEditing && (
-            <button
-              type="button"
-              onClick={enterEdit}
-              className="flex-shrink-0 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-              aria-label="Edit message"
-              title="Edit message"
-            >
-              <PencilIcon />
-            </button>
+            <div className="relative flex-shrink-0">
+              <button
+                type="button"
+                onClick={enterEdit}
+                onMouseEnter={() => setShowEditTooltip(true)}
+                onMouseLeave={() => setShowEditTooltip(false)}
+                className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                aria-label="Edit message"
+              >
+                <PencilIcon />
+              </button>
+              {showEditTooltip && (
+                <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                  Edit message
+                </div>
+              )}
+            </div>
           )}
         </div>
 
@@ -485,19 +495,27 @@ export function CatalogCard({
 
       {/* Send button — centered vertically, tertiary styling */}
       <div className="flex items-center flex-shrink-0">
-        <button
-          type="button"
-          onClick={handleSend}
-          className={`flex items-center justify-center transition duration-100 ease-linear cursor-pointer ${
-            sendIcon
-              ? "text-fg-tertiary hover:text-fg-secondary"
-              : "w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs hover:bg-bg-secondary_hover"
-          }`}
-          aria-label="Send to my phone"
-          title="Send to my phone"
-        >
-          {sendIcon ?? <SendIcon />}
-        </button>
+        <div className="relative">
+          <button
+            type="button"
+            onClick={handleSend}
+            onMouseEnter={() => setShowSendTooltip(true)}
+            onMouseLeave={() => setShowSendTooltip(false)}
+            className={`flex items-center justify-center transition duration-100 ease-linear cursor-pointer ${
+              sendIcon
+                ? "text-fg-tertiary hover:text-fg-secondary"
+                : "w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs hover:bg-bg-secondary_hover"
+            }`}
+            aria-label="Send to my phone"
+          >
+            {sendIcon ?? <SendIcon />}
+          </button>
+          {showSendTooltip && (
+            <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+              Send to my phone
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
