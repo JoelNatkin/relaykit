@@ -11,19 +11,13 @@ interface WizardPageConfig {
 }
 
 function getPageConfig(pathname: string, appId: string): WizardPageConfig {
-  if (pathname.endsWith("/opt-in")) {
-    // Opt-in: Back to messages, top Continue only (no dual). Signup is
-    // the next step once it exists; for now Continue loops back to /messages.
-    return {
-      backHref: `/apps/${appId}/messages`,
-      continueHref: `/apps/${appId}/messages`,
-      dualContinue: false,
-    };
-  }
-  // Messages: Back to the final /start intake step, dual Continue (D-318)
+  // Messages: Back to the final /start intake step, dual Continue (D-318).
+  // Opt-in was removed from the wizard flow; signup is the next destination
+  // once it exists. For now Continue loops to /messages as a placeholder.
+  void pathname;
   return {
     backHref: "/start/context",
-    continueHref: `/apps/${appId}/opt-in`,
+    continueHref: `/apps/${appId}/messages`,
     dualContinue: true,
   };
 }

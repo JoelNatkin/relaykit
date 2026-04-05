@@ -28,14 +28,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isRegisterFlow) return; // Don't redirect register pages
 
+    // Opt-in was removed from the wizard flow — always redirect to messages
+    if (isOptIn) {
+      router.replace(`/apps/${appId}/messages`);
+      return;
+    }
+
     if (isWizard) {
       // Wizard mode: overview and settings don't exist — redirect to messages
       if (isOverview || isSettings) {
-        router.replace(`/apps/${appId}/messages`);
-      }
-    } else {
-      // Dashboard mode: opt-in doesn't exist — redirect to messages
-      if (isOptIn) {
         router.replace(`/apps/${appId}/messages`);
       }
     }
@@ -50,11 +51,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (willBeWizard && !wasWizard) {
       // Switching TO wizard: redirect overview/settings to messages
       if (isOverview || isSettings) {
-        router.replace(`/apps/${appId}/messages`);
-      }
-    } else if (!willBeWizard && wasWizard) {
-      // Switching FROM wizard: redirect opt-in to messages
-      if (isOptIn) {
         router.replace(`/apps/${appId}/messages`);
       }
     }
