@@ -1,123 +1,167 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-05 (Wizard/dashboard split, message card polish, compliance rework, opt-in page redesign)
+**Date:** 2026-04-05 (Wizard entry flow — /start intake + /ready + /signup)
 **Branch:** main
 
 ---
 
-## Commits This Session (24)
+## Commits This Session (26)
 
 ```
-04f1abf  decisions: amend D-317 — add post-onboarding opt-in form clause
-65b9317  refactor(prototype): split layout into wizard and dashboard wrappers
-88e4ca8  feat(prototype): wizard messages page — centered heading, Phone01 icons, dual Continue
-aa52b03  feat(prototype): opt-in page centered layout for wizard context
-a04813c  feat(prototype): add floating nav helper for design review
-df47de4  docs: update PROTOTYPE_SPEC.md and WORKSPACE_DESIGN_SPEC.md for layout reorganization
-63453e2  fix(prototype): consolidate wizard header into single top nav bar
-1d2d3e2  fix(prototype): wizard Back/Continue align with nav bar edges
-642341f  fix(prototype): redesign message card style pills, realign compliance error
-e22f421  feat(prototype): add Stars02 prefix icon to AI help input in card edit
-f865576  feat(prototype): rename pills + add AI/Fix loading states
-82051a6  feat(prototype): single-card editing for message list
-694a085  feat(prototype): add title tooltips to card pencil and phone buttons
-36ed4d1  style(prototype): match info tooltip styling on pencil and phone buttons
-2043d15  style(prototype): contextual placeholder for AI help input
-cfa282a  feat(prototype): rename Fix to Restore, restore full canned pill text
-3fc88dd  decisions: D-319 Restore replaces full message with clean variant
-7b073c7  feat(prototype): expand compliance checks to variable deletion, stackable hints
-7b10596  feat(prototype): looser compliance checks + immediate clear on fix
-0bad194  style(prototype): simplify opt-in consent checkbox text
-255b743  style(prototype): reframe opt-in page heading + max-w 400px on form
-2aa0f28  style(prototype): opt-in page polish
-8344eef  style(prototype): opt-in page copy — Message opt-in heading + consent records line
-bd1a002  style(prototype): center opt-in content column (heading + text + form)
+16f7fda  docs: update PROTOTYPE_SPEC for wizard entry flow and ready/signup
+64cc8dc  style(prototype): trim ready page benefit text
+16210f2  refactor(prototype): redesign ready page with benefit-led copy
+d2fbf8c  feat(prototype): ready-to-build confirmation page at /apps/[appId]/ready
+363175c  feat(prototype): signup wizard page at /apps/[appId]/signup
+68595aa  fix(prototype): separate ownership tooltip from EIN label tooltip
+7ae8493  style(prototype): EIN cancel button and checkbox into card
+9b8ed35  feat(prototype): EIN toggle, checkbox confirmation, trimmed failure state
+a2b1e24  docs: D-320 — registration fee reduced to $49 flat
+be28c5f  refactor(prototype): EIN as expandable toggle on business name page
+922e2d8  feat(prototype): add EIN verification to business name wizard step
+6c4b1e9  feat(prototype): phone verification wizard step at /start/verify
+ca2fb7f  refactor(prototype): remove opt-in from wizard flow
+a2415b2  style(prototype): fix dropdown chevron on details wizard step
+31f50a0  style(prototype): update business name placeholder and body text
+e1001b2  feat(prototype): add bottom Continue button to wizard messages page
+6c3c662  fix(prototype): messages wizard Back links to /start/context
+5b84561  feat(prototype): show vertical pill on wizard pages after picker
+17a3738  fix(prototype): vertical picker navigates to /start/business
+26be57d  feat(prototype): context wizard step at /start/context
+0e29dc9  feat(prototype): website wizard step at /start/website
+e605240  feat(prototype): service context wizard step at /start/details
+6fc4c24  feat(prototype): business name wizard step at /start/business
+cc45062  feat(prototype): shared wizard layout and step shell for /start
+7c47e6c  feat(prototype): add body text to wizard messages page
+3835a8d  feat(prototype): vertical picker page at /start
 ```
 
 ---
 
 ## What Was Completed
 
-### Layout architecture — wizard / dashboard split
-- Two layout wrappers, one route tree. `layout.tsx` reads registrationState and renders either `WizardLayout` or `DashboardLayout`.
-- **WizardLayout** (Default state): full-width Back/Continue row aligned with nav edges (`px-6`), centered `max-w-[540px]` content container, optional full-width bottom Continue for dualContinue pages. Back/Continue targets come from `getPageConfig(pathname, appId)`.
-- **DashboardLayout** (Pending/Approved/Extended Review/Rejected): preserves existing app identity bar, tabs, status indicator, with state switcher moved to top right.
-- **TopNav wizard-aware:** on sandbox `/apps/*/(messages|opt-in)` routes it renders RelayKit + Appointments pill (left) and state switcher + Sign out (right). No "Your Apps" link. No duplicate Sign out.
-- **Route redirects:** wizard mode forbids overview/settings → `/messages`; dashboard mode forbids opt-in → `/messages`; state switcher changes trigger redirects.
-- **ProtoNavHelper** (`prototype/components/proto-nav-helper.tsx`): floating bottom-left "Nav ↑" pill. Expands to show jump links to every page in every state — sets registrationState and navigates in one click. Prototype-only, strip on port.
+### End-to-end wizard flow
+The full onboarding path now exists from scratch through to registration-pending dashboard:
 
-### Messages page + CatalogCard
-- **Single-card editing** — `CatalogCard` supports controlled `isEditing` + `onEditRequest` props. Parent (messages page) tracks `editingMessageId`; clicking a new pencil closes the previous edit, unsaved text discarded, no confirmation. `savedText`/`savedPillId` persist across sessions. Fallback to local state when uncontrolled (public messages page).
-- **Style pills redesigned:** Removed "Current" pill + Accept/Revert preview flow. New order: Standard / Friendly / Brief / (Custom on far right, dashed border, `ml-auto`). Canned pill taps swap textarea instantly, no preview. Typing → Custom auto-highlights, `customTextBuffer` preserves custom content across pill clicks. Custom pill hidden until custom content exists.
-- **Pill labels renamed** (ids unchanged for data stability): Brand-first → Standard, Action-first → Friendly, Context-first → Brief. Variant text rewritten across all 6 appointment messages: Standard = original template, Friendly = warmer/conversational, Brief = shortest compliant.
-- **AI help input:** Stars02 sparkle prefix icon (brand color). Contextual placeholder: canned active → "Ask AI: make it more casual"; Custom active → "Ask AI: polish my edit"; loading → "Rewriting…". Enter submits. 1.5s stub setTimeout, then rewrite + activePillId → Custom. Textarea disabled during load.
-- **Fix → Restore** (D-319): Button renamed, behavior changed. Clicking Restore replaces the entire textarea with the clean interpolated text of `lastCannedPillId` (the last canned pill before switching to Custom). Restores compliance wholesale rather than patching fragments. 1.5s stub delay.
-- **Compliance rework:**
-  - Opt-out check: now requires BOTH `STOP` (case-insensitive) AND one of `opt out`/`opt-out`/`unsubscribe`.
-  - Variable deletion check: for each `{var}` in message.template, substring-matches (case-insensitive) interpolated demo value. Missing variables grouped via `VARIABLE_LABELS` map (date/time/service_type → "appointment details", etc.).
-  - Error text: "Missing opt-out language" → "Needs opt-out language" (neutral framing).
-  - `ComplianceResult.issues: string[]` — multiple hints stack vertically right-aligned with single Restore button.
-  - Check runs on every editText change via useEffect. Non-compliant reveal debounced 2s; compliant hides hint immediately.
-- **Send icons context-aware:** `sendIcon` prop. Wizard uses `Phone01` (no circle). Dashboard keeps paper airplane in `bg-bg-secondary` circle.
-- **Custom tooltips** on pencil and phone buttons, matching info tooltip styling (`rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg`). Anchored right to avoid overflow.
+```
+/start  →  /start/business  →  /start/details  →  /start/website  →  /start/context  →  /start/verify
+       →  /apps/glowstudio/messages  →  /apps/glowstudio/ready  →  /apps/glowstudio/signup
+       →  (setRegistrationState("pending"))  →  /apps/glowstudio/overview
+```
 
-### Opt-in page
-- Heading: "Message opt-in"
-- Context: "Opt-in, opt-out, and consent records — all handled for you."
-- Content wrapped in `max-w-[400px] mx-auto` — heading, context, form share a single centered 400px column.
-- Continue button moved to WizardLayout top header row (single Continue, not dual). "Signup page coming soon" caption removed. Continue loops to `/messages` as placeholder.
-- **CatalogOptIn polish:** consent checkbox simplified to category + business name (e.g., "I agree to receive appointment text messages from GlowStudio.") via `CATEGORY_CONSENT_WORD` map. Checkbox + fine print tightened to `leading-snug`. CTA button lightened to `bg-[#98A2B3]` (hover `bg-[#7A808A]`).
+Back works at every step. Continue gating enforced per step. sessionStorage (`relaykit_wizard`) persists answers across pages so Back-navigation restores prior state.
 
-### Decisions
-- D-317 amended — added post-onboarding opt-in viewability clause.
-- D-319 recorded — Restore replaces full message with clean variant, not a partial patch.
+### `/start/*` wizard entry flow — 6 new pages
+- **`/start`** — Vertical picker. 8 cards in 2-col grid (Appointments, Verification codes, Order updates, Customer support, Marketing, Team alerts, Community, Waitlist). Card is click target — no CTA text. Saves `vertical` and advances.
+- **`/start/business`** — Business name + optional EIN verification. EIN is expandable (brand-purple toggle link → inline form), two-phase verify spinner (`Verifying…` 1s → `Checking sources…` 1.5s), verified state shows auto-populated identity card with ✕ dismiss and "This is my business" checkbox (with its own account-termination tooltip). Marketing-primary locks the form open and requires verified EIN. Prototype state cycler (Default/Verified/Failed) for design review.
+- **`/start/details`** — Industry dropdown (11 options) + vertical-specific service-type placeholder. Service input fades in after industry selection.
+- **`/start/website`** — Optional URL input + Skip link.
+- **`/start/context`** — Optional 4-row textarea + Skip link.
+- **`/start/verify`** — Phone verification. +1 prefix, live-formatted phone input, Send code (1.5s stub), 6-digit OTP (auto-advance, paste, backspace), verified state card with Change link.
+
+### Shared wizard infrastructure
+- **`prototype/app/start/layout.tsx`** — min-h viewport wrapper.
+- **`prototype/components/wizard-step-shell.tsx`** — reusable shell with Back link + children + full-width Continue. Pages pass `backHref`, `continueHref`, `canContinue`, `onBeforeContinue`.
+- **`prototype/lib/wizard-storage.ts`** — sessionStorage under `relaykit_wizard`. `WizardData` fields: `vertical`, `businessName`, `industry`, `serviceType`, `website`, `context`, `verifiedPhone`, `ein`, `businessIdentity`. Exposes `VERTICAL_LABELS` for the nav pill.
+- **`wizardFadeIn` keyframe** promoted to `globals.css` so `/start/business` and `/start/details` can share it.
+- **TopNav** extended — wordmark-only on all `/start` and `/start/*`; vertical pill renders from sessionStorage on `/start/*` (not on the picker); wizard regex on `/apps/*` extended to `messages|ready|signup`.
+
+### `/apps/[appId]/ready` — new page
+- Heading "Skip the hard part" + body "Create a free account and start building."
+- 5 CheckCircle benefit lines (space-y-7): bold lead + tertiary detail. Covers one-prompt onboarding, real-phone testing, AI assistant, zero-code message edits, compliance handled.
+- Pricing: "Free while you build and test." (text-lg semibold) + "$49 registration + $19/mo" delivery line (per D-320).
+- Full-width purple "Create account" CTA → `/signup`.
+
+### `/apps/[appId]/signup` — new page
+- Heading "Create your account" + body "Free while you build. $49 + $19/mo when you're ready for real delivery."
+- Three states: email + Send code → OTP (6 digit boxes, any 6 digits work) → verified card + "Send me product updates" checkbox.
+- Continue in WizardLayout header, controlled via new `WizardContinueContext` (disabled until verified; on click: sets `registrationState="pending"` and navigates to `/overview`).
+
+### WizardLayout changes
+- **`continueLabel`** field on `WizardPageConfig` so messages Continue reads "Start building" instead of "Continue" (both top-right and full-width bottom).
+- **`WizardContinueContext`** lets pages register `{onClick, disabled}` to override the header Continue button.
+- `getPageConfig` flow: messages → /ready (`continueLabel: "Start building"`, dualContinue); /ready → no header Continue (owns own CTA); /signup → no static continueHref (uses context override).
+
+### Opt-in removal
+- `/apps/[appId]/opt-in/page.tsx` now returns `null`; original implementation preserved in a reference comment.
+- AppLayout redirects all `/opt-in` traffic to `/messages` in every state.
+- TopNav wizard regex dropped `opt-in`.
+- WizardLayout no longer has an opt-in branch.
+
+### Messages page (wizard mode) updates
+- Body text added below the "Messages" heading: "These are your messages — ready to use. Edit any message to match your voice." (Default state only.)
+- Continue text changed to **"Start building"**, navigates to `/ready`.
+- Bottom Continue is now full-width purple in the 540px column (was right-aligned compact).
+- Back goes to `/start/context`.
+
+### Decisions added
+- **D-320** — Registration fee $49 flat. Single payment, no split, no go-live fee. $19/mo subscription unchanged. Supersedes D-314 ($99 flat) and original D-193/D-216 split.
 
 ---
 
 ## Quality Checks Passed
 
 - `tsc --noEmit` — clean (prototype)
-- `next build` — clean (prototype)
-- All routes return 200: /, /apps/glowstudio/messages, /apps/glowstudio/opt-in, /apps/glowstudio/overview, /apps/glowstudio/settings, /sms/appointments/messages
-- No ESLint config in prototype — tsc and build are the quality gates (documented baseline).
+- `next build` — clean; all new routes static-rendered (`/start`, `/start/business`, `/start/details`, `/start/website`, `/start/context`, `/start/verify`) or dynamic (`/apps/[appId]/ready`, `/apps/[appId]/signup`).
+- No ESLint config in prototype — tsc and build are the quality gates (documented baseline, unchanged).
 
 ---
 
 ## In Progress / Partially Done (Carried Forward)
 
-### AI help backend (stubbed)
-The AI help input and Restore button both use 1.5s setTimeout stubs. Real Claude API integration is D-300.
+### Signup backend is stubbed
+Email validation is a client-side regex shape check. Send code is a 1.5s `setTimeout` stub. OTP accepts any 6 digits. Real magic-link backend is D-59.
 
-### Signup page (Step 6)
-Opt-in Continue loops back to `/messages` as a placeholder. Real signup page needs email + OTP + pricing reveal ($99 + $19/mo per D-314, D-315).
+### EIN verification backend is stubbed
+Two-phase spinner (`Verifying…` → `Checking sources…`) is visual-only. Real EIN lookup + auto-populate is D-302/D-303 backend work.
 
-### Sinch carrier integration
-POST /v1/messages still logs to console instead of sending via Sinch. Unchanged from prior session.
+### `/start/verify` phone OTP is stubbed
+Any 6 digits work. Real integration is Twilio Verify (D-46).
 
-### Custom messages
-`namespace: "custom", event: "send"` returns 422 "not yet supported". Placeholder for D-280.
+### Pricing references still stale in several places
+D-320 reduced the fee to $49 but the older $99 / $49+$150 references still appear in:
+- `/apps/[appId]/overview` registration card
+- `/apps/[appId]/register` and `/register/review`
+- `/apps/[appId]/settings` billing section
+- `/sms/[category]/messages` public pricing lines (may still reference $49 + $150 split)
+- `/` marketing home (uses D-193 $49+$150 era copy)
 
-### Style pill AI pre-validation
-Pill swaps render variant text directly. Per WORKSPACE_DESIGN_SPEC.md, pill changes should be AI pre-validated before showing. Current code comment notes: "Pill variants are pre-validated. If AI validation is added later, pre-compute on edit open and cache so taps remain zero-latency."
+D-320 copy is in place on `/ready` and `/signup`.
+
+### `/start/verify` destination is hardcoded
+Currently navigates to `/apps/glowstudio/messages`. In production, this would hit signup first (or create a draft app, then route to its messages workspace).
 
 ---
 
 ## Gotchas for Next Session
 
-1. **Delete `.next` before every dev server start** (prototype). API server has no `.next`.
-2. **API server runs on port 3002.** Prototype is port 3001.
-3. **No ESLint config in prototype.** tsc and build are the quality gates.
-4. **Variant IDs are stable** (standard / action-first / context-first) even though labels changed to Standard / Friendly / Brief. Data model and public messages page rely on the ids.
-5. **Public messages page uses local edit state** — it doesn't pass `isEditing`/`onEditRequest` to CatalogCard, so multiple cards could open simultaneously there. That's intentional for the marketing page.
-6. **Public marketing page at `/sms/[category]/page.tsx`** has its own hardcoded variant data with old labels ("Brand-first / Action-first / Context-first"). Not updated this session — it's separate marketing copy from the in-app pills.
-7. **Opt-in page Continue loops to `/messages`** as a placeholder. Signup page needs to exist before Continue points somewhere real.
-8. **TopNav wizard detection** uses a pathname regex `/\/apps\/[^/]+\/(messages|opt-in)$/`. If new wizard-mode pages are added, extend the regex.
-9. **WizardLayout's getPageConfig** is pathname-driven. New wizard steps need entries added there (backHref, continueHref, dualContinue).
-10. **Compliance check is a client-side stub.** Code comment notes "Prototype stub — production compliance is server-side with full TCPA/10DLC rule evaluation."
-11. **VARIABLE_LABELS map** in catalog-card.tsx groups variables into human labels. New categories will need entries added or the fallback (`key.replace(/_/g, " ")`) will show raw variable names.
-12. **Rate limiter is in-memory.** Resets on server restart.
-13. **Migrations 003 and 004 may not be applied to live DB.**
-14. **Pricing references across prototype are stale** (D-314 changed to $99 — overview registration card, register/review page, settings billing section still show old $49/$150 pricing).
-15. **WORKSPACE_DESIGN_SPEC.md** was updated last session to remove "(PENDING)" markers on D-310–D-318. D-319 hasn't been added there yet.
+1. **Delete `.next` before every prototype dev server start.** API server (port 3002) has no `.next`.
+2. **No ESLint config** in prototype — tsc + `next build` are the quality gates.
+3. **The full wizard flow uses TWO different layout systems:**
+   - `/start/*` pages use `WizardStepShell` (per-page component) inside `prototype/app/start/layout.tsx`.
+   - `/apps/[appId]/{messages,ready,signup}` pages use `WizardLayout` (shared wrapper via AppLayout state check).
+   Both render a 540px centered content column, but the Back/Continue chrome is delivered differently. When editing navigation behavior, pay attention to which system you're in.
+4. **TopNav has three distinct modes** (see the regex + conditionals at the top of `top-nav.tsx`):
+   - `/start` and `/start/*` → wordmark-only, with vertical pill on `/start/*`.
+   - `/apps/*/messages|ready|signup` + `registrationState === "default"` → wordmark + Appointments pill + state switcher + Sign out.
+   - Everything else → full marketing or dashboard nav.
+   Adding new wizard pages means updating both the `/start` detection (if outside /apps/) and the wizard-nav regex (if inside /apps/).
+5. **`WizardLayout.getPageConfig` is pathname-driven.** New wizard destinations under `/apps/[appId]/` need their own branch there.
+6. **`WizardContinueContext`** is only meaningful to pages rendered under `WizardLayout`. It lets a page override the header Continue with `{onClick, disabled}`. Register inside a `useEffect` and `return () => setOverride(null)` on unmount.
+7. **AppLayout safety redirects:**
+   - `/opt-in` → `/messages` in every state.
+   - `/ready` + `/signup` → `/overview` in non-wizard states.
+   - `/overview` + `/settings` → `/messages` in wizard state.
+   If you add a new wizard-only page under `/apps/[appId]/`, add the mirror redirect.
+8. **Signup's state transition is racy-feeling but OK in practice.** On Continue, `setRegistrationState("pending")` fires synchronously with `router.push("/overview")`. React batches both. The AppLayout safety redirect from `/signup` → `/overview` in non-wizard state covers any transient render.
+9. **Vertical pill on `/start/*`** reads from sessionStorage in a `useEffect`, so there's a brief flash where the wordmark renders without the pill on first paint. Prototype-acceptable.
+10. **`wizardFadeIn` keyframe** lives in `globals.css`. Both `/start/business` (EIN expand) and `/start/details` (service type reveal) use it via inline `style={{ animation: "..." }}`. The duplicate styled-jsx global block in `/start/details` is redundant but harmless.
+11. **EIN prototype state cycler** (Default/Verified/Failed) is a dev-only toggle — hide it when porting to production.
+12. **Variant IDs are stable** (`standard`, `action-first`, `context-first`) even though labels are Standard / Friendly / Brief. Don't rename the IDs.
+13. **`/apps/[appId]/opt-in/page.tsx`** is intentionally returning `null` — don't delete. The reference comment preserves the original implementation for future redesign.
+14. **Public marketing page at `/sms/[category]/page.tsx`** has its own hardcoded variant data and pricing copy — separate from the in-app pills and from the new D-320 pricing.
+15. **WORKSPACE_DESIGN_SPEC.md** has uncommitted changes that predate this session (staged before I started). Left untouched for PM review.
+16. **Migrations 003 and 004 may not be applied to live DB.**
+17. **Rate limiter is in-memory** — resets on server restart.
 
 ---
 
@@ -125,38 +169,48 @@ Pill swaps render variant text directly. Per WORKSPACE_DESIGN_SPEC.md, pill chan
 
 ```
 # Decisions & specs
-DECISIONS.md                                            # MODIFIED — D-317 amended, D-319 added
-PROTOTYPE_SPEC.md                                       # MODIFIED — Messages, CatalogCard, Opt-in, WizardLayout sections
-CC_HANDOFF.md                                           # This file (overwritten)
+DECISIONS.md                                              # MODIFIED — D-320 added
+PROTOTYPE_SPEC.md                                         # MODIFIED — wizard entry flow + ready/signup sections
+CC_HANDOFF.md                                             # This file (overwritten)
 
-# Prototype — layout architecture
-prototype/app/apps/[appId]/layout.tsx                   # REWRITTEN — state-based layout switching + redirects
-prototype/components/wizard-layout.tsx                  # NEW — wizard layout wrapper
-prototype/components/dashboard-layout.tsx               # NEW — dashboard layout wrapper
-prototype/components/top-nav.tsx                        # MODIFIED — wizard-aware nav rendering
-prototype/components/proto-nav-helper.tsx               # NEW — floating nav helper for design review
-prototype/app/layout.tsx                                # MODIFIED — mount ProtoNavHelper
+# Wizard entry flow (/start/*) — all NEW
+prototype/app/start/layout.tsx                            # NEW — min-h wrapper
+prototype/app/start/page.tsx                              # NEW — vertical picker
+prototype/app/start/business/page.tsx                     # NEW — business name + EIN verification
+prototype/app/start/details/page.tsx                      # NEW — industry + service type
+prototype/app/start/website/page.tsx                      # NEW — optional URL
+prototype/app/start/context/page.tsx                      # NEW — optional notes
+prototype/app/start/verify/page.tsx                       # NEW — phone verification
+prototype/components/wizard-step-shell.tsx                # NEW — shared wizard step wrapper
+prototype/lib/wizard-storage.ts                           # NEW — sessionStorage helpers + VERTICAL_LABELS
 
-# Prototype — messages page + catalog card
-prototype/app/apps/[appId]/messages/page.tsx            # REWRITTEN — wizard/dashboard context, single-card editing state
-prototype/components/catalog/catalog-card.tsx           # REWRITTEN — pills, compliance, AI/Restore loading, tooltips, controlled edit state
-prototype/data/messages.ts                              # MODIFIED — pill labels renamed, variant text rewritten
-prototype/lib/catalog-helpers.ts                        # (unchanged, but extractVariables + getExampleValues now imported by catalog-card)
+# Wizard destination (/apps/[appId]/*)
+prototype/app/apps/[appId]/ready/page.tsx                 # NEW — benefit-led pre-signup page
+prototype/app/apps/[appId]/signup/page.tsx                # NEW — email + OTP + productUpdates
+prototype/app/apps/[appId]/messages/page.tsx              # MODIFIED — wizard body text
+prototype/app/apps/[appId]/opt-in/page.tsx                # MODIFIED — commented out, returns null
+prototype/app/apps/[appId]/layout.tsx                     # MODIFIED — redirect /opt-in, /ready, /signup
 
-# Prototype — opt-in page
-prototype/app/apps/[appId]/opt-in/page.tsx              # REWRITTEN — new heading, context, centered 400px column
-prototype/components/catalog/catalog-opt-in.tsx         # MODIFIED — simplified checkbox, tightened spacing, lighter button
+# Shared components
+prototype/components/wizard-layout.tsx                    # MODIFIED — continueLabel, WizardContinueContext,
+                                                          #            /ready + /signup config, full-width
+                                                          #            bottom Continue
+prototype/components/top-nav.tsx                          # MODIFIED — /start wordmark-only, vertical pill,
+                                                          #            wizard regex extended to ready|signup
+
+# Global styles
+prototype/app/globals.css                                 # MODIFIED — wizardFadeIn keyframe added
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. **Phase 2.5: Error states design session** — per WORKSPACE_DESIGN_SPEC.md, walk through every interaction that can fail (EIN verification, phone OTP, AI rewrite, compliance, network errors) before building the wizard flow.
-2. **Signup page (Step 6)** — email + OTP + pricing reveal. Opt-in Continue currently loops to /messages as placeholder.
-3. **Phase 3: `/start` wizard flow** — vertical picker, intake questions, AI summary, phone verification. Net-new pages that feed into the existing messages workspace.
-4. **Wire the AI help stub to Claude** (D-300) — backend call for rewrites.
-5. **Wire Restore to real server-side compliance** (D-319) — production check with full TCPA/10DLC rules.
-6. **Fix stale pricing across prototype** (D-314 — $99 flat fee) — overview registration card, register/review page, settings billing section.
-7. **Append D-319 reference** to WORKSPACE_DESIGN_SPEC.md alongside D-310–D-318.
-8. **Sinch carrier integration** — replace console.log stub in POST /v1/messages.
+1. **Fix stale pricing copy across prototype** (D-320 — $49 flat + $19/mo). Touch points: overview registration card, register + register/review pages, settings billing section, `/sms/[category]/messages` public messages page, marketing home.
+2. **Wire the EIN verification backend** (D-302, D-303) — replace the two-phase stub with real lookup + business-identity auto-populate.
+3. **Wire signup to real magic-link backend** (D-59) — replace the email regex + OTP stub.
+4. **Wire `/start/verify` phone OTP to Twilio Verify** (D-46) — real send code + verification.
+5. **Phase 2.5: Error states design session** (per WORKSPACE_DESIGN_SPEC) — walk through all interaction failures (EIN verify, phone OTP, AI rewrite, compliance, network, signup OTP) before locking in copy.
+6. **`/start/verify` destination** — decide whether it routes to signup first, or creates a draft app and routes to its messages workspace.
+7. **Extract `OtpInput`** to a shared component — currently inlined in three places (`/start/verify`, `/apps/[appId]/signup`, `/apps/[appId]/overview`). Sign-in modal has its own variant. Low-risk cleanup.
+8. **Ported production build** — when porting prototype screens to production, the new `/start/*` pages need their own production routes (the current `/start/*` routes are prototype-only since production `/` is the marketing page).
