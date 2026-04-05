@@ -81,7 +81,7 @@ export default function StartPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] flex items-center justify-center px-6 py-12">
+    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center px-6 py-12">
       <div className="w-full max-w-3xl">
         <h1 className="text-center text-2xl font-bold text-text-primary">
           What&apos;s the main reason your app sends texts?

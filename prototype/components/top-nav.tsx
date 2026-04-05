@@ -36,8 +36,8 @@ export function TopNav() {
   const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/(messages|opt-in)$/.test(pathname);
   const isWizardNav = isAppRoute && state.registrationState === "default";
 
-  // Vertical picker (Step 1 of wizard): wordmark only, no other nav items
-  const isStartRoute = pathname === "/start";
+  // Wizard (Step 1+): wordmark only, no other nav items
+  const isStartRoute = pathname === "/start" || pathname.startsWith("/start/");
 
   if (isStartRoute) {
     return (
