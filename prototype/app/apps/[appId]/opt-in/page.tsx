@@ -44,20 +44,22 @@ export default function OptInPreviewPage() {
     <div>
       {/* Heading */}
       <div className="mb-2">
-        <h2 className="text-lg font-semibold text-text-primary">Your opt-in form</h2>
+        <h2 className="text-lg font-semibold text-text-primary">Built into your app, styled to match</h2>
       </div>
 
       {/* Context line */}
       <p className="mb-8 text-sm text-text-secondary">
-        RelayKit generates and maintains this for you. Your AI tool builds it into your app.
+        Your AI tool creates this form with your styles. You never have to touch it again.
       </p>
 
       {/* Opt-in form preview */}
-      <CatalogOptIn
-        appName={state.appName}
-        website={state.website}
-        allMessages={coreMessages}
-      />
+      <div className="max-w-[400px]">
+        <CatalogOptIn
+          appName={state.appName}
+          website={state.website}
+          allMessages={coreMessages}
+        />
+      </div>
 
       {/* Continue */}
       <div className="mt-8 flex flex-col items-end">
