@@ -4,49 +4,84 @@ import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { ArrowLeft } from "@untitledui/icons";
 
-const WIZARD_BACK_TARGETS: Record<string, (appId: string) => string | null> = {
-  messages: () => null, // No previous step yet
-  "opt-in": (appId) => `/apps/${appId}/messages`,
-};
+interface WizardPageConfig {
+  backHref: string | null;
+  continueHref: string | null;
+  dualContinue: boolean; // If true, render Continue at top AND bottom (D-318)
+}
+
+function getPageConfig(pathname: string, appId: string): WizardPageConfig {
+  if (pathname.endsWith("/opt-in")) {
+    // Opt-in: Back to messages. Continue handled by the page itself
+    // (has its own "Signup page coming soon" caption).
+    return {
+      backHref: `/apps/${appId}/messages`,
+      continueHref: null,
+      dualContinue: false,
+    };
+  }
+  // Messages is the first wizard step — dual Continue (D-318)
+  return {
+    backHref: null,
+    continueHref: `/apps/${appId}/opt-in`,
+    dualContinue: true,
+  };
+}
 
 export function WizardLayout({ children }: { children: React.ReactNode }) {
   const { appId } = useParams<{ appId: string }>();
   const pathname = usePathname();
+  const { backHref, continueHref, dualContinue } = getPageConfig(pathname, appId);
 
-  const currentPage = pathname.endsWith("/opt-in")
-    ? "opt-in"
-    : "messages";
-
-  const backHref = WIZARD_BACK_TARGETS[currentPage]?.(appId) ?? null;
+  const continueButton = continueHref ? (
+    <Link
+      href={continueHref}
+      className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+    >
+      Continue
+    </Link>
+  ) : null;
 
   return (
     <div>
-      {/* Centered content column with back button above */}
-      <div className="mx-auto max-w-[540px] px-6 pt-6 pb-16">
-        {/* Back button row */}
-        <div className="mb-6">
-          {backHref ? (
-            <Link
-              href={backHref}
-              className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
-            >
-              <ArrowLeft className="size-4" />
-              Back
-            </Link>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="inline-flex items-center gap-1.5 text-sm text-text-quaternary cursor-not-allowed"
-            >
-              <ArrowLeft className="size-4" />
-              Back
-            </button>
-          )}
-        </div>
+      {/* Full-width Back / Continue row — aligned with nav bar edges */}
+      <div className="px-6 pt-6 flex items-center justify-between">
+        {backHref ? (
+          <Link
+            href={backHref}
+            className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </Link>
+        ) : (
+          <button
+            type="button"
+            disabled
+            className="inline-flex items-center gap-1.5 text-sm text-text-quaternary cursor-not-allowed"
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </button>
+        )}
 
+        {continueButton}
+      </div>
+
+      {/* Centered content column */}
+      <div className="mx-auto max-w-[540px] px-6 pt-6">
         {children}
       </div>
+
+      {/* Full-width bottom Continue — aligned with nav bar right edge (D-318) */}
+      {dualContinue && continueButton && (
+        <div className="px-6 pt-8 pb-16 flex justify-end">
+          {continueButton}
+        </div>
+      )}
+
+      {/* Bottom padding when no dual continue */}
+      {!dualContinue && <div className="pb-16" />}
     </div>
   );
 }

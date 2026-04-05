@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
 import { Phone01 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
@@ -39,7 +37,6 @@ const REGISTERED_VALUES: PersonalizeData = {
 /* ── Page ── */
 
 export default function AppMessagesPage() {
-  const { appId } = useParams<{ appId: string }>();
   const { state, setField } = useSession();
 
   const isWizard = state.registrationState === "default";
@@ -71,23 +68,13 @@ export default function AppMessagesPage() {
     console.log("Send message:", messageId);
   }
 
-  const continueHref = `/apps/${appId}/opt-in`;
-
   const phoneIcon = <Phone01 className="size-[18px]" />;
 
   return (
     <div>
-      {/* Header with optional top Continue (D-318) */}
-      <div className="mb-6 flex items-center justify-between">
+      {/* Heading — left-aligned in centered container */}
+      <div className="mb-6">
         <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-        {isWizard && (
-          <Link
-            href={continueHref}
-            className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-          >
-            Continue
-          </Link>
-        )}
       </div>
 
       {/* Message cards */}
@@ -105,18 +92,6 @@ export default function AppMessagesPage() {
             />
           ))}
         </div>
-
-        {/* Bottom Continue (D-318) — wizard only */}
-        {isWizard && (
-          <div className="mt-8 flex justify-end">
-            <Link
-              href={continueHref}
-              className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-            >
-              Continue
-            </Link>
-          </div>
-        )}
       </div>
     </div>
   );
