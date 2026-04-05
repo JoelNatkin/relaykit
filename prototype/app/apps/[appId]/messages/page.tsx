@@ -76,9 +76,16 @@ export default function AppMessagesPage() {
   return (
     <div>
       {/* Heading — left-aligned in centered container */}
-      <div className="mb-6">
+      <div className={isWizard ? "mb-2" : "mb-6"}>
         <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
       </div>
+
+      {/* Wizard body text */}
+      {isWizard && (
+        <p className="mb-8 text-sm text-text-tertiary">
+          These are your messages — ready to use. Edit any message to match your voice.
+        </p>
+      )}
 
       {/* Message cards */}
       <div className={isWizard ? "" : "max-w-[540px]"}>
