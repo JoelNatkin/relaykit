@@ -16,6 +16,13 @@ export const VERTICAL_LABELS: Record<string, string> = {
   waitlist: "Waitlist",
 };
 
+export interface BusinessIdentity {
+  legalName: string;
+  address: string;
+  entityType: string;
+  state: string;
+}
+
 export interface WizardData {
   vertical: string;
   businessName: string;
@@ -24,6 +31,8 @@ export interface WizardData {
   website: string;
   context: string;
   verifiedPhone: string;
+  ein: string;
+  businessIdentity: BusinessIdentity | null;
 }
 
 const DEFAULT_DATA: WizardData = {
@@ -34,6 +43,8 @@ const DEFAULT_DATA: WizardData = {
   website: "",
   context: "",
   verifiedPhone: "",
+  ein: "",
+  businessIdentity: null,
 };
 
 export function loadWizardData(): WizardData {
