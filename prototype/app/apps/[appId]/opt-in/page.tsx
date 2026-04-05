@@ -43,12 +43,12 @@ export default function OptInPreviewPage() {
   return (
     <div>
       {/* Heading */}
-      <div className="mb-2 text-center">
+      <div className="mb-2">
         <h2 className="text-lg font-semibold text-text-primary">Your opt-in form</h2>
       </div>
 
       {/* Context line */}
-      <p className="mb-8 text-sm text-text-secondary text-center">
+      <p className="mb-8 text-sm text-text-secondary">
         RelayKit generates and maintains this for you. Your AI tool builds it into your app.
       </p>
 
@@ -60,10 +60,10 @@ export default function OptInPreviewPage() {
       />
 
       {/* Continue */}
-      <div className="mt-8 flex flex-col items-center">
+      <div className="mt-8 flex flex-col items-end">
         <Link
           href={`/apps/${appId}/messages`}
-          className="inline-flex rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+          className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
         >
           Continue
         </Link>

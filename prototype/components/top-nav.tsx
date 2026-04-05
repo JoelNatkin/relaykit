@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/context/session-context";
+import type { RegistrationState } from "@/context/session-context";
 import { SignInModal } from "@/components/sign-in-modal";
 
 const USE_CASE_ITEMS = [
@@ -13,7 +14,7 @@ const USE_CASE_ITEMS = [
 export function TopNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { state, setLoggedIn } = useSession();
+  const { state, setLoggedIn, setRegistrationState } = useSession();
   const { isLoggedIn } = state;
 
   const [useCasesOpen, setUseCasesOpen] = useState(false);
@@ -31,24 +32,37 @@ export function TopNav() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [useCasesOpen]);
 
+  // Wizard context: on sandbox app pages (messages or opt-in, Default state)
+  const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/(messages|opt-in)$/.test(pathname);
+  const isWizardNav = isAppRoute && state.registrationState === "default";
+
+  function handleSignOut() {
+    setLoggedIn(false);
+    router.push("/");
+  }
+
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-border-secondary bg-bg-primary px-6">
-        {/* Left: wordmark + nav links */}
-        <div className="flex items-center gap-6">
+        {/* Left: wordmark + context */}
+        <div className="flex items-center gap-4">
           <Link href={isLoggedIn ? "/apps" : "/"} className="text-lg font-bold text-text-primary">
             RelayKit
           </Link>
 
-          {isLoggedIn ? (
+          {isWizardNav ? (
+            <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2.5 py-1 text-xs font-medium text-text-brand-secondary">
+              Appointments
+            </span>
+          ) : isLoggedIn ? (
             <Link
               href="/apps"
-              className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
+              className="ml-2 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
             >
               Your Apps
             </Link>
           ) : (
-            <>
+            <div className="ml-2 flex items-center gap-6">
               {/* Use Cases dropdown */}
               <div ref={dropdownRef} className="relative">
                 <button
@@ -100,31 +114,44 @@ export function TopNav() {
               >
                 Compliance
               </Link>
-            </>
+            </div>
           )}
         </div>
 
-        {/* Right: auth */}
-        {isLoggedIn ? (
-          <button
-            type="button"
-            onClick={() => {
-              setLoggedIn(false);
-              router.push("/");
-            }}
-            className="text-sm text-text-secondary hover:text-text-primary transition duration-100 ease-linear cursor-pointer"
-          >
-            Sign out
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setShowSignIn(true)}
-            className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-          >
-            Sign in
-          </button>
-        )}
+        {/* Right: state switcher (wizard only) + auth */}
+        <div className="flex items-center gap-4">
+          {isWizardNav && (
+            <select
+              value={state.registrationState}
+              onChange={(e) => setRegistrationState(e.target.value as RegistrationState)}
+              className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
+            >
+              <option value="default">Default</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="changes_requested">Extended Review</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          )}
+
+          {isLoggedIn ? (
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="text-sm text-text-secondary hover:text-text-primary transition duration-100 ease-linear cursor-pointer"
+            >
+              Sign out
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowSignIn(true)}
+              className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+            >
+              Sign in
+            </button>
+          )}
+        </div>
       </nav>
 
       <SignInModal isOpen={showSignIn} onClose={() => setShowSignIn(false)} />

@@ -78,19 +78,15 @@ export default function AppMessagesPage() {
   return (
     <div>
       {/* Header with optional top Continue (D-318) */}
-      <div className={`mb-6 flex items-center ${isWizard ? "justify-center" : "justify-between"}`}>
-        {/* Spacer for centering when wizard has Continue */}
-        {isWizard && <div className="w-[88px]" />}
+      <div className="mb-6 flex items-center justify-between">
         <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-        {isWizard ? (
+        {isWizard && (
           <Link
             href={continueHref}
             className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
           >
             Continue
           </Link>
-        ) : (
-          <div />
         )}
       </div>
 
@@ -112,10 +108,10 @@ export default function AppMessagesPage() {
 
         {/* Bottom Continue (D-318) — wizard only */}
         {isWizard && (
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex justify-end">
             <Link
               href={continueHref}
-              className="inline-flex rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+              className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
             >
               Continue
             </Link>

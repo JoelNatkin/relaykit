@@ -14,7 +14,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { state, setRegistrationState, setLoggedIn } = useSession();
 
   const isWizard = state.registrationState === "default";
-  const isMessages = pathname.endsWith("/messages");
   const isOptIn = pathname.endsWith("/opt-in");
   const isOverview = pathname.endsWith("/overview");
   const isSettings = pathname.endsWith("/settings");
@@ -61,11 +60,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }
 
-  function handleSignOut() {
-    setLoggedIn(false);
-    router.push("/");
-  }
-
   // Register flow pages render without either wrapper
   if (isRegisterFlow) {
     return (
@@ -78,15 +72,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   if (isWizard) {
-    return (
-      <WizardLayout
-        registrationState={state.registrationState}
-        onRegistrationStateChange={handleStateChange}
-        onSignOut={handleSignOut}
-      >
-        {children}
-      </WizardLayout>
-    );
+    return <WizardLayout>{children}</WizardLayout>;
   }
 
   return (
