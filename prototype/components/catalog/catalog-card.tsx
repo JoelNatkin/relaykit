@@ -347,6 +347,7 @@ export function CatalogCard({
               onClick={enterEdit}
               className="flex-shrink-0 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
               aria-label="Edit message"
+              title="Edit message"
             >
               <PencilIcon />
             </button>
@@ -493,6 +494,7 @@ export function CatalogCard({
               : "w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs hover:bg-bg-secondary_hover"
           }`}
           aria-label="Send to my phone"
+          title="Send to my phone"
         >
           {sendIcon ?? <SendIcon />}
         </button>
