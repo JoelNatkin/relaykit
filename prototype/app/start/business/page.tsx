@@ -33,7 +33,9 @@ function XIcon({ className }: { className?: string }) {
 }
 
 const TOOLTIP_COPY =
-  "A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases. Misrepresenting business identity will result in account termination.";
+  "A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases.";
+const OWNERSHIP_TOOLTIP_COPY =
+  "Misrepresenting business identity will result in account termination.";
 
 /* ── Demo business identity for verified state (D-303) ── */
 const DEMO_IDENTITY = {
@@ -61,6 +63,7 @@ export default function BusinessNamePage() {
   const [formatError, setFormatError] = useState(false);
   const [stubMode, setStubMode] = useState<StubMode>("default");
   const [showTooltip, setShowTooltip] = useState(false);
+  const [showOwnershipTooltip, setShowOwnershipTooltip] = useState(false);
   const [vertical, setVertical] = useState("");
   const [einExpanded, setEinExpanded] = useState(false);
   const [confirmedOwnership, setConfirmedOwnership] = useState(false);
@@ -348,15 +351,33 @@ export default function BusinessNamePage() {
                   {DEMO_IDENTITY.entityType} · {DEMO_IDENTITY.state}
                 </p>
                 <div className="mt-3 border-t border-border-tertiary pt-3">
-                  <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={confirmedOwnership}
-                      onChange={(e) => setConfirmedOwnership(e.target.checked)}
-                      className="h-4 w-4 flex-shrink-0 cursor-pointer accent-[color:var(--color-brand-600)]"
-                    />
-                    <span>This is my business</span>
-                  </label>
+                  <div className="flex items-center gap-1.5">
+                    <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={confirmedOwnership}
+                        onChange={(e) => setConfirmedOwnership(e.target.checked)}
+                        className="h-4 w-4 flex-shrink-0 cursor-pointer accent-[color:var(--color-brand-600)]"
+                      />
+                      <span>This is my business</span>
+                    </label>
+                    <div className="relative flex items-center">
+                      <button
+                        type="button"
+                        onMouseEnter={() => setShowOwnershipTooltip(true)}
+                        onMouseLeave={() => setShowOwnershipTooltip(false)}
+                        className="text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
+                        aria-label={OWNERSHIP_TOOLTIP_COPY}
+                      >
+                        <InfoIcon />
+                      </button>
+                      {showOwnershipTooltip && (
+                        <div className="absolute left-4 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[240px] max-w-[300px] whitespace-normal leading-relaxed pointer-events-none">
+                          {OWNERSHIP_TOOLTIP_COPY}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
