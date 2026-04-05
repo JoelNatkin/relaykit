@@ -33,7 +33,7 @@ function XIcon({ className }: { className?: string }) {
 }
 
 const TOOLTIP_COPY =
-  "A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases.";
+  "A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases. Misrepresenting business identity will result in account termination.";
 
 /* ── Demo business identity for verified state (D-303) ── */
 const DEMO_IDENTITY = {
@@ -211,38 +211,33 @@ export default function BusinessNamePage() {
 
       {/* EIN section */}
       <div className="mt-6">
-        {/* Toggle trigger — not shown for marketing-primary (always expanded) */}
-        {!isMarketingPrimary && (
+        {/* Collapsed trigger — not shown for marketing-primary (always expanded)
+            or when already expanded (label row shows Cancel instead) */}
+        {!isMarketingPrimary && !einExpanded && (
           <div className="flex items-center gap-1.5">
             <button
               type="button"
               onClick={handleToggleEinExpanded}
-              className={`text-sm transition duration-100 ease-linear cursor-pointer ${
-                einExpanded
-                  ? "text-text-tertiary hover:text-text-secondary"
-                  : "text-text-brand-secondary hover:text-text-brand-secondary_hover"
-              }`}
+              className="text-sm text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
             >
-              {einExpanded ? "I don\u2019t have one" : "I have a business tax ID (EIN)"}
+              I have a business tax ID (EIN)
             </button>
-            {!einExpanded && (
-              <div className="relative flex items-center">
-                <button
-                  type="button"
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
-                  className="text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
-                  aria-label={TOOLTIP_COPY}
-                >
-                  <InfoIcon />
-                </button>
-                {showTooltip && (
-                  <div className="absolute left-4 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[240px] max-w-[300px] whitespace-normal leading-relaxed pointer-events-none">
-                    {TOOLTIP_COPY}
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="relative flex items-center">
+              <button
+                type="button"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                className="text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
+                aria-label={TOOLTIP_COPY}
+              >
+                <InfoIcon />
+              </button>
+              {showTooltip && (
+                <div className="absolute left-4 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[240px] max-w-[300px] whitespace-normal leading-relaxed pointer-events-none">
+                  {TOOLTIP_COPY}
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -258,9 +253,9 @@ export default function BusinessNamePage() {
               </p>
             )}
 
-            {/* Label row with tooltip + prototype state switcher */}
+            {/* Label row with tooltip + Cancel + prototype state switcher */}
             <div className="flex items-center justify-between mb-1.5">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <label htmlFor="ein" className="text-sm font-medium text-text-secondary">
                   Business tax ID (EIN)
                 </label>
@@ -281,6 +276,15 @@ export default function BusinessNamePage() {
                       </div>
                     )}
                   </div>
+                )}
+                {!isMarketingPrimary && (
+                  <button
+                    type="button"
+                    onClick={handleToggleEinExpanded}
+                    className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Cancel
+                  </button>
                 )}
               </div>
               <select
@@ -327,35 +331,33 @@ export default function BusinessNamePage() {
               </p>
             )}
 
-            {/* Verified — business identity card with ✕ dismiss + confirmation checkbox */}
+            {/* Verified — business identity card with ✕ dismiss + inline confirmation checkbox */}
             {einState === "verified" && (
-              <div>
-                <div className="relative rounded-lg border border-border-secondary bg-bg-secondary px-4 py-3 pr-10">
-                  <button
-                    type="button"
-                    onClick={handleDismissVerified}
-                    aria-label="Dismiss — this is not my business"
-                    className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded text-text-tertiary hover:text-text-secondary hover:bg-bg-primary transition duration-100 ease-linear cursor-pointer"
-                  >
-                    <XIcon />
-                  </button>
-                  <p className="text-sm font-medium text-text-primary">{DEMO_IDENTITY.legalName}</p>
-                  <p className="mt-0.5 text-sm text-text-tertiary">{DEMO_IDENTITY.address}</p>
-                  <p className="mt-0.5 text-sm text-text-tertiary">
-                    {DEMO_IDENTITY.entityType} · {DEMO_IDENTITY.state}
-                  </p>
+              <div className="relative rounded-lg border border-border-secondary bg-bg-secondary px-4 py-3 pr-10">
+                <button
+                  type="button"
+                  onClick={handleDismissVerified}
+                  aria-label="Dismiss — this is not my business"
+                  className="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded text-text-tertiary hover:text-text-secondary hover:bg-bg-primary transition duration-100 ease-linear cursor-pointer"
+                >
+                  <XIcon />
+                </button>
+                <p className="text-sm font-medium text-text-primary">{DEMO_IDENTITY.legalName}</p>
+                <p className="mt-0.5 text-sm text-text-tertiary">{DEMO_IDENTITY.address}</p>
+                <p className="mt-0.5 text-sm text-text-tertiary">
+                  {DEMO_IDENTITY.entityType} · {DEMO_IDENTITY.state}
+                </p>
+                <div className="mt-3 border-t border-border-tertiary pt-3">
+                  <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={confirmedOwnership}
+                      onChange={(e) => setConfirmedOwnership(e.target.checked)}
+                      className="h-4 w-4 flex-shrink-0 cursor-pointer accent-[color:var(--color-brand-600)]"
+                    />
+                    <span>This is my business</span>
+                  </label>
                 </div>
-                <label className="mt-3 flex items-start gap-2.5 text-xs text-text-secondary cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={confirmedOwnership}
-                    onChange={(e) => setConfirmedOwnership(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 flex-shrink-0 cursor-pointer accent-[color:var(--color-brand-600)]"
-                  />
-                  <span className="leading-snug">
-                    I confirm this is my business. Submitting someone else&apos;s business identity will result in account termination.
-                  </span>
-                </label>
               </div>
             )}
 
