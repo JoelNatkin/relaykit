@@ -16,6 +16,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const isWizard = state.registrationState === "default";
   const isOptIn = pathname.endsWith("/opt-in");
   const isSignup = pathname.endsWith("/signup");
+  const isReady = pathname.endsWith("/ready");
   const isOverview = pathname.endsWith("/overview");
   const isSettings = pathname.endsWith("/settings");
   const isRegisterFlow = pathname.includes("/register");
@@ -41,12 +42,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         router.replace(`/apps/${appId}/messages`);
       }
     } else {
-      // Non-wizard (post-signup): signup no longer applies — redirect to overview
-      if (isSignup) {
+      // Non-wizard (post-signup): wizard-only pages redirect to overview
+      if (isSignup || isReady) {
         router.replace(`/apps/${appId}/overview`);
       }
     }
-  }, [isWizard, isOverview, isSettings, isOptIn, isSignup, isRegisterFlow, appId, router]);
+  }, [isWizard, isOverview, isSettings, isOptIn, isSignup, isReady, isRegisterFlow, appId, router]);
 
   // Handle state switcher changes — redirect if current page is invalid for new state
   function handleStateChange(newState: RegistrationState) {

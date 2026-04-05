@@ -8,6 +8,7 @@ import { createContext, useState } from "react";
 interface WizardPageConfig {
   backHref: string | null;
   continueHref: string | null;
+  continueLabel?: string;
   dualContinue: boolean; // If true, render Continue at top AND bottom (D-318)
 }
 
@@ -25,8 +26,18 @@ export const WizardContinueContext = createContext<
 
 function getPageConfig(pathname: string, appId: string): WizardPageConfig {
   if (pathname.endsWith("/signup")) {
-    // Signup: Back to messages, single header Continue (no dual). The
-    // page registers its Continue handler via WizardContinueContext.
+    // Signup: Back to the ready confirmation, single header Continue
+    // (no dual). The page registers its Continue handler via
+    // WizardContinueContext.
+    return {
+      backHref: `/apps/${appId}/ready`,
+      continueHref: null,
+      dualContinue: false,
+    };
+  }
+  if (pathname.endsWith("/ready")) {
+    // Ready-to-build confirmation: Back to messages, no header Continue
+    // (the page owns its own "Create account" CTA).
     return {
       backHref: `/apps/${appId}/messages`,
       continueHref: null,
@@ -34,10 +45,11 @@ function getPageConfig(pathname: string, appId: string): WizardPageConfig {
     };
   }
   // Messages: Back to the final /start intake step, dual Continue (D-318).
-  // Continue advances to the signup wizard step.
+  // Continue advances to the ready-to-build confirmation.
   return {
     backHref: "/start/context",
-    continueHref: `/apps/${appId}/signup`,
+    continueHref: `/apps/${appId}/ready`,
+    continueLabel: "Start building",
     dualContinue: true,
   };
 }
@@ -45,8 +57,9 @@ function getPageConfig(pathname: string, appId: string): WizardPageConfig {
 export function WizardLayout({ children }: { children: React.ReactNode }) {
   const { appId } = useParams<{ appId: string }>();
   const pathname = usePathname();
-  const { backHref, continueHref, dualContinue } = getPageConfig(pathname, appId);
+  const { backHref, continueHref, continueLabel, dualContinue } = getPageConfig(pathname, appId);
   const [continueOverride, setContinueOverride] = useState<WizardContinueOverride | null>(null);
+  const continueText = continueLabel ?? "Continue";
 
   // Header Continue: override (page-controlled) takes precedence over static Link
   const continueButton = continueOverride ? (
@@ -56,14 +69,14 @@ export function WizardLayout({ children }: { children: React.ReactNode }) {
       disabled={continueOverride.disabled}
       className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-text-disabled cursor-pointer"
     >
-      Continue
+      {continueText}
     </button>
   ) : continueHref ? (
     <Link
       href={continueHref}
       className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
     >
-      Continue
+      {continueText}
     </Link>
   ) : null;
 
@@ -73,7 +86,7 @@ export function WizardLayout({ children }: { children: React.ReactNode }) {
       href={continueHref}
       className="block w-full rounded-lg bg-bg-brand-solid px-5 py-2.5 text-center text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
     >
-      Continue
+      {continueText}
     </Link>
   ) : null;
 
