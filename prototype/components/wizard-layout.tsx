@@ -42,6 +42,16 @@ export function WizardLayout({ children }: { children: React.ReactNode }) {
     </Link>
   ) : null;
 
+  // Full-width bottom Continue — matches the /start wizard step button style
+  const bottomContinueButton = continueHref ? (
+    <Link
+      href={continueHref}
+      className="block w-full rounded-lg bg-bg-brand-solid px-5 py-2.5 text-center text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+    >
+      Continue
+    </Link>
+  ) : null;
+
   return (
     <div>
       {/* Full-width Back / Continue row — aligned with nav bar edges */}
@@ -73,10 +83,10 @@ export function WizardLayout({ children }: { children: React.ReactNode }) {
         {children}
       </div>
 
-      {/* Full-width bottom Continue — aligned with nav bar right edge (D-318) */}
-      {dualContinue && continueButton && (
-        <div className="px-6 pt-8 pb-16 flex justify-end">
-          {continueButton}
+      {/* Full-width bottom Continue — spans the 540px content column (D-318) */}
+      {dualContinue && bottomContinueButton && (
+        <div className="mx-auto max-w-[540px] px-6 pt-10 pb-16">
+          {bottomContinueButton}
         </div>
       )}
 
