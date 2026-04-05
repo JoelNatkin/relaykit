@@ -66,7 +66,7 @@ export default function DetailsPage() {
             id="industry"
             value={industry}
             onChange={(e) => setIndustry(e.target.value)}
-            className={`w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm shadow-xs focus:border-border-brand focus:outline-none focus:ring-2 focus:ring-border-brand/20 cursor-pointer ${
+            className={`w-full appearance-none rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 pr-10 text-sm shadow-xs focus:border-border-brand focus:outline-none focus:ring-2 focus:ring-border-brand/20 cursor-pointer bg-[length:16px_16px] bg-[position:right_0.75rem_center] bg-no-repeat bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%2F%3E%3C%2Fsvg%3E')] ${
               industry === "" ? "text-text-placeholder" : "text-text-primary"
             }`}
           >
