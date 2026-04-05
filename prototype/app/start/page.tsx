@@ -12,6 +12,7 @@ import {
   ClipboardCheck,
 } from "@untitledui/icons";
 import type { FC } from "react";
+import { saveWizardData } from "@/lib/wizard-storage";
 
 interface Vertical {
   id: string;
@@ -74,10 +75,9 @@ const VERTICALS: Vertical[] = [
 export default function StartPage() {
   const router = useRouter();
 
-  function handleSelect(_verticalId: string) {
-    // Prototype: all verticals navigate to the appointments workspace since
-    // that's the only vertical with full message data.
-    router.push("/apps/glowstudio/messages");
+  function handleSelect(verticalId: string) {
+    saveWizardData({ vertical: verticalId });
+    router.push("/start/business");
   }
 
   return (
