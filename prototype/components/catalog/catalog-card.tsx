@@ -43,6 +43,15 @@ function SendIcon({ className }: { className?: string }) {
   );
 }
 
+function Spinner({ className }: { className?: string }) {
+  return (
+    <svg className={`animate-spin ${className ?? ""}`} viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
+      <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 /* ── Pill types ── */
 
 type PillId = "standard" | "action-first" | "context-first" | "custom";
@@ -96,6 +105,8 @@ export function CatalogCard({
   const [activePillId, setActivePillId] = useState<PillId>("standard");
   const [customTextBuffer, setCustomTextBuffer] = useState<string | null>(null);
   const [aiInput, setAiInput] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isFixLoading, setIsFixLoading] = useState(false);
   const [compliance, setCompliance] = useState<ComplianceResult>({ isCompliant: true, issue: null, fixedText: null });
   const [showComplianceHint, setShowComplianceHint] = useState(false);
   const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -154,6 +165,8 @@ export function CatalogCard({
       setCustomTextBuffer(null);
     }
     setAiInput("");
+    setIsAiLoading(false);
+    setIsFixLoading(false);
     setCompliance({ isCompliant: true, issue: null, fixedText: null });
     setShowComplianceHint(false);
     setIsEditing(true);
@@ -170,13 +183,33 @@ export function CatalogCard({
   }
 
   function handleFix() {
-    if (compliance.fixedText) {
-      setEditText(compliance.fixedText);
-      setCustomTextBuffer(compliance.fixedText);
+    if (!compliance.fixedText || isFixLoading) return;
+    const fixedText = compliance.fixedText;
+    setIsFixLoading(true);
+    // Simulate async AI fix — real impl will call the AI backend
+    setTimeout(() => {
+      setEditText(fixedText);
+      setCustomTextBuffer(fixedText);
       setActivePillId("custom");
       setCompliance({ isCompliant: true, issue: null, fixedText: null });
       setShowComplianceHint(false);
-    }
+      setIsFixLoading(false);
+    }, 1500);
+  }
+
+  function handleAiSubmit() {
+    if (!aiInput.trim() || isAiLoading) return;
+    setIsAiLoading(true);
+    // Stubbed AI call — real impl will send aiInput + editText to the backend
+    setTimeout(() => {
+      // Placeholder rewrite: prepend a note so the developer sees something happened
+      const rewritten = `${editText} (rewritten: ${aiInput.trim()})`;
+      setEditText(rewritten);
+      setCustomTextBuffer(rewritten);
+      setActivePillId("custom");
+      setAiInput("");
+      setIsAiLoading(false);
+    }, 1500);
   }
 
   function handleCancel() {
@@ -294,7 +327,8 @@ export function CatalogCard({
               ref={textareaRef}
               value={editText}
               onChange={(e) => handleTextChange(e.target.value)}
-              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-secondary leading-relaxed shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear resize-none"
+              disabled={isAiLoading || isFixLoading}
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-secondary leading-relaxed shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear resize-none disabled:opacity-60 disabled:cursor-not-allowed"
               rows={3}
             />
 
@@ -307,16 +341,20 @@ export function CatalogCard({
                 <button
                   type="button"
                   onClick={handleFix}
-                  className="flex-shrink-0 rounded-md border border-border-primary px-2.5 py-1 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer"
+                  disabled={isFixLoading}
+                  className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-md border border-border-primary px-2.5 py-1 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Fix
+                  {isFixLoading && <Spinner className="size-3" />}
+                  {isFixLoading ? "Fixing…" : "Fix"}
                 </button>
               </div>
             )}
 
             {/* Edit controls — no divider, closer to textarea */}
             <div className="mt-3 space-y-3">
-              {/* Style pills: Brand-first, Action-first, Context-first, (Custom on far right) */}
+              {/* Style pills: Standard, Friendly, Brief, (Custom on far right).
+                  Pill variants are pre-validated. If AI validation is added later,
+                  pre-compute on edit open and cache so taps remain zero-latency. */}
               {variants && variants.length > 1 && (
                 <div className="flex flex-wrap items-center gap-2">
                   {variants.map((v) => {
@@ -356,13 +394,24 @@ export function CatalogCard({
 
               {/* AI help input */}
               <div className="relative">
-                <Stars02 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
+                {isAiLoading ? (
+                  <Spinner className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
+                ) : (
+                  <Stars02 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
+                )}
                 <input
                   type="text"
-                  value={aiInput}
+                  value={isAiLoading ? "" : aiInput}
                   onChange={(e) => setAiInput(e.target.value)}
-                  placeholder="Ask AI: make it more casual"
-                  className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAiSubmit();
+                    }
+                  }}
+                  disabled={isAiLoading}
+                  placeholder={isAiLoading ? "Rewriting…" : "Ask AI: make it more casual"}
+                  className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear disabled:bg-bg-secondary disabled:cursor-not-allowed"
                 />
               </div>
 
@@ -378,7 +427,7 @@ export function CatalogCard({
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={!compliance.isCompliant}
+                  disabled={!compliance.isCompliant || isFixLoading || isAiLoading}
                   className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Save

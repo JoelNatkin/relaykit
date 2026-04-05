@@ -24,13 +24,13 @@ export interface VariantSet {
 
 export const CATEGORY_VARIANTS: Record<string, VariantSet[]> = {
   appointments: [
-    { id: "standard", label: "Brand-first" },
-    { id: "action-first", label: "Action-first" },
-    { id: "context-first", label: "Context-first" },
+    { id: "standard", label: "Standard" },
+    { id: "action-first", label: "Friendly" },
+    { id: "context-first", label: "Brief" },
   ],
   verification: [
-    { id: "standard", label: "Brand-first" },
-    { id: "action-first", label: "Action-first" },
+    { id: "standard", label: "Standard" },
+    { id: "action-first", label: "Friendly" },
   ],
 };
 
@@ -156,8 +156,8 @@ export const MESSAGES: Record<string, Message[]> = {
       expansionType: null,
       consentLabel: "booking confirmations",
       variants: {
-        "action-first": "Confirmed — {service_type} appointment on {date} at {time}. {app_name} has you on the books. Reply STOP to opt out.",
-        "context-first": "You just booked a {service_type} appointment. {app_name} confirms {date} at {time}. Reply STOP to opt out.",
+        "action-first": "You're set! {app_name} has your {service_type} booked for {date} at {time}. See you then! Reply STOP to opt out.",
+        "context-first": "{app_name}: {service_type} confirmed — {date}, {time}. Reply STOP to opt out.",
       },
     },
     {
@@ -173,8 +173,8 @@ export const MESSAGES: Record<string, Message[]> = {
       expansionType: null,
       consentLabel: "appointment reminders",
       variants: {
-        "action-first": "Tomorrow at {time} — your {service_type} appointment with {app_name}. Reply STOP to opt out.",
-        "context-first": "Your {service_type} appointment is coming up. {app_name} reminder: tomorrow at {time}. Reply STOP to opt out.",
+        "action-first": "Hey from {app_name} — your {service_type} appointment is tomorrow at {time}. Looking forward to it! Reply STOP to opt out.",
+        "context-first": "{app_name}: {service_type} tomorrow at {time}. Reply STOP to opt out.",
       },
     },
     {
@@ -190,8 +190,8 @@ export const MESSAGES: Record<string, Message[]> = {
       expansionType: null,
       consentLabel: "pre-visit instructions",
       variants: {
-        "action-first": "Today at {time} — your {service_type} appointment. Arrive 10 min early. Details: {website_url}. {app_name}. Reply STOP to opt out.",
-        "context-first": "It's the day of your {service_type} appointment. {app_name}: {time} today, arrive 10 minutes early. Details: {website_url}. Reply STOP to opt out.",
+        "action-first": "Today's the day! Your {service_type} appointment is at {time}. Please come 10 minutes early — see you soon! — {app_name}. Reply STOP to opt out.",
+        "context-first": "{app_name}: {service_type} today at {time}. Arrive 10 min early. {website_url}. Reply STOP to opt out.",
       },
     },
     {
@@ -207,8 +207,8 @@ export const MESSAGES: Record<string, Message[]> = {
       expansionType: null,
       consentLabel: "reschedule notices",
       variants: {
-        "action-first": "Rescheduled — your {service_type} appointment is now {date} at {time}. {app_name}. Reply STOP to opt out.",
-        "context-first": "There's been a change to your {service_type} appointment. {app_name} has moved it to {date} at {time}. Reply STOP to opt out.",
+        "action-first": "Heads up from {app_name} — your {service_type} appointment moved to {date} at {time}. Thanks for rolling with us! Reply STOP to opt out.",
+        "context-first": "{app_name}: {service_type} moved to {date}, {time}. Reply STOP to opt out.",
       },
     },
     {
@@ -224,8 +224,8 @@ export const MESSAGES: Record<string, Message[]> = {
       expansionType: null,
       consentLabel: "no-show follow-ups",
       variants: {
-        "action-first": "Missed today — your {service_type} appointment. Rebook at {website_url}. {app_name}. Reply STOP to opt out.",
-        "context-first": "Your {service_type} appointment was today. {app_name} noticed you couldn't make it — rebook at {website_url}. Reply STOP to opt out.",
+        "action-first": "We missed you today! {app_name} hopes everything's OK. Rebook whenever works: {website_url}. Reply STOP to opt out.",
+        "context-first": "{app_name}: missed your {service_type} today. Rebook: {website_url}. Reply STOP to opt out.",
       },
     },
     {
@@ -241,8 +241,8 @@ export const MESSAGES: Record<string, Message[]> = {
       expansionType: null,
       consentLabel: "cancellation notices",
       variants: {
-        "action-first": "Cancelled — your {service_type} appointment on {date}. Rebook at {website_url}. {app_name}. Reply STOP to opt out.",
-        "context-first": "Your {service_type} appointment on {date} won't be happening. {app_name}: rebook at {website_url}. Reply STOP to opt out.",
+        "action-first": "Your {service_type} appointment on {date} was cancelled. No worries — rebook anytime at {website_url}. — {app_name}. Reply STOP to opt out.",
+        "context-first": "{app_name}: {service_type} {date} cancelled. Rebook: {website_url}. Reply STOP to opt out.",
       },
     },
     {
