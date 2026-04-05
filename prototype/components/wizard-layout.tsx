@@ -12,11 +12,11 @@ interface WizardPageConfig {
 
 function getPageConfig(pathname: string, appId: string): WizardPageConfig {
   if (pathname.endsWith("/opt-in")) {
-    // Opt-in: Back to messages. Continue handled by the page itself
-    // (has its own "Signup page coming soon" caption).
+    // Opt-in: Back to messages, top Continue only (no dual). Signup is
+    // the next step once it exists; for now Continue loops back to /messages.
     return {
       backHref: `/apps/${appId}/messages`,
-      continueHref: null,
+      continueHref: `/apps/${appId}/messages`,
       dualContinue: false,
     };
   }

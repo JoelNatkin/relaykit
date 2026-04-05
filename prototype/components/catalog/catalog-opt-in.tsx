@@ -81,7 +81,7 @@ export function CatalogOptIn({
           <div className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border border-border-primary bg-bg-primary">
             {/* Unchecked by default — compliance requirement */}
           </div>
-          <span className="leading-relaxed">{checkboxLabel}</span>
+          <span className="leading-snug">{checkboxLabel}</span>
         </label>
 
         {/* Marketing consent checkbox — separate per CTIA */}
@@ -90,12 +90,12 @@ export function CatalogOptIn({
             <div className="mt-0.5 inline-flex h-4 w-4 flex-shrink-0 items-center justify-center rounded border border-border-primary bg-bg-primary">
               {/* Unchecked by default */}
             </div>
-            <span className="leading-relaxed">{marketingCheckboxLabel}</span>
+            <span className="leading-snug">{marketingCheckboxLabel}</span>
           </label>
         )}
 
         {/* Fine print */}
-        <p className="mt-4 text-xs text-text-tertiary leading-relaxed">
+        <p className="mt-4 text-xs text-text-tertiary leading-snug">
           {finePrint}{" "}
           <span className="text-text-brand-secondary underline cursor-default">Privacy</span>
           {" · "}
@@ -105,7 +105,7 @@ export function CatalogOptIn({
         {/* CTA button */}
         <button
           type="button"
-          className="mt-5 w-full rounded-lg bg-[#61656C] py-2.5 text-sm font-semibold text-white shadow-xs transition duration-100 ease-linear hover:bg-[#4E5258]"
+          className="mt-5 w-full rounded-lg bg-[#98A2B3] py-2.5 text-sm font-semibold text-white shadow-xs transition duration-100 ease-linear hover:bg-[#7A808A]"
         >
           Sign up for messages
         </button>

@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import Link from "next/link";
 import { MESSAGES } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogOptIn } from "@/components/catalog/catalog-opt-in";
@@ -24,7 +22,6 @@ function loadPersonalization() {
 /* ── Page ── */
 
 export default function OptInPreviewPage() {
-  const { appId } = useParams<{ appId: string }>();
   const { state, setField } = useSession();
 
   const categoryId = state.selectedCategory || "appointments";
@@ -49,7 +46,7 @@ export default function OptInPreviewPage() {
 
       {/* Context line */}
       <p className="mb-8 text-sm text-text-secondary">
-        Your AI tool creates this form with your styles. You never have to touch it again.
+        Your AI tool creates your opt-in form, styled for your app. Always up to date.
       </p>
 
       {/* Opt-in form preview */}
@@ -59,19 +56,6 @@ export default function OptInPreviewPage() {
           website={state.website}
           allMessages={coreMessages}
         />
-      </div>
-
-      {/* Continue */}
-      <div className="mt-8 flex flex-col items-end">
-        <Link
-          href={`/apps/${appId}/messages`}
-          className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-        >
-          Continue
-        </Link>
-        <p className="mt-3 text-xs text-text-quaternary">
-          Signup page coming soon
-        </p>
       </div>
     </div>
   );
