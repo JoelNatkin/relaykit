@@ -24,6 +24,9 @@ function InfoIcon({ className }: { className?: string }) {
   );
 }
 
+const TOOLTIP_COPY =
+  "A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases.";
+
 /* ── Demo business identity for verified state (D-303) ── */
 const DEMO_IDENTITY = {
   legalName: "Vaulted Press LLC",
@@ -47,6 +50,7 @@ export default function BusinessNamePage() {
   const [stubMode, setStubMode] = useState<StubMode>("default");
   const [showTooltip, setShowTooltip] = useState(false);
   const [vertical, setVertical] = useState("");
+  const [einExpanded, setEinExpanded] = useState(false);
 
   useEffect(() => {
     const data = loadWizardData();
@@ -55,8 +59,10 @@ export default function BusinessNamePage() {
   }, []);
 
   const isMarketingPrimary = vertical === "marketing";
-  const trimmedName = businessName.trim();
+  // Marketing vertical: section is always expanded and cannot be collapsed
+  const showEinForm = einExpanded || isMarketingPrimary;
 
+  const trimmedName = businessName.trim();
   const einDigits = einInput.replace(/\D/g, "");
   const formatted = formatEin(einInput);
   const canVerify = einDigits.length === 9 && einState === "idle";
@@ -105,6 +111,19 @@ export default function BusinessNamePage() {
 
   function handleChooseDifferentVertical() {
     router.push("/start");
+  }
+
+  function handleExpandEin() {
+    setEinExpanded(true);
+  }
+
+  function handleCollapseEin() {
+    // Clear all EIN state when collapsing
+    setEinExpanded(false);
+    setEinInput("");
+    setEinState("idle");
+    setFormatError(false);
+    setStubMode("default");
   }
 
   function handleStubModeChange(mode: StubMode) {
@@ -166,137 +185,186 @@ export default function BusinessNamePage() {
         />
       </div>
 
-      {/* Separator */}
-      <div className="mt-10 border-t border-border-secondary" />
-
       {/* EIN section */}
-      <div className="mt-8">
-        <div className="flex items-center justify-between mb-1.5">
+      <div className="mt-6">
+        {!showEinForm && (
           <div className="flex items-center gap-1.5">
-            <label htmlFor="ein" className="text-sm font-medium text-text-secondary">
-              Business tax ID (EIN)
-            </label>
+            <button
+              type="button"
+              onClick={handleExpandEin}
+              className="text-sm text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+            >
+              I have a business tax ID (EIN)
+            </button>
             <div className="relative flex items-center">
               <button
                 type="button"
                 onMouseEnter={() => setShowTooltip(true)}
                 onMouseLeave={() => setShowTooltip(false)}
                 className="text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
-                aria-label="A 9-digit tax ID for your business."
+                aria-label={TOOLTIP_COPY}
               >
                 <InfoIcon />
               </button>
               {showTooltip && (
                 <div className="absolute left-4 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[240px] max-w-[300px] whitespace-normal leading-relaxed pointer-events-none">
-                  A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases.
+                  {TOOLTIP_COPY}
                 </div>
               )}
             </div>
           </div>
-          {/* Prototype state switcher */}
-          <select
-            value={stubMode}
-            onChange={(e) => handleStubModeChange(e.target.value as StubMode)}
-            className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
-          >
-            <option value="default">Default</option>
-            <option value="verified">Verified</option>
-            <option value="failed">Failed</option>
-          </select>
-        </div>
-
-        {/* Input row */}
-        <div className="flex items-start gap-2">
-          <input
-            id="ein"
-            type="text"
-            inputMode="numeric"
-            value={formatted}
-            onChange={(e) => handleEinChange(e.target.value)}
-            onBlur={handleEinBlur}
-            placeholder="XX-XXXXXXX"
-            disabled={einState === "verifying" || einState === "verified"}
-            className="flex-1 rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none focus:ring-2 focus:ring-border-brand/20 disabled:bg-bg-secondary disabled:text-text-tertiary"
-          />
-          {einState === "verified" ? (
-            <div className="flex items-center justify-center rounded-lg px-3 py-2.5 shrink-0">
-              <CheckCircle className="size-5 text-fg-success-primary" />
-            </div>
-          ) : (
-            <button
-              type="button"
-              onClick={handleVerify}
-              disabled={!canVerify && einState !== "failed"}
-              className="rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-text-disabled cursor-pointer shrink-0"
-            >
-              {einState === "verifying" ? "Verifying…" : "Verify"}
-            </button>
-          )}
-        </div>
-
-        {/* Format error */}
-        {formatError && einState === "idle" && (
-          <p className="mt-2 text-xs text-text-error-primary">
-            EIN should be 9 digits (XX-XXXXXXX)
-          </p>
         )}
 
-        {/* Verified — business identity block */}
-        {einState === "verified" && (
-          <div className="mt-3 rounded-lg border border-border-secondary bg-bg-secondary px-4 py-3">
-            <p className="text-sm font-medium text-text-primary">{DEMO_IDENTITY.legalName}</p>
-            <p className="mt-0.5 text-sm text-text-tertiary">{DEMO_IDENTITY.address}</p>
-            <p className="mt-0.5 text-sm text-text-tertiary">
-              {DEMO_IDENTITY.entityType} · {DEMO_IDENTITY.state}
-            </p>
-            <button
-              type="button"
-              onClick={handleNotRight}
-              className="mt-2 text-xs text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
-            >
-              Not right?
-            </button>
-          </div>
-        )}
+        {showEinForm && (
+          <div style={{ animation: "wizardFadeIn 200ms ease-out" }}>
+            {/* Marketing-primary note */}
+            {isMarketingPrimary && (
+              <p className="mb-3 text-xs text-text-tertiary">
+                Marketing messages require a verified business identity.
+              </p>
+            )}
 
-        {/* Failed — transactional primary */}
-        {einState === "failed" && !isMarketingPrimary && (
-          <div className="mt-3">
-            <p className="text-sm text-text-tertiary leading-relaxed">
-              We couldn&apos;t verify this EIN automatically. Your messages are fully functional with one campaign. To unlock marketing and additional use cases, you&apos;ll need a verified EIN — you can try again anytime from Settings.
-            </p>
-            <button
-              type="button"
-              onClick={handleTryAgain}
-              className="mt-2 text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
-            >
-              Try again
-            </button>
-          </div>
-        )}
+            {/* Collapse control — transactional only */}
+            {!isMarketingPrimary && (
+              <div className="mb-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={handleCollapseEin}
+                  className="text-xs text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+                >
+                  Never mind
+                </button>
+              </div>
+            )}
 
-        {/* Failed — marketing primary */}
-        {einState === "failed" && isMarketingPrimary && (
-          <div className="mt-3">
-            <p className="text-sm text-text-tertiary leading-relaxed">
-              We couldn&apos;t verify this EIN. Marketing messages require a verified business identity. You can switch to a different use case to get started, or try a different EIN.
-            </p>
-            <div className="mt-2 flex items-center gap-4">
-              <button
-                type="button"
-                onClick={handleTryAgain}
-                className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+            {/* Label row with tooltip + prototype state switcher */}
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-1.5">
+                <label htmlFor="ein" className="text-sm font-medium text-text-secondary">
+                  Business tax ID (EIN)
+                </label>
+                <div className="relative flex items-center">
+                  <button
+                    type="button"
+                    onMouseEnter={() => setShowTooltip(true)}
+                    onMouseLeave={() => setShowTooltip(false)}
+                    className="text-fg-quaternary hover:text-fg-tertiary transition duration-100 ease-linear cursor-default"
+                    aria-label={TOOLTIP_COPY}
+                  >
+                    <InfoIcon />
+                  </button>
+                  {showTooltip && (
+                    <div className="absolute left-4 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[240px] max-w-[300px] whitespace-normal leading-relaxed pointer-events-none">
+                      {TOOLTIP_COPY}
+                    </div>
+                  )}
+                </div>
+              </div>
+              <select
+                value={stubMode}
+                onChange={(e) => handleStubModeChange(e.target.value as StubMode)}
+                className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
               >
-                Try a different EIN
-              </button>
-              <button
-                type="button"
-                onClick={handleChooseDifferentVertical}
-                className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
-              >
-                Choose a different use case
-              </button>
+                <option value="default">Default</option>
+                <option value="verified">Verified</option>
+                <option value="failed">Failed</option>
+              </select>
             </div>
+
+            {/* Input row */}
+            <div className="flex items-start gap-2">
+              <input
+                id="ein"
+                type="text"
+                inputMode="numeric"
+                value={formatted}
+                onChange={(e) => handleEinChange(e.target.value)}
+                onBlur={handleEinBlur}
+                placeholder="XX-XXXXXXX"
+                disabled={einState === "verifying" || einState === "verified"}
+                className="flex-1 rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none focus:ring-2 focus:ring-border-brand/20 disabled:bg-bg-secondary disabled:text-text-tertiary"
+              />
+              {einState === "verified" ? (
+                <div className="flex items-center justify-center rounded-lg px-3 py-2.5 shrink-0">
+                  <CheckCircle className="size-5 text-fg-success-primary" />
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleVerify}
+                  disabled={!canVerify && einState !== "failed"}
+                  className="rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-text-disabled cursor-pointer shrink-0"
+                >
+                  {einState === "verifying" ? "Verifying…" : "Verify"}
+                </button>
+              )}
+            </div>
+
+            {/* Format error */}
+            {formatError && einState === "idle" && (
+              <p className="mt-2 text-xs text-text-error-primary">
+                EIN should be 9 digits (XX-XXXXXXX)
+              </p>
+            )}
+
+            {/* Verified — business identity block */}
+            {einState === "verified" && (
+              <div className="mt-3 rounded-lg border border-border-secondary bg-bg-secondary px-4 py-3">
+                <p className="text-sm font-medium text-text-primary">{DEMO_IDENTITY.legalName}</p>
+                <p className="mt-0.5 text-sm text-text-tertiary">{DEMO_IDENTITY.address}</p>
+                <p className="mt-0.5 text-sm text-text-tertiary">
+                  {DEMO_IDENTITY.entityType} · {DEMO_IDENTITY.state}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleNotRight}
+                  className="mt-2 text-xs text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+                >
+                  Not right?
+                </button>
+              </div>
+            )}
+
+            {/* Failed — transactional primary */}
+            {einState === "failed" && !isMarketingPrimary && (
+              <div className="mt-3">
+                <p className="text-sm text-text-tertiary leading-relaxed">
+                  We couldn&apos;t verify this EIN automatically. Your messages are fully functional with one campaign. To unlock marketing and additional use cases, you&apos;ll need a verified EIN — you can try again anytime from Settings.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleTryAgain}
+                  className="mt-2 text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+                >
+                  Try again
+                </button>
+              </div>
+            )}
+
+            {/* Failed — marketing primary */}
+            {einState === "failed" && isMarketingPrimary && (
+              <div className="mt-3">
+                <p className="text-sm text-text-tertiary leading-relaxed">
+                  We couldn&apos;t verify this EIN. Marketing messages require a verified business identity. You can switch to a different use case to get started, or try a different EIN.
+                </p>
+                <div className="mt-2 flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleTryAgain}
+                    className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Try a different EIN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleChooseDifferentVertical}
+                    className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Choose a different use case
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

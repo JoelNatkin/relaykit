@@ -132,3 +132,15 @@
   /* FOCUS RING */
   --color-focus-ring: var(--color-brand-500);
 }
+
+/* ── Wizard shared animations ── */
+@keyframes wizardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
