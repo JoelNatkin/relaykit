@@ -12,28 +12,25 @@ interface Benefit {
 const BENEFITS: Benefit[] = [
   {
     lead: "One prompt gets you started.",
-    detail:
-      "We generate a custom prompt with your business details and messages. Paste it into your AI tool and it builds your SMS feature — tailored to your app, your customers, your messages.",
+    detail: "Your business details, your messages, ready to paste into your AI tool.",
   },
   {
     lead: "Test with real people, real phones.",
     detail:
-      "Send messages to up to 5 people — your team, your co-founder, a client you\u2019re trying to impress. Real texts, your business name, on their actual phone.",
+      "Send to up to 5 people — your team, your co-founder, a client you want to impress.",
   },
   {
     lead: "An expert in your corner.",
     detail:
-      "Not a chatbot — a full AI assistant that knows your business, your messages, and how SMS works. It helps you refine your messages, troubleshoot your integration, and get your app right.",
+      "A full AI assistant that knows your business, your messages, and how SMS works.",
   },
   {
     lead: "Change a message here, your app updates automatically.",
-    detail:
-      "Edit copy on the website whenever you want. No code changes, no redeployment. Your app picks up the new version on the next send.",
+    detail: "Edit copy on the website. No code changes, no redeployment.",
   },
   {
     lead: "You never think about compliance.",
-    detail:
-      "Opt-in forms, carrier rules, message formatting — things that sink SMS features at other companies. We handle all of it so your customers get clean, professional messages every time.",
+    detail: "Opt-in forms, carrier rules, message formatting — all handled.",
   },
 ];
 
