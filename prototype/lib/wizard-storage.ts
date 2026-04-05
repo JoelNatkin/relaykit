@@ -23,6 +23,7 @@ export interface WizardData {
   serviceType: string;
   website: string;
   context: string;
+  verifiedPhone: string;
 }
 
 const DEFAULT_DATA: WizardData = {
@@ -32,6 +33,7 @@ const DEFAULT_DATA: WizardData = {
   serviceType: "",
   website: "",
   context: "",
+  verifiedPhone: "",
 };
 
 export function loadWizardData(): WizardData {

@@ -18,13 +18,13 @@ export default function ContextPage() {
 
   function handleSkip() {
     saveWizardData({ context: "" });
-    router.push("/apps/glowstudio/messages");
+    router.push("/start/verify");
   }
 
   return (
     <WizardStepShell
       backHref="/start/website"
-      continueHref="/apps/glowstudio/messages"
+      continueHref="/start/verify"
       canContinue={true}
       onBeforeContinue={() => saveWizardData({ context: trimmed })}
     >
