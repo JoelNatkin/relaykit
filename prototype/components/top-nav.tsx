@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import type { RegistrationState } from "@/context/session-context";
 import { SignInModal } from "@/components/sign-in-modal";
+import { loadWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
 
 const USE_CASE_ITEMS = [
   { href: "/sms/appointments", label: "Appointments" },
@@ -37,14 +38,34 @@ export function TopNav() {
   const isWizardNav = isAppRoute && state.registrationState === "default";
 
   // Wizard (Step 1+): wordmark only, no other nav items
-  const isStartRoute = pathname === "/start" || pathname.startsWith("/start/");
+  const isPickerRoute = pathname === "/start";
+  const isStartStepRoute = pathname.startsWith("/start/");
+  const isStartRoute = isPickerRoute || isStartStepRoute;
+
+  // On /start/* (post-picker), show the selected vertical pill next to wordmark
+  const [verticalPill, setVerticalPill] = useState<string | null>(null);
+  useEffect(() => {
+    if (!isStartStepRoute) {
+      setVerticalPill(null);
+      return;
+    }
+    const data = loadWizardData();
+    setVerticalPill(VERTICAL_LABELS[data.vertical] || null);
+  }, [isStartStepRoute, pathname]);
 
   if (isStartRoute) {
     return (
       <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center border-b border-border-secondary bg-bg-primary px-6">
-        <Link href="/" className="text-lg font-bold text-text-primary">
-          RelayKit
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="text-lg font-bold text-text-primary">
+            RelayKit
+          </Link>
+          {verticalPill && (
+            <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2.5 py-1 text-xs font-medium text-text-brand-secondary">
+              {verticalPill}
+            </span>
+          )}
+        </div>
       </nav>
     );
   }

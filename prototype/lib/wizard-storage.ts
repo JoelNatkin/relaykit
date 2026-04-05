@@ -4,6 +4,18 @@
 
 export const WIZARD_STORAGE_KEY = "relaykit_wizard";
 
+/* ── Vertical id → display label (for the nav pill) ── */
+export const VERTICAL_LABELS: Record<string, string> = {
+  appointments: "Appointments",
+  verification: "Verification codes",
+  orders: "Order updates",
+  support: "Customer support",
+  marketing: "Marketing",
+  internal: "Team alerts",
+  community: "Community",
+  waitlist: "Waitlist",
+};
+
 export interface WizardData {
   vertical: string;
   businessName: string;
