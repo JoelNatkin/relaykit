@@ -1,63 +1,80 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { loadWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
+import { CheckCircle } from "@untitledui/icons";
 
-const MESSAGE_COUNT = 6;
+interface Benefit {
+  lead: string;
+  detail: string;
+}
+
+const BENEFITS: Benefit[] = [
+  {
+    lead: "One prompt gets you started.",
+    detail:
+      "We generate a custom prompt with your business details and messages. Paste it into your AI tool and it builds your SMS feature — tailored to your app, your customers, your messages.",
+  },
+  {
+    lead: "Test with real people, real phones.",
+    detail:
+      "Send messages to up to 5 people — your team, your co-founder, a client you\u2019re trying to impress. Real texts, your business name, on their actual phone.",
+  },
+  {
+    lead: "An expert in your corner.",
+    detail:
+      "Not a chatbot — a full AI assistant that knows your business, your messages, and how SMS works. It helps you refine your messages, troubleshoot your integration, and get your app right.",
+  },
+  {
+    lead: "Change a message here, your app updates automatically.",
+    detail:
+      "Edit copy on the website whenever you want. No code changes, no redeployment. Your app picks up the new version on the next send.",
+  },
+  {
+    lead: "You never think about compliance.",
+    detail:
+      "Opt-in forms, carrier rules, message formatting — things that sink SMS features at other companies. We handle all of it so your customers get clean, professional messages every time.",
+  },
+];
 
 export default function ReadyPage() {
   const { appId } = useParams<{ appId: string }>();
-  const [verticalLabel, setVerticalLabel] = useState("");
-  const [businessName, setBusinessName] = useState("");
-
-  useEffect(() => {
-    const data = loadWizardData();
-    setVerticalLabel(VERTICAL_LABELS[data.vertical] || "Appointments");
-    setBusinessName(data.businessName || "Your business");
-  }, []);
 
   return (
     <div>
       <h1 className="text-2xl font-bold text-text-primary">
-        You&apos;re ready to build
+        Skip the hard part
       </h1>
       <p className="mt-2 text-sm text-text-tertiary">
-        Here&apos;s what we set up for you.
+        Create a free account and start building.
       </p>
 
-      {/* Summary card */}
-      <div className="mt-8 rounded-lg border border-border-secondary bg-bg-primary px-4 py-3.5">
-        <dl className="divide-y divide-border-tertiary">
-          <div className="flex items-center justify-between py-2">
-            <dt className="text-sm text-text-tertiary">Vertical</dt>
-            <dd className="text-sm font-medium text-text-primary">{verticalLabel}</dd>
-          </div>
-          <div className="flex items-center justify-between py-2">
-            <dt className="text-sm text-text-tertiary">Business</dt>
-            <dd className="text-sm font-medium text-text-primary">{businessName}</dd>
-          </div>
-          <div className="flex items-center justify-between py-2">
-            <dt className="text-sm text-text-tertiary">Messages</dt>
-            <dd className="text-sm font-medium text-text-primary">{MESSAGE_COUNT} messages ready</dd>
-          </div>
-        </dl>
-      </div>
-
-      {/* What you get */}
-      <p className="mt-8 text-sm text-text-tertiary leading-relaxed">
-        A sandbox API key, the RelayKit SDK, and a ready-to-paste prompt for your AI coding tool. Your app will have working SMS in minutes.
-      </p>
+      {/* Benefits */}
+      <ul className="mt-10 space-y-7">
+        {BENEFITS.map((benefit) => (
+          <li key={benefit.lead} className="flex items-start gap-3">
+            <CheckCircle className="size-5 shrink-0 text-fg-success-primary mt-0.5" />
+            <p className="text-sm leading-relaxed">
+              <span className="font-semibold text-text-primary">{benefit.lead}</span>{" "}
+              <span className="font-normal text-text-tertiary">{benefit.detail}</span>
+            </p>
+          </li>
+        ))}
+      </ul>
 
       {/* Pricing */}
-      <p className="mt-6 text-sm text-text-tertiary leading-relaxed">
-        Free while you build and test. When you&apos;re ready for real delivery:{" "}
-        <span className="font-semibold text-text-primary">$49</span>
-        {" registration + "}
-        <span className="font-semibold text-text-primary">$19/mo</span>
-        .
-      </p>
+      <div className="mt-12">
+        <p className="text-lg font-semibold text-text-primary">
+          Free while you build and test.
+        </p>
+        <p className="mt-1 text-base text-text-tertiary">
+          When you&apos;re ready for real delivery:{" "}
+          <span className="font-semibold text-text-primary">$49</span>
+          {" registration + "}
+          <span className="font-semibold text-text-primary">$19/mo</span>
+          .
+        </p>
+      </div>
 
       {/* CTA */}
       <Link
