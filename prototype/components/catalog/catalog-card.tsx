@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Stars02 } from "@untitledui/icons";
 import type { Message, VariantSet } from "@/data/messages";
 import type { SessionState } from "@/context/session-context";
@@ -58,7 +58,9 @@ function Spinner({ className }: { className?: string }) {
 
 type PillId = "standard" | "action-first" | "context-first" | "custom";
 
-/* ── Compliance check (stub) ── */
+/* ── Compliance check (stub) ──
+   Prototype stub — production compliance is server-side with full TCPA/10DLC
+   rule evaluation. These checks are intentionally loose. */
 
 interface ComplianceResult {
   isCompliant: boolean;
@@ -107,9 +109,10 @@ function checkCompliance(
 ): ComplianceResult {
   const issues: string[] = [];
 
-  // Opt-out language
-  const hasOptOut = /stop|opt.?out|unsubscribe/i.test(text);
-  if (message.requiresStop && !hasOptOut) {
+  // Opt-out language: must contain STOP AND one of opt out / opt-out / unsubscribe
+  const hasStop = /stop/i.test(text);
+  const hasExitWord = /opt[- ]?out|unsubscribe/i.test(text);
+  if (message.requiresStop && !(hasStop && hasExitWord)) {
     issues.push("Needs opt-out language");
   }
 
@@ -195,15 +198,28 @@ export function CatalogCard({
     }
   }, [isEditing, editText]);
 
-  // Compliance check with 2-second debounce on manual edits
-  const checkComplianceDebounced = useCallback((text: string) => {
-    if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
-    complianceTimerRef.current = setTimeout(() => {
-      const result = checkCompliance(text, message, categoryId, state);
-      setCompliance(result);
-      setShowComplianceHint(!result.isCompliant);
-    }, 2000);
-  }, [message, categoryId, state]);
+  // Compliance: run check on every editText change. Update issues immediately
+  // so already-visible hints reflect the latest text. When text becomes
+  // compliant, hide the hint immediately (no debounce). When non-compliant,
+  // debounce the initial reveal by 2s so the developer isn't nagged mid-type.
+  useEffect(() => {
+    if (!isEditing) return;
+    const result = checkCompliance(editText, message, categoryId, state);
+    setCompliance(result);
+
+    if (complianceTimerRef.current) {
+      clearTimeout(complianceTimerRef.current);
+      complianceTimerRef.current = null;
+    }
+
+    if (result.isCompliant) {
+      setShowComplianceHint(false);
+    } else {
+      complianceTimerRef.current = setTimeout(() => {
+        setShowComplianceHint(true);
+      }, 2000);
+    }
+  }, [editText, isEditing, message, categoryId, state]);
 
   useEffect(() => {
     return () => {
@@ -353,7 +369,7 @@ export function CatalogCard({
     if (activePillId !== "custom") {
       setActivePillId("custom");
     }
-    checkComplianceDebounced(newText);
+    // Compliance check runs via useEffect on editText change.
   }
 
   function renderPreview(template: string) {
