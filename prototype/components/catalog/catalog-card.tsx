@@ -113,6 +113,8 @@ export function CatalogCard({
   const [savedText, setSavedText] = useState<string | null>(null);
   const [savedPillId, setSavedPillId] = useState<PillId>("standard");
   const [activePillId, setActivePillId] = useState<PillId>("standard");
+  /** Most recent canned pill before switching to custom — used by Restore. */
+  const [lastCannedPillId, setLastCannedPillId] = useState<PillId>("standard");
   const [customTextBuffer, setCustomTextBuffer] = useState<string | null>(null);
   const [aiInput, setAiInput] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -169,10 +171,13 @@ export function CatalogCard({
       setEditText(savedText);
       setActivePillId(savedPillId);
       setCustomTextBuffer(savedPillId === "custom" ? savedText : customTextBuffer);
+      // If saved as custom, fall back to standard as the canned baseline for Restore
+      setLastCannedPillId(savedPillId === "custom" ? "standard" : savedPillId);
     } else {
       setEditText(getInterpolatedText(message.template));
       setActivePillId("standard");
       setCustomTextBuffer(null);
+      setLastCannedPillId("standard");
     }
     setAiInput("");
     setIsAiLoading(false);
@@ -218,15 +223,18 @@ export function CatalogCard({
     exitEdit();
   }
 
-  function handleFix() {
-    if (!compliance.fixedText || isFixLoading) return;
-    const fixedText = compliance.fixedText;
+  function handleRestore() {
+    if (isFixLoading) return;
+    // Restore the last canned pill's clean, compliant version. Canned
+    // variants are pre-validated so compliance passes immediately.
+    const template = getPillTemplate(lastCannedPillId);
+    if (!template) return;
+    const restored = getInterpolatedText(template);
     setIsFixLoading(true);
-    // Simulate async AI fix — real impl will call the AI backend
+    // Simulate async AI restore — real impl will call the AI backend
     setTimeout(() => {
-      setEditText(fixedText);
-      setCustomTextBuffer(fixedText);
-      setActivePillId("custom");
+      setEditText(restored);
+      setActivePillId(lastCannedPillId);
       setCompliance({ isCompliant: true, issue: null, fixedText: null });
       setShowComplianceHint(false);
       setIsFixLoading(false);
@@ -272,6 +280,7 @@ export function CatalogCard({
     if (template) {
       setEditText(getInterpolatedText(template));
       setActivePillId(id);
+      setLastCannedPillId(id);
       setCompliance({ isCompliant: true, issue: null, fixedText: null });
       setShowComplianceHint(false);
     }
@@ -385,12 +394,12 @@ export function CatalogCard({
                 </p>
                 <button
                   type="button"
-                  onClick={handleFix}
+                  onClick={handleRestore}
                   disabled={isFixLoading}
                   className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-md border border-border-primary px-2.5 py-1 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isFixLoading && <Spinner className="size-3" />}
-                  {isFixLoading ? "Fixing…" : "Fix"}
+                  {isFixLoading ? "Restoring…" : "Restore"}
                 </button>
               </div>
             )}
