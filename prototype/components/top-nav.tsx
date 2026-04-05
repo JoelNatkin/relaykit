@@ -33,8 +33,8 @@ export function TopNav() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, [useCasesOpen]);
 
-  // Wizard context: on sandbox app messages page, Default state
-  const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/messages$/.test(pathname);
+  // Wizard context: on sandbox app messages or signup page, Default state
+  const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/(messages|signup)$/.test(pathname);
   const isWizardNav = isAppRoute && state.registrationState === "default";
 
   // Wizard (Step 1+): wordmark only, no other nav items
