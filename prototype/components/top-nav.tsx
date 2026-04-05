@@ -36,6 +36,19 @@ export function TopNav() {
   const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/(messages|opt-in)$/.test(pathname);
   const isWizardNav = isAppRoute && state.registrationState === "default";
 
+  // Vertical picker (Step 1 of wizard): wordmark only, no other nav items
+  const isStartRoute = pathname === "/start";
+
+  if (isStartRoute) {
+    return (
+      <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center border-b border-border-secondary bg-bg-primary px-6">
+        <Link href="/" className="text-lg font-bold text-text-primary">
+          RelayKit
+        </Link>
+      </nav>
+    );
+  }
+
   function handleSignOut() {
     setLoggedIn(false);
     router.push("/");
