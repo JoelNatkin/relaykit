@@ -1090,3 +1090,7 @@ _Affects: Messages page layout, wizard flow, opt-in form component._
 **D-318 — Messages wizard step has Continue at top and bottom** (Date: 2026-04-04)
 The messages page in wizard context has a Continue button in both the top header area and below the last message card. Only wizard step with dual Continue — the page is long enough that developers may not scroll. All other wizard steps use bottom-only.
 _Affects: Messages page layout, wizard navigation pattern._
+
+**D-319 — Compliance restore replaces full message with clean variant, not a partial patch** (Date: 2026-04-05)
+When a developer's manual edit breaks compliance (missing or mangled opt-out language, missing business name, etc.), the "Restore" button replaces the entire message text with the clean version of whichever style variant was active before editing. This avoids trying to surgically fix fragments in messy text. The developer can continue editing from the restored clean version. The compliance check itself will be server-side in production — the prototype uses a client-side stub.
+_Affects: Message card edit state, compliance check behavior, future server-side compliance engine._
