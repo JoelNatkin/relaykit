@@ -455,7 +455,13 @@ export function CatalogCard({
                     }
                   }}
                   disabled={isAiLoading}
-                  placeholder={isAiLoading ? "Rewriting…" : "Ask AI: make it more casual"}
+                  placeholder={
+                    isAiLoading
+                      ? "Rewriting…"
+                      : activePillId === "custom"
+                        ? "Ask AI: polish my edit"
+                        : "Ask AI: make it more casual"
+                  }
                   className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear disabled:bg-bg-secondary disabled:cursor-not-allowed"
                 />
               </div>
