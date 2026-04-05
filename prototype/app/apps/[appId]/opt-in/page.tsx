@@ -38,7 +38,7 @@ export default function OptInPreviewPage() {
   }, []);
 
   return (
-    <div>
+    <div className="max-w-[400px] mx-auto">
       {/* Heading */}
       <div className="mb-2">
         <h2 className="text-lg font-semibold text-text-primary">Message opt-in</h2>
@@ -50,13 +50,11 @@ export default function OptInPreviewPage() {
       </p>
 
       {/* Opt-in form preview */}
-      <div className="max-w-[400px]">
-        <CatalogOptIn
-          appName={state.appName}
-          website={state.website}
-          allMessages={coreMessages}
-        />
-      </div>
+      <CatalogOptIn
+        appName={state.appName}
+        website={state.website}
+        allMessages={coreMessages}
+      />
     </div>
   );
 }
