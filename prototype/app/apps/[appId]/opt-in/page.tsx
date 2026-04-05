@@ -41,12 +41,12 @@ export default function OptInPreviewPage() {
     <div>
       {/* Heading */}
       <div className="mb-2">
-        <h2 className="text-lg font-semibold text-text-primary">Built into your app, styled to match</h2>
+        <h2 className="text-lg font-semibold text-text-primary">Message opt-in</h2>
       </div>
 
       {/* Context line */}
       <p className="mb-8 text-sm text-text-secondary">
-        Your AI tool creates your opt-in form, styled for your app. Always up to date.
+        Opt-in, opt-out, and consent records — all handled for you.
       </p>
 
       {/* Opt-in form preview */}
