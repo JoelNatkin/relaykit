@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { Stars02 } from "@untitledui/icons";
 import type { Message, VariantSet } from "@/data/messages";
 import type { SessionState } from "@/context/session-context";
 import {
@@ -354,13 +355,16 @@ export function CatalogCard({
               )}
 
               {/* AI help input */}
-              <input
-                type="text"
-                value={aiInput}
-                onChange={(e) => setAiInput(e.target.value)}
-                placeholder="How should we change this?"
-                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-              />
+              <div className="relative">
+                <Stars02 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
+                <input
+                  type="text"
+                  value={aiInput}
+                  onChange={(e) => setAiInput(e.target.value)}
+                  placeholder="Ask AI: make it more casual"
+                  className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+                />
+              </div>
 
               {/* Save / Cancel — right-aligned */}
               <div className="flex items-center justify-end gap-2">
