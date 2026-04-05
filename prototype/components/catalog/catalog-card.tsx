@@ -87,6 +87,9 @@ export interface CatalogCardProps {
   variants?: VariantSet[];
   onSend?: (messageId: string) => void;
   sendIcon?: React.ReactNode;
+  /** Controlled edit state. When provided, parent manages which card is editing. */
+  isEditing?: boolean;
+  onEditRequest?: (messageId: string | null) => void;
 }
 
 export function CatalogCard({
@@ -96,9 +99,14 @@ export function CatalogCard({
   variants,
   onSend,
   sendIcon,
+  isEditing: controlledIsEditing,
+  onEditRequest,
 }: CatalogCardProps) {
+  const isControlled = controlledIsEditing !== undefined;
   const [showTooltip, setShowTooltip] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [localIsEditing, setLocalIsEditing] = useState(false);
+  const isEditing = isControlled ? controlledIsEditing : localIsEditing;
+  const prevIsEditingRef = useRef(false);
   const [editText, setEditText] = useState("");
   const [savedText, setSavedText] = useState<string | null>(null);
   const [savedPillId, setSavedPillId] = useState<PillId>("standard");
@@ -152,14 +160,14 @@ export function CatalogCard({
     return message.variants?.[id] ?? null;
   }
 
-  function enterEdit() {
+  // Initialize edit-session state (editText, active pill, buffers, loading).
+  // Called when isEditing transitions false→true, whether controlled or local.
+  function initEditSession() {
     if (savedText !== null) {
-      // Restore saved state
       setEditText(savedText);
       setActivePillId(savedPillId);
       setCustomTextBuffer(savedPillId === "custom" ? savedText : customTextBuffer);
     } else {
-      // First edit: Brand-first (standard) default
       setEditText(getInterpolatedText(message.template));
       setActivePillId("standard");
       setCustomTextBuffer(null);
@@ -169,7 +177,33 @@ export function CatalogCard({
     setIsFixLoading(false);
     setCompliance({ isCompliant: true, issue: null, fixedText: null });
     setShowComplianceHint(false);
-    setIsEditing(true);
+  }
+
+  // Watch for edit-state transitions and initialize when entering edit.
+  // Unsaved edits are implicitly discarded when isEditing flips to false.
+  useEffect(() => {
+    if (isEditing && !prevIsEditingRef.current) {
+      initEditSession();
+    }
+    prevIsEditingRef.current = isEditing;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditing]);
+
+  function enterEdit() {
+    if (isControlled) {
+      onEditRequest?.(message.id);
+    } else {
+      initEditSession();
+      setLocalIsEditing(true);
+    }
+  }
+
+  function exitEdit() {
+    if (isControlled) {
+      onEditRequest?.(null);
+    } else {
+      setLocalIsEditing(false);
+    }
   }
 
   function handleSave() {
@@ -179,7 +213,7 @@ export function CatalogCard({
     if (activePillId === "custom") {
       setCustomTextBuffer(editText);
     }
-    setIsEditing(false);
+    exitEdit();
   }
 
   function handleFix() {
@@ -215,7 +249,7 @@ export function CatalogCard({
   function handleCancel() {
     setCompliance({ isCompliant: true, issue: null, fixedText: null });
     setShowComplianceHint(false);
-    setIsEditing(false);
+    exitEdit();
   }
 
   function handlePillClick(id: PillId) {

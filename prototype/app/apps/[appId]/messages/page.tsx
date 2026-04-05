@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Phone01 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
@@ -63,6 +63,9 @@ export default function AppMessagesPage() {
 
   const coreMessages = allMessages.filter((m) => m.tier !== "expansion");
 
+  // Single-card editing: clicking a new card's pencil closes any open edit.
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+
   function handleSend(messageId: string) {
     // Stub — future: send to verified phone
     console.log("Send message:", messageId);
@@ -89,6 +92,8 @@ export default function AppMessagesPage() {
               variants={variants}
               onSend={handleSend}
               sendIcon={isWizard ? phoneIcon : undefined}
+              isEditing={editingMessageId === message.id}
+              onEditRequest={setEditingMessageId}
             />
           ))}
         </div>
