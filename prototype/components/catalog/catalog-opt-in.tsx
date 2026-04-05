@@ -2,14 +2,21 @@
 
 import type { Message } from "@/data/messages";
 
-/* ── Helper: natural language list ── */
-
-function naturalList(items: string[]): string {
-  if (items.length === 0) return "";
-  if (items.length === 1) return items[0];
-  if (items.length === 2) return `${items[0]} and ${items[1]}`;
-  return `${items.slice(0, -1).join(", ")}, and ${items[items.length - 1]}`;
-}
+/* ── Category → consent word ──
+   The checkbox names the category, not every individual message type.
+   Fine print covers the TCPA disclosure details. Matches PRD_02 opt-in
+   language pattern. */
+const CATEGORY_CONSENT_WORD: Record<string, string> = {
+  appointments: "appointment",
+  verification: "verification",
+  orders: "order",
+  support: "support",
+  marketing: "marketing",
+  community: "community",
+  waitlist: "waitlist",
+  internal: "team alert",
+  exploring: "exploring",
+};
 
 /* ── CatalogOptIn component ── */
 
@@ -28,18 +35,14 @@ export function CatalogOptIn({
   const displayName = appName || "Your App";
   const displayUrl = website || "yourapp.com";
 
-  // Build consent labels from ALL messages in the category
-  const transactionalLabels = allMessages
-    .filter((m) => !m.expansionType)
-    .map((m) => m.consentLabel);
-  const marketingLabels = allMessages
-    .filter((m) => m.expansionType === "marketing" || m.expansionType === "mixed")
-    .map((m) => m.consentLabel);
+  const categoryId = allMessages[0]?.categoryId || "appointments";
+  const categoryWord = CATEGORY_CONSENT_WORD[categoryId] || categoryId;
+  const hasMarketing = allMessages.some(
+    (m) => m.expansionType === "marketing" || m.expansionType === "mixed"
+  );
 
-  const hasMarketing = marketingLabels.length > 0;
-
-  // Checkbox label — always lists all message types
-  const checkboxLabel = `I agree to receive ${naturalList([...transactionalLabels, ...marketingLabels])} text messages from ${displayName}.`;
+  // Checkbox label — names the category and the business, not each message type
+  const checkboxLabel = `I agree to receive ${categoryWord} text messages from ${displayName}.`;
 
   // Marketing consent checkbox — separate per CTIA
   const marketingCheckboxLabel = hasMarketing
