@@ -1094,3 +1094,7 @@ _Affects: Messages page layout, wizard navigation pattern._
 **D-319 — Compliance restore replaces full message with clean variant, not a partial patch** (Date: 2026-04-05)
 When a developer's manual edit breaks compliance (missing or mangled opt-out language, missing business name, etc.), the "Restore" button replaces the entire message text with the clean version of whichever style variant was active before editing. This avoids trying to surgically fix fragments in messy text. The developer can continue editing from the restored clean version. The compliance check itself will be server-side in production — the prototype uses a client-side stub.
 _Affects: Message card edit state, compliance check behavior, future server-side compliance engine._
+
+**D-320 — Registration pricing: $49 flat fee** (Date: 2026-04-05)
+Registration fee is $49, paid at submission. Single payment, no split, no go-live fee. Monthly subscription $19/mo unchanged. Per-message pricing unchanged. Volume play — lower barrier drives larger base. Supersedes D-314 ($99 flat fee) and the original D-193/D-216 ($49 submission + $150 go-live split).
+_Affects: Signup step, pricing reveal copy, settings billing section, overview registration card, register/review page, marketing/pricing pages._
