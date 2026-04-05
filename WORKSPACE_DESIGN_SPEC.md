@@ -375,13 +375,15 @@ Settings grows:
 - D-303: Business identity pre-validation from EIN lookup
 - D-304: Symmetrical pricing — first campaign $19, second $29
 - D-305: Marketing-only is valid standalone
-- D-310: EIN and business identity are per-app, not per-account (PENDING — needs to be recorded)
-- D-311: Multiple categories submit simultaneously at registration — no sequencing (PENDING — needs to be recorded)
-- D-312: TCR allows up to 5 campaigns per brand; v1 supports max 2, additional campaigns backlogged (PENDING — needs to be recorded)
-- D-313: Pre-auth message send — a special endpoint or temporary session token allowing message sends before signup, scoped to verified phone only (PENDING — needs design and recording)
-- D-314: Single $99 go-live fee replaces $49 submission + $150 approval split (PENDING — needs to be recorded)
-- D-315: Price revealed at signup step, not at go-live or on arrival (PENDING — needs to be recorded)
-- D-316: Signup is a wizard step, not a separate decision moment — same "Continue" treatment as other wizard advances (PENDING — needs to be recorded)
+- D-310: EIN and business identity are per-app, not per-account
+- D-311: Multiple categories submit simultaneously at registration — no sequencing
+- D-312: TCR allows up to 5 campaigns per brand; v1 supports max 2, additional campaigns backlogged
+- D-313: Pre-auth message send — a special endpoint or temporary session token allowing message sends before signup, scoped to verified phone only
+- D-314: Single $99 go-live fee replaces $49 submission + $150 approval split
+- D-315: Price revealed at signup step, not at go-live or on arrival
+- D-316: Signup is a wizard step, not a separate decision moment — same "Continue" treatment as other wizard advances
+- D-317: Opt-in form is a wizard step between messages and signup, not on the messages page
+- D-318: Messages wizard step has Continue at top and bottom
 
 ---
 

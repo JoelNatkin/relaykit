@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: March 27, 2026
+### Last updated: April 4, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -155,25 +155,42 @@ Public-facing compliance information page. Not yet fully designed.
 **File:** `prototype/app/apps/[appId]/layout.tsx`
 **Status:** Stable
 
-**Three tabs only: Overview, Messages, Settings.** (D-126 — Registration tab removed.)
+**Two layout wrappers, one route tree.** Layout.tsx checks `registrationState` and renders either the **Wizard Layout** (Default state) or the **Dashboard Layout** (all other states). Route redirects handle invalid state/page combos automatically.
 
-**Header:** App name (h1) + category pill (purple, `bg-bg-brand-secondary text-text-brand-secondary`) on same line (D-134). No breadcrumb. No page-level h1 titles on individual pages — tab label serves as page identification (D-167).
+#### Wizard Layout (Default state)
+**File:** `prototype/components/wizard-layout.tsx`
 
-**Contextual status indicator (D-176):** Right-aligned on the header row. Colored dot (8×8 `rounded-full`) + status text (`text-sm text-text-secondary`). States: green (#12B76A) "Your app is live" (approved), amber (#F79009) "Registration in review" (pending), red (#F04438) "Changes requested" / "Registration rejected", grey (#98A2B3) "Sandbox" (default). Visible on all tabs.
+Minimal, focused layout for the pre-signup wizard flow.
 
-**State switcher:** Small dropdown after status indicator, right-aligned (D-138). Five states: Default, Pending, Approved, Changes Requested, Rejected.
+**App bar:** "Appointments" category label (left) → state switcher dropdown (right) → "Sign out" (far right).
+**Back button row:** Below app bar, left-aligned. `ArrowLeft` icon + "Back" text. Links to previous wizard step (opt-in → messages). Disabled on messages page (no previous step yet).
+**Content:** Centered in `max-w-[540px]` container.
+**Not shown:** "Your Apps" link, app name, tabs, status indicator dot.
 
-**Compliance sub-switcher:** Second dropdown, only visible in Approved state (D-146). Options: "All clear" / "Has alerts."
+#### Dashboard Layout (Pending, Approved, Extended Review, Rejected)
+**File:** `prototype/components/dashboard-layout.tsx`
 
-**Alerts switcher (D-239):** Third dropdown, only visible on Overview tab. Options: "Alerts on" (default) / "Alerts off". Controls `alertsEnabled` in session context. Used to test all three D-239 placements without going through the wizard.
+Full dashboard with app identity, tabs, and status.
 
-**Period selector:** "This month" dropdown, right-aligned with `ml-auto` in tab row. Only visible when Approved + on Overview page. State lives in layout.tsx — display-only, doesn't change data. (D-150)
+**Header:** App name (h1) + category pill (purple) → state switcher dropdown (right) → status indicator dot+label (right of switcher, `ml-10` gap).
+**Status indicator:** Colored dot (8×8 `rounded-full`) + status text. States: green (#12B76A) "Your app is live", amber (#F79009) "Registration in review" / "Extended review", red (#F04438) "Registration rejected".
+**Tab bar:** Overview, Messages, Settings. Active tab: `border-border-brand text-text-brand-secondary`. Hidden during registration flow (`/register`).
+**Period selector:** "This month" dropdown in tab row, only when Approved + Overview.
+**Content:** `mx-auto max-w-5xl px-6 pt-6 pb-16`.
 
-**Layout structure (D-221):** Outer wrapper is full-width (no max-w constraint). App identity in `mx-auto max-w-5xl px-6`. Tab bar: full-width `border-b` wrapper with tabs inside `mx-auto max-w-5xl px-6`. Page content in `mx-auto max-w-5xl px-6 pt-6 pb-16`. This allows child pages to break out to full viewport width (e.g., Messages tab playbook gray band).
+#### State Switcher (both layouts)
+Five states: Default, Pending, Approved, Extended Review, Rejected. `text-xs text-text-quaternary`. Switching from Default to any other: wizard → dashboard, redirect if on opt-in → messages. Switching to Default: dashboard → wizard, redirect if on overview/settings → messages.
 
-**Tab bar hidden on registration flow:** When pathname includes `/register`, the tab bar is hidden entirely. Registration is a focused flow with its own "← Back to Overview" navigation.
+#### Route Redirects
+- **Default (wizard):** `/overview` and `/settings` redirect to `/messages`. Only `/messages` and `/opt-in` are valid.
+- **Non-default (dashboard):** `/opt-in` redirects to `/messages`. `/overview`, `/messages`, `/settings` are valid.
+- **Register flow:** No wrapper — content renders in bare `max-w-5xl` container.
 
-**Logged-in state forced:** Layout calls `setLoggedIn(true)` on mount via `useEffect`, ensuring top nav shows "Your Apps" and "Sign out" instead of logged-out version.
+#### Prototype Navigation Helper
+**File:** `prototype/components/proto-nav-helper.tsx`
+Floating "Nav ↑" pill (bottom-left, z-200). Expands to show jump links to every page in every state. Sets registration state and navigates in one click. Highlights current page/state. Only appears on `/apps/` routes. Strip when porting to production.
+
+**Logged-in state forced:** Layout calls `setLoggedIn(true)` on mount via `useEffect`.
 
 ---
 
@@ -268,15 +285,18 @@ Unchanged from prior spec. Full-width 3×2 card grid, no right sidebar.
 
 **Full-width layout (D-317):** No opt-in column. Messages get the full viewport. Opt-in form is a separate wizard step at `/apps/[appId]/opt-in`.
 
-**Wizard mode (sandbox/Default):**
-- Header: "Messages" h2 left, "Continue" button right (D-318)
-- Message cards full-width (`max-w-[540px]`)
-- Second "Continue" button below last message card (D-318 — dual Continue, only wizard step with this treatment)
-- Continue navigates to `/apps/[appId]/opt-in`
-- No Settings gear, no Sandbox indicator, no state switcher label in header (layout hides these via `isWizardMode`)
-- State switcher dropdown preserved (dev tool only)
+**Wizard mode (Default state — rendered inside WizardLayout):**
+- "Messages" heading centered, with "Continue" button right-aligned (D-318). Spacer div balances centering.
+- Message cards fill wizard container (`max-w-[540px]` from WizardLayout).
+- Send icons: `Phone01` from `@untitledui/icons` — no circle background, no container. Replaces paper airplane in wizard context.
+- Second "Continue" button below last card, centered (D-318 — dual Continue, only wizard step with this treatment).
+- Continue navigates to `/apps/[appId]/opt-in`.
+- Back button in WizardLayout header navigates nowhere (disabled — no previous wizard step yet).
 
-**Post-registration states:** Same full-width card layout, no Continue buttons, no wizard chrome. Header shows only "Messages" h2.
+**Dashboard mode (Pending/Approved/Extended Review/Rejected — rendered inside DashboardLayout):**
+- "Messages" heading left-aligned, no Continue buttons.
+- Message cards constrained to `max-w-[540px]` within the `max-w-5xl` dashboard container.
+- Send icons: paper airplane in `w-8 h-8` circle (`bg-bg-secondary`). Standard dashboard treatment.
 
 **Page-level controls removed (Phase 2a):**
 - Global style pill bar — gone, pills live inside card edit state
@@ -293,7 +313,7 @@ Each card shows the full message text, not truncated.
 
 - **Title row:** Message name (bold) + info icon (i) inline with 1.5 gap after title + pencil edit button right-aligned. Info icon shows tooltip on hover. No card numbers. No template/preview toggle. No copy button. No "Modify with AI" in default state.
 - **Message text:** Full message below title. Variables highlighted in brand color (`text-text-brand-secondary`). Always shows interpolated preview with real values (GlowStudio, etc.), not raw template syntax. Clicking text enters edit state.
-- **Send button:** Round icon button (paper plane, 15px), floats outside the card on the right side. Tertiary styling: `bg-bg-secondary text-fg-secondary`, `w-8 h-8`. Vertically centered on the card via `items-stretch` + `items-center` wrapper.
+- **Send button:** Floats outside the card on the right side, vertically centered via `items-stretch` + `items-center` wrapper. Accepts optional `sendIcon` prop for context-specific icons. Dashboard: round icon button (paper plane, 15px) in `bg-bg-secondary text-fg-secondary w-8 h-8` circle. Wizard: `Phone01` icon (18px) with no circle background (`text-fg-tertiary hover:text-fg-secondary`).
 - **Marketing badge:** Shown on marketing-tier messages, same as before.
 - **Card spacing:** `space-y-5` (20px) between cards.
 
@@ -327,14 +347,14 @@ Same card redesign. Key differences:
 
 ### Opt-in Form Preview — `/apps/[appId]/opt-in`
 **File:** `prototype/app/apps/[appId]/opt-in/page.tsx`
-**Status:** NEW — wizard Step 5.5 (D-317)
+**Status:** Stable — wizard Step 5.5 (D-317)
 
-Wizard step between messages and signup. Read-only opt-in form preview.
+Wizard step between messages and signup. Read-only opt-in form preview. Only accessible in Default (wizard) state — other states redirect to `/messages`.
 
-**Layout:** Single column, `max-w-[500px]`.
-- Heading: "Your opt-in form" (`text-lg font-semibold`)
-- Context line: "RelayKit generates and maintains this for you. Your AI tool builds it into your app." (`text-sm text-text-secondary`, `mb-8`)
-- `CatalogOptIn` component — populated with GlowStudio demo data from session state (appName, website, coreMessages). Read-only.
+**Layout:** Centered in WizardLayout's `max-w-[540px]` container. All content centered (`text-center`).
+- Heading: "Your opt-in form" (`text-lg font-semibold`, centered)
+- Context line: "RelayKit generates and maintains this for you. Your AI tool builds it into your app." (`text-sm text-text-secondary`, centered, `mb-8`)
+- `CatalogOptIn` component — populated from session state (appName, website, coreMessages). Read-only.
 - "Continue" button below opt-in form (`mt-8`). Same primary purple treatment as other wizard advances.
 - Continue target: placeholder — signup page not built yet. Currently links back to messages.
 - Stub note: "Signup page coming soon" in `text-xs text-text-quaternary` below Continue.
@@ -624,7 +644,7 @@ prototype/
 │   ├── apps/
 │   │   ├── page.tsx                      # Your Apps (project list)
 │   │   └── [appId]/
-│   │       ├── layout.tsx                # App shell (name, pill, tabs, state switchers, logged-in force)
+│   │       ├── layout.tsx                # App shell — state-based layout switching (wizard vs dashboard)
 │   │       ├── page.tsx                  # Redirects to /messages
 │   │       ├── overview/
 │   │       │   ├── page.tsx              # Sandbox dashboard (compliance card + build steps + sidebar)
@@ -649,6 +669,9 @@ prototype/
 │   └── c/[categoryId]/                   # ORPHANED — legacy catalog routes, safe to delete
 ├── components/
 │   ├── top-nav.tsx                       # Context-aware nav (D-118)
+│   ├── wizard-layout.tsx                 # Wizard layout wrapper (Default state)
+│   ├── dashboard-layout.tsx              # Dashboard layout wrapper (non-Default states)
+│   ├── proto-nav-helper.tsx              # Floating nav helper for design review (prototype only)
 │   ├── footer.tsx                        # Shared footer (D-121)
 │   ├── category-modal.tsx                # Category picker
 │   ├── catalog/                          # Message cards, opt-in form, registration-scope.tsx
