@@ -8,6 +8,8 @@ import {
   interpolateTemplate,
   getMessageNature,
   getTooltipText,
+  extractVariables,
+  getExampleValues,
 } from "@/lib/catalog-helpers";
 
 /* ── Inline variable styling ── */
@@ -60,22 +62,77 @@ type PillId = "standard" | "action-first" | "context-first" | "custom";
 
 interface ComplianceResult {
   isCompliant: boolean;
-  issue: string | null;
-  fixedText: string | null;
+  issues: string[];
 }
 
-function checkCompliance(text: string, message: Message): ComplianceResult {
+// Group variable keys into human labels for the "Needs X" hint.
+// Production compliance will be server-side; this is a client-side stub
+// (substring match against interpolated demo values).
+const VARIABLE_LABELS: Record<string, string> = {
+  app_name: "business name",
+  business_name: "business name",
+  date: "appointment details",
+  time: "appointment details",
+  service_type: "appointment details",
+  website_url: "website link",
+  customer_name: "customer name",
+  code: "verification code",
+  order_id: "order details",
+  tracking_url: "order details",
+  ticket_id: "ticket details",
+  eta: "delivery details",
+  contact_phone: "contact info",
+  address: "address",
+  product_type: "order details",
+  wait_time: "wait time",
+  party_size: "party size",
+  venue_type: "venue",
+  location: "location",
+  announcement_text: "announcement",
+  sponsor_name: "sponsor",
+  task_description: "task",
+  alert_text: "alert",
+  community_name: "community name",
+};
+
+function getVarLabel(key: string): string {
+  return VARIABLE_LABELS[key] || key.replace(/_/g, " ");
+}
+
+function checkCompliance(
+  text: string,
+  message: Message,
+  categoryId: string,
+  state: SessionState
+): ComplianceResult {
+  const issues: string[] = [];
+
+  // Opt-out language
   const hasOptOut = /stop|opt.?out|unsubscribe/i.test(text);
   if (message.requiresStop && !hasOptOut) {
-    const fixed = text.trimEnd().replace(/\.?$/, ". Reply STOP to opt out.");
-    return { isCompliant: false, issue: "Missing opt-out language", fixedText: fixed };
+    issues.push("Needs opt-out language");
   }
-  const hasBusinessName = /\{app_name\}|GlowStudio|glowstudio/i.test(text);
-  if (!hasBusinessName && text.length > 20) {
-    const fixed = `GlowStudio: ${text}`;
-    return { isCompliant: false, issue: "Missing business name", fixedText: fixed };
+
+  // Required interpolation variables — each original {var} must still appear
+  // in the edited text (substring match against interpolated demo value).
+  const vars = extractVariables(message.template);
+  const valueMap = getExampleValues(categoryId);
+  const missingLabels = new Set<string>();
+  const lowered = text.toLowerCase();
+  for (const v of vars) {
+    const example = valueMap.get(v);
+    if (!example) continue;
+    const value = example.preview(state);
+    if (!value) continue;
+    if (!lowered.includes(value.toLowerCase())) {
+      missingLabels.add(getVarLabel(v));
+    }
   }
-  return { isCompliant: true, issue: null, fixedText: null };
+  for (const label of missingLabels) {
+    issues.push(`Needs ${label}`);
+  }
+
+  return { isCompliant: issues.length === 0, issues };
 }
 
 /* ── CatalogCard component ── */
@@ -119,7 +176,7 @@ export function CatalogCard({
   const [aiInput, setAiInput] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isFixLoading, setIsFixLoading] = useState(false);
-  const [compliance, setCompliance] = useState<ComplianceResult>({ isCompliant: true, issue: null, fixedText: null });
+  const [compliance, setCompliance] = useState<ComplianceResult>({ isCompliant: true, issues: [] });
   const [showComplianceHint, setShowComplianceHint] = useState(false);
   const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -142,11 +199,11 @@ export function CatalogCard({
   const checkComplianceDebounced = useCallback((text: string) => {
     if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
     complianceTimerRef.current = setTimeout(() => {
-      const result = checkCompliance(text, message);
+      const result = checkCompliance(text, message, categoryId, state);
       setCompliance(result);
       setShowComplianceHint(!result.isCompliant);
     }, 2000);
-  }, [message]);
+  }, [message, categoryId, state]);
 
   useEffect(() => {
     return () => {
@@ -182,7 +239,7 @@ export function CatalogCard({
     setAiInput("");
     setIsAiLoading(false);
     setIsFixLoading(false);
-    setCompliance({ isCompliant: true, issue: null, fixedText: null });
+    setCompliance({ isCompliant: true, issues: [] });
     setShowComplianceHint(false);
   }
 
@@ -235,7 +292,7 @@ export function CatalogCard({
     setTimeout(() => {
       setEditText(restored);
       setActivePillId(lastCannedPillId);
-      setCompliance({ isCompliant: true, issue: null, fixedText: null });
+      setCompliance({ isCompliant: true, issues: [] });
       setShowComplianceHint(false);
       setIsFixLoading(false);
     }, 1500);
@@ -257,7 +314,7 @@ export function CatalogCard({
   }
 
   function handleCancel() {
-    setCompliance({ isCompliant: true, issue: null, fixedText: null });
+    setCompliance({ isCompliant: true, issues: [] });
     setShowComplianceHint(false);
     exitEdit();
   }
@@ -267,7 +324,7 @@ export function CatalogCard({
       if (customTextBuffer !== null) {
         setEditText(customTextBuffer);
         setActivePillId("custom");
-        setCompliance({ isCompliant: true, issue: null, fixedText: null });
+        setCompliance({ isCompliant: true, issues: [] });
         setShowComplianceHint(false);
       }
       return;
@@ -281,7 +338,7 @@ export function CatalogCard({
       setEditText(getInterpolatedText(template));
       setActivePillId(id);
       setLastCannedPillId(id);
-      setCompliance({ isCompliant: true, issue: null, fixedText: null });
+      setCompliance({ isCompliant: true, issues: [] });
       setShowComplianceHint(false);
     }
   }
@@ -386,12 +443,16 @@ export function CatalogCard({
               rows={3}
             />
 
-            {/* Compliance hint + Fix — right-aligned, 16px gap */}
-            {showFix && compliance.issue && (
-              <div className="mt-1.5 flex items-center justify-end gap-4">
-                <p className="text-xs text-[#F97066]">
-                  {compliance.issue}
-                </p>
+            {/* Compliance hints + Restore — right-aligned, 16px gap */}
+            {showFix && compliance.issues.length > 0 && (
+              <div className="mt-1.5 flex items-start justify-end gap-4">
+                <div className="flex flex-col items-end gap-0.5">
+                  {compliance.issues.map((issue, i) => (
+                    <p key={i} className="text-xs text-[#F97066]">
+                      {issue}
+                    </p>
+                  ))}
+                </div>
                 <button
                   type="button"
                   onClick={handleRestore}
