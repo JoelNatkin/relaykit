@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: April 5, 2026
+### Last updated: April 6, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -230,9 +230,10 @@ The `ProtoNavHelper` (bottom-left "Nav ↑" pill) is mounted globally and also i
 
 Minimal, focused layout for the pre-signup wizard flow.
 
-**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + Sign out (right). No "Your Apps" link, no Use Cases/Compliance links. TopNav detects the wizard context via pathname + registrationState — regex matches `/apps/[appId]/(messages|ready|signup)$`.
-**Back / Continue row:** Full-width row below the nav bar aligned with nav edges (`px-6`, no max-width). Back (`ArrowLeft` icon + "Back") on the left, Continue button on the right. Page config in `getPageConfig()` drives both: messages has `/start/context` Back + `/ready` Continue + `continueLabel: "Start building"` + dualContinue=true; ready has `/messages` Back + no header Continue (the page owns its own "Create account" CTA); signup has `/ready` Back + no static continueHref (the page registers a custom Continue via `WizardContinueContext`).
-**Continue button customization:** Pages can override the header Continue button by consuming `WizardContinueContext` from `wizard-layout.tsx` and registering `{ onClick, disabled }`. Signup uses this to set `registrationState="pending"` and navigate to `/overview` in a single click handler while staying disabled until OTP is verified. WizardLayout renders: override button > static continueHref Link > nothing.
+**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + onboarding nav dropdown (right). No "Your Apps" link, no Use Cases/Compliance links, no Sign out. TopNav detects the wizard context via pathname + registrationState — regex matches `/apps/[appId]/(messages|ready|signup(\/verify)?|get-started)$`. Sign out is hidden on all wizard-state pages.
+**Onboarding nav dropdown:** Native `<select>` (`text-xs text-text-quaternary`) to the right of the state switcher. Label "Onboarding" (disabled default option). 11 numbered options covering the full wizard flow from vertical picker through get-started. Resets to label after navigation. Also appears on `/start/*` routes (right side of wordmark-only nav). Only visible when `registrationState === "default"`.
+**Back / Continue row:** Full-width row below the nav bar aligned with nav edges (`px-6`, no max-width). Back (`ArrowLeft` icon + "Back") on the left, Continue button on the right. Hidden entirely when both `backHref` and `continueButton` are absent (signup pages). Page config in `getPageConfig()` drives both: messages has `/start/context` Back + `/ready` Continue + `continueLabel: "Start building"` + dualContinue=true; ready has `/messages` Back + no header Continue (the page owns its own "Create account" CTA); signup paths return `backHref: null, continueHref: null` (pages manage their own inline Back links).
+**Continue button customization:** Pages can override the header Continue button by consuming `WizardContinueContext` from `wizard-layout.tsx` and registering `{ onClick, disabled }`. WizardLayout renders: override button > static continueHref Link > nothing.
 **Centered content:** `max-w-[540px] mx-auto` container.
 **Bottom Continue:** When `dualContinue` is true (messages only, D-318), WizardLayout renders a second full-width Continue spanning the 540px content column below the content. Uses the same `continueLabel` as the header Continue.
 **Not shown in wizard layout:** app name (h1), tabs, status indicator dot.
@@ -253,8 +254,9 @@ Five states: Default, Pending, Approved, Extended Review, Rejected. `text-xs tex
 
 #### Route Redirects
 - **`/opt-in`:** Always redirects to `/messages` regardless of state. The opt-in step was removed from the wizard flow (D-317 tabled).
-- **Default (wizard):** `/overview` and `/settings` redirect to `/messages`. Valid wizard pages under `/apps/[appId]/`: `/messages`, `/ready`, `/signup`.
-- **Non-default (dashboard):** `/signup` and `/ready` redirect to `/overview` (they are wizard-only). `/overview`, `/messages`, `/settings` are valid.
+- **Default (wizard):** `/overview` and `/settings` redirect to `/messages`. Valid wizard pages under `/apps/[appId]/`: `/messages`, `/ready`, `/signup`, `/signup/verify`.
+- **Non-default (dashboard):** `/signup`, `/signup/verify`, and `/ready` redirect to `/overview` (they are wizard-only). `/overview`, `/messages`, `/settings` are valid.
+- **`/get-started`:** Excluded from both WizardLayout and redirect logic — renders standalone (no layout wrapper). Valid in Default state. The page itself handles the state transition to Pending (D-322).
 - **Register flow:** No wrapper — content renders in bare `max-w-5xl` container.
 
 #### Prototype Navigation Helper
@@ -436,28 +438,67 @@ Conversion moment. Sits between the messages workspace ("Start building" button)
 - Heading: "Skip the hard part" (`text-2xl font-bold text-text-primary`)
 - Body: "Create a free account and start building." (`text-sm text-text-tertiary`)
 - **Benefit list** (`ul` with `space-y-7`, `mt-10`): Five `CheckCircle` icons (success-green, `size-5`) + paragraph with bold lead sentence (`font-semibold text-text-primary`) followed by tertiary detail (`font-normal text-text-tertiary`):
-  1. One prompt gets you started. — Your business details, your messages, ready to paste into your AI tool.
-  2. Test with real people, real phones. — Send to up to 5 people — your team, your co-founder, a client you want to impress.
-  3. An expert in your corner. — A full AI assistant that knows your business, your messages, and how SMS works.
-  4. Change a message here, your app updates automatically. — Edit copy on the website. No code changes, no redeployment.
-  5. You never think about compliance. — Opt-in forms, carrier rules, message formatting — all handled.
-- **Pricing block** (`mt-12`): "Free while you build and test." (`text-lg font-semibold text-text-primary`) followed by "When you're ready for real delivery: **$49** registration + **$19/mo**." (`text-base text-text-tertiary`, dollar amounts emphasized `font-semibold text-text-primary`). See D-320.
+  1. One prompt gets you started. — Paste it into your AI tool and it builds your SMS feature — tailored to your app, your customers, your messages.
+  2. Test with real people, real phones. — Send messages to up to 5 people — your team, your co-founder, a client you're trying to impress.
+  3. An expert in your corner. — Not a chatbot — a full AI assistant that knows your business, your messages, and how SMS works. It helps you troubleshoot and get your app just right.
+  4. Change a message here, your app updates automatically. — No code changes, no prompts. Your app picks up the new version on the next send.
+  5. You never think about compliance. — Opt-in forms, opt-out handling, message formatting — things that sink SMS features at other companies. We handle all of it.
+- **Pricing block** (`mt-12`):
+  - Line 1: "Free while you build and test." (`text-lg font-semibold text-text-primary`)
+  - Line 2: "When you're ready for real delivery: **$49** registration + **$19/mo**." (`text-base text-text-tertiary`, dollar amounts `font-semibold text-text-primary`). See D-320.
+  - Line 3: "500 messages included. Additional messages **$8** per 500." (`text-sm text-text-tertiary`, dollar amount `font-semibold text-text-primary`). See D-321.
 - **CTA** (`mt-10`): Full-width purple button "Create account" → `/apps/[appId]/signup`.
 
-### Signup — `/apps/[appId]/signup`
+### Signup — Email Entry — `/apps/[appId]/signup` (D-323)
 **File:** `prototype/app/apps/[appId]/signup/page.tsx`
-**Status:** Stable — final wizard step (D-316)
+**Status:** Stable — email collection step
 
-Email + OTP account creation. Only valid in Default (wizard) state; non-wizard states redirect to `/overview`.
+First of two signup pages. Only valid in Default (wizard) state; non-wizard states redirect to `/overview`.
 
-**Layout:** Inside WizardLayout 540px column. Config: Back → `/ready`, no static continueHref. The page registers a custom Continue handler via `WizardContinueContext` — header Continue stays disabled until OTP verified, on click: `setRegistrationState("pending")` + `router.push("/apps/[appId]/overview")`.
+**Layout:** Inside WizardLayout but with no header Back or Continue (WizardLayout config returns `backHref: null, continueHref: null`). The header row is hidden entirely. Content column narrowed to 400px (`mx-auto max-w-[400px]` inside WizardLayout's 540px column).
 
+- Inline `← Back` link above heading (same pattern as `/start/*` pages) → `/apps/[appId]/ready`
 - Heading: "Create your account" (`text-2xl font-bold`)
-- Body: "Free while you build. $49 + $19/mo when you're ready for real delivery." (`text-sm text-text-tertiary`) — pricing per D-320.
-- **Three states** (`SignupStep` union):
-  - `email` + `sending`: Email input (`type="email"`, `autoFocus`, placeholder `you@company.com`) + right-aligned compact purple "Send code" button (disabled until valid email). Click → `sending` (1.5s stub, button shows "Sending…", input disabled) → `code`.
-  - `code`: "We sent a code to {email}" + 6 OTP digit boxes (`w-11 h-12 rounded-xl border`, auto-advance, paste support, backspace navigation). Auto-submits on 6th digit. "Use a different email" link returns to email step. Prototype hint: "(Prototype: any 6 digits will work)".
-  - `done`: Green checkmark + "Email verified · {email}" in subtle `bg-bg-secondary` card + "Change" link (resets to email step). Below: unchecked "Send me product updates" checkbox (optional, local state only).
+- Body: "We'll send you a code to verify your email and sign in." (`text-sm text-text-tertiary`)
+- Email input (`type="email"`, `autoFocus`, placeholder `you@company.com`)
+- Full-width purple "Send code" button (same styling as Continue buttons on other wizard pages). Disabled until valid email.
+- On click: shows "Sending…" disabled state for 1.5s, stores email in sessionStorage (`relaykit_signup_email`), navigates to `/apps/[appId]/signup/verify`.
+
+### Signup — Email Verification — `/apps/[appId]/signup/verify` (D-323)
+**File:** `prototype/app/apps/[appId]/signup/verify/page.tsx`
+**Status:** Stable — OTP verification step
+
+Second signup page. Only valid in Default (wizard) state; non-wizard states redirect to `/overview`.
+
+**Layout:** Same as email entry — no WizardLayout header Back/Continue. Content column 400px.
+
+- Inline `← Back` link above heading → `/apps/[appId]/signup`
+- Heading: "Check your email" (`text-2xl font-bold`)
+- Body: "We sent a code to {email}" (`text-sm text-text-tertiary`, email from sessionStorage in `font-medium text-text-secondary`)
+- 6 OTP digit boxes (`w-12 h-14 rounded-xl border`, centered with `justify-center gap-4`). Auto-advance on input, paste support, backspace navigation. Auto-submits on 6th digit.
+- Full-width purple "Confirm" button (always enabled, no disabled styling).
+- "Resend code" link below button (centered, `text-sm text-text-tertiary`).
+- On success (any 6 digits in prototype): navigates to `/apps/[appId]/get-started`. Does NOT change registrationState — stays Default (D-322).
+
+### Get Started — `/apps/[appId]/get-started` (D-322)
+**File:** `prototype/app/apps/[appId]/get-started/page.tsx`
+**Status:** Stable — final onboarding screen, state transition boundary
+
+The last screen before the dashboard. Developer has verified their email and lands here. This is the state transition boundary: everything before is onboarding (Default), clicking out transitions to Pending.
+
+**Layout:** Standalone — no WizardLayout, no DashboardLayout. AppLayout renders `<>{children}</>` for this path. Content column 500px (`mx-auto max-w-[500px] px-6 py-12 pb-16`). Top nav shows wordmark + Appointments pill + onboarding dropdown, no Sign out.
+
+- Heading: "Start building" (`text-2xl font-bold`)
+- Body: "Everything your AI tool needs to build your SMS feature." (`text-sm text-text-tertiary`)
+- **Tool logo farm** (`mt-6 mb-2`): 6 centered logos (40px circles, `border border-[#c4c4c4] bg-white p-1`) with `gap-3`: Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other (Code02 icon fallback). Same SVG assets as home page hero at smaller scale.
+- **Three numbered cards** (`space-y-4`): Each has rounded-xl border with label (top-left) + copy button (top-right, `Copy01` icon → `Check` for 2s) + helper text (`text-xs text-text-quaternary`) + content block (`bg-bg-secondary rounded-lg`):
+  1. "1. Install RelayKit" / "Run this in your project's terminal." / `npm install relaykit`
+  2. "2. Add your API key" / "Paste this prompt into your AI tool to add the key." / `Add this API key to my .env file: RELAYKIT_API_KEY=rk_sandbox_7Kx9mP2vL4qR8nJ5`
+  3. "3. Add SMS to your app" / "Paste this prompt into your AI tool to start building." / hardcoded Club Woman prompt (production will generate from wizard data)
+- **CTA** (`mt-8`): Full-width purple "View on dashboard" button. On click: `setRegistrationState("pending")` + navigate to `/apps/[appId]/overview`.
+- **Footer info** (`mt-4`, centered):
+  - "We also sent this to your email." (`text-xs text-text-quaternary`)
+  - "Need help? **Talk to our AI assistant →**" (`text-xs`, link `font-semibold text-text-brand-primary`). On click: `setRegistrationState("pending")` + navigate to `/apps/[appId]/support`.
 
 ### Opt-in form component
 **File:** `prototype/components/catalog/catalog-opt-in.tsx`
@@ -760,7 +801,12 @@ prototype/
 │   │       │   ├── page.tsx              # Sandbox dashboard (compliance card + build steps + sidebar)
 │   │       │   └── approved-dashboard.tsx # Full 3×2 card grid (Approved state)
 │   │       ├── messages/page.tsx         # Messages workspace — full width, dual Continue in wizard
-│   │       ├── opt-in/page.tsx          # Opt-in form preview — wizard Step 5.5 (D-317)
+│   │       ├── ready/page.tsx           # Ready-to-build confirmation — benefit list + pricing + CTA
+│   │       ├── signup/
+│   │       │   ├── page.tsx             # Signup email entry (400px, inline Back, Send code)
+│   │       │   └── verify/page.tsx      # Signup OTP verification (400px, 6-digit boxes, Confirm)
+│   │       ├── get-started/page.tsx     # Final onboarding — install/env/prompt cards, state transition (D-322)
+│   │       ├── opt-in/page.tsx          # Opt-in form preview — returns null, redirects to /messages
 │   │       ├── register/
 │   │       │   ├── page.tsx              # Registration form (BusinessDetailsForm)
 │   │       │   └── review/page.tsx       # Review & confirm (ReviewConfirm)

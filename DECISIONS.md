@@ -1102,3 +1102,11 @@ _Affects: Signup step, pricing reveal copy, settings billing section, overview r
 **D-321 — Overage pricing: $8 per 500 additional messages** (Date: 2026-04-05)
 Overage billing is $8 per 500 additional messages beyond the 500 included in the $19/mo base subscription. Replaces the previous $15/1000 structure. Lower increment matches vibe coder usage patterns and reduces perceived waste. Effective rate ~$16/1000, nearly identical to previous pricing.
 _Affects: Ready page pricing block, signup pricing reveal, settings billing section, marketing/pricing pages._
+
+**D-322 — Get-started page is the state transition boundary** (Date: 2026-04-06)
+The get-started page (`/apps/[appId]/get-started`) is the last onboarding screen. Everything before it (wizard, signup, verify) runs in Default state. The state transition to Pending happens only when the developer clicks "View on dashboard" or "Talk to our AI assistant" — not on OTP verification. This makes the get-started page a standalone screen (no WizardLayout, no DashboardLayout) that lives in Default state but is not a wizard page.
+_Affects: AppLayout routing, session state management, get-started page, signup/verify navigation._
+
+**D-323 — Signup split into email entry + OTP verification** (Date: 2026-04-06)
+Signup is two separate pages: `/apps/[appId]/signup` (email entry + "Send code" CTA) and `/apps/[appId]/signup/verify` (OTP input + "Confirm" CTA). Both pages manage their own inline Back links (no WizardLayout header Back/Continue). 400px max-width content column on both. Email stored in sessionStorage (`relaykit_signup_email`) for cross-page persistence.
+_Affects: Signup flow, WizardLayout config, AppLayout routing, TopNav wizard regex._
