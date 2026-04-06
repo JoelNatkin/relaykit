@@ -1098,3 +1098,7 @@ _Affects: Message card edit state, compliance check behavior, future server-side
 **D-320 — Registration pricing: $49 flat fee** (Date: 2026-04-05)
 Registration fee is $49, paid at submission. Single payment, no split, no go-live fee. Monthly subscription $19/mo unchanged. Per-message pricing unchanged. Volume play — lower barrier drives larger base. Supersedes D-314 ($99 flat fee) and the original D-193/D-216 ($49 submission + $150 go-live split).
 _Affects: Signup step, pricing reveal copy, settings billing section, overview registration card, register/review page, marketing/pricing pages._
+
+**D-321 — Overage pricing: $8 per 500 additional messages** (Date: 2026-04-05)
+Overage billing is $8 per 500 additional messages beyond the 500 included in the $19/mo base subscription. Replaces the previous $15/1000 structure. Lower increment matches vibe coder usage patterns and reduces perceived waste. Effective rate ~$16/1000, nearly identical to previous pricing.
+_Affects: Ready page pricing block, signup pricing reveal, settings billing section, marketing/pricing pages._

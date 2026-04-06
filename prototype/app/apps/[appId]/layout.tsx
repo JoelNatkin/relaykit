@@ -15,11 +15,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   const isWizard = state.registrationState === "default";
   const isOptIn = pathname.endsWith("/opt-in");
-  const isSignup = pathname.endsWith("/signup");
+  const isSignup = pathname.includes("/signup");
   const isReady = pathname.endsWith("/ready");
   const isOverview = pathname.endsWith("/overview");
   const isSettings = pathname.endsWith("/settings");
   const isRegisterFlow = pathname.includes("/register");
+  const isGetStarted = pathname.endsWith("/get-started");
 
   // App pages are always logged-in
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Route redirects based on state
   useEffect(() => {
-    if (isRegisterFlow) return; // Don't redirect register pages
+    if (isRegisterFlow || isGetStarted) return; // Don't redirect register or get-started pages
 
     // Opt-in was removed from the wizard flow — always redirect to messages
     if (isOptIn) {
@@ -47,7 +48,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         router.replace(`/apps/${appId}/overview`);
       }
     }
-  }, [isWizard, isOverview, isSettings, isOptIn, isSignup, isReady, isRegisterFlow, appId, router]);
+  }, [isWizard, isOverview, isSettings, isOptIn, isSignup, isReady, isGetStarted, isRegisterFlow, appId, router]);
 
   // Handle state switcher changes — redirect if current page is invalid for new state
   function handleStateChange(newState: RegistrationState) {
@@ -61,6 +62,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         router.replace(`/apps/${appId}/messages`);
       }
     }
+  }
+
+  // Standalone pages render without either wrapper
+  if (isGetStarted) {
+    return <>{children}</>;
   }
 
   // Register flow pages render without either wrapper

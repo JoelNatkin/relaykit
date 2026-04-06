@@ -12,25 +12,28 @@ interface Benefit {
 const BENEFITS: Benefit[] = [
   {
     lead: "One prompt gets you started.",
-    detail: "Your business details, your messages, ready to paste into your AI tool.",
+    detail:
+      "Paste it into your AI tool and it builds your SMS feature — tailored to your app, your customers, your messages.",
   },
   {
     lead: "Test with real people, real phones.",
     detail:
-      "Send to up to 5 people — your team, your co-founder, a client you want to impress.",
+      "Send messages to up to 5 people — your team, your co-founder, a client you're trying to impress.",
   },
   {
     lead: "An expert in your corner.",
     detail:
-      "A full AI assistant that knows your business, your messages, and how SMS works.",
+      "Not a chatbot — a full AI assistant that knows your business, your messages, and how SMS works. It helps you troubleshoot and get your app just right.",
   },
   {
     lead: "Change a message here, your app updates automatically.",
-    detail: "Edit copy on the website. No code changes, no redeployment.",
+    detail:
+      "No code changes, no prompts. Your app picks up the new version on the next send.",
   },
   {
     lead: "You never think about compliance.",
-    detail: "Opt-in forms, carrier rules, message formatting — all handled.",
+    detail:
+      "Opt-in forms, opt-out handling, message formatting — things that sink SMS features at other companies. We handle all of it.",
   },
 ];
 
@@ -70,6 +73,11 @@ export default function ReadyPage() {
           {" registration + "}
           <span className="font-semibold text-text-primary">$19/mo</span>
           .
+        </p>
+        <p className="mt-1 text-sm text-text-tertiary">
+          500 messages included. Additional messages{" "}
+          <span className="font-semibold text-text-primary">$8</span>
+          {" per 500."}
         </p>
       </div>
 

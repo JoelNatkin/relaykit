@@ -34,7 +34,7 @@ export function TopNav() {
   }, [useCasesOpen]);
 
   // Wizard context: on sandbox app messages / ready / signup pages, Default state
-  const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/(messages|ready|signup)$/.test(pathname);
+  const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/(messages|ready|signup(\/verify)?|get-started)$/.test(pathname);
   const isWizardNav = isAppRoute && state.registrationState === "default";
 
   // Wizard (Step 1+): wordmark only, no other nav items
@@ -53,9 +53,35 @@ export function TopNav() {
     setVerticalPill(VERTICAL_LABELS[data.vertical] || null);
   }, [isStartStepRoute, pathname]);
 
+  const onboardingDropdown = (
+    <select
+      value=""
+      onChange={(e) => {
+        if (e.target.value) {
+          router.push(e.target.value);
+          e.target.value = "";
+        }
+      }}
+      className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
+    >
+      <option value="" disabled>Onboarding</option>
+      <option value="/start">1. Vertical picker</option>
+      <option value="/start/business">2. Business name</option>
+      <option value="/start/details">3. Service details</option>
+      <option value="/start/website">4. Website</option>
+      <option value="/start/context">5. Notes</option>
+      <option value="/start/verify">6. Phone verify</option>
+      <option value="/apps/glowstudio/messages">7. Messages</option>
+      <option value="/apps/glowstudio/ready">8. Ready</option>
+      <option value="/apps/glowstudio/signup">9. Signup</option>
+      <option value="/apps/glowstudio/signup/verify">10. Email verify</option>
+      <option value="/apps/glowstudio/get-started">11. Get started</option>
+    </select>
+  );
+
   if (isStartRoute) {
     return (
-      <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center border-b border-border-secondary bg-bg-primary px-6">
+      <nav className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-border-secondary bg-bg-primary px-6">
         <div className="flex items-center gap-4">
           <Link href="/" className="text-lg font-bold text-text-primary">
             RelayKit
@@ -65,6 +91,9 @@ export function TopNav() {
               {verticalPill}
             </span>
           )}
+        </div>
+        <div className="flex items-center gap-4">
+          {onboardingDropdown}
         </div>
       </nav>
     );
@@ -155,20 +184,23 @@ export function TopNav() {
         {/* Right: state switcher (wizard only) + auth */}
         <div className="flex items-center gap-4">
           {isWizardNav && (
-            <select
-              value={state.registrationState}
-              onChange={(e) => setRegistrationState(e.target.value as RegistrationState)}
-              className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
-            >
-              <option value="default">Default</option>
-              <option value="pending">Pending</option>
-              <option value="approved">Approved</option>
-              <option value="changes_requested">Extended Review</option>
-              <option value="rejected">Rejected</option>
-            </select>
+            <>
+              <select
+                value={state.registrationState}
+                onChange={(e) => setRegistrationState(e.target.value as RegistrationState)}
+                className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
+              >
+                <option value="default">Default</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="changes_requested">Extended Review</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              {state.registrationState === "default" && onboardingDropdown}
+            </>
           )}
 
-          {isLoggedIn ? (
+          {isLoggedIn && !isWizardNav ? (
             <button
               type="button"
               onClick={handleSignOut}
@@ -176,7 +208,7 @@ export function TopNav() {
             >
               Sign out
             </button>
-          ) : (
+          ) : !isLoggedIn ? (
             <button
               type="button"
               onClick={() => setShowSignIn(true)}
@@ -184,7 +216,7 @@ export function TopNav() {
             >
               Sign in
             </button>
-          )}
+          ) : null}
         </div>
       </nav>
 

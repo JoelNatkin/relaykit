@@ -25,12 +25,11 @@ export const WizardContinueContext = createContext<
 >(() => {});
 
 function getPageConfig(pathname: string, appId: string): WizardPageConfig {
-  if (pathname.endsWith("/signup")) {
-    // Signup: Back to the ready confirmation, single header Continue
-    // (no dual). The page registers its Continue handler via
-    // WizardContinueContext.
+  if (pathname.includes("/signup")) {
+    // Signup pages manage their own inline Back link and action buttons.
+    // No header Back or Continue from WizardLayout.
     return {
-      backHref: `/apps/${appId}/ready`,
+      backHref: null,
       continueHref: null,
       dualContinue: false,
     };
@@ -93,29 +92,26 @@ export function WizardLayout({ children }: { children: React.ReactNode }) {
   return (
     <WizardContinueContext.Provider value={setContinueOverride}>
       <div>
-        {/* Full-width Back / Continue row — aligned with nav bar edges */}
-        <div className="px-6 pt-6 flex items-center justify-between">
-          {backHref ? (
-            <Link
-              href={backHref}
-              className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
-            >
-              <ArrowLeft className="size-4" />
-              Back
-            </Link>
-          ) : (
-            <button
-              type="button"
-              disabled
-              className="inline-flex items-center gap-1.5 text-sm text-text-quaternary cursor-not-allowed"
-            >
-              <ArrowLeft className="size-4" />
-              Back
-            </button>
-          )}
+        {/* Full-width Back / Continue row — aligned with nav bar edges.
+            Hidden when neither Back nor Continue are present (e.g. signup
+            pages that render their own inline Back link). */}
+        {(backHref || continueButton) && (
+          <div className="px-6 pt-6 flex items-center justify-between">
+            {backHref ? (
+              <Link
+                href={backHref}
+                className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
+              >
+                <ArrowLeft className="size-4" />
+                Back
+              </Link>
+            ) : (
+              <div />
+            )}
 
-          {continueButton}
-        </div>
+            {continueButton}
+          </div>
+        )}
 
         {/* Centered content column */}
         <div className="mx-auto max-w-[540px] px-6 pt-6">
