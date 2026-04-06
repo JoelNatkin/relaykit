@@ -23,7 +23,7 @@ export interface CustomMessage {
 
 export type DashboardVersion = "a" | "b" | "c";
 export type AppState = "pre-download" | "sandbox" | "live";
-export type RegistrationState = "default" | "pending" | "approved" | "changes_requested" | "rejected";
+export type RegistrationState = "onboarding" | "building" | "pending" | "registered" | "changes_requested" | "rejected";
 export interface SessionState {
   // Auth mock
   isLoggedIn: boolean;
@@ -82,7 +82,7 @@ const defaultState: SessionState = {
   isLoggedIn: false,
   dashboardVersion: "b",
   appState: "pre-download",
-  registrationState: "default",
+  registrationState: "onboarding",
   hasEIN: true,
   appName: "",
   website: "",

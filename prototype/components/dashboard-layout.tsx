@@ -23,7 +23,7 @@ interface DashboardLayoutProps {
 
 function StatusIndicator({ registrationState }: { registrationState: RegistrationState }) {
   switch (registrationState) {
-    case "approved":
+    case "registered":
       return (
         <span className="flex items-center gap-1.5 text-sm text-text-secondary">
           <span className="inline-block h-2 w-2 rounded-full bg-[#12B76A]" />
@@ -63,7 +63,7 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const { appId } = useParams<{ appId: string }>();
   const pathname = usePathname();
-  const isApproved = registrationState === "approved";
+  const isRegistered = registrationState === "registered";
   const isOverview = pathname.endsWith("/overview");
   const isRegisterFlow = pathname.includes("/register");
   const [period, setPeriod] = useState("this_month");
@@ -86,10 +86,11 @@ export function DashboardLayout({
             onChange={(e) => onRegistrationStateChange(e.target.value as RegistrationState)}
             className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
           >
-            <option value="default">Default</option>
+            <option value="onboarding">Onboarding</option>
+            <option value="building">Building</option>
             <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
             <option value="changes_requested">Extended Review</option>
+            <option value="registered">Registered</option>
             <option value="rejected">Rejected</option>
           </select>
 
@@ -120,7 +121,7 @@ export function DashboardLayout({
                 </Link>
               );
             })}
-            {isApproved && isOverview && (
+            {isRegistered && isOverview && (
               <select
                 value={period}
                 onChange={(e) => setPeriod(e.target.value)}

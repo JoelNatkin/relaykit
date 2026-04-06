@@ -43,10 +43,10 @@ export default function ReadyPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-text-primary">
-        Skip the hard part
+        SMS that just works
       </h1>
       <p className="mt-2 text-sm text-text-tertiary">
-        Create a free account and start building.
+        Create your account and we&apos;ll generate everything your tool needs to build.
       </p>
 
       {/* Benefits */}

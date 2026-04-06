@@ -147,6 +147,8 @@ export interface CatalogCardProps {
   variants?: VariantSet[];
   onSend?: (messageId: string) => void;
   sendIcon?: React.ReactNode;
+  /** Hide the send button entirely (onboarding view). */
+  hideSend?: boolean;
   /** Controlled edit state. When provided, parent manages which card is editing. */
   isEditing?: boolean;
   onEditRequest?: (messageId: string | null) => void;
@@ -159,6 +161,7 @@ export function CatalogCard({
   variants,
   onSend,
   sendIcon,
+  hideSend,
   isEditing: controlledIsEditing,
   onEditRequest,
 }: CatalogCardProps) {
@@ -585,30 +588,32 @@ export function CatalogCard({
         )}
       </div>
 
-      {/* Send button — centered vertically, tertiary styling */}
-      <div className="flex items-center flex-shrink-0">
-        <div className="relative">
-          <button
-            type="button"
-            onClick={handleSend}
-            onMouseEnter={() => setShowSendTooltip(true)}
-            onMouseLeave={() => setShowSendTooltip(false)}
-            className={`flex items-center justify-center transition duration-100 ease-linear cursor-pointer ${
-              sendIcon
-                ? "text-fg-tertiary hover:text-fg-secondary"
-                : "w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs hover:bg-bg-secondary_hover"
-            }`}
-            aria-label="Send to my phone"
-          >
-            {sendIcon ?? <SendIcon />}
-          </button>
-          {showSendTooltip && (
-            <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-              Send to my phone
-            </div>
-          )}
+      {/* Send button — centered vertically, tertiary styling. Hidden in onboarding. */}
+      {!hideSend && (
+        <div className="flex items-center flex-shrink-0">
+          <div className="relative">
+            <button
+              type="button"
+              onClick={handleSend}
+              onMouseEnter={() => setShowSendTooltip(true)}
+              onMouseLeave={() => setShowSendTooltip(false)}
+              className={`flex items-center justify-center transition duration-100 ease-linear cursor-pointer ${
+                sendIcon
+                  ? "text-fg-tertiary hover:text-fg-secondary"
+                  : "w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs hover:bg-bg-secondary_hover"
+              }`}
+              aria-label="Send to my phone"
+            >
+              {sendIcon ?? <SendIcon />}
+            </button>
+            {showSendTooltip && (
+              <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                Send to my phone
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -46,9 +46,9 @@ function getPageConfig(pathname: string, appId: string): WizardPageConfig {
   // Messages: Back to the final /start intake step, dual Continue (D-318).
   // Continue advances to the ready-to-build confirmation.
   return {
-    backHref: "/start/context",
+    backHref: "/start/verify",
     continueHref: `/apps/${appId}/ready`,
-    continueLabel: "Start building",
+    continueLabel: "Continue",
     dualContinue: true,
   };
 }
@@ -91,30 +91,27 @@ export function WizardLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <WizardContinueContext.Provider value={setContinueOverride}>
-      <div>
-        {/* Full-width Back / Continue row — aligned with nav bar edges.
-            Hidden when neither Back nor Continue are present (e.g. signup
-            pages that render their own inline Back link). */}
-        {(backHref || continueButton) && (
-          <div className="px-6 pt-6 flex items-center justify-between">
-            {backHref ? (
-              <Link
-                href={backHref}
-                className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
-              >
-                <ArrowLeft className="size-4" />
-                Back
-              </Link>
-            ) : (
-              <div />
-            )}
-
+      <div className="relative">
+        {/* Top-right Continue button — absolutely positioned so it
+            doesn't push the content column down. */}
+        {continueButton && (
+          <div className="absolute top-6 right-6">
             {continueButton}
           </div>
         )}
 
         {/* Centered content column */}
         <div className="mx-auto max-w-[540px] px-6 pt-6">
+          {/* Back link — inside content column so it aligns with body text */}
+          {backHref && (
+            <Link
+              href={backHref}
+              className="inline-flex items-center gap-1.5 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear mb-6"
+            >
+              <ArrowLeft className="size-4" />
+              Back
+            </Link>
+          )}
           {children}
         </div>
 

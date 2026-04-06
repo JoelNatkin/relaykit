@@ -13,7 +13,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { state, setRegistrationState, setLoggedIn } = useSession();
 
-  const isWizard = state.registrationState === "default";
+  const isWizard = state.registrationState === "onboarding";
   const isOptIn = pathname.endsWith("/opt-in");
   const isSignup = pathname.includes("/signup");
   const isReady = pathname.endsWith("/ready");
@@ -52,8 +52,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   // Handle state switcher changes — redirect if current page is invalid for new state
   function handleStateChange(newState: RegistrationState) {
-    const wasWizard = state.registrationState === "default";
-    const willBeWizard = newState === "default";
+    const wasWizard = state.registrationState === "onboarding";
+    const willBeWizard = newState === "onboarding";
     setRegistrationState(newState);
 
     if (willBeWizard && !wasWizard) {

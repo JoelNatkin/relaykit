@@ -74,7 +74,7 @@ export default function GetStartedPage() {
   const { setRegistrationState } = useSession();
 
   function handleTransition(path: string) {
-    setRegistrationState("pending");
+    setRegistrationState("building");
     router.push(path);
   }
 
@@ -88,7 +88,7 @@ export default function GetStartedPage() {
       </p>
 
       {/* Tool logos */}
-      <div className="mt-6 mb-2 flex items-center justify-center gap-3">
+      <div className="mt-4 mb-5 flex items-center gap-3">
         {AI_TOOLS.map((tool) => (
           <div
             key={tool.id}

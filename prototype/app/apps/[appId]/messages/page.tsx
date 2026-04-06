@@ -5,6 +5,7 @@ import { Phone01 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
+import { loadWizardData } from "@/lib/wizard-storage";
 
 /* ── localStorage personalization ── */
 
@@ -39,8 +40,8 @@ const REGISTERED_VALUES: PersonalizeData = {
 export default function AppMessagesPage() {
   const { state, setField } = useSession();
 
-  const isWizard = state.registrationState === "default";
-  const isApproved = state.registrationState === "approved";
+  const isWizard = state.registrationState === "onboarding";
+  const isApproved = state.registrationState === "registered";
   const categoryId = state.selectedCategory || "appointments";
   const allMessages = MESSAGES[categoryId] || [];
   const variants = CATEGORY_VARIANTS[categoryId];
@@ -63,6 +64,14 @@ export default function AppMessagesPage() {
 
   const coreMessages = allMessages.filter((m) => m.tier !== "expansion");
 
+  // Check if EIN was provided in wizard flow
+  const [hasEin, setHasEin] = useState(false);
+  const [showMarketingTooltip, setShowMarketingTooltip] = useState(false);
+  useEffect(() => {
+    const data = loadWizardData();
+    setHasEin(!!data.ein);
+  }, []);
+
   // Single-card editing: clicking a new card's pencil closes any open edit.
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
 
@@ -77,14 +86,39 @@ export default function AppMessagesPage() {
     <div>
       {/* Heading — left-aligned in centered container */}
       <div className={isWizard ? "mb-2" : "mb-6"}>
-        <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
+        {isWizard ? (
+          <h1 className="text-2xl font-bold text-text-primary">
+            Here{"\u2019"}s what your app will send
+          </h1>
+        ) : (
+          <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
+        )}
       </div>
 
       {/* Wizard body text */}
       {isWizard && (
-        <p className="mb-8 text-sm text-text-tertiary">
-          These are your messages — ready to use. Edit any message to match your voice.
-        </p>
+        <div className="mb-8">
+          <p className="text-sm text-text-tertiary">
+            Each message is tailored to your business. Edit messages any time. Your app always sends the latest version.
+          </p>
+          <div className="relative mt-2 inline-block">
+            <button
+              type="button"
+              onClick={() => setShowMarketingTooltip((v) => !v)}
+              onBlur={() => setShowMarketingTooltip(false)}
+              className="text-sm text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+            >
+              What about marketing messages?
+            </button>
+            {showMarketingTooltip && (
+              <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[260px] max-w-[320px] whitespace-normal leading-relaxed">
+                {hasEin
+                  ? "You\u2019re all set to add marketing messages after you create your account. We\u2019ll walk you through it."
+                  : "Marketing messages require a business tax ID (EIN). You can add one anytime in settings to unlock them."}
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Message cards */}
@@ -98,7 +132,8 @@ export default function AppMessagesPage() {
               state={state}
               variants={variants}
               onSend={handleSend}
-              sendIcon={isWizard ? phoneIcon : undefined}
+              sendIcon={phoneIcon}
+              hideSend={isWizard}
               isEditing={editingMessageId === message.id}
               onEditRequest={setEditingMessageId}
             />

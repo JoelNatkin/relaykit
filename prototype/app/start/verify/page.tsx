@@ -75,7 +75,7 @@ function OtpInput({
   }
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-4">
       {[0, 1, 2, 3, 4, 5].map((i) => (
         <input
           key={i}
@@ -89,7 +89,7 @@ function OtpInput({
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
           onFocus={(e) => e.target.select()}
-          className="w-11 h-12 rounded-xl border border-border-primary bg-bg-primary text-center text-lg font-medium text-text-primary shadow-xs transition duration-100 ease-linear focus:border-border-brand focus:ring-2 focus:ring-border-brand/20 focus:outline-none"
+          className="min-w-0 flex-1 h-14 rounded-xl border border-border-primary bg-bg-primary text-center text-lg font-medium text-text-primary shadow-xs transition duration-100 ease-linear focus:border-border-brand focus:ring-2 focus:ring-border-brand/20 focus:outline-none"
           aria-label={`Digit ${i + 1} of 6`}
         />
       ))}
@@ -105,6 +105,7 @@ export default function VerifyPage() {
   const [step, setStep] = useState<PhoneStep>("input");
   const [phoneDigits, setPhoneDigits] = useState("");
   const [otpCode, setOtpCode] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(0);
 
   // Hydrate from sessionStorage — if a phone was previously verified, start in done state
   useEffect(() => {
@@ -115,6 +116,13 @@ export default function VerifyPage() {
     }
   }, []);
 
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
+
   const formatted = formatPhone(phoneDigits);
   const canContinue = step === "done";
 
@@ -122,12 +130,20 @@ export default function VerifyPage() {
     const d = phoneDigits.replace(/\D/g, "");
     if (d.length !== 10) return;
     setStep("sending");
-    setTimeout(() => setStep("code"), 1500);
+    setTimeout(() => {
+      setStep("code");
+      setResendCooldown(60);
+    }, 1500);
   }
 
   function handleVerifyComplete() {
     setStep("done");
     saveWizardData({ verifiedPhone: phoneDigits });
+  }
+
+  function handleResend() {
+    setOtpCode("");
+    setResendCooldown(60);
   }
 
   function handleUseDifferent() {
@@ -149,6 +165,26 @@ export default function VerifyPage() {
       backHref="/start/context"
       continueHref="/apps/glowstudio/messages"
       canContinue={canContinue}
+      maxWidth="400px"
+      afterContinue={
+        step === "code" ? (
+          <div className="mt-4 text-center">
+            {resendCooldown > 0 ? (
+              <span className="text-sm text-text-quaternary">
+                Resend code in {resendCooldown}s
+              </span>
+            ) : (
+              <button
+                type="button"
+                onClick={handleResend}
+                className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+              >
+                Resend code
+              </button>
+            )}
+          </div>
+        ) : undefined
+      }
     >
       <h1 className="text-2xl font-bold text-text-primary">
         Verify your phone number
@@ -196,19 +232,16 @@ export default function VerifyPage() {
           <div>
             <p className="text-sm text-text-tertiary mb-4">
               We sent a code to{" "}
-              <span className="font-medium text-text-secondary">+1 {formatted}</span>
+              <span className="font-medium text-text-secondary">+1 {formatted}</span>.{" "}
+              <button
+                type="button"
+                onClick={handleUseDifferent}
+                className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+              >
+                Use a different number
+              </button>
             </p>
             <OtpInput value={otpCode} onChange={setOtpCode} onComplete={handleVerifyComplete} />
-            <button
-              type="button"
-              onClick={handleUseDifferent}
-              className="mt-4 text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
-            >
-              Use a different number
-            </button>
-            <p className="mt-2 text-xs text-text-quaternary">
-              (Prototype: any 6 digits will work)
-            </p>
           </div>
         )}
 

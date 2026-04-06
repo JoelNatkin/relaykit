@@ -13,6 +13,10 @@ interface WizardStepShellProps {
   canContinue: boolean;
   /** Called just before navigation — persist to sessionStorage here. */
   onBeforeContinue?: () => void;
+  /** Optional content rendered below the Continue button (e.g. Skip link). */
+  afterContinue?: ReactNode;
+  /** Override the default 540px max width. */
+  maxWidth?: string;
   children: ReactNode;
 }
 
@@ -21,6 +25,8 @@ export function WizardStepShell({
   continueHref,
   canContinue,
   onBeforeContinue,
+  afterContinue,
+  maxWidth,
   children,
 }: WizardStepShellProps) {
   const router = useRouter();
@@ -32,7 +38,7 @@ export function WizardStepShell({
   }
 
   return (
-    <div className="mx-auto w-full max-w-[540px] px-6 py-12">
+    <div className={`mx-auto w-full px-6 py-12 ${maxWidth ? "" : "max-w-[540px]"}`} style={maxWidth ? { maxWidth } : undefined}>
       {/* Back row */}
       <div className="mb-10 h-5">
         {backHref && (
@@ -59,6 +65,8 @@ export function WizardStepShell({
       >
         Continue
       </button>
+
+      {afterContinue}
     </div>
   );
 }

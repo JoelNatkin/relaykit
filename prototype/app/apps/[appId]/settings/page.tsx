@@ -162,10 +162,10 @@ function StatusDot({ color }: { color: "green" | "amber" | "red" | "grey" }) {
 export default function AppSettings() {
   const { state } = useSession();
   const rs = state.registrationState;
-  const isDefault = rs === "default";
+  const isDefault = rs === "onboarding" || rs === "building";
   const isPending = rs === "pending";
   const isExtendedReview = rs === "changes_requested";
-  const isApproved = rs === "approved";
+  const isApproved = rs === "registered";
   const isRejected = rs === "rejected";
   const hasRegistered = !isDefault; // post-registration = any non-default state
 

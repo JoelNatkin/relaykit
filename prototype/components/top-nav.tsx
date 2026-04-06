@@ -35,7 +35,7 @@ export function TopNav() {
 
   // Wizard context: on sandbox app messages / ready / signup pages, Default state
   const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/(messages|ready|signup(\/verify)?|get-started)$/.test(pathname);
-  const isWizardNav = isAppRoute && state.registrationState === "default";
+  const isWizardNav = isAppRoute && state.registrationState === "onboarding";
 
   // Wizard (Step 1+): wordmark only, no other nav items
   const isPickerRoute = pathname === "/start";
@@ -190,13 +190,14 @@ export function TopNav() {
                 onChange={(e) => setRegistrationState(e.target.value as RegistrationState)}
                 className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
               >
-                <option value="default">Default</option>
+                <option value="onboarding">Onboarding</option>
+                <option value="building">Building</option>
                 <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
                 <option value="changes_requested">Extended Review</option>
+                <option value="registered">Registered</option>
                 <option value="rejected">Rejected</option>
               </select>
-              {state.registrationState === "default" && onboardingDropdown}
+              {state.registrationState === "onboarding" && onboardingDropdown}
             </>
           )}
 

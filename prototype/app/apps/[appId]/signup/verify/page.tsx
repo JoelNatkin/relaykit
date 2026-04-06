@@ -67,7 +67,7 @@ function OtpInput({
   }
 
   return (
-    <div className="flex justify-center gap-4">
+    <div className="flex gap-4">
       {[0, 1, 2, 3, 4, 5].map((i) => (
         <input
           key={i}
@@ -81,7 +81,7 @@ function OtpInput({
           onKeyDown={(e) => handleKeyDown(i, e)}
           onPaste={handlePaste}
           onFocus={(e) => e.target.select()}
-          className="w-12 h-14 rounded-xl border border-border-primary bg-bg-primary text-center text-lg font-medium text-text-primary shadow-xs transition duration-100 ease-linear focus:border-border-brand focus:ring-2 focus:ring-border-brand/20 focus:outline-none"
+          className="min-w-0 flex-1 h-14 rounded-xl border border-border-primary bg-bg-primary text-center text-lg font-medium text-text-primary shadow-xs transition duration-100 ease-linear focus:border-border-brand focus:ring-2 focus:ring-border-brand/20 focus:outline-none"
           aria-label={`Digit ${i + 1} of 6`}
         />
       ))}
@@ -98,10 +98,11 @@ export default function SignupVerifyPage() {
 
   const [email, setEmail] = useState("");
   const [otpCode, setOtpCode] = useState("");
+  const [resendCooldown, setResendCooldown] = useState(60);
 
   // Redirect to overview if not in wizard state
   useEffect(() => {
-    if (state.registrationState !== "default") {
+    if (state.registrationState !== "onboarding") {
       router.replace(`/apps/${appId}/overview`);
     }
   }, [state.registrationState, appId, router]);
@@ -111,6 +112,13 @@ export default function SignupVerifyPage() {
     const stored = sessionStorage.getItem(SIGNUP_EMAIL_KEY);
     if (stored) setEmail(stored);
   }, []);
+
+  // Resend cooldown timer
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [resendCooldown]);
 
   function handleVerifyComplete() {
     router.push(`/apps/${appId}/get-started`);
@@ -124,6 +132,7 @@ export default function SignupVerifyPage() {
 
   function handleResend() {
     setOtpCode("");
+    setResendCooldown(60);
   }
 
   return (
@@ -166,13 +175,19 @@ export default function SignupVerifyPage() {
 
       {/* Resend code link */}
       <div className="mt-4 text-center">
-        <button
-          type="button"
-          onClick={handleResend}
-          className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
-        >
-          Resend code
-        </button>
+        {resendCooldown > 0 ? (
+          <span className="text-sm text-text-quaternary">
+            Resend code in {resendCooldown}s
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={handleResend}
+            className="text-sm text-text-tertiary hover:text-text-secondary hover:underline transition duration-100 ease-linear cursor-pointer"
+          >
+            Resend code
+          </button>
+        )}
       </div>
     </div>
   );
