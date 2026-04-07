@@ -356,10 +356,16 @@ D-320: Registration fee $49 flat. No split, no go-live fee. $19/mo unchanged. Su
 D-321: Overage pricing: $8 per 500 additional messages beyond 500 included in base.
 D-322: Get-started page is the state transition boundary. registrationState flips to Building only on exit.
 D-323: Signup split into email entry + OTP verification (two pages).
-D-324 (pending): Get-started content appears on Overview in Building state. Get-started page remains as transition screen.
-D-325 (pending): Claude AI support slideout on every dashboard page. Wide panel, pre-loaded with developer context.
-D-326 (pending): SDK stays static for launch — all namespaces exposed. Dynamic discovery is backlog.
-D-327 (pending): Generated prompt replaces SMS_GUIDELINES.md for get-started moment.
+D-324: State rename — Default → Onboarding, Approved → Registered.
+D-325: New "Building" state between Onboarding and Pending.
+D-326: Building state Overview layout (Start building left column + registration card right column).
+D-327: Remove "Build your SMS feature" accordion from Overview.
+D-328: Messages page onboarding/dashboard divergence.
+D-329: Ready page copy — "SMS that just works."
+D-330 (pending): SDK stays static for launch — all namespaces exposed. Dynamic discovery is backlog.
+D-331 (pending): Generated prompt replaces SMS_GUIDELINES.md for get-started moment.
+D-332 (pending): Single-page workspace — no tabs, Messages is sole workspace page, Settings is child page.
+D-333 (pending): One transactional + one marketing per project max. No multiple transactional verticals.
 
 
 What This Replaces in the Current Prototype
@@ -403,7 +409,7 @@ Phase 3.6: Messages Page Cleanup ✅ DONE (Session 25)
 Updated messages page copy (Onboarding state): "Here's what your app will send" heading, new body text, Continue CTAs replacing "Start building", removed send icons from onboarding version, added EIN-aware "What about marketing messages?" tooltip. Updated ready page copy: "SMS that just works" heading. Fixed Back button alignment, Skip button placement, phone verify visual consistency.
 Phase 3.7: Single-Page Workspace Build (NEXT)
 Replace the tabbed dashboard with the single Messages-centric workspace. Remove Overview and Messages/Settings tabs. Messages page becomes the sole workspace page. Migrate setup cards, registration CTA, and metrics onto the messages page in their respective lifecycle positions. Settings becomes a child page accessed via icon/link. Evolve message cards into self-contained workspace rows with test status, Send test, Ask Claude, and kebab menu. Overview route redirects to Messages.
-Phase 3.8: Claude AI Support Slideout (D-325)
+Phase 3.8: Claude AI Support Slideout
 Wide panel (500-600px) triggered by persistent button and per-message "Ask Claude". Pushes page content left. Pre-loaded with developer's business context, vertical, configured messages, and lifecycle state. Prototype stubs the chat interface. App Doctor round-trip diagnostic loop designed but not wired to real AI.
 Phase 3.9: Wire Wizard Data Into Messages
 Read sessionStorage business name and service type, interpolate into message card templates. Currently messages show hardcoded demo data.
