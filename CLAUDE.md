@@ -142,10 +142,24 @@ _Affects: [files/areas]._
 
 Never batch decisions to session end. Append the moment Joel confirms a direction.
 
+### What belongs in DECISIONS.md vs PROTOTYPE_SPEC.md
+
+DECISIONS.md is for product decisions — choices between alternatives that affect the product's direction, architecture, pricing, user experience model, or vocabulary. The test: "Would a different team member need to know WHY we went this direction, and would reversing it require rethinking the approach?"
+
+Decision examples: pricing model changes, state naming conventions, single-page vs tabs, SDK delivery model, marketing messages requiring EIN, copy strategy for a key conversion page, new feature concepts, removing a feature, choosing one approach over another.
+
+PROTOTYPE_SPEC.md is for implementation details — how a specific screen currently looks and behaves. The test: "Is this describing the current visual/behavioral state of a screen, or a choice that constrains future work?"
+
+PROTOTYPE_SPEC examples: button position, font size, spacing values, OTP box width, back link href corrections, logo alignment, element ordering on a page, cooldown timer duration.
+
+Shortcut test: If the change can be fully expressed as "move X below Y" or "change size to Z" or "fix link to point to correct page" — it belongs in PROTOTYPE_SPEC only, not DECISIONS.md. If it changes what the product does or how it works conceptually, it's a decision.
+
+When in doubt, put it in PROTOTYPE_SPEC. A missing decision can be backfilled. A cluttered DECISIONS.md filled with layout tweaks buries real decisions and makes the file unusable.
+
 ### Session close-out
 When Joel says "session close-out":
 1. Commit all working code
-2. Append any unrecorded decisions to DECISIONS.md
+2. Append any unrecorded decisions to DECISIONS.md — apply the DECISIONS vs PROTOTYPE_SPEC test to each candidate. Layout tweaks, spacing changes, and visual polish go in PROTOTYPE_SPEC only.
 3. Update PROTOTYPE_SPEC.md for screens that changed
 4. Write CC_HANDOFF.md (overwrite) with: commits, completed work, in-progress work, gotchas, modified files, suggested next tasks
 
