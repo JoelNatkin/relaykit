@@ -1,6 +1,11 @@
 # RelayKit — Product Requirements Document
 ## Consolidated from prototype, decisions, and strategy sessions
-### April 3, 2026 — Living document, not a build spec
+### April 7, 2026 — Living document, not a build spec
+
+> **Scope of this document:** This is the product-level "what and why" — the story, the architecture, the principles. It does not describe screens, UI flows, or visual specifications. For those, see:
+> - **WORKSPACE_DESIGN_SPEC.md** — target UI architecture, screen flows, page layouts
+> - **PROTOTYPE_SPEC.md** — pixel-level current state of each prototype screen
+> - **DECISIONS.md** — the audit trail of every product choice
 
 ---
 
@@ -41,41 +46,33 @@ RelayKit eliminates all of this.
 
 ## The Solution — What the Developer Experiences
 
-### Step 1: Pick a use case
+### Step 1: Pick a use case and answer business context questions
 
-The developer visits RelayKit and picks their category: appointments, orders, verification, customer support, marketing, team alerts, community, or waitlist. Each category has a complete system of pre-written, carrier-compliant messages tailored to that use case.
+The developer visits RelayKit and picks their category: appointments, orders, verification, customer support, marketing, team alerts, community, or waitlist. A short intake wizard collects business context — business name, EIN (optional for transactional, required for marketing), service details, website, and any additional notes.
 
-For appointments, this includes: booking confirmation, appointment reminder, rescheduling confirmation, cancellation notice, no-show follow-up, and pre-visit instructions. Each message comes in multiple style variants (brand-first, action-first, context-first) and can be personalized with the developer's business name, service type, and website.
+### Step 2: Preview and customize messages
 
-### Step 2: Answer business context questions and customize messages
+The developer sees their complete message set — pre-written, carrier-compliant, and personalized with the business context they just provided. For appointments: booking confirmation, appointment reminder, rescheduling notice, cancellation notice, no-show follow-up, and pre-visit instructions. Each message comes in multiple style variants (Standard, Friendly, Brief) and can be edited inline with real-time compliance checking. Non-compliant messages cannot be saved (D-293).
 
-Before message preview, the website conducts a short intake interview — business-specific questions per vertical, powered by Claude on the backend (D-300). For appointments: business name, appointment types, booking lead time, cancellation policy. For orders: store name, shipping methods, return window. Answers feed into two outputs: (1) message templates are personalized with real business context in previews, and (2) the spec file includes structured business context so the developer's AI tool builds with real data, not placeholders. ~80% of the intake logic is deterministic (branching questions, template personalization, variable validation, keyword screening); Claude handles ~20% (edited message compliance evaluation, AI fix rewrites, content classification).
+The website is the message authoring surface (D-279). Message content is saved server-side, tied to the developer's project. The SDK delivers whatever is saved — the developer's codebase never contains message text.
 
-The developer then previews their curated message library with real business context already populated, edits text inline with real-time compliance indicators (D-281), and optionally authors custom messages beyond the curated library (D-280). Message content is saved server-side, tied to the developer's API key (D-279).
+### Step 3: Create an account and build with AI
 
-### Step 3: Install the SDK and build with AI
+The developer creates an account (email + OTP verification), then receives three things to paste into their AI coding tool: an install command (`npm install relaykit`), an API key setup prompt, and a build prompt tailored to their business. The AI tool reads the SDK, finds the right integration points in the developer's codebase, and wires up compliant SMS sending.
 
-The developer runs `npx relaykit init`, which delivers a fully contextualized spec file generated from their intake interview answers (D-300). No copy-paste, no file downloads, no generic prompts. The developer's AI tool receives instructions with real business context — not questions to ask. The spec file includes the SDK setup, the developer's specific message types, their business data model, and integration guidance tailored to their vertical.
+The developer tests in sandbox mode — messages are validated and logged, delivered to up to 5 verified phone numbers. The sandbox runs the same compliance checks as production.
 
-The SDK provides per-vertical namespace functions (e.g., `relaykit.appointments.sendConfirmation()`) that AI tools use correctly on first attempt — validated across Claude Code, Cursor, and Windsurf in 25 experiment rounds (D-265). The SDK sends semantic events; the server composes actual SMS from the developer's saved templates. The developer's codebase never contains message text.
-
-The AI tool reads function names like `sendBookingConfirmation` and infers integration points without being told when to call them (D-268). It finds the booking creation handler, the cancellation flow, the reminder scheduler, and wires in the right SDK call at the right moment.
-
-The developer tests in sandbox mode — messages are validated and logged but don't require carrier registration. The sandbox runs the same compliance checks as production.
-
-Developers who don't use a package manager — including those building on no-code platforms — skip the SDK and call `POST /v1/messages` directly with their API key. The spec file is also available via an API endpoint that the developer's project reads from. Same templates, same compliance checks, same results. The SDK is a convenience wrapper for developers working in code editors; the API is the universal path (D-296).
+Developers who don't use a package manager — including those building on no-code platforms — skip the SDK and call `POST /v1/messages` directly with their API key. Same templates, same compliance checks, same results (D-296).
 
 ### Step 4: Go live
 
-When the developer is ready for real message delivery, they complete a short registration form. RelayKit handles the entire carrier registration process: brand registration, campaign submission to carriers via Sinch, compliance site deployment, phone number provisioning. The developer pays $49 at submission. Approval typically takes a few days (Sinch's structural advantage — D-215). On approval, the developer pays $150 go-live fee (customer-initiated, not auto-charged — D-194). If rejected, full $49 refund.
-
-The developer swaps their sandbox API key for a live key. Same code, same SDK, same API. Messages start delivering to real phones.
+When the developer is ready for real message delivery, they complete registration. RelayKit handles the entire carrier registration process: brand registration with TCR, campaign submission, compliance site deployment, phone number provisioning. The developer pays $49 at submission. If rejected, full refund. On approval, the developer's sandbox API key is replaced with a live key. Same code, same SDK, same API. Messages start delivering to real phones.
 
 ### Step 5: Stay compliant
 
 Compliance is handled at two layers. First, at authoring time: the website's real-time compliance checking prevents non-compliant messages from being saved. Missing business name, missing opt-out language, SHAFT-C content flags — all caught before the message enters the system. If it can't be saved, it can't be sent (D-293).
 
-Second, at delivery time: the messaging proxy enforces operational rules — opt-out (STOP replies honored automatically), consent status (marketing messages require explicit opt-in), quiet hours, and rate limits. The proxy is a delivery engine, not a content enforcement engine. It doesn't judge message text because the text was already approved at authoring time.
+Second, at delivery time: the messaging proxy enforces operational rules — opt-out (STOP replies honored automatically), consent status (marketing messages require explicit opt-in), quiet hours, and rate limits. The proxy is a delivery engine, not a content enforcement engine.
 
 The developer never has to think about compliance. RelayKit handles it — before the message is saved, and again before it's delivered.
 
@@ -98,7 +95,7 @@ Verification code, password reset, new device alert, account recovery, welcome/o
 Ticket acknowledgment, status update, resolution confirmation, satisfaction follow-up, escalation notice, information request.
 
 ### Marketing
-Weekly promotion, new arrivals, loyalty reward, seasonal sale, back-in-stock, abandoned cart. Available in sandbox from day one. Registers automatically at registration (if used in sandbox) or on-demand when the developer first enables it in production (D-294).
+Weekly promotion, new arrivals, loyalty reward, seasonal sale, back-in-stock, abandoned cart. Marketing requires EIN and is registered as a separate campaign.
 
 ### Team Alerts
 Meeting reminder, schedule change, shift confirmation, emergency broadcast, policy update, system status.
@@ -113,33 +110,45 @@ Position update, spot available, reservation confirmation, wait time update, can
 
 ## Marketing Messages
 
-Marketing messages are available to every developer from day one. In sandbox, the marketing namespace is fully usable — same as transactional. The developer can author, customize, and test marketing messages against their verified phones throughout development (D-294).
+Marketing messages are a separate campaign registration from transactional messages. One transactional + one marketing per project maximum. No multiple transactional verticals — developers needing multiple verticals use multi-project (PRD_11).
 
-**At registration:** If the developer used marketing messages in sandbox (detected from send history), RelayKit auto-submits both transactional and marketing campaigns. If they didn't, only transactional submits. Either way, the developer pays $199. RelayKit absorbs the ~$15 TCR campaign vetting fee for the marketing campaign — it's invisible to the customer.
+**EIN requirement:** Marketing messages require a verified business tax ID (EIN). Transactional-primary developers can add marketing later by providing an EIN in Settings. Marketing-primary developers must provide an EIN during onboarding.
 
-**On-demand activation:** If a developer registered transactional-only and later wants marketing, they send their first marketing message in production or toggle it on from the Messages page. RelayKit auto-submits the marketing campaign in the background — no extra fee, no modal, no checkout. The developer sees: "Marketing messages are being registered — usually a few days." Monthly subscription adjusts from $19 to $29 when the marketing campaign activates (D-294). The same on-demand activation works in reverse: a marketing-only developer who later wants transactional messages gets the transactional campaign submitted automatically (D-305).
+**Information architecture:** No marketing content surfaces during onboarding except a "What about marketing messages?" tooltip on the messages page. After signup, the workspace surfaces a marketing invitation — EIN-aware: developers with an EIN see "add marketing for $49," developers without see guidance on adding an EIN. Pricing always reflects only what the developer is signing up for.
 
-**Stepping down:** Developer can turn off marketing in Settings. Takes effect next billing cycle — subscription drops to $19, marketing campaign is suspended with the carrier. Re-enabling later requires re-submission (~few days for approval).
-
-**Pricing:** Pricing is symmetrical: first registered campaign costs $19/month, second campaign adds $10/month for $29 total — regardless of whether the first campaign is transactional or marketing (D-304). Marketing-only is a valid standalone vertical requiring an EIN (D-305). Cancellation cancels all active campaigns.
-
-Marketing messages require an EIN — sole proprietorships without an EIN are limited to transactional messages only. When a developer accesses marketing messages on the website, they enter their EIN. RelayKit verifies the EIN and auto-populates business identity fields for registration (D-302, D-303). This pre-validation catches mismatches before TCR submission.
-
-Marketing messages require separate recipient consent — federal law (TCPA). RelayKit handles this: the SDK includes top-level consent functions (`relaykit.recordConsent()`, `relaykit.checkConsent()`, `relaykit.revokeConsent()` — D-274), the consent API stores records, and the proxy blocks marketing messages to recipients who haven't opted in.
+**Consent:** Marketing messages require separate recipient consent (TCPA). RelayKit handles this: the SDK includes top-level consent functions (`relaykit.recordConsent()`, `relaykit.checkConsent()`, `relaykit.revokeConsent()` — D-274), the consent API stores records, and the proxy blocks marketing messages to recipients who haven't opted in.
 
 The words "campaign" and "promotional" never appear in customer-facing copy. The developer sees "marketing messages."
 
 ---
 
-## Carrier Layer — Sinch
+## Carrier Strategy
 
-RelayKit operates as an ISV (Independent Software Vendor) on Sinch's platform (D-215). Sinch replaces Twilio as the carrier layer, driven by a structural advantage: Sinch performs CSP-level review before TCR submission, combined with RelayKit's clean template engine. This positions RelayKit for fast, often first-try approval. Registration typically completes in days, not weeks.
+### TCR CSP Registration (Primary Path)
+RelayKit is pursuing registration as a Campaign Service Provider (CSP) directly with The Campaign Registry (TCR). This decouples campaign registration from message delivery: RelayKit owns all brand and campaign registrations, and any DCA/connectivity partner handles message delivery. Benefits: carrier-agnostic delivery, ability to switch delivery partners without re-registering campaigns, direct visibility into registration status and issues, no dependency on a single carrier's account management.
 
-Each developer gets an isolated subaccount on Sinch for credential isolation, per-customer compliance enforcement, and clean usage reporting.
+Application: csp.campaignregistry.com. $200 one-time fee. 3-5 week approval timeline.
 
-The registration pipeline: create subaccount → register brand → submit campaign with RelayKit-generated artifacts (campaign description, sample messages, opt-in description) → provision phone number → configure proxy webhooks → generate live API key.
+### Delivery Partners (Separate from Registration)
+As a CSP, RelayKit chooses connectivity partners purely for message delivery — price, API quality, deliverability, and approval speed. Evaluation needed:
 
-Sinch account: dashboard.sinch.com, Project ID `6bf3a837-d11d-486c-81db-fa907adc4dd4`. Currently trial account — ISV/reseller upgrade pending (D-271).
+- **Telgorithm:** Fastest campaign approvals (24-48 hours), relationships with all three major DCAs. Requires 500K messages/month minimum — too high for launch.
+- **Telnyx:** Worth evaluating for lower-volume CSP connectivity.
+- **SignalWire:** Worth evaluating for CSP support and approval timelines.
+- **Sinch:** Original carrier choice (D-215). Account upgrade stalled. Can serve as delivery partner once CSP is approved.
+- **Bandwidth:** Slowest approvals (5-10+ business days). Not recommended.
+
+### How Registration Works (Once CSP is Active)
+1. Developer completes registration form on RelayKit website
+2. RelayKit registers the brand with TCR via API (EIN verification, business identity)
+3. RelayKit submits the campaign to TCR (use case, sample messages, opt-in description, compliance site URL)
+4. TCR shares the campaign with the elected connectivity partner (DCA)
+5. DCA reviews for CTIA compliance (24 hours to 10+ business days depending on partner)
+6. On approval: phone number provisioned, live API key issued, developer is sending
+
+### Legacy Accounts
+- **Sinch:** Trial account at dashboard.sinch.com. Payment rejected with no explanation. Account manager contacted. Not blocking prototype work.
+- **Twilio:** ISV Reseller account under VAULTED PRESS LLC. Working but not used for new work. Entity name changing to RelayKit LLC (D-195). Production carrier submission pipeline was built for Twilio and needs remapping when carrier strategy finalizes.
 
 ---
 
@@ -148,22 +157,18 @@ Sinch account: dashboard.sinch.com, Project ID `6bf3a837-d11d-486c-81db-fa907adc
 ### Compliance Site
 RelayKit generates and hosts a live, carrier-compliant website for each developer at a neutral domain (e.g., glowstudio.msgverified.com). Four pages: home (business info), privacy policy (with mandatory mobile data non-sharing language), terms of service, and SMS opt-in form. The site looks like the developer's own — no RelayKit branding. Carriers verify this site exists during registration review.
 
-When marketing is active, the compliance site includes marketing consent language. For developers who register with marketing from the start, this is included from day one. For developers who activate marketing later, the compliance site updates automatically (D-294). When marketing is the only campaign, the compliance site includes marketing consent language from day one.
+When marketing is active, the compliance site includes marketing consent language automatically.
 
 ### Messaging Proxy
-Every outbound message passes through RelayKit's delivery proxy before reaching carriers. The proxy handles: template lookup and data interpolation, consent status verification (marketing messages require explicit opt-in), opt-out enforcement (STOP replies honored automatically), quiet hours, and rate limits.
+Every outbound message passes through RelayKit's delivery proxy before reaching carriers. The proxy handles: template lookup and data interpolation, consent status verification (marketing messages require explicit opt-in), opt-out enforcement (STOP replies honored automatically), quiet hours (8 AM–9 PM recipient local time via NPA-NXX lookup for marketing messages — D-309), and rate limits.
 
 The proxy does not perform content enforcement. Compliance is enforced at authoring time on the website — non-compliant messages cannot be saved, therefore cannot be sent (D-293). The proxy is a delivery engine, not a content judgment layer.
 
 ### Consent Management
 RelayKit provides full consent lifecycle management:
-- **Opt-in:** The SDK's consent functions and SMS_GUIDELINES.md include consent form specifications with TCPA-compliant language. The developer's AI tool builds the form natively in their app. On form submission, the developer's app calls `relaykit.recordConsent()` (D-274). RelayKit stores the consent record — timestamped, auditable, retained for 4 years.
+- **Opt-in:** The SDK's consent functions and generated AI tool prompt include consent form specifications with TCPA-compliant language. The developer's AI tool builds the form natively in their app. On form submission, the developer's app calls `relaykit.recordConsent()` (D-274). RelayKit stores the consent record — timestamped, auditable, retained for 4 years.
 - **Opt-out:** STOP replies intercepted automatically by the proxy. No developer code required.
 - **Enforcement:** The proxy checks consent before every marketing message. No consent on file = message blocked.
-
-The developer's app can also store consent in their own database for their own logic. Both sides have it. RelayKit's database is the source of truth for enforcement.
-
-The consent + SMS integration pattern was validated end-to-end in experiment Round 3: all three AI tools scored 18/18 on a six-task prompt covering TCPA-compliant checkbox, conditional phone validation, consent API, and SMS sending (D-269).
 
 ### Compliance Monitoring
 When carrier content rules change after messages were authored, RelayKit re-runs compliance checks against saved templates and notifies affected developers. This is a RelayKit operational process — not a customer-facing dashboard feature (D-293).
@@ -199,9 +204,11 @@ The SDK (`npm install relaykit`) is RelayKit's production delivery mechanism (D-
 - `DELETE /v1/consent/:phone` — revoke consent
 - `POST /v1/messages/preview` — validate before sending
 
-**Zero-config init:** `new RelayKit()` reads `RELAYKIT_API_KEY` and `BUSINESS_NAME` from `process.env`. Explicit config available via `new RelayKit({ apiKey, businessName })` (D-278).
+**Zero-config init:** `new RelayKit()` reads `RELAYKIT_API_KEY` from `process.env`. Explicit config available via `new RelayKit({ apiKey })` (D-278).
 
 **Graceful failure by default:** Missing phone → null + console warning. Missing API key → null + console warning. Network error → null + console warning. Compliance blocks → structured result: `{ id: null, status: 'blocked', reason: 'recipient_opted_out' }`. Optional strict mode (`new RelayKit({ strict: true })`) throws `RelayKitError` instead (D-277).
+
+**Static for launch:** All namespaces are exposed regardless of the developer's configured messages. Dynamic method discovery (only exposing namespaces the developer uses) is backlog (D-330 pending).
 
 ### How the SDK works with the website (D-279)
 
@@ -209,9 +216,9 @@ The website is the authoring surface; the SDK is the delivery mechanism. The dev
 
 Custom messages authored on the website (D-280) are callable via `relaykit.send({ to, messageType: 'custom_post_visit_thankyou', data })`. Same compliance checks, same proxy, same API endpoint underneath.
 
-### SMS_GUIDELINES.md (D-283, D-300)
+### Generated AI Tool Prompt (D-331 pending)
 
-A separate compliance co-pilot document that sits in the developer's project root. The AI coding tool reads it for compliance context while writing the integration. Generated from intake interview answers and delivered automatically via `npx relaykit init` or an API endpoint — no manual download, no copy-paste (D-300). The document includes the developer's specific business context, use-case-specific compliance guidance, and consent form specifications. The SDK handles message sending; SMS_GUIDELINES.md handles compliance context.
+After signup, the developer receives a short prompt to paste into their AI coding tool. The prompt includes the developer's business name, use case, and a directive to use all SDK message templates. The AI tool introspects the SDK for details — the prompt is an entry point, not a comprehensive reference. This replaces the earlier SMS_GUIDELINES.md concept for the initial get-started moment. SMS_GUIDELINES.md may return as a separate workstream for deeper compliance context.
 
 ### Validation Results Summary
 
@@ -227,66 +234,25 @@ Key findings:
 
 ---
 
-## Pricing
+## Pricing (D-320, D-321)
 
 ### Free Tier — Sandbox
-$0 forever. Build and test the full SMS integration — all namespaces including marketing. No credit card, no time limit. SDK access, full API access, curated message library, message authoring on website, custom message authoring, sandbox API key, verified phone number. Sends to verified phones only (D-298).
+$0 forever. Build and test the full SMS integration — all namespaces including marketing. No credit card, no time limit. SDK access, full API access, curated message library, message authoring on website, custom message authoring, sandbox API key, verified phone number. Sends to up to 5 verified phones only.
 
-### Go Live (D-193, D-216, D-294)
-- **$49 registration fee** at submission — transactional campaign always submitted; marketing campaign also submitted if developer used marketing in sandbox
-- **$150 go-live fee** after carrier approval (customer-initiated — D-194; full $49 refund if rejected)
-- **$19/month** — one registered campaign (transactional or marketing). 500 messages included, dedicated phone number, delivery proxy, compliance site hosting (D-304)
-- **$29/month** — two registered campaigns (transactional + marketing). Same 500-message combined pool. The $10/month difference reflects the additional TCR campaign and carrier fees. Direction-agnostic — applies whether the developer started with transactional or marketing (D-304, D-305).
-- **$15 per additional 1,000 messages** (auto-scales, no interruption)
-- Volume pricing available above 5,000 messages
-- **Display:** "$199 to register + $19/mo" headline, with "$49 to register. $150 only after you're approved. Full refund if not. $29/mo if you add a second campaign type." in feature details
-- Marketing or transactional can be activated or deactivated at any time from Settings. Subscription adjusts on next billing cycle (D-304, D-305).
+### Go Live
+- **$49 registration fee** at submission. Full refund if rejected. Single payment, no split, no go-live fee.
+- **$19/month** subscription. 500 messages included. Dedicated phone number, delivery proxy, compliance site hosting.
+- **$8 per 500 additional messages** beyond the included 500 (D-321). Lower increment matches vibe coder usage patterns.
+- Second campaign (marketing) is an additional $49 registration fee. Monthly pricing for two campaigns TBD — prior model was $29/mo combined (D-304) but may be revisited.
 
-### Beta (D-196)
-- **$49 flat** — no $150 approval payment, no monthly until post-beta conversion
-- Capped at 25–50 slots
-- Access requires completing a prototype user test session (D-197)
-
----
-
-## Dashboard
-
-The developer's dashboard has three tabs: Overview, Messages, and Settings.
-
-### Overview
-Adapts to five lifecycle states: Default (sandbox, building), Pending (registration submitted), Approved (live, sending), Extended Review (carrier requested changes), and Rejected (with debrief and resubmission path).
-
-Default state: compliance status section (message scanning results, SMS alerts toggle), onboarding wizard (verify phone → send test → send from code → build full feature), and registration sidebar with pricing and CTA.
-
-Approved state: three metric cards (delivery rate, recipients, usage & billing), message delivery health (messages sent, delivered, failed with failure reasons). No compliance enforcement cards — compliance is handled at authoring time (D-293). No marketing expansion banner — marketing is available from sandbox and activates seamlessly (D-294, D-295).
-
-### Messages
-The developer's message library and authoring surface. All namespaces including marketing are visible from sandbox onward. In sandbox: full message library with personalization, style variants (brand-first, action-first, context-first), inline editing with compliance indicators, and custom message authoring. After approval: registered messages shown with their approved values. Marketing messages show status inline — 'live', 'being reviewed', or 'activate marketing' toggle if not yet registered (D-294, D-295).
-
-The Messages page is where developers preview, edit, and extend their message library. Message content saved here is what the SDK delivers — the website is the authoring surface, the SDK is the delivery mechanism (D-279).
-
-### Settings
-Business details, API keys, registration status, billing, and danger zone (cancel/delete). Five lifecycle state variants with appropriate fields and actions per state.
-
----
-
-## Marketing Pages
-
-### Home
-Hero claim, AI tool logo farm, "How it works" three-step flow, use case grid, pricing cards (Free/Go live with D-216 display), comparison table (DIY vs Others vs RelayKit), and compliance value proposition.
-
-### Category Landing (per use case)
-Category-specific messaging with message previews in style variants, "What you get" cards, pricing context, and registration CTA. Deep page with "Why registration matters" FAQ section and "What's included from day one" checklist.
-
-### Messages Page (public, pre-signup)
-Full message library for the category. Playbook summary (D-217 — describes the messaging system and when messages fire, not a download gateway), style variant selector, tool selector with real logos, personalization slideout, download modal with How it Works context.
-
-### Compliance Page
-RelayKit's compliance value proposition. How the proxy works, what gets caught, how alerts work. Positions compliance as protection, not burden.
+### Display
+"Free while you build and test." as the lead. "When you're ready for real delivery: $49 registration + $19/mo." with "500 messages included. Additional messages $8 per 500." as secondary line. No mention of marketing pricing unless the developer is adding marketing.
 
 ---
 
 ## Voice and Experience Principles (Summary)
+
+Full document: `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`
 
 **The developer is the hero. RelayKit is the guide.** Every screen, every status message, every error state follows this philosophy.
 
@@ -299,69 +265,6 @@ RelayKit's compliance value proposition. How the proxy works, what gets caught, 
 **Reduce to the job.** Every element on a screen should serve the developer's current task. If it doesn't, move it somewhere else — even if it's accurate and well-written.
 
 **Vocabulary rules:** Use "marketing messages" never "campaign" or "promotional." Use "registration" not "campaign submission." Use "live" not "active." Never leave a pending state without narrative. Never use "required," "violation," "you must," or "please note." Use "your AI tool builds it" — outcome language, not mechanism (D-257). Use "we handle..." — unequivocal claim language (D-263).
-
----
-
-## What's Built
-
-### Production (committed, working code)
-- Project scaffolding (Next.js, Supabase, Stripe, Tailwind)
-- Database schema and migrations
-- Intake wizard (screens 1, 1b, 2, 3)
-- Stripe checkout integration
-- Template engine (all 8 use cases, 5-8 base + 3-4 expansion messages per use case)
-- Compliance site generator (4-page static HTML, Cloudflare Pages deployment)
-- Carrier submission pipeline (state machine, subaccount creation, brand registration, campaign submission, phone provisioning, webhooks) — built for Twilio, needs Sinch mapping (D-215)
-
-### Prototype (UI source of truth, port 3001)
-- Full marketing pages (home, category landing, messages page, compliance)
-- Dashboard with all five lifecycle states
-- Messages tab with style variants, personalization, download flow
-- Settings page with lifecycle state differentiation
-- Sign-in modal with email + OTP flow
-- Compliance alerts system (three enforcement tiers) — **to be removed per D-293**
-- Marketing expansion modal with lifecycle states — **to be removed per D-294, D-295; replaced with inline marketing status and toggle**
-- Admin pages (control room, registration pipeline, customer list/detail)
-
-### Validated (experiments complete, ready for production build)
-- SDK API surface — per-vertical namespaces, top-level consent, zero-config init, graceful failure, single API endpoint (D-272–D-278)
-- Mock SDK package (`relaykit/` with `index.js`, `index.d.ts`, `package.json`) — starting point for production SDK
-- Integration pattern — AI tools wire SDK calls into existing codebases correctly on first attempt
-- Cross-vertical generalization — same SDK pattern works for appointments and orders on fundamentally different app architectures
-- Full experiment log: `docs/BUILD_SPEC_VALIDATION_LOG.md`
-
-### Not Yet Built
-- **Production SDK** — convert mock to TypeScript, `tsup` build pipeline, npm publish (D-272)
-- **Sandbox API endpoint** — `POST /v1/messages`, API key validation, template lookup, Sinch sandbox delivery
-- **Sandbox signup flow** — issue API key, verify phone, show key in dashboard
-- Messaging proxy (PRD_09) — delivery engine: template lookup, interpolation, carrier send, opt-out enforcement, quiet hours (D-293)
-- Consent API endpoints — `POST /v1/consent`, `GET /v1/consent/:phone`, `DELETE /v1/consent/:phone`
-- Sinch integration — carrier submission mapped to Sinch APIs (D-215, D-271)
-- Message authoring UI on website — inline editing with compliance indicators (D-281)
-- Custom message authoring — developer-authored messages beyond curated library (D-280)
-- Website intake interview — business context questions per vertical, Claude-powered on backend, generates contextualized spec file (D-300)
-- EIN verification and business identity pre-validation (D-302, D-303)
-
----
-
-## What's Next — Production Build Priority
-
-The validation program is complete. The SDK architecture is locked. The build priority is now the shortest path to a developer experiencing `npm install relaykit` → real text message on their phone.
-
-### Priority 1: SDK build pipeline
-Convert mock `index.js` to TypeScript source, set up `tsup` for dual ESM/CJS output (D-272), npm publish workflow, versioning strategy. Well-scoped CC session. Mock SDK from Round 12 is the starting point.
-
-### Priority 2: Sandbox API endpoint
-`POST /v1/messages` — receive request, validate API key, look up message template, interpolate data, send through Sinch sandbox. This is where experiments connect to reality.
-
-### Priority 3: Sandbox signup flow
-Issue sandbox API key on signup. Verify one phone number. Show key in dashboard. This + SDK + endpoint = "3 minutes to a real text message."
-
-### Priority 4: Sinch ISV upgrade
-Trial account (D-271) needs upgrade to production ISV. Reseller toggle errored on trial. Required before real message delivery.
-
-### Priority 5: Production build order (paused behind prototype stabilization — D-104)
-When prototype screens stabilize and PRDs are updated: port dashboard, build consent API, build messaging proxy, build compliance monitoring, build landing page. See BUILD_HANDOFF.md for full sequence.
 
 ---
 
@@ -378,4 +281,44 @@ When prototype screens stabilize and PRDs are updated: port dashboard, build con
 - **One product, multiple entry points.** SDK users and API-direct users get the same experience — same templates, same compliance, same pricing. The only difference is how they arrive. (D-296)
 - **Compliance at authoring time, not send time.** Non-compliant messages can't be saved. The proxy delivers; the website enforces. (D-293)
 - **Website gathers context, AI tool executes.** The RelayKit website asks the business context questions and generates a fully specified brief. The developer's AI tool receives instructions, not questions. (D-300)
-- **Decisions are recorded.** 305+ decisions in DECISIONS.md govern everything from architecture to vocabulary. CC reads them every session.
+- **Decisions are recorded.** 329+ decisions in DECISIONS.md govern everything from architecture to vocabulary. CC reads them every session.
+- **One page, one purpose.** The post-signup workspace is a single Messages-centric page that evolves with the developer's lifecycle. No tabs. Setup, testing, registration, and metrics all live on one surface.
+
+---
+
+## What's Built
+
+### Production (committed, working code)
+- Project scaffolding (Next.js, Supabase, Stripe, Tailwind)
+- Database schema and migrations
+- Stripe checkout integration
+- Template engine (all 8 use cases, 5-8 base + 3-4 expansion messages per use case)
+- Compliance site generator (4-page static HTML, Cloudflare Pages deployment)
+- Carrier submission pipeline (state machine, subaccount creation, brand registration, campaign submission, phone provisioning, webhooks) — built for Twilio, needs remapping to TCR/new carrier
+
+### Prototype (UI source of truth, port 3001)
+- Full onboarding wizard (vertical picker → business name + EIN → service context → website → notes → phone verify → messages → ready → signup → email verify → get-started)
+- Post-signup workspace with six lifecycle states (Onboarding, Building, Pending, Extended Review, Registered, Rejected)
+- Messages page with style variants (Standard/Friendly/Brief), AI rewrite, compliance checking with Restore
+- Settings page with lifecycle state differentiation
+- Sign-in modal with email + OTP flow
+- Full marketing pages (home, category landing, messages page, compliance)
+- Admin pages (control room, registration pipeline, customer list/detail)
+
+### Validated (experiments complete, ready for production build)
+- SDK API surface — per-vertical namespaces, top-level consent, zero-config init, graceful failure, single API endpoint (D-272–D-278)
+- Mock SDK package — starting point for production SDK
+- Integration pattern — AI tools wire SDK calls into existing codebases correctly on first attempt
+- Cross-vertical generalization — same SDK pattern works for appointments and orders on fundamentally different app architectures
+- Full experiment log: `docs/BUILD_SPEC_VALIDATION_LOG.md`
+
+### Not Yet Built
+- **Single-page workspace** — collapse tabbed dashboard into Messages-centric single page (see WORKSPACE_DESIGN_SPEC.md)
+- **Production SDK** — convert mock to TypeScript, `tsup` build pipeline, npm publish (D-272)
+- **Sandbox API endpoint** — `POST /v1/messages`, API key validation, template lookup, carrier sandbox delivery
+- **TCR CSP registration** — register as Campaign Service Provider, build registration pipeline against TCR API
+- **Delivery partner integration** — evaluate and integrate with Telnyx/SignalWire/other for message delivery
+- Messaging proxy (PRD_09) — delivery engine: template lookup, interpolation, carrier send, opt-out enforcement, quiet hours (D-293)
+- Consent API endpoints — `POST /v1/consent`, `GET /v1/consent/:phone`, `DELETE /v1/consent/:phone`
+- EIN verification and business identity pre-validation (D-302, D-303)
+- Claude AI support slideout with per-message context and round-trip diagnostics (App Doctor)
