@@ -1,6 +1,6 @@
 # BACKLOG.md — RelayKit
 ## Ideas, Deferred Work, and Future Features
-### Last updated: April 3, 2026
+### Last updated: April 7, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -86,6 +86,14 @@
 - **EIN verification and business identity pre-validation** — When developer enters EIN (for marketing access or registration), look up and auto-populate legal business name, address, entity type, state of registration. Investigate data sources: IRS Business Master File, state SOS databases, Middesk, Enigma (~$1-3/lookup). ROI: $15 saved per prevented TCR rejection + ISV trust score protection. (Origin: April 3 noodling session, D-302, D-303)
 
 - **Message editing UX: curated messages with locked variables** — Default curated set per vertical displayed on website. Individual messages show pill variants (tone/style). Click to edit opens inline editor with live compliance checking and AI fix button. Variables are locked per curated message type — editing changes copy only, never the data contract with the SDK. Custom messages (D-280) define their own variable schema. (Origin: April 3 noodling session, D-301)
+
+- **App Doctor — AI support with round-trip diagnostics** — Claude support slideout acts as a specialist that can order tests. Core loop: developer reports issue → Claude generates a diagnostic prompt for the developer's AI tool → developer pastes results back → Claude pinpoints issue and generates fix. Per-message "Ask Claude" entry point pre-loads context (message definition, last test result, delivery status). SDK error design constraint: all error responses must be structured (status, error code, human-readable message, context hint) for clean diagnostic loop. (Origin: Session 25 design discussion)
+
+- **Returning user onboarding (new project from Your Apps)** — When a developer with an existing account creates a new project, the wizard should pre-fill business name from account, auto-populate EIN if on file (confirmation card, no re-verification), and skip phone verify and signup/email verify entirely. The business name page for returning users needs its own design — the EIN section behaves differently. (Origin: Session 25 design discussion)
+
+- **Confirm Anthropic brand usage for Claude references** — Can we reference Claude by name in the support panel UI and marketing copy? ("Ask Claude", "Claude helps you build, test, and troubleshoot"). Check Anthropic API terms of service. If yes, update ready page benefit #3 and marketing copy to name Claude explicitly. (Origin: Session 25 strategy discussion)
+
+- **TCR CSP registration** — Register as Campaign Service Provider directly with TCR. $200 fee, 3-5 week approval. Decouples campaign registration from message delivery carrier. RelayKit owns brand/campaign registrations; carriers compete purely on delivery. Application at csp.campaignregistry.com. (Origin: Session 25 carrier strategy discussion)
 
 ### Infrastructure & Operations
 

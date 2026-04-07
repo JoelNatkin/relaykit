@@ -1131,30 +1131,6 @@ _Affects: overview/page.tsx (659 lines deleted)._
 Messages page in Onboarding state is now visually distinct from the dashboard version: H1 "Here's what your app will send" (text-2xl font-bold), body "Each message is tailored to your business. Edit messages any time. Your app always sends the latest version.", CTA label "Continue" (not "Start building"), no send icons on message cards (`hideSend` prop on CatalogCard), "What about marketing messages?" tooltip (EIN-aware from wizard sessionStorage). Dashboard states keep H2 "Messages", send icons, no marketing tooltip.
 _Affects: messages/page.tsx, catalog-card.tsx._
 
-**D-329 — Skip links positioned below Continue button** (Date: 2026-04-07)
-On `/start/website` and `/start/context`, the "Skip" link moved from below the input field to below the Continue button. Centered text, `mt-3`. Implemented via `afterContinue` slot on `WizardStepShell`.
-_Affects: wizard-step-shell.tsx, website/page.tsx, context/page.tsx._
-
-**D-330 — Back button inside content column** (Date: 2026-04-07)
-On `/apps/[appId]/messages` and `/apps/[appId]/ready`, the ← Back button moved from full-width page edge alignment to inside the centered content column, left-aligned with the headline and body text. Continue button (messages page) is absolutely positioned top-right so it doesn't push content down.
-_Affects: wizard-layout.tsx._
-
-**D-331 — Phone verify page matches email verify styling** (Date: 2026-04-07)
-`/start/verify` (phone OTP) now matches `/apps/[appId]/signup/verify` (email OTP): 400px max width, full-width OTP boxes (flex-1, gap-4, h-14), 60s resend cooldown, "Use a different number" inline with phone number, prototype hint removed. WizardStepShell gained `maxWidth` prop.
-_Affects: start/verify/page.tsx, wizard-step-shell.tsx._
-
-**D-332 — Ready page copy update** (Date: 2026-04-07)
+**D-329 — Ready page copy update** (Date: 2026-04-07)
 Headline changed from "Skip the hard part" to "SMS that just works". Subhead changed to "Create your account and we'll generate everything your tool needs to build."
 _Affects: ready/page.tsx._
-
-**D-333 — Messages Back href corrected** (Date: 2026-04-07)
-Messages page Back button in wizard state now points to `/start/verify` (phone verify, step 6) instead of `/start/context` (notes, step 5). Matches the actual wizard flow order.
-_Affects: wizard-layout.tsx._
-
-**D-334 — Signup verify: full-width OTP + 60s resend cooldown** (Date: 2026-04-07)
-OTP boxes on `/apps/[appId]/signup/verify` stretch full width (flex-1, gap-4 preserved). 60s cooldown on "Resend code" — shows "Resend code in XXs" counting down, swaps to clickable link at 0. Starts on page load, resets on click.
-_Affects: signup/verify/page.tsx._
-
-**D-335 — Get-started tool logos left-aligned** (Date: 2026-04-07)
-Tool logo farm on get-started page changed from centered to left-aligned. Top margin reduced 8px (mt-6 → mt-4), bottom margin increased to 20px (mb-2 → mb-5).
-_Affects: get-started/page.tsx._
