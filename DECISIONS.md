@@ -1110,3 +1110,51 @@ _Affects: AppLayout routing, session state management, get-started page, signup/
 **D-323 — Signup split into email entry + OTP verification** (Date: 2026-04-06)
 Signup is two separate pages: `/apps/[appId]/signup` (email entry + "Send code" CTA) and `/apps/[appId]/signup/verify` (OTP input + "Confirm" CTA). Both pages manage their own inline Back links (no WizardLayout header Back/Continue). 400px max-width content column on both. Email stored in sessionStorage (`relaykit_signup_email`) for cross-page persistence.
 _Affects: Signup flow, WizardLayout config, AppLayout routing, TopNav wizard regex._
+
+**D-324 — Registration state rename: Default → Onboarding, Approved → Registered** (Date: 2026-04-07)
+Renamed `RegistrationState` enum values: `"default"` → `"onboarding"`, `"approved"` → `"registered"`. All conditionals, state switchers, and routing updated. Existing states Pending, Extended Review (`changes_requested`), Rejected unchanged. Semantic clarity — "default" was ambiguous, "approved" conflated carrier approval with the product state.
+_Affects: session-context.tsx, top-nav.tsx, dashboard-layout.tsx, app layout, overview, messages, settings, signup/verify, get-started, proto-nav-helper._
+
+**D-325 — New "Building" state between Onboarding and Pending** (Date: 2026-04-07)
+Added `"building"` to `RegistrationState`. This is the post-signup, pre-registration dashboard state. Shows full dashboard layout (Overview/Messages/Settings tabs) like Pending. Get-started page transitions to Building (not Pending). State switcher order: Onboarding → Building → Pending → Extended Review → Registered → Rejected.
+_Affects: session-context.tsx, all state switchers, get-started page, app layout routing._
+
+**D-326 — Building state Overview: Start building content + registration card** (Date: 2026-04-07)
+Building state Overview shows two-column layout. Left: "Start building" heading, subhead, tool logo farm (left-aligned), 3 copyable instruction cards (Install, API key, Add SMS). Right: registration card with "Ready to go live?" heading, "$49 registration + $19/mo" pricing, "Start registration →" CTA. Same left-column content also shown in Pending, Extended Review, and Rejected states.
+_Affects: overview/page.tsx._
+
+**D-327 — Remove "Build your SMS feature" accordion from Overview** (Date: 2026-04-07)
+The 4-step accordion (verify phone → send test → send from code → build feature) was removed from Overview across all states. Replaced by the simpler Start building content (D-326). The accordion was stale — onboarding now handles setup through the wizard flow, and the get-started page provides the build instructions.
+_Affects: overview/page.tsx (659 lines deleted)._
+
+**D-328 — Messages page onboarding view divergence** (Date: 2026-04-07)
+Messages page in Onboarding state is now visually distinct from the dashboard version: H1 "Here's what your app will send" (text-2xl font-bold), body "Each message is tailored to your business. Edit messages any time. Your app always sends the latest version.", CTA label "Continue" (not "Start building"), no send icons on message cards (`hideSend` prop on CatalogCard), "What about marketing messages?" tooltip (EIN-aware from wizard sessionStorage). Dashboard states keep H2 "Messages", send icons, no marketing tooltip.
+_Affects: messages/page.tsx, catalog-card.tsx._
+
+**D-329 — Skip links positioned below Continue button** (Date: 2026-04-07)
+On `/start/website` and `/start/context`, the "Skip" link moved from below the input field to below the Continue button. Centered text, `mt-3`. Implemented via `afterContinue` slot on `WizardStepShell`.
+_Affects: wizard-step-shell.tsx, website/page.tsx, context/page.tsx._
+
+**D-330 — Back button inside content column** (Date: 2026-04-07)
+On `/apps/[appId]/messages` and `/apps/[appId]/ready`, the ← Back button moved from full-width page edge alignment to inside the centered content column, left-aligned with the headline and body text. Continue button (messages page) is absolutely positioned top-right so it doesn't push content down.
+_Affects: wizard-layout.tsx._
+
+**D-331 — Phone verify page matches email verify styling** (Date: 2026-04-07)
+`/start/verify` (phone OTP) now matches `/apps/[appId]/signup/verify` (email OTP): 400px max width, full-width OTP boxes (flex-1, gap-4, h-14), 60s resend cooldown, "Use a different number" inline with phone number, prototype hint removed. WizardStepShell gained `maxWidth` prop.
+_Affects: start/verify/page.tsx, wizard-step-shell.tsx._
+
+**D-332 — Ready page copy update** (Date: 2026-04-07)
+Headline changed from "Skip the hard part" to "SMS that just works". Subhead changed to "Create your account and we'll generate everything your tool needs to build."
+_Affects: ready/page.tsx._
+
+**D-333 — Messages Back href corrected** (Date: 2026-04-07)
+Messages page Back button in wizard state now points to `/start/verify` (phone verify, step 6) instead of `/start/context` (notes, step 5). Matches the actual wizard flow order.
+_Affects: wizard-layout.tsx._
+
+**D-334 — Signup verify: full-width OTP + 60s resend cooldown** (Date: 2026-04-07)
+OTP boxes on `/apps/[appId]/signup/verify` stretch full width (flex-1, gap-4 preserved). 60s cooldown on "Resend code" — shows "Resend code in XXs" counting down, swaps to clickable link at 0. Starts on page load, resets on click.
+_Affects: signup/verify/page.tsx._
+
+**D-335 — Get-started tool logos left-aligned** (Date: 2026-04-07)
+Tool logo farm on get-started page changed from centered to left-aligned. Top margin reduced 8px (mt-6 → mt-4), bottom margin increased to 20px (mb-2 → mb-5).
+_Affects: get-started/page.tsx._
