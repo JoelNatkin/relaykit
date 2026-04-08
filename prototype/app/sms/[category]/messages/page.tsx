@@ -958,7 +958,7 @@ function StepsLayout({
           </div>
 
           <p className="mt-5 text-sm text-text-tertiary">
-            Free sandbox, no credit card. $49 to register, $150 + $19/mo after approval.<br />You&apos;ll get two files and a sandbox API key.
+            Free sandbox, no credit card. $49 to register, $19/mo after approval.<br />You&apos;ll get two files and a sandbox API key.
           </p>
 
           {/* Mobile CTA — after logos, full width */}
@@ -1060,7 +1060,7 @@ function StepsLayout({
                     <span className="text-sm text-text-tertiary">/mo</span>
                   </div>
                   <p className="mt-3 text-base text-text-tertiary">
-                    <span className="font-semibold text-text-primary">$150 go-live fee</span> after approval. Full refund if not approved.
+                    Full refund if not approved.
                   </p>
                   <ul className="mt-5 flex flex-col gap-3">
                     {[
@@ -1069,7 +1069,7 @@ function StepsLayout({
                       "500 messages included per month",
                       "Dedicated phone number",
                       "Compliance monitoring and drift detection included",
-                      "Need more messages? $15 per 1,000. Scales with usage.",
+                      "Need more messages? $8 per 500. Scales with usage.",
                     ].map((item) => (
                       <li key={item} className="flex items-start gap-2 text-base text-text-secondary">
                         <CheckCircle className="size-4 shrink-0 text-fg-brand-primary mt-1" />

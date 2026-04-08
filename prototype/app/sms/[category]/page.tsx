@@ -274,7 +274,6 @@ export default function CategoryLanding() {
         <p className="mt-5 text-center text-base text-text-tertiary">
           Free sandbox. No credit card.{" "}
           <span className="font-semibold text-text-primary">$49</span> to register,{" "}
-          <span className="font-semibold text-text-primary">$150</span> +{" "}
           <span className="font-semibold text-text-primary">$19/mo</span> after approval.
         </p>
       </div>
