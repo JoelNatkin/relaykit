@@ -209,7 +209,7 @@ export default function MarketingHome() {
 
       {/* Pricing context line */}
       <p className="py-8 text-center text-sm text-text-tertiary">
-        Free to build and test. $49 to register, $150 after approval, then $19/mo.
+        Free to build and test. $49 to register, then $19/mo.
       </p>
 
       {/* Category grid — the product showcase */}
@@ -295,7 +295,7 @@ export default function MarketingHome() {
               <span className="text-sm text-text-tertiary">/mo</span>
             </div>
             <p className="mt-3 text-base text-text-tertiary">
-              <span className="font-semibold text-text-primary">$150 go-live fee</span> after approval. Full refund if not approved.
+              Full refund if not approved.
             </p>
             <ul className="mt-5 flex flex-col gap-3">
               {[
@@ -304,7 +304,7 @@ export default function MarketingHome() {
                 "500 messages included per month",
                 "Dedicated phone number",
                 "Every message scanned — issues caught and fixed before they reach carriers",
-                "Need more messages? $15 per 1,000. Scales with usage.",
+                "Need more messages? $8 per 500. Scales with usage.",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2 text-base text-text-secondary">
                   <CheckCircle className="size-4 shrink-0 text-fg-brand-primary mt-1" />
