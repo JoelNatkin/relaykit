@@ -244,21 +244,20 @@ Minimal, focused layout for the pre-signup wizard flow.
 #### Dashboard Layout (Building, Pending, Registered, Extended Review, Rejected)
 **File:** `prototype/components/dashboard-layout.tsx`
 
-Full dashboard with app identity, tabs, and status.
+Full dashboard with app identity bar. No tab bar — Messages is the sole workspace page, Settings is a child page accessed via gear icon (D-332).
 
-**Header:** App name (h1) + category pill (purple) → state switcher dropdown (right) → status indicator dot+label (right of switcher, `ml-10` gap).
+**Header:** App name (h1) + category pill (purple) → state switcher dropdown (right) → EIN prototype switcher ("With EIN" / "No EIN", writes to wizard sessionStorage `ein` field, dispatches `relaykit-ein-change` event) → status indicator dot+label (right of switcher, `ml-10` gap).
 **Status indicator:** Colored dot (8×8 `rounded-full`) + status text. States: green (#12B76A) "Your app is live" (Registered), amber (#F79009) "Registration in review" (Pending) / "Extended review" (Changes Requested), red (#F04438) "Registration rejected" (Rejected). Building state shows no status indicator.
-**Tab bar:** Overview, Messages, Settings. Active tab: `border-border-brand text-text-brand-secondary`. Hidden during registration flow (`/register`).
-**Period selector:** "This month" dropdown in tab row, only when Registered + Overview.
 **Content:** `mx-auto max-w-5xl px-6 pt-6 pb-16`.
 
 #### State Switcher (both layouts)
 Six states: Onboarding, Building, Pending, Extended Review, Registered, Rejected (D-324, D-325). `text-xs text-text-quaternary`. Switching from Onboarding to any other: wizard → dashboard, redirect if on overview/settings stays valid, wizard-only pages (ready/signup) get the transition redirect. Switching to Onboarding: dashboard → wizard, redirect if on overview/settings → messages.
 
 #### Route Redirects
-- **`/opt-in`:** Always redirects to `/messages` regardless of state. The opt-in step was removed from the wizard flow (D-317 tabled).
-- **Onboarding (wizard):** `/overview` and `/settings` redirect to `/messages`. Valid wizard pages under `/apps/[appId]/`: `/messages`, `/ready`, `/signup`, `/signup/verify`.
-- **Non-onboarding (dashboard):** `/signup`, `/signup/verify`, and `/ready` redirect to `/overview` (they are wizard-only). `/overview`, `/messages`, `/settings` are valid.
+- **`/opt-in`:** Always redirects to `/messages` regardless of state.
+- **`/overview`:** Always redirects to `/messages` regardless of state (D-332 — no tab bar, Messages is the workspace).
+- **Onboarding (wizard):** `/settings` redirects to `/messages`. Valid wizard pages under `/apps/[appId]/`: `/messages`, `/ready`, `/signup`, `/signup/verify`.
+- **Non-onboarding (dashboard):** `/signup`, `/signup/verify`, and `/ready` redirect to `/messages` (they are wizard-only). `/messages` and `/settings` are valid.
 - **`/get-started`:** Excluded from both WizardLayout and redirect logic — renders standalone (no layout wrapper). Valid in Onboarding state. The page itself handles the state transition to Building (D-325).
 - **Register flow:** No wrapper — content renders in bare `max-w-5xl` container.
 
@@ -346,9 +345,28 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 - Bottom "Continue": full-width purple button spanning the 540px content column, rendered by WizardLayout (D-318 — dual Continue).
 
 **Dashboard mode (Building/Pending/Registered/Extended Review/Rejected — rendered inside DashboardLayout):**
-- "Messages" heading (H2 `text-lg font-semibold`) left-aligned, no Continue buttons.
+- No "Messages" heading — page has no H2 in post-onboarding states.
+- **Top-right control row** (`flex items-center justify-end gap-4 mb-4`): "Setup instructions" toggle switch + Settings gear icon link (`Settings01` + "Settings" text, `text-text-tertiary`, links to `/apps/[appId]/settings`). Visible in all post-onboarding states.
+- **Setup instructions** (`prototype/components/setup-instructions.tsx`): Toggle-controlled container with "Start building" heading, subhead, logo farm, and 3 stacked instruction cards (same content as Overview/get-started). Default ON in Building, OFF in all other states. Per-state toggle persisted independently in sessionStorage (`relaykit_setup_instructions_[state]`). When off, container unmounts — no animation.
 - Message cards constrained to `max-w-[540px]` within the `max-w-5xl` dashboard container.
 - Send icons: `Phone01` from `@untitledui/icons` — no circle background. Standard dashboard treatment.
+
+**Building state — two-column layout:**
+- Left column (`min-w-0 flex-1`): setup instructions + message cards.
+- Right column (`md:w-[280px] md:shrink-0`, `order-first md:order-last`): "Ready to go live?" registration card (`rounded-xl bg-gray-50 p-6 md:sticky md:top-20`). Body: "Registration takes a few days." When EIN on file: two radio buttons — "Just [vertical]" (default, $19/mo) and "Add marketing messages too" ($29/mo) (D-335). When no EIN: no radios, "$49 registration + $19/mo", small text "Add your EIN to unlock marketing messages." CTA: "Start registration →" → `/apps/[appId]/register`.
+- **Marketing tooltip** below registration card (Building state only): "What about marketing messages?" purple text link. Click toggles dark tooltip. EIN-aware: with EIN → "Want marketing messages? Add them after your registration is approved — no extra fee."; no EIN → "Want marketing messages? Add your EIN after registration to unlock them."
+
+**Pending state — two-column layout:**
+- Same structure. Right column card shows: "Registration status" heading, purple "Under carrier review" pill, "Submitted March 17, 2026", email notification copy.
+
+**Extended Review state — two-column layout:**
+- Right column card shows: "Registration status" heading, purple "Under review" pill, submitted/updated dates, longer-than-expected copy.
+
+**Rejected state — two-column layout:**
+- Right column card shows: "Registration status" heading, red "Not approved" pill, "$49 refunded" in green, divider, "What happened" section, mailto link. No retry button.
+
+**Registered state — single-column, no right rail:**
+- Three delivery metrics cards (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`): Delivery (98.4%), Recipients (284), Usage & Billing (347/500 progress bar). Same mock data as Overview approved-dashboard.tsx. Positioned below setup instructions, above message cards.
 
 **Page-level controls removed (Phase 2a):**
 - Global style pill bar — gone, pills live inside card edit state
@@ -392,14 +410,8 @@ Triggered by edit button click or by clicking into the message text.
 
 ---
 
-#### Pending / Changes Requested / Rejected states
-All render the same Messages page content as Default/sandbox. Registration state doesn't change message card behavior.
-
-#### Approved state
-Same card redesign. Key differences:
-- Registered values baked in (GlowStudio, glowstudio.com, etc.) — `REGISTERED_VALUES` constant sets personalization on mount.
-- Messages header copy: "Your registered messages. Edit copy, add new messages, or adapt existing ones."
-- No opt-in column (moved to own page). No Continue buttons in approved state.
+#### Per-state message card behavior
+Message card content and editing behavior is identical across all post-onboarding states. Registration state affects page layout (two-column vs single-column, right rail content, metrics cards) but not individual card rendering. Registered state uses `REGISTERED_VALUES` for personalization (GlowStudio, glowstudio.com, etc.).
 
 ---
 
@@ -411,7 +423,7 @@ Same card redesign. Key differences:
 **File:** `prototype/app/apps/[appId]/ready/page.tsx`
 **Status:** Stable — wizard step between messages and signup
 
-Conversion moment. Sits between the messages workspace ("Continue" button) and the signup page. Only valid in Onboarding (wizard) state; non-wizard states redirect to `/overview`.
+Conversion moment. Sits between the messages workspace ("Continue" button) and the signup page. Only valid in Onboarding (wizard) state; non-wizard states redirect to `/messages`.
 
 **Layout:** Rendered inside WizardLayout's 540px content column. WizardLayout config: Back → `/messages` (inside content column), no header Continue, no dual — the page owns its own "Create account" CTA.
 - Heading: "SMS that just works" (`text-2xl font-bold text-text-primary`) (D-329)
@@ -432,7 +444,7 @@ Conversion moment. Sits between the messages workspace ("Continue" button) and t
 **File:** `prototype/app/apps/[appId]/signup/page.tsx`
 **Status:** Stable — email collection step
 
-First of two signup pages. Only valid in Onboarding (wizard) state; non-wizard states redirect to `/overview`.
+First of two signup pages. Only valid in Onboarding (wizard) state; non-wizard states redirect to `/messages`.
 
 **Layout:** Inside WizardLayout but with no header Back or Continue (WizardLayout config returns `backHref: null, continueHref: null`). The header row is hidden entirely. Content column narrowed to 400px (`mx-auto max-w-[400px]` inside WizardLayout's 540px column).
 
@@ -495,9 +507,11 @@ The last screen before the dashboard. Developer has verified their email and lan
 
 ### Settings — `/apps/[appId]/settings`
 **File:** `prototype/app/apps/[appId]/settings/page.tsx`
-**Status:** Stable — full lifecycle state differentiation across all 5 states
+**Status:** Stable — child page accessed via gear icon on Messages page (D-332)
 
-**Layout:** 600px max-width, centered. Five card sections stack vertically (`space-y-6`). Sections appear/disappear based on `registrationState` from session context. All body text is 14px (`text-sm`). Section headers are 18px (`text-lg font-semibold`) — matching Messages tab headers. All action buttons/links right-aligned (`flex justify-end`).
+**Navigation:** "← Back to messages" link at top of page (`text-sm font-medium text-text-tertiary`, links to `/apps/[appId]/messages`). Accessed via Settings gear icon on Messages page, not via tab bar (tab bar removed).
+
+**Layout:** 600px max-width, centered. Five card sections stack vertically (`space-y-6`). Sections appear/disappear based on `registrationState` from session context. All body text is 14px (`text-sm`). Section headers are 18px (`text-lg font-semibold`). All action buttons/links right-aligned (`flex justify-end`).
 
 **Phone label convention (D-207):** "Personal phone" (developer's own number), "Your SMS number" (dedicated campaign number, Approved only), "Sandbox phone" (not on Settings — Messages tab concept). Never bare "Phone."
 

@@ -1134,3 +1134,27 @@ _Affects: messages/page.tsx, catalog-card.tsx._
 **D-329 — Ready page copy update** (Date: 2026-04-07)
 Headline changed from "Skip the hard part" to "SMS that just works". Subhead changed to "Create your account and we'll generate everything your tool needs to build."
 _Affects: ready/page.tsx._
+
+**D-330 — SDK static for launch** (Date: 2026-04-07)
+All vertical namespaces are exposed in the SDK regardless of which messages the developer has configured. Dynamic method discovery (only exposing configured namespaces) is backlog. The static approach validated cleanly in 25 rounds of build spec testing — AI tools use the namespace pattern correctly on first attempt without needing filtered exports.
+_Affects: /sdk, future dynamic discovery work._
+
+**D-331 — Generated AI tool prompt replaces SMS_GUIDELINES.md for get-started** (Date: 2026-04-07)
+The get-started page generates a pre-populated prompt for the developer's AI coding tool, built from their wizard data (business name, vertical, configured messages). This replaces the earlier concept of a downloadable SMS_GUIDELINES.md file. The prompt is the onboarding artifact — not a reference doc.
+_Affects: get-started/page.tsx, wizard sessionStorage data flow._
+
+**D-332 — Single-page workspace: no tabs, Messages is the workspace** (Date: 2026-04-07)
+The post-signup dashboard collapses into a single Messages-centric page. No tab bar. Overview route redirects to Messages. Setup cards appear at the top of Messages (dismissible). Registration CTA is a lightweight banner, not a structural column. Metrics appear at top after registration. Settings is a child page accessed via icon/link, not a tab. See WORKSPACE_DESIGN_SPEC.md for full specification.
+_Affects: All post-signup routes, dashboard-layout.tsx, overview redirect, tab bar removal, settings routing._
+
+**D-333 — One transactional + one marketing campaign per project** (Date: 2026-04-07)
+Each project supports exactly one transactional campaign and one optional marketing campaign. No multiple transactional verticals within a single project — multi-vertical developers use multi-project support (PRD_11). Marketing requires EIN. Marketing-first flow requires EIN upfront and bundles transactional automatically.
+_Affects: Registration model, campaign architecture, marketing expansion flow, PRD_11 scoping._
+
+**D-334 — Marketing campaign bundled in $49 registration fee** (Date: 2026-04-08)
+Registration fee ($49) covers both transactional and marketing campaigns. No additional registration charge for the second campaign. Marketing requires EIN (unchanged). Monthly subscription auto-adjusts from $19/mo to $29/mo when marketing activates (D-304). Both campaigns share a single message pool. Developer earns marketing access by providing EIN — the identity verification is the gate, not payment.
+_Affects: Registration flow, pricing copy, marketing expansion CTA, PRICING_MODEL.md._
+
+**D-335 — Registration CTA shows campaign selection when EIN on file** (Date: 2026-04-08)
+The "Ready to go live?" registration card in Building state presents two radio options when an EIN is verified: "Just [vertical]" (default, $19/mo) and "Add marketing messages too" ($29/mo). When no EIN, no radio buttons — shows transactional-only pricing with "Add your EIN to unlock marketing messages." This is the pre-registration moment where the developer commits to campaign scope. The vertical name is read from sessionStorage and lowercased in the label.
+_Affects: Messages page Building state, registration flow entry point, campaign selection UX._

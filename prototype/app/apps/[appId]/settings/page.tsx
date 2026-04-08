@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import { CopyButton } from "@/components/copy-button";
 
@@ -160,6 +162,7 @@ function StatusDot({ color }: { color: "green" | "amber" | "red" | "grey" }) {
 /* ── Page ── */
 
 export default function AppSettings() {
+  const { appId } = useParams<{ appId: string }>();
   const { state } = useSession();
   const rs = state.registrationState;
   const isDefault = rs === "onboarding" || rs === "building";
@@ -198,6 +201,14 @@ export default function AppSettings() {
 
   return (
     <div className="py-4 space-y-6 max-w-[600px] mx-auto">
+      {/* Back link */}
+      <Link
+        href={`/apps/${appId}/messages`}
+        className="inline-flex items-center gap-1 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
+      >
+        &larr; Back to messages
+      </Link>
+
       {/* Modals */}
       <ConfirmModal
         open={cancelModalOpen}
