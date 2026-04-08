@@ -382,7 +382,7 @@ export function ReviewConfirm({
                 </div>
               </div>
               <p className="mt-1 text-sm text-text-tertiary leading-relaxed">
-                <span className="font-semibold">After approval, pay $150 + $19/mo to activate your live API key and dedicated phone number.</span> 500 messages included monthly. Additional messages $15 per 1,000. Not approved? Full refund.
+                <span className="font-semibold">After approval, $19/mo for your live API key and dedicated phone number.</span> 500 messages included monthly. Additional messages $8 per 500. Not approved? Full refund.
               </p>
             </div>
           </div>
