@@ -465,8 +465,8 @@ export default function AppMessagesPage() {
                         <p className="mt-2 text-sm text-text-secondary leading-relaxed">
                           Promote new services, announce specials, and bring past clients back.
                         </p>
-                        <p className="mt-3 text-xs font-semibold text-text-primary">
-                          $29/mo instead of $19/mo. Registration takes a few days, no fee.
+                        <p className="mt-3 text-sm font-semibold text-text-primary">
+                          $29/mo instead of $19/mo.
                         </p>
                         {!hasEin ? (
                           /* Scenario 1: No EIN */
