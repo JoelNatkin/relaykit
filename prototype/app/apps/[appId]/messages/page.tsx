@@ -405,12 +405,9 @@ export default function AppMessagesPage() {
               <>
                 <h3 className="text-lg font-semibold text-text-primary">Registration submitted</h3>
                 <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                  Most registrations are approved within 2–3 days. We&#39;ll email jen@glowstudio.com as soon as yours is live.
+                  We&#39;ll email you when you&#39;re live — usually 2–3 days.
                 </p>
-                <p className="mt-3 text-xs text-text-tertiary">Submitted March 17, 2026</p>
-                <p className="mt-3 text-xs text-text-tertiary leading-relaxed">
-                  Keep building and testing while you wait. Everything still works.
-                </p>
+                <p className="mt-3 text-sm font-semibold text-text-primary">Submitted March 17, 2026</p>
               </>
             ) : isChangesRequested ? (
               <>

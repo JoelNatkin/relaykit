@@ -424,7 +424,7 @@ export function CatalogCard({
                 </div>
               )}
             </div>
-            {isMarketing && (
+            {isMarketing && !badge && (
               <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0 bg-[#F9F5FF] border border-[#E9D7FE] text-[#7C3AED]">
                 Marketing
               </span>
