@@ -285,13 +285,12 @@ export default function AppMessagesPage() {
                     </>
                   ) : (
                     <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                      Registration takes a few days.{" "}
+                      Registration takes a few days. An EIN lets us verify your business and enable marketing messages.{" "}
                       <button
                         type="button"
                         onClick={() => setEinExpanded(true)}
                         className="font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
-                      >Add your EIN</button>
-                      {" "}for marketing messages any time.
+                      >Add your EIN.</button>
                     </p>
                   )}
                   <p className="mt-4 text-sm font-semibold text-text-primary">
