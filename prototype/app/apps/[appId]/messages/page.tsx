@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { Phone01, Settings01 } from "@untitledui/icons";
+import { InfoCircle, Phone01, Settings01 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
@@ -151,6 +151,14 @@ export default function AppMessagesPage() {
   const [upsellEinExpanded, setUpsellEinExpanded] = useState(false);
   const [upsellConfirmStep, setUpsellConfirmStep] = useState(false);
   const [upsellConfirmed, setUpsellConfirmed] = useState(false);
+
+  // Registration status tracker (Pending right rail)
+  type RegTrackerState = "all-review" | "partial" | "all-registered";
+  const [regTrackerState, setRegTrackerState] = useState<RegTrackerState>("all-review");
+  const [regTrackerDismissed, setRegTrackerDismissed] = useState(false);
+  const [regTrackerTooltip, setRegTrackerTooltip] = useState(false);
+  const hasMarketingRegistered = upsellConfirmed;
+  const verticalName = VERTICAL_LABELS[categoryId] || "Messages";
 
   function handleEinSave(ein: string, identity: BusinessIdentity) {
     saveWizardData({ ein, businessIdentity: identity });
@@ -439,7 +447,7 @@ export default function AppMessagesPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={() => setUpsellConfirmed(true)}
+                      onClick={() => { setUpsellConfirmed(true); setUpsellConfirmStep(false); }}
                       className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
                     >
                       Confirm
@@ -456,19 +464,93 @@ export default function AppMessagesPage() {
                 </div>
               ) : (
               <div className="space-y-4">
-                {/* Registration submitted card */}
-                <div>
-                  <h3 className="text-lg font-semibold text-text-primary">Registration submitted</h3>
-                  <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                    We&#39;ll email you when you&#39;re live — usually 2–3 days.
-                  </p>
-                  <p className="mt-3 text-xs font-semibold text-text-primary">Submitted 3/17/2026</p>
-                </div>
+                {/* Registration status tracker */}
+                {!regTrackerDismissed && (
+                  <div>
+                    {/* Prototype state cycler */}
+                    <div className="flex justify-end mb-2">
+                      <select
+                        value={regTrackerState}
+                        onChange={(e) => setRegTrackerState(e.target.value as RegTrackerState)}
+                        className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
+                      >
+                        <option value="all-review">All in review</option>
+                        <option value="partial">Partial registered</option>
+                        <option value="all-registered">All registered</option>
+                      </select>
+                    </div>
+
+                    <div className="relative">
+                      <h3 className="text-lg font-semibold text-text-primary inline-flex items-center gap-1.5">
+                        {regTrackerState === "all-registered" ? "Your messages are live!" : "Registration status"}
+                        <button
+                          type="button"
+                          onClick={() => setRegTrackerTooltip((v) => !v)}
+                          onBlur={() => setRegTrackerTooltip(false)}
+                          className="cursor-pointer"
+                        >
+                          <InfoCircle className="size-4 text-text-quaternary" />
+                        </button>
+                      </h3>
+                      {regTrackerTooltip && (
+                        <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed">
+                          Registration usually takes 2–3 days per message type.
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-3 space-y-2">
+                      {/* Transactional row */}
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-text-secondary">
+                          {verticalName} &middot; Submitted 3/17/2026
+                        </span>
+                        {regTrackerState === "all-review" ? (
+                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                            In review
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                            Registered
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Marketing row — only if marketing was added */}
+                      {hasMarketingRegistered && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-text-secondary">
+                            Marketing &middot; Submitted 3/17/2026
+                          </span>
+                          {regTrackerState === "all-registered" ? (
+                            <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                              Registered
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                              In review
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Close button — only in all-registered state */}
+                    {regTrackerState === "all-registered" && (
+                      <button
+                        type="button"
+                        onClick={() => setRegTrackerDismissed(true)}
+                        className="mt-4 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                      >
+                        Close
+                      </button>
+                    )}
+                  </div>
+                )}
 
                 {/* Marketing upsell card — hidden after upsell confirmed */}
                 {!upsellConfirmed && (
                   <div className="border-t border-border-secondary pt-4" style={{ animation: "einCardFade 200ms ease-out" }}>
-                    {/* Default upsell card */}
                     <div>
                       <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
                       <p className="mt-2 text-sm text-text-secondary leading-relaxed">
@@ -478,7 +560,6 @@ export default function AppMessagesPage() {
                         $29/mo instead of $19/mo.
                       </p>
                       {!hasEin ? (
-                        /* Scenario 1: No EIN */
                         <button
                           type="button"
                           onClick={() => setUpsellEinExpanded(true)}
@@ -487,7 +568,6 @@ export default function AppMessagesPage() {
                           Add your EIN &rarr;
                         </button>
                       ) : (
-                        /* Scenario 2: Has EIN, didn't choose marketing */
                         <button
                           type="button"
                           onClick={() => setUpsellConfirmStep(true)}
