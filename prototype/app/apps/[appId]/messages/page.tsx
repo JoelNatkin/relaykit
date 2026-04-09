@@ -407,7 +407,7 @@ export default function AppMessagesPage() {
                 <p className="mt-2 text-sm text-text-secondary leading-relaxed">
                   We&#39;ll email you when you&#39;re live — usually 2–3 days.
                 </p>
-                <p className="mt-3 text-sm font-semibold text-text-primary">Submitted March 17, 2026</p>
+                <p className="mt-3 text-xs font-semibold text-text-primary">Submitted 3/17/2026</p>
               </>
             ) : isChangesRequested ? (
               <>
