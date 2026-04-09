@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: April 7, 2026
+### Last updated: April 9, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -69,7 +69,7 @@ All data is mocked. Session context provides state management. localStorage key:
 
 **How it works:** Three-step grid (Pick / Hand it to your AI / Go live). Followed by centered pricing context line.
 
-**How it works pricing context:** "Free to build and test. $49 to register, $150 after approval, then $19/mo."
+**How it works pricing context:** "Free to build and test. $49 to register, then $19/mo."
 
 **Pricing:** Two cards — "Free" ($0 forever, 4 features at text-base) and "Go live" ($49 to register + $19/mo headline, bridge line: "$150 go-live fee" in semibold text-text-primary + "after approval. Full refund if not approved." in regular weight, 6 feature bullets including "No credit card to start building" and "Every message scanned — issues caught and fixed before they reach carriers" (D-241)). No per-card buttons. Single centered "Start building free →" CTA below both. Volume pricing note. (D-216, D-220)
 
@@ -83,7 +83,7 @@ All data is mocked. Session context provides state management. localStorage key:
 
 **Subhead:** "Your AI coding tool builds the integration. RelayKit handles the carriers." (updated from prior copy)
 
-**Pricing context line:** Below "See all appointment messages →" CTA link with `mt-5`. Styled: `text-base text-center text-text-tertiary`. "$49", "$150", and "$19/mo" in `font-semibold text-text-primary`. Full text: "Free sandbox. No credit card. $49 to register, $150 + $19/mo after approval."
+**Pricing context line:** Below "See all appointment messages →" CTA link with `mt-5`. Styled: `text-base text-center text-text-tertiary`. "$49" and "$19/mo" in `font-semibold text-text-primary`. Full text: "Free sandbox. No credit card. $49 to register, $19/mo after approval."
 
 **What you get cards (updated D-220, D-241):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section is a true full-width gray band (`bg-bg-secondary`) — outer page container is `py-16` with no max-width, content sections use `mx-auto max-w-4xl px-6`. Cards have `bg-bg-primary` to pop against gray. "Compliance that runs itself" card has extended description: original text + "Issues caught are fixed automatically — you get a heads-up, not an emergency." (D-241)
 
@@ -103,7 +103,7 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **Breadcrumb:** Home / Appointments / Messages — inside gray hero band as first element (see Global Patterns > Breadcrumbs). No Appointments pill badge — breadcrumb handles category identification.
 
-**Hero:** Gray band (`bg-bg-tertiary`, `pt-6 pb-12`). H1 ("Appointment messages, ready to send.") with subhead grouped below ("Everything your AI coding tool needs to add SMS — in two files."). Desktop CTA right-aligned with "Free to build and test. No lock-in." below. Mobile CTA full-width after logos. Logo row (6 tools, 48px circles with `border-[#999999]`). Pricing context below logos: "Free sandbox, no credit card. $49 to register, $150 + $19/mo after approval." with line break before "You'll get two files and a sandbox API key." "How it works" link (Expand06 icon, brand purple semibold) opens full-page modal (D-218).
+**Hero:** Gray band (`bg-bg-tertiary`, `pt-6 pb-12`). H1 ("Appointment messages, ready to send.") with subhead grouped below ("Everything your AI coding tool needs to add SMS — in two files."). Desktop CTA right-aligned with "Free to build and test. No lock-in." below. Mobile CTA full-width after logos. Logo row (6 tools, 48px circles with `border-[#999999]`). Pricing context below logos: "Free sandbox, no credit card. $49 to register, $19/mo after approval." with line break before "You'll get two files and a sandbox API key." "How it works" link (Expand06 icon, brand purple semibold) opens full-page modal (D-218).
 
 **Playbook summary (D-217, D-224):** Between hero and messages. `bg-bg-secondary` band. Heading "Your complete appointment SMS system" + horizontal flow with 6 numbered nodes (24px filled purple circles, white numbers, CSS hover tooltips) connected by arrows. Labels left-aligned, max-width ~90px. Vertical stepper on mobile. Tagline "One prompt. Your AI tool builds the whole flow." Data in `PLAYBOOK_FLOWS` keyed by category. Node order: 1 Booking confirmed, 2 Reminder sent, 3 Pre-visit sent, 4 Reschedule handled, 5 No-show followed up, 6 Cancellation handled (D-223).
 
@@ -129,7 +129,7 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 
 **"Learn more about RelayKit →"** link below marketing section, before footer.
 
-**How it works modal (D-218):** Full-page overlay (z-50, bg-white, overflow-y-auto). Sticky close button. Content: H1 "How it works" (text-3xl/4xl), subhead, "What you get" 4-card grid, pricing section in gray band (Free + Go live cards, $49 headline + $150 bridge line per pricing audit), "Why registration matters" FAQ, "Back to messages" CTA.
+**How it works modal (D-218):** Full-page overlay (z-50, bg-white, overflow-y-auto). Sticky close button. Content: H1 "How it works" (text-3xl/4xl), subhead, "What you get" 4-card grid, pricing section in gray band (Free + Go live cards, $49 + $19/mo per D-320 pricing), "Why registration matters" FAQ, "Back to messages" CTA.
 
 **Download modal:** Unchanged from prior session.
 
@@ -291,12 +291,13 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
   3. "3. Add SMS to your app" / "Paste this prompt into your AI tool to start building." / hardcoded Club Woman prompt
 
 **Right column — registration sidebar card:**
-`rounded-xl bg-gray-50 p-6 md:sticky md:top-20`. Content varies by state:
-- **Building state (D-326):** "Ready to go live?" heading, body copy about carrier registration, "$49 registration + $19/mo" pricing, "Not approved? Full refund.", "Start registration →" CTA → `/apps/[appId]/register`.
-- **Pending state:** Registration status tracker with vertical stepper (PENDING_STEPS).
-- **Extended Review:** Status tracker with CHANGES_REQUESTED_STEPS.
-- **Rejected:** Status tracker with REJECTED_STEPS + refund confirmation + "Start new registration" button (→ Building state).
-- **Registered:** Completed status tracker with APPROVED_STEPS (not shown in two-column — Registered uses ApprovedDashboard).
+`rounded-xl bg-gray-50 p-6 md:sticky md:top-20`, `md:w-[300px]`. Content varies by state:
+- **Building state — Card A (D-326, D-335, D-337):** "Ready to go live?" heading. With EIN: "Registration takes a few days." body, campaign radios ("Just [vertical]" default $19/mo, "Add marketing messages too" $29/mo with helper text showing dynamic vertical name), pricing, "Start registration →" CTA. No EIN: body includes "An EIN lets us enable optional marketing messages. [Add EIN.]" inline link. Clicking "Add EIN." swaps to Card B.
+- **Building state — Card B (D-337):** "Add your EIN" heading, EIN explanation body, "Business tax ID (EIN)" label, input + grey "Verify" button, stub switcher (Default/Verified/Failed), two-phase spinner stub (Verifying → Checking sources), business identity confirmation card, "This is my business" checkbox, Cancel + Save buttons (right-aligned together). Cancel returns to Card A. Save writes EIN to sessionStorage, dispatches `relaykit-ein-change` event, returns to Card A with radios. Failed state shows light red error box. 200ms crossfade between Card A and Card B. Shared component: `prototype/components/ein-inline-verify.tsx`.
+- **Pending state:** "Registration submitted" heading, "We'll email you when you're live — usually 2–3 days." body, "Submitted 3/17/2026" bold date.
+- **Extended Review:** "Registration status" heading, purple "Under review" pill, submitted/updated dates, longer-than-expected copy.
+- **Rejected:** "Registration status" heading, red "Not approved" pill, "$49 refunded" in green, divider, "What happened" section, mailto link. No retry button.
+- **Registered:** No right rail. Single-column layout.
 
 #### Registered State — Operational Dashboard (D-150)
 
@@ -340,7 +341,7 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 - Back (inside content column) navigates to `/start/verify`. Continue absolutely positioned top-right, labeled **"Continue"**.
 - Heading: H1 "Here's what your app will send" (`text-2xl font-bold`).
 - Body: "Each message is tailored to your business. Edit messages any time. Your app always sends the latest version." (`text-sm text-text-tertiary`).
-- **"What about marketing messages?"** link below body text (`text-sm text-text-brand-secondary`, no underline, matching EIN link style on `/start/business`). Click toggles tooltip (dark bg, white text, `rounded-lg bg-[#333333]`). EIN-aware: reads wizard sessionStorage — if EIN provided: "You're all set to add marketing messages after you create your account. We'll walk you through it."; if no EIN: "Marketing messages require a business tax ID (EIN). You can add one anytime in settings to unlock them."
+- **"What about marketing messages?"** link below body text (`text-sm text-text-brand-secondary`, no underline, matching EIN link style on `/start/business`). Click toggles tooltip (dark bg, white text, `rounded-lg bg-[#333333]`). EIN-aware: reads wizard sessionStorage — if EIN provided: "You're all set to add marketing messages after you create your account. We'll walk you through it."; if no EIN: "Marketing messages require a business tax ID (EIN). You can add one anytime in settings."
 - Message cards fill the wizard container. **No send icons** — `hideSend={true}` on CatalogCard (D-328).
 - Bottom "Continue": full-width purple button spanning the 540px content column, rendered by WizardLayout (D-318 — dual Continue).
 
@@ -353,11 +354,14 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 
 **Building state — two-column layout:**
 - Left column (`min-w-0 flex-1`): setup instructions + message cards.
-- Right column (`md:w-[280px] md:shrink-0`, `order-first md:order-last`): "Ready to go live?" registration card (`rounded-xl bg-gray-50 p-6 md:sticky md:top-20`). Body: "Registration takes a few days." When EIN on file: two radio buttons — "Just [vertical]" (default, $19/mo) and "Add marketing messages too" ($29/mo) (D-335). When no EIN: no radios, "$49 registration + $19/mo", small text "Add your EIN to unlock marketing messages." CTA: "Start registration →" → `/apps/[appId]/register`.
-- **Marketing tooltip** below registration card (Building state only): "What about marketing messages?" purple text link. Click toggles dark tooltip. EIN-aware: with EIN → "Want marketing messages? Add them after your registration is approved — no extra fee."; no EIN → "Want marketing messages? Add your EIN after registration to unlock them."
+- Right column (`md:w-[300px] md:shrink-0`, `order-first md:order-last`): Registration card — see "Right column — registration sidebar card" above for Card A / Card B details (D-335, D-337).
+- Pricing block on Card A: "$49 registration + $19/mo" (or $29/mo with marketing) bold, "500 messages included, then $8 per 500." detail line. When no EIN, detail line continues: "An EIN lets us enable optional marketing messages. [Add EIN.]" with inline purple link. When EIN expanded (Card B), pricing and CTA are hidden.
+- Marketing radio helper text (visible when "Add marketing messages too" selected): "[Vertical] messages go live first. Once approved, you'll get access to marketing templates you can customize or write from scratch."
+- No marketing tooltip below card — removed, inline EIN flow handles this.
 
 **Pending state — two-column layout:**
-- Same structure. Right column card shows: "Registration status" heading, purple "Under carrier review" pill, "Submitted March 17, 2026", email notification copy.
+- Same two-column structure. Right column card shows: "Registration submitted" heading, "We'll email you when you're live — usually 2–3 days.", "Submitted 3/17/2026" bold.
+- **Marketing messages in Pending state (D-336):** When EIN is on file (proxy for "registered with marketing"), 4 marketing message cards appear above transactional messages: New service announcement, Seasonal promotion, Re-engagement, Loyalty reward. Each has a filled purple "Marketing" badge next to the message name. Same card treatment (edit, send, style pills) as transactional messages. Marketing messages are defined in `MARKETING_MESSAGES` constant in messages/page.tsx.
 
 **Extended Review state — two-column layout:**
 - Right column card shows: "Registration status" heading, purple "Under review" pill, submitted/updated dates, longer-than-expected copy.
@@ -486,10 +490,7 @@ The last screen before the dashboard. Developer has verified their email and lan
   1. "1. Install RelayKit" / "Run this in your project's terminal." / `npm install relaykit`
   2. "2. Add your API key" / "Paste this prompt into your AI tool to add the key." / `Add this API key to my .env file: RELAYKIT_API_KEY=rk_sandbox_7Kx9mP2vL4qR8nJ5`
   3. "3. Add SMS to your app" / "Paste this prompt into your AI tool to start building." / hardcoded Club Woman prompt (production will generate from wizard data)
-- **CTA** (`mt-8`): Full-width purple "View on dashboard" button. On click: `setRegistrationState("building")` + navigate to `/apps/[appId]/overview`.
-- **Footer info** (`mt-4`, centered):
-  - "We also sent this to your email." (`text-xs text-text-quaternary`)
-  - "Need help? **Talk to our AI assistant →**" (`text-xs`, link `font-semibold text-text-brand-primary`). On click: `setRegistrationState("building")` + navigate to `/apps/[appId]/support`.
+- **CTA** (`mt-8`): Full-width purple "View on dashboard" button. On click: `setRegistrationState("building")` + navigate to `/apps/[appId]/messages`.
 
 ### Opt-in form component
 **File:** `prototype/components/catalog/catalog-opt-in.tsx`
@@ -575,7 +576,7 @@ Heading: "API keys." Sub-copy: "Your AI coding tool reads this key from your Rel
 
 - **Default:** Plan → "Sandbox — Free", muted "No credit card required."
 - **Pending / Extended Review:** Registration fee → "$49 paid · date", Plan → "Sandbox — Free", "View account billing →" link (right-aligned)
-- **Approved:** Plan → "$19/mo", Includes → "500 messages, then $15 per additional 1,000" (D-213), Next billing → date, "Manage billing →" link (right-aligned, would open Stripe Portal), separator, "Cancel plan" text link (right-aligned, text-tertiary, hover:text-error-primary). Cancel modal: "Cancel your plan" heading, sandbox continuity copy (D-153), "Keep plan" (grey) + "Cancel plan" (red). No guilt copy, no survey.
+- **Approved:** Plan → "$19/mo", Includes → "500 messages, then $8 per additional 500" (D-213), Next billing → date, "Manage billing →" link (right-aligned, would open Stripe Portal), separator, "Cancel plan" text link (right-aligned, text-tertiary, hover:text-error-primary). Cancel modal: "Cancel your plan" heading, sandbox continuity copy (D-153), "Keep plan" (grey) + "Cancel plan" (red). No guilt copy, no survey.
 - **Rejected:** Registration fee → "$49 refunded · date", Plan → "Sandbox — Free"
 
 #### Sections REMOVED
@@ -711,7 +712,7 @@ Single-customer deep-dive — everything about one customer on one page. Max-wid
 
 4. **Attention Items** — Severity-coded items matching Control Room format (colored dot + issue text + time + action link). Items in `bg-gray-50 rounded-lg` rows. Empty state: "No attention items — this customer is in good standing." (green text).
 
-5. **Billing** — Two-column grid: Plan, Registration fee ("$49 paid [date]"), Go-live fee ("$150 paid [date]" for active, "$150 due on approval" for pending, "N/A" for sandbox), Monthly rate ($19/mo or $0), Payment status (green "Current" / red "Past due" / gray "N/A"), Current period, Messages this period, Overage.
+5. **Billing** — Two-column grid: Plan, Registration fee ("$49 paid [date]"), Monthly rate ($19/mo or $0), Payment status (green "Current" / red "Past due" / gray "N/A"), Current period, Messages this period, Overage.
 
 6. **Recent Messages** — 20-row table (longest section, at bottom). Columns: Time, Recipient (masked •••-••-XXXX), Type, Preview (truncated ~60 chars), Status (colored dot: green delivered, red failed, yellow pending), Flag (only shows for non-clean: amber "warned", red "blocked" badges). Empty state: "No messages sent yet."
 
@@ -749,7 +750,7 @@ Tab bar hidden. "← Back to business details" navigation. Reads form data from 
 
 **Two-column layout:** Left: "Your details" card with business info rows + Edit button (navigates back to form). Right: compact "What happens next" card — three numbered steps (submit to carriers, get live key + number, swap sandbox for live).
 
-**Bottom:** Pricing breakdown: "Registration submission $49 / Due today $49". Below: "After approval, pay $150 + $19/mo to activate your live API key and dedicated phone number. 500 messages included monthly. Additional messages $15 per 1,000. Not approved? Full refund." Monitoring consent checkbox. CTA: "Start my registration — $49".
+**Bottom:** Pricing breakdown: "Registration submission $49 / Due today $49". Below: "After approval, $19/mo for your live API key and dedicated phone number. 500 messages included monthly. Additional messages $8 per 500. Not approved? Full refund." Monitoring consent checkbox. CTA: "Start my registration — $49".
 
 ### Compliance Modal Revision
 **Status:** `[NEEDS REVISION]`
@@ -855,4 +856,4 @@ prototype/
 | Bar thickness 8px consistency across row 2 cards | May need verification | PM_HANDOFF |
 | Overview page `changes_requested` copy may still say "Changes requested" | Needs alignment with D-202 | CC_HANDOFF gotcha #18 |
 | Registration form pre-fill: "Pre-filled" state may not auto-validate EIN path fields | Touch-all ref validates on click, but initial mount may not trigger | Register page |
-| ~~Pricing inconsistency~~ | Resolved — $199 references updated to $49/$150 split across all prototype files (pricing audit, Mar 26 session). Only orphaned `shared.tsx` retains $199. | D-193, D-196 |
+| ~~Pricing inconsistency~~ | Resolved — all pricing updated to D-320 ($49 flat) / D-321 ($8/500 overage). No go-live fee. | D-320, D-321 |
