@@ -285,28 +285,32 @@ export default function AppMessagesPage() {
                       <span className="text-sm text-text-primary">Add marketing messages too</span>
                     </label>
                   </div>
-                ) : null}
+                ) : (
+                  <>
+                    {!einExpanded && (
+                      <button
+                        type="button"
+                        onClick={() => setEinExpanded(true)}
+                        className="mt-3 text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer text-left"
+                      >
+                        Add your EIN for marketing messages
+                      </button>
+                    )}
+                    {einExpanded && (
+                      <EinInlineVerify
+                        className="mt-4"
+                        onVerified={handleEinVerified}
+                        onCancel={handleEinCancel}
+                      />
+                    )}
+                  </>
+                )}
 
                 <p className="mt-4 text-sm font-semibold text-text-primary">
                   $49 registration + {includeMarketing && hasEin ? "$29" : "$19"}/mo
                 </p>
+                <p className="mt-1 text-xs text-text-tertiary">500 messages included, then $8 per 500</p>
                 <p className="mt-1 text-sm text-text-tertiary">Not approved? Full refund.</p>
-                {!hasEin && !einExpanded && (
-                  <button
-                    type="button"
-                    onClick={() => setEinExpanded(true)}
-                    className="mt-1 text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer text-left"
-                  >
-                    Add your EIN for marketing messages — or do it later
-                  </button>
-                )}
-                {!hasEin && einExpanded && (
-                  <EinInlineVerify
-                    className="mt-4"
-                    onVerified={handleEinVerified}
-                    onCancel={handleEinCancel}
-                  />
-                )}
                 <Link
                   href={`/apps/${appId}/register`}
                   className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"

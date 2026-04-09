@@ -144,9 +144,9 @@ export function EinInlineVerify({ onVerified, onCancel, className }: EinInlineVe
   function handleOwnershipChange(checked: boolean) {
     setConfirmedOwnership(checked);
     if (checked) {
-      // Confirmed state: show checkmark for 500ms, then collapse
+      // Confirmed state: show checkmark for 800ms, then collapse
       setEinState("confirmed");
-      setTimeout(() => setEinState("collapsing"), 500);
+      setTimeout(() => setEinState("collapsing"), 800);
     }
   }
 
@@ -216,13 +216,13 @@ export function EinInlineVerify({ onVerified, onCancel, className }: EinInlineVe
             onBlur={handleEinBlur}
             placeholder="XX-XXXXXXX"
             disabled={einState === "verifying"}
-            className="flex-1 rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none focus:ring-2 focus:ring-border-brand/20 disabled:bg-bg-secondary disabled:text-text-tertiary"
+            className="min-w-0 flex-1 rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none focus:ring-2 focus:ring-border-brand/20 disabled:bg-bg-secondary disabled:text-text-tertiary"
           />
           <button
             type="button"
             onClick={handleVerify}
             disabled={!canVerify && einState !== "verifying"}
-            className="rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-text-disabled cursor-pointer shrink-0"
+            className="rounded-lg bg-bg-brand-solid px-3 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-text-disabled cursor-pointer shrink-0"
           >
             {verifyButtonText}
           </button>
@@ -285,7 +285,7 @@ export function EinInlineVerify({ onVerified, onCancel, className }: EinInlineVe
                     <InfoIcon />
                   </button>
                   {showOwnershipTooltip && (
-                    <div className="absolute left-4 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[240px] max-w-[300px] whitespace-normal leading-relaxed pointer-events-none">
+                    <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[200px] max-w-[240px] whitespace-normal leading-relaxed pointer-events-none">
                       {OWNERSHIP_TOOLTIP_COPY}
                     </div>
                   )}
