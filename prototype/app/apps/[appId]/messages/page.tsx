@@ -445,18 +445,27 @@ export default function AppMessagesPage() {
                       <div style={{ animation: "einCardFade 200ms ease-out" }}>
                         <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
                         <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                          Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>.
+                          Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration takes a few days.
                         </p>
                         <p className="mt-1 text-xs text-text-tertiary">
                           No extra registration fee. Marketing messages share your 500 included messages.
                         </p>
-                        <button
-                          type="button"
-                          onClick={() => setUpsellConfirmed(true)}
-                          className="mt-4 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                        >
-                          Confirm
-                        </button>
+                        <div className="mt-4 flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={() => setUpsellConfirmStep(false)}
+                            className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setUpsellConfirmed(true)}
+                            className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                          >
+                            Confirm
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       /* Default upsell card */
@@ -473,7 +482,7 @@ export default function AppMessagesPage() {
                           <button
                             type="button"
                             onClick={() => setUpsellEinExpanded(true)}
-                            className="mt-3 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                            className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
                           >
                             Add your EIN &rarr;
                           </button>
@@ -482,7 +491,7 @@ export default function AppMessagesPage() {
                           <button
                             type="button"
                             onClick={() => setUpsellConfirmStep(true)}
-                            className="mt-3 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                            className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
                           >
                             Add marketing messages &rarr;
                           </button>
