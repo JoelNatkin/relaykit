@@ -160,28 +160,11 @@ export default function GetStartedPage() {
       {/* Dashboard CTA */}
       <button
         type="button"
-        onClick={() => handleTransition(`/apps/${appId}/overview`)}
+        onClick={() => handleTransition(`/apps/${appId}/messages`)}
         className="mt-8 w-full rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
       >
         View on dashboard
       </button>
-
-      {/* Footer info */}
-      <div className="mt-4 text-center">
-        <p className="text-xs text-text-quaternary">
-          We also sent this to your email.
-        </p>
-        <p className="mt-1 text-xs text-text-quaternary">
-          Need help?{" "}
-          <button
-            type="button"
-            onClick={() => handleTransition(`/apps/${appId}/support`)}
-            className="font-semibold text-text-brand-primary hover:text-text-brand-secondary transition duration-100 ease-linear cursor-pointer"
-          >
-            Talk to our AI assistant →
-          </button>
-        </p>
-      </div>
     </div>
   );
 }
