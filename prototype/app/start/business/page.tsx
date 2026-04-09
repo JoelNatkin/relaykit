@@ -33,7 +33,7 @@ function XIcon({ className }: { className?: string }) {
 }
 
 const TOOLTIP_COPY =
-  "A 9-digit tax ID for your business. Entering one unlocks marketing messages and additional use cases.";
+  "A 9-digit tax ID for your business. With one, you can send marketing messages and register additional use cases.";
 const OWNERSHIP_TOOLTIP_COPY =
   "Misrepresenting business identity will result in account termination.";
 

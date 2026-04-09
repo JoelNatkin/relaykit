@@ -8,7 +8,9 @@ import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { SetupInstructions, SetupToggle, useSetupToggle } from "@/components/setup-instructions";
-import { loadWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
+import { loadWizardData, saveWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
+import { EinInlineVerify } from "@/components/ein-inline-verify";
+import type { BusinessIdentity } from "@/components/ein-inline-verify";
 
 /* ── localStorage personalization ── */
 
@@ -82,9 +84,21 @@ export default function AppMessagesPage() {
     return () => window.removeEventListener("relaykit-ein-change", readEin);
   }, []);
 
-  // Registration card: marketing radio + vertical label
+  // Registration card: marketing radio + vertical label + inline EIN
   const [includeMarketing, setIncludeMarketing] = useState(false);
+  const [einExpanded, setEinExpanded] = useState(false);
   const verticalLabel = (VERTICAL_LABELS[categoryId] || categoryId).toLowerCase();
+
+  function handleEinVerified(ein: string, identity: BusinessIdentity) {
+    saveWizardData({ ein, businessIdentity: identity });
+    setHasEin(true);
+    setEinExpanded(false);
+    window.dispatchEvent(new Event("relaykit-ein-change"));
+  }
+
+  function handleEinCancel() {
+    setEinExpanded(false);
+  }
 
   // Single-card editing: clicking a new card's pencil closes any open edit.
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
@@ -152,7 +166,7 @@ export default function AppMessagesPage() {
               <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[260px] max-w-[320px] whitespace-normal leading-relaxed">
                 {hasEin
                   ? "You\u2019re all set to add marketing messages after you create your account. We\u2019ll walk you through it."
-                  : "Marketing messages require a business tax ID (EIN). You can add one anytime in settings to unlock them."}
+                  : "Marketing messages require a business tax ID (EIN). You can add one anytime in settings."}
               </div>
             )}
           </div>
@@ -273,8 +287,21 @@ export default function AppMessagesPage() {
                   $49 registration + {includeMarketing && hasEin ? "$29" : "$19"}/mo
                 </p>
                 <p className="mt-1 text-sm text-text-tertiary">Not approved? Full refund.</p>
-                {!hasEin && (
-                  <p className="mt-1 text-xs text-text-quaternary">Add your EIN to unlock marketing messages.</p>
+                {!hasEin && !einExpanded && (
+                  <button
+                    type="button"
+                    onClick={() => setEinExpanded(true)}
+                    className="mt-1 text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer text-left"
+                  >
+                    Add your EIN for marketing messages
+                  </button>
+                )}
+                {!hasEin && einExpanded && (
+                  <EinInlineVerify
+                    className="mt-4"
+                    onVerified={handleEinVerified}
+                    onCancel={handleEinCancel}
+                  />
                 )}
                 <Link
                   href={`/apps/${appId}/register`}
@@ -362,7 +389,7 @@ export default function AppMessagesPage() {
                 <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[240px] max-w-[280px] whitespace-normal leading-relaxed">
                   {hasEin
                     ? "Want marketing messages? Add them after your registration is approved \u2014 no extra fee."
-                    : "Want marketing messages? Add your EIN after registration to unlock them."}
+                    : "Want marketing messages? Add your EIN to get started."}
                 </div>
               )}
             </div>
