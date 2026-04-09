@@ -281,6 +281,11 @@ export default function AppMessagesPage() {
                           />
                           <span className="text-sm text-text-primary">Add marketing messages too</span>
                         </label>
+                        {includeMarketing && (
+                          <p className="pl-6 text-xs text-text-tertiary leading-relaxed">
+                            Your transactional messages go live first. Marketing messages are enabled shortly after.
+                          </p>
+                        )}
                       </div>
                     </>
                   ) : (
