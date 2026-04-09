@@ -147,6 +147,11 @@ export default function AppMessagesPage() {
   const [einExpanded, setEinExpanded] = useState(false);
   const verticalLabel = (VERTICAL_LABELS[categoryId] || categoryId).toLowerCase();
 
+  // Marketing upsell card state (Pending right rail)
+  const [upsellEinExpanded, setUpsellEinExpanded] = useState(false);
+  const [upsellConfirmStep, setUpsellConfirmStep] = useState(false);
+  const [upsellConfirmed, setUpsellConfirmed] = useState(false);
+
   function handleEinSave(ein: string, identity: BusinessIdentity) {
     saveWizardData({ ein, businessIdentity: identity });
     setHasEin(true);
@@ -156,6 +161,18 @@ export default function AppMessagesPage() {
 
   function handleEinCancel() {
     setEinExpanded(false);
+  }
+
+  function handleUpsellEinSave(ein: string, identity: BusinessIdentity) {
+    saveWizardData({ ein, businessIdentity: identity });
+    setHasEin(true);
+    setUpsellEinExpanded(false);
+    setUpsellConfirmStep(true);
+    window.dispatchEvent(new Event("relaykit-ein-change"));
+  }
+
+  function handleUpsellEinCancel() {
+    setUpsellEinExpanded(false);
   }
 
   // Single-card editing: clicking a new card's pencil closes any open edit.
@@ -177,7 +194,7 @@ export default function AppMessagesPage() {
   const { visible: setupVisible, toggle: setupToggle } = useSetupToggle(registrationState);
 
   /* ── Should marketing messages be shown? (D-336) ── */
-  const showMarketingMessages = isPending && hasEin;
+  const showMarketingMessages = isPending && hasEin && upsellConfirmed;
 
   /* ── Shared message list ── */
   const messageList = (
@@ -402,13 +419,79 @@ export default function AppMessagesPage() {
                 </div>
               )
             ) : isPending ? (
-              <>
-                <h3 className="text-lg font-semibold text-text-primary">Registration submitted</h3>
-                <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                  We&#39;ll email you when you&#39;re live — usually 2–3 days.
-                </p>
-                <p className="mt-3 text-xs font-semibold text-text-primary">Submitted 3/17/2026</p>
-              </>
+              <div className="space-y-4">
+                {/* Registration submitted card */}
+                <div>
+                  <h3 className="text-lg font-semibold text-text-primary">Registration submitted</h3>
+                  <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                    We&#39;ll email you when you&#39;re live — usually 2–3 days.
+                  </p>
+                  <p className="mt-3 text-xs font-semibold text-text-primary">Submitted 3/17/2026</p>
+                </div>
+
+                {/* Marketing upsell card — hidden after upsell confirmed */}
+                {!upsellConfirmed && (
+                  <div className="border-t border-border-secondary pt-4" style={{ animation: "einCardFade 200ms ease-out" }}>
+                    {upsellEinExpanded ? (
+                      /* Scenario 1: EIN verification card */
+                      <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                        <EinInlineVerify
+                          onSave={handleUpsellEinSave}
+                          onCancel={handleUpsellEinCancel}
+                        />
+                      </div>
+                    ) : upsellConfirmStep ? (
+                      /* Pricing confirmation step (after EIN verified or Scenario 2 click) */
+                      <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                        <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
+                        <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+                          Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>.
+                        </p>
+                        <p className="mt-1 text-xs text-text-tertiary">
+                          No extra registration fee. Marketing messages share your 500 included messages.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setUpsellConfirmed(true)}
+                          className="mt-4 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Confirm
+                        </button>
+                      </div>
+                    ) : (
+                      /* Default upsell card */
+                      <div>
+                        <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
+                        <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                          Promote new services, announce specials, and bring past clients back. Your marketing messages go through the same registration — no extra steps.
+                        </p>
+                        {!hasEin ? (
+                          /* Scenario 1: No EIN */
+                          <button
+                            type="button"
+                            onClick={() => setUpsellEinExpanded(true)}
+                            className="mt-4 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                          >
+                            Add your EIN &rarr;
+                          </button>
+                        ) : (
+                          /* Scenario 2: Has EIN, didn't choose marketing */
+                          <button
+                            type="button"
+                            onClick={() => setUpsellConfirmStep(true)}
+                            className="mt-4 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                          >
+                            Add marketing messages &rarr;
+                          </button>
+                        )}
+                        <p className="mt-3 text-xs text-text-tertiary">
+                          Your monthly plan changes from $19/mo to $29/mo. No extra registration fee.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             ) : isChangesRequested ? (
               <>
                 <h3 className="text-base font-semibold text-text-primary">Registration status</h3>
