@@ -255,46 +255,50 @@ export default function AppMessagesPage() {
             {isBuilding ? (
               <>
                 <h3 className="text-lg font-semibold text-text-primary">Ready to go live?</h3>
-                <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                  Registration takes a few days.
-                </p>
 
                 {hasEin ? (
-                  <div
-                    className="mt-4 space-y-2"
-                    style={einJustVerified ? { animation: "einRadiosIn 200ms ease-out" } : undefined}
-                  >
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="campaign-type"
-                        checked={!includeMarketing}
-                        onChange={() => setIncludeMarketing(false)}
-                        className="accent-[var(--color-brand-600)]"
-                      />
-                      <span className="text-sm text-text-primary">Just {verticalLabel}</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="campaign-type"
-                        checked={includeMarketing}
-                        onChange={() => setIncludeMarketing(true)}
-                        className="accent-[var(--color-brand-600)]"
-                      />
-                      <span className="text-sm text-text-primary">Add marketing messages too</span>
-                    </label>
-                  </div>
+                  <>
+                    <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                      Registration takes a few days.
+                    </p>
+                    <div
+                      className="mt-4 space-y-2"
+                      style={einJustVerified ? { animation: "einRadiosIn 200ms ease-out" } : undefined}
+                    >
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="campaign-type"
+                          checked={!includeMarketing}
+                          onChange={() => setIncludeMarketing(false)}
+                          className="accent-[var(--color-brand-600)]"
+                        />
+                        <span className="text-sm text-text-primary">Just {verticalLabel}</span>
+                      </label>
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="campaign-type"
+                          checked={includeMarketing}
+                          onChange={() => setIncludeMarketing(true)}
+                          className="accent-[var(--color-brand-600)]"
+                        />
+                        <span className="text-sm text-text-primary">Add marketing messages too</span>
+                      </label>
+                    </div>
+                  </>
                 ) : (
                   <>
                     {!einExpanded && (
-                      <button
-                        type="button"
-                        onClick={() => setEinExpanded(true)}
-                        className="mt-3 text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer text-left"
-                      >
-                        Add your EIN for marketing messages
-                      </button>
+                      <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                        Registration takes a few days.{" "}
+                        <button
+                          type="button"
+                          onClick={() => setEinExpanded(true)}
+                          className="font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+                        >Add your EIN</button>
+                        {" "}for marketing messages any time.
+                      </p>
                     )}
                     {einExpanded && (
                       <EinInlineVerify
