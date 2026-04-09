@@ -86,14 +86,12 @@ export default function AppMessagesPage() {
   // Registration card: marketing radio + vertical label + inline EIN
   const [includeMarketing, setIncludeMarketing] = useState(false);
   const [einExpanded, setEinExpanded] = useState(false);
-  const [einJustVerified, setEinJustVerified] = useState(false);
   const verticalLabel = (VERTICAL_LABELS[categoryId] || categoryId).toLowerCase();
 
-  function handleEinVerified(ein: string, identity: BusinessIdentity) {
+  function handleEinSave(ein: string, identity: BusinessIdentity) {
     saveWizardData({ ein, businessIdentity: identity });
     setHasEin(true);
     setEinExpanded(false);
-    setEinJustVerified(true);
     window.dispatchEvent(new Event("relaykit-ein-change"));
   }
 
@@ -253,78 +251,69 @@ export default function AppMessagesPage() {
         <div className="order-first md:order-last md:w-[300px] md:shrink-0">
           <div className="rounded-xl bg-gray-50 p-6 md:sticky md:top-20">
             {isBuilding ? (
-              <>
-                <h3 className="text-lg font-semibold text-text-primary">Ready to go live?</h3>
-
-                {hasEin ? (
-                  <>
-                    <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                      Registration takes a few days.
-                    </p>
-                    <div
-                      className="mt-4 space-y-2"
-                      style={einJustVerified ? { animation: "einRadiosIn 200ms ease-out" } : undefined}
-                    >
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="campaign-type"
-                          checked={!includeMarketing}
-                          onChange={() => setIncludeMarketing(false)}
-                          className="accent-[var(--color-brand-600)]"
-                        />
-                        <span className="text-sm text-text-primary">Just {verticalLabel}</span>
-                      </label>
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="radio"
-                          name="campaign-type"
-                          checked={includeMarketing}
-                          onChange={() => setIncludeMarketing(true)}
-                          className="accent-[var(--color-brand-600)]"
-                        />
-                        <span className="text-sm text-text-primary">Add marketing messages too</span>
-                      </label>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {!einExpanded && (
+              !einExpanded ? (
+                /* Card A — Registration card */
+                <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                  <h3 className="text-lg font-semibold text-text-primary">Ready to go live?</h3>
+                  {hasEin ? (
+                    <>
                       <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                        Registration takes a few days.{" "}
-                        <button
-                          type="button"
-                          onClick={() => setEinExpanded(true)}
-                          className="font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
-                        >Add your EIN</button>
-                        {" "}for marketing messages any time.
+                        Registration takes a few days.
                       </p>
-                    )}
-                    {einExpanded && (
-                      <EinInlineVerify
-                        className="mt-4"
-                        onVerified={handleEinVerified}
-                        onCancel={handleEinCancel}
-                      />
-                    )}
-                  </>
-                )}
-
-                {!einExpanded && (
-                  <>
-                    <p className="mt-4 text-sm font-semibold text-text-primary">
-                      $49 registration + {includeMarketing && hasEin ? "$29" : "$19"}/mo
+                      <div className="mt-4 space-y-2">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="campaign-type"
+                            checked={!includeMarketing}
+                            onChange={() => setIncludeMarketing(false)}
+                            className="accent-[var(--color-brand-600)]"
+                          />
+                          <span className="text-sm text-text-primary">Just {verticalLabel}</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="campaign-type"
+                            checked={includeMarketing}
+                            onChange={() => setIncludeMarketing(true)}
+                            className="accent-[var(--color-brand-600)]"
+                          />
+                          <span className="text-sm text-text-primary">Add marketing messages too</span>
+                        </label>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                      Registration takes a few days.{" "}
+                      <button
+                        type="button"
+                        onClick={() => setEinExpanded(true)}
+                        className="font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+                      >Add your EIN</button>
+                      {" "}for marketing messages any time.
                     </p>
-                    <p className="mt-1 text-xs text-text-tertiary">500 messages included, then $8 per 500</p>
-                    <Link
-                      href={`/apps/${appId}/register`}
-                      className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-                    >
-                      Start registration &rarr;
-                    </Link>
-                  </>
-                )}
-              </>
+                  )}
+                  <p className="mt-4 text-sm font-semibold text-text-primary">
+                    $49 registration + {includeMarketing && hasEin ? "$29" : "$19"}/mo
+                  </p>
+                  <p className="mt-1 text-xs text-text-tertiary">500 messages included, then $8 per 500</p>
+                  <Link
+                    href={`/apps/${appId}/register`}
+                    className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                  >
+                    Start registration &rarr;
+                  </Link>
+                </div>
+              ) : (
+                /* Card B — EIN verification card */
+                <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                  <EinInlineVerify
+                    onSave={handleEinSave}
+                    onCancel={handleEinCancel}
+                  />
+                </div>
+              )
             ) : isPending ? (
               <>
                 <h3 className="text-base font-semibold text-text-primary">Registration status</h3>
