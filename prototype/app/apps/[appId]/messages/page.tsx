@@ -463,14 +463,17 @@ export default function AppMessagesPage() {
                       <div>
                         <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
                         <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                          Promote new services, announce specials, and bring past clients back. Your marketing messages go through the same registration — no extra steps.
+                          Promote new services, announce specials, and bring past clients back.
+                        </p>
+                        <p className="mt-3 text-xs font-semibold text-text-primary">
+                          $29/mo instead of $19/mo. Registration takes a few days, no fee.
                         </p>
                         {!hasEin ? (
                           /* Scenario 1: No EIN */
                           <button
                             type="button"
                             onClick={() => setUpsellEinExpanded(true)}
-                            className="mt-4 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                            className="mt-3 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
                           >
                             Add your EIN &rarr;
                           </button>
@@ -479,14 +482,11 @@ export default function AppMessagesPage() {
                           <button
                             type="button"
                             onClick={() => setUpsellConfirmStep(true)}
-                            className="mt-4 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                            className="mt-3 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
                           >
                             Add marketing messages &rarr;
                           </button>
                         )}
-                        <p className="mt-3 text-xs text-text-tertiary">
-                          Your monthly plan changes from $19/mo to $29/mo. No extra registration fee.
-                        </p>
                       </div>
                     )}
                   </div>
