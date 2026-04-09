@@ -419,6 +419,42 @@ export default function AppMessagesPage() {
                 </div>
               )
             ) : isPending ? (
+              upsellConfirmStep ? (
+                /* Pricing confirmation step — takes over entire card */
+                <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                  <h3 className="text-lg font-semibold text-text-primary">Confirm marketing messages</h3>
+                  <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+                    Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration takes a few days; no fee.
+                  </p>
+                  <p className="mt-1 text-xs text-text-tertiary">
+                    Marketing messages share your 500 included messages.
+                  </p>
+                  <div className="mt-4 flex items-center gap-5">
+                    <button
+                      type="button"
+                      onClick={() => setUpsellConfirmed(true)}
+                      className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUpsellConfirmStep(false)}
+                      className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : upsellEinExpanded ? (
+                /* Scenario 1: EIN verification card — takes over entire card */
+                <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                  <EinInlineVerify
+                    onSave={handleUpsellEinSave}
+                    onCancel={handleUpsellEinCancel}
+                  />
+                </div>
+              ) : (
               <div className="space-y-4">
                 {/* Registration submitted card */}
                 <div>
@@ -432,75 +468,39 @@ export default function AppMessagesPage() {
                 {/* Marketing upsell card — hidden after upsell confirmed */}
                 {!upsellConfirmed && (
                   <div className="border-t border-border-secondary pt-4" style={{ animation: "einCardFade 200ms ease-out" }}>
-                    {upsellEinExpanded ? (
-                      /* Scenario 1: EIN verification card */
-                      <div style={{ animation: "einCardFade 200ms ease-out" }}>
-                        <EinInlineVerify
-                          onSave={handleUpsellEinSave}
-                          onCancel={handleUpsellEinCancel}
-                        />
-                      </div>
-                    ) : upsellConfirmStep ? (
-                      /* Pricing confirmation step (after EIN verified or Scenario 2 click) */
-                      <div style={{ animation: "einCardFade 200ms ease-out" }}>
-                        <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
-                        <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                          Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration takes a few days; no fee.
-                        </p>
-                        <p className="mt-1 text-xs text-text-tertiary">
-                          Marketing messages share your 500 included messages.
-                        </p>
-                        <div className="mt-4 flex items-center justify-between">
-                          <button
-                            type="button"
-                            onClick={() => setUpsellConfirmStep(false)}
-                            className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setUpsellConfirmed(true)}
-                            className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                          >
-                            Confirm
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      /* Default upsell card */
-                      <div>
-                        <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
-                        <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                          Promote new services, announce specials, and bring past clients back.
-                        </p>
-                        <p className="mt-3 text-sm font-semibold text-text-primary">
-                          $29/mo instead of $19/mo.
-                        </p>
-                        {!hasEin ? (
-                          /* Scenario 1: No EIN */
-                          <button
-                            type="button"
-                            onClick={() => setUpsellEinExpanded(true)}
-                            className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                          >
-                            Add your EIN &rarr;
-                          </button>
-                        ) : (
-                          /* Scenario 2: Has EIN, didn't choose marketing */
-                          <button
-                            type="button"
-                            onClick={() => setUpsellConfirmStep(true)}
-                            className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                          >
-                            Add marketing messages &rarr;
-                          </button>
-                        )}
-                      </div>
-                    )}
+                    {/* Default upsell card */}
+                    <div>
+                      <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
+                      <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                        Promote new services, announce specials, and bring past clients back.
+                      </p>
+                      <p className="mt-3 text-sm font-semibold text-text-primary">
+                        $29/mo instead of $19/mo.
+                      </p>
+                      {!hasEin ? (
+                        /* Scenario 1: No EIN */
+                        <button
+                          type="button"
+                          onClick={() => setUpsellEinExpanded(true)}
+                          className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Add your EIN &rarr;
+                        </button>
+                      ) : (
+                        /* Scenario 2: Has EIN, didn't choose marketing */
+                        <button
+                          type="button"
+                          onClick={() => setUpsellConfirmStep(true)}
+                          className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Add marketing messages &rarr;
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
+              )
             ) : isChangesRequested ? (
               <>
                 <h3 className="text-base font-semibold text-text-primary">Registration status</h3>
