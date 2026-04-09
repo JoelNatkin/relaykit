@@ -283,7 +283,7 @@ export default function AppMessagesPage() {
                         </label>
                         {includeMarketing && (
                           <p className="pl-6 text-xs text-text-tertiary leading-relaxed">
-                            Your transactional messages go live first. Marketing messages are enabled shortly after.
+                            {VERTICAL_LABELS[categoryId] || "Your"} messages go live first. Once approved, you&apos;ll get access to marketing templates you can customize or write from scratch.
                           </p>
                         )}
                       </div>
