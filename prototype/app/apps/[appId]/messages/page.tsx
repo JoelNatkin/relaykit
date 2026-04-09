@@ -403,22 +403,14 @@ export default function AppMessagesPage() {
               )
             ) : isPending ? (
               <>
-                <h3 className="text-base font-semibold text-text-primary">Registration status</h3>
-                <div className="mt-3">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-2.5 py-1 text-xs font-medium text-text-brand-secondary">
-                    <span className="w-1.5 h-1.5 rounded-full bg-fg-brand-primary" />
-                    Under carrier review
-                  </span>
-                </div>
-                <div className="mt-4 space-y-1">
-                  <p className="text-sm font-semibold text-text-secondary">Submitted March 17, 2026</p>
-                  <p className="text-sm text-text-tertiary">
-                    Typically approved in a few days. We&#39;ll email you at{" "}
-                    <a href="mailto:jen@glowstudio.com" className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">
-                      jen@glowstudio.com
-                    </a>.
-                  </p>
-                </div>
+                <h3 className="text-lg font-semibold text-text-primary">Registration submitted</h3>
+                <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                  Most registrations are approved within 2–3 days. We&#39;ll email jen@glowstudio.com as soon as yours is live.
+                </p>
+                <p className="mt-3 text-xs text-text-tertiary">Submitted March 17, 2026</p>
+                <p className="mt-3 text-xs text-text-tertiary leading-relaxed">
+                  Keep building and testing while you wait. Everything still works.
+                </p>
               </>
             ) : isChangesRequested ? (
               <>
