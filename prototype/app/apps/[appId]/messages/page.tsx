@@ -73,7 +73,6 @@ export default function AppMessagesPage() {
   // Check if EIN was provided in wizard flow — re-reads on switcher change
   const [hasEin, setHasEin] = useState(false);
   const [showMarketingTooltip, setShowMarketingTooltip] = useState(false);
-  const [showBuildingMarketingTooltip, setShowBuildingMarketingTooltip] = useState(false);
   useEffect(() => {
     function readEin() {
       const data = loadWizardData();
@@ -87,12 +86,14 @@ export default function AppMessagesPage() {
   // Registration card: marketing radio + vertical label + inline EIN
   const [includeMarketing, setIncludeMarketing] = useState(false);
   const [einExpanded, setEinExpanded] = useState(false);
+  const [einJustVerified, setEinJustVerified] = useState(false);
   const verticalLabel = (VERTICAL_LABELS[categoryId] || categoryId).toLowerCase();
 
   function handleEinVerified(ein: string, identity: BusinessIdentity) {
     saveWizardData({ ein, businessIdentity: identity });
     setHasEin(true);
     setEinExpanded(false);
+    setEinJustVerified(true);
     window.dispatchEvent(new Event("relaykit-ein-change"));
   }
 
@@ -259,7 +260,10 @@ export default function AppMessagesPage() {
                 </p>
 
                 {hasEin ? (
-                  <div className="mt-4 space-y-2">
+                  <div
+                    className="mt-4 space-y-2"
+                    style={einJustVerified ? { animation: "einRadiosIn 200ms ease-out" } : undefined}
+                  >
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="radio"
@@ -293,7 +297,7 @@ export default function AppMessagesPage() {
                     onClick={() => setEinExpanded(true)}
                     className="mt-1 text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer text-left"
                   >
-                    Add your EIN for marketing messages
+                    Add your EIN for marketing messages — or do it later
                   </button>
                 )}
                 {!hasEin && einExpanded && (
@@ -374,26 +378,6 @@ export default function AppMessagesPage() {
             ) : null}
           </div>
 
-          {/* Marketing tooltip — Building state only */}
-          {isBuilding && (
-            <div className="relative mt-3">
-              <button
-                type="button"
-                onClick={() => setShowBuildingMarketingTooltip((v) => !v)}
-                onBlur={() => setShowBuildingMarketingTooltip(false)}
-                className="text-sm text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
-              >
-                What about marketing messages?
-              </button>
-              {showBuildingMarketingTooltip && (
-                <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[240px] max-w-[280px] whitespace-normal leading-relaxed">
-                  {hasEin
-                    ? "Want marketing messages? Add them after your registration is approved \u2014 no extra fee."
-                    : "Want marketing messages? Add your EIN to get started."}
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </div>
