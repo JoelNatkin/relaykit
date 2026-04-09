@@ -1158,3 +1158,7 @@ _Affects: Registration flow, pricing copy, marketing expansion CTA, PRICING_MODE
 **D-335 — Registration CTA shows campaign selection when EIN on file** (Date: 2026-04-08)
 The "Ready to go live?" registration card in Building state presents two radio options when an EIN is verified: "Just [vertical]" (default, $19/mo) and "Add marketing messages too" ($29/mo). When no EIN, no radio buttons — shows transactional-only pricing with "Add your EIN to unlock marketing messages." This is the pre-registration moment where the developer commits to campaign scope. The vertical name is read from sessionStorage and lowercased in the label.
 _Affects: Messages page Building state, registration flow entry point, campaign selection UX._
+
+**D-336 — Marketing messages visible and editable in Pending state after registration** (Date: 2026-04-09)
+When a developer selects "Add marketing messages too" during registration, marketing messages appear in the messages list immediately in Pending state — not after approval. Developer can customize and refine marketing messages while waiting for transactional approval. Marketing messages display above transactional messages with a "Marketing" badge on each card. This transforms wait time into productive building time and validates the developer's $29/mo commitment.
+_Affects: Messages page Pending state, message list ordering, marketing message visibility, badge component._
