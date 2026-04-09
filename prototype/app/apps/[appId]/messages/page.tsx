@@ -429,20 +429,20 @@ export default function AppMessagesPage() {
                   <p className="mt-1 text-xs text-text-tertiary">
                     Marketing messages share your 500 included messages.
                   </p>
-                  <div className="mt-4 flex items-center gap-5">
-                    <button
-                      type="button"
-                      onClick={() => setUpsellConfirmed(true)}
-                      className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                    >
-                      Confirm
-                    </button>
+                  <div className="mt-6 flex items-center justify-end gap-5">
                     <button
                       type="button"
                       onClick={() => setUpsellConfirmStep(false)}
                       className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
                     >
                       Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUpsellConfirmed(true)}
+                      className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                    >
+                      Confirm
                     </button>
                   </div>
                 </div>
