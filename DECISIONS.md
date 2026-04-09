@@ -1162,3 +1162,7 @@ _Affects: Messages page Building state, registration flow entry point, campaign 
 **D-336 — Marketing messages visible and editable in Pending state after registration** (Date: 2026-04-09)
 When a developer selects "Add marketing messages too" during registration, marketing messages appear in the messages list immediately in Pending state — not after approval. Developer can customize and refine marketing messages while waiting for transactional approval. Marketing messages display above transactional messages with a "Marketing" badge on each card. This transforms wait time into productive building time and validates the developer's $29/mo commitment.
 _Affects: Messages page Pending state, message list ordering, marketing message visibility, badge component._
+
+**D-337 — Inline EIN verification on Building state registration card** (Date: 2026-04-09)
+Developers can add their EIN directly from the Building state registration card without navigating away. "Add EIN." link swaps the registration card to an EIN verification card (Card B) with input, two-phase verify stub, business identity confirmation, and Save/Cancel. On save, the card swaps back with campaign selection radios visible. Same EIN verification pattern (input + two-phase spinner + identity card) as the onboarding /start/business page, extracted to shared component ein-inline-verify.tsx.
+_Affects: Messages page Building state, registration card, ein-inline-verify.tsx._
