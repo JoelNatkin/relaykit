@@ -384,15 +384,17 @@ export default function BusinessNamePage() {
 
             {/* Failed — transactional primary */}
             {einState === "failed" && !isMarketingPrimary && (
-              <p className="mt-2 text-xs text-text-tertiary leading-relaxed">
-                We couldn&apos;t verify this EIN. You can try again or continue without it.
-              </p>
+              <div className="mt-2 rounded-lg bg-bg-error-secondary px-3 py-2">
+                <p className="text-xs text-text-error-primary leading-relaxed">
+                  We couldn&apos;t verify this EIN. You can try again or continue without it.
+                </p>
+              </div>
             )}
 
             {/* Failed — marketing primary */}
             {einState === "failed" && isMarketingPrimary && (
-              <div className="mt-3">
-                <p className="text-sm text-text-tertiary leading-relaxed">
+              <div className="mt-3 rounded-lg bg-bg-error-secondary px-3 py-2">
+                <p className="text-sm text-text-error-primary leading-relaxed">
                   We couldn&apos;t verify this EIN. Marketing messages require a verified business identity. You can switch to a different use case to get started, or try a different EIN.
                 </p>
                 <button

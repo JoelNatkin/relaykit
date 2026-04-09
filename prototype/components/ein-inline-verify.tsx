@@ -27,6 +27,7 @@ export interface BusinessIdentity {
 
 type EinState = "idle" | "verifying" | "verified" | "failed";
 type VerifyingPhase = "primary" | "sources";
+type StubMode = "default" | "verified" | "failed";
 
 interface EinInlineVerifyProps {
   /** Called when the user clicks Save after confirming ownership */
@@ -45,6 +46,7 @@ export function EinInlineVerify({ onSave, onCancel, className }: EinInlineVerify
   const [verifyingPhase, setVerifyingPhase] = useState<VerifyingPhase>("primary");
   const [formatError, setFormatError] = useState(false);
   const [confirmedOwnership, setConfirmedOwnership] = useState(false);
+  const [stubMode, setStubMode] = useState<StubMode>("default");
 
   const einDigits = einInput.replace(/\D/g, "");
   const formatted = formatEin(einInput);
@@ -76,7 +78,7 @@ export function EinInlineVerify({ onSave, onCancel, className }: EinInlineVerify
     setTimeout(() => {
       setVerifyingPhase("sources");
       setTimeout(() => {
-        setEinState("verified");
+        setEinState(stubMode === "failed" ? "failed" : "verified");
       }, 1500);
     }, 1000);
   }
@@ -104,9 +106,20 @@ export function EinInlineVerify({ onSave, onCancel, className }: EinInlineVerify
       {/* EIN input + Verify button — hidden once verified */}
       {einState !== "verified" && (
         <div className="mt-4">
-          <label htmlFor="ein-inline" className="mb-1.5 block text-sm font-medium text-text-secondary">
-            Business tax ID (EIN)
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label htmlFor="ein-inline" className="text-sm font-medium text-text-secondary">
+              Business tax ID (EIN)
+            </label>
+            <select
+              value={stubMode}
+              onChange={(e) => setStubMode(e.target.value as StubMode)}
+              className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
+            >
+              <option value="default">Default</option>
+              <option value="verified">Verified</option>
+              <option value="failed">Failed</option>
+            </select>
+          </div>
           <div className="flex items-start gap-2">
           <input
             ref={einInputRef}
@@ -142,9 +155,11 @@ export function EinInlineVerify({ onSave, onCancel, className }: EinInlineVerify
 
       {/* Failed */}
       {einState === "failed" && (
-        <p className="mt-2 text-xs text-text-tertiary leading-relaxed">
-          We couldn&apos;t verify this EIN. You can try again or cancel.
-        </p>
+        <div className="mt-2 rounded-lg bg-bg-error-secondary px-3 py-2">
+          <p className="text-xs text-text-error-primary leading-relaxed">
+            We couldn&apos;t verify this EIN. You can try again or continue without it.
+          </p>
+        </div>
       )}
 
       {/* Verified — business identity + checkbox */}
