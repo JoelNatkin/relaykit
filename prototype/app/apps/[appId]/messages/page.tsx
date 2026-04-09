@@ -445,10 +445,10 @@ export default function AppMessagesPage() {
                       <div style={{ animation: "einCardFade 200ms ease-out" }}>
                         <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
                         <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                          Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration takes a few days.
+                          Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration takes a few days; no fee.
                         </p>
                         <p className="mt-1 text-xs text-text-tertiary">
-                          No extra registration fee. Marketing messages share your 500 included messages.
+                          Marketing messages share your 500 included messages.
                         </p>
                         <div className="mt-4 flex items-center justify-between">
                           <button
