@@ -96,14 +96,18 @@ export function EinInlineVerify({ onSave, onCancel, className }: EinInlineVerify
 
   return (
     <div className={className}>
-      <h3 className="text-lg font-semibold text-text-primary">Verify your business</h3>
+      <h3 className="text-lg font-semibold text-text-primary">Add your EIN</h3>
       <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-        Required for marketing messages.
+        Your Employer Identification Number (EIN) lets us verify your business for marketing messages.
       </p>
 
       {/* EIN input + Verify button — hidden once verified */}
       {einState !== "verified" && (
-        <div className="mt-4 flex items-start gap-2">
+        <div className="mt-4">
+          <label htmlFor="ein-inline" className="mb-1.5 block text-sm font-medium text-text-secondary">
+            Business tax ID (EIN)
+          </label>
+          <div className="flex items-start gap-2">
           <input
             ref={einInputRef}
             id="ein-inline"
@@ -125,6 +129,7 @@ export function EinInlineVerify({ onSave, onCancel, className }: EinInlineVerify
           >
             {verifyButtonText}
           </button>
+          </div>
         </div>
       )}
 
@@ -164,8 +169,8 @@ export function EinInlineVerify({ onSave, onCancel, className }: EinInlineVerify
         </div>
       )}
 
-      {/* Bottom row: Cancel (left) + Save (right) */}
-      <div className="mt-5 flex items-center justify-between">
+      {/* Bottom row: Cancel + Save (right-aligned together) */}
+      <div className="mt-5 flex items-center justify-end gap-5">
         <button
           type="button"
           onClick={onCancel}
@@ -177,7 +182,7 @@ export function EinInlineVerify({ onSave, onCancel, className }: EinInlineVerify
           type="button"
           onClick={handleSave}
           disabled={!canSave}
-          className="rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-text-disabled cursor-pointer"
+          className="rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:bg-[#D0D5DD] disabled:text-white/60 cursor-pointer"
         >
           Save
         </button>
