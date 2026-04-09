@@ -4,13 +4,72 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { Phone01, Settings01 } from "@untitledui/icons";
-import { MESSAGES, CATEGORY_VARIANTS } from "@/data/messages";
+import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { SetupInstructions, SetupToggle, useSetupToggle } from "@/components/setup-instructions";
 import { loadWizardData, saveWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
 import { EinInlineVerify } from "@/components/ein-inline-verify";
 import type { BusinessIdentity } from "@/components/ein-inline-verify";
+
+/* ── Marketing messages (D-336) ── */
+
+const MARKETING_MESSAGES: Message[] = [
+  {
+    id: "mkt_new_service",
+    categoryId: "appointments",
+    name: "New service announcement",
+    tier: "core",
+    defaultEnabled: true,
+    template: "Hi {first_name}, GlowStudio now offers {service_name}! Book your first session and get 15% off. Reply STOP to opt out.",
+    trigger: "When a new service is added",
+    requiresStop: true,
+    expansionType: "marketing",
+    consentLabel: "new service announcements",
+  },
+  {
+    id: "mkt_seasonal",
+    categoryId: "appointments",
+    name: "Seasonal promotion",
+    tier: "core",
+    defaultEnabled: true,
+    template: "Hey {first_name}, spring refresh specials are here at GlowStudio! Book this week for 20% off any facial. Reply STOP to opt out.",
+    trigger: "Seasonal or time-limited promotions",
+    requiresStop: true,
+    expansionType: "marketing",
+    consentLabel: "seasonal promotions",
+  },
+  {
+    id: "mkt_reengagement",
+    categoryId: "appointments",
+    name: "Re-engagement",
+    tier: "core",
+    defaultEnabled: true,
+    template: "Hi {first_name}, we miss you at GlowStudio! It\u2019s been a while since your last visit. Book today and enjoy $10 off. Reply STOP to opt out.",
+    trigger: "Customer inactive for 60+ days",
+    requiresStop: true,
+    expansionType: "marketing",
+    consentLabel: "re-engagement messages",
+  },
+  {
+    id: "mkt_loyalty",
+    categoryId: "appointments",
+    name: "Loyalty reward",
+    tier: "core",
+    defaultEnabled: true,
+    template: "Hey {first_name}, you\u2019ve been a GlowStudio regular! Your next appointment comes with a complimentary add-on. Book now. Reply STOP to opt out.",
+    trigger: "Customer reaches loyalty milestone",
+    requiresStop: true,
+    expansionType: "marketing",
+    consentLabel: "loyalty rewards",
+  },
+];
+
+const MARKETING_BADGE = (
+  <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+    Marketing
+  </span>
+);
 
 /* ── localStorage personalization ── */
 
@@ -117,10 +176,27 @@ export default function AppMessagesPage() {
   /* ── Setup toggle (per-state persistence) ── */
   const { visible: setupVisible, toggle: setupToggle } = useSetupToggle(registrationState);
 
+  /* ── Should marketing messages be shown? (D-336) ── */
+  const showMarketingMessages = isPending && hasEin;
+
   /* ── Shared message list ── */
   const messageList = (
     <div className={isWizard ? "" : "max-w-[540px]"}>
       <div className="space-y-5">
+        {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
+          <CatalogCard
+            key={message.id}
+            message={message}
+            categoryId={categoryId}
+            state={state}
+            variants={variants}
+            onSend={handleSend}
+            sendIcon={phoneIcon}
+            isEditing={editingMessageId === message.id}
+            onEditRequest={setEditingMessageId}
+            badge={MARKETING_BADGE}
+          />
+        ))}
         {coreMessages.map((message) => (
           <CatalogCard
             key={message.id}

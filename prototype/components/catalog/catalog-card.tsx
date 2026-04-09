@@ -152,6 +152,8 @@ export interface CatalogCardProps {
   /** Controlled edit state. When provided, parent manages which card is editing. */
   isEditing?: boolean;
   onEditRequest?: (messageId: string | null) => void;
+  /** Optional badge rendered next to the message name */
+  badge?: React.ReactNode;
 }
 
 export function CatalogCard({
@@ -164,6 +166,7 @@ export function CatalogCard({
   hideSend,
   isEditing: controlledIsEditing,
   onEditRequest,
+  badge,
 }: CatalogCardProps) {
   const isControlled = controlledIsEditing !== undefined;
   const [showTooltip, setShowTooltip] = useState(false);
@@ -403,6 +406,7 @@ export function CatalogCard({
             <span className="text-sm font-semibold text-text-primary truncate">
               {message.name}
             </span>
+            {badge}
             {/* Info tooltip — inline with title */}
             <div className="relative flex-shrink-0">
               <button
