@@ -517,7 +517,6 @@ export default function AppMessagesPage() {
 
         {/* RIGHT — Registration card */}
         <div className="order-first md:order-last md:w-[300px] md:shrink-0">
-          {isPending && upsellConfirmed ? null : (
           <div className="rounded-xl bg-gray-50 p-6 md:sticky md:top-20">
             {isBuilding ? (
               !einExpanded ? (
@@ -757,7 +756,6 @@ export default function AppMessagesPage() {
               </>
             ) : null}
           </div>
-          )}
 
         </div>
       </div>
