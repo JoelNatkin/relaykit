@@ -160,6 +160,10 @@ export default function AppMessagesPage() {
   const hasMarketingRegistered = upsellConfirmed;
   const verticalName = VERTICAL_LABELS[categoryId] || "Messages";
 
+  // Registered state marketing upsell
+  const [registeredUpsellConfirmStep, setRegisteredUpsellConfirmStep] = useState(false);
+  const [registeredUpsellConfirmed, setRegisteredUpsellConfirmed] = useState(false);
+
   function handleEinSave(ein: string, identity: BusinessIdentity) {
     saveWizardData({ ein, businessIdentity: identity });
     setHasEin(true);
@@ -202,7 +206,7 @@ export default function AppMessagesPage() {
   const { visible: setupVisible, toggle: setupToggle } = useSetupToggle(registrationState);
 
   /* ── Should marketing messages be shown? (D-336) ── */
-  const showMarketingMessages = isPending && hasEin && upsellConfirmed;
+  const showMarketingMessages = (isPending && hasEin && upsellConfirmed) || (isApproved && hasEin && registeredUpsellConfirmed);
 
   /* ── Shared message list ── */
   const messageList = (
@@ -276,8 +280,10 @@ export default function AppMessagesPage() {
     );
   }
 
-  /* ── Registered state: single-column, no right rail ── */
+  /* ── Registered state ── */
   if (isApproved) {
+    const showRegisteredUpsell = !registeredUpsellConfirmed;
+
     return (
       <div>
         <div className="flex items-center justify-end gap-4 mb-4">
@@ -325,7 +331,72 @@ export default function AppMessagesPage() {
           </div>
         </div>
 
-        {messageList}
+        <div className="flex flex-col md:flex-row gap-6 md:gap-16">
+          <div className="min-w-0 flex-1">
+            {messageList}
+          </div>
+
+          {/* RIGHT — Marketing upsell card */}
+          {showRegisteredUpsell && (
+            <div className="order-first md:order-last md:w-[300px] md:shrink-0">
+              <div className="rounded-xl bg-gray-50 p-6 md:sticky md:top-20">
+                {registeredUpsellConfirmStep ? (
+                  <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                    <h3 className="text-lg font-semibold text-text-primary">Confirm marketing messages</h3>
+                    <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+                      Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration typically takes a few days.
+                    </p>
+                    <p className="mt-1 text-xs text-text-tertiary">
+                      Marketing messages share your 500 included messages.
+                    </p>
+                    <div className="mt-6 flex items-center justify-end gap-5">
+                      <button
+                        type="button"
+                        onClick={() => setRegisteredUpsellConfirmStep(false)}
+                        className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setRegisteredUpsellConfirmed(true); setRegisteredUpsellConfirmStep(false); }}
+                        className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
+                    <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                      Promote new services, announce specials, and bring past clients back.
+                    </p>
+                    <p className="mt-3 text-sm font-semibold text-text-primary">
+                      $29/mo instead of $19/mo.
+                    </p>
+                    {!hasEin ? (
+                      <button
+                        type="button"
+                        className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                      >
+                        Add your EIN &rarr;
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setRegisteredUpsellConfirmStep(true)}
+                        className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                      >
+                        Add marketing messages &rarr;
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
