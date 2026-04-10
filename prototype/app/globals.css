@@ -153,3 +153,13 @@
     opacity: 1;
   }
 }
+
+/* Monitor-expansion send-test confirmation: quick fade-in, short hold,
+   slow fade-out, total 3s. Pairs with a setTimeout that unmounts the
+   element at 3s so the animation runs to completion. */
+@keyframes testSentFade {
+  0% { opacity: 0; }
+  10% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}

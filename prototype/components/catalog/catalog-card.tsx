@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Activity, Stars02 } from "@untitledui/icons";
+import { Activity, Check, Stars02 } from "@untitledui/icons";
 import type { Message, VariantSet } from "@/data/messages";
 import type { SessionState } from "@/context/session-context";
 import {
@@ -271,6 +271,36 @@ export function CatalogCard({
     setShowMonitorTooltip(false);
   }
 
+  // Send-test flow (prototype stub). Not wired to a backend; the confirmation
+  // intentionally does not push a row into the activity list — only real
+  // app-triggered sends appear there.
+  const TEST_RECIPIENTS = ["Joel", "Sarah", "Mike"] as const;
+  const [selectedRecipient, setSelectedRecipient] = useState<string>(TEST_RECIPIENTS[0]);
+  const [isSendingTest, setIsSendingTest] = useState(false);
+  const [sentTestTo, setSentTestTo] = useState<string | null>(null);
+  const sendTestTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sentTestClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleSendTest() {
+    if (isSendingTest) return;
+    const target = selectedRecipient;
+    setIsSendingTest(true);
+    setSentTestTo(null);
+    if (sentTestClearRef.current) {
+      clearTimeout(sentTestClearRef.current);
+      sentTestClearRef.current = null;
+    }
+    if (sendTestTimerRef.current) clearTimeout(sendTestTimerRef.current);
+    sendTestTimerRef.current = setTimeout(() => {
+      setIsSendingTest(false);
+      setSentTestTo(target);
+      // Unmount the confirmation after the 3s fade animation completes.
+      sentTestClearRef.current = setTimeout(() => {
+        setSentTestTo(null);
+      }, 3000);
+    }, 1500);
+  }
+
   const nature = getMessageNature(message);
   const isMarketing = nature === "Marketing";
   const tooltipText = getTooltipText(message);
@@ -313,6 +343,8 @@ export function CatalogCard({
       if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
       if (editTooltipTimerRef.current) clearTimeout(editTooltipTimerRef.current);
       if (monitorTooltipTimerRef.current) clearTimeout(monitorTooltipTimerRef.current);
+      if (sendTestTimerRef.current) clearTimeout(sendTestTimerRef.current);
+      if (sentTestClearRef.current) clearTimeout(sentTestClearRef.current);
     };
   }, []);
 
@@ -535,48 +567,58 @@ export function CatalogCard({
             )}
           </div>
 
-          {/* Header action buttons — hidden while either expansion is open.
-              Activity (monitor) on the left, pencil (edit) on the right.
+          {/* Header action buttons. Activity (monitor) on the left, pencil
+              (edit) on the right. The Activity icon stays visible while
+              monitoring and toggles monitor mode on click — clicking it
+              again closes the expansion. Pencil is hidden while either
+              expansion is open; the full row is hidden while editing.
               gap-0 + p-1 on each button = 8px visible icon-to-icon spacing
               (4px of each button's click-target padding), click targets intact. */}
-          {!isEditing && !isMonitoring && (
+          {!isEditing && (
             <div className="flex items-center gap-0 flex-shrink-0">
               {monitorMode && (
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={enterMonitor}
+                    onClick={isMonitoring ? exitMonitor : enterMonitor}
                     onMouseEnter={scheduleMonitorTooltip}
                     onMouseLeave={clearMonitorTooltip}
-                    className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                    aria-label="Test & debug"
+                    className={`p-1 transition duration-100 ease-linear cursor-pointer ${
+                      isMonitoring
+                        ? "text-text-brand-secondary"
+                        : "text-fg-quaternary hover:text-fg-secondary"
+                    }`}
+                    aria-label={isMonitoring ? "Close test view" : "Test & debug"}
+                    aria-pressed={isMonitoring}
                   >
                     <Activity className="size-[17px]" />
                   </button>
                   {showMonitorTooltip && (
                     <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                      Test & debug
+                      {isMonitoring ? "Close test view" : "Test & debug"}
                     </div>
                   )}
                 </div>
               )}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={enterEdit}
-                  onMouseEnter={scheduleEditTooltip}
-                  onMouseLeave={clearEditTooltip}
-                  className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                  aria-label="Edit message"
-                >
-                  <PencilIcon />
-                </button>
-                {showEditTooltip && (
-                  <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                    Edit message
-                  </div>
-                )}
-              </div>
+              {!isMonitoring && (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={enterEdit}
+                    onMouseEnter={scheduleEditTooltip}
+                    onMouseLeave={clearEditTooltip}
+                    className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                    aria-label="Edit message"
+                  >
+                    <PencilIcon />
+                  </button>
+                  {showEditTooltip && (
+                    <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                      Edit message
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -779,8 +821,10 @@ export function CatalogCard({
                   )}
                 </div>
 
-                {/* Footer actions — mirrors edit mode's Save/Cancel position */}
-                <div className="mt-6 flex items-center justify-end gap-5">
+                {/* Footer actions — Ask Claude on the left, Send test group
+                    on the right. Close is removed: the Activity icon in the
+                    header toggles monitor mode. */}
+                <div className="mt-6 flex items-center justify-between gap-4">
                   <button
                     type="button"
                     onClick={(e) => e.preventDefault()}
@@ -788,13 +832,40 @@ export function CatalogCard({
                   >
                     Ask Claude
                   </button>
-                  <button
-                    type="button"
-                    onClick={exitMonitor}
-                    className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                  >
-                    Close
-                  </button>
+
+                  <div className="flex items-center gap-3">
+                    {sentTestTo && (
+                      <span
+                        key={sentTestTo}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-text-success-primary whitespace-nowrap"
+                        style={{ animation: "testSentFade 3s ease-out forwards" }}
+                      >
+                        <Check className="size-3.5" />
+                        Sent to {sentTestTo}
+                      </span>
+                    )}
+                    <select
+                      value={selectedRecipient}
+                      onChange={(e) => setSelectedRecipient(e.target.value)}
+                      disabled={isSendingTest}
+                      className="rounded-lg border border-border-primary bg-bg-primary px-2.5 py-1.5 text-sm text-text-secondary shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      aria-label="Test recipient"
+                    >
+                      {TEST_RECIPIENTS.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      onClick={handleSendTest}
+                      disabled={isSendingTest}
+                      className="rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-semibold text-text-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isSendingTest ? "Sending…" : "Send test"}
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
