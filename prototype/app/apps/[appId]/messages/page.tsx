@@ -161,8 +161,21 @@ export default function AppMessagesPage() {
   const verticalName = VERTICAL_LABELS[categoryId] || "Messages";
 
   // Registered state marketing upsell
+  const [registeredUpsellEinExpanded, setRegisteredUpsellEinExpanded] = useState(false);
   const [registeredUpsellConfirmStep, setRegisteredUpsellConfirmStep] = useState(false);
   const [registeredUpsellConfirmed, setRegisteredUpsellConfirmed] = useState(false);
+
+  function handleRegisteredUpsellEinSave(ein: string, identity: BusinessIdentity) {
+    saveWizardData({ ein, businessIdentity: identity });
+    setHasEin(true);
+    setRegisteredUpsellEinExpanded(false);
+    setRegisteredUpsellConfirmStep(true);
+    window.dispatchEvent(new Event("relaykit-ein-change"));
+  }
+
+  function handleRegisteredUpsellEinCancel() {
+    setRegisteredUpsellEinExpanded(false);
+  }
 
   function handleEinSave(ein: string, identity: BusinessIdentity) {
     saveWizardData({ ein, businessIdentity: identity });
@@ -366,6 +379,13 @@ export default function AppMessagesPage() {
                       </button>
                     </div>
                   </div>
+                ) : registeredUpsellEinExpanded ? (
+                  <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                    <EinInlineVerify
+                      onSave={handleRegisteredUpsellEinSave}
+                      onCancel={handleRegisteredUpsellEinCancel}
+                    />
+                  </div>
                 ) : (
                   <div>
                     <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
@@ -378,6 +398,7 @@ export default function AppMessagesPage() {
                     {!hasEin ? (
                       <button
                         type="button"
+                        onClick={() => setRegisteredUpsellEinExpanded(true)}
                         className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
                       >
                         Add your EIN &rarr;
