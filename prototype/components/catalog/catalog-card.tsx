@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Stars02 } from "@untitledui/icons";
+import { Activity, Stars02, XClose } from "@untitledui/icons";
 import type { Message, VariantSet } from "@/data/messages";
 import type { SessionState } from "@/context/session-context";
 import {
@@ -43,6 +43,55 @@ function Spinner({ className }: { className?: string }) {
       <path d="M22 12a10 10 0 0 1-10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
     </svg>
   );
+}
+
+/* ── Monitor/activity types ── */
+
+export type LastSentStatus = "delivered" | "failed" | "pending";
+
+export interface LastSent {
+  timestamp: string;
+  status: LastSentStatus;
+  recipientName?: string;
+}
+
+export interface ActivityEntry {
+  id: string;
+  recipientName: string;
+  status: LastSentStatus;
+  timestamp: string;
+  errorDetail?: string;
+}
+
+const STATUS_DOT: Record<LastSentStatus, string> = {
+  delivered: "bg-fg-success-primary",
+  failed: "bg-fg-error-primary",
+  pending: "bg-fg-warning-primary",
+};
+
+const STATUS_LABEL: Record<LastSentStatus, string> = {
+  delivered: "Delivered",
+  failed: "Failed",
+  pending: "Pending",
+};
+
+function timeAgo(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  if (Number.isNaN(ms) || ms < 0) return "just now";
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return `${sec}s ago`;
+  const min = Math.floor(sec / 60);
+  if (min < 60) return `${min}m ago`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr}h ago`;
+  const day = Math.floor(hr / 24);
+  if (day === 1) return "yesterday";
+  if (day < 7) return `${day}d ago`;
+  const wk = Math.floor(day / 7);
+  if (wk < 4) return `${wk}w ago`;
+  const mo = Math.floor(day / 30);
+  if (mo < 12) return `${mo}mo ago`;
+  return `${Math.floor(day / 365)}y ago`;
 }
 
 /* ── Pill types ── */
@@ -141,6 +190,15 @@ export interface CatalogCardProps {
   onEditRequest?: (messageId: string | null) => void;
   /** Optional badge rendered next to the message name */
   badge?: React.ReactNode;
+  /** Enable the Activity icon, status line, and monitor expansion. Off by default so onboarding + public marketing cards stay clean. */
+  monitorMode?: boolean;
+  /** Last send outcome shown as a small colored dot + relative timestamp below the message body. */
+  lastSent?: LastSent | null;
+  /** Controlled monitor state. Mutually exclusive with isEditing. */
+  isMonitoring?: boolean;
+  onMonitorRequest?: (messageId: string | null) => void;
+  /** Recent activity entries rendered inside the monitor expansion. */
+  activity?: ActivityEntry[];
 }
 
 export function CatalogCard({
@@ -151,12 +209,22 @@ export function CatalogCard({
   isEditing: controlledIsEditing,
   onEditRequest,
   badge,
+  monitorMode = false,
+  lastSent = null,
+  isMonitoring: controlledIsMonitoring,
+  onMonitorRequest,
+  activity,
 }: CatalogCardProps) {
   const isControlled = controlledIsEditing !== undefined;
+  const isMonitoringControlled = controlledIsMonitoring !== undefined;
   const [showTooltip, setShowTooltip] = useState(false);
   const [showEditTooltip, setShowEditTooltip] = useState(false);
+  const [showMonitorTooltip, setShowMonitorTooltip] = useState(false);
   const [localIsEditing, setLocalIsEditing] = useState(false);
+  const [localIsMonitoring, setLocalIsMonitoring] = useState(false);
   const isEditing = isControlled ? controlledIsEditing : localIsEditing;
+  const isMonitoring =
+    monitorMode && (isMonitoringControlled ? controlledIsMonitoring : localIsMonitoring);
   const prevIsEditingRef = useRef(false);
   const [editText, setEditText] = useState("");
   const [savedText, setSavedText] = useState<string | null>(null);
@@ -259,6 +327,8 @@ export function CatalogCard({
   }, [isEditing]);
 
   function enterEdit() {
+    // Opening edit closes any open monitor view.
+    if (isMonitoring) exitMonitor();
     if (isControlled) {
       onEditRequest?.(message.id);
     } else {
@@ -272,6 +342,25 @@ export function CatalogCard({
       onEditRequest?.(null);
     } else {
       setLocalIsEditing(false);
+    }
+  }
+
+  function enterMonitor() {
+    if (!monitorMode) return;
+    // Opening monitor closes any open edit (unsaved changes discarded, same as edit→edit).
+    if (isEditing) exitEdit();
+    if (isMonitoringControlled) {
+      onMonitorRequest?.(message.id);
+    } else {
+      setLocalIsMonitoring(true);
+    }
+  }
+
+  function exitMonitor() {
+    if (isMonitoringControlled) {
+      onMonitorRequest?.(null);
+    } else {
+      setLocalIsMonitoring(false);
     }
   }
 
@@ -408,22 +497,43 @@ export function CatalogCard({
             )}
           </div>
 
-          {/* Edit button — right side of header, hidden during edit */}
-          {!isEditing && (
-            <div className="relative flex-shrink-0">
-              <button
-                type="button"
-                onClick={enterEdit}
-                onMouseEnter={() => setShowEditTooltip(true)}
-                onMouseLeave={() => setShowEditTooltip(false)}
-                className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                aria-label="Edit message"
-              >
-                <PencilIcon />
-              </button>
-              {showEditTooltip && (
-                <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                  Edit message
+          {/* Header action buttons — hidden while either expansion is open */}
+          {!isEditing && !isMonitoring && (
+            <div className="flex items-center gap-0.5 flex-shrink-0">
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={enterEdit}
+                  onMouseEnter={() => setShowEditTooltip(true)}
+                  onMouseLeave={() => setShowEditTooltip(false)}
+                  className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                  aria-label="Edit message"
+                >
+                  <PencilIcon />
+                </button>
+                {showEditTooltip && (
+                  <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                    Edit message
+                  </div>
+                )}
+              </div>
+              {monitorMode && (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={enterMonitor}
+                    onMouseEnter={() => setShowMonitorTooltip(true)}
+                    onMouseLeave={() => setShowMonitorTooltip(false)}
+                    className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                    aria-label="Test & debug"
+                  >
+                    <Activity className="size-[15px]" />
+                  </button>
+                  {showMonitorTooltip && (
+                    <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                      Test & debug
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -556,16 +666,105 @@ export function CatalogCard({
               </div>
             </div>
           </div>
-        ) : (
-          <div
-            className="mt-2 cursor-pointer"
-            onClick={enterEdit}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === "Enter") enterEdit(); }}
-          >
-            {renderPreview(currentTemplate)}
+        ) : isMonitoring ? (
+          <div className="mt-4">
+            {/* Monitor header */}
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
+                Recent activity
+              </p>
+              <button
+                type="button"
+                onClick={exitMonitor}
+                className="p-1 -mr-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                aria-label="Close"
+              >
+                <XClose className="size-4" />
+              </button>
+            </div>
+
+            {/* Activity list */}
+            <div className="mt-3">
+              {activity && activity.length > 0 ? (
+                <ul className="space-y-2.5">
+                  {activity.map((entry) => (
+                    <li key={entry.id}>
+                      <div className="flex items-center justify-between gap-3 text-sm">
+                        <span className="text-text-secondary truncate">
+                          {entry.recipientName}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 text-text-tertiary flex-shrink-0">
+                          <span
+                            className={`inline-block size-1.5 rounded-full ${STATUS_DOT[entry.status]}`}
+                          />
+                          <span>
+                            {STATUS_LABEL[entry.status]} {timeAgo(entry.timestamp)}
+                          </span>
+                        </span>
+                      </div>
+                      {entry.errorDetail && (
+                        <p className="mt-0.5 pl-3 text-xs text-text-tertiary">
+                          {entry.errorDetail}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-text-tertiary text-center py-4">
+                  No activity yet. This message hasn{"\u2019"}t been sent by your app.
+                </p>
+              )}
+            </div>
+
+            {/* Divider */}
+            <div className="mt-4 border-t border-border-secondary" />
+
+            {/* AI help input — non-functional stub */}
+            <div className="mt-4 relative">
+              <Stars02 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
+              <input
+                type="text"
+                placeholder="Ask about this message"
+                className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+              />
+            </div>
+
+            {/* Open in App Doctor — non-functional stub */}
+            <div className="mt-3">
+              <a
+                href="#"
+                onClick={(e) => e.preventDefault()}
+                className="text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+              >
+                Open in App Doctor &rarr;
+              </a>
+            </div>
           </div>
+        ) : (
+          <>
+            <div
+              className="mt-2 cursor-pointer"
+              onClick={enterEdit}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter") enterEdit(); }}
+            >
+              {renderPreview(currentTemplate)}
+            </div>
+            {monitorMode && lastSent && (
+              <div className="mt-2 flex items-center gap-1.5">
+                <span
+                  className={`inline-block size-1.5 rounded-full ${STATUS_DOT[lastSent.status]}`}
+                />
+                <span className="text-xs text-text-tertiary">
+                  {lastSent.status === "pending"
+                    ? STATUS_LABEL[lastSent.status]
+                    : `${STATUS_LABEL[lastSent.status]} ${timeAgo(lastSent.timestamp)}`}
+                </span>
+              </div>
+            )}
+          </>
         )}
     </div>
   );

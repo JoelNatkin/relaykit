@@ -7,6 +7,7 @@ import { InfoCircle, Settings01 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
+import type { LastSent, ActivityEntry } from "@/components/catalog/catalog-card";
 import { SetupInstructions, SetupToggle, useSetupToggle } from "@/components/setup-instructions";
 import { loadWizardData, saveWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
 import { EinInlineVerify } from "@/components/ein-inline-verify";
@@ -70,6 +71,53 @@ const MARKETING_BADGE = (
     Marketing
   </span>
 );
+
+/* ── Mock monitor data ──
+   Keyed by coreMessages index. First 3 have delivered history; the 4th has a
+   recent failure with carrier error detail. Remaining cards have null → look
+   identical to pre-monitor-mode. Prototype only — production will query real
+   send logs. */
+
+const MOCK_NOW = Date.now();
+const MINUTE = 60 * 1000;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+const mockIso = (msAgo: number) => new Date(MOCK_NOW - msAgo).toISOString();
+
+const MOCK_LAST_SENT: (LastSent | null)[] = [
+  { timestamp: mockIso(3 * MINUTE), status: "delivered", recipientName: "Primary phone" },
+  { timestamp: mockIso(22 * MINUTE), status: "delivered", recipientName: "Sarah" },
+  { timestamp: mockIso(2 * HOUR), status: "delivered", recipientName: "Primary phone" },
+  { timestamp: mockIso(DAY), status: "failed", recipientName: "Primary phone" },
+];
+
+const MOCK_ACTIVITY: (ActivityEntry[] | undefined)[] = [
+  [
+    { id: "e1", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(3 * MINUTE) },
+    { id: "e2", recipientName: "Sarah", status: "delivered", timestamp: mockIso(15 * MINUTE) },
+    { id: "e3", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(4 * HOUR) },
+  ],
+  [
+    { id: "e1", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(22 * MINUTE) },
+    { id: "e2", recipientName: "Sarah", status: "delivered", timestamp: mockIso(2 * HOUR) },
+    { id: "e3", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(19 * HOUR) },
+  ],
+  [
+    { id: "e1", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(2 * HOUR) },
+    { id: "e2", recipientName: "Sarah", status: "delivered", timestamp: mockIso(2 * DAY) },
+  ],
+  [
+    {
+      id: "e1",
+      recipientName: "Primary phone",
+      status: "failed",
+      timestamp: mockIso(DAY),
+      errorDetail: "Carrier rejected: invalid number format",
+    },
+    { id: "e2", recipientName: "Sarah", status: "delivered", timestamp: mockIso(3 * DAY) },
+    { id: "e3", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(5 * DAY) },
+  ],
+];
 
 /* ── localStorage personalization ── */
 
@@ -203,8 +251,20 @@ export default function AppMessagesPage() {
     setUpsellEinExpanded(false);
   }
 
-  // Single-card editing: clicking a new card's pencil closes any open edit.
+  // Single-card edit/monitor: at most one card is in edit state and at most
+  // one is in monitor state. Opening one closes the other across all cards.
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [monitoringMessageId, setMonitoringMessageId] = useState<string | null>(null);
+
+  function requestEdit(id: string | null) {
+    setEditingMessageId(id);
+    if (id !== null) setMonitoringMessageId(null);
+  }
+
+  function requestMonitor(id: string | null) {
+    setMonitoringMessageId(id);
+    if (id !== null) setEditingMessageId(null);
+  }
 
   const { appId } = useParams<{ appId: string }>();
   const registrationState = state.registrationState;
@@ -230,11 +290,14 @@ export default function AppMessagesPage() {
             state={state}
             variants={variants}
             isEditing={editingMessageId === message.id}
-            onEditRequest={setEditingMessageId}
+            onEditRequest={requestEdit}
             badge={MARKETING_BADGE}
+            monitorMode={!isWizard}
+            isMonitoring={monitoringMessageId === message.id}
+            onMonitorRequest={requestMonitor}
           />
         ))}
-        {coreMessages.map((message) => (
+        {coreMessages.map((message, index) => (
           <CatalogCard
             key={message.id}
             message={message}
@@ -242,7 +305,12 @@ export default function AppMessagesPage() {
             state={state}
             variants={variants}
             isEditing={editingMessageId === message.id}
-            onEditRequest={setEditingMessageId}
+            onEditRequest={requestEdit}
+            monitorMode={!isWizard}
+            lastSent={MOCK_LAST_SENT[index] ?? null}
+            activity={MOCK_ACTIVITY[index]}
+            isMonitoring={monitoringMessageId === message.id}
+            onMonitorRequest={requestMonitor}
           />
         ))}
       </div>
