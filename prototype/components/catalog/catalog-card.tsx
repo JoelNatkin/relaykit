@@ -834,19 +834,6 @@ export function CatalogCard({
                     >
                       Ask Claude
                     </button>
-                    <select
-                      value={selectedRecipient}
-                      onChange={(e) => setSelectedRecipient(e.target.value)}
-                      disabled={isSendingTest}
-                      className="bg-transparent border-0 p-0 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
-                      aria-label="Test recipient"
-                    >
-                      {TEST_RECIPIENTS.map((name) => (
-                        <option key={name} value={name}>
-                          {name}
-                        </option>
-                      ))}
-                    </select>
                     <button
                       type="button"
                       onClick={handleSendTest}
@@ -855,6 +842,19 @@ export function CatalogCard({
                     >
                       {isSendingTest ? "Sending…" : "Send test"}
                     </button>
+                    <select
+                      value={selectedRecipient}
+                      onChange={(e) => setSelectedRecipient(e.target.value)}
+                      disabled={isSendingTest}
+                      className="bg-transparent border-0 p-0 text-sm font-normal text-text-primary transition duration-100 ease-linear cursor-pointer focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                      aria-label="Test recipient"
+                    >
+                      {TEST_RECIPIENTS.map((name) => (
+                        <option key={name} value={name}>
+                          {name}
+                        </option>
+                      ))}
+                    </select>
                     {sentTestTo && (
                       <span
                         key={sentTestTo}
