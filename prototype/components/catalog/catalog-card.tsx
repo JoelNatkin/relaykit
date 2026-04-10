@@ -736,12 +736,10 @@ export function CatalogCard({
             )}
 
             {/* Monitor expansion — message text stays above; Recent Activity
-                section renders below, separated by a top divider with 4px
-                padding above and below the line. */}
+                section renders below with 16px of breathing room. */}
             {isMonitoring && (
               <div className="mt-4">
-                <div className="my-1 border-t border-border-secondary" />
-                <p className="mt-4 text-xs font-medium text-text-tertiary uppercase tracking-wide">
+                <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
                   Recent activity
                 </p>
 
