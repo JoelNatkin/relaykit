@@ -821,34 +821,24 @@ export function CatalogCard({
                   )}
                 </div>
 
-                {/* Footer actions — Ask Claude on the left, Send test group
-                    on the right. Close is removed: the Activity icon in the
-                    header toggles monitor mode. */}
+                {/* Footer actions — mirrors edit mode's Save/Cancel row.
+                    Left: tertiary Ask Claude + recipient select + Send test
+                    (all plain text, no borders) with an inline send-test
+                    confirmation that fades on success. Right: primary Close. */}
                 <div className="mt-6 flex items-center justify-between gap-4">
-                  <button
-                    type="button"
-                    onClick={(e) => e.preventDefault()}
-                    className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
-                  >
-                    Ask Claude
-                  </button>
-
                   <div className="flex items-center gap-3">
-                    {sentTestTo && (
-                      <span
-                        key={sentTestTo}
-                        className="inline-flex items-center gap-1 text-xs font-medium text-text-success-primary whitespace-nowrap"
-                        style={{ animation: "testSentFade 3s ease-out forwards" }}
-                      >
-                        <Check className="size-3.5" />
-                        Sent to {sentTestTo}
-                      </span>
-                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => e.preventDefault()}
+                      className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+                    >
+                      Ask Claude
+                    </button>
                     <select
                       value={selectedRecipient}
                       onChange={(e) => setSelectedRecipient(e.target.value)}
                       disabled={isSendingTest}
-                      className="rounded-lg border border-border-primary bg-bg-primary px-2.5 py-1.5 text-sm text-text-secondary shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="bg-transparent border-0 p-0 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
                       aria-label="Test recipient"
                     >
                       {TEST_RECIPIENTS.map((name) => (
@@ -861,11 +851,28 @@ export function CatalogCard({
                       type="button"
                       onClick={handleSendTest}
                       disabled={isSendingTest}
-                      className="rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-semibold text-text-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {isSendingTest ? "Sending…" : "Send test"}
                     </button>
+                    {sentTestTo && (
+                      <span
+                        key={sentTestTo}
+                        className="inline-flex items-center gap-1 text-xs font-medium text-text-success-primary whitespace-nowrap"
+                        style={{ animation: "testSentFade 3s ease-out forwards" }}
+                      >
+                        <Check className="size-3.5" />
+                        Sent to {sentTestTo}
+                      </span>
+                    )}
                   </div>
+                  <button
+                    type="button"
+                    onClick={exitMonitor}
+                    className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             )}
