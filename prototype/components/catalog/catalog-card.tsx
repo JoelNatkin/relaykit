@@ -36,15 +36,6 @@ function PencilIcon({ className }: { className?: string }) {
   );
 }
 
-function SendIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13" />
-      <polygon points="22 2 15 22 11 13 2 9 22 2" />
-    </svg>
-  );
-}
-
 function Spinner({ className }: { className?: string }) {
   return (
     <svg className={`animate-spin ${className ?? ""}`} viewBox="0 0 24 24" fill="none">
@@ -145,10 +136,6 @@ export interface CatalogCardProps {
   categoryId: string;
   state: SessionState;
   variants?: VariantSet[];
-  onSend?: (messageId: string) => void;
-  sendIcon?: React.ReactNode;
-  /** Hide the send button entirely (onboarding view). */
-  hideSend?: boolean;
   /** Controlled edit state. When provided, parent manages which card is editing. */
   isEditing?: boolean;
   onEditRequest?: (messageId: string | null) => void;
@@ -161,9 +148,6 @@ export function CatalogCard({
   categoryId,
   state,
   variants,
-  onSend,
-  sendIcon,
-  hideSend,
   isEditing: controlledIsEditing,
   onEditRequest,
   badge,
@@ -171,7 +155,6 @@ export function CatalogCard({
   const isControlled = controlledIsEditing !== undefined;
   const [showTooltip, setShowTooltip] = useState(false);
   const [showEditTooltip, setShowEditTooltip] = useState(false);
-  const [showSendTooltip, setShowSendTooltip] = useState(false);
   const [localIsEditing, setLocalIsEditing] = useState(false);
   const isEditing = isControlled ? controlledIsEditing : localIsEditing;
   const prevIsEditingRef = useRef(false);
@@ -365,10 +348,6 @@ export function CatalogCard({
     }
   }
 
-  function handleSend() {
-    onSend?.(message.id);
-  }
-
   function handleTextChange(newText: string) {
     setEditText(newText);
     setCustomTextBuffer(newText);
@@ -397,10 +376,8 @@ export function CatalogCard({
   const showCustomPill = customTextBuffer !== null;
 
   return (
-    <div className="relative flex items-stretch gap-3">
-      {/* Card */}
-      <div className="flex-1 rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
-        {/* Header row */}
+    <div className="relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+      {/* Header row */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
             <span className="text-sm font-semibold text-text-primary truncate">
@@ -590,34 +567,6 @@ export function CatalogCard({
             {renderPreview(currentTemplate)}
           </div>
         )}
-      </div>
-
-      {/* Send button — centered vertically, tertiary styling. Hidden in onboarding. */}
-      {!hideSend && (
-        <div className="flex items-center flex-shrink-0">
-          <div className="relative">
-            <button
-              type="button"
-              onClick={handleSend}
-              onMouseEnter={() => setShowSendTooltip(true)}
-              onMouseLeave={() => setShowSendTooltip(false)}
-              className={`flex items-center justify-center transition duration-100 ease-linear cursor-pointer ${
-                sendIcon
-                  ? "text-fg-tertiary hover:text-fg-secondary"
-                  : "w-8 h-8 rounded-full bg-bg-secondary text-fg-secondary shadow-xs hover:bg-bg-secondary_hover"
-              }`}
-              aria-label="Send to my phone"
-            >
-              {sendIcon ?? <SendIcon />}
-            </button>
-            {showSendTooltip && (
-              <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                Send to my phone
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

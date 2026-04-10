@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { InfoCircle, Phone01, Settings01 } from "@untitledui/icons";
+import { InfoCircle, Settings01 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
@@ -206,13 +206,7 @@ export default function AppMessagesPage() {
   // Single-card editing: clicking a new card's pencil closes any open edit.
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
 
-  function handleSend(messageId: string) {
-    // Stub — future: send to verified phone
-    console.log("Send message:", messageId);
-  }
-
   const { appId } = useParams<{ appId: string }>();
-  const phoneIcon = <Phone01 className="size-[18px]" />;
   const registrationState = state.registrationState;
   const isPending = registrationState === "pending";
   const isChangesRequested = registrationState === "changes_requested";
@@ -235,8 +229,6 @@ export default function AppMessagesPage() {
             categoryId={categoryId}
             state={state}
             variants={variants}
-            onSend={handleSend}
-            sendIcon={phoneIcon}
             isEditing={editingMessageId === message.id}
             onEditRequest={setEditingMessageId}
             badge={MARKETING_BADGE}
@@ -249,9 +241,6 @@ export default function AppMessagesPage() {
             categoryId={categoryId}
             state={state}
             variants={variants}
-            onSend={handleSend}
-            sendIcon={phoneIcon}
-            hideSend={isWizard}
             isEditing={editingMessageId === message.id}
             onEditRequest={setEditingMessageId}
           />
@@ -347,7 +336,7 @@ export default function AppMessagesPage() {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-6 md:gap-16">
+        <div className="flex flex-col md:flex-row gap-10">
           <div className="min-w-0 flex-1">
             {messageList}
           </div>
@@ -508,7 +497,7 @@ export default function AppMessagesPage() {
         </Link>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6 md:gap-16">
+      <div className="flex flex-col md:flex-row gap-10">
         {/* LEFT — setup instructions + messages */}
         <div className="min-w-0 flex-1">
           <SetupInstructions visible={setupVisible} />
