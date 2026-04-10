@@ -433,7 +433,7 @@ export default function AppMessagesPage() {
                 <div style={{ animation: "einCardFade 200ms ease-out" }}>
                   <h3 className="text-lg font-semibold text-text-primary">Confirm marketing messages</h3>
                   <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                    Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration takes a few days; no fee.
+                    Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration typically takes a few days.
                   </p>
                   <p className="mt-1 text-xs text-text-tertiary">
                     Marketing messages share your 500 included messages.
@@ -513,11 +513,11 @@ export default function AppMessagesPage() {
                           <span className="font-semibold">{verticalName}</span> &middot; Submitted 3/17/2026
                         </span>
                         {regTrackerState === "all-review" ? (
-                          <span className="inline-flex items-center rounded-full bg-bg-brand-solid px-2 py-0.5 text-[10px] font-medium text-white shrink-0">
+                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
                             In review
                           </span>
                         ) : (
-                          <span className="inline-flex items-center rounded-full bg-bg-success-solid px-2 py-0.5 text-[10px] font-medium text-white shrink-0">
+                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
                             Registered
                           </span>
                         )}
