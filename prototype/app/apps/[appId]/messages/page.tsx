@@ -66,7 +66,7 @@ const MARKETING_MESSAGES: Message[] = [
 ];
 
 const MARKETING_BADGE = (
-  <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+  <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0 mt-1">
     Marketing
   </span>
 );
@@ -468,11 +468,11 @@ export default function AppMessagesPage() {
                           <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
                         </div>
                         {regMktTrackerState === "in-review" ? (
-                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0 mt-1">
                             In review
                           </span>
                         ) : (
-                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0 mt-1">
                             Registered
                           </span>
                         )}
@@ -684,11 +684,11 @@ export default function AppMessagesPage() {
                           <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
                         </div>
                         {regTrackerState === "all-review" ? (
-                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0 mt-1">
                             In review
                           </span>
                         ) : (
-                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0 mt-1">
                             Registered
                           </span>
                         )}
@@ -702,11 +702,11 @@ export default function AppMessagesPage() {
                             <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
                           </div>
                           {regTrackerState === "all-registered" ? (
-                            <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                            <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0 mt-1">
                               Registered
                             </span>
                           ) : (
-                            <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                            <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0 mt-1">
                               In review
                             </span>
                           )}
