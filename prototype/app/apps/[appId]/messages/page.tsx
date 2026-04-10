@@ -165,6 +165,12 @@ export default function AppMessagesPage() {
   const [registeredUpsellConfirmStep, setRegisteredUpsellConfirmStep] = useState(false);
   const [registeredUpsellConfirmed, setRegisteredUpsellConfirmed] = useState(false);
 
+  // Registered state marketing-only registration tracker
+  type RegMktTrackerState = "in-review" | "registered";
+  const [regMktTrackerState, setRegMktTrackerState] = useState<RegMktTrackerState>("in-review");
+  const [regMktTrackerDismissed, setRegMktTrackerDismissed] = useState(false);
+  const [regMktTrackerTooltip, setRegMktTrackerTooltip] = useState(false);
+
   function handleRegisteredUpsellEinSave(ein: string, identity: BusinessIdentity) {
     saveWizardData({ ein, businessIdentity: identity });
     setHasEin(true);
@@ -349,68 +355,140 @@ export default function AppMessagesPage() {
             {messageList}
           </div>
 
-          {/* RIGHT — Marketing upsell card */}
-          {showRegisteredUpsell && (
+          {/* RIGHT — Marketing upsell or registration tracker */}
+          {(showRegisteredUpsell || (registeredUpsellConfirmed && !regMktTrackerDismissed)) && (
             <div className="order-first md:order-last md:w-[300px] md:shrink-0">
               <div className="rounded-xl bg-gray-50 p-6 md:sticky md:top-20">
-                {registeredUpsellConfirmStep ? (
-                  <div style={{ animation: "einCardFade 200ms ease-out" }}>
-                    <h3 className="text-lg font-semibold text-text-primary">Confirm marketing messages</h3>
-                    <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-                      Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration typically takes a few days.
-                    </p>
-                    <p className="mt-1 text-xs text-text-tertiary">
-                      Marketing messages share your 500 included messages.
-                    </p>
-                    <div className="mt-6 flex items-center justify-end gap-5">
-                      <button
-                        type="button"
-                        onClick={() => setRegisteredUpsellConfirmStep(false)}
-                        className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { setRegisteredUpsellConfirmed(true); setRegisteredUpsellConfirmStep(false); }}
-                        className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                      >
-                        Confirm
-                      </button>
+                {showRegisteredUpsell ? (
+                  registeredUpsellConfirmStep ? (
+                    <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                      <h3 className="text-lg font-semibold text-text-primary">Confirm marketing messages</h3>
+                      <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+                        Your plan updates from <span className="font-semibold text-text-primary">$19/mo</span> to <span className="font-semibold text-text-primary">$29/mo</span>. Registration typically takes a few days.
+                      </p>
+                      <p className="mt-1 text-xs text-text-tertiary">
+                        Marketing messages share your 500 included messages.
+                      </p>
+                      <div className="mt-6 flex items-center justify-end gap-5">
+                        <button
+                          type="button"
+                          onClick={() => setRegisteredUpsellConfirmStep(false)}
+                          className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setRegisteredUpsellConfirmed(true); setRegisteredUpsellConfirmStep(false); }}
+                          className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Confirm
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ) : registeredUpsellEinExpanded ? (
-                  <div style={{ animation: "einCardFade 200ms ease-out" }}>
-                    <EinInlineVerify
-                      onSave={handleRegisteredUpsellEinSave}
-                      onCancel={handleRegisteredUpsellEinCancel}
-                    />
-                  </div>
+                  ) : registeredUpsellEinExpanded ? (
+                    <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                      <EinInlineVerify
+                        onSave={handleRegisteredUpsellEinSave}
+                        onCancel={handleRegisteredUpsellEinCancel}
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
+                      <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+                        Promote new services, announce specials, and bring past clients back.
+                      </p>
+                      <p className="mt-3 text-sm font-semibold text-text-primary">
+                        $29/mo instead of $19/mo.
+                      </p>
+                      {!hasEin ? (
+                        <button
+                          type="button"
+                          onClick={() => setRegisteredUpsellEinExpanded(true)}
+                          className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Add your EIN &rarr;
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setRegisteredUpsellConfirmStep(true)}
+                          className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Add marketing messages &rarr;
+                        </button>
+                      )}
+                    </div>
+                  )
                 ) : (
-                  <div>
-                    <h3 className="text-base font-semibold text-text-primary">Add marketing messages</h3>
-                    <p className="mt-2 text-sm text-text-secondary leading-relaxed">
-                      Promote new services, announce specials, and bring past clients back.
-                    </p>
-                    <p className="mt-3 text-sm font-semibold text-text-primary">
-                      $29/mo instead of $19/mo.
-                    </p>
-                    {!hasEin ? (
-                      <button
-                        type="button"
-                        onClick={() => setRegisteredUpsellEinExpanded(true)}
-                        className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                  /* Marketing-only registration tracker */
+                  <div style={{ animation: "einCardFade 200ms ease-out" }}>
+                    {/* Prototype state cycler */}
+                    <div className="flex justify-end mb-2">
+                      <select
+                        value={regMktTrackerState}
+                        onChange={(e) => setRegMktTrackerState(e.target.value as RegMktTrackerState)}
+                        className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
                       >
-                        Add your EIN &rarr;
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setRegisteredUpsellConfirmStep(true)}
-                        className="mt-5 inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-                      >
-                        Add marketing messages &rarr;
-                      </button>
+                        <option value="in-review">In review</option>
+                        <option value="registered">Registered</option>
+                      </select>
+                    </div>
+
+                    <div className="relative">
+                      {regMktTrackerState === "registered" ? (
+                        <h3 className="text-lg font-semibold text-text-primary">Your messages are live!</h3>
+                      ) : (
+                        <>
+                          <h3 className="text-lg font-semibold text-text-primary inline-flex items-center gap-1.5">
+                            Registration status
+                            <button
+                              type="button"
+                              onClick={() => setRegMktTrackerTooltip((v) => !v)}
+                              onBlur={() => setRegMktTrackerTooltip(false)}
+                              className="cursor-pointer"
+                            >
+                              <InfoCircle className="size-4 text-text-quaternary" />
+                            </button>
+                          </h3>
+                          {regMktTrackerTooltip && (
+                            <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed">
+                              Registration usually takes 2–3 days per message type.
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <div className="mt-3">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <span className="text-sm font-semibold text-text-primary">Marketing</span>
+                          <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
+                        </div>
+                        {regMktTrackerState === "in-review" ? (
+                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                            In review
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                            Registered
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {regMktTrackerState === "registered" && (
+                      <div className="mt-4 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setRegMktTrackerDismissed(true)}
+                          className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Close
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
