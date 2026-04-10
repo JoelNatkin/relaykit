@@ -220,7 +220,7 @@ export default function AppMessagesPage() {
 
   /* ── Shared message list ── */
   const messageList = (
-    <div className={isWizard ? "" : "max-w-[540px]"}>
+    <div className={isWizard ? "" : "max-w-[680px]"}>
       <div className="space-y-5">
         {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
           <CatalogCard
@@ -337,7 +337,7 @@ export default function AppMessagesPage() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-10">
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 max-w-[680px]">
             {messageList}
           </div>
 
@@ -499,7 +499,7 @@ export default function AppMessagesPage() {
 
       <div className="flex flex-col md:flex-row gap-10">
         {/* LEFT — setup instructions + messages */}
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 max-w-[680px]">
           <SetupInstructions visible={setupVisible} />
           {messageList}
         </div>
