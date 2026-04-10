@@ -509,9 +509,10 @@ export default function AppMessagesPage() {
                     <div className="mt-3 space-y-2">
                       {/* Transactional row */}
                       <div className="flex items-start justify-between">
-                        <span className="text-sm text-text-secondary">
-                          <span className="font-semibold">{verticalName}</span> &middot; Submitted 3/17/2026
-                        </span>
+                        <div>
+                          <span className="text-sm font-semibold text-text-primary">{verticalName}</span>
+                          <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
+                        </div>
                         {regTrackerState === "all-review" ? (
                           <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
                             In review
@@ -526,9 +527,10 @@ export default function AppMessagesPage() {
                       {/* Marketing row — only if marketing was added */}
                       {hasMarketingRegistered && (
                         <div className="flex items-start justify-between">
-                          <span className="text-sm text-text-secondary">
-                            <span className="font-semibold">Marketing</span> &middot; Submitted 3/17/2026
-                          </span>
+                          <div>
+                            <span className="text-sm font-semibold text-text-primary">Marketing</span>
+                            <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
+                          </div>
                           {regTrackerState === "all-registered" ? (
                             <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
                               Registered
