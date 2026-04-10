@@ -501,7 +501,9 @@ export function CatalogCard({
   const showCustomPill = customTextBuffer !== null;
 
   return (
-    <div className="relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+    <div
+      className={`relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs ${monitorMode ? "max-w-[500px]" : ""}`}
+    >
       {/* Header row */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5 min-w-0 flex-1">
@@ -734,10 +736,12 @@ export function CatalogCard({
             )}
 
             {/* Monitor expansion — message text stays above; Recent Activity
-                section renders below, separated by a top divider. */}
+                section renders below, separated by a top divider with 4px
+                padding above and below the line. */}
             {isMonitoring && (
-              <div className="mt-4 pt-4 border-t border-border-secondary">
-                <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
+              <div className="mt-4">
+                <div className="my-1 border-t border-border-secondary" />
+                <p className="mt-4 text-xs font-medium text-text-tertiary uppercase tracking-wide">
                   Recent activity
                 </p>
 
@@ -776,7 +780,7 @@ export function CatalogCard({
                 </div>
 
                 {/* Footer actions — mirrors edit mode's Save/Cancel position */}
-                <div className="mt-4 flex items-center justify-end gap-5">
+                <div className="mt-6 flex items-center justify-end gap-5">
                   <button
                     type="button"
                     onClick={(e) => e.preventDefault()}
@@ -787,7 +791,7 @@ export function CatalogCard({
                   <button
                     type="button"
                     onClick={exitMonitor}
-                    className="rounded-lg bg-bg-secondary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary_hover cursor-pointer"
+                    className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
                   >
                     Close
                   </button>
