@@ -536,9 +536,11 @@ export function CatalogCard({
           </div>
 
           {/* Header action buttons — hidden while either expansion is open.
-              Activity (monitor) on the left, pencil (edit) on the right. */}
+              Activity (monitor) on the left, pencil (edit) on the right.
+              gap-0 + p-1 on each button = 8px visible icon-to-icon spacing
+              (4px of each button's click-target padding), click targets intact. */}
           {!isEditing && !isMonitoring && (
-            <div className="flex items-center gap-4 flex-shrink-0">
+            <div className="flex items-center gap-0 flex-shrink-0">
               {monitorMode && (
                 <div className="relative">
                   <button
@@ -736,9 +738,9 @@ export function CatalogCard({
             )}
 
             {/* Monitor expansion — message text stays above; Recent Activity
-                section renders below with 16px of breathing room. */}
+                section renders below with 24px of breathing room. */}
             {isMonitoring && (
-              <div className="mt-4">
+              <div className="mt-6">
                 <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
                   Recent activity
                 </p>

@@ -404,15 +404,17 @@ export default function AppMessagesPage() {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-10">
-          <div className="min-w-0 flex-1 max-w-[680px]">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <div className="min-w-0 lg:col-span-2">
             {messageList}
           </div>
 
-          {/* RIGHT — Marketing upsell or registration tracker */}
+          {/* RIGHT — Marketing upsell or registration tracker.
+              Sits in the third column of the same 3-col grid as the metrics
+              row above, so it lines up with one metrics card exactly. */}
           {(showRegisteredUpsell || (registeredUpsellConfirmed && !regMktTrackerDismissed)) && (
-            <div className="order-first md:order-last md:w-[300px] md:shrink-0">
-              <div className="rounded-xl bg-gray-50 p-6 md:sticky md:top-20">
+            <div className="order-first lg:order-last">
+              <div className="rounded-xl bg-gray-50 p-6 lg:sticky lg:top-20">
                 {showRegisteredUpsell ? (
                   registeredUpsellConfirmStep ? (
                     <div style={{ animation: "einCardFade 200ms ease-out" }}>
@@ -565,16 +567,17 @@ export default function AppMessagesPage() {
         </Link>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* LEFT — setup instructions + messages */}
-        <div className="min-w-0 flex-1 max-w-[680px]">
+        <div className="min-w-0 lg:col-span-2">
           <SetupInstructions visible={setupVisible} />
           {messageList}
         </div>
 
-        {/* RIGHT — Registration card */}
-        <div className="order-first md:order-last md:w-[300px] md:shrink-0">
-          <div className="rounded-xl bg-gray-50 p-6 md:sticky md:top-20">
+        {/* RIGHT — Registration card. Sits in the same 3-col grid as the
+            Registered state metrics row so rail widths match across states. */}
+        <div className="order-first lg:order-last">
+          <div className="rounded-xl bg-gray-50 p-6 lg:sticky lg:top-20">
             {isBuilding ? (
               !einExpanded ? (
                 /* Card A — Registration card */
