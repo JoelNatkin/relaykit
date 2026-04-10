@@ -457,3 +457,26 @@ Signup email in sessionStorage under key relaykit_signup_email. Verify page read
 State transition boundary: registrationState does NOT change during OTP verify. It only flips to "building" when exiting the get-started page (D-322).
 Onboarding and workspace Messages pages have cleanly separated rendering logic — they will diverge further (onboarding has no send icons or test controls, workspace has full row controls). Changes to one should not affect the other.
 The workspace is a single page (Messages). There are no tabs. Overview route redirects to Messages. Settings is a child page. All lifecycle content (setup cards, registration status, metrics) lives on the Messages page in state-appropriate positions.
+
+## Right Rail State Matrix
+
+Reference for all right rail content across registration states.
+
+### PENDING STATE (no metrics)
+
+| EIN | Marketing | Right rail |
+|-----|-----------|------------|
+| No EIN | Not added | Registration status (Appointments: In review) + divider + Marketing upsell ("Add your EIN →") |
+| With EIN | Not added | Registration status (Appointments: In review) + divider + Marketing upsell ("Add marketing messages →") |
+| With EIN | Just confirmed via upsell | Registration status (Appointments: In review, Marketing: In review) — upsell gone. Marketing messages appear in list. |
+| With EIN | Added at signup (D-336) | Registration status (Appointments: In review, Marketing: In review) — no upsell. Marketing messages in list. |
+
+### REGISTERED STATE (has metrics)
+
+| EIN | Marketing | Right rail (below Usage & Billing) |
+|-----|-----------|------------|
+| No EIN | Not added | Marketing upsell only ("Add your EIN →") |
+| With EIN | Not added | Marketing upsell only ("Add marketing messages →") |
+| With EIN | Just confirmed via upsell, in review | Registration status (Marketing: In review) — no Appointments row. Marketing messages in list. |
+| With EIN | Marketing registered | "Your messages are live!" (Marketing: Registered) + Close. Marketing messages in list. |
+| With EIN | Dismissed / no marketing | No right rail card |
