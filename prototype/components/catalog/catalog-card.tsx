@@ -241,6 +241,36 @@ export function CatalogCard({
   const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  // Header icon tooltips: short hover delay, and always clear on unmount-while-
+  // hovered. The icons are unmounted when an expansion opens, so mouseLeave
+  // never fires — without an explicit reset, the tooltip would come back
+  // "stuck open" the next time the icons remount.
+  const editTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const monitorTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function scheduleEditTooltip() {
+    if (editTooltipTimerRef.current) clearTimeout(editTooltipTimerRef.current);
+    editTooltipTimerRef.current = setTimeout(() => setShowEditTooltip(true), 300);
+  }
+  function clearEditTooltip() {
+    if (editTooltipTimerRef.current) {
+      clearTimeout(editTooltipTimerRef.current);
+      editTooltipTimerRef.current = null;
+    }
+    setShowEditTooltip(false);
+  }
+  function scheduleMonitorTooltip() {
+    if (monitorTooltipTimerRef.current) clearTimeout(monitorTooltipTimerRef.current);
+    monitorTooltipTimerRef.current = setTimeout(() => setShowMonitorTooltip(true), 300);
+  }
+  function clearMonitorTooltip() {
+    if (monitorTooltipTimerRef.current) {
+      clearTimeout(monitorTooltipTimerRef.current);
+      monitorTooltipTimerRef.current = null;
+    }
+    setShowMonitorTooltip(false);
+  }
+
   const nature = getMessageNature(message);
   const isMarketing = nature === "Marketing";
   const tooltipText = getTooltipText(message);
@@ -281,6 +311,8 @@ export function CatalogCard({
   useEffect(() => {
     return () => {
       if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
+      if (editTooltipTimerRef.current) clearTimeout(editTooltipTimerRef.current);
+      if (monitorTooltipTimerRef.current) clearTimeout(monitorTooltipTimerRef.current);
     };
   }, []);
 
@@ -327,6 +359,8 @@ export function CatalogCard({
   }, [isEditing]);
 
   function enterEdit() {
+    clearEditTooltip();
+    clearMonitorTooltip();
     // Opening edit closes any open monitor view.
     if (isMonitoring) exitMonitor();
     if (isControlled) {
@@ -347,6 +381,8 @@ export function CatalogCard({
 
   function enterMonitor() {
     if (!monitorMode) return;
+    clearEditTooltip();
+    clearMonitorTooltip();
     // Opening monitor closes any open edit (unsaved changes discarded, same as edit→edit).
     if (isEditing) exitEdit();
     if (isMonitoringControlled) {
@@ -497,15 +533,35 @@ export function CatalogCard({
             )}
           </div>
 
-          {/* Header action buttons — hidden while either expansion is open */}
+          {/* Header action buttons — hidden while either expansion is open.
+              Activity (monitor) on the left, pencil (edit) on the right. */}
           {!isEditing && !isMonitoring && (
-            <div className="flex items-center gap-0.5 flex-shrink-0">
+            <div className="flex items-center gap-5 flex-shrink-0">
+              {monitorMode && (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={enterMonitor}
+                    onMouseEnter={scheduleMonitorTooltip}
+                    onMouseLeave={clearMonitorTooltip}
+                    className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                    aria-label="Test & debug"
+                  >
+                    <Activity className="size-[19px]" />
+                  </button>
+                  {showMonitorTooltip && (
+                    <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                      Test & debug
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="relative">
                 <button
                   type="button"
                   onClick={enterEdit}
-                  onMouseEnter={() => setShowEditTooltip(true)}
-                  onMouseLeave={() => setShowEditTooltip(false)}
+                  onMouseEnter={scheduleEditTooltip}
+                  onMouseLeave={clearEditTooltip}
                   className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
                   aria-label="Edit message"
                 >
@@ -517,25 +573,6 @@ export function CatalogCard({
                   </div>
                 )}
               </div>
-              {monitorMode && (
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={enterMonitor}
-                    onMouseEnter={() => setShowMonitorTooltip(true)}
-                    onMouseLeave={() => setShowMonitorTooltip(false)}
-                    className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                    aria-label="Test & debug"
-                  >
-                    <Activity className="size-[15px]" />
-                  </button>
-                  {showMonitorTooltip && (
-                    <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                      Test & debug
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -666,89 +703,20 @@ export function CatalogCard({
               </div>
             </div>
           </div>
-        ) : isMonitoring ? (
-          <div className="mt-4">
-            {/* Monitor header */}
-            <div className="flex items-center justify-between">
-              <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                Recent activity
-              </p>
-              <button
-                type="button"
-                onClick={exitMonitor}
-                className="p-1 -mr-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                aria-label="Close"
-              >
-                <XClose className="size-4" />
-              </button>
-            </div>
-
-            {/* Activity list */}
-            <div className="mt-3">
-              {activity && activity.length > 0 ? (
-                <ul className="space-y-2.5">
-                  {activity.map((entry) => (
-                    <li key={entry.id}>
-                      <div className="flex items-center justify-between gap-3 text-sm">
-                        <span className="text-text-secondary truncate">
-                          {entry.recipientName}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 text-text-tertiary flex-shrink-0">
-                          <span
-                            className={`inline-block size-1.5 rounded-full ${STATUS_DOT[entry.status]}`}
-                          />
-                          <span>
-                            {STATUS_LABEL[entry.status]} {timeAgo(entry.timestamp)}
-                          </span>
-                        </span>
-                      </div>
-                      {entry.errorDetail && (
-                        <p className="mt-0.5 pl-3 text-xs text-text-tertiary">
-                          {entry.errorDetail}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-text-tertiary text-center py-4">
-                  No activity yet. This message hasn{"\u2019"}t been sent by your app.
-                </p>
-              )}
-            </div>
-
-            {/* Divider */}
-            <div className="mt-4 border-t border-border-secondary" />
-
-            {/* AI help input — non-functional stub */}
-            <div className="mt-4 relative">
-              <Stars02 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
-              <input
-                type="text"
-                placeholder="Ask about this message"
-                className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-              />
-            </div>
-
-            {/* Open in App Doctor — non-functional stub */}
-            <div className="mt-3">
-              <a
-                href="#"
-                onClick={(e) => e.preventDefault()}
-                className="text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
-              >
-                Open in App Doctor &rarr;
-              </a>
-            </div>
-          </div>
         ) : (
           <>
+            {/* Read-only message text. Clickable to enter edit unless monitor
+                is open (monitor shows the text for reference, not for editing). */}
             <div
-              className="mt-2 cursor-pointer"
-              onClick={enterEdit}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => { if (e.key === "Enter") enterEdit(); }}
+              className={isMonitoring ? "mt-2" : "mt-2 cursor-pointer"}
+              onClick={isMonitoring ? undefined : enterEdit}
+              role={isMonitoring ? undefined : "button"}
+              tabIndex={isMonitoring ? undefined : 0}
+              onKeyDown={
+                isMonitoring
+                  ? undefined
+                  : (e) => { if (e.key === "Enter") enterEdit(); }
+              }
             >
               {renderPreview(currentTemplate)}
             </div>
@@ -762,6 +730,85 @@ export function CatalogCard({
                     ? STATUS_LABEL[lastSent.status]
                     : `${STATUS_LABEL[lastSent.status]} ${timeAgo(lastSent.timestamp)}`}
                 </span>
+              </div>
+            )}
+
+            {/* Monitor expansion — message text stays above; Recent Activity
+                section renders below with the same inter-section spacing the
+                edit mode uses. */}
+            {isMonitoring && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
+                    Recent activity
+                  </p>
+                  <button
+                    type="button"
+                    onClick={exitMonitor}
+                    className="p-1 -mr-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                    aria-label="Close"
+                  >
+                    <XClose className="size-4" />
+                  </button>
+                </div>
+
+                {/* Activity list */}
+                <div className="mt-3">
+                  {activity && activity.length > 0 ? (
+                    <ul className="divide-y divide-border-secondary">
+                      {activity.map((entry) => (
+                        <li key={entry.id} className="py-2.5 first:pt-0 last:pb-0">
+                          <div className="flex items-center justify-between gap-3 text-sm">
+                            <span className="text-text-secondary truncate">
+                              {entry.recipientName}
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 text-text-tertiary flex-shrink-0">
+                              <span
+                                className={`inline-block size-1.5 rounded-full ${STATUS_DOT[entry.status]}`}
+                              />
+                              <span>
+                                {STATUS_LABEL[entry.status]} {timeAgo(entry.timestamp)}
+                              </span>
+                            </span>
+                          </div>
+                          {entry.errorDetail && (
+                            <p className="mt-0.5 pl-3 text-xs text-text-tertiary">
+                              {entry.errorDetail}
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-text-tertiary text-center py-4">
+                      No activity yet. This message hasn{"\u2019"}t been sent by your app.
+                    </p>
+                  )}
+                </div>
+
+                {/* Divider */}
+                <div className="mt-4 border-t border-border-secondary" />
+
+                {/* AI help input — non-functional stub */}
+                <div className="mt-4 relative">
+                  <Stars02 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
+                  <input
+                    type="text"
+                    placeholder="Ask about this message"
+                    className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+                  />
+                </div>
+
+                {/* Open in App Doctor — non-functional stub */}
+                <div className="mt-3">
+                  <a
+                    href="#"
+                    onClick={(e) => e.preventDefault()}
+                    className="text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Open in App Doctor &rarr;
+                  </a>
+                </div>
               </div>
             )}
           </>
