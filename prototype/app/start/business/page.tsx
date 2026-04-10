@@ -378,6 +378,13 @@ export default function BusinessNamePage() {
                       )}
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => { setEinState("idle"); setEinInput(""); setConfirmedOwnership(false); }}
+                    className="mt-2 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Try a different EIN
+                  </button>
                 </div>
               </div>
             )}
