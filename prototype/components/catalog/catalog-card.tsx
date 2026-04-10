@@ -199,6 +199,10 @@ export interface CatalogCardProps {
   onMonitorRequest?: (messageId: string | null) => void;
   /** Recent activity entries rendered inside the monitor expansion. */
   activity?: ActivityEntry[];
+  /** Names shown in the monitor expansion's Send test dropdown. Kept in sync
+   *  with the Test phones card in the right rail so both read from the same
+   *  list. Falls back to the built-in list when not provided. */
+  testRecipients?: string[];
 }
 
 export function CatalogCard({
@@ -214,6 +218,7 @@ export function CatalogCard({
   isMonitoring: controlledIsMonitoring,
   onMonitorRequest,
   activity,
+  testRecipients,
 }: CatalogCardProps) {
   const isControlled = controlledIsEditing !== undefined;
   const isMonitoringControlled = controlledIsMonitoring !== undefined;
@@ -274,12 +279,24 @@ export function CatalogCard({
   // Send-test flow (prototype stub). Not wired to a backend; the confirmation
   // intentionally does not push a row into the activity list — only real
   // app-triggered sends appear there.
-  const TEST_RECIPIENTS = ["Joel", "Sarah", "Mike"] as const;
-  const [selectedRecipient, setSelectedRecipient] = useState<string>(TEST_RECIPIENTS[0]);
+  const FALLBACK_RECIPIENTS = ["Joel", "Sarah", "Mike"];
+  const recipients =
+    testRecipients && testRecipients.length > 0 ? testRecipients : FALLBACK_RECIPIENTS;
+  const [selectedRecipient, setSelectedRecipient] = useState<string>(() => recipients[0] ?? "");
   const [isSendingTest, setIsSendingTest] = useState(false);
   const [sentTestTo, setSentTestTo] = useState<string | null>(null);
   const sendTestTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sentTestClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // If the selected recipient is removed from the list upstream, fall back
+  // to the first remaining name so the <select> never holds a stale value.
+  useEffect(() => {
+    if (!recipients.includes(selectedRecipient)) {
+      setSelectedRecipient(recipients[0] ?? "");
+    }
+    // Depend on the prop (stable across renders when identity is preserved)
+    // and on the current selection.
+  }, [testRecipients, selectedRecipient]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSendTest() {
     if (isSendingTest) return;
@@ -838,7 +855,7 @@ export function CatalogCard({
                       type="button"
                       onClick={handleSendTest}
                       disabled={isSendingTest}
-                      className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="ml-2 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {isSendingTest ? "Sending…" : "Send test"}
                     </button>
@@ -849,7 +866,7 @@ export function CatalogCard({
                       className="bg-transparent border-0 p-0 text-sm font-normal text-text-primary transition duration-100 ease-linear cursor-pointer focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
                       aria-label="Test recipient"
                     >
-                      {TEST_RECIPIENTS.map((name) => (
+                      {recipients.map((name) => (
                         <option key={name} value={name}>
                           {name}
                         </option>

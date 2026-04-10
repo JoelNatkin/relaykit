@@ -8,6 +8,7 @@ import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import type { LastSent, ActivityEntry } from "@/components/catalog/catalog-card";
+import { TestPhonesCard, INITIAL_TEST_PHONES, type TestPhone } from "@/components/test-phones-card";
 import { SetupInstructions, SetupToggle, useSetupToggle } from "@/components/setup-instructions";
 import { loadWizardData, saveWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
 import { EinInlineVerify } from "@/components/ein-inline-verify";
@@ -266,6 +267,30 @@ export default function AppMessagesPage() {
     if (id !== null) setEditingMessageId(null);
   }
 
+  // Test phones — shared between the right-rail Test phones card and the
+  // Send test dropdown inside each CatalogCard's monitor expansion, so both
+  // read from a single source of names.
+  const [testPhones, setTestPhones] = useState<TestPhone[]>(INITIAL_TEST_PHONES);
+  const testRecipientNames = testPhones.map((p) => p.name);
+
+  function handleRemoveTestPhone(id: string) {
+    setTestPhones((prev) => prev.filter((p) => p.id !== id));
+  }
+
+  function handleInviteTestPhone(name: string, phone: string) {
+    const digits = phone.replace(/\D/g, "");
+    const last4 = (digits || phone).slice(-4);
+    setTestPhones((prev) => [
+      ...prev,
+      {
+        id: `invited-${Date.now()}`,
+        name,
+        phoneLast4: last4,
+        status: "invited",
+      },
+    ]);
+  }
+
   const { appId } = useParams<{ appId: string }>();
   const registrationState = state.registrationState;
   const isPending = registrationState === "pending";
@@ -295,6 +320,7 @@ export default function AppMessagesPage() {
             monitorMode={!isWizard}
             isMonitoring={monitoringMessageId === message.id}
             onMonitorRequest={requestMonitor}
+            testRecipients={testRecipientNames}
           />
         ))}
         {coreMessages.map((message, index) => (
@@ -311,6 +337,7 @@ export default function AppMessagesPage() {
             activity={MOCK_ACTIVITY[index]}
             isMonitoring={monitoringMessageId === message.id}
             onMonitorRequest={requestMonitor}
+            testRecipients={testRecipientNames}
           />
         ))}
       </div>
@@ -409,12 +436,13 @@ export default function AppMessagesPage() {
             {messageList}
           </div>
 
-          {/* RIGHT — Marketing upsell or registration tracker.
-              Sits in the third column of the same 3-col grid as the metrics
-              row above, so it lines up with one metrics card exactly. */}
-          {(showRegisteredUpsell || (registeredUpsellConfirmed && !regMktTrackerDismissed)) && (
-            <div className="order-first lg:order-last">
-              <div className="rounded-xl bg-gray-50 p-6 lg:sticky lg:top-20">
+          {/* RIGHT — stacks the marketing/tracker card (when present) and
+              the Test phones card. The column always renders because Test
+              phones is visible in every post-onboarding state. Sits in the
+              third column of the same 3-col grid as the metrics row above. */}
+          <div className="order-first lg:order-last lg:sticky lg:top-20 space-y-4">
+            {(showRegisteredUpsell || (registeredUpsellConfirmed && !regMktTrackerDismissed)) && (
+              <div className="rounded-xl bg-gray-50 p-6">
                 {showRegisteredUpsell ? (
                   registeredUpsellConfirmStep ? (
                     <div style={{ animation: "einCardFade 200ms ease-out" }}>
@@ -549,8 +577,13 @@ export default function AppMessagesPage() {
                   </div>
                 )}
               </div>
-            </div>
-          )}
+            )}
+            <TestPhonesCard
+              phones={testPhones}
+              onRemove={handleRemoveTestPhone}
+              onInvite={handleInviteTestPhone}
+            />
+          </div>
         </div>
       </div>
     );
@@ -574,10 +607,11 @@ export default function AppMessagesPage() {
           {messageList}
         </div>
 
-        {/* RIGHT — Registration card. Sits in the same 3-col grid as the
-            Registered state metrics row so rail widths match across states. */}
-        <div className="order-first lg:order-last">
-          <div className="rounded-xl bg-gray-50 p-6 lg:sticky lg:top-20">
+        {/* RIGHT — Registration card stacked above the Test phones card.
+            Sits in the same 3-col grid as the Registered state metrics row
+            so rail widths match across states. */}
+        <div className="order-first lg:order-last lg:sticky lg:top-20 space-y-4">
+          <div className="rounded-xl bg-gray-50 p-6">
             {isBuilding ? (
               !einExpanded ? (
                 /* Card A — Registration card */
@@ -816,7 +850,11 @@ export default function AppMessagesPage() {
               </>
             ) : null}
           </div>
-
+          <TestPhonesCard
+            phones={testPhones}
+            onRemove={handleRemoveTestPhone}
+            onInvite={handleInviteTestPhone}
+          />
         </div>
       </div>
     </div>
