@@ -153,6 +153,9 @@ export default function AppMessagesPage() {
   const [upsellConfirmed, setUpsellConfirmed] = useState(false);
 
   // Registration status tracker (Pending right rail)
+  type RegTrackerState = "all-review" | "partial" | "all-registered";
+  const [regTrackerState, setRegTrackerState] = useState<RegTrackerState>("all-review");
+  const [regTrackerDismissed, setRegTrackerDismissed] = useState(false);
   const [regTrackerTooltip, setRegTrackerTooltip] = useState(false);
   const hasMarketingRegistered = upsellConfirmed;
   const verticalName = VERTICAL_LABELS[categoryId] || "Messages";
@@ -517,7 +520,7 @@ export default function AppMessagesPage() {
 
         {/* RIGHT — Registration card */}
         <div className="order-first md:order-last md:w-[300px] md:shrink-0">
-          {isPending && upsellConfirmed ? null : (
+          {isPending && regTrackerDismissed && upsellConfirmed ? null : (
           <div className="rounded-xl bg-gray-50 p-6 md:sticky md:top-20">
             {isBuilding ? (
               !einExpanded ? (
@@ -632,53 +635,99 @@ export default function AppMessagesPage() {
                 </div>
               ) : (
               <div className="space-y-4">
-                {/* Registration status — always "in review" in Pending state */}
-                <div>
-                  <div className="relative">
-                    <h3 className="text-lg font-semibold text-text-primary inline-flex items-center gap-1.5">
-                      Registration status
-                      <button
-                        type="button"
-                        onClick={() => setRegTrackerTooltip((v) => !v)}
-                        onBlur={() => setRegTrackerTooltip(false)}
-                        className="cursor-pointer"
+                {/* Registration status tracker */}
+                {!regTrackerDismissed && (
+                  <div>
+                    {/* Prototype state cycler */}
+                    <div className="flex justify-end mb-2">
+                      <select
+                        value={regTrackerState}
+                        onChange={(e) => setRegTrackerState(e.target.value as RegTrackerState)}
+                        className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
                       >
-                        <InfoCircle className="size-4 text-text-quaternary" />
-                      </button>
-                    </h3>
-                    {regTrackerTooltip && (
-                      <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed">
-                        Registration usually takes 2–3 days per message type.
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-3 space-y-2">
-                    {/* Transactional row */}
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <span className="text-sm font-semibold text-text-primary">{verticalName}</span>
-                        <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
-                      </div>
-                      <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
-                        In review
-                      </span>
+                        <option value="all-review">All in review</option>
+                        <option value="partial">Partial registered</option>
+                        <option value="all-registered">All registered</option>
+                      </select>
                     </div>
 
-                    {/* Marketing row — only if marketing was added */}
-                    {hasMarketingRegistered && (
+                    <div className="relative">
+                      {regTrackerState === "all-registered" ? (
+                        <h3 className="text-lg font-semibold text-text-primary">Your messages are live!</h3>
+                      ) : (
+                        <>
+                          <h3 className="text-lg font-semibold text-text-primary inline-flex items-center gap-1.5">
+                            Registration status
+                            <button
+                              type="button"
+                              onClick={() => setRegTrackerTooltip((v) => !v)}
+                              onBlur={() => setRegTrackerTooltip(false)}
+                              className="cursor-pointer"
+                            >
+                              <InfoCircle className="size-4 text-text-quaternary" />
+                            </button>
+                          </h3>
+                          {regTrackerTooltip && (
+                            <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed">
+                              Registration usually takes 2–3 days per message type.
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <div className="mt-3 space-y-2">
+                      {/* Transactional row */}
                       <div className="flex items-start justify-between">
                         <div>
-                          <span className="text-sm font-semibold text-text-primary">Marketing</span>
+                          <span className="text-sm font-semibold text-text-primary">{verticalName}</span>
                           <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
                         </div>
-                        <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
-                          In review
-                        </span>
+                        {regTrackerState === "all-review" ? (
+                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                            In review
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                            Registered
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Marketing row — only if marketing was added */}
+                      {hasMarketingRegistered && (
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <span className="text-sm font-semibold text-text-primary">Marketing</span>
+                            <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
+                          </div>
+                          {regTrackerState === "all-registered" ? (
+                            <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                              Registered
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                              In review
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Close button — only in all-registered state */}
+                    {regTrackerState === "all-registered" && (
+                      <div className="mt-4 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setRegTrackerDismissed(true)}
+                          className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Close
+                        </button>
                       </div>
                     )}
                   </div>
-                </div>
+                )}
 
                 {/* Marketing upsell card — hidden after upsell confirmed */}
                 {!upsellConfirmed && (
