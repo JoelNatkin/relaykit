@@ -278,17 +278,21 @@ export default function AppMessagesPage() {
   }
 
   function handleInviteTestPhone(name: string, phone: string) {
-    const digits = phone.replace(/\D/g, "");
-    const last4 = (digits || phone).slice(-4);
     setTestPhones((prev) => [
       ...prev,
       {
         id: `invited-${Date.now()}`,
         name,
-        phoneLast4: last4,
+        phone,
         status: "invited",
       },
     ]);
+  }
+
+  function handleEditTestPhone(id: string, name: string, phone: string) {
+    setTestPhones((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, name, phone } : p))
+    );
   }
 
   const { appId } = useParams<{ appId: string }>();
@@ -582,6 +586,7 @@ export default function AppMessagesPage() {
               phones={testPhones}
               onRemove={handleRemoveTestPhone}
               onInvite={handleInviteTestPhone}
+              onEdit={handleEditTestPhone}
             />
           </div>
         </div>
@@ -854,6 +859,7 @@ export default function AppMessagesPage() {
             phones={testPhones}
             onRemove={handleRemoveTestPhone}
             onInvite={handleInviteTestPhone}
+            onEdit={handleEditTestPhone}
           />
         </div>
       </div>
