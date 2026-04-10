@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Activity, Stars02, XClose } from "@untitledui/icons";
+import { Activity, Stars02 } from "@untitledui/icons";
 import type { Message, VariantSet } from "@/data/messages";
 import type { SessionState } from "@/context/session-context";
 import {
@@ -536,7 +536,7 @@ export function CatalogCard({
           {/* Header action buttons — hidden while either expansion is open.
               Activity (monitor) on the left, pencil (edit) on the right. */}
           {!isEditing && !isMonitoring && (
-            <div className="flex items-center gap-5 flex-shrink-0">
+            <div className="flex items-center gap-4 flex-shrink-0">
               {monitorMode && (
                 <div className="relative">
                   <button
@@ -547,7 +547,7 @@ export function CatalogCard({
                     className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
                     aria-label="Test & debug"
                   >
-                    <Activity className="size-[19px]" />
+                    <Activity className="size-[17px]" />
                   </button>
                   {showMonitorTooltip && (
                     <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
@@ -734,23 +734,12 @@ export function CatalogCard({
             )}
 
             {/* Monitor expansion — message text stays above; Recent Activity
-                section renders below with the same inter-section spacing the
-                edit mode uses. */}
+                section renders below, separated by a top divider. */}
             {isMonitoring && (
-              <div className="mt-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
-                    Recent activity
-                  </p>
-                  <button
-                    type="button"
-                    onClick={exitMonitor}
-                    className="p-1 -mr-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                    aria-label="Close"
-                  >
-                    <XClose className="size-4" />
-                  </button>
-                </div>
+              <div className="mt-4 pt-4 border-t border-border-secondary">
+                <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
+                  Recent activity
+                </p>
 
                 {/* Activity list */}
                 <div className="mt-3">
@@ -786,28 +775,22 @@ export function CatalogCard({
                   )}
                 </div>
 
-                {/* Divider */}
-                <div className="mt-4 border-t border-border-secondary" />
-
-                {/* AI help input — non-functional stub */}
-                <div className="mt-4 relative">
-                  <Stars02 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
-                  <input
-                    type="text"
-                    placeholder="Ask about this message"
-                    className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
-                  />
-                </div>
-
-                {/* Open in App Doctor — non-functional stub */}
-                <div className="mt-3">
-                  <a
-                    href="#"
+                {/* Footer actions — mirrors edit mode's Save/Cancel position */}
+                <div className="mt-4 flex items-center justify-end gap-5">
+                  <button
+                    type="button"
                     onClick={(e) => e.preventDefault()}
-                    className="text-xs text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+                    className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
                   >
-                    Open in App Doctor &rarr;
-                  </a>
+                    Ask Claude
+                  </button>
+                  <button
+                    type="button"
+                    onClick={exitMonitor}
+                    className="rounded-lg bg-bg-secondary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary_hover cursor-pointer"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
             )}
