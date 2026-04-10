@@ -350,6 +350,7 @@ export default function AppMessagesPage() {
 
         {/* RIGHT — Registration card */}
         <div className="order-first md:order-last md:w-[300px] md:shrink-0">
+          {isPending && regTrackerDismissed && upsellConfirmed ? null : (
           <div className="rounded-xl bg-gray-50 p-6 md:sticky md:top-20">
             {isBuilding ? (
               !einExpanded ? (
@@ -384,7 +385,7 @@ export default function AppMessagesPage() {
                         </label>
                         {includeMarketing && (
                           <p className="pl-6 text-xs text-text-tertiary leading-relaxed">
-                            {VERTICAL_LABELS[categoryId] || "Your"} messages go live first. You&apos;ll get access to marketing templates you can customize or write from scratch.
+                            You&apos;ll get access to marketing templates you can customize or write from scratch.
                           </p>
                         )}
                       </div>
@@ -481,36 +482,42 @@ export default function AppMessagesPage() {
                     </div>
 
                     <div className="relative">
-                      <h3 className="text-lg font-semibold text-text-primary inline-flex items-center gap-1.5">
-                        {regTrackerState === "all-registered" ? "Your messages are live!" : "Registration status"}
-                        <button
-                          type="button"
-                          onClick={() => setRegTrackerTooltip((v) => !v)}
-                          onBlur={() => setRegTrackerTooltip(false)}
-                          className="cursor-pointer"
-                        >
-                          <InfoCircle className="size-4 text-text-quaternary" />
-                        </button>
-                      </h3>
-                      {regTrackerTooltip && (
-                        <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed">
-                          Registration usually takes 2–3 days per message type.
-                        </div>
+                      {regTrackerState === "all-registered" ? (
+                        <h3 className="text-lg font-semibold text-text-primary">Your messages are live!</h3>
+                      ) : (
+                        <>
+                          <h3 className="text-lg font-semibold text-text-primary inline-flex items-center gap-1.5">
+                            Registration status
+                            <button
+                              type="button"
+                              onClick={() => setRegTrackerTooltip((v) => !v)}
+                              onBlur={() => setRegTrackerTooltip(false)}
+                              className="cursor-pointer"
+                            >
+                              <InfoCircle className="size-4 text-text-quaternary" />
+                            </button>
+                          </h3>
+                          {regTrackerTooltip && (
+                            <div className="absolute left-0 top-full mt-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed">
+                              Registration usually takes 2–3 days per message type.
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
 
                     <div className="mt-3 space-y-2">
                       {/* Transactional row */}
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-start justify-between">
                         <span className="text-sm text-text-secondary">
-                          {verticalName} &middot; Submitted 3/17/2026
+                          <span className="font-semibold">{verticalName}</span> &middot; Submitted 3/17/2026
                         </span>
                         {regTrackerState === "all-review" ? (
-                          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2 py-0.5 text-[10px] font-medium text-text-brand-secondary shrink-0">
+                          <span className="inline-flex items-center rounded-full bg-bg-brand-solid px-2 py-0.5 text-[10px] font-medium text-white shrink-0">
                             In review
                           </span>
                         ) : (
-                          <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
+                          <span className="inline-flex items-center rounded-full bg-bg-success-solid px-2 py-0.5 text-[10px] font-medium text-white shrink-0">
                             Registered
                           </span>
                         )}
@@ -518,9 +525,9 @@ export default function AppMessagesPage() {
 
                       {/* Marketing row — only if marketing was added */}
                       {hasMarketingRegistered && (
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-start justify-between">
                           <span className="text-sm text-text-secondary">
-                            Marketing &middot; Submitted 3/17/2026
+                            <span className="font-semibold">Marketing</span> &middot; Submitted 3/17/2026
                           </span>
                           {regTrackerState === "all-registered" ? (
                             <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-[10px] font-medium text-text-success-primary shrink-0">
@@ -537,13 +544,15 @@ export default function AppMessagesPage() {
 
                     {/* Close button — only in all-registered state */}
                     {regTrackerState === "all-registered" && (
-                      <button
-                        type="button"
-                        onClick={() => setRegTrackerDismissed(true)}
-                        className="mt-4 text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
-                      >
-                        Close
-                      </button>
+                      <div className="mt-4 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setRegTrackerDismissed(true)}
+                          className="inline-flex items-center rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                        >
+                          Close
+                        </button>
+                      </div>
                     )}
                   </div>
                 )}
@@ -625,6 +634,7 @@ export default function AppMessagesPage() {
               </>
             ) : null}
           </div>
+          )}
 
         </div>
       </div>
