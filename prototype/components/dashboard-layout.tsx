@@ -20,38 +20,16 @@ interface DashboardLayoutProps {
 }
 
 function StatusIndicator({ registrationState }: { registrationState: RegistrationState }) {
-  switch (registrationState) {
-    case "registered":
-      return (
-        <span className="flex items-center gap-1.5 text-sm text-text-secondary">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#12B76A]" />
-          Your app is live
-        </span>
-      );
-    case "pending":
-      return (
-        <span className="flex items-center gap-1.5 text-sm text-text-secondary">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#F79009]" />
-          Registration in review
-        </span>
-      );
-    case "changes_requested":
-      return (
-        <span className="flex items-center gap-1.5 text-sm text-text-secondary">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#F79009]" />
-          Extended review
-        </span>
-      );
-    case "rejected":
-      return (
-        <span className="flex items-center gap-1.5 text-sm text-text-secondary">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#F04438]" />
-          Registration rejected
-        </span>
-      );
-    default:
-      return null;
-  }
+  if (registrationState === "onboarding") return null;
+  const isLive = registrationState === "registered";
+  return (
+    <span className="flex items-center gap-1.5 text-sm text-text-secondary">
+      <span
+        className={`inline-block h-2 w-2 rounded-full ${isLive ? "bg-green-500" : "bg-yellow-500"}`}
+      />
+      {isLive ? "Live" : "Test mode"}
+    </span>
+  );
 }
 
 export function DashboardLayout({
@@ -120,12 +98,9 @@ export function DashboardLayout({
             {/* Status indicator sits between the prototype switchers and the
                 Setup/Settings cluster so Settings stays flush against the
                 right edge of the page content. The wrapper is conditional so
-                states that return null from StatusIndicator don't leave an
+                the onboarding state (which returns null) doesn't leave an
                 empty margin pushing Settings inward. */}
-            {(registrationState === "pending" ||
-              registrationState === "registered" ||
-              registrationState === "changes_requested" ||
-              registrationState === "rejected") && (
+            {registrationState !== "onboarding" && (
               <div className="ml-10">
                 <StatusIndicator registrationState={registrationState} />
               </div>
