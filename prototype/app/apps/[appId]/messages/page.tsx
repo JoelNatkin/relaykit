@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { InfoCircle, Settings01, Stars02 } from "@untitledui/icons";
+import { InfoCircle, Stars02 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import type { LastSent, ActivityEntry } from "@/components/catalog/catalog-card";
 import { TestPhonesCard, INITIAL_TEST_PHONES, type TestPhone } from "@/components/test-phones-card";
-import { SetupInstructions, SetupToggle, useSetupToggle } from "@/components/setup-instructions";
+import { SetupInstructions } from "@/components/setup-instructions";
+import { useSetupToggleState } from "@/context/setup-toggle-context";
 import { loadWizardData, saveWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
 import { EinInlineVerify } from "@/components/ein-inline-verify";
 import type { BusinessIdentity } from "@/components/ein-inline-verify";
@@ -301,8 +302,9 @@ export default function AppMessagesPage() {
   const isChangesRequested = registrationState === "changes_requested";
   const isRejected = registrationState === "rejected";
 
-  /* ── Setup toggle (per-state persistence) ── */
-  const { visible: setupVisible, toggle: setupToggle } = useSetupToggle(registrationState);
+  /* ── Setup toggle state lives in DashboardLayout's header row; we just
+         read the current visibility here to drive the panel below. ── */
+  const { visible: setupVisible } = useSetupToggleState();
 
   /* ── Should marketing messages be shown? (D-336) ── */
   const showMarketingMessages = (isPending && hasEin && upsellConfirmed) || (isApproved && hasEin && registeredUpsellConfirmed);
@@ -405,13 +407,6 @@ export default function AppMessagesPage() {
 
     return (
       <div>
-        <div className="flex items-center justify-end gap-4 mb-4">
-          <SetupToggle checked={setupVisible} onChange={setupToggle} />
-          <Link href={`/apps/${appId}/settings`} className="flex items-center gap-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">
-            <Settings01 className="size-4" />
-            Settings
-          </Link>
-        </div>
         <SetupInstructions visible={setupVisible} />
 
         {/* Delivery metrics */}
@@ -614,14 +609,6 @@ export default function AppMessagesPage() {
   /* ── All other states: two-column layout with right rail ── */
   return (
     <div>
-      <div className="flex items-center justify-end gap-4 mb-4">
-        <SetupToggle checked={setupVisible} onChange={setupToggle} />
-        <Link href={`/apps/${appId}/settings`} className="flex items-center gap-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear">
-          <Settings01 className="size-4" />
-          Settings
-        </Link>
-      </div>
-
       {messagesSectionHeader}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">

@@ -1,9 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
+import Link from "next/link";
+import { useParams, usePathname } from "next/navigation";
+import { Settings01 } from "@untitledui/icons";
 import type { RegistrationState } from "@/context/session-context";
 import { loadWizardData, saveWizardData } from "@/lib/wizard-storage";
+import { SetupToggle, useSetupToggle } from "@/components/setup-instructions";
+import { SetupToggleProvider } from "@/context/setup-toggle-context";
 
 const APP_NAMES: Record<string, string> = {
   glowstudio: "GlowStudio",
@@ -56,7 +60,14 @@ export function DashboardLayout({
   onRegistrationStateChange,
 }: DashboardLayoutProps) {
   const { appId } = useParams<{ appId: string }>();
+  const pathname = usePathname();
+  const isMessagesPage = pathname.endsWith("/messages");
   const appName = APP_NAMES[appId] || appId;
+
+  // Setup instructions toggle — lives in the app identity bar on the
+  // messages page, shared with the messages page via context so the
+  // SetupInstructions panel it reveals can read the same visibility flag.
+  const { visible: setupVisible, toggle: setupToggle } = useSetupToggle(registrationState);
 
   // EIN prototype switcher — writes to wizard sessionStorage
   const [hasEin, setHasEin] = useState(true);
@@ -73,48 +84,65 @@ export function DashboardLayout({
   }
 
   return (
-    <div>
-      {/* App identity bar */}
-      <div className="mx-auto max-w-5xl px-6 pt-6 pb-4 flex items-center gap-3">
-        <h1 className="text-xl font-semibold text-text-primary">{appName}</h1>
-        <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2.5 py-1 text-xs font-medium text-text-brand-secondary">
-          Appointments
-        </span>
+    <SetupToggleProvider value={{ visible: setupVisible, toggle: setupToggle }}>
+      <div>
+        {/* App identity bar */}
+        <div className="mx-auto max-w-5xl px-6 pt-6 pb-4 flex items-center gap-3">
+          <h1 className="text-xl font-semibold text-text-primary">{appName}</h1>
+          <span className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2.5 py-1 text-xs font-medium text-text-brand-secondary">
+            Appointments
+          </span>
 
-        {/* Right: state switcher + status indicator */}
-        <div className="ml-auto flex items-center">
-          <select
-            value={registrationState}
-            onChange={(e) => onRegistrationStateChange(e.target.value as RegistrationState)}
-            className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
-          >
-            <option value="onboarding">Onboarding</option>
-            <option value="building">Building</option>
-            <option value="pending">Pending</option>
-            <option value="changes_requested">Extended Review</option>
-            <option value="registered">Registered</option>
-            <option value="rejected">Rejected</option>
-          </select>
+          {/* Right: state switchers → setup toggle → settings → status */}
+          <div className="ml-auto flex items-center">
+            <select
+              value={registrationState}
+              onChange={(e) => onRegistrationStateChange(e.target.value as RegistrationState)}
+              className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
+            >
+              <option value="onboarding">Onboarding</option>
+              <option value="building">Building</option>
+              <option value="pending">Pending</option>
+              <option value="changes_requested">Extended Review</option>
+              <option value="registered">Registered</option>
+              <option value="rejected">Rejected</option>
+            </select>
 
-          <select
-            value={hasEin ? "with" : "without"}
-            onChange={(e) => handleEinChange(e.target.value)}
-            className="ml-3 text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
-          >
-            <option value="with">With EIN</option>
-            <option value="without">No EIN</option>
-          </select>
+            <select
+              value={hasEin ? "with" : "without"}
+              onChange={(e) => handleEinChange(e.target.value)}
+              className="ml-3 text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
+            >
+              <option value="with">With EIN</option>
+              <option value="without">No EIN</option>
+            </select>
 
-          <div className="ml-10">
-            <StatusIndicator registrationState={registrationState} />
+            {isMessagesPage && (
+              <>
+                <div className="ml-6">
+                  <SetupToggle checked={setupVisible} onChange={setupToggle} />
+                </div>
+                <Link
+                  href={`/apps/${appId}/settings`}
+                  className="ml-4 flex items-center gap-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
+                >
+                  <Settings01 className="size-4" />
+                  Settings
+                </Link>
+              </>
+            )}
+
+            <div className="ml-10">
+              <StatusIndicator registrationState={registrationState} />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Page content */}
-      <div className="mx-auto max-w-5xl px-6 pt-6 pb-16">
-        {children}
+        {/* Page content */}
+        <div className="mx-auto max-w-5xl px-6 pt-6 pb-16">
+          {children}
+        </div>
       </div>
-    </div>
+    </SetupToggleProvider>
   );
 }
