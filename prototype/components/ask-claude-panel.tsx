@@ -14,7 +14,7 @@ export function AskClaudePanel({ focusedMessageName, onClose }: AskClaudePanelPr
   return (
     <div
       className="w-[500px] shrink-0 self-start sticky top-20 flex flex-col overflow-hidden rounded-xl border border-border-secondary bg-bg-primary"
-      style={{ maxHeight: "calc(100vh - 5rem)" }}
+      style={{ height: "calc(100vh - 6.5rem)" }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-6 pb-4">
