@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { InfoCircle, Settings01 } from "@untitledui/icons";
+import { InfoCircle, Settings01, Stars02 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
@@ -307,6 +307,21 @@ export default function AppMessagesPage() {
   /* ── Should marketing messages be shown? (D-336) ── */
   const showMarketingMessages = (isPending && hasEin && upsellConfirmed) || (isApproved && hasEin && registeredUpsellConfirmed);
 
+  /* ── Section header (post-onboarding only) ── */
+  const messagesSectionHeader = (
+    <div className="mb-4 flex items-center justify-between gap-4">
+      <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
+      <button
+        type="button"
+        onClick={(e) => e.preventDefault()}
+        className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+      >
+        <Stars02 className="size-4 text-fg-brand-primary" />
+        Ask Claude
+      </button>
+    </div>
+  );
+
   /* ── Shared message list ── */
   const messageList = (
     <div className={isWizard ? "" : "max-w-[680px]"}>
@@ -434,6 +449,8 @@ export default function AppMessagesPage() {
             <p className="mt-2 text-xs text-text-tertiary">Plan: $19/mo &middot; 500 included</p>
           </div>
         </div>
+
+        {messagesSectionHeader}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="min-w-0 lg:col-span-2">
@@ -604,6 +621,8 @@ export default function AppMessagesPage() {
           Settings
         </Link>
       </div>
+
+      {messagesSectionHeader}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* LEFT — setup instructions + messages */}
