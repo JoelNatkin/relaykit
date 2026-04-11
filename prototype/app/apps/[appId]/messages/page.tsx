@@ -323,16 +323,6 @@ export default function AppMessagesPage() {
   const isChangesRequested = registrationState === "changes_requested";
   const isRejected = registrationState === "rejected";
 
-  const ASK_CLAUDE_STATE_LABELS: Record<string, string> = {
-    onboarding: "Onboarding",
-    building: "Building",
-    pending: "Pending",
-    changes_requested: "Extended Review",
-    registered: "Registered",
-    rejected: "Rejected",
-  };
-  const askClaudeStateLabel = ASK_CLAUDE_STATE_LABELS[registrationState] ?? "Building";
-
   /* ── Setup toggle state lives in DashboardLayout's header row; we just
          read the current visibility here to drive the panel below. ── */
   const { visible: setupVisible } = useSetupToggleState();
@@ -358,10 +348,6 @@ export default function AppMessagesPage() {
   /* ── Ask Claude panel (reused across both layouts) ── */
   const askClaudePanel = (
     <AskClaudePanel
-      appName="GlowStudio"
-      categoryLabel="Appointments"
-      messageCount={coreMessages.length}
-      stateLabel={askClaudeStateLabel}
       focusedMessageName={askClaudeFocusedMessage}
       onClose={closeAskClaude}
     />

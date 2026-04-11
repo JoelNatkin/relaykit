@@ -3,36 +3,22 @@
 import { Stars02, XClose } from "@untitledui/icons";
 
 export interface AskClaudePanelProps {
-  appName: string;
-  categoryLabel: string;
-  messageCount: number;
-  stateLabel: string;
-  /** When present, the panel shows a "Focused on: X" line below the context
-   *  card — set by opening the panel from inside a message card's monitor
-   *  expansion. */
+  /** When present, the panel shows a "Focused on: X" line at the top of
+   *  the scroll body — set by opening the panel from inside a message
+   *  card's monitor expansion. */
   focusedMessageName?: string | null;
   onClose: () => void;
 }
 
-export function AskClaudePanel({
-  appName,
-  categoryLabel,
-  messageCount,
-  stateLabel,
-  focusedMessageName,
-  onClose,
-}: AskClaudePanelProps) {
+export function AskClaudePanel({ focusedMessageName, onClose }: AskClaudePanelProps) {
   return (
     <div
-      className="w-[500px] shrink-0 self-start sticky top-20 flex flex-col border-l border-border-secondary bg-bg-primary"
+      className="w-[500px] shrink-0 self-start sticky top-20 flex flex-col overflow-hidden rounded-xl border border-border-secondary bg-bg-primary"
       style={{ maxHeight: "calc(100vh - 5rem)" }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-6 pb-4">
-        <div className="inline-flex items-center gap-2">
-          <Stars02 className="size-5 text-fg-brand-primary" />
-          <h2 className="text-lg font-semibold text-text-primary">Ask Claude</h2>
-        </div>
+        <h2 className="text-lg font-semibold text-text-primary">Ask Claude</h2>
         <button
           type="button"
           onClick={onClose}
@@ -45,23 +31,13 @@ export function AskClaudePanel({
 
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto px-6">
-        {/* Context summary — tells the developer what Claude already knows */}
-        <div className="rounded-lg bg-bg-secondary p-4 mt-4">
-          <p className="text-sm font-semibold text-text-primary">
-            {appName} &middot; {categoryLabel}
-          </p>
-          <p className="text-sm text-text-tertiary">
-            {messageCount} messages configured &middot; {stateLabel}
-          </p>
-        </div>
-
         {focusedMessageName && (
-          <p className="mt-3 text-sm font-medium text-text-secondary">
+          <p className="mt-4 text-sm font-medium text-text-secondary">
             Focused on: {focusedMessageName}
           </p>
         )}
 
-        <p className="mt-4 text-sm text-text-secondary leading-relaxed">
+        <p className="mt-4 mb-6 text-sm text-text-secondary leading-relaxed">
           I know your messages, your business, and how SMS compliance works.
           Ask me anything &mdash; about delivery issues, message wording,
           compliance, or getting your integration working.
