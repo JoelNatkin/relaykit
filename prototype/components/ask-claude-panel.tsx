@@ -38,9 +38,8 @@ export function AskClaudePanel({ focusedMessageName, onClose }: AskClaudePanelPr
         )}
 
         <p className="mt-4 mb-6 text-sm text-text-secondary leading-relaxed">
-          I know your messages, your business, and how SMS compliance works.
-          Ask me anything &mdash; about delivery issues, message wording,
-          compliance, or getting your integration working.
+          I know your messages and your business. Ask me about delivery issues,
+          errors, or getting your integration working.
         </p>
       </div>
 
