@@ -857,7 +857,7 @@ export function CatalogCard({
                       disabled={isSendingTest}
                       className="ml-2 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      {isSendingTest ? "Sending…" : "Send test"}
+                      {isSendingTest ? "Sending…" : "Quick send"}
                     </button>
                     <select
                       value={selectedRecipient}
