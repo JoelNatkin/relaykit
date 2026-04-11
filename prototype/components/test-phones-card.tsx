@@ -124,7 +124,7 @@ export function TestPhonesCard({ phones, onRemove, onInvite, onEdit }: TestPhone
     <div className="rounded-xl bg-gray-50 p-6">
       <h3 className="text-base font-semibold text-text-primary">Testers</h3>
       <p className="mt-1 text-sm text-text-tertiary">
-        People who receive messages when your app sends in test mode. Invite your co-founder, a client, or anyone you want to try it.
+        Up to 5 people who receive messages from your app in test mode.
       </p>
 
       <ul ref={menuContainerRef} className="mt-4 divide-y divide-border-secondary">
