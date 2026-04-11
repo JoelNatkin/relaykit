@@ -11,6 +11,7 @@ import type { LastSent, ActivityEntry } from "@/components/catalog/catalog-card"
 import { TestPhonesCard, INITIAL_TEST_PHONES, type TestPhone } from "@/components/test-phones-card";
 import { SetupInstructions } from "@/components/setup-instructions";
 import { useSetupToggleState } from "@/context/setup-toggle-context";
+import { AskClaudePanel } from "@/components/ask-claude-panel";
 import { loadWizardData, saveWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
 import { EinInlineVerify } from "@/components/ein-inline-verify";
 import type { BusinessIdentity } from "@/components/ein-inline-verify";
@@ -268,6 +269,26 @@ export default function AppMessagesPage() {
     if (id !== null) setEditingMessageId(null);
   }
 
+  // Ask Claude panel — takes over the right rail (and metrics cards in the
+  // Registered state) while open. Can be opened from the section header
+  // (no focused message) or from inside a card's monitor expansion (focused
+  // on that message's name).
+  const [askClaudeOpen, setAskClaudeOpen] = useState(false);
+  const [askClaudeFocusedMessage, setAskClaudeFocusedMessage] = useState<string | null>(null);
+
+  function openAskClaude(focusedMessageName: string | null = null) {
+    setAskClaudeFocusedMessage(focusedMessageName);
+    setAskClaudeOpen(true);
+    // Close any open edit/monitor since the panel replaces the right rail.
+    setEditingMessageId(null);
+    setMonitoringMessageId(null);
+  }
+
+  function closeAskClaude() {
+    setAskClaudeOpen(false);
+    setAskClaudeFocusedMessage(null);
+  }
+
   // Test phones — shared between the right-rail Test phones card and the
   // Send test dropdown inside each CatalogCard's monitor expansion, so both
   // read from a single source of names.
@@ -302,6 +323,16 @@ export default function AppMessagesPage() {
   const isChangesRequested = registrationState === "changes_requested";
   const isRejected = registrationState === "rejected";
 
+  const ASK_CLAUDE_STATE_LABELS: Record<string, string> = {
+    onboarding: "Onboarding",
+    building: "Building",
+    pending: "Pending",
+    changes_requested: "Extended Review",
+    registered: "Registered",
+    rejected: "Rejected",
+  };
+  const askClaudeStateLabel = ASK_CLAUDE_STATE_LABELS[registrationState] ?? "Building";
+
   /* ── Setup toggle state lives in DashboardLayout's header row; we just
          read the current visibility here to drive the panel below. ── */
   const { visible: setupVisible } = useSetupToggleState();
@@ -315,13 +346,25 @@ export default function AppMessagesPage() {
       <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
       <button
         type="button"
-        onClick={(e) => e.preventDefault()}
+        onClick={() => openAskClaude()}
         className="ml-auto inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
       >
         <Stars02 className="size-4 text-fg-brand-primary" />
         Ask Claude
       </button>
     </div>
+  );
+
+  /* ── Ask Claude panel (reused across both layouts) ── */
+  const askClaudePanel = (
+    <AskClaudePanel
+      appName="GlowStudio"
+      categoryLabel="Appointments"
+      messageCount={coreMessages.length}
+      stateLabel={askClaudeStateLabel}
+      focusedMessageName={askClaudeFocusedMessage}
+      onClose={closeAskClaude}
+    />
   );
 
   /* ── Shared message list ── */
@@ -342,6 +385,7 @@ export default function AppMessagesPage() {
             isMonitoring={monitoringMessageId === message.id}
             onMonitorRequest={requestMonitor}
             testRecipients={testRecipientNames}
+            onAskClaude={openAskClaude}
           />
         ))}
         {coreMessages.map((message, index) => (
@@ -359,6 +403,7 @@ export default function AppMessagesPage() {
             isMonitoring={monitoringMessageId === message.id}
             onMonitorRequest={requestMonitor}
             testRecipients={testRecipientNames}
+            onAskClaude={openAskClaude}
           />
         ))}
       </div>
@@ -409,7 +454,8 @@ export default function AppMessagesPage() {
       <div>
         <SetupInstructions visible={setupVisible} />
 
-        {/* Delivery metrics */}
+        {/* Delivery metrics — hidden when the Ask Claude panel is open */}
+        {!askClaudeOpen && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
             <p className="text-sm font-semibold text-text-tertiary uppercase tracking-wide">Delivery</p>
@@ -444,18 +490,28 @@ export default function AppMessagesPage() {
             <p className="mt-2 text-xs text-text-tertiary">Plan: $19/mo &middot; 500 included</p>
           </div>
         </div>
+        )}
 
         {messagesSectionHeader}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="min-w-0 lg:col-span-2">
+        <div
+          className={
+            askClaudeOpen
+              ? "flex gap-4"
+              : "grid grid-cols-1 lg:grid-cols-3 gap-4"
+          }
+        >
+          <div className={askClaudeOpen ? "min-w-0 flex-1" : "min-w-0 lg:col-span-2"}>
             {messageList}
           </div>
 
-          {/* RIGHT — stacks the marketing/tracker card (when present) and
+          {askClaudeOpen ? (
+            askClaudePanel
+          ) : (
+          /* RIGHT — stacks the marketing/tracker card (when present) and
               the Test phones card. The column always renders because Test
               phones is visible in every post-onboarding state. Sits in the
-              third column of the same 3-col grid as the metrics row above. */}
+              third column of the same 3-col grid as the metrics row above. */
           <div className="order-first lg:order-last lg:sticky lg:top-20 space-y-4">
             {(showRegisteredUpsell || (registeredUpsellConfirmed && !regMktTrackerDismissed)) && (
               <div className="rounded-xl bg-gray-50 p-6">
@@ -601,6 +657,7 @@ export default function AppMessagesPage() {
               onEdit={handleEditTestPhone}
             />
           </div>
+          )}
         </div>
       </div>
     );
@@ -611,16 +668,25 @@ export default function AppMessagesPage() {
     <div>
       {messagesSectionHeader}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div
+        className={
+          askClaudeOpen
+            ? "flex gap-4"
+            : "grid grid-cols-1 lg:grid-cols-3 gap-4"
+        }
+      >
         {/* LEFT — setup instructions + messages */}
-        <div className="min-w-0 lg:col-span-2">
+        <div className={askClaudeOpen ? "min-w-0 flex-1" : "min-w-0 lg:col-span-2"}>
           <SetupInstructions visible={setupVisible} />
           {messageList}
         </div>
 
-        {/* RIGHT — Registration card stacked above the Test phones card.
+        {askClaudeOpen ? (
+          askClaudePanel
+        ) : (
+        /* RIGHT — Registration card stacked above the Test phones card.
             Sits in the same 3-col grid as the Registered state metrics row
-            so rail widths match across states. */}
+            so rail widths match across states. */
         <div className="order-first lg:order-last lg:sticky lg:top-20 space-y-4">
           <div className="rounded-xl bg-gray-50 p-6">
             {isBuilding ? (
@@ -868,6 +934,7 @@ export default function AppMessagesPage() {
             onEdit={handleEditTestPhone}
           />
         </div>
+        )}
       </div>
     </div>
   );

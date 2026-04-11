@@ -203,6 +203,9 @@ export interface CatalogCardProps {
    *  with the Test phones card in the right rail so both read from the same
    *  list. Falls back to the built-in list when not provided. */
   testRecipients?: string[];
+  /** Invoked when the monitor expansion's "Ask Claude" button is clicked.
+   *  Receives the current message name so the parent can focus the panel. */
+  onAskClaude?: (messageName: string) => void;
 }
 
 export function CatalogCard({
@@ -219,6 +222,7 @@ export function CatalogCard({
   onMonitorRequest,
   activity,
   testRecipients,
+  onAskClaude,
 }: CatalogCardProps) {
   const isControlled = controlledIsEditing !== undefined;
   const isMonitoringControlled = controlledIsMonitoring !== undefined;
@@ -846,7 +850,7 @@ export function CatalogCard({
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      onClick={(e) => e.preventDefault()}
+                      onClick={() => onAskClaude?.(message.name)}
                       className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
                     >
                       Ask Claude
