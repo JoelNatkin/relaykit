@@ -13,8 +13,18 @@ export interface AskClaudePanelProps {
 export function AskClaudePanel({ focusedMessageName, onClose }: AskClaudePanelProps) {
   return (
     <div
-      className="w-[500px] shrink-0 self-start sticky top-20 flex flex-col overflow-hidden rounded-xl border border-border-secondary bg-bg-primary"
-      style={{ height: "calc(100vh - 6.5rem)" }}
+      // Fixed position so the input stays visible at the bottom regardless
+      // of page scroll. Right offset aligns with the right edge of the
+      // max-w-5xl page content (matching the `mx-auto max-w-5xl px-6` wrapper
+      // in DashboardLayout): 24px of inner padding, plus the centered gutter
+      // on wide screens. The messages page reserves 500px of layout space
+      // for this panel via an empty placeholder div.
+      className="fixed z-30 w-[500px] flex flex-col overflow-hidden rounded-xl border border-border-secondary bg-bg-primary shadow-sm"
+      style={{
+        top: "5rem",
+        bottom: "2.5rem",
+        right: "max(1.5rem, calc((100vw - 64rem) / 2 + 1.5rem))",
+      }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-6 pb-4">

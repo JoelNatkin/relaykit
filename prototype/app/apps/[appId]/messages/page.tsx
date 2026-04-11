@@ -492,7 +492,9 @@ export default function AppMessagesPage() {
           </div>
 
           {askClaudeOpen ? (
-            askClaudePanel
+            /* Reserves layout space for the fixed-position Ask Claude panel
+               rendered outside the flex below. */
+            <div className="w-[500px] shrink-0" aria-hidden="true" />
           ) : (
           /* RIGHT — stacks the marketing/tracker card (when present) and
               the Test phones card. The column always renders because Test
@@ -645,6 +647,7 @@ export default function AppMessagesPage() {
           </div>
           )}
         </div>
+        {askClaudeOpen && askClaudePanel}
       </div>
     );
   }
@@ -668,7 +671,9 @@ export default function AppMessagesPage() {
         </div>
 
         {askClaudeOpen ? (
-          askClaudePanel
+          /* Reserves layout space for the fixed-position Ask Claude panel
+             rendered outside the flex below. */
+          <div className="w-[500px] shrink-0" aria-hidden="true" />
         ) : (
         /* RIGHT — Registration card stacked above the Test phones card.
             Sits in the same 3-col grid as the Registered state metrics row
@@ -922,6 +927,7 @@ export default function AppMessagesPage() {
         </div>
         )}
       </div>
+      {askClaudeOpen && askClaudePanel}
     </div>
   );
 }
