@@ -1,6 +1,6 @@
 "use client";
 
-import { Stars02, XClose } from "@untitledui/icons";
+import { Plus, Stars02, XClose } from "@untitledui/icons";
 
 export interface AskClaudePanelProps {
   /** When present, the panel shows a "Focused on: X" line at the top of
@@ -53,15 +53,33 @@ export function AskClaudePanel({ focusedMessageName, onClose }: AskClaudePanelPr
         </p>
       </div>
 
-      {/* Sticky bottom input — non-functional stub */}
+      {/* Sticky bottom input — non-functional stub. Textarea + toolbar share
+          one bordered container so they feel like a single chat composer. */}
       <div className="px-6 pt-4 pb-6 border-t border-border-secondary">
-        <div className="relative">
-          <Stars02 className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 size-4 text-fg-brand-primary" />
-          <input
-            type="text"
+        <div className="rounded-lg border border-border-secondary bg-bg-primary shadow-xs transition duration-100 ease-linear focus-within:border-border-brand">
+          <textarea
+            rows={3}
             placeholder="Ask anything about your messages..."
-            className="w-full rounded-lg border border-border-primary bg-bg-primary pl-9 pr-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
+            className="block w-full resize-none bg-transparent px-3 pt-2.5 pb-1 text-sm text-text-primary placeholder:text-text-placeholder focus:outline-none"
           />
+          <div className="flex items-center justify-between px-2 pb-2">
+            <button
+              type="button"
+              onClick={(e) => e.preventDefault()}
+              className="p-1 text-fg-tertiary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+              aria-label="Attach"
+            >
+              <Plus className="size-5" />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => e.preventDefault()}
+              className="p-1 text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+              aria-label="Send"
+            >
+              <Stars02 className="size-5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
