@@ -117,6 +117,20 @@ export function DashboardLayout({
               <option value="without">No EIN</option>
             </select>
 
+            {/* Status indicator sits between the prototype switchers and the
+                Setup/Settings cluster so Settings stays flush against the
+                right edge of the page content. The wrapper is conditional so
+                states that return null from StatusIndicator don't leave an
+                empty margin pushing Settings inward. */}
+            {(registrationState === "pending" ||
+              registrationState === "registered" ||
+              registrationState === "changes_requested" ||
+              registrationState === "rejected") && (
+              <div className="ml-10">
+                <StatusIndicator registrationState={registrationState} />
+              </div>
+            )}
+
             {isMessagesPage && (
               <>
                 <div className="ml-6">
@@ -131,10 +145,6 @@ export function DashboardLayout({
                 </Link>
               </>
             )}
-
-            <div className="ml-10">
-              <StatusIndicator registrationState={registrationState} />
-            </div>
           </div>
         </div>
 

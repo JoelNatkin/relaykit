@@ -311,12 +311,12 @@ export default function AppMessagesPage() {
 
   /* ── Section header (post-onboarding only) ── */
   const messagesSectionHeader = (
-    <div className="mb-4 flex items-center justify-between gap-4">
+    <div className="mb-4 flex w-full items-center">
       <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
       <button
         type="button"
         onClick={(e) => e.preventDefault()}
-        className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+        className="ml-auto inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
       >
         <Stars02 className="size-4 text-fg-brand-primary" />
         Ask Claude
