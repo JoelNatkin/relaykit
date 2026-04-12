@@ -496,19 +496,17 @@ export default function AppMessagesPage() {
         <div
           className={
             askClaudeOpen
-              ? "flex gap-4"
+              ? "grid grid-cols-1 md:grid-cols-2 md:gap-10"
               : "grid grid-cols-1 lg:grid-cols-3 gap-4"
           }
         >
-          <div className={askClaudeOpen ? "min-w-0 flex-1" : "min-w-0 lg:col-span-2"}>
+          <div className={askClaudeOpen ? "min-w-0" : "min-w-0 lg:col-span-2"}>
             <div ref={messageTopRef} />
             {messageList}
           </div>
 
           {askClaudeOpen ? (
-            /* Reserves layout space for the fixed-position Ask Claude panel
-               rendered outside the flex below. */
-            <div className="w-[500px] shrink-0" aria-hidden="true" />
+            askClaudePanel
           ) : (
           /* RIGHT — stacks the marketing/tracker card (when present) and
               the Test phones card. The column always renders because Test
@@ -661,7 +659,6 @@ export default function AppMessagesPage() {
           </div>
           )}
         </div>
-        {askClaudeOpen && askClaudePanel}
       </div>
     );
   }
@@ -674,21 +671,19 @@ export default function AppMessagesPage() {
       <div
         className={
           askClaudeOpen
-            ? "flex gap-4"
+            ? "grid grid-cols-1 md:grid-cols-2 md:gap-10"
             : "grid grid-cols-1 lg:grid-cols-3 gap-4"
         }
       >
         {/* LEFT — setup instructions + messages */}
-        <div className={askClaudeOpen ? "min-w-0 flex-1" : "min-w-0 lg:col-span-2"}>
+        <div className={askClaudeOpen ? "min-w-0" : "min-w-0 lg:col-span-2"}>
           <SetupInstructions visible={setupVisible} />
           <div ref={messageTopRef} />
           {messageList}
         </div>
 
         {askClaudeOpen ? (
-          /* Reserves layout space for the fixed-position Ask Claude panel
-             rendered outside the flex below. */
-          <div className="w-[500px] shrink-0" aria-hidden="true" />
+          askClaudePanel
         ) : (
         /* RIGHT — Registration card stacked above the Test phones card.
             Sits in the same 3-col grid as the Registered state metrics row
@@ -942,7 +937,6 @@ export default function AppMessagesPage() {
         </div>
         )}
       </div>
-      {askClaudeOpen && askClaudePanel}
     </div>
   );
 }

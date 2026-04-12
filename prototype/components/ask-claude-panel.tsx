@@ -9,26 +9,13 @@ export interface AskClaudePanelProps {
   focusedMessageName?: string | null;
   onClose: () => void;
   /** Distance from viewport top to the first message card, measured by the
-   *  parent via a ref so the panel top-aligns with the card column. */
+   *  parent via a ref so the desktop panel top-aligns with the card column. */
   topOffset?: number;
 }
 
 export function AskClaudePanel({ focusedMessageName, onClose, topOffset = 144 }: AskClaudePanelProps) {
-  return (
-    <div
-      // Fixed position so the input stays visible at the bottom regardless
-      // of page scroll. Right offset aligns with the right edge of the
-      // max-w-5xl page content (matching the `mx-auto max-w-5xl px-6` wrapper
-      // in DashboardLayout): 24px of inner padding, plus the centered gutter
-      // on wide screens. The messages page reserves 500px of layout space
-      // for this panel via an empty placeholder div.
-      className="fixed z-30 w-[500px] flex flex-col overflow-hidden rounded-xl border border-border-secondary bg-bg-primary shadow-sm"
-      style={{
-        top: `${topOffset}px`,
-        bottom: "2.5rem",
-        right: "max(1.5rem, calc((100vw - 64rem) / 2 + 1.5rem))",
-      }}
-    >
+  const content = (
+    <>
       {/* Header */}
       <div className="flex items-center justify-between px-6 pt-6 pb-4">
         <h2 className="text-lg font-semibold text-text-primary">Ask Claude</h2>
@@ -56,7 +43,7 @@ export function AskClaudePanel({ focusedMessageName, onClose, topOffset = 144 }:
         </p>
       </div>
 
-      {/* Sticky bottom input — non-functional stub. Textarea + toolbar share
+      {/* Pinned bottom input — non-functional stub. Textarea + toolbar share
           one bordered container so they feel like a single chat composer. */}
       <div className="px-6 pt-4 pb-6 border-t border-border-secondary">
         <div className="rounded-lg border border-border-secondary bg-bg-primary shadow-xs transition duration-100 ease-linear focus-within:border-border-brand">
@@ -85,6 +72,26 @@ export function AskClaudePanel({ focusedMessageName, onClose, topOffset = 144 }:
           </div>
         </div>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile (<md): fixed full-width overlay below the nav */}
+      <div className="md:hidden fixed inset-x-0 top-20 bottom-0 z-10 flex flex-col bg-bg-primary">
+        {content}
+      </div>
+
+      {/* Desktop (md+): inline grid cell, sticky, with border */}
+      <div
+        className="hidden md:flex self-start sticky flex-col overflow-hidden rounded-xl border border-border-secondary bg-bg-primary shadow-sm"
+        style={{
+          top: `${topOffset}px`,
+          height: `calc(100vh - ${topOffset}px - 2.5rem)`,
+        }}
+      >
+        {content}
+      </div>
+    </>
   );
 }
