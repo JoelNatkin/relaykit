@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Plus, Stars02, XClose } from "@untitledui/icons";
 
 export interface AskClaudePanelProps {
@@ -14,6 +15,18 @@ export interface AskClaudePanelProps {
 }
 
 export function AskClaudePanel({ focusedMessageName, onClose, topOffset = 144 }: AskClaudePanelProps) {
+  // Lock body scroll when the mobile overlay is active (<md). At md+ the
+  // panel is inline and the page scrolls normally.
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    if (mq.matches) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   const content = (
     <>
       {/* Header */}
@@ -77,8 +90,9 @@ export function AskClaudePanel({ focusedMessageName, onClose, topOffset = 144 }:
 
   return (
     <>
-      {/* Mobile (<md): fixed full-width overlay below the nav */}
-      <div className="md:hidden fixed inset-x-0 top-20 bottom-0 z-10 flex flex-col bg-bg-primary">
+      {/* Mobile (<md): fixed full-width overlay flush against the bottom
+          of the top nav (h-14 = 56px = top-14). Covers everything below. */}
+      <div className="md:hidden fixed inset-x-0 top-14 bottom-0 z-10 flex flex-col bg-bg-primary">
         {content}
       </div>
 
