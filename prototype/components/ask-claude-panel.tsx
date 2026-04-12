@@ -8,9 +8,12 @@ export interface AskClaudePanelProps {
    *  card's monitor expansion. */
   focusedMessageName?: string | null;
   onClose: () => void;
+  /** Distance from viewport top to the first message card, measured by the
+   *  parent via a ref so the panel top-aligns with the card column. */
+  topOffset?: number;
 }
 
-export function AskClaudePanel({ focusedMessageName, onClose }: AskClaudePanelProps) {
+export function AskClaudePanel({ focusedMessageName, onClose, topOffset = 144 }: AskClaudePanelProps) {
   return (
     <div
       // Fixed position so the input stays visible at the bottom regardless
@@ -21,7 +24,7 @@ export function AskClaudePanel({ focusedMessageName, onClose }: AskClaudePanelPr
       // for this panel via an empty placeholder div.
       className="fixed z-30 w-[500px] flex flex-col overflow-hidden rounded-xl border border-border-secondary bg-bg-primary shadow-sm"
       style={{
-        top: "5rem",
+        top: `${topOffset}px`,
         bottom: "2.5rem",
         right: "max(1.5rem, calc((100vw - 64rem) / 2 + 1.5rem))",
       }}

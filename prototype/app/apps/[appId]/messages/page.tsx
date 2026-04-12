@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { InfoCircle, Stars02 } from "@untitledui/icons";
@@ -289,6 +289,18 @@ export default function AppMessagesPage() {
     setAskClaudeFocusedMessage(null);
   }
 
+  // Measure the message-card column's viewport-relative top so the fixed
+  // Ask Claude panel aligns with it. A zero-height ref div sits right above
+  // the first card in both layouts.
+  const messageTopRef = useRef<HTMLDivElement>(null);
+  const [panelTopOffset, setPanelTopOffset] = useState(144);
+
+  useEffect(() => {
+    if (askClaudeOpen && messageTopRef.current) {
+      setPanelTopOffset(Math.max(80, messageTopRef.current.getBoundingClientRect().top));
+    }
+  }, [askClaudeOpen]);
+
   // Test phones — shared between the right-rail Test phones card and the
   // Send test dropdown inside each CatalogCard's monitor expansion, so both
   // read from a single source of names.
@@ -350,6 +362,7 @@ export default function AppMessagesPage() {
     <AskClaudePanel
       focusedMessageName={askClaudeFocusedMessage}
       onClose={closeAskClaude}
+      topOffset={panelTopOffset}
     />
   );
 
@@ -488,6 +501,7 @@ export default function AppMessagesPage() {
           }
         >
           <div className={askClaudeOpen ? "min-w-0 flex-1" : "min-w-0 lg:col-span-2"}>
+            <div ref={messageTopRef} />
             {messageList}
           </div>
 
@@ -667,6 +681,7 @@ export default function AppMessagesPage() {
         {/* LEFT — setup instructions + messages */}
         <div className={askClaudeOpen ? "min-w-0 flex-1" : "min-w-0 lg:col-span-2"}>
           <SetupInstructions visible={setupVisible} />
+          <div ref={messageTopRef} />
           {messageList}
         </div>
 
