@@ -588,40 +588,50 @@ export function CatalogCard({
             )}
           </div>
 
-          {/* Header action buttons. Activity (monitor) on the left, pencil
-              (edit) on the right. The Activity icon stays visible while
-              monitoring and toggles monitor mode on click — clicking it
-              again closes the expansion. Pencil is hidden while either
-              expansion is open; the full row is hidden while editing.
-              gap-0 + p-1 on each button = 8px visible icon-to-icon spacing
-              (4px of each button's click-target padding), click targets intact. */}
-          {!isEditing && (
-            <div className="flex items-center gap-0 flex-shrink-0">
-              {monitorMode && (
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={isMonitoring ? exitMonitor : enterMonitor}
-                    onMouseEnter={scheduleMonitorTooltip}
-                    onMouseLeave={clearMonitorTooltip}
-                    className={`p-1 transition duration-100 ease-linear cursor-pointer ${
-                      isMonitoring
-                        ? "text-text-brand-secondary"
-                        : "text-fg-quaternary hover:text-fg-secondary"
-                    }`}
-                    aria-label={isMonitoring ? "Close test view" : "Test & debug"}
-                    aria-pressed={isMonitoring}
-                  >
-                    <Activity className="size-[17px]" />
-                  </button>
-                  {showMonitorTooltip && (
-                    <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                      {isMonitoring ? "Close test view" : "Test & debug"}
-                    </div>
-                  )}
-                </div>
-              )}
-              {!isMonitoring && (
+          {/* Header action icons — when a card is expanded, show only
+              the active mode's icon + a text label; when collapsed, show
+              both icons (no labels). */}
+          <div className="flex items-center flex-shrink-0">
+            {isMonitoring ? (
+              /* Monitor active: Activity icon + label, click to close */
+              <button
+                type="button"
+                onClick={exitMonitor}
+                className="flex items-center gap-1.5 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                aria-label="Close test view"
+              >
+                <Activity className="size-[17px]" />
+                <span className="text-sm">Test & debug</span>
+              </button>
+            ) : isEditing ? (
+              /* Edit active: Pencil icon + label (visual indicator) */
+              <span className="flex items-center gap-1.5 p-1 text-fg-quaternary">
+                <PencilIcon />
+                <span className="text-sm">Edit</span>
+              </span>
+            ) : (
+              /* Default collapsed: both icons, no labels, gap-0 + p-1 = 8px
+                 visible icon-to-icon spacing. */
+              <div className="flex items-center gap-0">
+                {monitorMode && (
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={enterMonitor}
+                      onMouseEnter={scheduleMonitorTooltip}
+                      onMouseLeave={clearMonitorTooltip}
+                      className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                      aria-label="Test & debug"
+                    >
+                      <Activity className="size-[17px]" />
+                    </button>
+                    {showMonitorTooltip && (
+                      <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                        Test & debug
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="relative">
                   <button
                     type="button"
@@ -639,9 +649,9 @@ export function CatalogCard({
                     </div>
                   )}
                 </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Message body */}
