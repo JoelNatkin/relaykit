@@ -593,16 +593,11 @@ export function CatalogCard({
               both icons (no labels). */}
           <div className="flex items-center flex-shrink-0">
             {isMonitoring ? (
-              /* Monitor active: Activity icon + label, click to close */
-              <button
-                type="button"
-                onClick={exitMonitor}
-                className="flex items-center gap-1.5 p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                aria-label="Close test view"
-              >
+              /* Monitor active: Activity icon + label (visual indicator) */
+              <span className="flex items-center gap-1.5 p-1 text-fg-quaternary">
                 <Activity className="size-[17px]" />
                 <span className="text-sm">Test & debug</span>
-              </button>
+              </span>
             ) : isEditing ? (
               /* Edit active: Pencil icon + label (visual indicator) */
               <span className="flex items-center gap-1.5 p-1 text-fg-quaternary">
@@ -610,9 +605,9 @@ export function CatalogCard({
                 <span className="text-sm">Edit</span>
               </span>
             ) : (
-              /* Default collapsed: both icons, no labels, gap-0 + p-1 = 8px
+              /* Default collapsed: both icons, no labels, gap-1 + p-1 = 12px
                  visible icon-to-icon spacing. */
-              <div className="flex items-center gap-0">
+              <div className="flex items-center gap-1">
                 {monitorMode && (
                   <div className="relative">
                     <button
