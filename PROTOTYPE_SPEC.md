@@ -346,32 +346,41 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 - Bottom "Continue": full-width purple button spanning the 540px content column, rendered by WizardLayout (D-318 — dual Continue).
 
 **Dashboard mode (Building/Pending/Registered/Extended Review/Rejected — rendered inside DashboardLayout):**
-- No "Messages" heading — page has no H2 in post-onboarding states.
-- **Top-right control row** (`flex items-center justify-end gap-4 mb-4`): "Setup instructions" toggle switch + Settings gear icon link (`Settings01` + "Settings" text, `text-text-tertiary`, links to `/apps/[appId]/settings`). Visible in all post-onboarding states.
-- **Setup instructions** (`prototype/components/setup-instructions.tsx`): Toggle-controlled container with "Start building" heading, subhead, logo farm, and 3 stacked instruction cards (same content as Overview/get-started). Default ON in Building, OFF in all other states. Per-state toggle persisted independently in sessionStorage (`relaykit_setup_instructions_[state]`). When off, container unmounts — no animation.
-- Message cards constrained to `max-w-[540px]` within the `max-w-5xl` dashboard container.
-- Send icons: `Phone01` from `@untitledui/icons` — no circle background. Standard dashboard treatment.
 
-**Building state — two-column layout:**
-- Left column (`min-w-0 flex-1`): setup instructions + message cards.
-- Right column (`md:w-[300px] md:shrink-0`, `order-first md:order-last`): Registration card — see "Right column — registration sidebar card" above for Card A / Card B details (D-335, D-337).
-- Pricing block on Card A: "$49 registration + $19/mo" (or $29/mo with marketing) bold, "500 messages included, then $8 per 500." detail line. When no EIN, detail line continues: "An EIN lets us enable optional marketing messages. [Add EIN.]" with inline purple link. When EIN expanded (Card B), pricing and CTA are hidden.
-- Marketing radio helper text (visible when "Add marketing messages too" selected): "You'll get access to marketing templates you can customize or write from scratch."
-- No marketing tooltip below card — removed, inline EIN flow handles this.
+- **DashboardLayout header row** (app identity bar): `GlowStudio` heading + `Appointments` pill on the left. Right side (via `ml-auto`): prototype state-switcher dropdowns → EIN switcher → StatusIndicator (conditional, see below) → Setup instructions toggle (`ml-6`, messages page only) → Settings gear link (`ml-4`, messages page only). Setup toggle + Settings visibility gated on `pathname.endsWith("/messages")` via `usePathname()`. Toggle state shared with messages page via `SetupToggleContext` (provider in DashboardLayout, consumer in messages page).
+- **StatusIndicator (D-344):** Yellow dot + "Test mode" for Building/Pending/Extended Review/Rejected. Green dot + "Live" for Registered. Null for Onboarding. Conditional wrapper (`registrationState !== "onboarding"`) so no empty `ml-10` div when null.
+- **Messages section header** (`mb-4 flex w-full items-center`): `<h2>Messages</h2>` on the left, "Ask Claude" button (`Stars02` icon + text, `ml-auto`, tertiary purple) on the right. Clicking opens the Ask Claude panel (D-343).
+- **Setup instructions** (`prototype/components/setup-instructions.tsx`): Toggle-controlled container. Default ON in Building, OFF in other states. Per-state toggle persisted in sessionStorage. Rendered inside the left column in the generic layout, above the metrics grid in the Registered layout.
+- **Message cards:** `max-w-[680px]` wrapper on the messageList (non-wizard). Individual card root has `max-w-[500px]` when `monitorMode` is true. No send icons (removed).
 
-**Pending state — two-column layout (D-338, D-339):**
-- Same two-column structure. Right column shows the per-type registration status tracker (see "Right column — registration sidebar card" above) plus optional marketing upsell card below a divider.
-- **Marketing messages in Pending state (D-336, D-340):** Marketing messages appear in the message list when marketing was added at signup OR after the upsell card is confirmed. Same 4 cards (New service announcement, Seasonal promotion, Re-engagement, Loyalty reward) with filled purple "Marketing" badge. `showMarketingMessages = (isPending && hasEin && upsellConfirmed) || (isApproved && hasEin && registeredUpsellConfirmed)`.
+**Two-column layout (all post-onboarding states):**
+- When Ask Claude panel is closed: `grid grid-cols-1 lg:grid-cols-3 gap-4`. Left column: `min-w-0 lg:col-span-2`. Right column (third grid col): `order-first lg:order-last lg:sticky lg:top-20 space-y-4` stacks state-specific card(s) above the Testers card (D-342).
+- When Ask Claude panel is open (D-343): `grid grid-cols-1 md:grid-cols-2 md:gap-10`. Equal 50/50 columns. Metrics hidden (Registered). Right rail replaced by inline Ask Claude panel (desktop: `md:flex`, sticky; mobile `<md`: full-width fixed overlay).
 
-**Extended Review state — two-column layout:**
-- Right column card shows: "Registration status" heading, purple "Under review" pill, submitted/updated dates, longer-than-expected copy.
+**Right rail — Testers card (D-342):** Always visible in all post-onboarding states, below any state-specific card. Shows up to 5 people. Each row: name (bold) + status dot ("Verified" green / "Invited" gray) + full phone number on second line + kebab menu (Edit + Delete, self-entry has Edit only). Inline invite form collapses on success. Names synced with CatalogCard `testRecipients` prop for the monitor expansion's Quick send dropdown.
 
-**Rejected state — two-column layout:**
-- Right column card shows: "Registration status" heading, red "Not approved" pill, "$49 refunded" in green, divider, "What happened" section, mailto link. No retry button.
+**Building state right rail:** Registration card (D-335, D-337) + Testers card below.
 
-**Registered state — two-column layout (D-338):**
-- Three delivery metrics cards (`grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`): Delivery (98.4%), Recipients (284), Usage & Billing (347/500 progress bar). Same mock data as Overview approved-dashboard.tsx. Positioned below setup instructions, above the two-column layout.
-- Below metrics: two-column layout. Left column is the message list. Right column shows the marketing upsell card OR marketing-only registration tracker (see "Right column — registration sidebar card" above) OR nothing (after tracker dismissed). The marketing upsell card allows developers to add marketing at any point post-registration.
+**Pending state right rail (D-338, D-339):** Per-type registration status tracker + optional marketing upsell card + Testers card below.
+- **Marketing in Pending (D-336, D-340):** Marketing messages in list when confirmed. `showMarketingMessages` covers both signup and upsell paths.
+
+**Extended Review state right rail:** "Registration status" card (Under review pill, dates, extended-review copy) + Testers card below.
+
+**Rejected state right rail:** "Registration status" card (Not approved pill, refund note, "What happened" section) + Testers card below.
+
+**Registered state right rail (D-338):** Three delivery metrics cards above the two-column layout. Right rail: marketing upsell OR marketing-only tracker OR nothing (after dismissed) + Testers card below.
+
+---
+
+#### Ask Claude Panel (D-343)
+
+**File:** `prototype/components/ask-claude-panel.tsx`
+
+Opens from the "Ask Claude" button in the messages section header (no focused message) or from the "Ask Claude" link inside a card's monitor expansion footer (focused on that message name). Replaces the right rail and (in Registered state) hides the metrics cards.
+
+- **Desktop (≥768px):** Inline grid cell in a `grid-cols-2 gap-10` layout. `self-start sticky`, height `calc(100vh - ${topOffset}px - 2.5rem)` via inline style. `topOffset` measured via a zero-height ref div above the first message card, clamped to min 80px. `rounded-xl border border-border-secondary bg-bg-primary shadow-sm`.
+- **Mobile (<768px):** `fixed inset-x-0 top-14 bottom-0 z-10 bg-bg-primary`. Full-width overlay flush against the top nav (h-14 = 56px). Body scroll locked via `document.body.style.overflow = "hidden"` in a `useEffect` gated on `matchMedia("(max-width: 767px)")`.
+- **Layout:** `flex flex-col`. Header (`px-6 pt-6 pb-4`): "Ask Claude" h2 + XClose button. Scroll body (`flex-1 overflow-y-auto px-6`): optional "Focused on: [name]" line + welcome text ("I know your messages and your business…"). Pinned footer (`px-6 pt-4 pb-6 border-t`): chat composer — `rounded-lg border border-border-secondary` wrapping a 3-row textarea (no icon prefix, placeholder "Ask anything about your messages...") + toolbar row with Plus attach button (left, `text-fg-tertiary`) and Stars02 send button (right, `text-text-brand-secondary`). All non-functional stubs.
 
 **Page-level controls removed (Phase 2a):**
 - Global style pill bar — gone, pills live inside card edit state
@@ -382,41 +391,47 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 
 ---
 
-#### CatalogCard — Default State
+#### CatalogCard — Default State (collapsed)
 
-Each card shows the full message text, not truncated.
+Each card shows the full message text, not truncated. Card root has `max-w-[500px]` when `monitorMode` is true (dashboard cards); no max-width for wizard/public marketing cards.
 
-- **Title row:** Message name (bold) + info icon (i) inline with 1.5 gap after title + pencil edit button right-aligned. No card numbers. No template/preview toggle. No copy button. No "Modify with AI" in default state.
-- **Tooltips:** Info icon, pencil, and phone buttons all use a custom dark tooltip matching styling: `rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg leading-relaxed pointer-events-none`, positioned above the button (`bottom-full mb-1`). Info tooltip anchors left; pencil and phone tooltips anchor right (`right-0`) to avoid overflowing the card.
-- **Message text:** Full message below title. Variables highlighted in brand color (`text-text-brand-secondary`). Always shows interpolated preview with real values (GlowStudio, etc.), not raw template syntax. Clicking text enters edit state.
-- **Send button:** Floats outside the card on the right side, vertically centered via `items-stretch` + `items-center` wrapper. Accepts optional `sendIcon` prop for context-specific icons and `hideSend` prop to remove entirely (D-328). Dashboard: `Phone01` icon (18px) with no circle background (`text-fg-tertiary hover:text-fg-secondary`). Onboarding wizard: hidden via `hideSend={true}`.
+- **Title row:** Message name (bold) + info icon (i) inline with 1.5 gap after title. Right side: Activity icon (17px, `text-fg-quaternary`, tooltip "Test & debug") + pencil edit icon (15px, `text-fg-quaternary`, tooltip "Edit message"), separated by `gap-1` + `p-1` on each button = 12px visible spacing. Activity icon only renders when `monitorMode` is true. Both icons use 300ms hover-delay tooltips (via `setTimeout` refs, cleared on click to prevent stuck state on icon unmount).
+- **Tooltips:** Info icon, pencil, and Activity buttons all use a custom dark tooltip: `rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg leading-relaxed pointer-events-none`, positioned above the button (`bottom-full mb-1`). Info tooltip anchors left; pencil and Activity tooltips anchor right.
+- **Message text:** Full message below title. Variables highlighted in brand color. Always shows interpolated preview. Clicking text enters edit state.
+- **Status line** (below message text, `monitorMode` only): When `lastSent` prop is provided — small colored dot (green delivered / red failed / yellow pending) + relative timestamp via `timeAgo()` formatter. When `lastSent` is null, nothing renders (card looks identical to pre-monitor-mode).
 - **Marketing badge:** Shown on marketing-tier messages, same as before.
 - **Card spacing:** `space-y-5` (20px) between cards.
-- **Single-card editing:** Only one card can be in edit state at a time. `CatalogCard` accepts optional controlled props (`isEditing`, `onEditRequest`). When the parent provides them, clicking a new card's pencil closes any open edit — unsaved changes are discarded, no confirmation dialog. `savedText`/`savedPillId` persist across edit sessions. When props are absent, the card falls back to local state (used by the public messages page).
+- **Single-card editing/monitoring:** At most one card can be in edit state and at most one in monitor state. `CatalogCard` accepts controlled props for both (`isEditing`/`onEditRequest`, `isMonitoring`/`onMonitorRequest`). The messages page manages cross-card mutual exclusivity: opening edit on any card clears monitor on all cards and vice versa. Opening the Ask Claude panel clears both.
 
 ---
 
-#### CatalogCard — Edit State
+#### CatalogCard — Edit State (D-341)
 
-Triggered by edit button click or by clicking into the message text.
+Triggered by pencil icon click or by clicking into the message text.
 
-- **Title row:** Unchanged (name + info icon). Edit button hidden (already in edit mode).
-- **Textarea:** Replaces static message text. Full-width, auto-height, body font (not monospace). Shows personalized values (GlowStudio, etc.), not raw `{var_name}` template syntax. 8px spacing (`mt-4`) between title row and textarea. Disabled during AI/Restore loading.
-- **Send button:** Still available on the right during edit — developer can test changes before saving.
-- **Compliance feedback** (below textarea, above pills): Runs on every keystroke via `useEffect` on editText. Non-compliant hint reveal is debounced 2s to avoid nagging mid-type. Once text becomes compliant, hint + Restore button hide immediately. Hint stack is right-aligned with 16px gap from the Restore button (`justify-end gap-4`); multiple issues stack vertically (`flex-col items-end`). Save is disabled while non-compliant or while AI/Restore loading.
-  - **Opt-out check:** passes if text contains `STOP` (case-insensitive) AND one of `opt out` / `opt-out` / `unsubscribe`. Issue label: "Needs opt-out language".
-  - **Variable deletion check:** for each `{var}` in `message.template`, substring-matches (case-insensitive) the interpolated demo value against the edited text. Missing variables are grouped via `VARIABLE_LABELS` (date/time/service_type → "appointment details", app_name → "business name", website_url → "website link", etc.). Issue label: "Needs {label}".
-  - **Restore button:** clicking it replaces the entire textarea with the last canned pill's clean interpolated text (tracked via `lastCannedPillId`). This restores compliance wholesale rather than patching fragments (D-319). Button shows Spinner + "Restoring…" during 1.5s stubbed AI delay.
-  - **Prototype stub** — production compliance is server-side with full TCPA/10DLC rule evaluation. Client-side checks are intentionally loose.
-- **Edit controls panel** (bottom of card, no divider — `mt-3 space-y-3`):
-  - **Style pills row:** Badge-styled (`rounded-full px-3.5 py-1.5`). Canned variants in left cluster: Standard, Friendly, Brief (labels display-only; ids still `standard` / `action-first` / `context-first` for data stability). Custom pill appears on the far right (`ml-auto`, dashed border) only after the developer has made a custom edit. Active: brand fill (`bg-bg-brand-secondary text-text-brand-secondary`). Canned pill taps swap textarea instantly — no preview, no Accept/Revert. Typing or AI help switches activePillId to Custom. `customTextBuffer` preserves custom text across pill clicks. Canned pill swaps are instant — pre-validated and zero-latency by design.
-  - **AI help input:** Prefix Stars02 sparkle icon (brand color, swaps to Spinner while loading). Placeholder is contextual: canned pill active → "Ask AI: make it more casual"; Custom pill active → "Ask AI: polish my edit"; loading → "Rewriting…". Enter submits. 1.5s stubbed delay; on complete, textarea updates with rewritten text, activePillId → Custom. AI call is stubbed — no backend call yet.
-- **Save / Cancel buttons:** Right-aligned at bottom of card. Save is primary purple, Cancel is tertiary text-only. Save disabled while non-compliant or during AI/Restore loading.
+- **Title row:** Name + info icon unchanged. Right side shows pencil icon + "Edit" text label (`text-sm text-fg-quaternary`), non-interactive (visual indicator only). Activity icon hidden.
+- **Textarea:** Replaces static message text. Full-width, auto-height, body font (not monospace). Shows personalized values, not raw `{var_name}` template syntax. 8px spacing (`mt-4`). Disabled during AI/Restore loading.
+- **Compliance feedback** (below textarea, above pills): Same as before — opt-out check, variable deletion check, Restore button, 2s debounced hint reveal.
+- **Edit controls panel** (`mt-3 space-y-3`): Style pills row (Standard, Friendly, Brief, Custom) + AI help input + Save/Cancel buttons. Unchanged from prior session.
+- **Save / Cancel buttons:** Right-aligned. Save primary purple, Cancel tertiary text-only. Save disabled while non-compliant or during AI/Restore loading.
+
+---
+
+#### CatalogCard — Monitor State (D-341)
+
+Triggered by Activity icon click. Mutually exclusive with edit mode.
+
+- **Title row:** Name + info icon unchanged. Right side shows Activity icon (17px) + "Test & debug" text label (`text-sm text-fg-quaternary`), non-interactive (visual indicator only). Pencil icon hidden.
+- **Message text:** Read-only, same as default state. Clicking text does NOT enter edit mode while monitoring.
+- **Status line:** Same as default state (dot + relative timestamp if `lastSent` is set).
+- **Recent activity** (`mt-6` below status line): "RECENT ACTIVITY" label (`text-xs font-medium text-text-tertiary uppercase tracking-wide`). Below: a list of recent test sends with `divide-y divide-border-secondary`. Each entry: recipient name (left, `text-sm text-text-secondary`) + status dot + "Delivered/Failed/Pending" + relative timestamp (right, `text-sm text-text-tertiary`). Failed entries have an indented error detail line (`text-xs text-text-tertiary`). Empty state: "No activity yet. This message hasn't been sent by your app." centered.
+- **Footer row** (`mt-6 flex items-center justify-between gap-4`): Left side — "Ask Claude" (tertiary purple, calls `onAskClaude` prop with message name) + "Quick send" (tertiary purple, 1.5s "Sending…" disabled state, fade-out "✓ Sent to [name]" confirmation via `testSentFade` keyframe) + recipient dropdown (plain text, `text-text-primary font-normal`, synced with Testers card names via `testRecipients` prop). Right side — "Close" primary purple button (calls `exitMonitor`).
+- **Mock data:** First 3 core messages have delivered `lastSent` (3m, 22m, 2h ago) with 3–4 activity entries. 4th message has a failed `lastSent` (yesterday) with carrier error detail. Remaining messages have null (no status line, no activity).
 
 ---
 
 #### Per-state message card behavior
-Message card content and editing behavior is identical across all post-onboarding states. Registration state affects page layout (two-column vs single-column, right rail content, metrics cards) but not individual card rendering. Registered state uses `REGISTERED_VALUES` for personalization (GlowStudio, glowstudio.com, etc.).
+Message card content, editing, and monitoring behavior is identical across all post-onboarding states. Registration state affects page layout (two-column vs single-column, right rail content, metrics cards) but not individual card rendering. Registered state uses `REGISTERED_VALUES` for personalization (GlowStudio, glowstudio.com, etc.).
 
 ---
 
