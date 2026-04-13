@@ -257,3 +257,33 @@
 | In-app message composer v1 | AI tools + SMS_GUIDELINES.md is the authoring layer | D-79 |
 | Plan builder / message curation UI | Category selection is sufficient for scope | D-85 |
 | Model 3 BYO Twilio (subaccount + direct creds) | Unmonitorable ISV risk | D-26 |
+
+---
+
+## Open-Source SMS Compliance Linter
+
+Open-source repo (separate from main RelayKit codebase) that packages SMS compliance knowledge into a developer tool. Serves as a marketing vehicle targeting vibe coders, indie devs, and newsletter coverage (TLDR AI, Simon Willison, etc.).
+
+**Core: deterministic validators (no API key required)**
+- Quiet hours checker with NPA-NXX timezone lookup
+- Opt-out language presence and placement validation
+- SHAFT content keyword detection
+- Segment counter (handles Unicode/emoji encoding edge cases)
+- Transactional vs marketing classification rules
+- TCR/10DLC registration requirement checker
+- Character limit and link shortener carrier flagging rules
+
+**AI layer (requires user's own LLM API key)**
+- Gray-area content evaluation (marketing disguised as transactional, borderline SHAFT)
+- Carrier rejection risk scoring
+- Message rewrite suggestions
+
+**Structured compliance ruleset (the real asset)**
+- Machine-readable JSON/YAML rules covering verticals, obligations, carrier-specific gotchas
+- Designed for community contributions as carrier rules evolve
+
+**Distribution:** CLI tool, potential GitHub Action, callable from AI coding tools.
+
+**Upgrade path to RelayKit:** The linter diagnoses compliance problems; RelayKit solves them. Natural funnel from open-source user to paid customer.
+
+**Timing:** Post-launch. Build after Priorities 1–3.
