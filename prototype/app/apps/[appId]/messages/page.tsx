@@ -455,7 +455,7 @@ export default function AppMessagesPage() {
 
         {/* Delivery metrics — hidden when the Ask Claude panel is open */}
         {!askClaudeOpen && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 min-[860px]:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 min-[860px]:grid-cols-3 gap-4 mb-6">
           <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
             <p className="text-sm font-semibold text-text-tertiary uppercase tracking-wide">Delivery</p>
             <div className="mt-3">
