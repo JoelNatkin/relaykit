@@ -61,14 +61,13 @@ export default function YourApps() {
             Manage your SMS projects.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => alert("New project flow — not yet wired")}
+        <Link
+          href="/start"
           className="inline-flex items-center gap-2 rounded-lg border border-border-primary px-4 py-2 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover cursor-pointer"
         >
           <Plus className="size-4" />
           New project
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

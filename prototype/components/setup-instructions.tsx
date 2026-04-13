@@ -159,7 +159,7 @@ export function SetupInstructions({ visible }: { visible: boolean }) {
                 <p className="text-sm font-semibold text-text-primary">3. Add SMS to your app</p>
                 <CopyButton text={PROMPT_TEXT} />
               </div>
-              <p className="mt-1 mb-3 text-xs text-text-quaternary">Paste this prompt into your AI tool to start building.</p>
+              <p className="mt-1 mb-3 text-xs text-text-quaternary">Paste this prompt into your AI tool to start building. Once your app is sending, use the cards below to test delivery and Ask Claude to debug issues.</p>
               <div className="rounded-lg bg-bg-secondary px-3 py-2">
                 <p className="text-sm text-text-secondary leading-relaxed">{PROMPT_TEXT}</p>
               </div>
