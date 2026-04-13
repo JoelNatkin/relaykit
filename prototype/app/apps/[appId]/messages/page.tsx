@@ -88,37 +88,37 @@ const DAY = 24 * HOUR;
 const mockIso = (msAgo: number) => new Date(MOCK_NOW - msAgo).toISOString();
 
 const MOCK_LAST_SENT: (LastSent | null)[] = [
-  { timestamp: mockIso(3 * MINUTE), status: "delivered", recipientName: "Primary phone" },
+  { timestamp: mockIso(3 * MINUTE), status: "delivered", recipientName: "Joel" },
   { timestamp: mockIso(22 * MINUTE), status: "delivered", recipientName: "Sarah" },
-  { timestamp: mockIso(2 * HOUR), status: "delivered", recipientName: "Primary phone" },
-  { timestamp: mockIso(DAY), status: "failed", recipientName: "Primary phone" },
+  { timestamp: mockIso(2 * HOUR), status: "delivered", recipientName: "Joel" },
+  { timestamp: mockIso(DAY), status: "failed", recipientName: "Joel" },
 ];
 
 const MOCK_ACTIVITY: (ActivityEntry[] | undefined)[] = [
   [
-    { id: "e1", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(3 * MINUTE) },
+    { id: "e1", recipientName: "Joel", status: "delivered", timestamp: mockIso(3 * MINUTE) },
     { id: "e2", recipientName: "Sarah", status: "delivered", timestamp: mockIso(15 * MINUTE) },
-    { id: "e3", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(4 * HOUR) },
+    { id: "e3", recipientName: "Joel", status: "delivered", timestamp: mockIso(4 * HOUR) },
   ],
   [
-    { id: "e1", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(22 * MINUTE) },
+    { id: "e1", recipientName: "Joel", status: "delivered", timestamp: mockIso(22 * MINUTE) },
     { id: "e2", recipientName: "Sarah", status: "delivered", timestamp: mockIso(2 * HOUR) },
-    { id: "e3", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(19 * HOUR) },
+    { id: "e3", recipientName: "Joel", status: "delivered", timestamp: mockIso(19 * HOUR) },
   ],
   [
-    { id: "e1", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(2 * HOUR) },
+    { id: "e1", recipientName: "Joel", status: "delivered", timestamp: mockIso(2 * HOUR) },
     { id: "e2", recipientName: "Sarah", status: "delivered", timestamp: mockIso(2 * DAY) },
   ],
   [
     {
       id: "e1",
-      recipientName: "Primary phone",
+      recipientName: "Joel",
       status: "failed",
       timestamp: mockIso(DAY),
       errorDetail: "Carrier rejected: invalid number format",
     },
     { id: "e2", recipientName: "Sarah", status: "delivered", timestamp: mockIso(3 * DAY) },
-    { id: "e3", recipientName: "Primary phone", status: "delivered", timestamp: mockIso(5 * DAY) },
+    { id: "e3", recipientName: "Joel", status: "delivered", timestamp: mockIso(5 * DAY) },
   ],
 ];
 
