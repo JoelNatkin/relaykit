@@ -555,7 +555,7 @@ export function CatalogCard({
 
   return (
     <div
-      className={`relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs ${monitorMode ? "max-w-[500px]" : ""}`}
+      className={`relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs ${monitorMode ? "min-[860px]:max-w-[540px]" : ""}`}
     >
       {/* Header row */}
         <div className="flex items-center gap-3">

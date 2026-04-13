@@ -99,7 +99,7 @@ export function SetupToggle({ checked, onChange }: { checked: boolean; onChange:
       >
         <span
           className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition duration-100 ease-linear mt-0.5 ${
-            checked ? "translate-x-[18px] ml-0.5" : "translate-x-0 ml-0.5"
+            checked ? "translate-x-[16px] ml-0.5" : "translate-x-0 ml-0.5"
           }`}
         />
       </button>
@@ -114,7 +114,7 @@ export function SetupInstructions({ visible }: { visible: boolean }) {
 
   return (
     <div className="mb-6">
-      <div className="rounded-xl bg-bg-secondary p-6">
+      <div className="rounded-xl bg-bg-secondary p-6 min-[860px]:max-w-[540px]">
           {/* Heading */}
           <h2 className="text-2xl font-bold text-text-primary">Start building</h2>
           <p className="mt-2 mb-5 text-sm text-text-tertiary">

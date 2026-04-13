@@ -121,7 +121,7 @@ export function TestPhonesCard({ phones, onRemove, onInvite, onEdit }: TestPhone
   }
 
   return (
-    <div className="p-6">
+    <div className="rounded-xl border border-border-secondary p-6">
       <h3 className="text-base font-semibold text-text-primary">Testers</h3>
       <p className="mt-1 text-sm text-text-tertiary">
         Up to 5 people can sign up and receive messages from your app in test mode.

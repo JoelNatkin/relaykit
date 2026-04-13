@@ -368,7 +368,7 @@ export default function AppMessagesPage() {
 
   /* ── Shared message list ── */
   const messageList = (
-    <div className={isWizard ? "" : "max-w-[680px]"}>
+    <div className={isWizard ? "" : "min-[860px]:max-w-[540px]"}>
       <div className="space-y-5">
         {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
           <CatalogCard
@@ -451,8 +451,6 @@ export default function AppMessagesPage() {
 
     return (
       <div>
-        <SetupInstructions visible={setupVisible} />
-
         {/* Delivery metrics — hidden when the Ask Claude panel is open */}
         {!askClaudeOpen && (
         <div className="grid grid-cols-1 min-[860px]:grid-cols-3 gap-4 mb-6">
@@ -487,6 +485,8 @@ export default function AppMessagesPage() {
           </div>
         </div>
         )}
+
+        <SetupInstructions visible={setupVisible} />
 
         {messagesSectionHeader}
 
