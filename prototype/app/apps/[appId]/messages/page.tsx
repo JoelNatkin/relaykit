@@ -455,15 +455,14 @@ export default function AppMessagesPage() {
 
         {/* Delivery metrics — hidden when the Ask Claude panel is open */}
         {!askClaudeOpen && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 min-[860px]:grid-cols-3 gap-4 mb-6">
           <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
             <p className="text-sm font-semibold text-text-tertiary uppercase tracking-wide">Delivery</p>
             <div className="mt-3">
               <span className="text-3xl font-semibold text-text-success-primary">98.4%</span>
             </div>
             <p className="mt-1 text-sm text-text-secondary">delivery rate</p>
-            <p className="mt-3 text-sm text-text-secondary">1,812 delivered &middot; 22 failed &middot; 8 pending</p>
-            <p className="mt-1 text-sm text-text-success-primary">&uarr; 0.3% vs last period</p>
+            <p className="mt-3 text-sm text-text-success-primary">&uarr; 0.3% vs last period</p>
           </div>
 
           <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
@@ -472,8 +471,7 @@ export default function AppMessagesPage() {
               <span className="text-3xl font-semibold text-text-primary">284</span>
             </div>
             <p className="mt-1 text-sm text-text-secondary">unique recipients this period</p>
-            <p className="mt-3 text-sm text-text-secondary">12 opt-outs (4.2%) &middot; 38 inbound replies</p>
-            <p className="mt-1 text-sm text-text-success-primary">&uarr; 1.2% vs last period</p>
+            <p className="mt-3 text-sm text-text-success-primary">&uarr; 1.2% vs last period</p>
           </div>
 
           <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
@@ -497,10 +495,10 @@ export default function AppMessagesPage() {
           className={
             askClaudeOpen
               ? "grid grid-cols-1 md:grid-cols-2 md:gap-10"
-              : "grid grid-cols-1 lg:grid-cols-3 gap-4"
+              : "grid grid-cols-1 min-[860px]:grid-cols-3 gap-4"
           }
         >
-          <div className={askClaudeOpen ? "min-w-0" : "min-w-0 lg:col-span-2"}>
+          <div className={askClaudeOpen ? "min-w-0" : "min-w-0 min-[860px]:col-span-2"}>
             <div ref={messageTopRef} />
             {messageList}
           </div>
@@ -512,7 +510,7 @@ export default function AppMessagesPage() {
               the Test phones card. The column always renders because Test
               phones is visible in every post-onboarding state. Sits in the
               third column of the same 3-col grid as the metrics row above. */
-          <div className="order-first lg:order-last lg:sticky lg:top-20 space-y-4">
+          <div className="order-first min-[860px]:order-last min-[860px]:sticky min-[860px]:top-20 space-y-4">
             {(showRegisteredUpsell || (registeredUpsellConfirmed && !regMktTrackerDismissed)) && (
               <div className="rounded-xl bg-gray-50 p-6">
                 {showRegisteredUpsell ? (
@@ -672,11 +670,11 @@ export default function AppMessagesPage() {
         className={
           askClaudeOpen
             ? "grid grid-cols-1 md:grid-cols-2 md:gap-10"
-            : "grid grid-cols-1 lg:grid-cols-3 gap-4"
+            : "grid grid-cols-1 min-[860px]:grid-cols-3 gap-4"
         }
       >
         {/* LEFT — setup instructions + messages */}
-        <div className={askClaudeOpen ? "min-w-0" : "min-w-0 lg:col-span-2"}>
+        <div className={askClaudeOpen ? "min-w-0" : "min-w-0 min-[860px]:col-span-2"}>
           <SetupInstructions visible={setupVisible} />
           <div ref={messageTopRef} />
           {messageList}
@@ -688,7 +686,7 @@ export default function AppMessagesPage() {
         /* RIGHT — Registration card stacked above the Test phones card.
             Sits in the same 3-col grid as the Registered state metrics row
             so rail widths match across states. */
-        <div className="order-first lg:order-last lg:sticky lg:top-20 space-y-4">
+        <div className="order-first min-[860px]:order-last min-[860px]:sticky min-[860px]:top-20 space-y-4">
           <div className="rounded-xl bg-gray-50 p-6">
             {isBuilding ? (
               !einExpanded ? (
