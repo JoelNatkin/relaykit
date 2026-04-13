@@ -486,8 +486,6 @@ export default function AppMessagesPage() {
         </div>
         )}
 
-        <SetupInstructions visible={setupVisible} />
-
         {messagesSectionHeader}
 
         <div
@@ -498,6 +496,7 @@ export default function AppMessagesPage() {
           }
         >
           <div className={askClaudeOpen ? "min-w-0" : "min-w-0 min-[860px]:col-span-2"}>
+            <SetupInstructions visible={setupVisible} />
             <div ref={messageTopRef} />
             {messageList}
           </div>
