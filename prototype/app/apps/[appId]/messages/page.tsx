@@ -934,14 +934,18 @@ export default function AppMessagesPage() {
                 </div>
 
                 <p className="mt-4 text-sm text-text-tertiary leading-relaxed">
-                  Your business information couldn&apos;t be verified with the details provided.
+                  The business name on file didn&apos;t match your EIN records.
                 </p>
-                <a
-                  href="mailto:hello@relaykit.ai"
-                  className="mt-2 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
-                >
-                  hello@relaykit.ai
-                </a>
+                <p className="mt-2 text-sm text-text-tertiary leading-relaxed">
+                  We know this is frustrating. Reply to your confirmation email or reach out at{" "}
+                  <a
+                    href="mailto:support@relaykit.ai"
+                    className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                  >
+                    support@relaykit.ai
+                  </a>{" "}
+                  and we&apos;ll sort it out.
+                </p>
               </div>
             ) : null}
           </div>
