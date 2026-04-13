@@ -483,8 +483,7 @@ export default function AppMessagesPage() {
             <div className="mt-3 h-2 rounded-full bg-bg-secondary">
               <div className="h-2 rounded-full bg-bg-brand-solid" style={{ width: "69.4%" }} />
             </div>
-            <p className="mt-2 text-sm text-text-secondary">153 messages remaining this period</p>
-            <p className="mt-2 text-xs text-text-tertiary">Plan: $19/mo &middot; 500 included</p>
+            <p className="mt-3 text-sm text-text-secondary">Plan: $19/mo &middot; 500 included</p>
           </div>
         </div>
         )}
