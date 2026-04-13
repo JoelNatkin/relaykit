@@ -765,7 +765,7 @@ export default function AppMessagesPage() {
                   />
                 </div>
               )
-            ) : isPending ? (
+            ) : (isPending || isChangesRequested) ? (
               upsellConfirmStep ? (
                 /* Pricing confirmation step — takes over entire card */
                 <div style={{ animation: "einCardFade 200ms ease-out" }}>
@@ -849,6 +849,20 @@ export default function AppMessagesPage() {
                       </div>
                     )}
                   </div>
+
+                  {/* Extended Review note — only in changes_requested state */}
+                  {isChangesRequested && (
+                    <p className="mt-4 text-sm text-text-tertiary leading-relaxed">
+                      This is taking longer than usual. We&apos;ll email you at{" "}
+                      <a
+                        href="mailto:jen@glowstudio.com"
+                        className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                      >
+                        jen@glowstudio.com
+                      </a>{" "}
+                      when there&apos;s an update.
+                    </p>
+                  )}
                 </div>
 
                 {/* Marketing upsell card — hidden after upsell confirmed */}
@@ -884,48 +898,51 @@ export default function AppMessagesPage() {
                 )}
               </div>
               )
-            ) : isChangesRequested ? (
-              <>
-                <h3 className="text-base font-semibold text-text-primary">Registration status</h3>
-                <div className="mt-3">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-brand-secondary px-2.5 py-1 text-xs font-medium text-text-brand-secondary">
-                    <span className="w-1.5 h-1.5 rounded-full bg-fg-brand-primary" />
-                    Under review
-                  </span>
-                </div>
-                <div className="mt-4 space-y-1">
-                  <p className="text-sm font-semibold text-text-secondary">Submitted March 17, 2026 &middot; Updated March 24, 2026</p>
-                  <p className="text-sm text-text-tertiary">
-                    Your registration is taking a bit longer than expected. We&apos;re on it &mdash; we&#39;ll email you at{" "}
-                    <a href="mailto:jen@glowstudio.com" className="font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">
-                      jen@glowstudio.com
-                    </a>{" "}
-                    when it&apos;s resolved.
-                  </p>
-                </div>
-              </>
             ) : isRejected ? (
-              <>
-                <h3 className="text-base font-semibold text-text-primary">Registration status</h3>
-                <div className="mt-3">
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-error-secondary px-2.5 py-1 text-xs font-medium text-text-error-primary">
-                    <span className="w-1.5 h-1.5 rounded-full bg-fg-error-primary" />
-                    Not approved
-                  </span>
+              /* Rejected state — per-type tracker rows with Not approved pills,
+                 followed by the reason and contact email. No tooltip (nothing
+                 to explain about timing), no marketing upsell. */
+              <div>
+                <h3 className="text-lg font-semibold text-text-primary">
+                  Registration status
+                </h3>
+
+                <div className="mt-3 space-y-2">
+                  {/* Transactional row */}
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <span className="text-sm font-semibold text-text-primary">{verticalName}</span>
+                      <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
+                    </div>
+                    <span className="inline-flex items-center rounded-full bg-bg-error-secondary px-2 py-0.5 text-[10px] font-medium text-text-error-primary shrink-0 mt-1">
+                      Not approved
+                    </span>
+                  </div>
+
+                  {/* Marketing row — only if marketing was also registered */}
+                  {hasMarketingRegistered && (
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <span className="text-sm font-semibold text-text-primary">Marketing</span>
+                        <p className="text-xs text-text-tertiary mt-0.5">Submitted 3/17/2026</p>
+                      </div>
+                      <span className="inline-flex items-center rounded-full bg-bg-error-secondary px-2 py-0.5 text-[10px] font-medium text-text-error-primary shrink-0 mt-1">
+                        Not approved
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <p className="mt-4 text-sm font-semibold text-text-success-primary">$49 refunded March 28, 2026</p>
-                <div className="my-4 border-t border-border-secondary" />
-                <p className="text-sm font-semibold text-text-primary">What happened</p>
-                <p className="mt-2 text-sm text-text-tertiary leading-relaxed">
+
+                <p className="mt-4 text-sm text-text-tertiary leading-relaxed">
                   Your business information couldn&apos;t be verified with the details provided.
                 </p>
-                <p className="mt-4 text-sm text-text-tertiary leading-relaxed">
-                  We&apos;re looking into what went wrong on our end. Reach out if you&apos;d like to discuss.
-                </p>
-                <a href="mailto:hello@relaykit.ai" className="mt-1 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear">
+                <a
+                  href="mailto:hello@relaykit.ai"
+                  className="mt-2 inline-block text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+                >
                   hello@relaykit.ai
                 </a>
-              </>
+              </div>
             ) : null}
           </div>
           <TestPhonesCard

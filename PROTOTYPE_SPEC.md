@@ -364,9 +364,9 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 **Pending state right rail (D-338, D-339):** Per-type registration status tracker + optional marketing upsell card + Testers card below.
 - **Marketing in Pending (D-336, D-340):** Marketing messages in list when confirmed. `showMarketingMessages` covers both signup and upsell paths.
 
-**Extended Review state right rail:** "Registration status" card (Under review pill, dates, extended-review copy) + Testers card below.
+**Extended Review state right rail (extends D-339):** Per-type registration status tracker (identical structure to Pending — "Registration status" heading with the same info tooltip, `{verticalName}` row with "In review" purple pill, Marketing row with "In review" pill when `hasMarketingRegistered`). Below the tracker rows, an extra explanatory line: "This is taking longer than usual. We'll email you at [jen@glowstudio.com](mailto:jen@glowstudio.com) when there's an update." (email is a brand-secondary mailto link). Marketing upsell card below the divider works the same as Pending — gated on `!upsellConfirmed`, reuses the same `upsellEinExpanded` / `upsellConfirmStep` take-over states. Testers card below.
 
-**Rejected state right rail:** "Registration status" card (Not approved pill, refund note, "What happened" section) + Testers card below.
+**Rejected state right rail (extends D-339):** Per-type tracker with red "Not approved" pills (`bg-bg-error-secondary text-text-error-primary`). Heading: "Registration status" (no info tooltip — nothing to explain about timing). `{verticalName}` row always; Marketing row when `hasMarketingRegistered` (also "Not approved"). Below the tracker: `"Your business information couldn't be verified with the details provided."` + `hello@relaykit.ai` mailto link (brand-secondary). No "What happened" subheading, no "$49 refunded" line, no "We're looking into what went wrong" copy, no marketing upsell. Testers card below.
 
 **Registered state right rail (D-338):** Three delivery metrics cards above the two-column layout. Right rail: marketing upsell OR marketing-only tracker OR nothing (after dismissed) + Testers card below.
 
