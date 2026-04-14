@@ -1,99 +1,76 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-11/12 (monitor expansion, Testers card, Ask Claude panel, header redesign)
-**Branch:** main (55 commits ahead of origin/main — NOT YET PUSHED, awaiting PM review)
+**Date:** 2026-04-13/14 (Extended Review + Rejected redesign, 860px breakpoint, card polish, messages promoted to /apps/[appId] root)
+**Branch:** main (14 commits ahead of origin/main — NOT YET PUSHED, awaiting PM review)
 
 ---
 
-## Commits This Session (32)
+## Commits This Session (13)
 
 ```
-b368ac0  fix(prototype): mobile Claude overlay flush with nav, lock body scroll
-49e9dad  fix(prototype): equal-width Claude panel and messages, overlay below 768px
-9abbdc8  fix(prototype): remove hover/click from monitor label, increase icon gap
-faa3c08  feat(prototype): icon + text label in title row for active card mode
-6d75309  fix(prototype): Ask Claude panel top-aligns with message cards
-921e030  fix(prototype): testers subtitle wording
-b8ad8be  refactor(prototype): Ask Claude input as textarea with toolbar row
-740f727  fix(prototype): Ask Claude panel viewport-aware height with always-visible input
-d7e05b1  feat(prototype): full-height Ask Claude panel with pinned input
-adbe364  fix(prototype): shorter Ask Claude welcome text
-6a1d956  fix(prototype): Ask Claude panel — remove context card, complete border, remove header icon
-3dfb50b  feat(prototype): Ask Claude panel with context summary and message focus
-ff6d3fa  fix(prototype): testers subtitle — sign up language
-3223092  refactor(prototype): simplify header status to test mode / live
-2668f64  fix(prototype): shorter Testers card subtitle
-b898226  fix(prototype): rename test phones to Testers, send test to quick send
-fe81d85  fix(prototype): right-align header row controls and Ask Claude button
-99dfa0d  refactor(prototype): move setup instructions and settings to header row
-686c41d  feat(prototype): messages section header with Ask Claude button
-224db2b  feat(prototype): test phones — full numbers, kebab menu with edit/delete, button alignment
-d23202e  feat(prototype): test phones card in right rail with inline invite flow
-342609f  fix(prototype): swap send test and dropdown order, plain dropdown text
-4685ac9  fix(prototype): monitor button row — left-aligned actions, right-aligned close
-4f2319c  feat(prototype): send test dropdown + ask claude in monitor expansion, remove close button
-7f3d6ed  fix(prototype): right rail width matches metrics column, activity spacing, icon gap
-1cb3962  fix(prototype): remove divider above recent activity, add 16px spacing
-bb65378  fix(prototype): monitor card spacing, max-width 500px, primary Close button
-b86c5c6  fix(prototype): monitor expansion layout — divider, buttons, icon sizing
-e87cb28  fix(prototype): monitor expansion shows message text, icon order/size, dividers, tooltip behavior
-29838ce  feat(prototype): add monitor/test expansion mode to message cards
-a593d36  fix(prototype): set message card column to 680px max-width
-26dd8d4  refactor(prototype): remove floating send icon and set 40px message-to-rail gap
+71827cc  fix(prototype): fix register page back link to workspace root
+094a0a7  refactor(prototype): promote messages page to /apps/[appId] root route
+0ac4a5e  fix(prototype): restore Ask Claude panel desktop layout after Start Building card move
+de47356  feat(prototype): wire New project button to onboarding flow
+9bea989  fix(prototype): Registered state — Start building inside left column under Messages header
+e7eaa58  fix(prototype): card width and styling polish — Testers border, Start building + messages cards 540px cap, setup move, toggle thumb padding
+3c73003  fix(prototype): simplify Usage card — remove remaining count, align plan line with trend text
+ca1aa5a  fix(prototype): remove grey background from Testers card
+02e229a  fix(prototype): metrics grid 3-col at 860px breakpoint
+f91d1cb  fix(prototype): lower metrics grid collapse breakpoint to 860px
+4e30863  fix(prototype): warmer Rejected card copy with specific reason
+be3b7e9  refactor(prototype): redesign Extended Review and Rejected cards to per-type tracker layout
+d7e1411  docs(backlog): add open-source SMS compliance linter
 ```
 
-(Previous session ended at `1346f3a`. 23 commits from that session remain unpushed too — 55 total.)
+(Previous session close-out commit was `0661de3`, pushed to origin after. This session's commits are all since then and are unpushed.)
 
 ---
 
 ## What Was Completed
 
-### Monitor/test expansion on message cards (D-341)
-- New expansion mode on CatalogCard alongside the existing edit mode. Activity icon (17px) + pencil icon in the title row, with hover-delay tooltips (300ms via setTimeout refs, cleared on click to prevent stuck state).
-- **Default state:** both icons visible with `gap-1` (12px visual), no text labels.
-- **Monitor expanded:** Activity icon + "Test & debug" label (non-interactive). Read-only message text stays visible. Below: "RECENT ACTIVITY" section with delivery status list (divide-y dividers), then footer row with "Ask Claude" (wired to Ask Claude panel) + "Quick send" (1.5s stub) + recipient dropdown (synced with Testers card) on left, "Close" primary button on right.
-- **Edit expanded:** pencil icon + "Edit" label (non-interactive). Activity hidden. Edit controls unchanged from prior session.
-- Mock data: first 3 messages delivered, 4th failed with carrier error, rest null.
-- Card root has `max-w-[500px]` when `monitorMode=true` (dashboard cards only).
-- Status line (lastSent) below message text when monitorMode + data present.
+### Route promotion — messages page at `/apps/[appId]` root (D-345)
+- Moved `prototype/app/apps/[appId]/messages/page.tsx` → `prototype/app/apps/[appId]/page.tsx`. The root of the app is now the workspace.
+- Replaced `/messages/page.tsx` with a server-side `redirect(/apps/${appId})` for backward-compat.
+- Updated every internal navigation: AppLayout's 6 `router.replace` calls, Your Apps card link (also dropped a pass-through to /overview → goes direct), auth post-download push, wizard Continue → workspace, get-started "View on dashboard", Settings back link, wizard-layout backHref for /ready, start/verify continueHref, top-nav dev state switcher + `isAppRoute` regex (now `^\/apps\/[^/]+(\/(ready|signup(\/verify)?|get-started))?$`), proto-nav-helper dev nav items, Register page back link.
+- DashboardLayout's `isMessagesPage` check: was `pathname.endsWith("/messages")` → now `pathname === /apps/${appId}` (exact match so /settings doesn't inherit the header setup toggle + Settings link).
+- Register page back link label: was `Back to Overview` → now the app name (e.g., `GlowStudio`) via an inline `APP_NAMES` map mirroring DashboardLayout's pattern.
 
-### Testers card in right rail (D-342)
-- New `prototype/components/test-phones-card.tsx` component.
-- Appears in ALL post-onboarding states, below any state-specific right rail card. Always visible.
-- Heading: "Testers". Subtitle: "Up to 5 people can sign up and receive messages from your app in test mode."
-- Each row: name (bold) + verified/invited status dot + full phone number on second line + kebab menu (DotsVertical) with Edit and Delete. Self entry (Joel) has Edit only. Hover-X removed in favor of kebab menu.
-- Edit: inline form (pre-filled name + phone), Save/Cancel right-aligned.
-- Invite: "+ Invite someone" link → inline form (name + phone), 1.5s "Sending…" stub, collapses on success. Hidden at 5 entries.
-- State lives in messages page (`testPhones`), with `handleRemoveTestPhone`, `handleInviteTestPhone`, `handleEditTestPhone` handlers.
-- Names synced to CatalogCard via `testRecipients` prop → monitor expansion's Quick send dropdown. `useEffect` resets `selectedRecipient` if removed from list.
+### Extended Review + Rejected right rail redesign (extends D-339)
+- Extended Review now uses the same per-type tracker card as Pending. Implemented by expanding the existing `isPending` branch guard to `(isPending || isChangesRequested)` so both states share the tracker structure + marketing upsell take-over flow. Added a conditional explanatory line below the tracker rows (gated on `isChangesRequested`): "This is taking longer than usual. We'll email you at jen@glowstudio.com when there's an update."
+- Rejected rewritten from scratch: "Registration status" heading (no info tooltip), tracker rows with red "Not approved" pills (`bg-bg-error-secondary text-text-error-primary`), reason line "The business name on file didn't match your EIN records.", warmer support line "We know this is frustrating. Reply to your confirmation email or reach out at support@relaykit.ai and we'll sort it out." Removed the old bulk "Not approved" pill, "$49 refunded" line, "What happened" subheading, and "We're looking into what went wrong" paragraph.
 
-### Ask Claude panel (D-343)
-- New `prototype/components/ask-claude-panel.tsx` component.
-- Opens from "Ask Claude" button in messages section header (unfocused) or from monitor expansion's "Ask Claude" footer link (focused on message name, closes monitor).
-- **Desktop (≥768px):** inline grid cell in a 50/50 two-column grid (`grid-cols-2 gap-10`). Sticky, top-aligned with first message card (measured via `messageTopRef` + `getBoundingClientRect`). Height `calc(100vh - topOffset - 2.5rem)`. Rounded-xl border, shadow-sm.
-- **Mobile (<768px):** fixed full-width overlay (`top-14` flush with nav bottom, `bottom-0`). Body scroll locked via `document.body.style.overflow = "hidden"` (gated on `matchMedia < 767px`).
-- Content: "Ask Claude" h2 + XClose → flex-1 scroll body (optional "Focused on: [name]" + welcome text) → pinned footer with chat composer (3-row textarea + Plus attach + Stars02 send toolbar). All non-functional stubs.
-- When open: right rail + metrics cards (Registered) hidden. When closed: layout restored.
+### Responsive breakpoint consolidation at 860px
+- Metrics grid: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` → `grid-cols-1 min-[860px]:grid-cols-3` (skips the 2-col intermediate step).
+- Card/rail grid (both Registered and generic layouts): `lg:grid-cols-3` → `min-[860px]:grid-cols-3`. Paired modifiers (`col-span-2`, `order-last`, `sticky`, `top-20`) also updated to `min-[860px]:` so the layout doesn't break between 860–1024px.
+- Start building card: `min-[860px]:max-w-[540px]` on the inner panel.
+- Message cards: `messageList` wrapper + per-card `monitorMode` cap both set to `min-[860px]:max-w-[540px]` (replacing prior 680px / 500px caps).
 
-### Header row redesign
-- **Status indicator simplified (D-344):** yellow "Test mode" for all pre-live states, green "Live" for Registered. Onboarding = null.
-- **Setup instructions toggle + Settings link moved** to DashboardLayout header row (messages page only, gated on `pathname.endsWith("/messages")`). State shared via `SetupToggleContext` (new file `prototype/context/setup-toggle-context.tsx`).
-- **Messages section header:** "Messages" h2 on left + "Ask Claude" button (Stars02 icon + text) on right. Appears in all post-onboarding states.
+### Card styling polish
+- Testers card: `rounded-xl border border-border-secondary p-6` (matches message card stroke + radius), grey background removed so the grey treatment is reserved for state-specific cards above.
+- Metrics Usage & billing: removed "153 messages remaining this period" line; "Plan: $19/mo · 500 included" restyled from `mt-2 text-xs text-text-tertiary` to `mt-3 text-sm text-text-secondary` (same size/position as the trend lines, neutral color).
+- Metrics Delivery + Recipients: stat-detail lines ("1,812 delivered · 22 failed · 8 pending", "12 opt-outs · 38 inbound replies") removed.
+- SetupToggle thumb: `translate-x-[18px]` → `translate-x-[16px]` so the enabled state has 2px right padding matching the 2px left (`ml-0.5`) when disabled.
 
-### Card layout cleanup
-- Floating send icon removed from CatalogCard (hideSend, sendIcon, onSend props deleted, Phone01 import dropped).
-- Two-column layout uses `grid grid-cols-1 lg:grid-cols-3 gap-4` matching the metrics grid for right rail width alignment.
-- `messageList` max-width raised from 540px to 680px.
+### Start building card placement
+- Moved from above the metrics grid (Registered) or above `messageList` (generic) into a consistent slot: inside the left column, above the message cards, in both Registered and generic layouts.
+- Card 3 helper text extended: "Paste this prompt into your AI tool to start building. Once your app is sending, use the cards below to test delivery and Ask Claude to debug issues."
 
-### Documentation
-- **D-341 through D-344** added to `DECISIONS.md`.
-- **PROTOTYPE_SPEC.md** updated: CatalogCard default/edit/monitor states rewritten, Dashboard mode layout section rewritten with Testers card, Ask Claude panel, header row, right rail structure.
+### Ask Claude panel top-alignment fix
+- Root cause: after moving SetupInstructions inside the left column, the `messageTopRef` sat BELOW it. When Start building was toggled on, `getBoundingClientRect().top` returned a big Y value, making `topOffset` large and collapsing the panel to a thin nub.
+- Fix: moved the ref ABOVE SetupInstructions in both layouts so it measures the grid row top, not the position after the setup card.
+
+### New project button
+- Your Apps `+ New project` button swapped from `onClick={alert}` to `<Link href="/start">` (wizard entry).
+
+### Docs
+- **BACKLOG.md** — added new top-level section "Open-Source SMS Compliance Linter" (Core deterministic validators + AI layer + structured ruleset + distribution + upgrade path + post-launch timing).
 
 ---
 
 ## Quality Checks Passed
 
 - `tsc --noEmit` — clean (prototype)
-- `next build` — clean (run multiple times during session)
+- `next build` — clean (run multiple times during session, including after the route promotion)
 - No ESLint config in prototype — tsc and build are the quality gates (unchanged baseline)
 
 ---
@@ -101,38 +78,40 @@ a593d36  fix(prototype): set message card column to 680px max-width
 ## In Progress / Partially Done (Carried Forward)
 
 ### All backend stubs from previous sessions still apply
-- Signup backend is stubbed (D-59 pending)
-- EIN verification backend is stubbed (D-302/D-303 pending)
-- Phone OTP is stubbed (D-46 pending)
-- Get-started content is hardcoded
+- Signup backend stubbed (D-59 pending)
+- EIN verification backend stubbed (D-302/D-303)
+- Phone OTP stubbed (D-46)
+- Get-started content hardcoded
 - Marketing messages hardcoded for Appointments vertical only
+- Ask Claude panel chat composer is a non-functional stub
+- Monitor expansion Quick send is visual-only
+- Testers invite flow stubbed (1.5s "Sending…" but no real OTP)
+- Registered state metrics are mock data
+- Marketing-only registration tracker transitions are prototype dropdowns
 
 ### New this session
-- Ask Claude panel is a non-functional stub — typing in the textarea and pressing Enter does nothing. The Plus (attach) and Stars02 (send) toolbar buttons are stubbed with preventDefault.
-- Quick send in monitor expansion is a visual stub — 1.5s "Sending…" + fade-out confirmation, but doesn't actually send a message or add an activity entry.
-- Testers card's invite flow is a stub — 1.5s "Sending…" but no real OTP/verification.
-- Monitor activity list uses mock data (module-level MOCK_LAST_SENT/MOCK_ACTIVITY keyed by message index).
-- Registered state metrics remain mock data.
-- Marketing-only registration tracker state transitions are prototype dropdowns.
+- `/apps/[appId]/messages` is now only a redirect — any new app-scoped pages should be subroutes of `/apps/[appId]/`, the workspace itself stays at root. This constrains future route design.
+- Extended Review now reuses Pending's state variables (`upsellEinExpanded`, `upsellConfirmStep`, `upsellConfirmed`). If we later want different upsell behavior in Extended Review, we'll need to introduce separate state.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **Delete `.next` AND `node_modules` before every prototype dev server start if you see @untitledui vendor chunk errors.** The `.next` cache was persistently corrupted this session — `rm -rf .next` alone sometimes didn't fix it; `rm -rf node_modules && npm install` was needed. API server (port 3002) has no `.next`.
-2. **The prototype is in `/prototype`, not the root.** Running `next dev` from root starts the production app. Always `cd prototype` first.
+1. **`.next` + `node_modules` nuke is the escalation** for the persistent @untitledui vendor chunk error. Straight `.next` wipes sometimes aren't enough — if you see it, `rm -rf .next node_modules && npm install`.
+2. **The prototype is in `/prototype`, not the root.** Always `cd prototype` first.
 3. **No ESLint config** in prototype — tsc + `next build` are the quality gates.
-4. **`testPhones` state is in the messages page**, not a global store. Adding/removing testers via the Testers card + reading names in the CatalogCard monitor dropdown both go through props threaded from the same `useState` array.
-5. **`messageTopRef`** is a zero-height div placed right above `{messageList}` in both Registered and generic layouts. It's read by `getBoundingClientRect().top` when the Ask Claude panel opens to set the desktop panel's `top` offset. Don't move it.
-6. **SetupToggle state** is now in a React context (`SetupToggleContext`) provided by DashboardLayout. The messages page reads `visible` from the context via `useSetupToggleState()`. The toggle itself renders in DashboardLayout's header row (messages page only).
-7. **Ask Claude panel renders TWO wrappers** (mobile + desktop) sharing the same JSX `content` fragment. Both are always mounted; CSS `hidden`/`md:hidden` toggles visibility. The mobile wrapper uses `fixed` positioning; the desktop uses `sticky` inside the grid.
-8. **CatalogCard has three expansion states:** edit (controlled by `editingMessageId`), monitor (controlled by `monitoringMessageId`), and neither (collapsed). `openAskClaude()` clears both. The Activity icon's label ("Test & debug") is a non-interactive `<span>`, NOT a button — clicking it does nothing. The monitor's Close button is the only way to exit monitor mode.
-9. **Body scroll lock** on the mobile Ask Claude overlay (`document.body.style.overflow = "hidden"`) is only applied when `matchMedia("(max-width: 767px)")` matches at mount time. If the user resizes the browser while the panel is open, the lock persists. Acceptable for prototype.
-10. **Variant IDs are stable** (`standard`, `action-first`, `context-first`) even though labels are Standard/Friendly/Brief. Don't rename the IDs.
-11. **Never push this branch without PM review.** 55 unpushed commits as of close-out.
-12. **Migrations 003 and 004 may not be applied to live DB** (carried forward).
-13. **Rate limiter is in-memory** — resets on server restart (carried forward).
-14. **`testSentFade` keyframe** in `globals.css` powers the Quick send confirmation fade: 3s total, 10% fade-in, 80% hold, 100% fade-out. Paired with a 3s setTimeout that unmounts the element.
+4. **The workspace route is `/apps/[appId]` (D-345).** `/apps/[appId]/messages` still exists as a server redirect to the root. All internal links must point to the root; any new link to `/messages` is a regression.
+5. **`isMessagesPage` uses exact equality** (`pathname === /apps/${appId}`), not `endsWith`. `/settings` and other subroutes should NOT match.
+6. **`messageTopRef` is the FIRST child of the left column** in both layouts. Above `<SetupInstructions>`. If you move it below Setup, the Ask Claude panel's height calc breaks when the Start building card is toggled on — the topOffset balloons and the panel collapses to a thin strip.
+7. **Extended Review shares Pending's tracker JSX** via the `(isPending || isChangesRequested)` outer guard. The only Extended-Review-specific content is a conditional `<p>` with the "taking longer than usual" email note. If you need divergent logic, split the branches again.
+8. **860px is the responsive threshold** for both the metrics grid and the card/rail grid. Every paired modifier (`col-span-2`, `order-last`, `sticky`, `top-20`) uses `min-[860px]:`. If you change the breakpoint, update all 5 spots together or the layout breaks between states.
+9. **testPhones state is in the workspace page**, not a global store. It gets threaded to CatalogCard via `testRecipients` and to TestPhonesCard directly.
+10. **Ask Claude panel renders TWO wrappers** (mobile fixed overlay + desktop inline) sharing the same `content` fragment. Both mount; CSS `hidden` / `md:hidden` toggles visibility.
+11. **CatalogCard has three expansion states:** edit, monitor, collapsed. They're mutually exclusive. The Activity icon label ("Test & debug") is a non-interactive `<span>`; only the monitor footer's Close button exits monitor mode.
+12. **Body scroll lock** on the mobile Ask Claude overlay (`document.body.style.overflow = "hidden"`) is only applied when `matchMedia("(max-width: 767px)")` matches at mount. Viewport resize while open keeps the lock.
+13. **Variant IDs are stable** (`standard`, `action-first`, `context-first`) even though labels are Standard/Friendly/Brief.
+14. **Never push this branch without PM review.** 14 unpushed commits as of close-out.
+15. **Register page uses its own inline `APP_NAMES` map** mirroring DashboardLayout's. If we add more apps beyond GlowStudio, factor this into a shared helper to avoid drift.
 
 ---
 
@@ -140,36 +119,46 @@ a593d36  fix(prototype): set message card column to 680px max-width
 
 ```
 # Decisions, specs, docs
-DECISIONS.md                                             # MODIFIED — D-341 through D-344 added
-PROTOTYPE_SPEC.md                                        # MODIFIED — CatalogCard states rewritten, Dashboard layout rewritten, Ask Claude panel + Testers card sections added
+DECISIONS.md                                             # MODIFIED — D-345 added (workspace at /apps/[appId] root)
+PROTOTYPE_SPEC.md                                        # MODIFIED — Messages page header, dashboard layout + breakpoints, Testers styling, Rejected copy, CatalogCard max-width, top-nav regex
+BACKLOG.md                                               # MODIFIED — Open-Source SMS Compliance Linter section added
 CC_HANDOFF.md                                            # This file (overwritten)
 
-# New files
-prototype/components/ask-claude-panel.tsx                # NEW — Ask Claude panel component
-prototype/components/test-phones-card.tsx                # NEW — Testers card component
-prototype/context/setup-toggle-context.tsx               # NEW — SetupToggle React context (provider + hook)
+# Route promotion (file move)
+prototype/app/apps/[appId]/page.tsx                      # WAS a redirect stub, NOW the workspace page (moved from /messages/page.tsx)
+prototype/app/apps/[appId]/messages/page.tsx             # WAS the workspace page, NOW a redirect to /apps/[appId]
 
 # Page changes
-prototype/app/apps/[appId]/messages/page.tsx             # MAJOR — monitor expansion, Testers card, Ask Claude panel, section header, layout swap (grid↔flex), test-phone state, context wiring
-prototype/app/globals.css                                # MODIFIED — testSentFade keyframe added
+prototype/app/apps/page.tsx                              # MODIFIED — New project Link + card href to /apps/${app.id}
+prototype/app/apps/[appId]/layout.tsx                    # MODIFIED — 6 router.replace targets (/messages → root)
+prototype/app/apps/[appId]/get-started/page.tsx          # MODIFIED — handleTransition target
+prototype/app/apps/[appId]/settings/page.tsx             # MODIFIED — back link href
+prototype/app/apps/[appId]/register/page.tsx             # MODIFIED — back link href + label (Back to Overview → app name)
+prototype/app/auth/page.tsx                              # MODIFIED — post-download push to /apps/glowstudio
+prototype/app/start/verify/page.tsx                      # MODIFIED — continueHref
 
 # Component changes
-prototype/components/catalog/catalog-card.tsx            # MAJOR — monitor expansion mode, Activity icon, status line, mode labels, onAskClaude/testRecipients props, send icon removal
-prototype/components/dashboard-layout.tsx                # MODIFIED — StatusIndicator simplified, SetupToggle + Settings moved to header, SetupToggleProvider, usePathname
+prototype/components/dashboard-layout.tsx                # MODIFIED — isMessagesPage check switched to exact equality
+prototype/components/top-nav.tsx                         # MODIFIED — isAppRoute regex + dev state switcher option value
+prototype/components/wizard-layout.tsx                   # MODIFIED — backHref for /ready
+prototype/components/proto-nav-helper.tsx                # MODIFIED — 4 Messages nav item hrefs
+prototype/components/setup-instructions.tsx              # MODIFIED — max-w-[540px] cap, toggle thumb padding, card 3 helper text
+prototype/components/test-phones-card.tsx                # MODIFIED — rounded-xl border, grey bg removed
+prototype/components/catalog/catalog-card.tsx            # MODIFIED — per-card max-w cap changed to min-[860px]:max-w-[540px]
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. **Wire Ask Claude panel to real AI** — connect the chat composer to Claude API (Anthropic SDK). The panel already has the UI; needs a backend route + streaming response display.
-2. **Extended Review and Rejected card redesign** — these still use the old "Registration status" / pill pattern. Apply the per-type tracker pattern from D-339 for consistency.
-3. **Wire wizard data into setup instructions** — generate install command, API key, and prompt from sessionStorage business name + messages instead of hardcoded Club Woman content.
-4. **Marketing messages for other verticals** — currently only Appointments has marketing message data. Add sets for Verification, Orders, Support, etc.
-5. **Test all right rail state matrix permutations** — use the matrix in WORKSPACE_DESIGN_SPEC.md as a QA checklist before porting to production.
-6. **Wire signup to real magic-link backend** (D-59).
-7. **Wire `/start/verify` phone OTP to Twilio Verify** (D-46).
-8. **Wire EIN verification backend** (D-302, D-303).
-9. **Extract `OtpInput`** to shared component — currently inlined in `/signup/verify`, `/start/verify`, and sign-in modal.
-10. **Registration flow pages** — `/apps/[appId]/register` and `/register/review` need the new single-page workspace context (no tab bar, back-to-messages pattern).
-11. **Error states design session** — walk through all interaction failures before locking in copy.
+1. **Wire Ask Claude panel to real AI** — connect the chat composer to the Anthropic SDK. UI is done; needs backend route + streaming response display.
+2. **Wire wizard data into setup instructions** — generate install command, API key, and prompt from sessionStorage business name + messages instead of hardcoded Club Woman content.
+3. **Marketing messages for other verticals** — only Appointments has marketing message data. Add sets for Verification, Orders, Support, etc.
+4. **Test all right rail state matrix permutations** — use the matrix in WORKSPACE_DESIGN_SPEC.md as a QA checklist before porting to production.
+5. **Wire signup to real magic-link backend** (D-59).
+6. **Wire `/start/verify` phone OTP to Twilio Verify** (D-46).
+7. **Wire EIN verification backend** (D-302, D-303).
+8. **Extract `OtpInput`** to shared component — currently inlined in `/signup/verify`, `/start/verify`, and sign-in modal.
+9. **Registration flow pages** — `/apps/[appId]/register` and `/register/review` need the new single-page workspace context (no tab bar, back-to-workspace pattern — already updated the back link, but double-check the review screen).
+10. **Error states design session** — walk through all interaction failures before locking in copy.
+11. **Extract shared `APP_NAMES` map** — currently duplicated in dashboard-layout.tsx and register/page.tsx. Will get worse when beta launches with multiple apps.

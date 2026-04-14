@@ -218,7 +218,7 @@ The `ProtoNavHelper` (bottom-left "Nav ↑" pill) is mounted globally and also i
 **File:** `prototype/app/apps/page.tsx`
 **Status:** Stable
 
-**Logged-in home page (D-94).** Grid of project cards. Each card: app name, category pill, status pill (Sandbox/Registered/Live), created date. Cards link to `/apps/[appId]/overview`. "Add new app" triggers streamlined category selection (D-100) — no marketing persuasion, just pick → name → verify → download.
+**Logged-in home page (D-94).** Grid of project cards. Each card: app name, category pill, status pill (Sandbox/Registered/Live), created date. Cards link to the workspace root `/apps/[appId]` (D-345). "+ New project" button in the page header links to `/start` (wizard entry — D-345 session).
 
 ### App Layout Shell — `/apps/[appId]/layout.tsx`
 **File:** `prototype/app/apps/[appId]/layout.tsx`
@@ -231,7 +231,7 @@ The `ProtoNavHelper` (bottom-left "Nav ↑" pill) is mounted globally and also i
 
 Minimal, focused layout for the pre-signup wizard flow.
 
-**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + onboarding nav dropdown (right). No "Your Apps" link, no Use Cases/Compliance links, no Sign out. TopNav detects the wizard context via pathname + registrationState — regex matches `/apps/[appId]/(messages|ready|signup(\/verify)?|get-started)$`. Sign out is hidden on all wizard-state pages.
+**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + onboarding nav dropdown (right). No "Your Apps" link, no Use Cases/Compliance links, no Sign out. TopNav detects the wizard context via pathname + registrationState — regex matches `^/apps/[appId](/(ready|signup(/verify)?|get-started))?$` — workspace root or any wizard subroute (D-345). Sign out is hidden on all wizard-state pages.
 **Onboarding nav dropdown:** Native `<select>` (`text-xs text-text-quaternary`) to the right of the state switcher. Label "Onboarding" (disabled default option). 11 numbered options covering the full wizard flow from vertical picker through get-started. Resets to label after navigation. Also appears on `/start/*` routes (right side of wordmark-only nav). Only visible when `registrationState === "onboarding"`.
 **Continue button:** Absolutely positioned top-right (`absolute top-6 right-6`) so it doesn't push the content column down. Hidden when no `continueButton` is present.
 **Back link:** Inside the centered content column (`mb-6`), left-aligned with headline and body text. Hidden when `backHref` is absent.
@@ -327,9 +327,11 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 
 ---
 
-### Messages Page — `/apps/[appId]/messages`
-**File:** `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/components/catalog/catalog-card.tsx`
+### Messages Page — `/apps/[appId]` (D-345)
+**File:** `prototype/app/apps/[appId]/page.tsx`, `prototype/components/catalog/catalog-card.tsx`
 **Status:** REDESIGNED — Phase 2 card redesign + wizard skeleton (WORKSPACE_DESIGN_SPEC.md)
+
+The workspace lives at the `/apps/[appId]` root (D-345). `/apps/[appId]/messages` still exists as a backward-compat server redirect. All internal links point to the root route.
 
 ---
 
@@ -347,17 +349,19 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 
 **Dashboard mode (Building/Pending/Registered/Extended Review/Rejected — rendered inside DashboardLayout):**
 
-- **DashboardLayout header row** (app identity bar): `GlowStudio` heading + `Appointments` pill on the left. Right side (via `ml-auto`): prototype state-switcher dropdowns → EIN switcher → StatusIndicator (conditional, see below) → Setup instructions toggle (`ml-6`, messages page only) → Settings gear link (`ml-4`, messages page only). Setup toggle + Settings visibility gated on `pathname.endsWith("/messages")` via `usePathname()`. Toggle state shared with messages page via `SetupToggleContext` (provider in DashboardLayout, consumer in messages page).
+- **DashboardLayout header row** (app identity bar): `GlowStudio` heading + `Appointments` pill on the left. Right side (via `ml-auto`): prototype state-switcher dropdowns → EIN switcher → StatusIndicator (conditional, see below) → Setup instructions toggle (`ml-6`, workspace page only) → Settings gear link (`ml-4`, workspace page only). Setup toggle + Settings visibility gated on `pathname === /apps/${appId}` (exact root match — D-345). Toggle state shared with messages page via `SetupToggleContext` (provider in DashboardLayout, consumer in the workspace page). Setup toggle thumb uses `translate-x-[16px]` in the enabled state so there's 2px right padding matching the 2px left (`ml-0.5`) when disabled.
 - **StatusIndicator (D-344):** Yellow dot + "Test mode" for Building/Pending/Extended Review/Rejected. Green dot + "Live" for Registered. Null for Onboarding. Conditional wrapper (`registrationState !== "onboarding"`) so no empty `ml-10` div when null.
 - **Messages section header** (`mb-4 flex w-full items-center`): `<h2>Messages</h2>` on the left, "Ask Claude" button (`Stars02` icon + text, `ml-auto`, tertiary purple) on the right. Clicking opens the Ask Claude panel (D-343).
-- **Setup instructions** (`prototype/components/setup-instructions.tsx`): Toggle-controlled container. Default ON in Building, OFF in other states. Per-state toggle persisted in sessionStorage. Rendered inside the left column in the generic layout, above the metrics grid in the Registered layout.
-- **Message cards:** `max-w-[680px]` wrapper on the messageList (non-wizard). Individual card root has `max-w-[500px]` when `monitorMode` is true. No send icons (removed).
+- **Metrics grid (Registered only):** `grid grid-cols-1 min-[860px]:grid-cols-3 gap-4 mb-6` — single column below 860px, straight to 3 columns at 860px (no intermediate 2-column step). Three cards: Delivery (98.4% + trend), Recipients (284 + trend), Usage & billing (347/500 + progress bar + `"Plan: $19/mo · 500 included"` at same size/weight as the trend lines). Stat-detail lines ("1,812 delivered · 22 failed · 8 pending", "12 opt-outs · 38 inbound replies", "153 messages remaining this period") removed.
+- **Setup instructions** (`prototype/components/setup-instructions.tsx`): Toggle-controlled container with "Start building" heading and 3 numbered instruction cards. Default ON in Building, OFF in other states. Per-state toggle persisted in sessionStorage. Rendered inside the left column **above** the message cards in both layouts (moved from above the metrics grid in the Registered state so all post-onboarding states render it in the same slot). The Start building panel itself caps at `min-[860px]:max-w-[540px]`. Card 3's helper text reads: "Paste this prompt into your AI tool to start building. Once your app is sending, use the cards below to test delivery and Ask Claude to debug issues."
+- **Message cards:** `min-[860px]:max-w-[540px]` wrapper on the messageList (non-wizard) + individual card root when `monitorMode` is true — uncapped below 860px, 540px above. No send icons (removed).
 
 **Two-column layout (all post-onboarding states):**
-- When Ask Claude panel is closed: `grid grid-cols-1 lg:grid-cols-3 gap-4`. Left column: `min-w-0 lg:col-span-2`. Right column (third grid col): `order-first lg:order-last lg:sticky lg:top-20 space-y-4` stacks state-specific card(s) above the Testers card (D-342).
+- When Ask Claude panel is closed: `grid grid-cols-1 min-[860px]:grid-cols-3 gap-4`. Left column: `min-w-0 min-[860px]:col-span-2`. Right column (third grid col): `order-first min-[860px]:order-last min-[860px]:sticky min-[860px]:top-20 space-y-4` stacks state-specific card(s) above the Testers card (D-342). The 860px breakpoint is used consistently across the metrics grid and the card/rail grid so they align pixel-for-pixel.
 - When Ask Claude panel is open (D-343): `grid grid-cols-1 md:grid-cols-2 md:gap-10`. Equal 50/50 columns. Metrics hidden (Registered). Right rail replaced by inline Ask Claude panel (desktop: `md:flex`, sticky; mobile `<md`: full-width fixed overlay).
+- **Ask Claude panel top alignment:** A zero-height `<div ref={messageTopRef} />` sits at the very top of the left column (above SetupInstructions, above messageList) so `getBoundingClientRect().top` measures the grid row's top. If the ref were placed below SetupInstructions, `topOffset` would shift when the Start building card toggles on and the panel's `height: calc(100vh - topOffset - 2.5rem)` would collapse to a thin strip.
 
-**Right rail — Testers card (D-342):** Always visible in all post-onboarding states, below any state-specific card. Shows up to 5 people. Each row: name (bold) + status dot ("Verified" green / "Invited" gray) + full phone number on second line + kebab menu (Edit + Delete, self-entry has Edit only). Inline invite form collapses on success. Names synced with CatalogCard `testRecipients` prop for the monitor expansion's Quick send dropdown.
+**Right rail — Testers card (D-342):** Always visible in all post-onboarding states, below any state-specific card. Card root uses `rounded-xl border border-border-secondary p-6` — same stroke and radius as message cards, no grey background (`bg-gray-50` was removed so the grey treatment is reserved for state-specific cards above it). Shows up to 5 people. Each row: name (bold) + status dot ("Verified" green / "Invited" gray) + full phone number on second line + kebab menu (Edit + Delete, self-entry has Edit only). Inline invite form collapses on success. Names synced with CatalogCard `testRecipients` prop for the monitor expansion's Quick send dropdown.
 
 **Building state right rail:** Registration card (D-335, D-337) + Testers card below.
 
@@ -366,7 +370,7 @@ Same content across all non-Registered states. Replaces the former 4-step "Build
 
 **Extended Review state right rail (extends D-339):** Per-type registration status tracker (identical structure to Pending — "Registration status" heading with the same info tooltip, `{verticalName}` row with "In review" purple pill, Marketing row with "In review" pill when `hasMarketingRegistered`). Below the tracker rows, an extra explanatory line: "This is taking longer than usual. We'll email you at [jen@glowstudio.com](mailto:jen@glowstudio.com) when there's an update." (email is a brand-secondary mailto link). Marketing upsell card below the divider works the same as Pending — gated on `!upsellConfirmed`, reuses the same `upsellEinExpanded` / `upsellConfirmStep` take-over states. Testers card below.
 
-**Rejected state right rail (extends D-339):** Per-type tracker with red "Not approved" pills (`bg-bg-error-secondary text-text-error-primary`). Heading: "Registration status" (no info tooltip — nothing to explain about timing). `{verticalName}` row always; Marketing row when `hasMarketingRegistered` (also "Not approved"). Below the tracker: `"Your business information couldn't be verified with the details provided."` + `hello@relaykit.ai` mailto link (brand-secondary). No "What happened" subheading, no "$49 refunded" line, no "We're looking into what went wrong" copy, no marketing upsell. Testers card below.
+**Rejected state right rail (extends D-339):** Per-type tracker with red "Not approved" pills (`bg-bg-error-secondary text-text-error-primary`). Heading: "Registration status" (no info tooltip — nothing to explain about timing). `{verticalName}` row always; Marketing row when `hasMarketingRegistered` (also "Not approved"). Below the tracker, two paragraphs: (1) reason line — `"The business name on file didn't match your EIN records."`, (2) warmer support line — `"We know this is frustrating. Reply to your confirmation email or reach out at support@relaykit.ai and we'll sort it out."` with `support@relaykit.ai` as an inline brand-secondary mailto link. No "What happened" subheading, no "$49 refunded" line, no marketing upsell. Testers card below.
 
 **Registered state right rail (D-338):** Three delivery metrics cards above the two-column layout. Right rail: marketing upsell OR marketing-only tracker OR nothing (after dismissed) + Testers card below.
 
@@ -393,9 +397,9 @@ Opens from the "Ask Claude" button in the messages section header (no focused me
 
 #### CatalogCard — Default State (collapsed)
 
-Each card shows the full message text, not truncated. Card root has `max-w-[500px]` when `monitorMode` is true (dashboard cards); no max-width for wizard/public marketing cards.
+Each card shows the full message text, not truncated. Card root has `min-[860px]:max-w-[540px]` when `monitorMode` is true (dashboard cards); no max-width for wizard/public marketing cards.
 
-- **Title row:** Message name (bold) + info icon (i) inline with 1.5 gap after title. Right side: Activity icon (17px, `text-fg-quaternary`, tooltip "Test & debug") + pencil edit icon (15px, `text-fg-quaternary`, tooltip "Edit message"), separated by `gap-1` + `p-1` on each button = 12px visible spacing. Activity icon only renders when `monitorMode` is true. Both icons use 300ms hover-delay tooltips (via `setTimeout` refs, cleared on click to prevent stuck state on icon unmount).
+- **Title row:** Message name (bold) + info icon (i) inline with 1.5 gap after title. Right side: Activity icon (17px, `text-fg-quaternary`, tooltip "Test & debug") + pencil edit icon (15px, `text-fg-quaternary`, tooltip "Edit message"), separated by `gap-1` + `p-1` on each button = 12px visible spacing. Activity icon only renders when `monitorMode` is true. Both icons use 300ms hover-delay tooltips (via `setTimeout` refs, cleared on click to prevent stuck state on icon unmount). In monitor mode, the icon row collapses to `<span>` (non-interactive) Activity icon + "Test & debug" label only. In edit mode, same pattern with pencil icon + "Edit" label.
 - **Tooltips:** Info icon, pencil, and Activity buttons all use a custom dark tooltip: `rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg leading-relaxed pointer-events-none`, positioned above the button (`bottom-full mb-1`). Info tooltip anchors left; pencil and Activity tooltips anchor right.
 - **Message text:** Full message below title. Variables highlighted in brand color. Always shows interpolated preview. Clicking text enters edit state.
 - **Status line** (below message text, `monitorMode` only): When `lastSent` prop is provided — small colored dot (green delivered / red failed / yellow pending) + relative timestamp via `timeAgo()` formatter. When `lastSent` is null, nothing renders (card looks identical to pre-monitor-mode).
