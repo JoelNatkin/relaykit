@@ -6,6 +6,10 @@ import { useParams } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import { CopyButton } from "@/components/copy-button";
 
+const APP_NAMES: Record<string, string> = {
+  glowstudio: "GlowStudio",
+};
+
 /* ── Inline editable field ── */
 
 function EditableField({
@@ -171,6 +175,8 @@ export default function AppSettings() {
   const isApproved = rs === "registered";
   const isRejected = rs === "rejected";
   const hasRegistered = !isDefault; // post-registration = any non-default state
+  const hasEIN = state.hasEIN;
+  const appName = APP_NAMES[appId] || appId;
 
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -181,8 +187,7 @@ export default function AppSettings() {
   const [regenLiveModalOpen, setRegenLiveModalOpen] = useState(false);
 
   // Editable field values (prototype local state)
-  const [email, setEmail] = useState("joel@radarlove.app");
-  const [phone, setPhone] = useState("+1 (512) 555-0147");
+  const [businessName, setBusinessName] = useState(appName);
 
   function startEdit(key: string, value: string) {
     setEditingField(key);
@@ -190,8 +195,7 @@ export default function AppSettings() {
   }
 
   function saveEdit() {
-    if (editingField === "email") setEmail(editValue);
-    if (editingField === "phone") setPhone(editValue);
+    if (editingField === "business_name") setBusinessName(editValue);
     setEditingField(null);
   }
 
@@ -206,8 +210,10 @@ export default function AppSettings() {
         href={`/apps/${appId}`}
         className="inline-flex items-center gap-1 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
       >
-        &larr; Back to messages
+        &larr; Back to {appName}
       </Link>
+
+      <h1 className="text-2xl font-semibold text-text-primary mb-6">Settings</h1>
 
       {/* Modals */}
       <ConfirmModal
@@ -239,41 +245,51 @@ export default function AppSettings() {
         onConfirm={() => setRegenLiveModalOpen(false)}
       />
 
-      {/* ── Section 1: Account Info ── */}
+      {/* ── Section 1: Business Info ── */}
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <h3 className="text-lg font-semibold text-text-primary mb-4">Account info</h3>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">Business info</h3>
         <dl className="space-y-3">
-          {hasRegistered && (
-            <ReadOnlyField
-              label="Business name"
-              value="RadarLove"
-              sub="Set during registration"
-            />
-          )}
-          <EditableField
-            label="Email"
-            value={email}
-            editingField={editingField}
-            fieldKey="email"
-            onEdit={startEdit}
-            onSave={saveEdit}
-            onCancel={cancelEdit}
-            editValue={editValue}
-            onEditValueChange={setEditValue}
-          />
-          <EditableField
-            label="Personal phone"
-            value={phone}
-            editingField={editingField}
-            fieldKey="phone"
-            onEdit={startEdit}
-            onSave={saveEdit}
-            onCancel={cancelEdit}
-            editValue={editValue}
-            onEditValueChange={setEditValue}
-          />
-          {hasRegistered && (
-            <ReadOnlyField label="Category" value="Appointment reminders" />
+          {isDefault ? (
+            <>
+              <EditableField
+                label="Business name"
+                value={businessName}
+                editingField={editingField}
+                fieldKey="business_name"
+                onEdit={startEdit}
+                onSave={saveEdit}
+                onCancel={cancelEdit}
+                editValue={editValue}
+                onEditValueChange={setEditValue}
+              />
+              <ReadOnlyField label="Category" value="Appointment reminders" />
+              {hasEIN ? (
+                <ReadOnlyField label="EIN" value="Verified · ••••••4567" />
+              ) : (
+                <div className="flex items-center justify-between">
+                  <dt className="text-sm text-text-tertiary">EIN</dt>
+                  <dd className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-text-primary">Not on file</span>
+                    <button
+                      type="button"
+                      className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+                    >
+                      Add
+                    </button>
+                  </dd>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <ReadOnlyField
+                label="Business name"
+                value={businessName}
+                sub="Set during registration"
+              />
+              <ReadOnlyField label="Category" value="Appointment reminders" />
+              {hasEIN && <ReadOnlyField label="EIN" value="Verified · ••••••4567" />}
+            </>
           )}
         </dl>
       </div>
