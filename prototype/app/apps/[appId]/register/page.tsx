@@ -8,6 +8,10 @@ import { BusinessDetailsForm } from "@/components/registration/business-details-
 import type { UseCaseId } from "@/lib/intake/use-case-data";
 import type { BusinessDetailsData } from "@/lib/intake/validation";
 
+const APP_NAMES: Record<string, string> = {
+  glowstudio: "GlowStudio",
+};
+
 const MOCK_DATA: Record<string, string> = {
   business_name: "GlowStudio",
   business_description:
@@ -63,11 +67,11 @@ export default function RegisterPage() {
       {/* Back link + state switcher */}
       <div className="flex items-center justify-between">
         <Link
-          href={`/apps/${appId}/overview`}
+          href={`/apps/${appId}`}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
         >
           <ArrowLeft className="size-4" />
-          Back to Overview
+          {APP_NAMES[appId] || appId}
         </Link>
         <select
           value={prefill}
