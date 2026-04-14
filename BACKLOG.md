@@ -57,7 +57,7 @@
 
 - **Platform/multi-tenant tier (PRD_10)** — SaaS platforms register on behalf of their customers. Six architectural guardrails identified. (Origin: PRD_10, D-43)
 
-- **Advanced rate limiting with queue mode** — Instead of rejecting rate-limited messages, queue and drip-send. (Origin: D-43 Phase 2 list)
+- Moved to DECISIONS.md as D-346 — rate limiting is a launch requirement.
 
 - **EIN 5-brand limit detection** — Track `registration_count_by_ein`, block 6th submission. (Origin: D-23, PRD_04 TODO-P2-03)
 
