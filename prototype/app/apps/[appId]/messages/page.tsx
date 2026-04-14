@@ -496,8 +496,8 @@ export default function AppMessagesPage() {
           }
         >
           <div className={askClaudeOpen ? "min-w-0" : "min-w-0 min-[860px]:col-span-2"}>
-            <SetupInstructions visible={setupVisible} />
             <div ref={messageTopRef} />
+            <SetupInstructions visible={setupVisible} />
             {messageList}
           </div>
 
@@ -673,8 +673,8 @@ export default function AppMessagesPage() {
       >
         {/* LEFT — setup instructions + messages */}
         <div className={askClaudeOpen ? "min-w-0" : "min-w-0 min-[860px]:col-span-2"}>
-          <SetupInstructions visible={setupVisible} />
           <div ref={messageTopRef} />
+          <SetupInstructions visible={setupVisible} />
           {messageList}
         </div>
 
