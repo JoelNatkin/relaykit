@@ -33,25 +33,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
     // Opt-in was removed from the wizard flow — always redirect to messages
     if (isOptIn) {
-      router.replace(`/apps/${appId}/messages`);
+      router.replace(`/apps/${appId}`);
       return;
     }
 
     // Overview always redirects to messages (no tab bar, messages is the workspace)
     if (isOverview) {
-      router.replace(`/apps/${appId}/messages`);
+      router.replace(`/apps/${appId}`);
       return;
     }
 
     if (isWizard) {
       // Wizard mode: settings doesn't exist — redirect to messages
       if (isSettings) {
-        router.replace(`/apps/${appId}/messages`);
+        router.replace(`/apps/${appId}`);
       }
     } else {
       // Non-wizard (post-signup): wizard-only pages redirect to messages
       if (isSignup || isReady) {
-        router.replace(`/apps/${appId}/messages`);
+        router.replace(`/apps/${appId}`);
       }
     }
   }, [isWizard, isOverview, isSettings, isOptIn, isSignup, isReady, isGetStarted, isRegisterFlow, appId, router]);
@@ -65,12 +65,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     if (willBeWizard && !wasWizard) {
       // Switching TO wizard: redirect settings to messages
       if (isSettings) {
-        router.replace(`/apps/${appId}/messages`);
+        router.replace(`/apps/${appId}`);
       }
     }
     // Overview always redirects to messages regardless of state
     if (isOverview) {
-      router.replace(`/apps/${appId}/messages`);
+      router.replace(`/apps/${appId}`);
     }
   }
 

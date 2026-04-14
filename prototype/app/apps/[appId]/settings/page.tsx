@@ -203,7 +203,7 @@ export default function AppSettings() {
     <div className="py-4 space-y-6 max-w-[600px] mx-auto">
       {/* Back link */}
       <Link
-        href={`/apps/${appId}/messages`}
+        href={`/apps/${appId}`}
         className="inline-flex items-center gap-1 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
       >
         &larr; Back to messages

@@ -76,7 +76,7 @@ export default function YourApps() {
           return (
             <Link
               key={app.id}
-              href={`/apps/${app.id}/overview`}
+              href={`/apps/${app.id}`}
               className="group flex flex-col justify-between rounded-lg border border-border-secondary bg-bg-primary p-5 transition duration-100 ease-linear hover:border-border-brand hover:shadow-xs"
             >
               <div>

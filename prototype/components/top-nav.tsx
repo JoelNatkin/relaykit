@@ -34,7 +34,8 @@ export function TopNav() {
   }, [useCasesOpen]);
 
   // Wizard context: on sandbox app messages / ready / signup pages, Default state
-  const isAppRoute = pathname.startsWith("/apps/") && /\/apps\/[^/]+\/(messages|ready|signup(\/verify)?|get-started)$/.test(pathname);
+  // Match the workspace root (/apps/[appId]) OR its wizard subroutes.
+  const isAppRoute = pathname.startsWith("/apps/") && /^\/apps\/[^/]+(\/(ready|signup(\/verify)?|get-started))?$/.test(pathname);
   const isWizardNav = isAppRoute && state.registrationState === "onboarding";
 
   // Wizard (Step 1+): wordmark only, no other nav items
@@ -71,7 +72,7 @@ export function TopNav() {
       <option value="/start/website">4. Website</option>
       <option value="/start/context">5. Notes</option>
       <option value="/start/verify">6. Phone verify</option>
-      <option value="/apps/glowstudio/messages">7. Messages</option>
+      <option value="/apps/glowstudio">7. Messages</option>
       <option value="/apps/glowstudio/ready">8. Ready</option>
       <option value="/apps/glowstudio/signup">9. Signup</option>
       <option value="/apps/glowstudio/signup/verify">10. Email verify</option>

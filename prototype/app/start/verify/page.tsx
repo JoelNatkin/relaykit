@@ -163,7 +163,7 @@ export default function VerifyPage() {
   return (
     <WizardStepShell
       backHref="/start/context"
-      continueHref="/apps/glowstudio/messages"
+      continueHref="/apps/glowstudio"
       canContinue={canContinue}
       maxWidth="400px"
       afterContinue={

@@ -39,7 +39,9 @@ export function DashboardLayout({
 }: DashboardLayoutProps) {
   const { appId } = useParams<{ appId: string }>();
   const pathname = usePathname();
-  const isMessagesPage = pathname.endsWith("/messages");
+  // Messages is the workspace route at /apps/[appId] (no /messages segment).
+  // Match the appId root exactly — not any deeper subroute like /settings.
+  const isMessagesPage = pathname === `/apps/${appId}`;
   const appName = APP_NAMES[appId] || appId;
 
   // Setup instructions toggle — lives in the app identity bar on the

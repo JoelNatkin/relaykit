@@ -14,16 +14,16 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Messages (onboarding)", href: `/apps/${APP_ID}/messages`, state: "onboarding" },
+  { label: "Messages (onboarding)", href: `/apps/${APP_ID}`, state: "onboarding" },
   { label: "Opt-in (onboarding)", href: `/apps/${APP_ID}/opt-in`, state: "onboarding" },
   { label: "Overview (building)", href: `/apps/${APP_ID}/overview`, state: "building" },
-  { label: "Messages (building)", href: `/apps/${APP_ID}/messages`, state: "building" },
+  { label: "Messages (building)", href: `/apps/${APP_ID}`, state: "building" },
   { label: "Settings (building)", href: `/apps/${APP_ID}/settings`, state: "building" },
   { label: "Overview (pending)", href: `/apps/${APP_ID}/overview`, state: "pending" },
-  { label: "Messages (pending)", href: `/apps/${APP_ID}/messages`, state: "pending" },
+  { label: "Messages (pending)", href: `/apps/${APP_ID}`, state: "pending" },
   { label: "Settings (pending)", href: `/apps/${APP_ID}/settings`, state: "pending" },
   { label: "Overview (registered)", href: `/apps/${APP_ID}/overview`, state: "registered" },
-  { label: "Messages (registered)", href: `/apps/${APP_ID}/messages`, state: "registered" },
+  { label: "Messages (registered)", href: `/apps/${APP_ID}`, state: "registered" },
   { label: "Settings (registered)", href: `/apps/${APP_ID}/settings`, state: "registered" },
   { label: "Overview (ext. review)", href: `/apps/${APP_ID}/overview`, state: "changes_requested" },
   { label: "Overview (rejected)", href: `/apps/${APP_ID}/overview`, state: "rejected" },

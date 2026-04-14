@@ -160,7 +160,7 @@ export default function GetStartedPage() {
       {/* Dashboard CTA */}
       <button
         type="button"
-        onClick={() => handleTransition(`/apps/${appId}/messages`)}
+        onClick={() => handleTransition(`/apps/${appId}`)}
         className="mt-8 w-full rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
       >
         View on dashboard

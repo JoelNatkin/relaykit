@@ -39,7 +39,7 @@ export default function AuthGate() {
 
   function handleDownload() {
     setLoggedIn(true);
-    router.push("/apps/glowstudio/overview");
+    router.push("/apps/glowstudio");
   }
 
   return (

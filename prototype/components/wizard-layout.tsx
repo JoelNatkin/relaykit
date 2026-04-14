@@ -38,7 +38,7 @@ function getPageConfig(pathname: string, appId: string): WizardPageConfig {
     // Ready-to-build confirmation: Back to messages, no header Continue
     // (the page owns its own "Create account" CTA).
     return {
-      backHref: `/apps/${appId}/messages`,
+      backHref: `/apps/${appId}`,
       continueHref: null,
       dualContinue: false,
     };
