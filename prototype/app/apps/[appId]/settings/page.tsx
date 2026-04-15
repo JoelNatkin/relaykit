@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useSession } from "@/context/session-context";
 import { CopyButton } from "@/components/copy-button";
+import { loadWizardData } from "@/lib/wizard-storage";
 
 const APP_NAMES: Record<string, string> = {
   glowstudio: "GlowStudio",
@@ -175,8 +176,18 @@ export default function AppSettings() {
   const isApproved = rs === "registered";
   const isRejected = rs === "rejected";
   const hasRegistered = !isDefault; // post-registration = any non-default state
-  const hasEIN = state.hasEIN;
   const appName = APP_NAMES[appId] || appId;
+
+  // EIN toggle — read from wizard sessionStorage (driven by top-bar dev switcher)
+  const [hasEIN, setHasEIN] = useState(false);
+  useEffect(() => {
+    function readEin() {
+      setHasEIN(!!loadWizardData().ein);
+    }
+    readEin();
+    window.addEventListener("relaykit-ein-change", readEin);
+    return () => window.removeEventListener("relaykit-ein-change", readEin);
+  }, []);
 
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
@@ -384,48 +395,19 @@ export default function AppSettings() {
             </div>
           </dl>
 
-          {/* What was submitted */}
-          <div className="mt-4">
-            <p className="text-sm font-semibold text-text-primary mb-2">What was submitted</p>
-            <dl className="space-y-2">
-              <div className="flex items-center justify-between">
-                <dt className="text-sm text-text-tertiary">Business name</dt>
-                <dd className="text-sm font-medium text-text-primary">Radar Love LLC</dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-sm text-text-tertiary">EIN</dt>
-                <dd className="text-sm font-medium text-text-primary">••-•••4567</dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-sm text-text-tertiary">Business address</dt>
-                <dd className="text-sm font-medium text-text-primary">123 Main St, Austin, TX 78701</dd>
-              </div>
-              <div className="flex items-center justify-between">
-                <dt className="text-sm text-text-tertiary">Use case</dt>
-                <dd className="text-sm font-medium text-text-primary">Appointment reminders</dd>
-              </div>
-            </dl>
-          </div>
-
-          {/* Debrief box */}
-          <div className="mt-4 rounded-lg bg-bg-error-primary p-4">
-            <p className="text-sm font-semibold text-text-primary">What happened</p>
-            <p className="mt-1 text-sm text-text-secondary leading-relaxed">
-              The carrier couldn&apos;t verify your business name against your EIN. Make sure your registered business name matches exactly what&apos;s on file with the IRS.
-            </p>
-          </div>
-
-          <p className="mt-4 text-sm text-text-success-primary">
-            Your $49 registration fee has been refunded.
+          <p className="mt-4 text-sm text-text-secondary leading-relaxed">
+            Your registration wasn&apos;t approved. The business information provided didn&apos;t match public records.
           </p>
-          <div className="mt-2 flex justify-end">
+          <p className="mt-2 text-sm text-text-secondary leading-relaxed">
+            Contact us at{" "}
             <a
-              href="#"
-              className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
+              href="mailto:support@relaykit.ai"
+              className="text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
             >
-              Start a new registration &rarr;
-            </a>
-          </div>
+              support@relaykit.ai
+            </a>{" "}
+            if you believe this is an error.
+          </p>
         </div>
       )}
 
