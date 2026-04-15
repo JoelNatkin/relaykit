@@ -100,6 +100,52 @@ function ReadOnlyField({ label, value, sub }: { label: string; value: string; su
   );
 }
 
+/* ── EIN row ── */
+
+function EinRow({
+  hasEIN,
+  showAddWhenMissing,
+  editable = false,
+}: {
+  hasEIN: boolean;
+  showAddWhenMissing: boolean;
+  editable?: boolean;
+}) {
+  if (!hasEIN) {
+    if (!showAddWhenMissing) return null;
+    return (
+      <div className="flex items-center justify-between">
+        <dt className="text-sm text-text-tertiary">EIN</dt>
+        <dd className="flex items-center gap-2">
+          <span className="text-sm font-medium text-text-primary">Not on file</span>
+          <button
+            type="button"
+            className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+          >
+            Add
+          </button>
+        </dd>
+      </div>
+    );
+  }
+  return (
+    <div className="flex items-center justify-between">
+      <dt className="text-sm text-text-tertiary">EIN</dt>
+      <dd className="flex items-center gap-2">
+        <span className="text-sm font-medium text-text-primary">••••••4567</span>
+        {editable && (
+          <button
+            type="button"
+            className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+          >
+            Edit
+          </button>
+        )}
+      </dd>
+    </div>
+  );
+}
+
 /* ── Confirmation modal (reusable) ── */
 
 function ConfirmModal({
@@ -123,7 +169,7 @@ function ConfirmModal({
 }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-overlay">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="w-full max-w-md rounded-xl bg-bg-primary border border-border-secondary shadow-xl p-6">
         <h2 className="text-lg font-semibold text-text-primary">{title}</h2>
         <p className="mt-3 text-sm text-text-secondary leading-relaxed">{body}</p>
@@ -194,6 +240,7 @@ export default function AppSettings() {
 
   // Modal states
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [cancelConfirmText, setCancelConfirmText] = useState("");
   const [regenSandboxModalOpen, setRegenSandboxModalOpen] = useState(false);
   const [regenLiveModalOpen, setRegenLiveModalOpen] = useState(false);
 
@@ -227,20 +274,56 @@ export default function AppSettings() {
       <h1 className="text-2xl font-semibold text-text-primary mb-6">Settings</h1>
 
       {/* Modals */}
-      <ConfirmModal
-        open={cancelModalOpen}
-        title="Cancel your plan"
-        body="Your plan will stay active through April 14, 2026. After that, live messaging stops but your sandbox stays available — your code, your API key, and your test environment aren't going anywhere."
-        confirmLabel="Cancel plan"
-        cancelLabel="Keep plan"
-        destructive
-        onCancel={() => setCancelModalOpen(false)}
-        onConfirm={() => setCancelModalOpen(false)}
-      />
+      {cancelModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-xl bg-bg-primary border border-border-secondary shadow-xl p-6">
+            <h2 className="text-lg font-semibold text-text-primary">Cancel your plan</h2>
+            <p className="mt-3 text-sm text-text-secondary leading-relaxed">
+              Your plan will stay active through April 14, 2026. After that, live messaging stops but your test environment stays available — your code, your API key, and your test setup aren&apos;t going anywhere.
+            </p>
+            <div className="mt-4">
+              <label htmlFor="cancel-confirm" className="block text-sm text-text-tertiary mb-1.5">
+                Type CANCEL to confirm
+              </label>
+              <input
+                id="cancel-confirm"
+                type="text"
+                value={cancelConfirmText}
+                onChange={(e) => setCancelConfirmText(e.target.value)}
+                placeholder="CANCEL"
+                className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary shadow-xs focus:border-border-brand focus:outline-none"
+              />
+            </div>
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setCancelModalOpen(false);
+                  setCancelConfirmText("");
+                }}
+                className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2.5 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer"
+              >
+                Keep plan
+              </button>
+              <button
+                type="button"
+                disabled={cancelConfirmText !== "CANCEL"}
+                onClick={() => {
+                  setCancelModalOpen(false);
+                  setCancelConfirmText("");
+                }}
+                className="rounded-lg bg-bg-error-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-[var(--color-error-700)] disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+              >
+                Cancel plan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <ConfirmModal
         open={regenSandboxModalOpen}
-        title="Regenerate sandbox key"
-        body="This will invalidate your current sandbox key. Code using it will stop working."
+        title="Regenerate test key"
+        body="This will invalidate your current test key. Code using it will stop working."
         confirmLabel="Regenerate"
         destructive
         onCancel={() => setRegenSandboxModalOpen(false)}
@@ -274,28 +357,13 @@ export default function AppSettings() {
                 onEditValueChange={setEditValue}
               />
               <ReadOnlyField label="Category" value="Appointment reminders" />
-              {hasEIN ? (
-                <ReadOnlyField label="EIN" value="••••••4567" />
-              ) : (
-                <div className="flex items-center justify-between">
-                  <dt className="text-sm text-text-tertiary">EIN</dt>
-                  <dd className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-text-primary">Not on file</span>
-                    <button
-                      type="button"
-                      className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
-                    >
-                      Add
-                    </button>
-                  </dd>
-                </div>
-              )}
+              <EinRow hasEIN={hasEIN} showAddWhenMissing editable={hasEIN} />
             </>
           ) : (
             <>
               <ReadOnlyField label="Business name" value={businessName} />
               <ReadOnlyField label="Category" value="Appointment reminders" />
-              {hasEIN && <ReadOnlyField label="EIN" value="••••••4567" />}
+              <EinRow hasEIN={hasEIN} showAddWhenMissing={isApproved} />
             </>
           )}
         </dl>
@@ -496,38 +564,12 @@ export default function AppSettings() {
             </>
           )}
 
-          {/* Pending */}
-          {isPending && (
+          {/* Pending / Extended Review */}
+          {(isPending || isExtendedReview) && (
             <>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-tertiary">Registration fee</span>
                 <span className="text-sm font-medium text-text-primary">$49 paid · Mar 10, 2026</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-text-tertiary">Plan</span>
-                <span className="text-sm font-medium text-text-primary">Test mode — Free</span>
-              </div>
-              <div className="flex justify-end">
-                <a
-                  href="#"
-                  className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear"
-                >
-                  View account billing &rarr;
-                </a>
-              </div>
-            </>
-          )}
-
-          {/* Extended Review — same as Pending */}
-          {isExtendedReview && (
-            <>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-text-tertiary">Registration fee</span>
-                <span className="text-sm font-medium text-text-primary">$49 paid · Mar 10, 2026</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-text-tertiary">Plan</span>
-                <span className="text-sm font-medium text-text-primary">Test mode — Free</span>
               </div>
               <div className="flex justify-end">
                 <a
