@@ -6,7 +6,7 @@ import { useParams, usePathname } from "next/navigation";
 import { Settings01 } from "@untitledui/icons";
 import type { RegistrationState } from "@/context/session-context";
 import { loadWizardData, saveWizardData } from "@/lib/wizard-storage";
-import { SetupToggle, useSetupToggle } from "@/components/setup-instructions";
+import { useSetupToggle } from "@/components/setup-instructions";
 import { SetupToggleProvider } from "@/context/setup-toggle-context";
 
 const APP_NAMES: Record<string, string> = {
@@ -109,18 +109,13 @@ export function DashboardLayout({
             )}
 
             {isMessagesPage && (
-              <>
-                <div className="ml-6">
-                  <SetupToggle checked={setupVisible} onChange={setupToggle} />
-                </div>
-                <Link
-                  href={`/apps/${appId}/settings`}
-                  className="ml-4 flex items-center gap-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
-                >
-                  <Settings01 className="size-4" />
-                  Settings
-                </Link>
-              </>
+              <Link
+                href={`/apps/${appId}/settings`}
+                className="ml-6 flex items-center gap-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
+              >
+                <Settings01 className="size-4" />
+                Settings
+              </Link>
             )}
           </div>
         </div>

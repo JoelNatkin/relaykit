@@ -87,7 +87,7 @@ export function useSetupToggle(registrationState: string) {
 export function SetupToggle({ checked, onChange }: { checked: boolean; onChange: () => void }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="text-sm font-medium text-text-secondary">Setup instructions</span>
+      <span className="text-sm font-medium text-text-secondary">Instructions</span>
       <button
         type="button"
         role="switch"

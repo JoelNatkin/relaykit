@@ -9,7 +9,7 @@ import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import type { LastSent, ActivityEntry } from "@/components/catalog/catalog-card";
 import { TestPhonesCard, INITIAL_TEST_PHONES, type TestPhone } from "@/components/test-phones-card";
-import { SetupInstructions } from "@/components/setup-instructions";
+import { SetupInstructions, SetupToggle } from "@/components/setup-instructions";
 import { useSetupToggleState } from "@/context/setup-toggle-context";
 import { AskClaudePanel } from "@/components/ask-claude-panel";
 import { loadWizardData, saveWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
@@ -337,7 +337,7 @@ export default function AppMessagesPage() {
 
   /* ── Setup toggle state lives in DashboardLayout's header row; we just
          read the current visibility here to drive the panel below. ── */
-  const { visible: setupVisible } = useSetupToggleState();
+  const { visible: setupVisible, toggle: setupToggle } = useSetupToggleState();
 
   /* ── Should marketing messages be shown? (D-336) ── */
   const showMarketingMessages = (isPending && hasEin && upsellConfirmed) || (isApproved && hasEin && registeredUpsellConfirmed);
@@ -346,14 +346,17 @@ export default function AppMessagesPage() {
   const messagesSectionHeader = (
     <div className="mb-4 flex w-full items-center">
       <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
-      <button
-        type="button"
-        onClick={() => openAskClaude()}
-        className="ml-auto inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
-      >
-        <Stars02 className="size-4 text-fg-brand-primary" />
-        Ask Claude
-      </button>
+      <div className="ml-auto flex items-center gap-6">
+        <SetupToggle checked={setupVisible} onChange={setupToggle} />
+        <button
+          type="button"
+          onClick={() => openAskClaude()}
+          className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+        >
+          <Stars02 className="size-4 text-fg-brand-primary" />
+          Ask Claude
+        </button>
+      </div>
     </div>
   );
 
