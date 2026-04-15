@@ -238,8 +238,8 @@ export default function AppSettings() {
   // Modal states
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [cancelConfirmText, setCancelConfirmText] = useState("");
-  const [regenSandboxModalOpen, setRegenSandboxModalOpen] = useState(false);
   const [regenLiveModalOpen, setRegenLiveModalOpen] = useState(false);
+  const [notificationsOn, setNotificationsOn] = useState(false);
 
   // Editable field values (prototype local state)
   const [businessName, setBusinessName] = useState(appName);
@@ -318,15 +318,6 @@ export default function AppSettings() {
         </div>
       )}
       <ConfirmModal
-        open={regenSandboxModalOpen}
-        title="Regenerate test key"
-        body="This will invalidate your current test key. Code using it will stop working."
-        confirmLabel="Regenerate"
-        destructive
-        onCancel={() => setRegenSandboxModalOpen(false)}
-        onConfirm={() => setRegenSandboxModalOpen(false)}
-      />
-      <ConfirmModal
         open={regenLiveModalOpen}
         title="Regenerate live key"
         body="This will immediately invalidate your current live key and generate a new one. The new key will be shown once — copy it before closing. Any code using the old key will stop working."
@@ -394,7 +385,7 @@ export default function AppSettings() {
               <dt className="text-sm text-text-tertiary">Status</dt>
               <dd className="flex items-center gap-1.5 text-sm font-medium text-text-primary">
                 <StatusDot color="amber" />
-                Extended review
+                In review
               </dd>
             </div>
             <div className="flex items-center justify-between">
@@ -493,9 +484,9 @@ export default function AppSettings() {
             </div>
             <div className="flex items-center gap-2">
               <code className="flex-1 rounded-md bg-bg-secondary px-3 py-2 text-sm font-mono text-text-primary">
-                rk_sandbox_rL7x9Kp2mWqYvBn4
+                rk_test_rL7x9Kp2mWqYvBn4
               </code>
-              <CopyButton text="rk_sandbox_rL7x9Kp2mWqYvBn4" />
+              <CopyButton text="rk_test_rL7x9Kp2mWqYvBn4" />
             </div>
           </div>
 
@@ -628,6 +619,44 @@ export default function AppSettings() {
             </>
           )}
         </div>
+      </div>
+
+      {/* ── Section 6: Notifications ── */}
+      <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold text-text-primary">Notifications</h3>
+            <p className="mt-1 text-sm text-text-tertiary">
+              Get a text when something needs your attention.
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={notificationsOn}
+            onClick={() => setNotificationsOn((v) => !v)}
+            className={`relative mt-1 inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition duration-100 ease-linear ${
+              notificationsOn ? "bg-bg-brand-solid" : "bg-bg-quaternary"
+            }`}
+          >
+            <span
+              className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow-sm transform transition duration-100 ease-linear mt-0.5 ${
+                notificationsOn ? "translate-x-[16px] ml-0.5" : "translate-x-0 ml-0.5"
+              }`}
+            />
+          </button>
+        </div>
+        {notificationsOn && (
+          <div className="mt-4 flex items-center justify-between">
+            <span className="text-sm text-text-secondary">Texts go to +1 (512) 555-0147</span>
+            <button
+              type="button"
+              className="text-sm font-medium text-text-brand-secondary hover:text-text-brand-primary transition duration-100 ease-linear cursor-pointer"
+            >
+              Change
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
