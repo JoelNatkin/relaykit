@@ -1,164 +1,136 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-13/14 (Extended Review + Rejected redesign, 860px breakpoint, card polish, messages promoted to /apps/[appId] root)
-**Branch:** main (14 commits ahead of origin/main — NOT YET PUSHED, awaiting PM review)
+**Date:** 2026-04-14/15 (Settings rebuild to PRD v2.2 + three new decisions)
+**Branch:** main (0 commits ahead of origin/main — pushed through `2075aeb`)
 
 ---
 
-## Commits This Session (13)
+## Commits This Session (10)
 
 ```
-71827cc  fix(prototype): fix register page back link to workspace root
-094a0a7  refactor(prototype): promote messages page to /apps/[appId] root route
-0ac4a5e  fix(prototype): restore Ask Claude panel desktop layout after Start Building card move
-de47356  feat(prototype): wire New project button to onboarding flow
-9bea989  fix(prototype): Registered state — Start building inside left column under Messages header
-e7eaa58  fix(prototype): card width and styling polish — Testers border, Start building + messages cards 540px cap, setup move, toggle thumb padding
-3c73003  fix(prototype): simplify Usage card — remove remaining count, align plan line with trend text
-ca1aa5a  fix(prototype): remove grey background from Testers card
-02e229a  fix(prototype): metrics grid 3-col at 860px breakpoint
-f91d1cb  fix(prototype): lower metrics grid collapse breakpoint to 860px
-4e30863  fix(prototype): warmer Rejected card copy with specific reason
-be3b7e9  refactor(prototype): redesign Extended Review and Rejected cards to per-type tracker layout
-d7e1411  docs(backlog): add open-source SMS compliance linter
+2075aeb  docs: update Settings PRD to v2.2
+6fa3cf2  fix(prototype): Extended Review label, Notifications section, test key prefix, remove test key regen
+5549f36  fix(prototype): move Instructions toggle next to Ask Claude, rename label
+12029c8  fix(prototype): EIN row consistent across all Settings states
+dd3fe1d  fix(prototype): EIN edit affordance, billing cleanup, cancel modal friction
+32097d8  fix(prototype): EIN toggle on Settings, Rejected card rewrite
+3ff72b2  fix(prototype): Settings copy and layout polish (Phase 2)
+f7172b6  feat(prototype): Settings h1, back link, Business Info with EIN (Phase 1)
+857a389  docs: record account/app field split (D-347) and notification triggers (D-348)
+78bd013  docs: elevate rate limiting from backlog to launch requirement (D-346)
 ```
 
-(Previous session close-out commit was `0661de3`, pushed to origin after. This session's commits are all since then and are unpushed.)
+Pushed to `origin/main`. Previous session's 14 unpushed commits (through `fde7bad`) went out during this session.
 
 ---
 
 ## What Was Completed
 
-### Route promotion — messages page at `/apps/[appId]` root (D-345)
-- Moved `prototype/app/apps/[appId]/messages/page.tsx` → `prototype/app/apps/[appId]/page.tsx`. The root of the app is now the workspace.
-- Replaced `/messages/page.tsx` with a server-side `redirect(/apps/${appId})` for backward-compat.
-- Updated every internal navigation: AppLayout's 6 `router.replace` calls, Your Apps card link (also dropped a pass-through to /overview → goes direct), auth post-download push, wizard Continue → workspace, get-started "View on dashboard", Settings back link, wizard-layout backHref for /ready, start/verify continueHref, top-nav dev state switcher + `isAppRoute` regex (now `^\/apps\/[^/]+(\/(ready|signup(\/verify)?|get-started))?$`), proto-nav-helper dev nav items, Register page back link.
-- DashboardLayout's `isMessagesPage` check: was `pathname.endsWith("/messages")` → now `pathname === /apps/${appId}` (exact match so /settings doesn't inherit the header setup toggle + Settings link).
-- Register page back link label: was `Back to Overview` → now the app name (e.g., `GlowStudio`) via an inline `APP_NAMES` map mirroring DashboardLayout's pattern.
+### Three new decisions (D-346, D-347, D-348)
+- **D-346:** Rate limiting is a launch requirement, not backlog. The matching BACKLOG.md entry ("Advanced rate limiting with queue mode") was replaced with a pointer line. Quiet hours enforcement (D-309) is already bundled into the "Message pipeline refactor (pre-Sinch)" backlog item and required before Sinch integration — confirmed twice this session, no change needed.
+- **D-347:** Account-level vs app-level field split. Email, auth phone, payment method are account-level (future avatar-dropdown settings page). Per-app Settings only shows app-scoped fields.
+- **D-348:** Notification triggers — text (opt-in via toggle) vs email (always on) vs silent handling (rate limits, quiet hours, opt-outs, approaching cap).
 
-### Extended Review + Rejected right rail redesign (extends D-339)
-- Extended Review now uses the same per-type tracker card as Pending. Implemented by expanding the existing `isPending` branch guard to `(isPending || isChangesRequested)` so both states share the tracker structure + marketing upsell take-over flow. Added a conditional explanatory line below the tracker rows (gated on `isChangesRequested`): "This is taking longer than usual. We'll email you at jen@glowstudio.com when there's an update."
-- Rejected rewritten from scratch: "Registration status" heading (no info tooltip), tracker rows with red "Not approved" pills (`bg-bg-error-secondary text-text-error-primary`), reason line "The business name on file didn't match your EIN records.", warmer support line "We know this is frustrating. Reply to your confirmation email or reach out at support@relaykit.ai and we'll sort it out." Removed the old bulk "Not approved" pill, "$49 refunded" line, "What happened" subheading, and "We're looking into what went wrong" paragraph.
+### Settings page — full rebuild to PRD_SETTINGS v2.2
+Single file: `prototype/app/apps/[appId]/settings/page.tsx`. Every section reworked to match the current PRD.
 
-### Responsive breakpoint consolidation at 860px
-- Metrics grid: `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3` → `grid-cols-1 min-[860px]:grid-cols-3` (skips the 2-col intermediate step).
-- Card/rail grid (both Registered and generic layouts): `lg:grid-cols-3` → `min-[860px]:grid-cols-3`. Paired modifiers (`col-span-2`, `order-last`, `sticky`, `top-20`) also updated to `min-[860px]:` so the layout doesn't break between 860–1024px.
-- Start building card: `min-[860px]:max-w-[540px]` on the inner panel.
-- Message cards: `messageList` wrapper + per-card `monitorMode` cap both set to `min-[860px]:max-w-[540px]` (replacing prior 680px / 500px caps).
+- **Page chrome:** Back link now uses app name ("← Back to GlowStudio") via an inline `APP_NAMES` map mirroring the Register page. Added `<h1>Settings</h1>` below the back link.
+- **Business info:** Renamed from "Account info". Visible in every state. Building is editable (business name via inline `EditableField` with right-aligned Save/Cancel buttons); all post-reg states are read-only. Email and Personal phone rows removed entirely (D-347).
+- **EIN row (consolidated into `EinRow` component):** Reads `hasEIN` from wizard sessionStorage (`loadWizardData().ein`) and listens to the `relaykit-ein-change` event — same source the messages page and the dashboard-layout top-bar EIN switcher use. With EIN: shows `••••••4567` everywhere; adds an "Edit" link in Building only. Without EIN: shows "Not on file" + "Add" link in every state. Cleaner and uniform.
+- **Registration section:**
+  - Pending: Status ("In review") + Submitted only. Removed Estimated review row and the "sandbox is fully active" sub-copy.
+  - Extended Review: Status label now "In review" (same as Pending per PRD §3) with sub-copy "This is taking longer than usual. We'll email you at jen@glowstudio.com when there's an update."
+  - Registered: removed Campaign ID row (carrier infrastructure, not developer-facing).
+  - Rejected: full rewrite per PRD §5. Two plain-text lines ("Your registration wasn't approved. The business information provided didn't match public records." + support mailto). Removed "What was submitted" reference block, red "What happened" debrief box, refund line, "Start a new registration" link, "your sandbox is still active" line.
+- **API keys:** Removed sub-copy ("Your AI coding tool reads this key…"). "SANDBOX" label → "TEST". Mock key string `rk_sandbox_rL7x9Kp2mWqYvBn4` → `rk_test_rL7x9Kp2mWqYvBn4`. Removed the never-wired regenerate-test-key modal state + JSX — test keys are re-displayable and don't need Regenerate.
+- **Billing:** Removed the Plan row in Pending/Extended Review (showing "Test mode — Free" while they've paid $49 was confusing). Collapsed the two identical branches into `(isPending || isExtendedReview)`. "Sandbox — Free" → "Test mode — Free" everywhere. Cancel modal rewrote to a custom inline modal (not shared ConfirmModal): `bg-black/50` backdrop, "Type CANCEL to confirm" text input, "Cancel plan" button disabled until input strictly equals "CANCEL".
+- **Notifications (new):** Added Section 5 at the bottom of the page, all states. Heading + "Get a text when something needs your attention." sub-copy. Toggle switch (same visual pattern as the Instructions toggle), off by default. When on: "Texts go to +1 (512) 555-0147" + "Change" brand link.
 
-### Card styling polish
-- Testers card: `rounded-xl border border-border-secondary p-6` (matches message card stroke + radius), grey background removed so the grey treatment is reserved for state-specific cards above.
-- Metrics Usage & billing: removed "153 messages remaining this period" line; "Plan: $19/mo · 500 included" restyled from `mt-2 text-xs text-text-tertiary` to `mt-3 text-sm text-text-secondary` (same size/position as the trend lines, neutral color).
-- Metrics Delivery + Recipients: stat-detail lines ("1,812 delivered · 22 failed · 8 pending", "12 opt-outs · 38 inbound replies") removed.
-- SetupToggle thumb: `translate-x-[18px]` → `translate-x-[16px]` so the enabled state has 2px right padding matching the 2px left (`ml-0.5`) when disabled.
-
-### Start building card placement
-- Moved from above the metrics grid (Registered) or above `messageList` (generic) into a consistent slot: inside the left column, above the message cards, in both Registered and generic layouts.
-- Card 3 helper text extended: "Paste this prompt into your AI tool to start building. Once your app is sending, use the cards below to test delivery and Ask Claude to debug issues."
-
-### Ask Claude panel top-alignment fix
-- Root cause: after moving SetupInstructions inside the left column, the `messageTopRef` sat BELOW it. When Start building was toggled on, `getBoundingClientRect().top` returned a big Y value, making `topOffset` large and collapsing the panel to a thin nub.
-- Fix: moved the ref ABOVE SetupInstructions in both layouts so it measures the grid row top, not the position after the setup card.
-
-### New project button
-- Your Apps `+ New project` button swapped from `onClick={alert}` to `<Link href="/start">` (wizard entry).
+### Instructions toggle relocation
+Moved out of the DashboardLayout header row and into the messages section header, immediately left of the Ask Claude button with a 24px gap. Label renamed "Setup instructions" → "Instructions". `useSetupToggle` state stays in DashboardLayout and flows to the page via `SetupToggleContext` — only the rendered control moved.
 
 ### Docs
-- **BACKLOG.md** — added new top-level section "Open-Source SMS Compliance Linter" (Core deterministic validators + AI layer + structured ruleset + distribution + upgrade path + post-launch timing).
+- **PRD_SETTINGS_v2.2.md** — new file, 501 lines, supersedes v2.1. Added by Joel and committed as `2075aeb`.
+- **DECISIONS.md** — three new entries (D-346, D-347, D-348).
+- **BACKLOG.md** — rate limiting entry replaced with pointer line.
 
 ---
 
 ## Quality Checks Passed
 
 - `tsc --noEmit` — clean (prototype)
-- `next build` — clean (run multiple times during session, including after the route promotion)
-- No ESLint config in prototype — tsc and build are the quality gates (unchanged baseline)
+- `next build` — clean, full production build ran
+- No ESLint config in prototype — tsc and `next build` remain the quality gates (unchanged baseline)
 
 ---
 
 ## In Progress / Partially Done (Carried Forward)
 
-### All backend stubs from previous sessions still apply
-- Signup backend stubbed (D-59 pending)
+### Backend stubs — unchanged from previous sessions
+- Signup backend stubbed (D-59)
 - EIN verification backend stubbed (D-302/D-303)
 - Phone OTP stubbed (D-46)
-- Get-started content hardcoded
-- Marketing messages hardcoded for Appointments vertical only
+- Marketing messages hardcoded for Appointments only
 - Ask Claude panel chat composer is a non-functional stub
-- Monitor expansion Quick send is visual-only
-- Testers invite flow stubbed (1.5s "Sending…" but no real OTP)
+- Testers invite flow stubbed (1.5s "Sending…", no real OTP)
 - Registered state metrics are mock data
 - Marketing-only registration tracker transitions are prototype dropdowns
 
-### New this session
-- `/apps/[appId]/messages` is now only a redirect — any new app-scoped pages should be subroutes of `/apps/[appId]/`, the workspace itself stays at root. This constrains future route design.
-- Extended Review now reuses Pending's state variables (`upsellEinExpanded`, `upsellConfirmStep`, `upsellConfirmed`). If we later want different upsell behavior in Extended Review, we'll need to introduce separate state.
+### New-ish this session
+- Settings Notifications toggle has no backend wiring — just local `useState`.
+- Cancel plan modal's destructive confirm is a close-modal no-op in the prototype.
+- Live key Regenerate modal is still a no-op.
+- Settings "Add EIN" / "Edit EIN" / "Change" (notification destination) links are all brand-styled no-ops.
+- Account settings page referenced by D-347 and PRD §7 doesn't exist yet. The avatar dropdown it implies also doesn't exist. Per-app Settings no longer shows email/phone even though that page isn't built — acceptable per D-347's interim note.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **`.next` + `node_modules` nuke is the escalation** for the persistent @untitledui vendor chunk error. Straight `.next` wipes sometimes aren't enough — if you see it, `rm -rf .next node_modules && npm install`.
-2. **The prototype is in `/prototype`, not the root.** Always `cd prototype` first.
-3. **No ESLint config** in prototype — tsc + `next build` are the quality gates.
-4. **The workspace route is `/apps/[appId]` (D-345).** `/apps/[appId]/messages` still exists as a server redirect to the root. All internal links must point to the root; any new link to `/messages` is a regression.
-5. **`isMessagesPage` uses exact equality** (`pathname === /apps/${appId}`), not `endsWith`. `/settings` and other subroutes should NOT match.
-6. **`messageTopRef` is the FIRST child of the left column** in both layouts. Above `<SetupInstructions>`. If you move it below Setup, the Ask Claude panel's height calc breaks when the Start building card is toggled on — the topOffset balloons and the panel collapses to a thin strip.
-7. **Extended Review shares Pending's tracker JSX** via the `(isPending || isChangesRequested)` outer guard. The only Extended-Review-specific content is a conditional `<p>` with the "taking longer than usual" email note. If you need divergent logic, split the branches again.
-8. **860px is the responsive threshold** for both the metrics grid and the card/rail grid. Every paired modifier (`col-span-2`, `order-last`, `sticky`, `top-20`) uses `min-[860px]:`. If you change the breakpoint, update all 5 spots together or the layout breaks between states.
-9. **testPhones state is in the workspace page**, not a global store. It gets threaded to CatalogCard via `testRecipients` and to TestPhonesCard directly.
-10. **Ask Claude panel renders TWO wrappers** (mobile fixed overlay + desktop inline) sharing the same `content` fragment. Both mount; CSS `hidden` / `md:hidden` toggles visibility.
-11. **CatalogCard has three expansion states:** edit, monitor, collapsed. They're mutually exclusive. The Activity icon label ("Test & debug") is a non-interactive `<span>`; only the monitor footer's Close button exits monitor mode.
-12. **Body scroll lock** on the mobile Ask Claude overlay (`document.body.style.overflow = "hidden"`) is only applied when `matchMedia("(max-width: 767px)")` matches at mount. Viewport resize while open keeps the lock.
-13. **Variant IDs are stable** (`standard`, `action-first`, `context-first`) even though labels are Standard/Friendly/Brief.
-14. **Never push this branch without PM review.** 14 unpushed commits as of close-out.
-15. **Register page uses its own inline `APP_NAMES` map** mirroring DashboardLayout's. If we add more apps beyond GlowStudio, factor this into a shared helper to avoid drift.
+1. **EIN on Settings is read from wizard sessionStorage, not the session-context `hasEIN` boolean.** The dashboard-layout top-bar switcher writes `data.ein` via `saveWizardData` and fires the `relaykit-ein-change` event. Settings subscribes. If you swap to a different storage layer or context flag later, update both the messages page (`prototype/app/apps/[appId]/page.tsx:184-194`) and Settings (`prototype/app/apps/[appId]/settings/page.tsx:225-233`) together — they're in lockstep.
+2. **`EinRow` is a single component used for every state.** Prop surface is `hasEIN` + `editable`. The "Not on file / Add" branch always renders when `hasEIN === false`. If a future state should hide the row instead, add a `hidden` prop rather than re-introducing per-state JSX.
+3. **Cancel plan modal is custom, not `ConfirmModal`.** Kept separate because it needs the text-input gate. `ConfirmModal` is still used for the Regenerate Live Key modal. Don't fold them back together unless you add body children support to `ConfirmModal`.
+4. **Shared `APP_NAMES` is duplicated** in `dashboard-layout.tsx`, `register/page.tsx`, and `settings/page.tsx`. Getting worse. Extract to `lib/app-names.ts` before beta launch when a second app joins.
+5. **Extended Review internal state is still `changes_requested`** — the developer-facing label is now "In review" (same as Pending). If you touch the state machine, remember the user never sees "Extended review" anymore.
+6. **Instructions toggle lives on the messages page row now**, not in the DashboardLayout header. `useSetupToggle` hook still initializes in DashboardLayout and provides context; only the rendered `<SetupToggle>` moved. `SetupToggle` is imported in `page.tsx` alongside `SetupInstructions`.
+7. **Notifications section toggle has no persistence.** In-component `useState` only — state resets on reload. Fine for the prototype; production needs `projects.sms_notifications_enabled`.
+8. **`.next` + `node_modules` nuke is still the escalation** for the @untitledui vendor chunk error. Straight `.next` wipes usually work; if not, `rm -rf .next node_modules && npm install`.
+9. **Prototype is in `/prototype`, not the root.** Always `cd prototype` first.
+10. **Branch is fully pushed.** Starting point for the next session is clean `origin/main`.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# Decisions, specs, docs
-DECISIONS.md                                             # MODIFIED — D-345 added (workspace at /apps/[appId] root)
-PROTOTYPE_SPEC.md                                        # MODIFIED — Messages page header, dashboard layout + breakpoints, Testers styling, Rejected copy, CatalogCard max-width, top-nav regex
-BACKLOG.md                                               # MODIFIED — Open-Source SMS Compliance Linter section added
+# Decisions + docs
+DECISIONS.md                                             # D-346, D-347, D-348 appended
+BACKLOG.md                                               # rate limiting entry → pointer line
+docs/PRD_SETTINGS_v2.2.md                                # NEW — supersedes v2.1
+PROTOTYPE_SPEC.md                                        # Settings section rewritten; header-row + messages-header toggle spec updated; Last updated → April 15, 2026
 CC_HANDOFF.md                                            # This file (overwritten)
 
-# Route promotion (file move)
-prototype/app/apps/[appId]/page.tsx                      # WAS a redirect stub, NOW the workspace page (moved from /messages/page.tsx)
-prototype/app/apps/[appId]/messages/page.tsx             # WAS the workspace page, NOW a redirect to /apps/[appId]
+# Settings rebuild
+prototype/app/apps/[appId]/settings/page.tsx             # Full rework — h1, back link, Business Info, EIN row, Registration per state, API keys, Billing, Cancel modal, Notifications
 
-# Page changes
-prototype/app/apps/page.tsx                              # MODIFIED — New project Link + card href to /apps/${app.id}
-prototype/app/apps/[appId]/layout.tsx                    # MODIFIED — 6 router.replace targets (/messages → root)
-prototype/app/apps/[appId]/get-started/page.tsx          # MODIFIED — handleTransition target
-prototype/app/apps/[appId]/settings/page.tsx             # MODIFIED — back link href
-prototype/app/apps/[appId]/register/page.tsx             # MODIFIED — back link href + label (Back to Overview → app name)
-prototype/app/auth/page.tsx                              # MODIFIED — post-download push to /apps/glowstudio
-prototype/app/start/verify/page.tsx                      # MODIFIED — continueHref
-
-# Component changes
-prototype/components/dashboard-layout.tsx                # MODIFIED — isMessagesPage check switched to exact equality
-prototype/components/top-nav.tsx                         # MODIFIED — isAppRoute regex + dev state switcher option value
-prototype/components/wizard-layout.tsx                   # MODIFIED — backHref for /ready
-prototype/components/proto-nav-helper.tsx                # MODIFIED — 4 Messages nav item hrefs
-prototype/components/setup-instructions.tsx              # MODIFIED — max-w-[540px] cap, toggle thumb padding, card 3 helper text
-prototype/components/test-phones-card.tsx                # MODIFIED — rounded-xl border, grey bg removed
-prototype/components/catalog/catalog-card.tsx            # MODIFIED — per-card max-w cap changed to min-[860px]:max-w-[540px]
+# Instructions toggle relocation
+prototype/components/dashboard-layout.tsx                # Removed SetupToggle render from header; dropped import
+prototype/components/setup-instructions.tsx              # Label "Setup instructions" → "Instructions"
+prototype/app/apps/[appId]/page.tsx                      # SetupToggle rendered in messages section header with gap-6 before Ask Claude; import updated; toggle destructured from context
 ```
 
 ---
 
 ## What's Next (suggested order)
 
-1. **Wire Ask Claude panel to real AI** — connect the chat composer to the Anthropic SDK. UI is done; needs backend route + streaming response display.
-2. **Wire wizard data into setup instructions** — generate install command, API key, and prompt from sessionStorage business name + messages instead of hardcoded Club Woman content.
-3. **Marketing messages for other verticals** — only Appointments has marketing message data. Add sets for Verification, Orders, Support, etc.
-4. **Test all right rail state matrix permutations** — use the matrix in WORKSPACE_DESIGN_SPEC.md as a QA checklist before porting to production.
-5. **Wire signup to real magic-link backend** (D-59).
-6. **Wire `/start/verify` phone OTP to Twilio Verify** (D-46).
-7. **Wire EIN verification backend** (D-302, D-303).
-8. **Extract `OtpInput`** to shared component — currently inlined in `/signup/verify`, `/start/verify`, and sign-in modal.
-9. **Registration flow pages** — `/apps/[appId]/register` and `/register/review` need the new single-page workspace context (no tab bar, back-to-workspace pattern — already updated the back link, but double-check the review screen).
-10. **Error states design session** — walk through all interaction failures before locking in copy.
-11. **Extract shared `APP_NAMES` map** — currently duplicated in dashboard-layout.tsx and register/page.tsx. Will get worse when beta launches with multiple apps.
+1. **Account settings page** — build the page referenced by D-347. Needs email, auth phone, payment method, sign out, delete account. Route probably `/account`; entry point is a new avatar dropdown in the top nav.
+2. **Wire Settings actions to real state** — notifications toggle → `projects.sms_notifications_enabled`; Cancel plan → Stripe subscription cancel-at-period-end; Regenerate live key → hash rotation; Edit EIN / Add EIN → open the EIN verification flow in a modal (the wizard-component-as-modal pattern noted in PRD §4.1).
+3. **Registered — no EIN "Add" flow** — tapping Add should open the EIN verification flow and, on success, unlock the marketing upsell (same trigger the messages page already uses).
+4. **Wire Ask Claude panel to real AI** — UI done; backend route + streaming display needed.
+5. **Wire wizard data into setup instructions** — generate install command, API key, and prompt from sessionStorage business name + messages instead of hardcoded Club Woman content.
+6. **Marketing messages for other verticals** — only Appointments has data.
+7. **Wire signup to real magic-link backend** (D-59).
+8. **Wire `/start/verify` phone OTP to Twilio Verify** (D-46).
+9. **Wire EIN verification backend** (D-302, D-303).
+10. **Extract `OtpInput`** to a shared component.
+11. **Extract shared `APP_NAMES`** — dashboard-layout, register, settings currently duplicate.
+12. **Error states design session** — walk through all interaction failures before locking in copy.

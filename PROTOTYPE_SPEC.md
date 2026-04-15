@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: April 9, 2026
+### Last updated: April 15, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -349,9 +349,9 @@ The workspace lives at the `/apps/[appId]` root (D-345). `/apps/[appId]/messages
 
 **Dashboard mode (Building/Pending/Registered/Extended Review/Rejected — rendered inside DashboardLayout):**
 
-- **DashboardLayout header row** (app identity bar): `GlowStudio` heading + `Appointments` pill on the left. Right side (via `ml-auto`): prototype state-switcher dropdowns → EIN switcher → StatusIndicator (conditional, see below) → Setup instructions toggle (`ml-6`, workspace page only) → Settings gear link (`ml-4`, workspace page only). Setup toggle + Settings visibility gated on `pathname === /apps/${appId}` (exact root match — D-345). Toggle state shared with messages page via `SetupToggleContext` (provider in DashboardLayout, consumer in the workspace page). Setup toggle thumb uses `translate-x-[16px]` in the enabled state so there's 2px right padding matching the 2px left (`ml-0.5`) when disabled.
+- **DashboardLayout header row** (app identity bar): `GlowStudio` heading + `Appointments` pill on the left. Right side (via `ml-auto`): prototype state-switcher dropdowns → EIN switcher → StatusIndicator (conditional, see below) → Settings gear link (`ml-6`, workspace page only). Settings visibility gated on `pathname === /apps/${appId}` (exact root match — D-345). The Instructions toggle is no longer in the header — it was moved into the messages section header row next to Ask Claude (see below). `useSetupToggle` state still lives in DashboardLayout and is provided via `SetupToggleContext` so the workspace page can render both the toggle control and the SetupInstructions panel against the same flag. Toggle thumb uses `translate-x-[16px]` in the enabled state so there's 2px right padding matching the 2px left (`ml-0.5`) when disabled.
 - **StatusIndicator (D-344):** Yellow dot + "Test mode" for Building/Pending/Extended Review/Rejected. Green dot + "Live" for Registered. Null for Onboarding. Conditional wrapper (`registrationState !== "onboarding"`) so no empty `ml-10` div when null.
-- **Messages section header** (`mb-4 flex w-full items-center`): `<h2>Messages</h2>` on the left, "Ask Claude" button (`Stars02` icon + text, `ml-auto`, tertiary purple) on the right. Clicking opens the Ask Claude panel (D-343).
+- **Messages section header** (`mb-4 flex w-full items-center`): `<h2>Messages</h2>` on the left. On the right (via `ml-auto flex items-center gap-6`): the **Instructions** toggle (renamed from "Setup instructions") immediately left of the "Ask Claude" button (`Stars02` icon + text, tertiary purple). 24px gap between toggle and button. Clicking Ask Claude opens the panel (D-343); toggling Instructions reveals/hides the SetupInstructions panel in the left column.
 - **Metrics grid (Registered only):** `grid grid-cols-1 min-[860px]:grid-cols-3 gap-4 mb-6` — single column below 860px, straight to 3 columns at 860px (no intermediate 2-column step). Three cards: Delivery (98.4% + trend), Recipients (284 + trend), Usage & billing (347/500 + progress bar + `"Plan: $19/mo · 500 included"` at same size/weight as the trend lines). Stat-detail lines ("1,812 delivered · 22 failed · 8 pending", "12 opt-outs · 38 inbound replies", "153 messages remaining this period") removed.
 - **Setup instructions** (`prototype/components/setup-instructions.tsx`): Toggle-controlled container with "Start building" heading and 3 numbered instruction cards. Default ON in Building, OFF in other states. Per-state toggle persisted in sessionStorage. Rendered inside the left column **above** the message cards in both layouts (moved from above the metrics grid in the Registered state so all post-onboarding states render it in the same slot). The Start building panel itself caps at `min-[860px]:max-w-[540px]`. Card 3's helper text reads: "Paste this prompt into your AI tool to start building. Once your app is sending, use the cards below to test delivery and Ask Claude to debug issues."
 - **Message cards:** `min-[860px]:max-w-[540px]` wrapper on the messageList (non-wizard) + individual card root when `monitorMode` is true — uncapped below 860px, 540px above. No send icons (removed).
@@ -528,80 +528,91 @@ The last screen before the dashboard. Developer has verified their email and lan
 
 ### Settings — `/apps/[appId]/settings`
 **File:** `prototype/app/apps/[appId]/settings/page.tsx`
-**Status:** Stable — child page accessed via gear icon on Messages page (D-332)
+**Status:** Stable — aligned with PRD_SETTINGS v2.2, updated 2026-04-15.
 
-**Navigation:** "← Back to messages" link at top of page (`text-sm font-medium text-text-tertiary`, links to `/apps/[appId]/messages`). Accessed via Settings gear icon on Messages page, not via tab bar (tab bar removed).
+**Navigation:** "← Back to {appName}" link (e.g., "← Back to GlowStudio") at top of page. Links to `/apps/[appId]` workspace root (D-345). App name resolved via inline `APP_NAMES` map.
 
-**Layout:** 600px max-width, centered. Five card sections stack vertically (`space-y-6`). Sections appear/disappear based on `registrationState` from session context. All body text is 14px (`text-sm`). Section headers are 18px (`text-lg font-semibold`). All action buttons/links right-aligned (`flex justify-end`).
+**Page heading:** `<h1>Settings</h1>` (`text-2xl font-semibold`, `mb-6`) below back link.
 
-**Phone label convention (D-207):** "Personal phone" (developer's own number), "Your SMS number" (dedicated campaign number, Approved only), "Sandbox phone" (not on Settings — Messages tab concept). Never bare "Phone."
+**Layout:** 600px max-width, centered. Card sections stack vertically (`space-y-6`). Sections and rows appear/disappear based on `registrationState` (from session context) and `hasEIN` (from wizard sessionStorage, listens to `relaykit-ein-change`). All body text 14px (`text-sm`); section headers 18px (`text-lg font-semibold`); action links right-aligned.
+
+**Account-level fields not here (D-347):** No Email or Personal phone on Settings — those are account-level, destined for an account settings page behind the top-nav avatar dropdown.
+
+**Phone label convention (D-207):** "Your SMS number" (dedicated campaign number, Registered only). Test phone lives on the workspace Testers card (D-342), not here.
 
 ---
 
-#### Section 1: SMS Compliance Alerts (all states)
-Toggle switch, **off by default** (D-201). Section header style (`text-lg font-semibold`): "SMS compliance alerts." `flex items-start justify-between gap-10` between text and toggle for minimum 40px spacing. Toggle off-state uses `gray-300` (`rgb(213 215 218)`) for visibility against white card background. Sub-copy: "Get a text when live messages are blocked or your content drifts from your registered use case. You'll always get email alerts." When on: "Alerts go to +1 (512) 555-0147" with "Edit" link (no-op — will link to account settings in production). When off: alert phone line hidden.
+#### Section 1: Business info (all states)
 
-#### Section 2: Account Info (all states, fields vary — D-210)
-`EditableField` component with one-field-at-a-time editing pattern (`editingField` shared state).
+Card heading: "Business info."
 
-- **Default:** Email (editable), Personal phone (editable). No business name or category.
-- **Pending / Extended Review / Approved / Rejected:** Business name (read-only, sub-text "Set during registration" — D-209), Email (editable), Personal phone (editable), Category (read-only, e.g., "Appointment reminders").
+- **Building (editable):** Business name (editable via inline `EditableField`, Save/Cancel right-aligned in `justify-end gap-3`); Category (read-only, "Appointment reminders"); EIN row (editable — see EIN row pattern).
+- **Post-registration (Pending, Extended Review, Registered, Rejected):** Business name (read-only, no sub-text); Category (read-only); EIN row (read-only — see EIN row pattern).
 
-#### Section 3: Registration (Pending, Extended Review, Approved, Rejected only — not Default)
+**EIN row pattern (shared via `EinRow` component, consistent across every state):**
+- `hasEIN = true`:
+  - Building → "••••••4567" + "Edit" link (brand color, no-op)
+  - All other states → "••••••4567" read-only
+- `hasEIN = false` (every state): "Not on file" + "Add" link (brand color, no-op)
+
+#### Section 2: Registration (not visible in Building)
 
 **Pending:**
 - Status: amber dot + "In review"
 - Submitted → date
-- Estimated review → "2–3 weeks"
-- Sub-copy: "Your sandbox is fully active while you wait."
+- No estimated-review row, no sub-copy
 
 **Extended Review** (internally `changes_requested` — D-202):
-- Status: amber dot + "Extended review"
+- Status: amber dot + "In review" (same label as Pending — developer sees only the delay, not a different status)
 - Submitted → date
-- Sub-copy: "The carrier asked for additional information about your registration. We're handling it — no action needed from you. We'll reach out if we need anything."
+- Sub-copy: "This is taking longer than usual. We'll email you at jen@glowstudio.com when there's an update."
 
-**Approved:**
+**Registered:**
 - Status: green dot + "Active"
 - Your SMS number → +1 (555) 867-5309 (mock)
 - Approved → date
-- Campaign ID → C-XXXXXX (mock)
-- No Plan row — pricing lives in Billing only (D-212)
+- No Campaign ID row (carrier infrastructure, not surfaced)
 - "View compliance site →" link (brand color, right-aligned, no-op)
 
-**Rejected (D-206, D-214):**
+**Rejected (aligned with PRD §5):**
 - Status: red dot + "Not approved"
 - Submitted → date, Reviewed → date
-- "What was submitted" subsection: Business name, EIN (masked last 4: "••-•••4567"), Business address, Use case — all read-only
-- Debrief box (`bg-bg-error-primary`, rounded, padded): bold "What happened" + mock rejection reason with actionable fix
-- "$49 registration fee has been refunded" in `text-success-primary`
-- "Start a new registration →" link (brand color, right-aligned, no-op)
-- "Your sandbox is still active — your code and test environment aren't going anywhere."
+- Paragraph: "Your registration wasn't approved. The business information provided didn't match public records."
+- Paragraph: "Contact us at support@relaykit.ai if you believe this is an error." (email is `mailto:` link)
+- No "What was submitted" reference block, no debrief box, no refund line, no "Start a new registration" link
 
-#### Section 4: API Keys (all states — D-205, D-211)
-Heading: "API keys." Sub-copy: "Your AI coding tool reads this key from your RelayKit files."
+#### Section 3: API keys (all states)
 
-**Sandbox key (always visible — D-211):**
-- Label: "SANDBOX" + green "Active" badge
-- Monospace field: `rk_sandbox_rL7x9Kp2mWqYvBn4` + copy button
-- No Regenerate link — sandbox keys are low-security, always visible and copyable
+Card heading: "API keys." No sub-copy.
 
-**Live key (Approved only — D-205):**
-- Divider between sandbox and live
-- Label: "LIVE" + green "Active" badge
-- Masked field: `rk_live_••••••••••••••••••••` + copy button (visually disabled: `opacity-30 cursor-not-allowed disabled`, no click action when key is masked — activates after regeneration when new key is briefly visible)
-- "Regenerate" link (right-aligned) → confirmation modal (destructive, warns key shown once and old key immediately invalidated)
-- Muted note: "Live key is shown once when generated. Use Regenerate if you need a new one."
+**Test key (all states):**
+- Uppercase label "TEST" + green "Active" badge
+- Monospace field: `rk_test_rL7x9Kp2mWqYvBn4` + copy button
+- No Regenerate — test keys are low-security and re-displayable
 
-#### Section 5: Billing (all states — D-208, D-213)
+**Live key (Registered only):**
+- Divider above
+- Uppercase label "LIVE" + green "Active" badge
+- Masked `rk_live_••••••••••••••••••••` + disabled copy button (`opacity-30 cursor-not-allowed`)
+- "Regenerate" link (right-aligned, brand) → `ConfirmModal` titled "Regenerate live key" with destructive confirm
+- Helper: "Live key is shown once when generated. Use Regenerate if you need a new one."
 
-- **Default:** Plan → "Sandbox — Free", muted "No credit card required."
-- **Pending / Extended Review:** Registration fee → "$49 paid · date", Plan → "Sandbox — Free", "View account billing →" link (right-aligned)
-- **Approved:** Plan → "$19/mo", Includes → "500 messages, then $8 per additional 500" (D-213), Next billing → date, "Manage billing →" link (right-aligned, would open Stripe Portal), separator, "Cancel plan" text link (right-aligned, text-tertiary, hover:text-error-primary). Cancel modal: "Cancel your plan" heading, sandbox continuity copy (D-153), "Keep plan" (grey) + "Cancel plan" (red). No guilt copy, no survey.
-- **Rejected:** Registration fee → "$49 refunded · date", Plan → "Sandbox — Free"
+#### Section 4: Billing (all states)
 
-#### Sections REMOVED
-- **Developer tools** — Cut from Settings. Sandbox phone and "Send test message" move to Messages tab (D-203).
-- **Portability ("Moving on?")** — Cut. Backlogged (D-204).
+- **Building:** Plan → "Test mode — Free"; muted "No credit card required."
+- **Pending / Extended Review:** Registration fee → "$49 paid · Mar 10, 2026"; "View account billing →" link (right-aligned). No Plan row.
+- **Registered:** Plan → "$19/mo"; Includes → "500 messages, then $8 per additional 500"; Next billing → date; "Manage billing →" link; divider; "Cancel plan" text link (right-aligned, `text-tertiary hover:text-error-primary`).
+- **Rejected:** Registration fee → "$49 refunded · date"; Plan → "Test mode — Free".
+
+**Cancel plan modal:** Custom inline modal (not shared `ConfirmModal`). `bg-black/50` backdrop. Body: "Your plan will stay active through April 14, 2026. After that, live messaging stops but your test environment stays available — your code, your API key, and your test setup aren't going anywhere." Input labeled "Type CANCEL to confirm" (placeholder "CANCEL"). Buttons: "Keep plan" (grey) / "Cancel plan" (red, disabled until input strictly equals "CANCEL").
+
+#### Section 5: Notifications (all states)
+
+Card heading: "Notifications." Sub-copy: "Get a text when something needs your attention." Toggle switch (same visual pattern as Instructions toggle), **off by default**. When on: reveals "Texts go to +1 (512) 555-0147" with a "Change" brand link (no-op). When off: destination line hidden.
+
+#### Modals
+
+Shared `ConfirmModal` helper used for the live-key Regenerate modal. Backdrop `bg-black/50`. The Cancel plan modal is custom inline because it needs a text input gate.
 
 ---
 
