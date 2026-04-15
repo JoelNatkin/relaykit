@@ -47,20 +47,20 @@ function EditableField({
             className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary shadow-xs focus:border-border-brand focus:outline-none"
             autoFocus
           />
-          <div className="mt-2 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={onSave}
-              className="rounded-md bg-bg-brand-solid px-3 py-1.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
-            >
-              Save
-            </button>
+          <div className="mt-3 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={onCancel}
               className="text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
             >
               Cancel
+            </button>
+            <button
+              type="button"
+              onClick={onSave}
+              className="rounded-md bg-bg-brand-solid px-3 py-1.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+            >
+              Save
             </button>
           </div>
         </dd>
@@ -264,7 +264,7 @@ export default function AppSettings() {
               />
               <ReadOnlyField label="Category" value="Appointment reminders" />
               {hasEIN ? (
-                <ReadOnlyField label="EIN" value="Verified · ••••••4567" />
+                <ReadOnlyField label="EIN" value="••••••4567" />
               ) : (
                 <div className="flex items-center justify-between">
                   <dt className="text-sm text-text-tertiary">EIN</dt>
@@ -282,13 +282,9 @@ export default function AppSettings() {
             </>
           ) : (
             <>
-              <ReadOnlyField
-                label="Business name"
-                value={businessName}
-                sub="Set during registration"
-              />
+              <ReadOnlyField label="Business name" value={businessName} />
               <ReadOnlyField label="Category" value="Appointment reminders" />
-              {hasEIN && <ReadOnlyField label="EIN" value="Verified · ••••••4567" />}
+              {hasEIN && <ReadOnlyField label="EIN" value="••••••4567" />}
             </>
           )}
         </dl>
@@ -310,14 +306,7 @@ export default function AppSettings() {
               <dt className="text-sm text-text-tertiary">Submitted</dt>
               <dd className="text-sm font-medium text-text-primary">Mar 10, 2026</dd>
             </div>
-            <div className="flex items-center justify-between">
-              <dt className="text-sm text-text-tertiary">Estimated review</dt>
-              <dd className="text-sm font-medium text-text-primary">A few days</dd>
-            </div>
           </dl>
-          <p className="mt-4 text-sm text-text-tertiary">
-            Your sandbox is fully active while you wait.
-          </p>
         </div>
       )}
 
@@ -338,7 +327,7 @@ export default function AppSettings() {
             </div>
           </dl>
           <p className="mt-4 text-sm text-text-tertiary">
-            The carrier asked for additional information about your registration. We&apos;re handling it — no action needed from you. We&apos;ll reach out if we need anything.
+            This is taking longer than usual. We&apos;ll email you at jen@glowstudio.com when there&apos;s an update.
           </p>
         </div>
       )}
@@ -361,10 +350,6 @@ export default function AppSettings() {
             <div className="flex items-center justify-between">
               <dt className="text-sm text-text-tertiary">Approved</dt>
               <dd className="text-sm font-medium text-text-primary">Mar 31, 2026</dd>
-            </div>
-            <div className="flex items-center justify-between">
-              <dt className="text-sm text-text-tertiary">Campaign ID</dt>
-              <dd className="text-sm font-medium text-text-primary">C-XXXXXX</dd>
             </div>
           </dl>
           <div className="mt-4 flex justify-end">
@@ -441,25 +426,19 @@ export default function AppSettings() {
               Start a new registration &rarr;
             </a>
           </div>
-          <p className="mt-3 text-sm text-text-tertiary">
-            Your sandbox is still active — your code and test environment aren&apos;t going anywhere.
-          </p>
         </div>
       )}
 
       {/* ── Section 4: API Keys ── */}
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
-        <h3 className="text-lg font-semibold text-text-primary mb-1">API keys</h3>
-        <p className="text-sm text-text-tertiary mb-4">
-          Your AI coding tool reads this key from your RelayKit files.
-        </p>
+        <h3 className="text-lg font-semibold text-text-primary mb-4">API keys</h3>
 
         <div className="space-y-4">
-          {/* Sandbox key — always visible */}
+          {/* Test key — always visible */}
           <div>
             <div className="flex items-center gap-2 mb-1.5">
               <p className="text-sm font-medium text-text-quaternary uppercase tracking-wide">
-                Sandbox
+                Test
               </p>
               <span className="inline-flex items-center rounded-full bg-bg-success-secondary px-2 py-0.5 text-xs font-medium text-text-success-primary">
                 Active
@@ -529,7 +508,7 @@ export default function AppSettings() {
             <>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-tertiary">Plan</span>
-                <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
+                <span className="text-sm font-medium text-text-primary">Test mode — Free</span>
               </div>
               <p className="text-xs text-text-quaternary">No credit card required.</p>
             </>
@@ -544,7 +523,7 @@ export default function AppSettings() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-tertiary">Plan</span>
-                <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
+                <span className="text-sm font-medium text-text-primary">Test mode — Free</span>
               </div>
               <div className="flex justify-end">
                 <a
@@ -566,7 +545,7 @@ export default function AppSettings() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-tertiary">Plan</span>
-                <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
+                <span className="text-sm font-medium text-text-primary">Test mode — Free</span>
               </div>
               <div className="flex justify-end">
                 <a
@@ -623,7 +602,7 @@ export default function AppSettings() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-text-tertiary">Plan</span>
-                <span className="text-sm font-medium text-text-primary">Sandbox — Free</span>
+                <span className="text-sm font-medium text-text-primary">Test mode — Free</span>
               </div>
             </>
           )}
