@@ -104,15 +104,12 @@ function ReadOnlyField({ label, value, sub }: { label: string; value: string; su
 
 function EinRow({
   hasEIN,
-  showAddWhenMissing,
   editable = false,
 }: {
   hasEIN: boolean;
-  showAddWhenMissing: boolean;
   editable?: boolean;
 }) {
   if (!hasEIN) {
-    if (!showAddWhenMissing) return null;
     return (
       <div className="flex items-center justify-between">
         <dt className="text-sm text-text-tertiary">EIN</dt>
@@ -357,13 +354,13 @@ export default function AppSettings() {
                 onEditValueChange={setEditValue}
               />
               <ReadOnlyField label="Category" value="Appointment reminders" />
-              <EinRow hasEIN={hasEIN} showAddWhenMissing editable={hasEIN} />
+              <EinRow hasEIN={hasEIN} editable />
             </>
           ) : (
             <>
               <ReadOnlyField label="Business name" value={businessName} />
               <ReadOnlyField label="Category" value="Appointment reminders" />
-              <EinRow hasEIN={hasEIN} showAddWhenMissing={isApproved} />
+              <EinRow hasEIN={hasEIN} />
             </>
           )}
         </dl>
