@@ -344,7 +344,7 @@ export default function AppMessagesPage() {
 
   /* ── Section header (post-onboarding only) ── */
   const messagesSectionHeader = (
-    <div className="mb-4 flex w-full items-center">
+    <div className="mt-2 mb-4 flex w-full items-center">
       <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
       <div className="ml-auto flex items-center gap-6">
         <SetupToggle checked={setupVisible} onChange={setupToggle} />
@@ -371,7 +371,7 @@ export default function AppMessagesPage() {
 
   /* ── Shared message list ── */
   const messageList = (
-    <div className={isWizard ? "" : "min-[860px]:max-w-[540px]"}>
+    <div>
       <div className="space-y-5">
         {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
           <CatalogCard
@@ -456,7 +456,7 @@ export default function AppMessagesPage() {
       <div>
         {/* Delivery metrics — hidden when the Ask Claude panel is open */}
         {!askClaudeOpen && (
-        <div className="grid grid-cols-1 min-[860px]:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 min-[860px]:grid-cols-3 gap-6 mb-6">
           <div className="rounded-xl border border-border-secondary bg-bg-primary p-5">
             <p className="text-sm font-semibold text-text-tertiary uppercase tracking-wide">Delivery</p>
             <div className="mt-3">
@@ -495,7 +495,7 @@ export default function AppMessagesPage() {
           className={
             askClaudeOpen
               ? "grid grid-cols-1 md:grid-cols-2 md:gap-10"
-              : "grid grid-cols-1 min-[860px]:grid-cols-3 gap-4"
+              : "grid grid-cols-1 min-[860px]:grid-cols-3 gap-6"
           }
         >
           <div className={askClaudeOpen ? "min-w-0" : "min-w-0 min-[860px]:col-span-2"}>
@@ -671,7 +671,7 @@ export default function AppMessagesPage() {
         className={
           askClaudeOpen
             ? "grid grid-cols-1 md:grid-cols-2 md:gap-10"
-            : "grid grid-cols-1 min-[860px]:grid-cols-3 gap-4"
+            : "grid grid-cols-1 min-[860px]:grid-cols-3 gap-6"
         }
       >
         {/* LEFT — setup instructions + messages */}

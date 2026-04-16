@@ -1,14 +1,14 @@
-# PRD: Settings Page
-## RelayKit — Per-App Settings
-### Version 2.1 — April 14, 2026
+# PRD: Settings
+## RelayKit — Per-App Settings + Account Settings
+### Version 2.3 — April 15, 2026
 
-> **Status:** Updated. Aligned with current prototype, DECISIONS.md (through D-348), PRICING_MODEL.md, VOICE_AND_PRODUCT_PRINCIPLES_v2.md, and WORKSPACE_DESIGN_SPEC.md. Supersedes V1.0 (March 23, 2026).
+> **Status:** Updated. Added Account Settings page spec (resolves open question #5). Corrected phone model — RelayKit uses email-only auth (magic link, D-03/D-59), no auth phone. Aligned with current prototype, DECISIONS.md (through D-348), PRICING_MODEL.md, VOICE_AND_PRODUCT_PRINCIPLES_v2.md, and WORKSPACE_DESIGN_SPEC.md.
 >
-> **Source of truth:** Prototype at `prototype/app/apps/[appId]/settings/page.tsx` (port 3001). This PRD describes the production version. The prototype is the visual spec.
+> **Source of truth:** Prototype at `prototype/app/apps/[appId]/settings/page.tsx` and `prototype/app/account/page.tsx` (port 3001). This PRD describes the production version. The prototype is the visual spec.
 >
-> **Dependencies:** Account settings page (not yet built — holds email, auth phone, payment method). Carrier registration pipeline (rewrite pending for TCR CSP). Stripe billing integration (PRICING_MODEL.md).
+> **Dependencies:** Carrier registration pipeline (rewrite pending for TCR CSP). Stripe billing integration (PRICING_MODEL.md).
 >
-> **Decision refs:** D-98, D-99, D-126, D-150, D-153, D-154, D-164, D-193, D-194, D-195, D-201, D-202, D-203, D-204, D-205, D-206, D-207, D-208, D-209, D-210, D-211, D-212, D-213, D-214, D-293, D-294, D-304, D-309, D-320, D-321, D-332, D-334, D-344, D-345, D-346, D-347, D-348.
+> **Decision refs:** D-03, D-59, D-98, D-99, D-126, D-150, D-153, D-154, D-164, D-193, D-194, D-195, D-201, D-202, D-203, D-204, D-205, D-206, D-207, D-208, D-209, D-210, D-211, D-212, D-213, D-214, D-293, D-294, D-304, D-309, D-320, D-321, D-332, D-334, D-344, D-345, D-346, D-347, D-348.
 
 ---
 
@@ -35,7 +35,9 @@ Settings is a utility panel: everything findable, nothing hidden, no surprises. 
 
 ### Account Access
 
-The top nav includes an account avatar button (right side) with a dropdown menu containing: account settings link (email, auth phone, payment method) and sign out. This is consistent across all authenticated pages, not specific to Settings. Account-level fields do not appear on the per-app Settings page — they live on the account settings page accessed via this dropdown.
+The top nav includes an account avatar button (right side) with a dropdown menu containing: "Account settings" link and "Sign out." This is consistent across all authenticated pages, not specific to Settings. Account-level fields do not appear on the per-app Settings page — they live on the account settings page (`/account`) accessed via this dropdown. See Section 8 for the full account settings page spec.
+
+The freestanding "Sign out" text link is removed from the top nav. Sign out lives exclusively in the avatar dropdown. The "Sign in" link on unauthenticated marketing pages is unaffected — it remains a freestanding text link.
 
 ---
 
@@ -95,9 +97,9 @@ All fields are read-only — they were locked at registration submission.
 
 Business name cannot change without canceling and restarting registration — it was submitted to carriers. Category is set at use case selection — changing use case means a new app. EIN is locked at submission.
 
-**Why email and phone aren't here (D-347):** Email and auth phone are account-level fields shared across all apps. They live on the account settings page, accessed via the avatar dropdown in the top nav. The per-app test phone is managed on the workspace via the Testers card (D-342). Settings only shows app-scoped fields.
+**Why email and phone aren't here (D-347):** Email is an account-level field shared across all apps. It lives on the account settings page, accessed via the avatar dropdown in the top nav. The per-app test phone is managed on the workspace via the Testers card (D-342). Settings only shows app-scoped fields.
 
-**Interim note:** While the account settings page doesn't exist yet, the prototype may still show email and personal phone on this page for completeness. Production should omit them from per-app Settings once the account page is built.
+**Interim note:** The account settings page now exists at `/account`. Production Settings should only show app-scoped fields. Email and payment method live on the account page.
 
 ---
 
@@ -262,8 +264,10 @@ The registration fee line reflects the refund outcome: "$49 refunded · [date]" 
 
 Toggle switch, **off by default** (D-201).
 
-When on: "Texts go to [auth phone number]" with "Change" link (navigates to account settings).
+When on: "Texts go to [verified phone number]" with "Change" link.
 When off: phone destination line hidden.
+
+**Note on notification phone:** RelayKit uses email-only authentication (magic link, D-03/D-59). There is no "auth phone." The notification phone is the developer's verified phone from the onboarding flow (`/start/verify`, D-46) — the same number used for test message delivery. If the developer wants to change their notification destination, the "Change" link opens an inline phone verification flow (same component as onboarding).
 
 **What triggers a text notification (D-348):**
 - Registration approved — "Your app is live! Log in to get your live API key."
@@ -289,7 +293,7 @@ When off: phone destination line hidden.
 
 **Data:**
 - `sms_notifications_enabled: boolean` (default: false) — per-app setting
-- Notification phone inherited from account-level auth phone
+- Notification phone: developer's verified phone from onboarding (`/start/verify`)
 - Delivered via dedicated RelayKit system number (not the developer's app number)
 
 ---
@@ -351,25 +355,25 @@ This mapping is deterministic (D-04) — not AI-generated. Unmapped error codes 
 
 ## 6. PHONE NUMBER DISAMBIGUATION
 
-Three phone numbers exist in the system. Never use the bare label "Phone" (D-207):
+Two phone numbers exist in the system. Never use the bare label "Phone" (D-207):
 
 | Label | What it is | Where it lives |
 |-------|-----------|----------------|
-| Auth phone | Developer's own number. Used for login OTP and text notifications. | Account settings page (via avatar dropdown) |
 | Your SMS number | Dedicated number assigned at registration approval. The number the developer's customers see. | Settings → Registration section (Registered only) |
-| Test phone | Primary phone for receiving test messages. | Workspace → Testers card (D-342). Not on Settings. |
+| Verified phone | Developer's own number. Collected at onboarding (`/start/verify`, D-46). Used for test message delivery and (if opted in) text notifications. | Workspace → Testers card (D-342). Notification destination on Settings. |
+
+**Note:** RelayKit uses email-only authentication (magic link, D-03/D-59). There is no separate "auth phone." The verified phone from onboarding serves both test delivery and notification purposes.
 
 ---
 
 ## 7. ACCOUNT-LEVEL VS. APP-LEVEL FIELDS (D-347)
 
-**Account-level** (shared across all apps, lives on account settings page):
-- Email
-- Auth phone
-- Payment method
-- Sign out
+**Account-level** (shared across all apps, lives on account settings page at `/account`):
+- Email (login identity, magic link target, notification destination)
+- Payment method (Stripe Customer, shared across all app subscriptions)
+- Delete account (destructive, affects everything)
 
-Accessed via avatar button dropdown in the top nav. Not on the per-app Settings page.
+Accessed via avatar button dropdown in the top nav. Not on the per-app Settings page. Sign out is also in the avatar dropdown.
 
 **App-level** (per-app, lives on Settings):
 - Business name (read-only post-registration)
@@ -380,11 +384,96 @@ Accessed via avatar button dropdown in the top nav. Not on the per-app Settings 
 - Cancellation
 - Text notification toggle
 
-**Interim treatment:** While the account settings page doesn't exist, the prototype shows email and personal phone on Settings for completeness. Production Settings should only show app-scoped fields. Account-level fields move to the account page when it's built.
+**Account settings page:** Now built at `/account`. See Section 8 for the full spec.
 
 ---
 
-## 8. DATA MODEL
+## 8. ACCOUNT SETTINGS PAGE
+
+Route: `/account`
+
+The account settings page manages fields shared across all apps. It is accessed via the avatar dropdown in the top nav ("Account settings" link). It is not a child of any app — it's a top-level page.
+
+### Layout
+
+- Same top nav as all authenticated pages (with avatar dropdown)
+- Back link: "← Back to [app name]" — links to the most recently viewed app (`/apps/[appId]`). If no app context, links to `/apps`.
+- Page heading: "Account settings" h1 below the back link
+- Same max-width, card pattern, typography, and spacing as per-app Settings
+- No state-dependent rendering — all sections always visible
+
+### 8.1 Login
+
+**Card heading:** "Login"
+
+| Row | Display | Action |
+|-----|---------|--------|
+| Email | jen@glowstudio.com | "Change" link (right-aligned) |
+
+The email address is the developer's login identity (magic link target), Stripe Customer email, and destination for all email notifications. One email, one developer.
+
+**Change flow:** Clicking "Change" opens an inline flow:
+1. Developer enters new email address
+2. Magic link sent to the *new* email for verification
+3. Change takes effect only after the new email is verified
+4. If not verified, nothing changes — the old email remains active
+
+This prevents account hijacking via session-based email swaps. The Stripe Customer email updates automatically when the account email changes.
+
+### 8.2 Payment Method
+
+**Card heading:** "Payment method"
+
+| Row | Display | Action |
+|-----|---------|--------|
+| Card on file | "Visa ending in 4242" / "No payment method" | "Manage billing →" link (right-aligned) |
+
+"Manage billing →" opens the Stripe Customer Portal (server-side `stripe.billingPortal.sessions.create()`). All app subscriptions are under one Stripe Customer record — one card, one portal. The developer manages all billing from here, not per-app.
+
+### 8.3 Delete Account
+
+**Card heading:** "Delete account" — `text-red-600`
+**Card border:** `border-red-200` (instead of normal `border-gray-200`)
+
+**Body text:** "This will permanently delete your account, all apps, and all data. Active subscriptions will be canceled and carrier registrations wound down. This cannot be undone."
+
+**Action:** "Delete account" button, destructive styling (red outline/text, not filled).
+
+**Confirmation modal:** Same pattern as the Cancel plan modal on per-app Settings:
+- Semi-transparent backdrop (`bg-black/50`)
+- White modal, centered
+- Text: "Type DELETE to confirm"
+- Text input field
+- "Delete account" button disabled until input strictly equals "DELETE"
+- "Cancel" button to close
+
+**What deletion does (production):**
+- Cancels all active Stripe subscriptions immediately (not at period end)
+- Initiates carrier registration wind-down for all registered apps
+- Marks account for 90-day data retention, then permanent deletion
+- Revokes all API keys immediately
+- Signs the developer out
+
+### Data Model
+
+#### Reads
+
+| Data | Source | Notes |
+|------|--------|-------|
+| Email | `auth.users.email` | Login identity |
+| Payment method | Stripe API | Card brand + last 4 via `stripe.customers.retrieve()` |
+
+#### Writes
+
+| Action | Target | Notes |
+|--------|--------|-------|
+| Change email | `auth.users.email` | Requires verification of new email via magic link |
+| Manage billing | Stripe Customer Portal | Redirect to hosted portal |
+| Delete account | Multiple | Stripe cancel, carrier wind-down, account soft-delete, session revoke |
+
+---
+
+## 9. DATA MODEL (PER-APP SETTINGS)
 
 ### Reads
 
@@ -408,11 +497,11 @@ Accessed via avatar button dropdown in the top nav. Not on the per-app Settings 
 | Regenerate live key | `api_keys` table | Delete old hash, generate new, hash and store, return plaintext once |
 | Cancel plan | Stripe API | Cancel at period end. Update `projects.status`. |
 
-Note: email and phone edits are account-level writes, handled on the account settings page (D-347).
+Note: email edits are account-level writes, handled on the account settings page (`/account`, D-347).
 
 ---
 
-## 9. ERROR STATES
+## 10. ERROR STATES
 
 | Scenario | Handling |
 |----------|---------|
@@ -423,7 +512,7 @@ Note: email and phone edits are account-level writes, handled on the account set
 
 ---
 
-## 10. SECTION ORDER BY STATE
+## 11. SECTION ORDER BY STATE
 
 | Section | Building | Pending | Extended Review | Registered | Rejected |
 |---------|----------|---------|-----------------|------------|----------|
@@ -439,7 +528,7 @@ Note: email and phone edits are account-level writes, handled on the account set
 
 ---
 
-## 11. IMPLEMENTATION NOTES
+## 12. IMPLEMENTATION NOTES
 
 ### Route
 `/apps/[appId]/settings` (D-345)
@@ -468,7 +557,7 @@ Billing data fetched server-side via Stripe Node SDK. Cancel calls Stripe API to
 
 ---
 
-## 12. OPEN QUESTIONS
+## 13. OPEN QUESTIONS
 
 | # | Question | Blocked on | Recommendation |
 |---|----------|-----------|----------------|
@@ -476,13 +565,13 @@ Billing data fetched server-side via Stripe Node SDK. Cancel calls Stripe API to
 | 2 | Error code mapping completeness | Carrier selection + error code documentation | Build mapping table per carrier during production. |
 | 3 | Live key initial reveal UX | Approval celebration design | The first reveal happens at the approval moment, not on Settings. Settings always shows masked unless just regenerated. |
 | 4 | Dual-campaign billing display ($29/mo) | Marketing upsell flow completion | Show $19/mo for now. When marketing activates, Billing section reflects $29/mo automatically. |
-| 5 | Account settings page design | Separate PRD | Needs email, auth phone, payment method, sign out, danger zone (delete account). |
 | 6 | Ask Claude panel design on Settings | Claude panel design session | Same entry point as workspace. Pre-loaded with app context and current state. Stub for now. |
 
 ### Resolved since V1.0
 
 | Old # | Question | Resolution |
 |-------|----------|------------|
+| 5 (v2) | Account settings page design | Resolved in V2.3. Section 8 specifies the full page: Login (email), Payment method (Stripe portal), Delete account (with DELETE confirmation). No auth phone — RelayKit uses email-only auth (D-03/D-59). |
 | 1 (v1) | Review timeline value | "A few days." Configurable in production. |
 | 2 (v1) | Account-level edit flow | Account settings page via avatar dropdown (D-347). Per-app Settings shows only app-scoped fields. |
 | 7 (v1) | High-volume pricing tier | Deferred. Volume tapering in PRICING_MODEL.md ($7/500 at 5k+) but not surfaced on Settings. |
@@ -491,7 +580,7 @@ Billing data fetched server-side via Stripe Node SDK. Cancel calls Stripe API to
 
 ---
 
-## 13. CHANGELOG
+## 14. CHANGELOG
 
 | Date | Change |
 |------|--------|
@@ -499,3 +588,4 @@ Billing data fetched server-side via Stripe Node SDK. Cancel calls Stripe API to
 | 2026-04-14 | V2.0 — Full rewrite. State names, route, pricing, notifications rename, copy alignment. |
 | 2026-04-14 | V2.1 — Added Settings h1. Business Info section now visible in all states including Building (editable pre-registration, locked post-registration). Added EIN row to Business Info with verified/not-on-file states. Restructured Account Info → Business Info (app-scoped only, D-347). Added account avatar dropdown to layout. Added Section 5: Rejection Behavior (four scenarios, fault model, refund rules, error code mapping). Rewrote Notifications with specific triggers per D-348. Replaced "sandbox" with "test" in API key labels and billing. Fixed user-facing status labels. Added Ask Claude entry point. Cancel modal requires typing CANCEL. Updated phone disambiguation. Removed drift detection references. Fixed onboarding redirect to `/apps/[appId]`. Noted production edit pattern: wizard step components reused in modals. |
 | 2026-04-15 | V2.2 — Synced with implemented prototype. Removed "Verified" prefix from EIN display. EIN "Add" link available in all states when not on file (not hidden post-registration). Removed "Set during registration" sub-text from business name. Removed "Estimated review" row and Pending sub-copy. Removed Campaign ID from Registered. Removed API keys sub-copy. Removed "Plan: Test mode — Free" row from Pending/Extended Review billing. Notifications section now implemented. |
+| 2026-04-15 | V2.3 — Added Account Settings page spec (Section 8): Login (email with change-via-magic-link verification), Payment method (Stripe Customer Portal), Delete account (type DELETE confirmation, 90-day retention). Resolved open question #5. Corrected phone model throughout: RelayKit uses email-only auth (magic link, D-03/D-59), no auth phone. Phone disambiguation reduced from three numbers to two (Your SMS number + Verified phone). Notification phone is the developer's verified phone from onboarding, not an account-level auth phone. Updated avatar dropdown spec: "Account settings" link + "Sign out"; freestanding Sign out removed from top nav. Removed all interim notes about account page not existing. |

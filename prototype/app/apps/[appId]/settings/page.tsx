@@ -268,7 +268,7 @@ export default function AppSettings() {
         &larr; Back to {appName}
       </Link>
 
-      <h1 className="text-2xl font-semibold text-text-primary mb-6">Settings</h1>
+      <h1 className="text-2xl font-semibold text-text-primary mb-6">App settings</h1>
 
       {/* Modals */}
       {cancelModalOpen && (

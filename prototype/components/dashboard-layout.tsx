@@ -111,14 +111,20 @@ export function DashboardLayout({
             {isMessagesPage && (
               <Link
                 href={`/apps/${appId}/settings`}
-                className="ml-6 flex items-center gap-1.5 text-sm font-medium text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
+                aria-label="App settings"
+                className="ml-6 flex items-center text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear"
               >
                 <Settings01 className="size-4" />
-                Settings
               </Link>
             )}
           </div>
         </div>
+
+        {isMessagesPage && (
+          <div className="mx-auto max-w-5xl px-6 pt-4">
+            <p className="text-sm text-gray-500 -mb-1">Your SMS workspace. Build and test your feature, go live when you&apos;re ready</p>
+          </div>
+        )}
 
         {/* Page content */}
         <div className="mx-auto max-w-5xl px-6 pt-6 pb-16">

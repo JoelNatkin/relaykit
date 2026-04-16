@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: April 15, 2026
+### Last updated: April 16, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -18,7 +18,7 @@
 
 **Logged-out (marketing) nav:** RelayKit wordmark (left) → Use Cases (dropdown: Appointments → `/sms/appointments`) → Compliance (`/compliance`) → Sign in (right, opens sign-in modal). No Prototype badge. (D-118, updated March 27 2026)
 
-**Logged-in (app) nav:** RelayKit wordmark (left) → "Your Apps" (plain text link to `/apps`, left-aligned after wordmark) → Sign out (right, toggles state + navigates to `/`). No Prototype badge, no pill styling.
+**Logged-in (app) nav:** RelayKit wordmark (left) → "Your Apps" (plain text link to `/apps`, left-aligned after wordmark) → avatar button (right, 32px round `bg-gray-200` with `User01` icon). Clicking the avatar opens a dropdown menu aligned to the right edge: **Account settings** (→ `/account`) and **Sign out** (toggles state + navigates to `/`). Menu closes on outside click. The freestanding "Sign out" text link was removed — sign out lives exclusively in the avatar dropdown. No Prototype badge, no pill styling. (PRD_SETTINGS v2.3 §2; implements D-347.)
 
 Per-project tabs live exclusively in the app layout shell, not in top nav. (D-118)
 
@@ -349,15 +349,16 @@ The workspace lives at the `/apps/[appId]` root (D-345). `/apps/[appId]/messages
 
 **Dashboard mode (Building/Pending/Registered/Extended Review/Rejected — rendered inside DashboardLayout):**
 
-- **DashboardLayout header row** (app identity bar): `GlowStudio` heading + `Appointments` pill on the left. Right side (via `ml-auto`): prototype state-switcher dropdowns → EIN switcher → StatusIndicator (conditional, see below) → Settings gear link (`ml-6`, workspace page only). Settings visibility gated on `pathname === /apps/${appId}` (exact root match — D-345). The Instructions toggle is no longer in the header — it was moved into the messages section header row next to Ask Claude (see below). `useSetupToggle` state still lives in DashboardLayout and is provided via `SetupToggleContext` so the workspace page can render both the toggle control and the SetupInstructions panel against the same flag. Toggle thumb uses `translate-x-[16px]` in the enabled state so there's 2px right padding matching the 2px left (`ml-0.5`) when disabled.
+- **DashboardLayout header row** (app identity bar): `GlowStudio` heading + `Appointments` pill on the left. Right side (via `ml-auto`): prototype state-switcher dropdowns → EIN switcher → StatusIndicator (conditional, see below) → Settings gear link (`ml-6`, workspace page only). Settings link is **icon-only** (`Settings01` gear, no text label; `aria-label="App settings"` for a11y) — the text label moved to the Settings page H1. Settings visibility gated on `pathname === /apps/${appId}` (exact root match — D-345). The Instructions toggle is no longer in the header — it was moved into the messages section header row next to Ask Claude (see below). `useSetupToggle` state still lives in DashboardLayout and is provided via `SetupToggleContext` so the workspace page can render both the toggle control and the SetupInstructions panel against the same flag. Toggle thumb uses `translate-x-[16px]` in the enabled state so there's 2px right padding matching the 2px left (`ml-0.5`) when disabled.
+- **Workspace tagline row:** Immediately below the header row on the messages page only (gated on `isMessagesPage`): `<p>` tagline reading "Your SMS workspace. Build and test your feature, go live when you're ready" (`text-sm text-gray-500`, sits inside the `max-w-5xl` content column, `pt-4 -mb-1`). Not shown on Settings or other app sub-pages.
 - **StatusIndicator (D-344):** Yellow dot + "Test mode" for Building/Pending/Extended Review/Rejected. Green dot + "Live" for Registered. Null for Onboarding. Conditional wrapper (`registrationState !== "onboarding"`) so no empty `ml-10` div when null.
-- **Messages section header** (`mb-4 flex w-full items-center`): `<h2>Messages</h2>` on the left. On the right (via `ml-auto flex items-center gap-6`): the **Instructions** toggle (renamed from "Setup instructions") immediately left of the "Ask Claude" button (`Stars02` icon + text, tertiary purple). 24px gap between toggle and button. Clicking Ask Claude opens the panel (D-343); toggling Instructions reveals/hides the SetupInstructions panel in the left column.
-- **Metrics grid (Registered only):** `grid grid-cols-1 min-[860px]:grid-cols-3 gap-4 mb-6` — single column below 860px, straight to 3 columns at 860px (no intermediate 2-column step). Three cards: Delivery (98.4% + trend), Recipients (284 + trend), Usage & billing (347/500 + progress bar + `"Plan: $19/mo · 500 included"` at same size/weight as the trend lines). Stat-detail lines ("1,812 delivered · 22 failed · 8 pending", "12 opt-outs · 38 inbound replies", "153 messages remaining this period") removed.
+- **Messages section header** (`mt-2 mb-4 flex w-full items-center`): `<h2>Messages</h2>` on the left. On the right (via `ml-auto flex items-center gap-6`): the **Instructions** toggle (renamed from "Setup instructions") immediately left of the "Ask Claude" button (`Stars02` icon + text, tertiary purple). 24px gap between toggle and button. Clicking Ask Claude opens the panel (D-343); toggling Instructions reveals/hides the SetupInstructions panel in the left column. The `mt-2` gives a small breather below the workspace tagline row.
+- **Metrics grid (Registered only):** `grid grid-cols-1 min-[860px]:grid-cols-3 gap-6 mb-6` — single column below 860px, straight to 3 columns at 860px (no intermediate 2-column step). 24px (`gap-6`) between cards matches the messages grid below so columns align pixel-for-pixel. Three cards: Delivery (98.4% + trend), Recipients (284 + trend), Usage & billing (347/500 + progress bar + `"Plan: $19/mo · 500 included"` at same size/weight as the trend lines). Stat-detail lines ("1,812 delivered · 22 failed · 8 pending", "12 opt-outs · 38 inbound replies", "153 messages remaining this period") removed.
 - **Setup instructions** (`prototype/components/setup-instructions.tsx`): Toggle-controlled container with "Start building" heading and 3 numbered instruction cards. Default ON in Building, OFF in other states. Per-state toggle persisted in sessionStorage. Rendered inside the left column **above** the message cards in both layouts (moved from above the metrics grid in the Registered state so all post-onboarding states render it in the same slot). The Start building panel itself caps at `min-[860px]:max-w-[540px]`. Card 3's helper text reads: "Paste this prompt into your AI tool to start building. Once your app is sending, use the cards below to test delivery and Ask Claude to debug issues."
-- **Message cards:** `min-[860px]:max-w-[540px]` wrapper on the messageList (non-wizard) + individual card root when `monitorMode` is true — uncapped below 860px, 540px above. No send icons (removed).
+- **Message cards:** The `messageList` wrapper is uncapped — message cards now flow to the full width of the 2-col grid cell. Individual card root still applies `min-[860px]:max-w-[540px]` when `monitorMode` is true — uncapped below 860px, 540px above. No send icons (removed). Removing the wrapper cap was what made the messages+rail grid share widths with the metrics grid above it.
 
 **Two-column layout (all post-onboarding states):**
-- When Ask Claude panel is closed: `grid grid-cols-1 min-[860px]:grid-cols-3 gap-4`. Left column: `min-w-0 min-[860px]:col-span-2`. Right column (third grid col): `order-first min-[860px]:order-last min-[860px]:sticky min-[860px]:top-20 space-y-4` stacks state-specific card(s) above the Testers card (D-342). The 860px breakpoint is used consistently across the metrics grid and the card/rail grid so they align pixel-for-pixel.
+- When Ask Claude panel is closed: `grid grid-cols-1 min-[860px]:grid-cols-3 gap-6`. Left column (messages): `min-w-0 min-[860px]:col-span-2`. Right column (third grid col): `order-first min-[860px]:order-last min-[860px]:sticky min-[860px]:top-20 space-y-4` stacks state-specific card(s) above the Testers card (D-342). The 860px breakpoint + 24px (`gap-6`) gutter are used consistently across the metrics grid (Registered only) and the card/rail grid so the two rows align pixel-for-pixel as a single shared 3-column grid. Messages column no longer applies its own `max-w-[540px]` wrapper — it fills the two-col cell.
 - When Ask Claude panel is open (D-343): `grid grid-cols-1 md:grid-cols-2 md:gap-10`. Equal 50/50 columns. Metrics hidden (Registered). Right rail replaced by inline Ask Claude panel (desktop: `md:flex`, sticky; mobile `<md`: full-width fixed overlay).
 - **Ask Claude panel top alignment:** A zero-height `<div ref={messageTopRef} />` sits at the very top of the left column (above SetupInstructions, above messageList) so `getBoundingClientRect().top` measures the grid row's top. If the ref were placed below SetupInstructions, `topOffset` would shift when the Start building card toggles on and the panel's `height: calc(100vh - topOffset - 2.5rem)` would collapse to a thin strip.
 
@@ -528,11 +529,11 @@ The last screen before the dashboard. Developer has verified their email and lan
 
 ### Settings — `/apps/[appId]/settings`
 **File:** `prototype/app/apps/[appId]/settings/page.tsx`
-**Status:** Stable — aligned with PRD_SETTINGS v2.2, updated 2026-04-15.
+**Status:** Stable — aligned with PRD_SETTINGS v2.3, updated 2026-04-16.
 
 **Navigation:** "← Back to {appName}" link (e.g., "← Back to GlowStudio") at top of page. Links to `/apps/[appId]` workspace root (D-345). App name resolved via inline `APP_NAMES` map.
 
-**Page heading:** `<h1>Settings</h1>` (`text-2xl font-semibold`, `mb-6`) below back link.
+**Page heading:** `<h1>App settings</h1>` (`text-2xl font-semibold`, `mb-6`) below back link. The "App" qualifier disambiguates from Account settings at `/account` (the DashboardLayout top-bar Settings gear is now icon-only; the label now lives on this H1).
 
 **Layout:** 600px max-width, centered. Card sections stack vertically (`space-y-6`). Sections and rows appear/disappear based on `registrationState` (from session context) and `hasEIN` (from wizard sessionStorage, listens to `relaykit-ein-change`). All body text 14px (`text-sm`); section headers 18px (`text-lg font-semibold`); action links right-aligned.
 
@@ -605,6 +606,23 @@ Card heading: "API keys." No sub-copy.
 - **Rejected:** Registration fee → "$49 refunded · date"; Plan → "Test mode — Free".
 
 **Cancel plan modal:** Custom inline modal (not shared `ConfirmModal`). `bg-black/50` backdrop. Body: "Your plan will stay active through April 14, 2026. After that, live messaging stops but your test environment stays available — your code, your API key, and your test setup aren't going anywhere." Input labeled "Type CANCEL to confirm" (placeholder "CANCEL"). Buttons: "Keep plan" (grey) / "Cancel plan" (red, disabled until input strictly equals "CANCEL").
+
+---
+
+### Account Settings — `/account`
+**File:** `prototype/app/account/page.tsx`
+**Status:** Scaffolded — holds the account-level fields carved out by D-347. Implements PRD_SETTINGS v2.3 §8. All actions are brand-link no-ops for the prototype.
+
+**Entry point:** Avatar dropdown in the top nav → "Account settings." The dropdown is the only way to reach this page; it's not linked from per-app Settings.
+
+**Layout:** 600px max-width, centered. Back link ("← Back to {appName}", currently hardcoded to GlowStudio) → `<h1>Account settings</h1>` (`text-2xl font-semibold`, `mb-6`). Sections stack as cards (`rounded-xl border border-border-secondary bg-bg-primary p-5`, `space-y-6`).
+
+- **Login card:** Heading "Login" + row "Email" / `jen@glowstudio.com`. Right-aligned "Change" brand link (no-op). No auth phone row — RelayKit uses email-only magic-link auth (D-03/D-59), per PRD v2.3 correction.
+- **Payment method card:** Heading "Payment method" + row "Card on file" / "Visa ending in 4242". Right-aligned "Manage billing →" brand link (no-op).
+- **Danger zone:** Red-bordered card (`border-red-200`). Heading "Delete account" (red). Paragraph: "This will permanently delete your account, all apps, and all data. Active subscriptions will be canceled and carrier registrations wound down. This cannot be undone." Right-aligned tertiary-text "Delete account" link that opens a modal.
+- **Delete confirmation modal:** `bg-black/50` backdrop, `max-w-md` card. Same descriptive paragraph, input "Type DELETE to confirm" (placeholder "DELETE"), Cancel (outline) / "Delete account" button (red, disabled until input strictly equals "DELETE"). Confirming is currently a close-modal no-op.
+
+**Not-yet-built on this page:** Real avatar upload, multi-app account picker (today's prototype shows just GlowStudio), password/2FA (magic-link only so N/A), export-my-data flow.
 
 #### Section 5: Notifications (all states)
 
@@ -815,6 +833,7 @@ Components now integrated into `/apps/[appId]/register` and `/apps/[appId]/regis
 prototype/
 ├── app/
 │   ├── page.tsx                          # Marketing home
+│   ├── account/page.tsx                  # Account settings (account-level, D-347)
 │   ├── compliance/page.tsx               # Public compliance page
 │   ├── auth/page.tsx                     # Auth gate (mock)
 │   ├── apps/

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { User01 } from "@untitledui/icons";
 import { useSession } from "@/context/session-context";
 import type { RegistrationState } from "@/context/session-context";
 import { SignInModal } from "@/components/sign-in-modal";
@@ -20,7 +21,20 @@ export function TopNav() {
 
   const [useCasesOpen, setUseCasesOpen] = useState(false);
   const [showSignIn, setShowSignIn] = useState(false);
+  const [avatarOpen, setAvatarOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const avatarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!avatarOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+        setAvatarOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, [avatarOpen]);
 
   useEffect(() => {
     if (!useCasesOpen) return;
@@ -203,13 +217,37 @@ export function TopNav() {
           )}
 
           {isLoggedIn && !isWizardNav ? (
-            <button
-              type="button"
-              onClick={handleSignOut}
-              className="text-sm text-text-secondary hover:text-text-primary transition duration-100 ease-linear cursor-pointer"
-            >
-              Sign out
-            </button>
+            <div ref={avatarRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setAvatarOpen((prev) => !prev)}
+                aria-label="Account menu"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 cursor-pointer"
+              >
+                <User01 className="size-4 text-gray-500" />
+              </button>
+              {avatarOpen && (
+                <div className="absolute right-0 top-full mt-1 min-w-[180px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                  <Link
+                    href="/account"
+                    onClick={() => setAvatarOpen(false)}
+                    className="block px-4 py-2 text-sm text-text-secondary hover:bg-gray-50 cursor-pointer"
+                  >
+                    Account settings
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAvatarOpen(false);
+                      handleSignOut();
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-gray-50 cursor-pointer"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
           ) : !isLoggedIn ? (
             <button
               type="button"
