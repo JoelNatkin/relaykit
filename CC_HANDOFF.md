@@ -1,136 +1,153 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-14/15 (Settings rebuild to PRD v2.2 + three new decisions)
-**Branch:** main (0 commits ahead of origin/main — pushed through `2075aeb`)
+**Date:** 2026-04-15/16 (Account settings + avatar dropdown; shared messages/metrics grid)
+**Branch:** main (2 commits ahead of origin/main — not pushed per Joel's request, PM review first)
 
 ---
 
-## Commits This Session (10)
+## Commits This Session (2)
 
 ```
-2075aeb  docs: update Settings PRD to v2.2
-6fa3cf2  fix(prototype): Extended Review label, Notifications section, test key prefix, remove test key regen
-5549f36  fix(prototype): move Instructions toggle next to Ask Claude, rename label
-12029c8  fix(prototype): EIN row consistent across all Settings states
-dd3fe1d  fix(prototype): EIN edit affordance, billing cleanup, cancel modal friction
-32097d8  fix(prototype): EIN toggle on Settings, Rejected card rewrite
-3ff72b2  fix(prototype): Settings copy and layout polish (Phase 2)
-f7172b6  feat(prototype): Settings h1, back link, Business Info with EIN (Phase 1)
-857a389  docs: record account/app field split (D-347) and notification triggers (D-348)
-78bd013  docs: elevate rate limiting from backlog to launch requirement (D-346)
+9418ba0  feat(prototype): avatar dropdown + /account page + shared messages/metrics grid
+<this>   docs: session close-out — 2026-04-15/16 (grid alignment, avatar dropdown, /account scaffold)
 ```
 
-Pushed to `origin/main`. Previous session's 14 unpushed commits (through `fde7bad`) went out during this session.
+Everything else from the previous session (through `cee3f95`) is already in `origin/main` — the two unpushed commits are everything this session produced plus this handoff.
 
 ---
 
 ## What Was Completed
 
-### Three new decisions (D-346, D-347, D-348)
-- **D-346:** Rate limiting is a launch requirement, not backlog. The matching BACKLOG.md entry ("Advanced rate limiting with queue mode") was replaced with a pointer line. Quiet hours enforcement (D-309) is already bundled into the "Message pipeline refactor (pre-Sinch)" backlog item and required before Sinch integration — confirmed twice this session, no change needed.
-- **D-347:** Account-level vs app-level field split. Email, auth phone, payment method are account-level (future avatar-dropdown settings page). Per-app Settings only shows app-scoped fields.
-- **D-348:** Notification triggers — text (opt-in via toggle) vs email (always on) vs silent handling (rate limits, quiet hours, opt-outs, approaching cap).
+### Shared messages/metrics grid on the workspace page
+`prototype/app/apps/[appId]/page.tsx` — the message cards and the right rail now sit on the same 3-column grid as the Registered-state metrics row above them.
+- Messages column: `col-span-2` (no change structurally, but the `min-[860px]:max-w-[540px]` wrapper on `messageList` is removed, so cards fill the two-col cell).
+- Right rail: 1 column in that same grid (existing behavior preserved).
+- Gap: both the metrics grid and the messages grid use `gap-6` (24px). The metrics grid was bumped from `gap-4` → `gap-6` so the two grids align pixel-for-pixel.
+- Applies in both Registered and non-Registered post-onboarding states (both grid blocks got the `gap-6` update).
+- Untouched: the Ask Claude two-column (`md:grid-cols-2 md:gap-10`) layout — that's an override, not part of the shared grid.
 
-### Settings page — full rebuild to PRD_SETTINGS v2.2
-Single file: `prototype/app/apps/[appId]/settings/page.tsx`. Every section reworked to match the current PRD.
+### Avatar dropdown replaces freestanding "Sign out" link
+`prototype/components/top-nav.tsx` — the right side of the logged-in (app) top nav is now a 32px round avatar button (`User01` icon, `bg-gray-200`). Clicking opens a dropdown menu with two items:
+- **Account settings** → links to `/account`
+- **Sign out** → existing `handleSignOut` flow
 
-- **Page chrome:** Back link now uses app name ("← Back to GlowStudio") via an inline `APP_NAMES` map mirroring the Register page. Added `<h1>Settings</h1>` below the back link.
-- **Business info:** Renamed from "Account info". Visible in every state. Building is editable (business name via inline `EditableField` with right-aligned Save/Cancel buttons); all post-reg states are read-only. Email and Personal phone rows removed entirely (D-347).
-- **EIN row (consolidated into `EinRow` component):** Reads `hasEIN` from wizard sessionStorage (`loadWizardData().ein`) and listens to the `relaykit-ein-change` event — same source the messages page and the dashboard-layout top-bar EIN switcher use. With EIN: shows `••••••4567` everywhere; adds an "Edit" link in Building only. Without EIN: shows "Not on file" + "Add" link in every state. Cleaner and uniform.
-- **Registration section:**
-  - Pending: Status ("In review") + Submitted only. Removed Estimated review row and the "sandbox is fully active" sub-copy.
-  - Extended Review: Status label now "In review" (same as Pending per PRD §3) with sub-copy "This is taking longer than usual. We'll email you at jen@glowstudio.com when there's an update."
-  - Registered: removed Campaign ID row (carrier infrastructure, not developer-facing).
-  - Rejected: full rewrite per PRD §5. Two plain-text lines ("Your registration wasn't approved. The business information provided didn't match public records." + support mailto). Removed "What was submitted" reference block, red "What happened" debrief box, refund line, "Start a new registration" link, "your sandbox is still active" line.
-- **API keys:** Removed sub-copy ("Your AI coding tool reads this key…"). "SANDBOX" label → "TEST". Mock key string `rk_sandbox_rL7x9Kp2mWqYvBn4` → `rk_test_rL7x9Kp2mWqYvBn4`. Removed the never-wired regenerate-test-key modal state + JSX — test keys are re-displayable and don't need Regenerate.
-- **Billing:** Removed the Plan row in Pending/Extended Review (showing "Test mode — Free" while they've paid $49 was confusing). Collapsed the two identical branches into `(isPending || isExtendedReview)`. "Sandbox — Free" → "Test mode — Free" everywhere. Cancel modal rewrote to a custom inline modal (not shared ConfirmModal): `bg-black/50` backdrop, "Type CANCEL to confirm" text input, "Cancel plan" button disabled until input strictly equals "CANCEL".
-- **Notifications (new):** Added Section 5 at the bottom of the page, all states. Heading + "Get a text when something needs your attention." sub-copy. Toggle switch (same visual pattern as the Instructions toggle), off by default. When on: "Texts go to +1 (512) 555-0147" + "Change" brand link.
+Outside-click closes the menu. The unauthenticated "Sign in" text link behavior is unchanged. This is how D-347's "account-vs-app-level field split" gets its entry point.
 
-### Instructions toggle relocation
-Moved out of the DashboardLayout header row and into the messages section header, immediately left of the Ask Claude button with a 24px gap. Label renamed "Setup instructions" → "Instructions". `useSetupToggle` state stays in DashboardLayout and flows to the page via `SetupToggleContext` — only the rendered control moved.
+### `/account` page scaffold
+`prototype/app/account/page.tsx` (new, 129 lines). 600px centered column, cards stack `space-y-6`. Implements PRD_SETTINGS v2.3 §8:
+- **Login** card — Email row + "Change" brand link (no-op). No auth phone row (v2.3 corrects the model to email-only magic-link auth per D-03/D-59).
+- **Payment method** card — "Visa ending in 4242" + "Manage billing →" link (no-op).
+- **Danger zone** card (red-bordered) — "Delete account" description + tertiary-text trigger.
+- **Delete confirmation modal** — `bg-black/50` backdrop, typed-DELETE gate, Cancel / "Delete account" (red, disabled until input equals "DELETE"). Confirming is a close-modal no-op.
 
-### Docs
-- **PRD_SETTINGS_v2.2.md** — new file, 501 lines, supersedes v2.1. Added by Joel and committed as `2075aeb`.
-- **DECISIONS.md** — three new entries (D-346, D-347, D-348).
-- **BACKLOG.md** — rate limiting entry replaced with pointer line.
+### DashboardLayout tweaks
+`prototype/components/dashboard-layout.tsx`:
+- Settings top-bar link is **icon-only** now (`Settings01` gear, no text label; `aria-label="App settings"` for a11y). The text moved to the Settings page H1.
+- New **workspace tagline row** on the messages page only (`isMessagesPage` gate): a small `<p>` reading "Your SMS workspace. Build and test your feature, go live when you're ready" sits between the app identity bar and the page content (`text-sm text-gray-500`, `pt-4 -mb-1`, inside the same `max-w-5xl` column).
+
+### Settings page H1 → "App settings"
+`prototype/app/apps/[appId]/settings/page.tsx` — single-line change: H1 now reads "App settings" so it's clearly distinct from Account settings at `/account`.
+
+### PRD_SETTINGS v2.3 supersedes v2.2
+`docs/PRD_SETTINGS_v2_3.md` replaces `docs/PRD_SETTINGS_v2.2.md` (git tracks as rename, 75% similarity). v2.3 adds the Account Settings §8 spec (resolves an open question from v2.2) and corrects the phone model — RelayKit is email-only magic-link auth, no auth phone.
+
+### PROTOTYPE_SPEC updates
+- Global **Navigation** section — logged-in nav rewritten to describe the avatar dropdown.
+- **Messages Page** — DashboardLayout header row updated for icon-only settings + new workspace tagline row; messages section header's `mt-2` noted; grid description rewritten (shared 3-col, `gap-6`, messages column uncapped); setup-instructions / metrics descriptions cleaned up.
+- **Settings** — H1 changed to "App settings", PRD version bumped to v2.3.
+- **New Account Settings** section (between Settings and Admin Dashboard).
+- **File map** — `app/account/page.tsx` added.
+- **Last updated** → April 16, 2026.
 
 ---
 
 ## Quality Checks Passed
 
 - `tsc --noEmit` — clean (prototype)
-- `next build` — clean, full production build ran
-- No ESLint config in prototype — tsc and `next build` remain the quality gates (unchanged baseline)
+- `next build` — full production build clean; 19/19 static pages generated; `/account` route compiles (1.35 kB)
+
+---
+
+## Decisions Applied / Not Appended
+
+All five candidate changes this session were evaluated against the DECISIONS vs PROTOTYPE_SPEC test and landed in PROTOTYPE_SPEC only — none rose to a new active decision:
+1. Shared messages/metrics grid — layout tweak.
+2. Workspace tagline copy — UI microcopy.
+3. Icon-only Settings gear — visual polish.
+4. Settings H1 "App settings" — label disambiguation.
+5. Avatar dropdown + `/account` scaffold — **implements** D-347 (account-vs-app field split), not a new decision. Reversing would contradict D-347 directly.
+
+DECISIONS.md is unchanged (last entries still D-346, D-347, D-348).
 
 ---
 
 ## In Progress / Partially Done (Carried Forward)
 
-### Backend stubs — unchanged from previous sessions
+### Already carried from previous session (still open)
 - Signup backend stubbed (D-59)
 - EIN verification backend stubbed (D-302/D-303)
 - Phone OTP stubbed (D-46)
 - Marketing messages hardcoded for Appointments only
 - Ask Claude panel chat composer is a non-functional stub
-- Testers invite flow stubbed (1.5s "Sending…", no real OTP)
+- Testers invite flow stubbed
 - Registered state metrics are mock data
 - Marketing-only registration tracker transitions are prototype dropdowns
+- Settings Notifications toggle has no backend wiring
+- Cancel plan modal's destructive confirm is a close-modal no-op
+- Live key Regenerate modal is a no-op
+- Settings Add/Edit EIN and Notifications "Change" links are brand-styled no-ops
 
 ### New-ish this session
-- Settings Notifications toggle has no backend wiring — just local `useState`.
-- Cancel plan modal's destructive confirm is a close-modal no-op in the prototype.
-- Live key Regenerate modal is still a no-op.
-- Settings "Add EIN" / "Edit EIN" / "Change" (notification destination) links are all brand-styled no-ops.
-- Account settings page referenced by D-347 and PRD §7 doesn't exist yet. The avatar dropdown it implies also doesn't exist. Per-app Settings no longer shows email/phone even though that page isn't built — acceptable per D-347's interim note.
+- `/account` is a UI scaffold — no backend. "Change" email, "Manage billing →", and "Delete account" are all no-ops. Delete modal's typed-DELETE gate is enforced on the button's disabled state only; confirming closes the modal without acting.
+- Avatar dropdown is not persisted anywhere — clicking Account settings or Sign out relies on existing `useSession` flow; the menu itself is purely local `useState`.
+- `/account` hardcodes app name to "GlowStudio" via its own local `APP_NAMES` map — adds to the existing duplication across `dashboard-layout.tsx`, `register/page.tsx`, and `settings/page.tsx` (now 4 copies). Extract to `lib/app-names.ts` is overdue.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **EIN on Settings is read from wizard sessionStorage, not the session-context `hasEIN` boolean.** The dashboard-layout top-bar switcher writes `data.ein` via `saveWizardData` and fires the `relaykit-ein-change` event. Settings subscribes. If you swap to a different storage layer or context flag later, update both the messages page (`prototype/app/apps/[appId]/page.tsx:184-194`) and Settings (`prototype/app/apps/[appId]/settings/page.tsx:225-233`) together — they're in lockstep.
-2. **`EinRow` is a single component used for every state.** Prop surface is `hasEIN` + `editable`. The "Not on file / Add" branch always renders when `hasEIN === false`. If a future state should hide the row instead, add a `hidden` prop rather than re-introducing per-state JSX.
-3. **Cancel plan modal is custom, not `ConfirmModal`.** Kept separate because it needs the text-input gate. `ConfirmModal` is still used for the Regenerate Live Key modal. Don't fold them back together unless you add body children support to `ConfirmModal`.
-4. **Shared `APP_NAMES` is duplicated** in `dashboard-layout.tsx`, `register/page.tsx`, and `settings/page.tsx`. Getting worse. Extract to `lib/app-names.ts` before beta launch when a second app joins.
-5. **Extended Review internal state is still `changes_requested`** — the developer-facing label is now "In review" (same as Pending). If you touch the state machine, remember the user never sees "Extended review" anymore.
-6. **Instructions toggle lives on the messages page row now**, not in the DashboardLayout header. `useSetupToggle` hook still initializes in DashboardLayout and provides context; only the rendered `<SetupToggle>` moved. `SetupToggle` is imported in `page.tsx` alongside `SetupInstructions`.
-7. **Notifications section toggle has no persistence.** In-component `useState` only — state resets on reload. Fine for the prototype; production needs `projects.sms_notifications_enabled`.
-8. **`.next` + `node_modules` nuke is still the escalation** for the @untitledui vendor chunk error. Straight `.next` wipes usually work; if not, `rm -rf .next node_modules && npm install`.
-9. **Prototype is in `/prototype`, not the root.** Always `cd prototype` first.
-10. **Branch is fully pushed.** Starting point for the next session is clean `origin/main`.
+1. **Two local commits are not pushed.** `9418ba0` (feature work) and the handoff commit. Joel explicitly said "Do NOT push — PM review happens first." Don't `git push` without confirmation.
+2. **Avatar dropdown only renders for `isLoggedIn && !isWizardNav`.** During wizard flows (`/start/*`) the nav still shows a plain "Sign out" path via the pre-existing `isWizardNav` branches in `top-nav.tsx`. If wizard UX changes, check both the dropdown branch and the existing wizard branches aren't out of sync.
+3. **`/account` hardcodes GlowStudio.** There's no session-context hookup for which app you came from — the "Back to {appName}" link always says "Back to GlowStudio" and jumps to `/apps/glowstudio`. When multi-app lands, route through session state or a referrer param.
+4. **Delete-account typed gate is on the button, not the input handler.** If you port this to production with backend wiring, validate on submit too — the `disabled` attribute is a UX affordance, not a security check.
+5. **Shared 3-col grid spans both messages and metrics.** If you ever adjust breakpoints, gutters, or column counts, update **both** grids in `page.tsx` together (and the metrics grid if you're in Registered) or they'll drift out of alignment. Lines around 459, 498, 674 in `page.tsx`.
+6. **PRD_SETTINGS_v2.2.md is gone.** Git tracked it as a rename to v2_3.md. Anyone with a stale working copy pointing to v2.2 needs to refresh.
+7. **`.next` + `node_modules` nuke is still the escalation** for the @untitledui vendor chunk error. Straight `.next` wipes usually work; if not, `rm -rf .next node_modules && npm install`.
+8. **Prototype is in `/prototype`, not the root.** Always `cd prototype` first.
+9. **`api/node_modules/` is untracked and should stay that way.** It's not in a .gitignore at the `api/` layer — don't `git add -A` without checking.
 
 ---
 
 ## Files Modified This Session
 
 ```
-# Decisions + docs
-DECISIONS.md                                             # D-346, D-347, D-348 appended
-BACKLOG.md                                               # rate limiting entry → pointer line
-docs/PRD_SETTINGS_v2.2.md                                # NEW — supersedes v2.1
-PROTOTYPE_SPEC.md                                        # Settings section rewritten; header-row + messages-header toggle spec updated; Last updated → April 15, 2026
-CC_HANDOFF.md                                            # This file (overwritten)
+# Docs
+PROTOTYPE_SPEC.md                                     # Navigation, Messages Page, Settings, new Account Settings section, file map, last-updated
+CC_HANDOFF.md                                         # This file (overwritten)
+docs/PRD_SETTINGS_v2.2.md → docs/PRD_SETTINGS_v2_3.md # Rename + content update (v2.3 adds Account Settings §8, corrects phone model)
 
-# Settings rebuild
-prototype/app/apps/[appId]/settings/page.tsx             # Full rework — h1, back link, Business Info, EIN row, Registration per state, API keys, Billing, Cancel modal, Notifications
-
-# Instructions toggle relocation
-prototype/components/dashboard-layout.tsx                # Removed SetupToggle render from header; dropped import
-prototype/components/setup-instructions.tsx              # Label "Setup instructions" → "Instructions"
-prototype/app/apps/[appId]/page.tsx                      # SetupToggle rendered in messages section header with gap-6 before Ask Claude; import updated; toggle destructured from context
+# Prototype code
+prototype/app/apps/[appId]/page.tsx                   # Shared 3-col grid with metrics; gap-6; messageList max-width removed; messages-section-header mt-2
+prototype/app/apps/[appId]/settings/page.tsx          # H1 "Settings" → "App settings"
+prototype/app/account/page.tsx                        # NEW — Login / Payment method / Danger zone + typed-DELETE confirm modal
+prototype/components/dashboard-layout.tsx             # Icon-only Settings top-bar link; new workspace tagline row (messages page only)
+prototype/components/top-nav.tsx                      # Avatar dropdown (Account settings + Sign out) replaces freestanding Sign out link
 ```
+
+`api/node_modules/` is untracked and intentionally uncommitted.
 
 ---
 
 ## What's Next (suggested order)
 
-1. **Account settings page** — build the page referenced by D-347. Needs email, auth phone, payment method, sign out, delete account. Route probably `/account`; entry point is a new avatar dropdown in the top nav.
-2. **Wire Settings actions to real state** — notifications toggle → `projects.sms_notifications_enabled`; Cancel plan → Stripe subscription cancel-at-period-end; Regenerate live key → hash rotation; Edit EIN / Add EIN → open the EIN verification flow in a modal (the wizard-component-as-modal pattern noted in PRD §4.1).
-3. **Registered — no EIN "Add" flow** — tapping Add should open the EIN verification flow and, on success, unlock the marketing upsell (same trigger the messages page already uses).
-4. **Wire Ask Claude panel to real AI** — UI done; backend route + streaming display needed.
-5. **Wire wizard data into setup instructions** — generate install command, API key, and prompt from sessionStorage business name + messages instead of hardcoded Club Woman content.
-6. **Marketing messages for other verticals** — only Appointments has data.
-7. **Wire signup to real magic-link backend** (D-59).
-8. **Wire `/start/verify` phone OTP to Twilio Verify** (D-46).
-9. **Wire EIN verification backend** (D-302, D-303).
-10. **Extract `OtpInput`** to a shared component.
-11. **Extract shared `APP_NAMES`** — dashboard-layout, register, settings currently duplicate.
+1. **Wire `/account` to real data** — email comes from auth, card from Stripe, "Change" opens magic-link flow, "Manage billing →" deep-links to Stripe customer portal, "Delete account" calls a destructive API.
+2. **Extract shared `APP_NAMES`** into `lib/app-names.ts` — now 4 duplicate copies (dashboard-layout, register, settings, account). Getting worse each session.
+3. **Session-aware Back link on `/account`** — remember which app the user came from and route "Back to {appName}" accordingly.
+4. **Wire Settings actions to real state** — notifications toggle → `projects.sms_notifications_enabled`; Cancel plan → Stripe subscription cancel-at-period-end; Regenerate live key → hash rotation; Edit EIN / Add EIN → open EIN verification flow in a modal.
+5. **Registered "Add EIN" flow** — tapping Add should open the EIN verification flow and, on success, unlock the marketing upsell (same trigger the messages page already uses).
+6. **Ask Claude panel backend** — UI done; streaming AI backend + route needed.
+7. **Wire wizard data into setup instructions** — generate install command, API key, and prompt from sessionStorage business name + messages.
+8. **Marketing messages for other verticals** — only Appointments has data.
+9. **Wire signup to real magic-link backend** (D-59).
+10. **Wire `/start/verify` phone OTP to Twilio Verify** (D-46).
+11. **Wire EIN verification backend** (D-302, D-303).
 12. **Error states design session** — walk through all interaction failures before locking in copy.
