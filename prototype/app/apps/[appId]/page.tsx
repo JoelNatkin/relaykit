@@ -175,6 +175,7 @@ export default function AppMessagesPage() {
       if (saved.website) setField("website", saved.website);
       if (saved.serviceType) setField("serviceType", saved.serviceType);
     }
+    // setField is intentionally excluded — it's a stable ref from context.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApproved]);
 

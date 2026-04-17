@@ -227,11 +227,11 @@ export function TopNav() {
                 <User01 className="size-4 text-gray-500" />
               </button>
               {avatarOpen && (
-                <div className="absolute right-0 top-full mt-1 min-w-[180px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                <div className="absolute right-0 top-full mt-1 min-w-[180px] rounded-lg border border-border-secondary bg-bg-primary py-1 shadow-lg">
                   <Link
                     href="/account"
                     onClick={() => setAvatarOpen(false)}
-                    className="block px-4 py-2 text-sm text-text-secondary hover:bg-gray-50 cursor-pointer"
+                    className="block px-4 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover cursor-pointer"
                   >
                     Account settings
                   </Link>
@@ -241,7 +241,7 @@ export function TopNav() {
                       setAvatarOpen(false);
                       handleSignOut();
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-gray-50 cursor-pointer"
+                    className="block w-full text-left px-4 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover cursor-pointer"
                   >
                     Sign out
                   </button>

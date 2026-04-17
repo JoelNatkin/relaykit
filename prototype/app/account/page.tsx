@@ -32,7 +32,7 @@ export default function AccountSettingsPage() {
           <div className="w-full max-w-md rounded-xl bg-bg-primary border border-border-secondary shadow-xl p-6">
             <h2 className="text-lg font-semibold text-text-primary">Delete your account</h2>
             <p className="mt-3 text-sm text-text-secondary leading-relaxed">
-              This will permanently delete your account, all apps, and all data. Active subscriptions will be canceled and carrier registrations wound down. This cannot be undone.
+              This will permanently delete your account, all apps, and all data. Your subscription will end and your SMS will stop sending. This cannot be undone.
             </p>
             <div className="mt-4">
               <label htmlFor="delete-confirm" className="block text-sm text-text-tertiary mb-1.5">
@@ -112,7 +112,7 @@ export default function AccountSettingsPage() {
       <div className="rounded-xl border border-red-200 bg-bg-primary p-5">
         <h3 className="text-lg font-semibold text-red-600 mb-4">Delete account</h3>
         <p className="text-sm text-text-secondary leading-relaxed">
-          This will permanently delete your account, all apps, and all data. Active subscriptions will be canceled and carrier registrations wound down. This cannot be undone.
+          This will permanently delete your account, all apps, and all data. Your subscription will end and your SMS will stop sending. This cannot be undone.
         </p>
         <div className="mt-4 flex justify-end">
           <button
