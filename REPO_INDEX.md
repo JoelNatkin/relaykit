@@ -6,11 +6,11 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-17 (Session 33 — orchestration setup)
+- **Last updated:** 2026-04-17 (Session 33 close-out — orchestration setup complete)
 - **Decision count:** D-348 (next available: D-349)
 - **PM instructions synced (Claude.ai UI ↔ repo):** `true`
 - **Active CC session branch:** main
-- **Unpushed local commits:** TBD on next update
+- **Unpushed local commits:** 0
 
 ---
 
@@ -43,7 +43,7 @@
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-03-28 | Post-signup workspace architecture |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-04-17 | `/api` pipeline — Sessions A (done) / B / C |
 | `SDK_BUILD_PLAN.md` | pending | `/sdk` build + README + AGENTS.md + integration prompt |
-| `CC_HANDOFF.md` | 2026-04-16 | Previous CC session state |
+| `CC_HANDOFF.md` | 2026-04-17 | Previous CC session state |
 | `BACKLOG.md` | 2026-04-10 | Parked ideas, never build without promotion |
 | `README.md` | (stable) | Repo readme |
 
@@ -130,3 +130,4 @@ Verify `D-348` against DECISIONS.md at chat start. If drifted, update this file.
 ## Change log
 
 - **2026-04-17:** Initial REPO_INDEX created. Introduces tiered file orchestration, sync tracking between repo and Claude.ai UI project instructions, canonical file listings at root and `/docs`.
+- **2026-04-17 (Session 33 close-out):** PM instructions paste confirmed (`synced = true`). Unpushed commits counter established (0 at close-out).
