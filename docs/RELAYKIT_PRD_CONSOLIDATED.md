@@ -1,11 +1,13 @@
 # RelayKit — Product Requirements Document
 ## Consolidated from prototype, decisions, and strategy sessions
-### April 7, 2026 — Living document, not a build spec
+### April 15, 2026 — Living document, not a build spec
 
 > **Scope of this document:** This is the product-level "what and why" — the story, the architecture, the principles. It does not describe screens, UI flows, or visual specifications. For those, see:
 > - **WORKSPACE_DESIGN_SPEC.md** — target UI architecture, screen flows, page layouts
 > - **PROTOTYPE_SPEC.md** — pixel-level current state of each prototype screen
 > - **DECISIONS.md** — the audit trail of every product choice
+> - **AI_INTEGRATION_RESEARCH.md** — research basis for AI integration strategy
+> - **PRD_SETTINGS_v2.3.md** — per-app and account settings specification
 
 ---
 
@@ -27,6 +29,8 @@ Developers and builders who need their app to send text messages to US phone num
 - **Agencies and vertical builders** building for specific industries who need category-specific message templates
 
 The common thread: they build apps (with code or AI tools), but they don't want to learn 10DLC registration, TCPA consent rules, carrier content policies, or opt-out enforcement. All audiences get the same product — same messages, same authoring surface, same compliance, same pricing (D-296). The only difference is the entry point.
+
+The SDK is optimized for the modern TypeScript stack (Next.js, Supabase, Stripe) — the dominant stack among vibe coders and indie builders. Developers on other stacks use the REST API directly with the same templates, compliance, and results.
 
 ---
 
@@ -58,15 +62,25 @@ The website is the message authoring surface (D-279). Message content is saved s
 
 ### Step 3: Create an account and build with AI
 
-The developer creates an account (email + OTP verification), then receives three things to paste into their AI coding tool: an install command (`npm install relaykit`), an API key setup prompt, and a build prompt tailored to their business. The AI tool reads the SDK, finds the right integration points in the developer's codebase, and wires up compliant SMS sending.
+The developer creates an account (email + OTP verification), then gets setup steps: an install command (`npm install relaykit`), an API key for their `.env`, and a path to integrate.
 
-The developer tests in sandbox mode — messages are validated and logged, delivered to up to 5 verified phone numbers. The sandbox runs the same compliance checks as production.
+**The SDK is server-side only.** It authenticates with a secret API key that must never be exposed in client-side code. The developer's AI tool places SDK calls in API routes, server actions, or serverless functions — never in React components or browser code. If the developer's app has no backend, the setup steps guide them to add one (Supabase Edge Functions, Vercel Serverless, or Cloudflare Workers).
+
+**Two integration paths, same destination:**
+
+**Guided (default):** The developer follows an incremental workflow — add the first message type (e.g., booking confirmation), send a test to their phone, verify it works, then add the next. The SDK README provides step-by-step guidance; an AGENTS.md snippet gives the developer's AI tool project-specific constraints and conventions. Each message type is a small, verifiable step. This is slower than one-shot but dramatically more reliable across diverse codebases.
+
+**Quick start:** For greenfield projects or confident developers, a single prompt triggers the AI tool to read the SDK README, scan the codebase, propose an integration plan, and implement it. The prompt includes the developer's business name and use case. The AI tool shows its plan before writing code.
+
+Both paths use the SDK README as the primary instruction surface — not the prompt itself. The README contains the method signatures, data shapes, constraints, and integration steps. The prompt is a trigger that points the AI tool at the README.
+
+The developer tests in test mode — messages are validated and logged, delivered to up to 5 verified phone numbers. Test mode runs the same compliance checks as production.
 
 Developers who don't use a package manager — including those building on no-code platforms — skip the SDK and call `POST /v1/messages` directly with their API key. Same templates, same compliance checks, same results (D-296).
 
 ### Step 4: Go live
 
-When the developer is ready for real message delivery, they complete registration. RelayKit handles the entire carrier registration process: brand registration with TCR, campaign submission, compliance site deployment, phone number provisioning. The developer pays $49 at submission. If rejected, full refund. On approval, the developer's sandbox API key is replaced with a live key. Same code, same SDK, same API. Messages start delivering to real phones.
+When the developer is ready for real message delivery, they complete registration. RelayKit handles the entire carrier registration process: brand registration, campaign submission, compliance site deployment, phone number provisioning. The developer pays $49 at submission. If rejected, full refund. On approval, the developer receives a live API key alongside their existing test key. Same code, same SDK, same API — swap the key in `.env` and messages start delivering to real phones. The test key continues to work for testing new message types or debugging.
 
 ### Step 5: Stay compliant
 
@@ -124,31 +138,31 @@ The words "campaign" and "promotional" never appear in customer-facing copy. The
 
 ## Carrier Strategy
 
-### TCR CSP Registration (Primary Path)
-RelayKit is pursuing registration as a Campaign Service Provider (CSP) directly with The Campaign Registry (TCR). This decouples campaign registration from message delivery: RelayKit owns all brand and campaign registrations, and any DCA/connectivity partner handles message delivery. Benefits: carrier-agnostic delivery, ability to switch delivery partners without re-registering campaigns, direct visibility into registration status and issues, no dependency on a single carrier's account management.
+### Sinch (Primary Path)
+Sinch is the primary carrier for both registration and message delivery. RelayKit registers brands and campaigns through Sinch's CSP (Campaign Service Provider) infrastructure, and delivers messages through Sinch's connectivity. Sinch account upgrade is in progress — the prior payment method rejection has been resolved.
+
+- Dashboard: dashboard.sinch.com
+- Project ID: 6bf3a837-d11d-486c-81db-fa907adc4dd4
+- Contact: elizabeth.garner@sinch.com (BDR)
+
+Sinch handles both registration and delivery, which simplifies the architecture: one carrier partner, one API integration, one relationship to manage. This is the right model for launch. Multi-carrier diversification is a post-traction concern.
+
+### TCR CSP Registration (Fallback Path)
+If Sinch's CSP infrastructure doesn't meet RelayKit's needs (approval timelines, API limitations, pricing), RelayKit can register directly as a Campaign Service Provider with The Campaign Registry (TCR). This decouples registration from delivery: RelayKit would own all brand and campaign registrations directly, and choose any DCA/connectivity partner for message delivery.
 
 Application: csp.campaignregistry.com. $200 one-time fee. 3-5 week approval timeline.
 
-### Delivery Partners (Separate from Registration)
-As a CSP, RelayKit chooses connectivity partners purely for message delivery — price, API quality, deliverability, and approval speed. Evaluation needed:
+This path preserves carrier-agnostic delivery and direct visibility into registration status. It's more infrastructure to build and maintain, but provides maximum control. Keep as a strategic option if Sinch's path hits friction.
 
-- **Telgorithm:** Fastest campaign approvals (24-48 hours), relationships with all three major DCAs. Requires 500K messages/month minimum — too high for launch.
-- **Telnyx:** Worth evaluating for lower-volume CSP connectivity.
-- **SignalWire:** Worth evaluating for CSP support and approval timelines.
-- **Sinch:** Original carrier choice (D-215). Account upgrade stalled. Can serve as delivery partner once CSP is approved.
-- **Bandwidth:** Slowest approvals (5-10+ business days). Not recommended.
-
-### How Registration Works (Once CSP is Active)
+### How Registration Works
 1. Developer completes registration form on RelayKit website
-2. RelayKit registers the brand with TCR via API (EIN verification, business identity)
-3. RelayKit submits the campaign to TCR (use case, sample messages, opt-in description, compliance site URL)
-4. TCR shares the campaign with the elected connectivity partner (DCA)
-5. DCA reviews for CTIA compliance (24 hours to 10+ business days depending on partner)
-6. On approval: phone number provisioned, live API key issued, developer is sending
+2. RelayKit registers the brand via carrier API (EIN verification, business identity)
+3. RelayKit submits the campaign (use case, sample messages, opt-in description, compliance site URL)
+4. Carrier reviews for CTIA compliance (days to weeks depending on carrier and DCA)
+5. On approval: phone number provisioned, live API key issued, developer is sending
 
-### Legacy Accounts
-- **Sinch:** Trial account at dashboard.sinch.com. Payment rejected with no explanation. Account manager contacted. Not blocking prototype work.
-- **Twilio:** ISV Reseller account under VAULTED PRESS LLC. Working but not used for new work. Entity name changing to RelayKit LLC (D-195). Production carrier submission pipeline was built for Twilio and needs remapping when carrier strategy finalizes.
+### Legacy Account
+- **Twilio:** ISV Reseller account under VAULTED PRESS LLC. Working but not used for new work. Entity name changing to RelayKit LLC (D-195). Production carrier submission pipeline was built for Twilio and needs remapping to Sinch.
 
 ---
 
@@ -216,9 +230,21 @@ The website is the authoring surface; the SDK is the delivery mechanism. The dev
 
 Custom messages authored on the website (D-280) are callable via `relaykit.send({ to, messageType: 'custom_post_visit_thankyou', data })`. Same compliance checks, same proxy, same API endpoint underneath.
 
-### Generated AI Tool Prompt (D-331 pending)
+### AI Integration Strategy
 
-After signup, the developer receives a short prompt to paste into their AI coding tool. The prompt includes the developer's business name, use case, and a directive to use all SDK message templates. The AI tool introspects the SDK for details — the prompt is an entry point, not a comprehensive reference. This replaces the earlier SMS_GUIDELINES.md concept for the initial get-started moment. SMS_GUIDELINES.md may return as a separate workstream for deeper compliance context.
+The SDK README and AGENTS.md are the primary instruction surfaces for AI coding tools — not the integration prompt. The prompt is a trigger; the documentation does the work.
+
+**SDK README (ships with the npm package):** Contains method signatures, data shapes, integration steps, server-side-only constraint, error handling patterns, and explicit "what NOT to do" list (don't compose messages, don't build opt-out logic, don't call from client code). Written for two audiences simultaneously: humans skimming and AI tools reading programmatically. The AI tool audience is primary — most RelayKit developers will never read the README themselves.
+
+**AGENTS.md snippet (generated per-developer on the website):** A short (~50 line), human-curated markdown block the developer pastes into their project's AGENTS.md file. Contains: the SDK methods for their specific use case, hard constraints (server-side only, don't modify existing schema), the recommended `lib/relaykit/` module pattern, and test commands. AGENTS.md is an open standard (Agentic AI Foundation / Linux Foundation) supported by Codex, Cursor, Claude Code, Gemini, Aider, Windsurf, and others. Per ETH Zurich research, only human-curated AGENTS.md files improve AI tool performance; auto-generated ones reduce success rates.
+
+**Integration prompt (personalized, shown on workspace):** Points the AI tool at the SDK README, states the developer's business name and use case, and instructs "show me your plan before writing code." The prompt is one paragraph, not a comprehensive brief. Example: *"I installed the RelayKit SDK. Read the RelayKit README in node_modules/relaykit for integration guidance. I run a beauty and wellness appointments business called GlowStudio. Analyze my codebase and find where appointment events happen. For each event, add the matching RelayKit SDK call. The README has the exact method signatures. Show me your plan before writing code."*
+
+**Incremental workflow (default path):** Add one message type → send a test → verify delivery → add the next. This replaces the prior "one prompt, entire integration" approach. Research and practitioner evidence show that AI coding tools operate reliably within ~1,500-3,000 lines of active scope; beyond that, cross-file reasoning degrades. Incremental integration keeps each step within this ceiling.
+
+**Additional AI onboarding infrastructure (post-launch):** Markdown-accessible docs (append `.md` to any page URL), `llms.txt` file for single-file context loading, MCP server covering the full API surface, per-builder integration guides for Lovable, Bolt.new, Replit, and v0. These are table stakes for developer tools in 2026 (Resend, Supabase, MakerKit all ship comparable offerings) but not required for launch.
+
+This section supersedes D-331 (generated prompt replaces SMS_GUIDELINES.md). The prompt still exists but is a trigger, not a self-contained instruction. SMS_GUIDELINES.md may return as a separate compliance-specific reference for the developer's project, distinct from the SDK README which focuses on integration mechanics. Full research basis: `docs/AI_INTEGRATION_RESEARCH.md`.
 
 ### Validation Results Summary
 
@@ -232,12 +258,14 @@ Key findings:
 - Repo report concept viable with Cursor hallucination mitigation (D-267)
 - Module format generalizes across fundamentally different app architectures (appointment booking + e-commerce)
 
+**Caveat:** These 25 rounds were run under controlled conditions with known codebases. Real-world brownfield integration introduces variables the experiments didn't cover: diverse frameworks, existing SMS code, non-standard file structures, client-only apps. The incremental integration workflow (add → test → verify → next) is the mitigation — it keeps each step small enough to succeed even when the codebase is unfamiliar to the AI tool.
+
 ---
 
 ## Pricing (D-320, D-321)
 
 ### Free Tier — Sandbox
-$0 forever. Build and test the full SMS integration — all namespaces including marketing. No credit card, no time limit. SDK access, full API access, curated message library, message authoring on website, custom message authoring, sandbox API key, verified phone number. Sends to up to 5 verified phones only.
+$0 forever. Build and test the full SMS integration — all namespaces including marketing. No credit card, no time limit. SDK access, full API access, curated message library, message authoring on website, custom message authoring, test API key, verified phone number. Sends to up to 5 verified phones only.
 
 ### Go Live
 - **$49 registration fee** at submission. Full refund if rejected. Single payment, no split, no go-live fee.
@@ -280,6 +308,8 @@ Full document: `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`
 - **Prototype is the UI source of truth.** Production screens are ported from the prototype, not built from PRDs. (D-163)
 - **One product, multiple entry points.** SDK users and API-direct users get the same experience — same templates, same compliance, same pricing. The only difference is how they arrive. (D-296)
 - **Compliance at authoring time, not send time.** Non-compliant messages can't be saved. The proxy delivers; the website enforces. (D-293)
+- **Server-side only.** The SDK authenticates with a secret API key that must never reach the browser. Client-only apps need a server-side route to call the SDK. This is a hard constraint, not a recommendation.
+- **Incremental integration over one-shot.** One message type at a time, tested before moving to the next. Safer, more reliable, and faster to a working integration than a single monolithic prompt. The AI tool shows its plan before writing code.
 - **Website gathers context, AI tool executes.** The RelayKit website asks the business context questions and generates a fully specified brief. The developer's AI tool receives instructions, not questions. (D-300)
 - **Decisions are recorded.** 329+ decisions in DECISIONS.md govern everything from architecture to vocabulary. CC reads them every session.
 - **One page, one purpose.** The post-signup workspace is a single Messages-centric page that evolves with the developer's lifecycle. No tabs. Setup, testing, registration, and metrics all live on one surface.
@@ -294,13 +324,14 @@ Full document: `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`
 - Stripe checkout integration
 - Template engine (all 8 use cases, 5-8 base + 3-4 expansion messages per use case)
 - Compliance site generator (4-page static HTML, Cloudflare Pages deployment)
-- Carrier submission pipeline (state machine, subaccount creation, brand registration, campaign submission, phone provisioning, webhooks) — built for Twilio, needs remapping to TCR/new carrier
+- Carrier submission pipeline (state machine, subaccount creation, brand registration, campaign submission, phone provisioning, webhooks) — built for Twilio, needs remapping to Sinch
 
 ### Prototype (UI source of truth, port 3001)
 - Full onboarding wizard (vertical picker → business name + EIN → service context → website → notes → phone verify → messages → ready → signup → email verify → get-started)
 - Post-signup workspace with six lifecycle states (Onboarding, Building, Pending, Extended Review, Registered, Rejected)
+- Single-page Messages workspace replacing tabbed dashboard (in progress)
 - Messages page with style variants (Standard/Friendly/Brief), AI rewrite, compliance checking with Restore
-- Settings page with lifecycle state differentiation
+- Settings page rebuilt to PRD v2.3 — per-app settings + account settings via avatar dropdown
 - Sign-in modal with email + OTP flow
 - Full marketing pages (home, category landing, messages page, compliance)
 - Admin pages (control room, registration pipeline, customer list/detail)
@@ -308,17 +339,19 @@ Full document: `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`
 ### Validated (experiments complete, ready for production build)
 - SDK API surface — per-vertical namespaces, top-level consent, zero-config init, graceful failure, single API endpoint (D-272–D-278)
 - Mock SDK package — starting point for production SDK
-- Integration pattern — AI tools wire SDK calls into existing codebases correctly on first attempt
+- Integration pattern — AI tools wire SDK calls into existing codebases correctly on first attempt (under controlled conditions — see caveat in validation results)
 - Cross-vertical generalization — same SDK pattern works for appointments and orders on fundamentally different app architectures
 - Full experiment log: `docs/BUILD_SPEC_VALIDATION_LOG.md`
 
 ### Not Yet Built
-- **Single-page workspace** — collapse tabbed dashboard into Messages-centric single page (see WORKSPACE_DESIGN_SPEC.md)
-- **Production SDK** — convert mock to TypeScript, `tsup` build pipeline, npm publish (D-272)
-- **Sandbox API endpoint** — `POST /v1/messages`, API key validation, template lookup, carrier sandbox delivery
-- **TCR CSP registration** — register as Campaign Service Provider, build registration pipeline against TCR API
-- **Delivery partner integration** — evaluate and integrate with Telnyx/SignalWire/other for message delivery
+- **Production SDK** — convert mock to TypeScript, `tsup` build pipeline, npm publish (D-272). Includes SDK README as a first-class product artifact.
+- **SDK README** — method signatures, data shapes, integration steps, server-side-only constraint, "what NOT to do" list. Primary instruction surface for AI coding tools.
+- **AGENTS.md snippet generator** — website feature that produces a personalized, human-curated AGENTS.md block for the developer's project
+- **Test mode API endpoint** — `POST /v1/messages`, API key validation, template lookup, carrier test delivery. Unblocks starter kit and real developer testing.
+- **Sinch integration** — brand registration, campaign submission, phone provisioning, message delivery via Sinch API. Remaps existing Twilio pipeline.
+- **Starter kit (appointments vertical)** — Next.js + Supabase + Stripe + RelayKit reference implementation with AGENTS.md, CLAUDE.md, and cursor rules. Ships one vertical first; expand after validation with real developers.
 - Messaging proxy (PRD_09) — delivery engine: template lookup, interpolation, carrier send, opt-out enforcement, quiet hours (D-293)
 - Consent API endpoints — `POST /v1/consent`, `GET /v1/consent/:phone`, `DELETE /v1/consent/:phone`
 - EIN verification and business identity pre-validation (D-302, D-303)
 - Claude AI support slideout with per-message context and round-trip diagnostics (App Doctor)
+- AI onboarding infrastructure — markdown-accessible docs, `llms.txt`, MCP server, per-builder integration guides (Lovable, Bolt.new, Replit, v0). Table stakes for developer tools in 2026; not required for launch.
