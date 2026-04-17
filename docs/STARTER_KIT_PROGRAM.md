@@ -2,6 +2,7 @@
 ## Open-Source App Starters as Developer Acquisition Channel
 ### Status: BACKLOG — Post-Launch Initiative
 ### Captured: March 31, 2026
+### Updated: April 17, 2026 (Sections 12–19 added)
 
 ---
 
@@ -172,7 +173,7 @@ The starters cannot ship until a developer can `npm install relaykit`, set an en
 
 1. **Core foundation repo** — Supabase auth + Stripe billing + RelayKit SDK + SMS_GUIDELINES.md + AI-optimized README. This is the shared base.
 2. **First vertical: Appointments** — highest existing content depth (PRD_02 has 6 base + 3 expansion messages, full campaign description, opt-in description). Data model: services, appointments, clients. SDK namespace: `relaykit.appointments.*`.
-3. **Second vertical: Orders** — different app architecture validates generalization (proven in validation Round 4, D-269). Data model: products, orders, customers. SDK namespace: `relaykit.orders.*`.
+3. **Second vertical: Orders** — different app architecture validates generalization (proven in validation Round 4, D-269). Data model: products, orders, customers. SDK namespace: `relaykit.orders.*`. **Gated — see §19.**
 4. **Expand based on traction** — add verticals where search demand, creator interest, or user requests indicate opportunity. Each new vertical is ~half a day of work.
 
 ### Estimated effort per starter
@@ -231,6 +232,228 @@ The starters are intentionally minimal, which limits maintenance burden:
 **Build before:** Major marketing push, Product Hunt launch, or paid acquisition spend. The starters should be discoverable before money is spent driving traffic.
 
 **Overlap with:** Build spec validation work (the integration patterns are already validated). Core foundation repo can be started as soon as the SDK is on npm.
+
+---
+
+## 12. TECHNICAL STACK
+
+Locked-in stack decisions for the core foundation. Every vertical fork inherits these choices.
+
+| Layer | Choice | Why |
+|-------|--------|-----|
+| Framework | Next.js 15+ App Router | Server components default; AI coding tools know the pattern cold |
+| Language | TypeScript strict | Type safety during AI-generated modifications |
+| Database + auth | Supabase (Postgres + Auth, magic-link) | Matches RelayKit's own stack |
+| ORM | Drizzle (primary) or Prisma (acceptable alternative) | Drizzle preferred for AI readability |
+| Payments | Stripe Checkout + webhook handler | Lowest-friction billing path |
+| SMS | RelayKit SDK (`npm install relaykit`) | Obviously |
+| UI | Tailwind v4.1 + shadcn/ui | shadcn gives developers a component library they own, no runtime dep |
+| Deployment | Vercel primary; any Node host supported | One-click Deploy button in the README |
+
+**Why shadcn/ui over a component library:** shadcn copies components into the developer's repo rather than installing as a dependency. AI tools can edit the components freely, and the developer owns the code. Lower friction than MUI or Chakra for starter use.
+
+**Why Drizzle over Prisma:** Drizzle's schema file reads more like SQL and less like magic. AI tools handle it more reliably for novel schemas. Prisma still works — if a developer's AI tool reaches for Prisma, don't fight it.
+
+---
+
+## 13. FILE STRUCTURE
+
+Group-by-feature layout. Matches the patterns AI coding tools produce most reliably.
+
+```
+/app
+├── (auth)/
+│   ├── login/page.tsx
+│   └── signup/page.tsx
+├── (dashboard)/
+│   ├── layout.tsx
+│   └── [feature]/
+│       ├── page.tsx
+│       └── actions.ts        # Server actions colocated
+├── api/
+│   └── webhooks/
+│       └── stripe/route.ts
+├── layout.tsx
+└── page.tsx                   # Landing page with pricing block
+
+/lib
+├── relaykit/
+│   ├── client.ts              # SDK init (see SDK_BUILD_PLAN §7)
+│   └── notifications.ts       # Wrapper functions per business event
+├── supabase/
+│   ├── client.ts              # Browser client
+│   ├── server.ts              # Server client
+│   └── middleware.ts          # Auth middleware
+├── stripe/
+│   └── client.ts              # Stripe init
+└── db/
+    ├── schema.ts              # Drizzle schema
+    └── index.ts               # DB client
+
+/components
+└── ui/                        # shadcn components (copied in, not imported)
+
+/types                          # Shared type definitions
+```
+
+**The `/lib/relaykit/` convention is prescriptive** — every starter ships with this structure and the wrappers pattern (see SDK_BUILD_PLAN.md §7). Developers adding new notifications extend `notifications.ts` rather than calling the SDK directly from route handlers.
+
+---
+
+## 14. WHAT'S SHIPPED IN THE STARTER
+
+Extends the "Shared core" and "Vertical scaffolding" descriptions in §3 with concrete deliverables.
+
+**Infrastructure**
+- Supabase project config + migration files for auth tables
+- Magic-link auth flow (signup, login, logout, session middleware)
+- Stripe Checkout session creator
+- Stripe webhook handler for subscription events
+- RelayKit SDK pre-integrated; `lib/relaykit/client.ts` and `lib/relaykit/notifications.ts` scaffolded
+- `.env.example` with every required variable commented
+
+**UI scaffolding**
+- Landing page with the pricing transparency block from §5
+- Signup and login pages
+- Authenticated dashboard shell with navigation
+- Empty state for whatever vertical-specific content lives at `/dashboard`
+
+**Vertical-specific (Appointments example)**
+- `appointments` table schema with Drizzle types
+- Two seed routes: create-appointment and list-appointments
+- `notifyBookingCreated()` and `notifyBookingReminder()` wrappers in `lib/relaykit/notifications.ts`
+- SMS_GUIDELINES.md tailored to the Appointments vertical (D-283)
+
+**Developer tooling**
+- `AGENTS.md` at repo root (template in §16)
+- `README.md` with the pricing block, quick-start, and customization prompts
+- Smoke test that verifies auth works and a single RelayKit send succeeds
+
+---
+
+## 15. WHAT'S NOT IN THE STARTER
+
+Intentional omissions. Every one of these is something an AI coding tool can add in minutes on request — shipping them would raise maintenance burden without improving the demo moment.
+
+- Notification preferences UI (per-user opt-in, digest controls, channel selection)
+- Calendar integration (Google Calendar, iCal, Outlook)
+- Team / multi-seat features
+- Email templates (RelayKit is SMS only)
+- Analytics dashboards
+- i18n / localization
+- Mobile UI polish beyond Tailwind defaults
+- Accessibility audit (Tailwind + shadcn get us to a reasonable baseline; full WCAG is the developer's job)
+- Tests beyond the smoke test
+
+If a developer asks "why doesn't the starter have X?" — the answer is "your AI tool can add it faster than we can keep it maintained."
+
+---
+
+## 16. AGENTS.md SNIPPET (TEMPLATE)
+
+Every starter repo ships with `AGENTS.md` at the root, under 60 lines, telling AI coding tools what's already wired and what they can safely modify.
+
+Draft template — refine once SDK_BUILD_PLAN.md README is finalized so namespaces and signatures stay in sync:
+
+```markdown
+# AGENTS.md
+
+## What this project is
+
+A [vertical] app scaffold with Supabase auth, Stripe billing, and
+compliant SMS via RelayKit already wired in. Build on top of what's here.
+
+## Hard constraints
+
+- RelayKit SDK calls run server-side only. Never import `relaykit` into a
+  client component. Never expose `RELAYKIT_API_KEY` to the browser.
+- Do not modify the shape of RelayKit SDK calls. Wrapper functions in
+  `/lib/relaykit/notifications.ts` are where new notification events go.
+- Do not implement opt-out (STOP), quiet hours, or consent storage.
+  RelayKit handles all three at the platform level.
+
+## Where things live
+
+- Auth: /lib/supabase/
+- Payments: /lib/stripe/
+- SMS: /lib/relaykit/
+- Database schema: /lib/db/schema.ts
+- Routes: /app/
+
+## RelayKit methods available for this vertical
+
+[personalized per vertical — for Appointments:]
+- relaykit.appointments.sendConfirmation({ to, data })
+- relaykit.appointments.sendReminder({ to, data })
+- relaykit.appointments.sendCancellation({ to, data })
+
+See node_modules/relaykit/README.md for full signatures and data shapes.
+
+## Commands to run before committing
+
+- npm run typecheck   — pass clean
+- npm run lint        — pass clean
+- npm run test        — smoke test only; does not send real SMS
+```
+
+A fuller draft lives in `docs/AI_INTEGRATION_RESEARCH.md` §8. When the SDK README reaches final form, do a same-session sweep of all starter AGENTS.md files to keep the signatures in sync.
+
+---
+
+## 17. DISCOVERABILITY
+
+Where starters live and how developers find them.
+
+- **GitHub organization:** `github.com/relaykit/starter-{vertical}` (e.g. `starter-appointments`, `starter-orders`)
+- **Vercel template gallery:** a "Deploy" button in each README, submitted to Vercel's public gallery once the starter has real users
+- **RelayKit marketing site:** a dedicated starters page, one card per vertical, deep-linking to the GitHub repo
+- **npm keywords:** the published `relaykit` package tags include `starter`, `template`, and vertical names so npm search cross-references
+- **README backlinks:** every starter links to relaykit.ai with UTM parameters, so sandbox signups are attributable to the originating starter
+
+**No paid distribution until organic volume justifies it.** Wait until at least one starter hits triple-digit weekly clones from organic search and social before spending on placement.
+
+---
+
+## 18. MAINTENANCE MODEL
+
+Extends the "Maintenance scope" bullet list in §7 with concrete policy.
+
+- **Ownership:** RelayKit owns all starter repos. Contributors welcome via pull request; direct commit access restricted to the team.
+- **Next.js version pinning:** starters pin to Next.js major releases. Bump when Next.js ships a major; ignore minor version chasing.
+- **SDK version bumps:** automated via Dependabot (or equivalent). Each bump runs the smoke test; manual sign-off before merge if the smoke test fails.
+- **Quarterly AI tool sanity check:** paste the integration prompt (SDK_BUILD_PLAN §5) into Claude Code, Cursor, Windsurf, Lovable, Bolt, and Replit. Verify each still produces a working integration from a fresh clone. Document the results. If any tool regresses, the README or AGENTS.md needs a revision — not the other way around.
+- **Supabase and Stripe dependencies:** bump quarterly unless a security advisory forces sooner.
+- **No responsive-design maintenance.** Tailwind defaults are the floor; the developer's AI tool polishes UI as part of customization. RelayKit does not ship visual refinements to starters.
+
+---
+
+## 19. VALIDATION GATE BEFORE SECOND STARTER
+
+Updates §7 Step 3.
+
+Before building the Orders starter (or any subsequent vertical), the Appointments starter has to prove it works in the wild — not just in principle.
+
+### The gate
+
+- **10+ real developers** have cloned the starter and customized it with an AI tool
+- **3+ sandbox signups** attributable to the starter via UTM or referrer
+- **5+ pieces of developer feedback** (survey responses, DMs, direct conversations) on what worked and what didn't
+
+Hit all three → build the next starter. Miss any one → iterate on the first before expanding.
+
+### Why this gate exists
+
+The per-vertical generalization is proven in principle (D-269, 25 experiment rounds). That's not the same as the starter being *useful* to real developers. Building the second starter before validating the first is how projects accumulate unused scaffolding that's expensive to maintain and contributes nothing to adoption.
+
+Real developers also surface things that are invisible in internal testing: confusing README ordering, assumptions baked into the AGENTS.md, missing seed data, `.env.example` gaps, AI tools that handle the pattern worse than the validation rounds suggested.
+
+### Timing expectation
+
+If the Appointments starter doesn't hit the gate in **~8 weeks** after launch, the problem is either the starter or the market. Don't push through by building more verticals — fix the first one, or step back and re-evaluate the thesis.
+
+### Per-vertical effort
+
+§7 estimates "4–8 hours per vertical fork" plus README and AI prompt refinement. In practice, once AGENTS.md and SMS_GUIDELINES.md polish are factored in, **plan on ~1 day per new vertical.** This is consistent with the existing range — just honest about where on the range things land when the work is done properly.
 
 ---
 
