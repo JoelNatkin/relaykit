@@ -1210,3 +1210,41 @@ _Affects: Settings page (PRD_SETTINGS), account settings page (future), top nav 
 **D-348 — Notification triggers: what warrants a text vs email vs silent handling** (Date: 2026-04-14)
 Text notifications (opt-in via Settings toggle): registration approved, registration rejected, payment failed (day 1 of grace period), account suspended (messaging stopped). Email notifications (always on, no toggle): registration submitted confirmation, registration approved (with detail), registration rejected (with reason and next steps), payment failed (days 1, 3, 6), account suspended, welcome/signup confirmation. Silent handling (no notification, no developer action needed): rate limiting (messages delayed, not dropped), quiet hours enforcement (messages queued for delivery after quiet hours end), opt-out received (proxy blocks future sends automatically), approaching message cap (dashboard indicator only — overage auto-scales per D-321). The test for a text: would the developer be upset tomorrow if they found out today and we didn't tell them? If no, it's email or dashboard only.
 _Affects: Settings notifications section, email template system, proxy behavior, API response design._
+
+**D-349 — API key prefix: `rk_test_` (user-facing), `environment = 'sandbox'` (DB/code)** (Date: 2026-04-17)
+
+User-visible API key prefix for test-mode keys is `rk_test_`. Live keys are `rk_live_`. Internal column `environment` on `api_keys` and `messages` tables retains `'sandbox' | 'live'` enum values per the user-facing vs internal naming rule — the boundary layer translates at key generation time.
+
+Reason: `rk_test_` is shorter, matches the current product voice ("test mode" in UI copy), and is already the prefix committed to in PRD_SETTINGS_v2.3. PRICING_MODEL.md and legacy PRD_04 previously referenced `rk_sandbox_` — those are stale and will be swept as a follow-up. DB `environment = 'sandbox'` stays because renaming a column is a code-only refactor with no operational payoff (per the code-only-renames-are-not-decisions rule).
+
+Follow-up (not part of this decision): sweep `rk_sandbox_` references in PRICING_MODEL.md and any prototype strings. Scoped as a separate PROTOTYPE_SPEC / docs cleanup task.
+
+**D-350 — Variables are atomic tokens in message edit mode** (Date: 2026-04-17)
+
+In the message row edit mode, template variables (business name, vertical, recipient-specific fields like date and time) render as atomic, indivisibly-selectable tokens. Visual styling is color-only — the same purple text used in non-edit preview mode. No pills, brackets, or visual weight that interferes with reading the message as an end user would.
+
+Mechanically: the user can place the cursor before or after a token, select it as a whole unit, or delete it entirely with backspace. They cannot place the cursor inside a token and corrupt it into static text. If a required variable is deleted, the existing red error state fires.
+
+Reason: visibility and protection are separate problems. Purple color alone solves visibility — the edit mode just needs to inherit the treatment already used in preview. Protection is the real risk: date and time are per-recipient variables, and the current textarea lets a user silently turn "Mar 15, 2026" into literal text that sends to every recipient regardless of their actual appointment. Atomic tokens prevent that class of error without introducing a heavier UI.
+
+Implementation requires a contentEditable editor (Tiptap, Lexical, or Slate). Library choice is a separate decision CC makes when this task becomes active.
+
+**D-351 — Custom message delivery model: manual send only at launch** (Date: 2026-04-17)
+
+Custom messages created in the workspace are manual-send only at launch. They render in the dashboard and support Quick Send to a verified tester or live recipient. They do not generate an SDK method and cannot be wired to an event in the developer's app code.
+
+Reason: covers the day-one cases (announcements, weather closures, one-off promos) without the infrastructure cost of developer-defined events. Developer-defined events would require code generation, AGENTS.md updates, and an SDK regeneration story — all post-launch scope. Post-launch expansion: developer-defined events with auto-generated SDK methods. Track in BACKLOG when D-351 ships.
+
+**D-352 — Custom messages classified by content at authoring time, not user self-selection** (Date: 2026-04-17)
+
+When a user creates or edits a custom message, the system classifies it as transactional or marketing based on real-time content analysis at authoring time. The user does not self-classify. If marketing-class content is detected and the user does not have marketing messages enabled, Save is blocked with a clear explanation and a path to add marketing.
+
+Reason: matches the existing principle that compliance enforcement collapses to authoring time (no non-compliant message can reach production). Asking users to self-classify invites mistakes and bad classifications that carriers would later reject. The system is already doing real-time compliance checking — campaign-class classification is the same primitive.
+
+**D-353 — Variable insertion affordance in all message edit states** (Date: 2026-04-17)
+
+Every message edit state (built-in and custom) includes a variable insertion affordance — a control that surfaces the variables available for that message and inserts them into the editor at cursor position as atomic tokens (per D-350).
+
+Variable scope is method-specific: each SDK method's `data` shape determines what's insertable for that message type. `sendConfirmation` exposes name/date/time/business; `sendReminder` adds time-until. For custom messages (per D-351, manual-send only), the available variable set defaults to the intersection of variables shared across all methods in the parent namespace.
+
+Reason: D-350 prevents corruption of variables already in the editor, but a user still needs a way to ADD them — without an insert affordance, the only way to get a variable into a custom message is copy-paste. For built-in edits, the affordance also enables recovery: a user who deletes a variable then reconsiders can re-insert without abandoning their other edits via Restore. Method-specific scope matches the per-method data shape declared in the SDK and avoids the failure mode where a user inserts a variable the SDK call won't actually populate at send time.

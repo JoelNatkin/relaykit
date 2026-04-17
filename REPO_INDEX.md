@@ -6,8 +6,8 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-17 (Session 33 close-out — orchestration setup complete)
-- **Decision count:** D-348 (next available: D-349)
+- **Last updated:** 2026-04-17 (Session 34 — MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN, STARTER_KIT expansion, D-349–D-353)
+- **Decision count:** D-353 (next available: D-354)
 - **PM instructions synced (Claude.ai UI ↔ repo):** `true`
 - **Active CC session branch:** main
 - **Unpushed local commits:** 0
@@ -42,7 +42,7 @@
 | `PROTOTYPE_SPEC.md` | 2026-04-16 | Screen specs for `/prototype` |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-03-28 | Post-signup workspace architecture |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-04-17 | `/api` pipeline — Sessions A (done) / B / C |
-| `SDK_BUILD_PLAN.md` | pending | `/sdk` build + README + AGENTS.md + integration prompt |
+| `SDK_BUILD_PLAN.md` | 2026-04-17 | `/sdk` build + README + AGENTS.md + integration prompt |
 | `CC_HANDOFF.md` | 2026-04-17 | Previous CC session state |
 | `BACKLOG.md` | 2026-04-10 | Parked ideas, never build without promotion |
 | `README.md` | (stable) | Repo readme |
@@ -58,7 +58,7 @@
 | `PRD_SETTINGS_v2_3.md` | 2026-04-15 | Settings page spec |
 | `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` | (stable) | Copy rules (Tier 1 in project knowledge) |
 | `UNTITLED_UI_REFERENCE.md` | (stable) | Design system reference (Tier 1 in project knowledge) |
-| `STARTER_KIT_PROGRAM.md` | 2026-03-20 | Starter kit strategy (build plan update pending) |
+| `STARTER_KIT_PROGRAM.md` | 2026-04-17 | Starter kit strategy (sections 12–19 added) |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-15 | AGENTS.md, Resend analog, tool prompts |
 
 ---
@@ -108,14 +108,14 @@ Migrations and config.
 | MESSAGE_PIPELINE_SPEC Session A | COMPLETE | `/api/src/pipeline/` — normalize, interpolate, send stub, log stub |
 | MESSAGE_PIPELINE_SPEC Session B | BLOCKED | Waiting on Sinch account |
 | MESSAGE_PIPELINE_SPEC Session C | NOT STARTED | Buildable after Session A; needs B for end-to-end |
-| SDK_BUILD_PLAN | NOT STARTED | Waiting on spec doc |
+| SDK_BUILD_PLAN | NOT STARTED | Spec ready |
 | Workspace message row evolution | IN PROGRESS | Shared grid + /account shipped Session 32–33 |
 
 ---
 
 ## Decision count verification
 
-Verify `D-348` against DECISIONS.md at chat start. If drifted, update this file.
+Verify `D-353` against DECISIONS.md at chat start. If drifted, update this file.
 
 ---
 
@@ -131,3 +131,4 @@ Verify `D-348` against DECISIONS.md at chat start. If drifted, update this file.
 
 - **2026-04-17:** Initial REPO_INDEX created. Introduces tiered file orchestration, sync tracking between repo and Claude.ai UI project instructions, canonical file listings at root and `/docs`.
 - **2026-04-17 (Session 33 close-out):** PM instructions paste confirmed (`synced = true`). Unpushed commits counter established (0 at close-out).
+- **2026-04-17 (Session 34):** Added `MESSAGE_PIPELINE_SPEC.md` and `SDK_BUILD_PLAN.md` at repo root; expanded `docs/STARTER_KIT_PROGRAM.md` with sections 12–19; recorded D-349 through D-353; build spec status for SDK flipped to "Spec ready".
