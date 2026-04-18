@@ -232,14 +232,6 @@ export function CatalogCard({
   const [isFixLoading, setIsFixLoading] = useState(false);
   const [compliance, setCompliance] = useState<ComplianceResult>({ isCompliant: true, issues: [] });
   const [showComplianceHint, setShowComplianceHint] = useState(false);
-  /** Suppresses compliance errors until the user has actually typed in the
-   *  editor. Prevents false positives on first open (where the effect may
-   *  run against a stale editText before initEditSession commits) and
-   *  keeps Fix (restore) in a clean state after it runs — the restored
-   *  template is compliant by definition, so the check doesn't need to
-   *  run again until the user starts editing fresh. Reset in
-   *  initEditSession and Fix; flipped in handleTextChange/handleAiSubmit. */
-  const [hasUserEdited, setHasUserEdited] = useState(false);
   const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const [isInsertOpen, setIsInsertOpen] = useState(false);
@@ -323,48 +315,41 @@ export function CatalogCard({
 
   const currentTemplate = savedText ?? message.template;
 
-  // Compliance: run check on every editText change. Update issues immediately
-  // so already-visible hints reflect the latest text. When text becomes
-  // compliant, hide the hint immediately (no debounce). When non-compliant,
-  // debounce the initial reveal by 2s so the developer isn't nagged mid-type.
-  //
-  // The hasUserEdited gate suppresses the check until the user has actually
-  // typed in the editor. Defaults and tone variants are pre-validated, so
-  // there's nothing for the check to say on first open — and the effect can
-  // fire against stale editText during the open transition, which previously
-  // produced "Needs X, Y, and Z" errors on an untouched message.
-  useEffect(() => {
-    if (!isEditing) return;
-    if (!hasUserEdited) {
-      if (complianceTimerRef.current) {
-        clearTimeout(complianceTimerRef.current);
-        complianceTimerRef.current = null;
-      }
-      setCompliance({ isCompliant: true, issues: [] });
-      setShowComplianceHint(false);
-      return;
-    }
-    // editText is a `{var_key}` template; compliance rules match interpolated
-    // values, so resolve before checking.
-    const resolved = interpolateTemplate(editText, categoryId, state)
-      .map((s) => s.text)
-      .join("");
-    const result = checkCompliance(resolved, message, categoryId, state);
-    setCompliance(result);
-
+  // Compliance is invoked explicitly from the handlers that produce a new
+  // editText (handleTextChange, handleAiSubmit, handlePillClick's custom
+  // branch). It was previously a useEffect keyed on [editText, isEditing,
+  // hasUserEdited, …] — that coupling made the check fire as a reactive
+  // side effect during edit-mode transitions, producing false-positive
+  // errors on first open and requiring a second Fix click because the
+  // effect re-ran with stale state after Fix's batched reset. Explicit
+  // invocation removes the ambiguity: compliance state only changes when
+  // a user action says it should.
+  function clearComplianceTimer() {
     if (complianceTimerRef.current) {
       clearTimeout(complianceTimerRef.current);
       complianceTimerRef.current = null;
     }
+  }
 
+  function runComplianceCheck(text: string) {
+    // editText is a `{var_key}` template; compliance rules match
+    // interpolated values, so resolve before checking.
+    const resolved = interpolateTemplate(text, categoryId, state)
+      .map((s) => s.text)
+      .join("");
+    const result = checkCompliance(resolved, message, categoryId, state);
+    setCompliance(result);
+    clearComplianceTimer();
     if (result.isCompliant) {
       setShowComplianceHint(false);
     } else {
+      // Debounce the hint reveal by 2s so the developer isn't nagged
+      // mid-type. Compliant states hide the hint immediately.
       complianceTimerRef.current = setTimeout(() => {
         setShowComplianceHint(true);
       }, 2000);
     }
-  }, [editText, isEditing, message, categoryId, state, hasUserEdited]);
+  }
 
   useEffect(() => {
     return () => {
@@ -400,9 +385,9 @@ export function CatalogCard({
     setAiInput("");
     setIsAiLoading(false);
     setIsFixLoading(false);
+    clearComplianceTimer();
     setCompliance({ isCompliant: true, issues: [] });
     setShowComplianceHint(false);
-    setHasUserEdited(false);
   }
 
   // Watch for edit-state transitions and initialize when entering edit.
@@ -474,13 +459,15 @@ export function CatalogCard({
     const template = getPillTemplate(lastCannedPillId);
     if (!template) return;
     setIsFixLoading(true);
-    // Simulate async AI fix — real impl will call the AI backend
+    // Simulate async AI fix — real impl will call the AI backend.
+    // Post-Fix state is definitionally clean by UX contract, so we set
+    // compliance directly rather than re-running the check.
     setTimeout(() => {
       setEditText(template);
       setActivePillId(lastCannedPillId);
+      clearComplianceTimer();
       setCompliance({ isCompliant: true, issues: [] });
       setShowComplianceHint(false);
-      setHasUserEdited(false);
       setIsFixLoading(false);
     }, 1500);
   }
@@ -496,12 +483,13 @@ export function CatalogCard({
       setCustomTextBuffer(rewritten);
       setActivePillId("custom");
       setAiInput("");
-      setHasUserEdited(true);
+      runComplianceCheck(rewritten);
       setIsAiLoading(false);
     }, 1500);
   }
 
   function handleCancel() {
+    clearComplianceTimer();
     setCompliance({ isCompliant: true, issues: [] });
     setShowComplianceHint(false);
     exitEdit();
@@ -512,8 +500,8 @@ export function CatalogCard({
       if (customTextBuffer !== null) {
         setEditText(customTextBuffer);
         setActivePillId("custom");
-        setCompliance({ isCompliant: true, issues: [] });
-        setShowComplianceHint(false);
+        // Custom buffer is user-authored — re-check, it may be non-compliant.
+        runComplianceCheck(customTextBuffer);
       }
       return;
     }
@@ -526,6 +514,8 @@ export function CatalogCard({
       setEditText(template);
       setActivePillId(id);
       setLastCannedPillId(id);
+      // Canned variants are pre-validated — clean by construction.
+      clearComplianceTimer();
       setCompliance({ isCompliant: true, issues: [] });
       setShowComplianceHint(false);
     }
@@ -558,11 +548,10 @@ export function CatalogCard({
   function handleTextChange(newText: string) {
     setEditText(newText);
     setCustomTextBuffer(newText);
-    setHasUserEdited(true);
     if (activePillId !== "custom") {
       setActivePillId("custom");
     }
-    // Compliance check runs via useEffect on editText change.
+    runComplianceCheck(newText);
   }
 
   function renderPreview(template: string) {
