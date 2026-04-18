@@ -100,8 +100,17 @@ export function MessageEditor({
     });
   }, [editor, template, categoryId]);
 
+  // setEditable's second argument is `emitUpdate` (defaults to true in
+  // @tiptap/core). When true, it unconditionally fires an "update" event with
+  // an empty transaction — bypassing the normal docChanged gating — and that
+  // event reaches onUpdate with whatever the editor's current doc happens to
+  // be, which may differ from the parent's editText (e.g. on mount, before
+  // the template-sync microtask has run setContent). Passing false makes this
+  // a pure editability toggle with no synthesized update event. Real
+  // transactions (user typing, insertVariable, setContent without
+  // emitUpdate:false) still fire onUpdate normally.
   useEffect(() => {
-    if (editor) editor.setEditable(!disabled);
+    if (editor) editor.setEditable(!disabled, false);
   }, [editor, disabled]);
 
   useEffect(() => {
