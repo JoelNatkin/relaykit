@@ -56,6 +56,20 @@ export function MessageEditor({
         }
         return false;
       },
+      // Drag suppression at the editor level (complements the NodeView's
+      // DOM-level drag blockers). handleDrop returning true tells ProseMirror
+      // the drop was handled — prevents the default copy-on-drop behavior
+      // that was duplicating tokens when the browser initiated a drag despite
+      // draggable=false.
+      handleDrop() {
+        return true;
+      },
+      handleDOMEvents: {
+        dragstart: (_view, event) => {
+          event.preventDefault();
+          return true;
+        },
+      },
     },
     onUpdate({ editor }) {
       const next = docToTemplate(editor.state.doc);

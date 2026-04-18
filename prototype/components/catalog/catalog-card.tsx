@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Activity, Check, Stars02 } from "@untitledui/icons";
+import { Activity, Check, Plus, Stars02 } from "@untitledui/icons";
 import type { Editor } from "@tiptap/react";
 import type { Message, VariantSet } from "@/data/messages";
 import type { SessionState } from "@/context/session-context";
@@ -715,8 +715,14 @@ export function CatalogCard({
             {/* Edit controls — no divider, closer to textarea */}
             <div className="mt-3 space-y-3">
               {/* Style pills + insert affordance (D-353).
-                  Left cluster: Standard / Friendly / Brief pill variants (pre-validated).
-                  Right cluster: `+ Variable` popover + Custom pill (when dirty). */}
+                  Left cluster: tone pills (Standard / Friendly / Brief) + Custom.
+                  Custom is a tone state (just user-authored), so it groups with
+                  the canned variants rather than with the insert control.
+                  Right cluster (flex-pushed): `+ Variable` tertiary button.
+                  Every button in this row uses onMouseDown preventDefault so the
+                  click doesn't blur the editor — keeping ProseMirror's selection
+                  machinery live across tone swaps, which otherwise broke
+                  click-to-select on tokens after any pill interaction. */}
               <div className="flex flex-wrap items-center gap-2">
                 {variants && variants.length > 1 && variants.map((v) => {
                   const pillId = v.id as PillId;
@@ -725,6 +731,7 @@ export function CatalogCard({
                     <button
                       key={v.id}
                       type="button"
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={() => handlePillClick(pillId)}
                       className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
                         isActive
@@ -737,66 +744,67 @@ export function CatalogCard({
                   );
                 })}
 
-                {/* Right cluster — insert affordance + Custom pill */}
-                <div className="ml-auto flex items-center gap-2" ref={insertWrapperRef}>
-                  <div className="relative">
-                    <button
-                      type="button"
-                      onClick={() => setIsInsertOpen((v) => !v)}
-                      aria-haspopup="menu"
-                      aria-expanded={isInsertOpen}
-                      className="rounded-full border border-border-secondary px-3.5 py-1.5 text-xs font-medium whitespace-nowrap text-text-tertiary hover:text-text-secondary hover:border-border-primary transition duration-100 ease-linear cursor-pointer"
-                    >
-                      + Variable
-                    </button>
-                    {isInsertOpen && (() => {
-                      const scope = getVariableScope(message, categoryId);
-                      const valueMap = getExampleValues(categoryId);
-                      const rows = scope
-                        .map((key) => ({ key, value: valueMap.get(key) }))
-                        .filter((r): r is { key: string; value: NonNullable<typeof r.value> } => !!r.value);
-                      return (
-                        <div
-                          role="menu"
-                          className="absolute right-0 top-full mt-1 z-20 min-w-[220px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1"
-                        >
-                          {rows.length === 0 ? (
-                            <p className="px-3 py-2 text-xs text-text-tertiary">
-                              No variables for this message.
-                            </p>
-                          ) : (
-                            rows.map(({ key, value }) => (
-                              <button
-                                key={key}
-                                type="button"
-                                role="menuitem"
-                                onMouseDown={(e) => e.preventDefault()}
-                                onClick={() => insertVariable(key)}
-                                className="flex w-full items-center justify-between gap-4 px-3 py-1.5 text-xs hover:bg-bg-primary_hover cursor-pointer"
-                              >
-                                <span className="text-text-primary">{value.label}</span>
-                                <span className={VARIABLE_TOKEN_CLASSES}>{value.preview(state)}</span>
-                              </button>
-                            ))
-                          )}
-                        </div>
-                      );
-                    })()}
-                  </div>
+                {showCustomPill && (
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => handlePillClick("custom")}
+                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
+                      activePillId === "custom"
+                        ? "bg-bg-brand-secondary text-text-brand-secondary"
+                        : "border border-dashed border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
+                    }`}
+                  >
+                    Custom
+                  </button>
+                )}
 
-                  {showCustomPill && (
-                    <button
-                      type="button"
-                      onClick={() => handlePillClick("custom")}
-                      className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
-                        activePillId === "custom"
-                          ? "bg-bg-brand-secondary text-text-brand-secondary"
-                          : "border border-dashed border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
-                      }`}
-                    >
-                      Custom
-                    </button>
-                  )}
+                {/* + Variable — tertiary purple text button at far right */}
+                <div className="ml-auto relative" ref={insertWrapperRef}>
+                  <button
+                    type="button"
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => setIsInsertOpen((v) => !v)}
+                    aria-haspopup="menu"
+                    aria-expanded={isInsertOpen}
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold whitespace-nowrap text-text-brand-secondary hover:text-text-brand-secondary_hover hover:bg-bg-brand-secondary transition-colors duration-100 cursor-pointer"
+                  >
+                    <Plus className="size-3.5" />
+                    Variable
+                  </button>
+                  {isInsertOpen && (() => {
+                    const scope = getVariableScope(message, categoryId);
+                    const valueMap = getExampleValues(categoryId);
+                    const rows = scope
+                      .map((key) => ({ key, value: valueMap.get(key) }))
+                      .filter((r): r is { key: string; value: NonNullable<typeof r.value> } => !!r.value);
+                    return (
+                      <div
+                        role="menu"
+                        className="absolute right-0 top-full mt-1 z-20 min-w-[220px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1"
+                      >
+                        {rows.length === 0 ? (
+                          <p className="px-3 py-2 text-xs text-text-tertiary">
+                            No variables for this message.
+                          </p>
+                        ) : (
+                          rows.map(({ key, value }) => (
+                            <button
+                              key={key}
+                              type="button"
+                              role="menuitem"
+                              onMouseDown={(e) => e.preventDefault()}
+                              onClick={() => insertVariable(key)}
+                              className="flex w-full items-center justify-between gap-4 px-3 py-1.5 text-xs hover:bg-bg-primary_hover cursor-pointer"
+                            >
+                              <span className="text-text-primary">{value.label}</span>
+                              <span className={VARIABLE_TOKEN_CLASSES}>{value.preview(state)}</span>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
 

@@ -89,3 +89,4 @@ CC_HANDOFF.md                                                    # This file (ov
 5. Ask Claude panel backend (streaming AI route).
 6. Wire signup / phone OTP / EIN verification to real backends (D-59, D-46, D-302/D-303).
 7. Error-state design pass across all interaction failures before copy lock.
+8. **Message editor polish — deferred from Session 34.** Delete icon button next to `+ Variable` in the tone-pills row. PM flagged as a potential addition while paste-testing the Tiptap editor; not in the current scope. Revisit after the atomic-token interaction model has settled in testing.

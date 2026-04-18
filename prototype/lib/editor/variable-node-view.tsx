@@ -18,25 +18,24 @@ export function VariableNodeView(props: ReactNodeViewProps) {
     return example ? example.preview(state) : `{${key}}`;
   })();
 
-  // D-350: the atom wrapper must be non-editable so that single click selects
-  // the whole node (ProseMirror/Tiptap otherwise treats the inner text as
-  // editable and click becomes a caret placement). draggable={false} +
-  // onDragStart handler disable drag at the DOM level since drag semantics
-  // (copy vs move) vary by browser and ProseMirror's default drop handler
-  // is a copy. Keeping the insert affordance + backspace as the canonical
-  // flows; drag isn't part of the core interaction model.
+  // D-350: at rest the token is color-only (no background, no radius, no
+  // padding) so prose reads cleanly. Hover and selected get a padded pill
+  // treatment for interaction feedback. Padding + negative margin pair
+  // (px-1 / -mx-1) grows the background 4px outside the text on each side
+  // without shifting surrounding text flow.
   //
-  // Visual states:
-  //   at rest  — color-only, no background (preserves prose reading)
-  //   hover    — subtle brand-secondary background
-  //   selected — same background + brand ring (from props.selected, which
-  //              Tiptap sets when ProseMirror's node selection targets this
-  //              node; enables keyboard backspace-to-delete feedback)
-  const baseClasses =
-    "rounded-sm px-0.5 -mx-0.5 transition-colors duration-100";
+  // Selected > hover by bg darkness: hover = bg-bg-brand-secondary (lightest
+  // brand tint), selected = bg-bg-brand-primary (next shade up). No ring by
+  // default per PM direction.
+  //
+  // Drag suppression: contentEditable={false} makes the atom click-selectable
+  // (otherwise the browser treats inner text as editable and clicks place a
+  // caret). draggable={false} + onDragStart + [-webkit-user-drag:none] kill
+  // drag at three layers (Chrome/Firefox/Safari) since drag isn't part of
+  // the interaction model — insert affordance + backspace cover all flows.
   const stateClasses = selected
-    ? "bg-bg-brand-secondary ring-1 ring-border-brand"
-    : "hover:bg-bg-brand-secondary";
+    ? "bg-bg-brand-primary rounded-sm px-1 -mx-1"
+    : "hover:bg-bg-brand-secondary hover:rounded-sm hover:px-1 hover:-mx-1";
 
   return (
     <NodeViewWrapper
@@ -45,7 +44,7 @@ export function VariableNodeView(props: ReactNodeViewProps) {
       draggable={false}
       onDragStart={(e: React.DragEvent<HTMLSpanElement>) => e.preventDefault()}
       data-variable-key={key ?? undefined}
-      className={`${VARIABLE_TOKEN_CLASSES} ${baseClasses} ${stateClasses}`}
+      className={`${VARIABLE_TOKEN_CLASSES} [-webkit-user-drag:none] transition-colors duration-100 ${stateClasses}`}
     >
       {preview}
     </NodeViewWrapper>
