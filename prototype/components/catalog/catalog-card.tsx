@@ -107,38 +107,17 @@ interface ComplianceResult {
   issues: string[];
 }
 
-// Group variable keys into human labels for the "Needs X" hint.
-// Production compliance will be server-side; this is a client-side stub
-// (substring match against interpolated demo values).
-const VARIABLE_LABELS: Record<string, string> = {
-  app_name: "business name",
-  business_name: "business name",
-  date: "appointment details",
-  time: "appointment details",
-  service_type: "appointment details",
-  website_url: "website link",
-  customer_name: "customer name",
-  code: "verification code",
-  order_id: "order details",
-  tracking_url: "order details",
-  ticket_id: "ticket details",
-  eta: "delivery details",
-  contact_phone: "contact info",
-  address: "address",
-  product_type: "order details",
-  wait_time: "wait time",
-  party_size: "party size",
-  venue_type: "venue",
-  location: "location",
-  announcement_text: "announcement",
-  sponsor_name: "sponsor",
-  task_description: "task",
-  alert_text: "alert",
-  community_name: "community name",
-};
-
-function getVarLabel(key: string): string {
-  return VARIABLE_LABELS[key] || key.replace(/_/g, " ");
+/**
+ * Format labels as a grammatical list:
+ *   1 → "X"
+ *   2 → "X and Y"
+ *   3+ → "X, Y, and Z"
+ */
+function joinLabels(labels: string[]): string {
+  if (labels.length === 0) return "";
+  if (labels.length === 1) return labels[0];
+  if (labels.length === 2) return `${labels[0]} and ${labels[1]}`;
+  return `${labels.slice(0, -1).join(", ")}, and ${labels[labels.length - 1]}`;
 }
 
 function checkCompliance(
@@ -158,21 +137,27 @@ function checkCompliance(
 
   // Required interpolation variables — each original {var} must still appear
   // in the edited text (substring match against interpolated demo value).
+  // The error labels come directly from the + Variable dropdown's label
+  // source (getExampleValues) so the two can never drift: adding a new
+  // variable in the future only requires registering it once in
+  // catalog-helpers.
   const vars = extractVariables(message.template);
   const valueMap = getExampleValues(categoryId);
-  const missingLabels = new Set<string>();
+  const missingLabels: string[] = [];
+  const seen = new Set<string>();
   const lowered = text.toLowerCase();
   for (const v of vars) {
     const example = valueMap.get(v);
     if (!example) continue;
     const value = example.preview(state);
     if (!value) continue;
-    if (!lowered.includes(value.toLowerCase())) {
-      missingLabels.add(getVarLabel(v));
+    if (!lowered.includes(value.toLowerCase()) && !seen.has(example.label)) {
+      seen.add(example.label);
+      missingLabels.push(example.label);
     }
   }
-  for (const label of missingLabels) {
-    issues.push(`Needs ${label}`);
+  if (missingLabels.length > 0) {
+    issues.push(`Needs ${joinLabels(missingLabels)}`);
   }
 
   return { isCompliant: issues.length === 0, issues };

@@ -19,10 +19,10 @@ export function VariableNodeView(props: ReactNodeViewProps) {
   })();
 
   // D-350: at rest the token is color-only (no background) so prose reads
-  // cleanly. Hover and selected paint a flat horizontal band behind the
-  // glyphs — mimics native text selection. No radius, no horizontal padding,
-  // no ring. Without padding expansion there is no layout shift on state
-  // change, so no negative-margin offset is needed either.
+  // cleanly. Hover and selected paint a horizontal band behind the glyphs
+  // with ~3px top / ~5px bottom padding to give the band more presence.
+  // Negative margin counterweight keeps the element's layout box unchanged
+  // so surrounding text flow stays stable. No radius, no ring.
   //
   // Token choice by observed rendering in this prototype's theme:
   //   hover    → bg-bg-brand-primary    (lighter tint)
@@ -34,9 +34,10 @@ export function VariableNodeView(props: ReactNodeViewProps) {
   // caret). draggable={false} + onDragStart + [-webkit-user-drag:none] kill
   // drag at three layers (Chrome/Firefox/Safari) since drag isn't part of
   // the interaction model — insert affordance + backspace cover all flows.
+  const padded = "pt-[3px] pb-[5px] -mt-[3px] -mb-[5px]";
   const stateClasses = selected
-    ? "bg-bg-brand-secondary"
-    : "hover:bg-bg-brand-primary";
+    ? `bg-bg-brand-secondary ${padded}`
+    : `hover:bg-bg-brand-primary hover:pt-[3px] hover:pb-[5px] hover:-mt-[3px] hover:-mb-[5px]`;
 
   return (
     <NodeViewWrapper
