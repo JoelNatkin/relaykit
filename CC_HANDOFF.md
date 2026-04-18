@@ -1,10 +1,12 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-18 (Session 35 — Tiptap message editor)
-**Branch:** main (9 unpushed commits pre-close-out; 10 after the close-out commit this file lives in)
+**Date:** 2026-04-18 (Session 35 — Tiptap editor + error-state resolution)
+**Branch:** main (all session commits pushed; close-out commit with doc updates will land locally on top and is NOT pushed per PM direction)
 
 ---
 
 ## Commits This Session
+
+All 12 pushed to `origin/main`:
 
 ```
 989aac5  docs: add message editor Tiptap design doc (implements D-350/D-353)
@@ -16,71 +18,86 @@ bf19374  fix(prototype): variable token click-select, drag-disable, visible stat
 058a0df  fix(prototype): defer setContent to microtask to avoid flushSync warning
 7c338d5  fix(prototype): token band padding, pointer cursor, label-accurate compliance errors
 cf09e61  fix(prototype): band padding tightening, error gating, Fix copy
+59cc72a  docs: session 35 close-out — Tiptap editor, D-354, error-state bugs unverified
+55a87e5  fix(prototype): compliance check moved from reactive effect to explicit calls
+858866d  fix(prototype): pass emitUpdate:false to editor.setEditable — root cause of error-state bugs
 ```
 
-A close-out commit overwriting this file + REPO_INDEX + PROTOTYPE_SPEC will follow.
+A final close-out commit containing this file + REPO_INDEX + PROTOTYPE_SPEC + design-doc §15 will follow and is intentionally unpushed.
 
 ---
 
 ## What Was Completed
 
-### D-354 recorded
-Tiptap v3 chosen for the message editor per D-350's requirement to use a proper contentEditable library. Rationale: React 19 support, ProseMirror atom model fits variable tokens perfectly, best community docs and mention-pattern examples. Recorded in `DECISIONS.md`.
+### Tiptap editor (D-354)
+Tiptap v3 wired into the workspace message editor. `prototype/lib/editor/`:
+- **`variable-node.ts`** — Tiptap atom node. `inline: true, atom: true, selectable: true, draggable: false`.
+- **`variable-node-view.tsx`** — React NodeView. Reads session state for live preview values. DOM-level drag suppression at three layers.
+- **`template-serde.ts`** — `templateToContent` / `docToTemplate`. Round-trip stable — verified headlessly via `@tiptap/pm/model` schema parse.
+- **`message-editor.tsx`** — thin Tiptap wrapper. Document + Paragraph + Text + VariableNode only (no StarterKit). Single-line (Enter suppressed). Editor-level drag kill. `setContent` deferred to `queueMicrotask` with `isDestroyed` guard to avoid `flushSync` commit-phase collision. `setEditable` called with `emitUpdate: false` (see §Gotcha below).
 
-### Design doc
-`docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md` — 362 lines covering VariableNode shape, template serde, per-message scope refactor, insert affordance UX, color-token plan, raw-color cleanup, migration, and two-commit execution shape. Approved by PM before code touched.
+### Atomic variable tokens (D-350)
+Variables render as indivisible atoms — cursor-before/after, click-selects-whole, backspace-deletes-whole, no cursor placement inside. Visual states:
+- Rest: color only (`text-text-brand-secondary`), no background.
+- Hover: flat horizontal band, `bg-bg-brand-primary`, `pt-[3px] pb-[3px] -mt-[3px] -mb-[3px]` padded footprint that preserves line height.
+- Selected: same band, `bg-bg-brand-secondary`.
 
-### Editor architecture (`prototype/lib/editor/`)
-- **`variable-node.ts`** — Tiptap atom node. `inline: true, atom: true, selectable: true, draggable: false`. Attribute `key` maps to a variable-registry entry. `parseHTML` matches `span[data-variable-key]` so clipboard HTML round-trips preserve atoms.
-- **`variable-node-view.tsx`** — React NodeView. Reads session state via `useSession()` so variable preview values stay live. DOM-level drag suppression (`contentEditable={false}`, `draggable={false}`, `onDragStart preventDefault`, CSS `[-webkit-user-drag:none]`). Hover/selected state styling through Tiptap's `props.selected`.
-- **`template-serde.ts`** — `templateToContent(template, categoryId)` parses `{var_key}` strings into ProseMirror JSON; `docToTemplate(doc)` walks the doc and emits `{key}` tokens. Round-trip stable.
-- **`message-editor.tsx`** — thin wrapper. `useEditor` with Document + Paragraph + Text + VariableNode only (no StarterKit). Single-line (Enter suppressed). Editor-level drag kill (`handleDrop: () => true`, `handleDOMEvents.dragstart` preventDefault). Template-sync effect deferred to `queueMicrotask` with `isDestroyed` guard to avoid `flushSync` inside React commit phase.
+### `+ Variable` insert affordance (D-353)
+Tertiary purple text button in the tone-pills row. Per-message scope via `Message.variables: string[]`. Custom messages use the intersection across all built-ins in the category. `prototype/lib/variable-scope.ts`.
 
-### Data model additions
-- **`prototype/data/messages.ts`** — added `variables: string[]` field to the `Message` interface. Populated for all 14 built-in messages (8 verification + 6 appointments) and the 4 inline marketing messages in `apps/[appId]/page.tsx`. Variables list = union of tokens used across default + all tone variants (since tone swap shouldn't change what's insertable — the SDK method's data shape is the same across tones).
-- **`prototype/lib/variable-scope.ts`** — `getVariableScope(message, categoryId)`. For built-in messages returns `message.variables`. For custom messages (D-351 manual-send) returns the intersection of variables across all built-in messages in the category, per D-353.
-- **`prototype/lib/variable-token.ts`** — shared `VARIABLE_TOKEN_CLASSES = "cursor-pointer text-text-brand-secondary"`. Single source for variable styling across the editor NodeView, `catalog-card` preview, `/sms/[category]/page.tsx`, `/sms/[category]/messages/page.tsx`. Edit and preview now match per D-350.
+### Token-styling consolidation
+Single source `prototype/lib/variable-token.ts` (`VARIABLE_TOKEN_CLASSES`) used by the NodeView, catalog-card preview, `/sms/[category]/page.tsx`, and `/sms/[category]/messages/page.tsx`. Edit and preview now match exactly.
 
-### catalog-card integration
-- Plain `<textarea>` swapped for `<MessageEditor>`. Internal state changed from resolved-string to template-string. Compliance check resolves the template before matching.
-- `+ Variable` popover added to the tone-pills row — tertiary purple text button with `Plus` icon, matches Ask Claude styling. Popover scoped per-message, rows use the top-nav dropdown scale (`text-sm px-3 py-2`), width content-driven.
-- Tone-pills row reordered: `Standard | Friendly | Brief | Custom | [spacer] | + Variable`. Custom is grouped with tone variants since it's a tone state.
-- Every control in the tone-pills row uses `onMouseDown preventDefault` so clicks don't blur the editor — this is required for ProseMirror's click-to-select on tokens to stay live across tone swaps. **Don't remove these in future refactors without reading the gotcha below.**
-- Raw-color violations cleaned up: three `bg-[#333333]` tooltips → `bg-bg-primary-solid text-text-white`; Marketing badge → `bg-bg-brand-secondary text-text-brand-secondary`; compliance error `text-[#F97066]` → `text-text-error-primary`.
-- Compliance error labels derive from the same source as the `+ Variable` dropdown (`getExampleValues().label`). Format: `Needs X` / `Needs X and Y` / `Needs X, Y, and Z`. Removed the hardcoded `VARIABLE_LABELS` map that collapsed `date`/`time`/`service_type` to vague "appointment details".
-- Button copy: Restore → **Fix**, Restoring… → Fixing….
-- Side effect: saved edits now preserve variable highlighting in preview (prior behavior saved resolved strings so `interpolateTemplate` couldn't round-trip them).
+### Data model
+`Message.variables: string[]` added to every built-in message (8 verification + 6 appointments) and the 4 inline marketing messages on `apps/[appId]/page.tsx`.
+
+### Copy change
+"Restore" button relabeled **Fix**; "Restoring…" → "Fixing…". Internal identifiers (`handleRestore`, `isFixLoading`) kept — not user-facing.
+
+### Raw-color cleanup (in files we touched)
+Three `bg-[#333333]` tooltips → `bg-bg-primary-solid text-text-white`. Marketing badge → `bg-bg-brand-secondary text-text-brand-secondary`. Compliance error `text-[#F97066]` → `text-text-error-primary`.
 
 ### Dead-code deletion
-Pre-delete grep confirmed zero live references. Removed:
-- `prototype/components/plan-builder/message-card.tsx`
-- `prototype/components/plan-builder/message-tier.tsx`
+`plan-builder/message-card.tsx` and `plan-builder/message-tier.tsx` removed — pre-delete grep confirmed zero live references. The `MessageTier` *type* in `data/messages.ts` is a different entity and is kept.
 
-`MessageTier` the **type** (in `data/messages.ts`) is a different entity, used by `Message.tier` in 6+ files — kept intact.
+### Compliance-error architecture (final form)
+Compliance check is an explicit-call function `runComplianceCheck(text)` — not a reactive `useEffect`. Called from `handleTextChange`, `handleAiSubmit`, and `handlePillClick`'s Custom branch. `initEditSession`, `handleRestore`, `handleCancel`, and `handlePillClick`'s canned branch set clean state directly (no re-check). Error labels derive from the same source as the `+ Variable` dropdown (`getExampleValues().label`), so label lists and dropdown labels can never drift. 2s debounce on hint reveal; immediate hide on compliant.
 
-### Token visual states
-- At rest: color only (`text-text-brand-secondary`), no background, no radius, no weight. Prose reads cleanly.
-- Hover: flat horizontal band, `bg-bg-brand-primary` (lighter in this theme per browser testing), `pt-[3px] pb-[3px] -mt-[3px] -mb-[3px]` for a padded footprint that doesn't shift line height.
-- Selected: same flat band, `bg-bg-brand-secondary` (darker shade). No ring.
-- Cursor pointer on all variable renders (edit + preview).
+### Error-state bugs — resolved (the saga)
+
+Two PM-reported issues from mid-session:
+- **Bug A.** Cold-open edit on Booking confirmation showed red "Needs opt-out language" + "Needs Business name, Service type, Date, and Time" before any user interaction.
+- **Bug B.** Deleting `{app_name}` → click Fix once → "Needs Service type" persisted → second Fix click cleared it.
+
+**Three attempts, one root cause in the last:**
+
+1. **`cf09e61` — `hasUserEdited` gate (failed).** Added a flag that gated the reactive compliance `useEffect` on user typing. Reasoning: the effect was firing during edit-mode transitions against stale `editText`. The gate was bypassed by the very event it was meant to block — `handleTextChange` flipped the flag to true on the spurious emission, so the gate opened for exactly the wrong call.
+
+2. **`55a87e5` — explicit-call compliance refactor (failed).** Moved compliance out of a reactive `useEffect` into explicit calls from handlers. Architecturally correct — reactive effects for correctness-critical UI state are fragile — but *orthogonal* to the real bug. `handleTextChange` remained a call site; the spurious emission still reached it with the wrong text.
+
+3. **`858866d` — `emitUpdate: false` on `setEditable` (resolved).** Root cause: Tiptap's `Editor.setEditable(editable, emitUpdate = true)` unconditionally emits the `update` event via a direct `this.emit("update", ...)` call, bypassing the docChanged gating at `@tiptap/core dist/index.js:5131`. `message-editor.tsx` called `editor.setEditable(!disabled)` with no second argument, so every `disabled` flip synthesized an `update` event with whatever doc the editor currently held — which during React's effect sequence was stale relative to what the parent expected. Bug A: the first post-mount `setEditable(true)` fired against the empty-paragraph doc the editor was constructed with (because `editText` was still `""` when `useEditor` captured its options — `initEditSession`'s commit hadn't happened yet; the template-sync microtask ran *after* the setEditable effect). Bug B: `handleRestore`'s `isFixLoading: false` flipped `disabled` back before the template-sync microtask had replaced the modified doc with the original.
+
+**One-line fix.** `editor.setEditable(!disabled, false)` in `message-editor.tsx:104`. Fully resolved both bugs; browser-verified by PM. `55a87e5`'s explicit-call architecture is *retained* — it's the better design regardless.
+
+The saga is documented in the design doc at `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md` §15 with a call-site audit and a rule for future editor commands: **any Tiptap method that isn't a real doc change must pass `emitUpdate: false` (or method-specific equivalent).**
 
 ---
 
 ## Quality Checks Passed
 
 - `tsc --noEmit` clean on `/prototype` throughout the session and at close-out.
-- `next build` passed cleanly once at mid-session; routes compile, SSR-safe (`immediatelyRender: false` on Tiptap).
-- Dev server running at `http://localhost:3001`, HMR stable across all 9 code commits.
+- Dev server restarted fresh (`rm -rf .next`) after the final fix; Ready in 2.5s; `/apps/glowstudio` HTTP 200 with no compile or runtime error markers.
+- Bug A: browser-verified resolved by PM (cold-open edit → zero errors).
+- Bug B: browser-verified resolved by PM (single Fix click fully clears).
+- Token click-select, typing → compliance, `+ Variable` insertion, Save — all verified unregressed by PM.
 - Raw-color scan clean on all files this session touched. Pre-existing raw colors remain in `/sms/[category]/messages/page.tsx` (lines 242, 379, 951) — outside this PR's scope; flagged for a future sweep.
-- **ESLint — not verified.** No eslint config exists in `/prototype` or at repo root; `next lint` is deprecated and interactive. CLAUDE.md lists eslint as a gate but the tooling isn't wired. Flag if PM wants this enforced going forward.
+- **ESLint — not verified.** No eslint config exists in `/prototype` or at repo root; `next lint` is deprecated and interactive. CLAUDE.md lists eslint as a gate but the tooling isn't wired. Unchanged from prior handoff.
 
 ---
 
 ## In Progress / Partially Done
 
-**Two error-state issues are unverified at close-out.** They may already be fixed by `cf09e61`, but I could not re-test in the browser end-to-end before handoff. Treat both as open until confirmed by PM testing.
-
-Carried forward from prior sessions (unchanged):
+Carried forward from prior sessions (unchanged this session):
 - Signup backend stubbed (D-59)
 - EIN verification backend stubbed (D-302/D-303)
 - Phone OTP stubbed (D-46)
@@ -97,77 +114,71 @@ Carried forward from prior sessions (unchanged):
 
 ## Gotchas for Next Session
 
-### Two open error-state bugs — unverified fix attempt in `cf09e61`
+### 1. Tiptap `emitUpdate: false` rule — load-bearing
+See design doc §15 for the full writeup. **Short version:** any Tiptap method that doesn't represent a real user-produced content change must pass `emitUpdate: false` (or method-specific equivalent). Currently `setContent` (line 98) and `setEditable` (line 104) in `message-editor.tsx` are correctly suppressed; `insertVariable` (catalog-card.tsx:525) is a real user transaction and correctly fires update. When adding any new editor command, audit the emit behavior before shipping.
 
-**Bug A — false-positive compliance errors on first open.**
-Reported by PM mid-session: opening edit mode on an untouched message immediately shows red "Needs Business name, Service type, Time, and Website" before any user interaction.
+### 2. D-355 variable grammar — must land as a decision before any related code
+`state.serviceType = "Beauty & wellness appointments"` (title case, plural) reads awkwardly mid-sentence and collides with literal "appointment" in many templates. The design requires a decision on canonical-form storage vs. context-aware rendering. **Do not attempt a code fix without a recorded decision.** Candidate for the next D-number.
 
-- **Suspected cause I diagnosed:** the compliance `useEffect` in `catalog-card.tsx` depends on `[editText, isEditing, message, categoryId, state]`. When `isEditing` flips true, the effect fires BEFORE `initEditSession`'s `setEditText(template)` has committed — it runs against stale or empty `editText`, finds no variable preview values in the empty string, and marks every required variable as missing. Secondary leak: `showComplianceHint` state from a prior edit session (in controlled mode, where the parent manages `isEditing` and `exitEdit` doesn't reset hint state) could be stuck true.
-- **Fix attempted:** added a `hasUserEdited` flag. Compliance effect short-circuits to `{ isCompliant: true, issues: [] }` unless the flag is true. Flag resets in `initEditSession` + `handleRestore` (Fix); flips true in `handleTextChange` + `handleAiSubmit`.
-- **Why it might still fail:** the gate is right in principle, but if there's a different code path that flips `hasUserEdited=true` unintentionally (e.g., an early `onUpdate` from Tiptap's editor fires handleTextChange during mount), the false positive would still surface. Fresh-eye re-test: open several messages cold, inspect React DevTools for `hasUserEdited` state on first render.
+### 3. `onMouseDown preventDefault` on tone pills — do not remove
+Every button in the tone-pills row (Standard, Friendly, Brief, Custom, `+ Variable`, popover items) uses this handler. Without it, clicking a tone pill blurs the editor and subsequent token clicks stop working (ProseMirror's click-to-select-atom requires a live editor view). The regression took a full diagnostic pass to find in `5e78377`.
 
-**Bug B — Fix (Restore) requires a second click to clear errors.**
-Reported by PM: delete required variables → see errors → click Fix once → errors persist → click Fix again → errors clear.
+### 4. `editText` holds a template, not resolved text
+All compliance/rendering code that expected resolved strings was updated in Session 35. If you add a new edit-mode consumer, run `interpolateTemplate(editText, categoryId, state)` to get the resolved form.
 
-- **Suspected cause I diagnosed:** after the 1.5s "Fixing…" timeout, `handleRestore` batches `setEditText(template) + setCompliance(clean) + setShowComplianceHint(false)`. React commits. The compliance useEffect then fires (because `editText` changed), re-runs the check against the restored template, and *should* keep compliance clean. But if something in the resolved-text match is flaky — preview value collision with a static word, empty session field — the check could flip compliance back to non-compliant, re-showing the error.
-- **Fix attempted:** `handleRestore` also sets `hasUserEdited=false`. Combined with the compliance-effect gate, the post-Fix re-check is short-circuited. By UX contract, post-Fix state is clean.
-- **Why it might still fail:** same surface as Bug A — if `hasUserEdited` gets flipped back to true by a code path I missed, the re-check runs and the bug reappears. Also worth checking whether the editor's template-sync effect triggers `onUpdate` (it shouldn't — we pass `emitUpdate: false` to setContent — but Tiptap has edge cases).
+### 5. `emitUpdate: false` + `queueMicrotask` in template-sync
+`setContent` runs in a microtask to dodge React's `flushSync` inside-commit warning. Calling `setContent` synchronously inside the effect reintroduces the warning. See `058a0df`.
 
-**Recommended next-session approach:**
-1. Open `/apps/glowstudio` in browser. DevTools console open.
-2. Click edit pencil on Booking confirmation. Observe: any errors? Any console warnings?
-3. If errors appear, add `console.log` around the compliance effect to trace: what is `editText`, `hasUserEdited`, `resolved` at each fire?
-4. Delete `{app_name}`. Wait for error. Click Fix once. Check state values as before.
-5. If either bug reproduces, the gate I added isn't sufficient — the real fix may require moving compliance check out of `useEffect` (which can re-fire unexpectedly) into an explicit call in `handleTextChange` only. That would be a bigger refactor but makes the compliance trigger deterministic.
+### 6. Compliance is explicit-call only
+`runComplianceCheck(text)` runs exclusively from user-action handlers. Do not re-introduce a reactive `useEffect` that watches `editText` — the `55a87e5` commit message explains why the deterministic model is load-bearing.
 
-### Other gotchas (structural)
+### 7. Deferred delete-icon button
+PM flagged during paste testing. Not in scope Session 35. Revisit after the atomic-token model has more production use.
 
-1. **Tiptap focus retention — do NOT remove `onMouseDown preventDefault` on tone pills.** Every button in the tone-pills row (Standard, Friendly, Brief, Custom, `+ Variable`, popover items) has this handler. Without it, clicking a tone pill blurs the editor, and subsequent token clicks stop working (ProseMirror's click-to-select-atom requires a live editor view). The regression took a full diagnostic pass to find in `5e78377`.
-2. **`editText` holds a template, not resolved text.** All compliance/rendering code that expected resolved strings was updated. If you add a new edit-mode consumer, run `interpolateTemplate(editText, categoryId, state)` to get the resolved form.
-3. **`emitUpdate: false` + `queueMicrotask` in template-sync.** The setContent call lives inside a microtask to dodge the `flushSync` warning from React. If you call setContent synchronously in an effect, the warning comes back. See `058a0df` for context.
-4. **Variable grammar issue (deferred per D-352 candidate).** `state.serviceType` = "Beauty & wellness appointments" (title case, plural). Inserting mid-sentence reads as "…your Beauty & wellness appointments booking…" — wrong. Also collides with the literal word "appointment" in many templates ("{service_type} appointment is confirmed" → doubled noun). This is a template-authoring / variable-semantics problem. Proposed approach for a future session: variables store a canonical base form + the renderer (or authoring tool) handles case + pluralization per insertion context. Candidate for a new D-number — **do not attempt a fix without a decision**.
-5. **Deferred delete-icon button.** PM flagged during paste testing. Not in scope this session. Revisit after the atomic-token model stabilizes.
-6. **`api/node_modules/` remains untracked** and intentionally not in `.gitignore` at the `api/` layer. Don't `git add -A` without checking.
-7. **Dev server:** `npm run dev` in `/prototype` → port 3001. Memory rule: always `rm -rf .next` before starting.
+### 8. `api/node_modules/` remains untracked
+Intentionally not in `.gitignore` at the `api/` layer. Don't `git add -A` without checking — it will try to include the entire vendored tree.
+
+### 9. Dev server
+`npm run dev` in `/prototype` → port 3001. Memory rule: always `rm -rf .next` before starting.
 
 ---
 
 ## Files Modified This Session
 
 ```
-DECISIONS.md                                                     # +D-354
-REPO_INDEX.md                                                    # meta + subtree index + change log
-PROTOTYPE_SPEC.md                                                # Edit State section rewritten (line ~413)
-CC_HANDOFF.md                                                    # this file (overwritten)
-docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md # NEW
-prototype/package.json                                           # +@tiptap/{core,pm,react,extension-{document,paragraph,text}}
-prototype/package-lock.json                                      # install
-prototype/data/messages.ts                                       # +variables field on every Message
-prototype/app/apps/[appId]/page.tsx                              # +variables on inline MARKETING_MESSAGES
-prototype/app/sms/[category]/page.tsx                            # VARIABLE_TOKEN_CLASSES import
-prototype/app/sms/[category]/messages/page.tsx                   # VARIABLE_TOKEN_CLASSES import
-prototype/components/catalog/catalog-card.tsx                    # textarea → MessageEditor; + Variable popover; raw-color cleanup; Fix button; compliance labels; hasUserEdited gate
-prototype/lib/variable-token.ts                                  # NEW
-prototype/lib/variable-scope.ts                                  # NEW
-prototype/lib/editor/message-editor.tsx                          # NEW
-prototype/lib/editor/variable-node.ts                            # NEW
-prototype/lib/editor/variable-node-view.tsx                      # NEW
-prototype/lib/editor/template-serde.ts                           # NEW
-prototype/components/plan-builder/message-card.tsx               # DELETED (dead code)
-prototype/components/plan-builder/message-tier.tsx               # DELETED (dead code)
+DECISIONS.md                                                      # +D-354
+REPO_INDEX.md                                                     # Meta + subtree index + change log; close-out bumps
+PROTOTYPE_SPEC.md                                                 # Edit State section rewritten (compliance + Fix behavior)
+CC_HANDOFF.md                                                     # This file (rewritten at close-out)
+docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md # Design doc + §15 Gotchas added at close-out
+prototype/package.json                                            # +@tiptap/{core,pm,react,extension-{document,paragraph,text}}
+prototype/package-lock.json                                       # install
+prototype/data/messages.ts                                        # +variables field on every Message
+prototype/app/apps/[appId]/page.tsx                               # +variables on inline MARKETING_MESSAGES
+prototype/app/sms/[category]/page.tsx                             # VARIABLE_TOKEN_CLASSES import
+prototype/app/sms/[category]/messages/page.tsx                    # VARIABLE_TOKEN_CLASSES import
+prototype/components/catalog/catalog-card.tsx                     # textarea → MessageEditor; + Variable popover; raw-color cleanup; Fix rename; compliance architecture refactor (55a87e5)
+prototype/lib/variable-token.ts                                   # NEW — shared classes
+prototype/lib/variable-scope.ts                                   # NEW — per-message scope (D-353)
+prototype/lib/editor/message-editor.tsx                           # NEW — Tiptap wrapper (+ setEditable emitUpdate fix in 858866d)
+prototype/lib/editor/variable-node.ts                             # NEW
+prototype/lib/editor/variable-node-view.tsx                       # NEW
+prototype/lib/editor/template-serde.ts                            # NEW
+prototype/components/plan-builder/message-card.tsx                # DELETED (dead code)
+prototype/components/plan-builder/message-tier.tsx                # DELETED (dead code)
 ```
 
 ---
 
-## What's Next (suggested order)
+## Suggested Next Tasks (priority order)
 
-1. **Priority 1 — Fresh-eye re-diagnosis of the two error-state bugs.** Bug A (false positives on first open) and Bug B (Fix requires second click). The `hasUserEdited` gate in `cf09e61` should address both in principle, but neither has been verified end-to-end. Re-test in browser with DevTools, confirm or reopen. If reopened, consider moving compliance invocation out of a React effect entirely and into an explicit call from `handleTextChange` + post-Fix — makes the trigger deterministic and eliminates the effect's dependency-array ambiguity. **This must land before Task 2.**
-2. **Task 2 — Custom message CRUD** (next logical step in the D-351 custom message model). Wire the Add message button to the session's `addCustomMessage`, make inline-editing of name + trigger persist, implement the Delete kebab. Keep D-352 deferred (content-based marketing classification) — separate session.
-3. **Variable grammar / D-352 candidate.** Design pass on canonical-form storage vs. context-aware rendering. Record as a decision before coding. Flagged in CC_HANDOFF #4 above.
-4. **Stale pricing sweep.** $49 + $19/$29 is canonical; sweep residual `$199`/`$149` from prototype strings, PRDs, marketing copy. Not started.
-5. Extract shared `APP_NAMES` into `lib/app-names.ts` (overdue — 4 duplicate copies).
-6. Session-aware "Back to {appName}" on `/account`.
-7. Ask Claude panel backend (streaming AI route).
-8. Wire signup / phone OTP / EIN verification to real backends (D-59, D-46, D-302/D-303).
-9. Error-state design pass across all interaction failures before copy lock.
-10. Delete icon button next to `+ Variable` (deferred polish — revisit after the atomic-token model settles).
+1. **D-355 — variable grammar decision.** Canonical-form storage (variables store base forms; renderer handles case + pluralization per insertion context) vs. context-aware rendering. Record as a decision *before* any code work. Blocks any polish pass on variable-heavy templates.
+2. **Task 2 — Custom message CRUD** (next logical step in the D-351 custom-message model). Wire the Add message button to the session's `addCustomMessage`, make inline-editing of name + trigger persist, implement the Delete kebab. D-352 (content-based marketing classification) remains deferred — separate session.
+3. **Stale pricing sweep.** $49 + $19/$29 is canonical; sweep residual `$199`/`$149` from prototype strings, PRDs, marketing copy. Not started.
+4. **Extract shared `APP_NAMES` into `lib/app-names.ts`** (overdue — 4 duplicate copies).
+5. **Session-aware "Back to {appName}" on `/account`.**
+6. **Ask Claude panel backend** (streaming AI route).
+7. **Wire signup / phone OTP / EIN verification to real backends** (D-59, D-46, D-302/D-303).
+8. **Error-state design pass** across all interaction failures before copy lock. (Not just the Tiptap bug — we want a coherent design system for failure states site-wide.)
+9. **Raw-color sweep** on pre-existing violations in `/sms/[category]/messages/page.tsx` (lines 242, 379, 951) and any others.
+10. **Delete icon button next to `+ Variable`** — deferred polish; revisit after the atomic-token model has more production use.

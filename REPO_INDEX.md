@@ -6,11 +6,11 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-18 (Session 35 — Tiptap message editor, D-354)
+- **Last updated:** 2026-04-18 (Session 35 close-out — Tiptap editor, D-354, error-state bugs resolved)
 - **Decision count:** D-354 (next available: D-355)
 - **PM instructions synced (Claude.ai UI ↔ repo):** `true`
 - **Active CC session branch:** main
-- **Unpushed local commits:** 10
+- **Unpushed local commits:** 0
 
 ---
 
@@ -118,7 +118,7 @@ Migrations and config.
 | MESSAGE_PIPELINE_SPEC Session B | BLOCKED | Waiting on Sinch account |
 | MESSAGE_PIPELINE_SPEC Session C | NOT STARTED | Buildable after Session A; needs B for end-to-end |
 | SDK_BUILD_PLAN | NOT STARTED | Spec ready |
-| Workspace message row evolution | IN PROGRESS | Shared grid + /account shipped Session 32–33; Tiptap editor + atomic variable tokens shipped Session 35 (D-350, D-353, D-354). Error-state polish has two unverified issues — see CC_HANDOFF gotchas |
+| Workspace message row evolution | IN PROGRESS | Shared grid + /account shipped Session 32–33; Tiptap editor + atomic variable tokens shipped Session 35 (D-350, D-353, D-354). Error-state bugs resolved this session (Tiptap setEditable emit-update fix). Task 2 — custom message CRUD (D-351) — is next |
 
 ---
 
@@ -141,4 +141,5 @@ Verify `D-354` against DECISIONS.md at chat start. If drifted, update this file.
 - **2026-04-17:** Initial REPO_INDEX created. Introduces tiered file orchestration, sync tracking between repo and Claude.ai UI project instructions, canonical file listings at root and `/docs`.
 - **2026-04-17 (Session 33 close-out):** PM instructions paste confirmed (`synced = true`). Unpushed commits counter established (0 at close-out).
 - **2026-04-17 (Session 34):** Added `MESSAGE_PIPELINE_SPEC.md` and `SDK_BUILD_PLAN.md` at repo root; expanded `docs/STARTER_KIT_PROGRAM.md` with sections 12–19; recorded D-349 through D-353; build spec status for SDK flipped to "Spec ready".
-- **2026-04-18 (Session 35):** Tiptap v3 wired into the workspace message editor with atomic `VariableNode` atoms (D-350) and a `+ Variable` insert affordance scoped per-message (D-353). Library choice recorded as D-354. Added `prototype/lib/editor/` + `prototype/lib/variable-{token,scope}.ts`; deleted unused `plan-builder/message-{card,tier}.tsx`. Design doc at `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md`. PROTOTYPE_SPEC Edit-State section rewritten. Closes with two unverified error-state bugs (see CC_HANDOFF).
+- **2026-04-18 (Session 35):** Tiptap v3 wired into the workspace message editor with atomic `VariableNode` atoms (D-350) and a `+ Variable` insert affordance scoped per-message (D-353). Library choice recorded as D-354. Added `prototype/lib/editor/` + `prototype/lib/variable-{token,scope}.ts`; deleted unused `plan-builder/message-{card,tier}.tsx`. Design doc at `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md`. PROTOTYPE_SPEC Edit-State section rewritten.
+- **2026-04-18 (Session 35 close-out):** Error-state bug resolution. Root cause was Tiptap's `Editor.setEditable` emitting the `update` event unconditionally with stale doc content. Two prior fix attempts (`cf09e61` `hasUserEdited` gate; `55a87e5` explicit-call compliance refactor) treated symptoms on the CatalogCard side and did not resolve. Final fix `858866d`: `editor.setEditable(!disabled, false)` in `message-editor.tsx`. The `55a87e5` architecture is retained as still correct. Design doc §15 added with the Tiptap usage rule + call-site audit. All 12 session commits pushed to `origin/main`.

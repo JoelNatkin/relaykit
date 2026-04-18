@@ -359,4 +359,37 @@ PM reviews file diffs before push.
 
 ---
 
-*RelayKit LLC — design doc for D-354 (pending), implements D-350 + D-353.*
+## 15. Gotchas — usage rules for future editor work
+
+These are library-usage rules, not product decisions. Update this section when the editor surface grows.
+
+### 15.1 Any Tiptap method that isn't a real doc change MUST pass `emitUpdate: false`
+
+**The rule.** When calling a Tiptap Editor method that does not produce a user-visible content change, pass `emitUpdate: false` (or the method-specific equivalent). Real transactions — user typing, `insertVariable`, `setContent` called with the intent to replace content and re-notify — keep the default.
+
+**The bug class.** Some Tiptap Editor methods emit the `update` event unconditionally, bypassing the normal "did the doc actually change?" gating. When they fire, `onUpdate` runs with whatever doc happens to be in the editor at that moment — which during React's commit-and-effects sequence may not match what the parent's controlled state is tracking. The parent's `onChange` listener then sees the wrong text and writes it back into React state, producing a permanent desync between what the editor renders and what the parent thinks the editor holds.
+
+**Why the gating is asymmetric.** Tiptap's internal dispatch path at `node_modules/@tiptap/core/dist/index.js:5131` filters update emission based on three conditions — `transaction.getMeta("preventUpdate")`, `transactions.some((tr) => tr.docChanged)`, and `prevState.doc.eq(state.doc)`. Content-changing commands route through this path and get correctly filtered. But direct `this.emit("update", ...)` call sites — like `setEditable` at `dist/index.js:4839` — construct an empty transaction and fire the event directly, no gating. If those methods aren't told to skip the emit, they synthesize a "update" event with stale content and any listener that assumes `update` = doc changed will corrupt its own state.
+
+**The symptom we hit — Session 35 error-state saga.** `message-editor.tsx` called `editor.setEditable(!disabled)` with no second argument, so `emitUpdate` defaulted to `true`.
+
+- **Bug A (cold-open false positives).** The MessageEditor mounts when `isEditing` flips true, which happens *before* CatalogCard's `initEditSession` commits `setEditText(template)`. Tiptap's `useEditor` captures options at call time — so the first editor is constructed with `content = templateToContent("", categoryId)` = an empty paragraph. When the async editor init completes and the editor instance becomes non-null, three effects fire in this order: the template-sync effect queues a *microtask* to `setContent(realTemplate, { emitUpdate: false })`; the setEditable effect *synchronously* calls `setEditable(true)` and fires update with the empty doc; the microtask runs afterwards and loads the real template. By then `onUpdate` has already called `onChange("")` → `handleTextChange("")` → `setEditText("")`, `setActivePillId("custom")`, `runComplianceCheck("")` → "Needs opt-out language" + every required variable missing. The editor repainted correctly so the visible preview looks right; `editText` and compliance reflect the spurious empty-doc emission.
+- **Bug B (Fix requires a second click).** `handleRestore` batches `setEditText(original) + setIsFixLoading(false) + clean compliance state`. `isFixLoading: false` flips `disabled` back to false, and the setEditable effect fires `setEditable(true)` → unconditional update emit — *before* the template-sync microtask has replaced the editor's doc with the restored template. So `onUpdate` fires with the user's modified doc still in place, `handleTextChange(modifiedTemplate)` clobbers the just-set clean compliance, and reports the variables the deletion removed. A second Fix click works because by then `lastEmittedRef`, the editor's doc, and `editText` are all aligned on the original template.
+
+Commit `cf09e61` (`hasUserEdited` gate in CatalogCard) and commit `55a87e5` (explicit-call compliance refactor in CatalogCard) both treated this as a CatalogCard-side problem and both failed. The real root cause lived in MessageEditor. Commit `858866d` fixed it in one line: `editor.setEditable(!disabled, false)`. The `55a87e5` architecture is retained — explicit compliance calls are still cleaner than a reactive useEffect regardless of the Tiptap bug.
+
+**Current call-site audit.** As of Session 35:
+
+| Site | Call | emitUpdate handling |
+|---|---|---|
+| `lib/editor/message-editor.tsx:98` | `editor.commands.setContent(templateToContent(template, categoryId), { emitUpdate: false })` | Correctly suppressed — template-sync is a parent-driven replacement, not a user edit |
+| `lib/editor/message-editor.tsx:104` | `editor.setEditable(!disabled, false)` | Correctly suppressed — editable toggles never represent a doc change |
+| `components/catalog/catalog-card.tsx:525` | `editorRef.current?.chain().focus().insertVariable(key).run()` | Update emit kept (default) — insertVariable is a real user-initiated doc change; compliance and parent state SHOULD re-run |
+
+**When adding a new editor command, ask:** does this call represent content the user just produced, or is it a mechanical reconfiguration? If mechanical (editable, focus, options, selection-only), suppress the update. If content (typing, insertion, replacement-with-intent-to-notify), let it fire.
+
+**Verification path.** To check Tiptap's behavior for a new method, grep the core dist file for `emit("update"` and verify that your method routes through the transaction path (dispatch + `dispatchTransaction`) rather than a direct `this.emit("update", ...)` call. If it's direct, that method needs an `emitUpdate: false` equivalent.
+
+---
+
+*RelayKit LLC — design doc for D-354, implements D-350 + D-353. §15 added Session 35 close-out after resolving error-state bugs.*
