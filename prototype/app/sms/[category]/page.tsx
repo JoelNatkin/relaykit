@@ -14,6 +14,7 @@ import {
 } from "@untitledui/icons";
 import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
 import { Footer } from "@/components/footer";
+import { VARIABLE_TOKEN_CLASSES } from "@/lib/variable-token";
 
 /* ── Appointments-specific content (stub 1 category as the primary example) ── */
 
@@ -124,7 +125,7 @@ function interpolate(text: string): React.ReactNode[] {
       parts.push(text.slice(lastIndex, match.index));
     }
     parts.push(
-      <span key={match.index} className="font-medium text-text-brand-tertiary">
+      <span key={match.index} className={VARIABLE_TOKEN_CLASSES}>
         {replacements[match[0]]}
       </span>
     );

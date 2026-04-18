@@ -275,12 +275,12 @@ After this change every surface that renders a variable value uses the same toke
 
 ## 9. Raw-color violations fixed in this PR
 
-Per CLAUDE.md rule and PM direction, touching `catalog-card.tsx` triggers a cleanup of any raw color in the file:
+Per CLAUDE.md rule and PM direction, touching `catalog-card.tsx` triggers a cleanup of any raw color in the file. Tokens verified against `docs/UNTITLED_UI_REFERENCE.md` (2026-04-18): no `utility-brand-*` scale exists in the exported token set — the reference exposes single-scale brand tokens only (`bg-brand-secondary`, `text-brand-secondary`, etc.), which in this codebase are addressed as `bg-bg-brand-secondary` / `text-text-brand-secondary` (double-prefix).
 
-| Line | Current | Replace with |
+| Line | Original | Applied replacement |
 |---|---|---|
-| 579 | `bg-[#333333] ... text-white` (tooltip) | `bg-bg-primary-solid text-text-white` (matches `message-card.tsx:421` which already uses the semantic token) |
-| 585 | `bg-[#F9F5FF] border-[#E9D7FE] text-[#7C3AED]` (Marketing badge) | `bg-utility-brand-50 border-utility-brand-200 text-utility-brand-700` (Untitled UI utility brand tokens — verify exact names against `docs/UNTITLED_UI_REFERENCE.md` during implementation; drop back to `bg-bg-brand-secondary text-text-brand-secondary` if utility-brand-* isn't exposed) |
+| 579 | `bg-[#333333] ... text-white` (tooltip) | `bg-bg-primary-solid text-text-white` (reference: "primary-solid... useful for components such as tooltips") |
+| 585 | `bg-[#F9F5FF] border-[#E9D7FE] text-[#7C3AED]` (Marketing badge) | `bg-bg-brand-secondary text-text-brand-secondary` (no border — matches the active-tone-pill pattern already used at line 704) |
 | 624, 642 | Two more `bg-[#333333]` tooltips | Same as 579 |
 | 670 | `text-[#F97066]` (compliance error) | `text-text-error-primary` |
 

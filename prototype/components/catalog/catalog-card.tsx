@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Activity, Check, Stars02 } from "@untitledui/icons";
+import type { Editor } from "@tiptap/react";
 import type { Message, VariantSet } from "@/data/messages";
 import type { SessionState } from "@/context/session-context";
 import {
@@ -11,10 +12,9 @@ import {
   extractVariables,
   getExampleValues,
 } from "@/lib/catalog-helpers";
-
-/* ── Inline variable styling ── */
-
-const VAR_CLASSES = "text-text-brand-secondary";
+import { VARIABLE_TOKEN_CLASSES } from "@/lib/variable-token";
+import { getVariableScope } from "@/lib/variable-scope";
+import { MessageEditor } from "@/lib/editor/message-editor";
 
 /* ── Icons ── */
 
@@ -248,7 +248,9 @@ export function CatalogCard({
   const [compliance, setCompliance] = useState<ComplianceResult>({ isCompliant: true, issues: [] });
   const [showComplianceHint, setShowComplianceHint] = useState(false);
   const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<Editor | null>(null);
+  const [isInsertOpen, setIsInsertOpen] = useState(false);
+  const insertWrapperRef = useRef<HTMLDivElement>(null);
 
   // Header icon tooltips: short hover delay, and always clear on unmount-while-
   // hovered. The icons are unmounted when an expansion opens, so mouseLeave
@@ -328,21 +330,18 @@ export function CatalogCard({
 
   const currentTemplate = savedText ?? message.template;
 
-  // Auto-resize textarea
-  useEffect(() => {
-    if (isEditing && textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
-    }
-  }, [isEditing, editText]);
-
   // Compliance: run check on every editText change. Update issues immediately
   // so already-visible hints reflect the latest text. When text becomes
   // compliant, hide the hint immediately (no debounce). When non-compliant,
   // debounce the initial reveal by 2s so the developer isn't nagged mid-type.
   useEffect(() => {
     if (!isEditing) return;
-    const result = checkCompliance(editText, message, categoryId, state);
+    // editText is a `{var_key}` template; compliance rules match interpolated
+    // values, so resolve before checking.
+    const resolved = interpolateTemplate(editText, categoryId, state)
+      .map((s) => s.text)
+      .join("");
+    const result = checkCompliance(resolved, message, categoryId, state);
     setCompliance(result);
 
     if (complianceTimerRef.current) {
@@ -369,10 +368,6 @@ export function CatalogCard({
     };
   }, []);
 
-  function getInterpolatedText(template: string): string {
-    return interpolateTemplate(template, categoryId, state).map(s => s.text).join("");
-  }
-
   function getPillTemplate(id: PillId): string | null {
     if (id === "standard") return message.template;
     if (id === "custom") return null;
@@ -389,7 +384,7 @@ export function CatalogCard({
       // If saved as custom, fall back to standard as the canned baseline for Restore
       setLastCannedPillId(savedPillId === "custom" ? "standard" : savedPillId);
     } else {
-      setEditText(getInterpolatedText(message.template));
+      setEditText(message.template);
       setActivePillId("standard");
       setCustomTextBuffer(null);
       setLastCannedPillId("standard");
@@ -469,11 +464,10 @@ export function CatalogCard({
     // variants are pre-validated so compliance passes immediately.
     const template = getPillTemplate(lastCannedPillId);
     if (!template) return;
-    const restored = getInterpolatedText(template);
     setIsFixLoading(true);
     // Simulate async AI restore — real impl will call the AI backend
     setTimeout(() => {
-      setEditText(restored);
+      setEditText(template);
       setActivePillId(lastCannedPillId);
       setCompliance({ isCompliant: true, issues: [] });
       setShowComplianceHint(false);
@@ -518,13 +512,37 @@ export function CatalogCard({
     }
     const template = getPillTemplate(id);
     if (template) {
-      setEditText(getInterpolatedText(template));
+      setEditText(template);
       setActivePillId(id);
       setLastCannedPillId(id);
       setCompliance({ isCompliant: true, issues: [] });
       setShowComplianceHint(false);
     }
   }
+
+  function insertVariable(key: string) {
+    editorRef.current?.chain().focus().insertVariable(key).run();
+    setIsInsertOpen(false);
+  }
+
+  // Close the insert popover on outside click / Escape.
+  useEffect(() => {
+    if (!isInsertOpen) return;
+    function handleMouseDown(e: MouseEvent) {
+      if (insertWrapperRef.current && !insertWrapperRef.current.contains(e.target as Node)) {
+        setIsInsertOpen(false);
+      }
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsInsertOpen(false);
+    }
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [isInsertOpen]);
 
   function handleTextChange(newText: string) {
     setEditText(newText);
@@ -541,7 +559,7 @@ export function CatalogCard({
       <p className="text-sm text-text-secondary leading-relaxed">
         {segments.map((seg, i) =>
           seg.isVariable ? (
-            <span key={i} className={VAR_CLASSES}>{seg.text}</span>
+            <span key={i} className={VARIABLE_TOKEN_CLASSES}>{seg.text}</span>
           ) : (
             <span key={i}>{seg.text}</span>
           )
@@ -576,13 +594,13 @@ export function CatalogCard({
                 <InfoIcon />
               </button>
               {showTooltip && (
-                <div className="absolute left-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed pointer-events-none">
+                <div className="absolute left-0 bottom-full mb-1 z-[100] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg min-w-[220px] max-w-[280px] whitespace-normal leading-relaxed pointer-events-none">
                   {tooltipText}
                 </div>
               )}
             </div>
             {isMarketing && !badge && (
-              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0 bg-[#F9F5FF] border border-[#E9D7FE] text-[#7C3AED]">
+              <span className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium flex-shrink-0 bg-bg-brand-secondary text-text-brand-secondary">
                 Marketing
               </span>
             )}
@@ -621,7 +639,7 @@ export function CatalogCard({
                       <Activity className="size-[17px]" />
                     </button>
                     {showMonitorTooltip && (
-                      <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                      <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
                         Test & debug
                       </div>
                     )}
@@ -639,7 +657,7 @@ export function CatalogCard({
                     <PencilIcon />
                   </button>
                   {showEditTooltip && (
-                    <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-[#333333] px-3 py-2 text-xs text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                    <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
                       Edit message
                     </div>
                   )}
@@ -652,22 +670,32 @@ export function CatalogCard({
         {/* Message body */}
         {isEditing ? (
           <div className="mt-4">
-            {/* Textarea */}
-            <textarea
-              ref={textareaRef}
-              value={editText}
-              onChange={(e) => handleTextChange(e.target.value)}
-              disabled={isAiLoading || isFixLoading}
-              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-secondary leading-relaxed shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear resize-none disabled:opacity-60 disabled:cursor-not-allowed"
-              rows={3}
-            />
+            {/* Editor — Tiptap with VariableNode atoms (D-350). editText holds
+                the `{var_key}` template; the editor renders variables as
+                atomic, color-only tokens that can't be partially edited. */}
+            <div
+              className={`w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs focus-within:border-border-brand transition duration-100 ease-linear ${
+                isAiLoading || isFixLoading ? "opacity-60 cursor-not-allowed" : ""
+              }`}
+            >
+              <MessageEditor
+                template={editText}
+                categoryId={categoryId}
+                disabled={isAiLoading || isFixLoading}
+                className="text-sm text-text-secondary leading-relaxed outline-none"
+                onChange={handleTextChange}
+                onReady={(editor) => {
+                  editorRef.current = editor;
+                }}
+              />
+            </div>
 
             {/* Compliance hints + Restore — right-aligned, 16px gap */}
             {showFix && compliance.issues.length > 0 && (
               <div className="mt-1.5 flex items-start justify-end gap-4">
                 <div className="flex flex-col items-end gap-0.5">
                   {compliance.issues.map((issue, i) => (
-                    <p key={i} className="text-xs text-[#F97066]">
+                    <p key={i} className="text-xs text-text-error-primary">
                       {issue}
                     </p>
                   ))}
@@ -686,35 +714,81 @@ export function CatalogCard({
 
             {/* Edit controls — no divider, closer to textarea */}
             <div className="mt-3 space-y-3">
-              {/* Style pills: Standard, Friendly, Brief, (Custom on far right).
-                  Pill variants are pre-validated. If AI validation is added later,
-                  pre-compute on edit open and cache so taps remain zero-latency. */}
-              {variants && variants.length > 1 && (
-                <div className="flex flex-wrap items-center gap-2">
-                  {variants.map((v) => {
-                    const pillId = v.id as PillId;
-                    const isActive = activePillId === pillId;
-                    return (
-                      <button
-                        key={v.id}
-                        type="button"
-                        onClick={() => handlePillClick(pillId)}
-                        className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
-                          isActive
-                            ? "bg-bg-brand-secondary text-text-brand-secondary"
-                            : "border border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
-                        }`}
-                      >
-                        {v.label}
-                      </button>
-                    );
-                  })}
-                  {/* Custom pill — far right, visually separated */}
+              {/* Style pills + insert affordance (D-353).
+                  Left cluster: Standard / Friendly / Brief pill variants (pre-validated).
+                  Right cluster: `+ Variable` popover + Custom pill (when dirty). */}
+              <div className="flex flex-wrap items-center gap-2">
+                {variants && variants.length > 1 && variants.map((v) => {
+                  const pillId = v.id as PillId;
+                  const isActive = activePillId === pillId;
+                  return (
+                    <button
+                      key={v.id}
+                      type="button"
+                      onClick={() => handlePillClick(pillId)}
+                      className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
+                        isActive
+                          ? "bg-bg-brand-secondary text-text-brand-secondary"
+                          : "border border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
+                      }`}
+                    >
+                      {v.label}
+                    </button>
+                  );
+                })}
+
+                {/* Right cluster — insert affordance + Custom pill */}
+                <div className="ml-auto flex items-center gap-2" ref={insertWrapperRef}>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsInsertOpen((v) => !v)}
+                      aria-haspopup="menu"
+                      aria-expanded={isInsertOpen}
+                      className="rounded-full border border-border-secondary px-3.5 py-1.5 text-xs font-medium whitespace-nowrap text-text-tertiary hover:text-text-secondary hover:border-border-primary transition duration-100 ease-linear cursor-pointer"
+                    >
+                      + Variable
+                    </button>
+                    {isInsertOpen && (() => {
+                      const scope = getVariableScope(message, categoryId);
+                      const valueMap = getExampleValues(categoryId);
+                      const rows = scope
+                        .map((key) => ({ key, value: valueMap.get(key) }))
+                        .filter((r): r is { key: string; value: NonNullable<typeof r.value> } => !!r.value);
+                      return (
+                        <div
+                          role="menu"
+                          className="absolute right-0 top-full mt-1 z-20 min-w-[220px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1"
+                        >
+                          {rows.length === 0 ? (
+                            <p className="px-3 py-2 text-xs text-text-tertiary">
+                              No variables for this message.
+                            </p>
+                          ) : (
+                            rows.map(({ key, value }) => (
+                              <button
+                                key={key}
+                                type="button"
+                                role="menuitem"
+                                onMouseDown={(e) => e.preventDefault()}
+                                onClick={() => insertVariable(key)}
+                                className="flex w-full items-center justify-between gap-4 px-3 py-1.5 text-xs hover:bg-bg-primary_hover cursor-pointer"
+                              >
+                                <span className="text-text-primary">{value.label}</span>
+                                <span className={VARIABLE_TOKEN_CLASSES}>{value.preview(state)}</span>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+
                   {showCustomPill && (
                     <button
                       type="button"
                       onClick={() => handlePillClick("custom")}
-                      className={`ml-auto rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
+                      className={`rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear cursor-pointer ${
                         activePillId === "custom"
                           ? "bg-bg-brand-secondary text-text-brand-secondary"
                           : "border border-dashed border-border-secondary text-text-tertiary hover:text-text-secondary hover:border-border-primary"
@@ -724,7 +798,7 @@ export function CatalogCard({
                     </button>
                   )}
                 </div>
-              )}
+              </div>
 
               {/* AI help input */}
               <div className="relative">

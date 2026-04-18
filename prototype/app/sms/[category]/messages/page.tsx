@@ -25,6 +25,7 @@ import {
   formatMultipleCopyBlocks,
   interpolateTemplate,
 } from "@/lib/catalog-helpers";
+import { VARIABLE_TOKEN_CLASSES } from "@/lib/variable-token";
 import { Footer } from "@/components/footer";
 
 /* ── Playbook flow data ── */
@@ -1268,7 +1269,7 @@ function StepsLayout({
                         <p className="mt-2 text-sm text-text-tertiary leading-relaxed">
                           {segments.map((seg, i) =>
                             seg.isVariable ? (
-                              <span key={i} className="font-normal text-text-brand-secondary">
+                              <span key={i} className={VARIABLE_TOKEN_CLASSES}>
                                 {seg.text}
                               </span>
                             ) : (
@@ -1571,7 +1572,7 @@ export default function PublicMessagesPage() {
                         <p className="mt-2 text-sm text-text-tertiary leading-relaxed">
                           {segments.map((seg, i) =>
                             seg.isVariable ? (
-                              <span key={i} className="font-normal text-text-brand-secondary">
+                              <span key={i} className={VARIABLE_TOKEN_CLASSES}>
                                 {seg.text}
                               </span>
                             ) : (
