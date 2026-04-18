@@ -759,7 +759,10 @@ export function CatalogCard({
                   </button>
                 )}
 
-                {/* + Variable — tertiary purple text button at far right */}
+                {/* + Variable — tertiary purple text button at far right.
+                    Matches the Ask Claude pattern elsewhere in the file:
+                    no background on hover, just a color shift via the
+                    text-brand-secondary_hover token. */}
                 <div className="ml-auto relative" ref={insertWrapperRef}>
                   <button
                     type="button"
@@ -767,7 +770,7 @@ export function CatalogCard({
                     onClick={() => setIsInsertOpen((v) => !v)}
                     aria-haspopup="menu"
                     aria-expanded={isInsertOpen}
-                    className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-xs font-semibold whitespace-nowrap text-text-brand-secondary hover:text-text-brand-secondary_hover hover:bg-bg-brand-secondary transition-colors duration-100 cursor-pointer"
+                    className="inline-flex items-center gap-1 py-1.5 text-xs font-semibold whitespace-nowrap text-text-brand-secondary hover:text-text-brand-secondary_hover transition-colors duration-100 cursor-pointer"
                   >
                     <Plus className="size-3.5" />
                     Variable
@@ -781,10 +784,10 @@ export function CatalogCard({
                     return (
                       <div
                         role="menu"
-                        className="absolute right-0 top-full mt-1 z-20 min-w-[220px] rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1"
+                        className="absolute right-0 top-full mt-1 z-20 rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1"
                       >
                         {rows.length === 0 ? (
-                          <p className="px-3 py-2 text-xs text-text-tertiary">
+                          <p className="px-3 py-2 text-sm text-text-tertiary whitespace-nowrap">
                             No variables for this message.
                           </p>
                         ) : (
@@ -795,9 +798,9 @@ export function CatalogCard({
                               role="menuitem"
                               onMouseDown={(e) => e.preventDefault()}
                               onClick={() => insertVariable(key)}
-                              className="flex w-full items-center justify-between gap-4 px-3 py-1.5 text-xs hover:bg-bg-primary_hover cursor-pointer"
+                              className="flex w-full items-center justify-between gap-6 whitespace-nowrap px-3 py-2 text-sm hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
                             >
-                              <span className="text-text-primary">{value.label}</span>
+                              <span className="text-text-secondary">{value.label}</span>
                               <span className={VARIABLE_TOKEN_CLASSES}>{value.preview(state)}</span>
                             </button>
                           ))

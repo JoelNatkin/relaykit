@@ -18,15 +18,16 @@ export function VariableNodeView(props: ReactNodeViewProps) {
     return example ? example.preview(state) : `{${key}}`;
   })();
 
-  // D-350: at rest the token is color-only (no background, no radius, no
-  // padding) so prose reads cleanly. Hover and selected get a padded pill
-  // treatment for interaction feedback. Padding + negative margin pair
-  // (px-1 / -mx-1) grows the background 4px outside the text on each side
-  // without shifting surrounding text flow.
+  // D-350: at rest the token is color-only (no background) so prose reads
+  // cleanly. Hover and selected paint a flat horizontal band behind the
+  // glyphs — mimics native text selection. No radius, no horizontal padding,
+  // no ring. Without padding expansion there is no layout shift on state
+  // change, so no negative-margin offset is needed either.
   //
-  // Selected > hover by bg darkness: hover = bg-bg-brand-secondary (lightest
-  // brand tint), selected = bg-bg-brand-primary (next shade up). No ring by
-  // default per PM direction.
+  // Token choice by observed rendering in this prototype's theme:
+  //   hover    → bg-bg-brand-primary    (lighter tint)
+  //   selected → bg-bg-brand-secondary  (one shade up, darker)
+  // Per PM direction after browser testing.
   //
   // Drag suppression: contentEditable={false} makes the atom click-selectable
   // (otherwise the browser treats inner text as editable and clicks place a
@@ -34,8 +35,8 @@ export function VariableNodeView(props: ReactNodeViewProps) {
   // drag at three layers (Chrome/Firefox/Safari) since drag isn't part of
   // the interaction model — insert affordance + backspace cover all flows.
   const stateClasses = selected
-    ? "bg-bg-brand-primary rounded-sm px-1 -mx-1"
-    : "hover:bg-bg-brand-secondary hover:rounded-sm hover:px-1 hover:-mx-1";
+    ? "bg-bg-brand-secondary"
+    : "hover:bg-bg-brand-primary";
 
   return (
     <NodeViewWrapper
