@@ -6,11 +6,11 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-17 (Session 34 — MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN, STARTER_KIT expansion, D-349–D-353)
-- **Decision count:** D-353 (next available: D-354)
+- **Last updated:** 2026-04-18 (Session 35 — Tiptap message editor, D-354)
+- **Decision count:** D-354 (next available: D-355)
 - **PM instructions synced (Claude.ai UI ↔ repo):** `true`
 - **Active CC session branch:** main
-- **Unpushed local commits:** 0
+- **Unpushed local commits:** 10
 
 ---
 
@@ -37,13 +37,13 @@
 | `REPO_INDEX.md` | 2026-04-17 | This file |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-04-17 | Canonical PM instructions (synced to Claude.ai UI) |
 | `CLAUDE.md` | 2026-04-17 | CC standing instructions (pared to ~110 lines) |
-| `DECISIONS.md` | 2026-04-15 | Active decisions D-84+, index of D-01–D-83 |
+| `DECISIONS.md` | 2026-04-18 | Active decisions D-84+, index of D-01–D-83 |
 | `DECISIONS_ARCHIVE.md` | (stable) | Full text of D-01–D-83 |
-| `PROTOTYPE_SPEC.md` | 2026-04-16 | Screen specs for `/prototype` |
+| `PROTOTYPE_SPEC.md` | 2026-04-18 | Screen specs for `/prototype` |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-03-28 | Post-signup workspace architecture |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-04-17 | `/api` pipeline — Sessions A (done) / B / C |
 | `SDK_BUILD_PLAN.md` | 2026-04-17 | `/sdk` build + README + AGENTS.md + integration prompt |
-| `CC_HANDOFF.md` | 2026-04-17 | Previous CC session state |
+| `CC_HANDOFF.md` | 2026-04-18 | Previous CC session state |
 | `BACKLOG.md` | 2026-04-10 | Parked ideas, never build without promotion |
 | `README.md` | (stable) | Repo readme |
 
@@ -77,11 +77,20 @@ Old UX prototype plans. Currently contains `2026-03-08-ux-prototype.md`. Superse
 
 ### `/docs/superpowers`
 
-CC's internal artifacts from the `superpowers` skill (claude-plugins-official). CC-managed. PM does not touch.
+CC's internal artifacts from the `superpowers` skill (claude-plugins-official). CC-managed. PM does not touch. Current design docs under `/specs`: `2026-04-17-message-editor-tiptap-design.md` (Tiptap editor architecture, D-354).
 
 ### `/prototype`
 
 Active prototype UI (port 3001). Source of truth for UI.
+
+Notable subtrees added Session 35:
+- `lib/editor/` — Tiptap editor scaffolding (`message-editor.tsx`, `variable-node.ts`, `variable-node-view.tsx`, `template-serde.ts`)
+- `lib/variable-token.ts` — shared color-only class for variable rendering across editor + previews
+- `lib/variable-scope.ts` — per-message variable scope helper (D-353)
+
+Removed Session 35 (dead code):
+- `components/plan-builder/message-card.tsx`
+- `components/plan-builder/message-tier.tsx`
 
 ### `/src`
 
@@ -109,13 +118,13 @@ Migrations and config.
 | MESSAGE_PIPELINE_SPEC Session B | BLOCKED | Waiting on Sinch account |
 | MESSAGE_PIPELINE_SPEC Session C | NOT STARTED | Buildable after Session A; needs B for end-to-end |
 | SDK_BUILD_PLAN | NOT STARTED | Spec ready |
-| Workspace message row evolution | IN PROGRESS | Shared grid + /account shipped Session 32–33 |
+| Workspace message row evolution | IN PROGRESS | Shared grid + /account shipped Session 32–33; Tiptap editor + atomic variable tokens shipped Session 35 (D-350, D-353, D-354). Error-state polish has two unverified issues — see CC_HANDOFF gotchas |
 
 ---
 
 ## Decision count verification
 
-Verify `D-353` against DECISIONS.md at chat start. If drifted, update this file.
+Verify `D-354` against DECISIONS.md at chat start. If drifted, update this file.
 
 ---
 
@@ -132,3 +141,4 @@ Verify `D-353` against DECISIONS.md at chat start. If drifted, update this file.
 - **2026-04-17:** Initial REPO_INDEX created. Introduces tiered file orchestration, sync tracking between repo and Claude.ai UI project instructions, canonical file listings at root and `/docs`.
 - **2026-04-17 (Session 33 close-out):** PM instructions paste confirmed (`synced = true`). Unpushed commits counter established (0 at close-out).
 - **2026-04-17 (Session 34):** Added `MESSAGE_PIPELINE_SPEC.md` and `SDK_BUILD_PLAN.md` at repo root; expanded `docs/STARTER_KIT_PROGRAM.md` with sections 12–19; recorded D-349 through D-353; build spec status for SDK flipped to "Spec ready".
+- **2026-04-18 (Session 35):** Tiptap v3 wired into the workspace message editor with atomic `VariableNode` atoms (D-350) and a `+ Variable` insert affordance scoped per-message (D-353). Library choice recorded as D-354. Added `prototype/lib/editor/` + `prototype/lib/variable-{token,scope}.ts`; deleted unused `plan-builder/message-{card,tier}.tsx`. Design doc at `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md`. PROTOTYPE_SPEC Edit-State section rewritten. Closes with two unverified error-state bugs (see CC_HANDOFF).
