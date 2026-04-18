@@ -232,6 +232,14 @@ export function CatalogCard({
   const [isFixLoading, setIsFixLoading] = useState(false);
   const [compliance, setCompliance] = useState<ComplianceResult>({ isCompliant: true, issues: [] });
   const [showComplianceHint, setShowComplianceHint] = useState(false);
+  /** Suppresses compliance errors until the user has actually typed in the
+   *  editor. Prevents false positives on first open (where the effect may
+   *  run against a stale editText before initEditSession commits) and
+   *  keeps Fix (restore) in a clean state after it runs — the restored
+   *  template is compliant by definition, so the check doesn't need to
+   *  run again until the user starts editing fresh. Reset in
+   *  initEditSession and Fix; flipped in handleTextChange/handleAiSubmit. */
+  const [hasUserEdited, setHasUserEdited] = useState(false);
   const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const [isInsertOpen, setIsInsertOpen] = useState(false);
@@ -319,8 +327,23 @@ export function CatalogCard({
   // so already-visible hints reflect the latest text. When text becomes
   // compliant, hide the hint immediately (no debounce). When non-compliant,
   // debounce the initial reveal by 2s so the developer isn't nagged mid-type.
+  //
+  // The hasUserEdited gate suppresses the check until the user has actually
+  // typed in the editor. Defaults and tone variants are pre-validated, so
+  // there's nothing for the check to say on first open — and the effect can
+  // fire against stale editText during the open transition, which previously
+  // produced "Needs X, Y, and Z" errors on an untouched message.
   useEffect(() => {
     if (!isEditing) return;
+    if (!hasUserEdited) {
+      if (complianceTimerRef.current) {
+        clearTimeout(complianceTimerRef.current);
+        complianceTimerRef.current = null;
+      }
+      setCompliance({ isCompliant: true, issues: [] });
+      setShowComplianceHint(false);
+      return;
+    }
     // editText is a `{var_key}` template; compliance rules match interpolated
     // values, so resolve before checking.
     const resolved = interpolateTemplate(editText, categoryId, state)
@@ -341,7 +364,7 @@ export function CatalogCard({
         setShowComplianceHint(true);
       }, 2000);
     }
-  }, [editText, isEditing, message, categoryId, state]);
+  }, [editText, isEditing, message, categoryId, state, hasUserEdited]);
 
   useEffect(() => {
     return () => {
@@ -379,6 +402,7 @@ export function CatalogCard({
     setIsFixLoading(false);
     setCompliance({ isCompliant: true, issues: [] });
     setShowComplianceHint(false);
+    setHasUserEdited(false);
   }
 
   // Watch for edit-state transitions and initialize when entering edit.
@@ -445,17 +469,18 @@ export function CatalogCard({
 
   function handleRestore() {
     if (isFixLoading) return;
-    // Restore the last canned pill's clean, compliant version. Canned
+    // Fix restores the last canned pill's clean, compliant version. Canned
     // variants are pre-validated so compliance passes immediately.
     const template = getPillTemplate(lastCannedPillId);
     if (!template) return;
     setIsFixLoading(true);
-    // Simulate async AI restore — real impl will call the AI backend
+    // Simulate async AI fix — real impl will call the AI backend
     setTimeout(() => {
       setEditText(template);
       setActivePillId(lastCannedPillId);
       setCompliance({ isCompliant: true, issues: [] });
       setShowComplianceHint(false);
+      setHasUserEdited(false);
       setIsFixLoading(false);
     }, 1500);
   }
@@ -471,6 +496,7 @@ export function CatalogCard({
       setCustomTextBuffer(rewritten);
       setActivePillId("custom");
       setAiInput("");
+      setHasUserEdited(true);
       setIsAiLoading(false);
     }, 1500);
   }
@@ -532,6 +558,7 @@ export function CatalogCard({
   function handleTextChange(newText: string) {
     setEditText(newText);
     setCustomTextBuffer(newText);
+    setHasUserEdited(true);
     if (activePillId !== "custom") {
       setActivePillId("custom");
     }
@@ -675,7 +702,7 @@ export function CatalogCard({
               />
             </div>
 
-            {/* Compliance hints + Restore — right-aligned, 16px gap */}
+            {/* Compliance hints + Fix — right-aligned, 16px gap */}
             {showFix && compliance.issues.length > 0 && (
               <div className="mt-1.5 flex items-start justify-end gap-4">
                 <div className="flex flex-col items-end gap-0.5">
@@ -692,7 +719,7 @@ export function CatalogCard({
                   className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-md border border-border-primary px-2.5 py-1 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isFixLoading && <Spinner className="size-3" />}
-                  {isFixLoading ? "Restoring…" : "Restore"}
+                  {isFixLoading ? "Fixing…" : "Fix"}
                 </button>
               </div>
             )}

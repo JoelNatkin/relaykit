@@ -34,10 +34,10 @@ export function VariableNodeView(props: ReactNodeViewProps) {
   // caret). draggable={false} + onDragStart + [-webkit-user-drag:none] kill
   // drag at three layers (Chrome/Firefox/Safari) since drag isn't part of
   // the interaction model — insert affordance + backspace cover all flows.
-  const padded = "pt-[3px] pb-[5px] -mt-[3px] -mb-[5px]";
+  const padded = "pt-[3px] pb-[3px] -mt-[3px] -mb-[3px]";
   const stateClasses = selected
     ? `bg-bg-brand-secondary ${padded}`
-    : `hover:bg-bg-brand-primary hover:pt-[3px] hover:pb-[5px] hover:-mt-[3px] hover:-mb-[5px]`;
+    : `hover:bg-bg-brand-primary hover:pt-[3px] hover:pb-[3px] hover:-mt-[3px] hover:-mb-[3px]`;
 
   return (
     <NodeViewWrapper
