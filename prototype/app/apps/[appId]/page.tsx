@@ -30,6 +30,7 @@ const MARKETING_MESSAGES: Message[] = [
     requiresStop: true,
     expansionType: "marketing",
     consentLabel: "new service announcements",
+    variables: ["first_name", "service_name"],
   },
   {
     id: "mkt_seasonal",
@@ -42,6 +43,7 @@ const MARKETING_MESSAGES: Message[] = [
     requiresStop: true,
     expansionType: "marketing",
     consentLabel: "seasonal promotions",
+    variables: ["first_name"],
   },
   {
     id: "mkt_reengagement",
@@ -54,6 +56,7 @@ const MARKETING_MESSAGES: Message[] = [
     requiresStop: true,
     expansionType: "marketing",
     consentLabel: "re-engagement messages",
+    variables: ["first_name"],
   },
   {
     id: "mkt_loyalty",
@@ -66,6 +69,7 @@ const MARKETING_MESSAGES: Message[] = [
     requiresStop: true,
     expansionType: "marketing",
     consentLabel: "loyalty rewards",
+    variables: ["first_name"],
   },
 ];
 

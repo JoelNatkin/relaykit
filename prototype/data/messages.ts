@@ -14,6 +14,13 @@ export interface Message {
   consentLabel: string;
   /** Variant templates keyed by variant name. If absent, only the default template is used. */
   variants?: Record<string, string>;
+  /**
+   * D-353: variables insertable for this message type. Mirrors the SDK
+   * method's `data` shape. Computed as the union of variable keys used
+   * across the default template and any `variants` — what an SDK call
+   * can populate is a fixed set, independent of which tone the user picks.
+   */
+  variables: string[];
 }
 
 /** Variant set definitions per category */
@@ -48,6 +55,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: false,
       expansionType: null,
       consentLabel: "login verification codes",
+      variables: ["app_name", "code"],
     },
     {
       id: "verification_signup_code",
@@ -61,6 +69,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: false,
       expansionType: null,
       consentLabel: "signup verifications",
+      variables: ["app_name", "code"],
     },
     {
       id: "verification_password_reset",
@@ -74,6 +83,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: false,
       expansionType: null,
       consentLabel: "password reset codes",
+      variables: ["app_name", "code"],
     },
     {
       id: "verification_mfa_code",
@@ -87,6 +97,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: false,
       expansionType: null,
       consentLabel: "multi-factor auth codes",
+      variables: ["app_name", "code"],
     },
     {
       id: "verification_device_confirmation",
@@ -100,6 +111,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: false,
       expansionType: null,
       consentLabel: "new device alerts",
+      variables: ["app_name", "website_url"],
     },
     {
       id: "verification_security_tip",
@@ -113,6 +125,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: "mixed",
       consentLabel: "security tips",
+      variables: ["app_name", "website_url"],
     },
     {
       id: "verification_welcome",
@@ -126,6 +139,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: "mixed",
       consentLabel: "welcome messages",
+      variables: ["app_name", "website_url"],
     },
     {
       id: "verification_feature_announcement",
@@ -139,6 +153,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: "marketing",
       consentLabel: "feature announcements",
+      variables: ["app_name", "website_url"],
     },
   ],
 
@@ -159,6 +174,7 @@ export const MESSAGES: Record<string, Message[]> = {
         "action-first": "You're set! {app_name} has your {service_type} booked for {date} at {time}. See you then! Reply STOP to opt out.",
         "context-first": "{app_name}: {service_type} confirmed — {date}, {time}. Reply STOP to opt out.",
       },
+      variables: ["app_name", "service_type", "date", "time"],
     },
     {
       id: "appointments_reminder",
@@ -176,6 +192,7 @@ export const MESSAGES: Record<string, Message[]> = {
         "action-first": "Hey from {app_name} — your {service_type} appointment is tomorrow at {time}. Looking forward to it! Reply STOP to opt out.",
         "context-first": "{app_name}: {service_type} tomorrow at {time}. Reply STOP to opt out.",
       },
+      variables: ["app_name", "service_type", "time"],
     },
     {
       id: "appointments_previsit",
@@ -193,6 +210,7 @@ export const MESSAGES: Record<string, Message[]> = {
         "action-first": "Today's the day! Your {service_type} appointment is at {time}. Please come 10 minutes early — see you soon! — {app_name}. Reply STOP to opt out.",
         "context-first": "{app_name}: {service_type} today at {time}. Arrive 10 min early. {website_url}. Reply STOP to opt out.",
       },
+      variables: ["app_name", "service_type", "time", "website_url"],
     },
     {
       id: "appointments_reschedule",
@@ -210,6 +228,7 @@ export const MESSAGES: Record<string, Message[]> = {
         "action-first": "Heads up from {app_name} — your {service_type} appointment moved to {date} at {time}. Thanks for rolling with us! Reply STOP to opt out.",
         "context-first": "{app_name}: {service_type} moved to {date}, {time}. Reply STOP to opt out.",
       },
+      variables: ["app_name", "service_type", "date", "time"],
     },
     {
       id: "appointments_noshow",
@@ -227,6 +246,7 @@ export const MESSAGES: Record<string, Message[]> = {
         "action-first": "We missed you today! {app_name} hopes everything's OK. Rebook whenever works: {website_url}. Reply STOP to opt out.",
         "context-first": "{app_name}: missed your {service_type} today. Rebook: {website_url}. Reply STOP to opt out.",
       },
+      variables: ["app_name", "service_type", "website_url"],
     },
     {
       id: "appointments_cancellation",
@@ -244,6 +264,7 @@ export const MESSAGES: Record<string, Message[]> = {
         "action-first": "Your {service_type} appointment on {date} was cancelled. No worries — rebook anytime at {website_url}. — {app_name}. Reply STOP to opt out.",
         "context-first": "{app_name}: {service_type} {date} cancelled. Rebook: {website_url}. Reply STOP to opt out.",
       },
+      variables: ["app_name", "service_type", "date", "website_url"],
     },
     {
       id: "appointments_promo",
@@ -257,6 +278,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: "marketing",
       consentLabel: "promotional offers",
+      variables: ["app_name", "service_type", "website_url"],
     },
     {
       id: "appointments_feedback",
@@ -270,6 +292,7 @@ export const MESSAGES: Record<string, Message[]> = {
       requiresStop: true,
       expansionType: "mixed",
       consentLabel: "feedback requests",
+      variables: ["app_name", "service_type", "website_url"],
     },
   ],
 };

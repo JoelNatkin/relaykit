@@ -1248,3 +1248,11 @@ Every message edit state (built-in and custom) includes a variable insertion aff
 Variable scope is method-specific: each SDK method's `data` shape determines what's insertable for that message type. `sendConfirmation` exposes name/date/time/business; `sendReminder` adds time-until. For custom messages (per D-351, manual-send only), the available variable set defaults to the intersection of variables shared across all methods in the parent namespace.
 
 Reason: D-350 prevents corruption of variables already in the editor, but a user still needs a way to ADD them — without an insert affordance, the only way to get a variable into a custom message is copy-paste. For built-in edits, the affordance also enables recovery: a user who deletes a variable then reconsiders can re-insert without abandoning their other edits via Restore. Method-specific scope matches the per-method data shape declared in the SDK and avoids the failure mode where a user inserts a variable the SDK call won't actually populate at send time.
+
+**D-354 — Tiptap v3 chosen for message editor** (Date: 2026-04-18)
+
+Tiptap v3 is the contentEditable library for the message editor (per D-350's requirement to use one of Tiptap, Lexical, or Slate). React 19 support, first-class atom node for variable tokens, strongest community examples for mention-pattern UIs. Lexical and Slate considered and rejected on ergonomics: Lexical's schema model is less mature for this specific case (plain-text body with inline atomic tokens), and Slate has the highest DIY footprint with the weakest maintenance story.
+
+Dependencies added: `@tiptap/core`, `@tiptap/pm`, `@tiptap/react`, `@tiptap/extension-document`, `@tiptap/extension-paragraph`, `@tiptap/extension-text` (all v3.x). No `StarterKit` — SMS messages don't need headings, lists, or marks, so we wire only the three base nodes plus our custom `VariableNode`.
+
+Design doc: `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md`.
