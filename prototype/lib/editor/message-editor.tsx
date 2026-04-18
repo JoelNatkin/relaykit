@@ -82,11 +82,22 @@ export function MessageEditor({
   // Sync external template changes (tone-pill swap, Restore) into the editor
   // without creating an onUpdate feedback loop — only resets when the new
   // template differs from the last value the editor emitted.
+  //
+  // setContent is deferred to a microtask. Calling it synchronously inside
+  // the effect fires during React's commit phase, and Tiptap's flushSync
+  // inside setContent then collides with React's own in-progress flush,
+  // producing the "flushSync was called from inside a lifecycle method"
+  // warning. queueMicrotask runs after the current commit completes. The
+  // isDestroyed guard covers the race where the component unmounts between
+  // the effect firing and the microtask running.
   useEffect(() => {
     if (!editor) return;
     if (template === lastEmittedRef.current) return;
-    editor.commands.setContent(templateToContent(template, categoryId), { emitUpdate: false });
-    lastEmittedRef.current = template;
+    queueMicrotask(() => {
+      if (!editor || editor.isDestroyed) return;
+      editor.commands.setContent(templateToContent(template, categoryId), { emitUpdate: false });
+      lastEmittedRef.current = template;
+    });
   }, [editor, template, categoryId]);
 
   useEffect(() => {
