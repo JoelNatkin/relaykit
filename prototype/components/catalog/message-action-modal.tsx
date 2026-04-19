@@ -75,7 +75,12 @@ export function MessageActionModal({
         <h3 className="text-lg font-semibold text-text-primary pr-6">{title}</h3>
         <p className="mt-3 text-sm text-text-secondary leading-relaxed">{body}</p>
 
-        <pre className="mt-4 rounded-md bg-bg-secondary px-3 py-2 text-xs font-mono text-text-secondary overflow-x-auto whitespace-pre-wrap break-words">
+        {/* Keep the SDK call on one line. whitespace-pre-wrap + break-words
+            was splitting the quoted slug mid-string (e.g. 'this-is-my-' /
+            'message') which read as broken code. whitespace-nowrap with
+            horizontal scroll preserves the shape — the slug stays intact,
+            and long calls scroll sideways within the code block. */}
+        <pre className="mt-4 rounded-md bg-bg-secondary px-3 py-2 text-xs font-mono text-text-secondary overflow-x-auto whitespace-nowrap">
           {codeBlock}
         </pre>
 
