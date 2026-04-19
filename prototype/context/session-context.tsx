@@ -139,12 +139,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         // existed. Missing fields would otherwise read as `undefined` and
         // break the archive filter + slug collision logic.
         //
-        // One-time zombie cleanup (PM bug 2): drop any custom whose name and
-        // template are both empty. These are leftovers from pre-fix Cancel
-        // behavior that created a row on "+ Add" but left it behind when the
-        // user cancelled without typing. Going-forward Cancel on never-saved
-        // rows discards correctly (see commit 203a97b), so this migration
-        // only needs to run against old sessions.
+        // Zombie cleanup: drop any custom that was never saved. An empty slug
+        // identifies a never-saved row — the save path is the only thing that
+        // assigns a slug (D-351). This rule supersedes the earlier name-
+        // OR-template filter because new customs now mount pre-populated with
+        // the opt-out phrase (see addCustomMessage), so an empty-template
+        // check would miss pending-but-abandoned rows. Unsaved edits don't
+        // survive reload — matches built-in edit behavior where messageEdits
+        // only stores persisted changes.
         if (Array.isArray(parsed.customMessages)) {
           parsed.customMessages = parsed.customMessages
             .map((m) => ({
@@ -152,7 +154,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
               slug: typeof m.slug === "string" ? m.slug : "",
               archived: typeof m.archived === "boolean" ? m.archived : false,
             }))
-            .filter((m) => (m.name ?? "").trim() !== "" || (m.template ?? "").trim() !== "");
+            .filter((m) => (m.slug ?? "") !== "");
         }
         setState((prev) => ({ ...prev, ...parsed }));
       }
@@ -230,7 +232,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       categoryId,
       name: "",
       trigger: "",
-      template: "",
+      // Pre-populate with the opt-out phrase so a fresh custom row starts
+      // in a compliant state. The user types their message in front of it
+      // (cursor defaults to position 0 in Tiptap for a newly-mounted doc).
+      // If they delete the phrase, checkCustomCompliance flags "Needs
+      // opt-out language" and the existing Fix affordance re-inserts it.
+      template: "Reply STOP to opt out.",
       slug: "",
       archived: false,
     };
