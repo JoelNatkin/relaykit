@@ -28,7 +28,7 @@ function StatusIndicator({ registrationState }: { registrationState: Registratio
       <span
         className={`inline-block h-2 w-2 rounded-full ${isLive ? "bg-green-500" : "bg-yellow-500"}`}
       />
-      {isLive ? "Live" : "Test mode"}
+      {isLive ? "Live" : "Test messages only"}
     </span>
   );
 }
