@@ -278,6 +278,21 @@ export function CustomMessageCard({
   const nameIsEmpty = !editName.trim();
   const displayName = message.name || "Untitled message";
 
+  // Reason the Save button is disabled. Surfaced inline next to Save so
+  // the user never sees silent disablement (PM bug 3). Omits the AI-loading
+  // case — that's already communicated loudly by the spinner + "Rewriting…"
+  // placeholder, and repeating it would add noise. Compliance issues bypass
+  // the 2s debounce here because the user is explicitly trying to commit;
+  // the debounced hint above the button row still exists for the while-typing
+  // awareness case.
+  const disableReason: string | null = isAiLoading
+    ? null
+    : nameIsEmpty
+      ? "Enter a name"
+      : !compliance.isCompliant
+        ? (compliance.issues[0] ?? "Add opt-out language")
+        : null;
+
   return (
     <div
       className={`relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs ${muted ? "opacity-70" : ""}`}
@@ -416,8 +431,15 @@ export function CustomMessageCard({
                 />
               </div>
 
-              {/* Save / Cancel */}
-              <div className="flex items-center justify-end gap-2">
+              {/* Save / Cancel. disableReason renders to the left of the
+                  buttons whenever Save is disabled for a user-actionable
+                  reason — prevents the silent-disable failure mode. */}
+              <div className="flex items-center justify-end gap-3">
+                {disableReason && (
+                  <span className="text-xs text-text-tertiary" aria-live="polite">
+                    {disableReason}
+                  </span>
+                )}
                 <button
                   type="button"
                   onClick={handleCancel}
