@@ -967,14 +967,25 @@ export function CatalogCard({
                     >
                       Ask Claude
                     </button>
-                    <button
-                      type="button"
-                      onClick={handleSendTest}
-                      disabled={isSendingTest}
-                      className="ml-2 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                      {isSendingTest ? "Sending…" : "Quick send"}
-                    </button>
+                    {/* Test send — clarified from "Quick send" to make it
+                        obvious the message comes from RelayKit's test
+                        infrastructure, not the developer's app. Tooltip
+                        reinforces on hover so the distinction survives
+                        into the Registered state where real sends look
+                        similar. */}
+                    <div className="relative group ml-2">
+                      <button
+                        type="button"
+                        onClick={handleSendTest}
+                        disabled={isSendingTest}
+                        className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {isSendingTest ? "Sending…" : "Test send"}
+                      </button>
+                      <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-[100] hidden group-hover:block rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                        Sends from RelayKit to a tester. Not from your app.
+                      </div>
+                    </div>
                     <select
                       value={selectedRecipient}
                       onChange={(e) => setSelectedRecipient(e.target.value)}
