@@ -326,26 +326,53 @@ export function CustomMessageCard({
     >
       {isEditing ? (
         <div>
-          {/* Editable name row */}
-          <div className="flex items-center gap-3">
+          {/* Edit-mode status indicator. Saved customs keep the pencil +
+              "Edit" label pattern that built-ins use (mode indicator in
+              the top-right). Never-saved customs skip it — the labeled
+              Name field below is self-evidently create/edit mode and a
+              redundant indicator adds noise. (PM bug 6) */}
+          {message.slug && (
+            <div className="flex items-center justify-end">
+              <span className="flex items-center gap-1.5 p-1 text-fg-quaternary">
+                <PencilIcon />
+                <span className="text-sm">Edit</span>
+              </span>
+            </div>
+          )}
+
+          {/* Name form field. Explicit labeled input at the top of the
+              card (PM bug 1). Previously the name input sat in the header
+              row with transparent styling that users read as a static
+              heading — "Enter a name" reasons from disable feedback didn't
+              land because users didn't see the field at all. */}
+          <div>
+            <label
+              htmlFor={`custom-name-${message.id}`}
+              className="mb-1.5 block text-sm font-medium text-text-secondary"
+            >
+              Name
+            </label>
             <input
+              id={`custom-name-${message.id}`}
               ref={nameInputRef}
               type="text"
               value={editName}
               onChange={(e) => setEditName(e.target.value)}
-              placeholder="New message"
-              className="flex-1 min-w-0 bg-transparent text-sm font-semibold text-text-primary placeholder:text-text-placeholder focus:outline-none"
-              aria-label="Message name"
+              placeholder="e.g. Holiday hours"
+              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear"
             />
-            <span className="flex items-center gap-1.5 p-1 text-fg-quaternary flex-shrink-0">
-              <PencilIcon />
-              <span className="text-sm">Edit</span>
-            </span>
           </div>
 
           {/* Editor body */}
           <div className="mt-4">
+            <label
+              htmlFor={`custom-body-${message.id}`}
+              className="mb-1.5 block text-sm font-medium text-text-secondary"
+            >
+              Message
+            </label>
             <div
+              id={`custom-body-${message.id}`}
               className={`w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs focus-within:border-border-brand transition duration-100 ease-linear ${
                 isAiLoading || isFixLoading ? "opacity-60 cursor-not-allowed" : ""
               }`}
