@@ -5,9 +5,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { InfoCircle, Plus, Stars02 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
-import { useSession } from "@/context/session-context";
+import { useSession, type CustomMessage } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
 import { CustomMessageCard } from "@/components/catalog/custom-message-card";
+import { MessageActionModal } from "@/components/catalog/message-action-modal";
 import type { LastSent, ActivityEntry } from "@/components/catalog/catalog-card";
 import { TestPhonesCard, INITIAL_TEST_PHONES, type TestPhone } from "@/components/test-phones-card";
 import { SetupInstructions, SetupToggle } from "@/components/setup-instructions";
@@ -158,7 +159,13 @@ const REGISTERED_VALUES: PersonalizeData = {
 /* ── Page ── */
 
 export default function AppMessagesPage() {
-  const { state, setField, addCustomMessage, saveCustomMessage } = useSession();
+  const {
+    state,
+    setField,
+    addCustomMessage,
+    saveCustomMessage,
+    archiveCustomMessage,
+  } = useSession();
 
   const isWizard = state.registrationState === "onboarding";
   const isBuilding = state.registrationState === "building";
@@ -283,6 +290,35 @@ export default function AppMessagesPage() {
     setEditingMessageId(id);
     setMonitoringMessageId(null);
   }
+
+  // Archive modal state. Holding the entire message (not just the id) so
+  // the modal can render the slug + namespace in its code block even if the
+  // underlying row unmounts between the kebab click and the confirm click.
+  const [archiveTarget, setArchiveTarget] = useState<CustomMessage | null>(null);
+
+  function handleConfirmArchive() {
+    if (!archiveTarget) return;
+    archiveCustomMessage(archiveTarget.id);
+    setArchiveTarget(null);
+    // If the archived card was in edit state, exit edit — the card is
+    // about to move to the archived disclosure (rendered in commit (e)).
+    if (editingMessageId === archiveTarget.id) setEditingMessageId(null);
+  }
+
+  // Archive modal JSX — rendered once via fixed positioning, inserted at
+  // the end of each non-wizard return branch. Namespace prefix mirrors the
+  // SDK method shape defined in D-351 (relaykit.{categoryId}.sendCustom).
+  const archiveModal = (
+    <MessageActionModal
+      isOpen={archiveTarget !== null}
+      title="Archive this message?"
+      body="Archived messages stay live. To stop sends, remove this message from your code:"
+      codeBlock={`relaykit.${archiveTarget?.categoryId ?? categoryId}.sendCustom('${archiveTarget?.slug ?? ""}', ...)`}
+      confirmLabel="Archive"
+      onConfirm={handleConfirmArchive}
+      onClose={() => setArchiveTarget(null)}
+    />
+  );
 
   function requestMonitor(id: string | null) {
     setMonitoringMessageId(id);
@@ -420,6 +456,7 @@ export default function AppMessagesPage() {
             onEditRequest={requestEdit}
             isFreshlyAdded={freshlyAddedCustomId === message.id}
             onSave={saveCustomMessage}
+            onArchiveRequest={setArchiveTarget}
           />
         ))}
         {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
@@ -707,6 +744,7 @@ export default function AppMessagesPage() {
           </div>
           )}
         </div>
+        {archiveModal}
       </div>
     );
   }
@@ -1006,6 +1044,7 @@ export default function AppMessagesPage() {
         </div>
         )}
       </div>
+      {archiveModal}
     </div>
   );
 }

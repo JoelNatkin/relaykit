@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Plus, Stars02 } from "@untitledui/icons";
+import { DotsVertical, Plus, Stars02 } from "@untitledui/icons";
 import type { Editor } from "@tiptap/react";
 import type { CustomMessage, SessionState } from "@/context/session-context";
 import {
@@ -59,6 +59,9 @@ export interface CustomMessageCardProps {
   muted?: boolean;
   /** Save commits the edits and assigns a slug on first save (D-351). */
   onSave: (messageId: string, updates: { name: string; template: string }) => void;
+  /** Invoked when the kebab "Archive" item is chosen. Parent owns the modal
+   *  and the session action wiring — we just surface the intent. */
+  onArchiveRequest?: (message: CustomMessage) => void;
 }
 
 export function CustomMessageCard({
@@ -70,6 +73,7 @@ export function CustomMessageCard({
   isFreshlyAdded = false,
   muted = false,
   onSave,
+  onArchiveRequest,
 }: CustomMessageCardProps) {
   const [editName, setEditName] = useState(message.name);
   const [editTemplate, setEditTemplate] = useState(message.template);
@@ -81,10 +85,12 @@ export function CustomMessageCard({
   });
   const [showComplianceHint, setShowComplianceHint] = useState(false);
   const [isInsertOpen, setIsInsertOpen] = useState(false);
+  const [isKebabOpen, setIsKebabOpen] = useState(false);
   const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const insertWrapperRef = useRef<HTMLDivElement>(null);
+  const kebabWrapperRef = useRef<HTMLDivElement>(null);
   const prevIsEditingRef = useRef(false);
 
   function clearComplianceTimer() {
@@ -160,6 +166,27 @@ export function CustomMessageCard({
       document.removeEventListener("keydown", handleKey);
     };
   }, [isInsertOpen]);
+
+  // Close the kebab menu on outside click / Escape. Same pattern as the
+  // + Variable popover; kept separate so opening one doesn't toggle the
+  // other through a shared handler.
+  useEffect(() => {
+    if (!isKebabOpen) return;
+    function handleMouseDown(e: MouseEvent) {
+      if (kebabWrapperRef.current && !kebabWrapperRef.current.contains(e.target as Node)) {
+        setIsKebabOpen(false);
+      }
+    }
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setIsKebabOpen(false);
+    }
+    document.addEventListener("mousedown", handleMouseDown);
+    document.addEventListener("keydown", handleKey);
+    return () => {
+      document.removeEventListener("mousedown", handleMouseDown);
+      document.removeEventListener("keydown", handleKey);
+    };
+  }, [isKebabOpen]);
 
   function handleTextChange(next: string) {
     setEditTemplate(next);
@@ -398,7 +425,7 @@ export function CustomMessageCard({
                 </span>
               )}
             </div>
-            <div className="flex items-center flex-shrink-0">
+            <div className="flex items-center flex-shrink-0 gap-1">
               <button
                 type="button"
                 onClick={enterEdit}
@@ -407,6 +434,42 @@ export function CustomMessageCard({
               >
                 <PencilIcon />
               </button>
+              {/* Kebab menu. Saved (non-archived) customs show "Archive".
+                  Archived customs get a different menu in a later commit (e)
+                  — this component only exposes Archive for now. Parent owns
+                  the modal + session action via onArchiveRequest. */}
+              {message.slug && onArchiveRequest && (
+                <div className="relative" ref={kebabWrapperRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsKebabOpen((v) => !v)}
+                    aria-haspopup="menu"
+                    aria-expanded={isKebabOpen}
+                    aria-label="More options"
+                    className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                  >
+                    <DotsVertical className="size-[17px]" />
+                  </button>
+                  {isKebabOpen && (
+                    <div
+                      role="menu"
+                      className="absolute right-0 top-full mt-1 z-20 rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1 min-w-[160px]"
+                    >
+                      <button
+                        type="button"
+                        role="menuitem"
+                        onClick={() => {
+                          setIsKebabOpen(false);
+                          onArchiveRequest(message);
+                        }}
+                        className="flex w-full items-center px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
+                      >
+                        Archive
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
