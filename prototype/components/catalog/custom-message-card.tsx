@@ -373,21 +373,6 @@ export function CustomMessageCard({
   const nameIsEmpty = !editName.trim();
   const displayName = message.name || "Untitled message";
 
-  // Reason the Save button is disabled. Surfaced inline next to Save so
-  // the user never sees silent disablement (PM bug 3). Omits the AI-loading
-  // and Fix-loading cases — those are already communicated by the editor
-  // opacity + spinner + "Rewriting…" / "Fixing…" label. Compliance issues
-  // bypass the 2s debounce here because the user is explicitly trying to
-  // commit; the debounced hint above the button row still exists for the
-  // while-typing awareness case.
-  const disableReason: string | null = isAiLoading || isFixLoading
-    ? null
-    : nameIsEmpty
-      ? "Enter a name"
-      : !compliance.isCompliant
-        ? (compliance.issues[0] ?? "Add opt-out language")
-        : null;
-
   return (
     <div
       className={`relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs min-[860px]:max-w-[540px] ${muted ? "opacity-70" : ""}`}
@@ -562,15 +547,13 @@ export function CustomMessageCard({
                 />
               </div>
 
-              {/* Save / Cancel. disableReason renders to the left of the
-                  buttons whenever Save is disabled for a user-actionable
-                  reason — prevents the silent-disable failure mode. */}
-              <div className="flex items-center justify-end gap-3">
-                {disableReason && (
-                  <span className="text-xs text-text-tertiary" aria-live="polite">
-                    {disableReason}
-                  </span>
-                )}
+              {/* Save / Cancel — no compliance/validation text in this row.
+                  Compliance errors surface ONLY inline below the editor (red
+                  issue + adjacent Fix button). Duplicating hints next to Save
+                  muddies where the user should look for problems. The
+                  explicit Name label at the top of the card + the disabled
+                  Save button are the only Save-gating surfaces. */}
+              <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={handleCancel}
