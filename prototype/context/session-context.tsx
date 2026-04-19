@@ -138,12 +138,21 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         // Back-fill custom messages persisted before `slug`/`archived` fields
         // existed. Missing fields would otherwise read as `undefined` and
         // break the archive filter + slug collision logic.
+        //
+        // One-time zombie cleanup (PM bug 2): drop any custom whose name and
+        // template are both empty. These are leftovers from pre-fix Cancel
+        // behavior that created a row on "+ Add" but left it behind when the
+        // user cancelled without typing. Going-forward Cancel on never-saved
+        // rows discards correctly (see commit 203a97b), so this migration
+        // only needs to run against old sessions.
         if (Array.isArray(parsed.customMessages)) {
-          parsed.customMessages = parsed.customMessages.map((m) => ({
-            ...m,
-            slug: typeof m.slug === "string" ? m.slug : "",
-            archived: typeof m.archived === "boolean" ? m.archived : false,
-          }));
+          parsed.customMessages = parsed.customMessages
+            .map((m) => ({
+              ...m,
+              slug: typeof m.slug === "string" ? m.slug : "",
+              archived: typeof m.archived === "boolean" ? m.archived : false,
+            }))
+            .filter((m) => (m.name ?? "").trim() !== "" || (m.template ?? "").trim() !== "");
         }
         setState((prev) => ({ ...prev, ...parsed }));
       }
