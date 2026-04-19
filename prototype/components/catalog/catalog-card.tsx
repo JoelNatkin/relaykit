@@ -983,7 +983,7 @@ export function CatalogCard({
                         {isSendingTest ? "Sending…" : "Test send"}
                       </button>
                       <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-[100] hidden group-hover:block rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                        Sends from RelayKit to a tester. Not from your app.
+                        Sends from RelayKit to someone on your preview list. Not from your app.
                       </div>
                     </div>
                     <select

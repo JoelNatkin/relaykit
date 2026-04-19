@@ -122,9 +122,13 @@ export function TestPhonesCard({ phones, onRemove, onInvite, onEdit }: TestPhone
 
   return (
     <div className="rounded-xl border border-border-secondary p-6">
-      <h3 className="text-base font-semibold text-text-primary">Testers</h3>
+      {/* User-facing concept is "Preview list". Code-level identifiers
+          (TestPhone, MAX_TEST_PHONES, onInvite, etc.) intentionally stay
+          as tester/test per PM_PROJECT_INSTRUCTIONS.md's user-facing-vs-
+          internal naming split — the boundary layer translates. */}
+      <h3 className="text-base font-semibold text-text-primary">Preview list</h3>
       <p className="mt-1 text-sm text-text-tertiary">
-        Up to 5 people can sign up and receive messages from your app in test mode.
+        People who can receive messages from RelayKit and from your app before you go live.
       </p>
 
       <ul ref={menuContainerRef} className="mt-4 divide-y divide-border-secondary">
@@ -227,53 +231,69 @@ export function TestPhonesCard({ phones, onRemove, onInvite, onEdit }: TestPhone
         })}
       </ul>
 
-      {canAddMore && (
-        isInviting ? (
-          <div className="mt-4 space-y-2">
-            <input
-              type="text"
-              value={nameInput}
-              onChange={(e) => setNameInput(e.target.value)}
+      {isInviting ? (
+        <div className="mt-4 space-y-2">
+          <input
+            type="text"
+            value={nameInput}
+            onChange={(e) => setNameInput(e.target.value)}
+            disabled={isSending}
+            placeholder="Name"
+            className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear disabled:bg-bg-secondary disabled:cursor-not-allowed"
+          />
+          <input
+            type="tel"
+            value={phoneInput}
+            onChange={(e) => setPhoneInput(e.target.value)}
+            disabled={isSending}
+            placeholder="Phone"
+            className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear disabled:bg-bg-secondary disabled:cursor-not-allowed"
+          />
+          <div className="flex items-center justify-end gap-3 pt-1">
+            <button
+              type="button"
+              onClick={handleCancelInvite}
               disabled={isSending}
-              placeholder="Name"
-              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear disabled:bg-bg-secondary disabled:cursor-not-allowed"
-            />
-            <input
-              type="tel"
-              value={phoneInput}
-              onChange={(e) => setPhoneInput(e.target.value)}
-              disabled={isSending}
-              placeholder="Phone"
-              className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs focus:border-border-brand focus:outline-none transition duration-100 ease-linear disabled:bg-bg-secondary disabled:cursor-not-allowed"
-            />
-            <div className="flex items-center justify-end gap-3 pt-1">
-              <button
-                type="button"
-                onClick={handleCancelInvite}
-                disabled={isSending}
-                className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSendInvite}
-                disabled={!canSubmitInvite}
-                className="rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-semibold text-text-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {isSending ? "Sending\u2026" : "Send invite"}
-              </button>
-            </div>
+              className="text-sm text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSendInvite}
+              disabled={!canSubmitInvite}
+              className="rounded-lg border border-border-primary bg-bg-primary px-3 py-1.5 text-sm font-semibold text-text-secondary shadow-xs transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isSending ? "Sending\u2026" : "Send invite"}
+            </button>
           </div>
-        ) : (
+        </div>
+      ) : (
+        /* + Invite someone — always rendered. When the list is at the cap
+           (canAddMore === false), disabled + tooltip makes the constraint
+           visible rather than silently hiding the affordance, which was
+           the prior behavior. Wrapper carries group-hover so the tooltip
+           can fire on a disabled button (pointer events still propagate
+           to the wrapper). */
+        <div className="relative group inline-block mt-3">
           <button
             type="button"
-            onClick={() => setIsInviting(true)}
-            className="mt-3 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+            onClick={(e) => { if (!canAddMore) { e.preventDefault(); return; } setIsInviting(true); }}
+            aria-disabled={!canAddMore}
+            className={`text-sm font-semibold transition duration-100 ease-linear ${
+              canAddMore
+                ? "text-text-brand-secondary hover:text-text-brand-secondary_hover cursor-pointer"
+                : "text-text-brand-secondary opacity-60 cursor-not-allowed"
+            }`}
           >
             + Invite someone
           </button>
-        )
+          {!canAddMore && (
+            <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-1 z-[100] hidden group-hover:block rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+              Preview list is full. Remove someone to invite another person.
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
