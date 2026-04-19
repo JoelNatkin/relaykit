@@ -108,6 +108,8 @@
   --color-bg-disabled_subtle: var(--color-gray-50);
   --color-bg-active: var(--color-gray-50);
   --color-bg-overlay: var(--color-gray-950);
+  --color-bg-primary-solid: var(--color-gray-950);
+  --color-bg-secondary-solid: var(--color-gray-700);
   --color-bg-brand-primary: var(--color-brand-50);
   --color-bg-brand-secondary: var(--color-brand-100);
   --color-bg-brand-solid: var(--color-brand-600);
