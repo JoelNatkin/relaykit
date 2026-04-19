@@ -1256,3 +1256,21 @@ Tiptap v3 is the contentEditable library for the message editor (per D-350's req
 Dependencies added: `@tiptap/core`, `@tiptap/pm`, `@tiptap/react`, `@tiptap/extension-document`, `@tiptap/extension-paragraph`, `@tiptap/extension-text` (all v3.x). No `StarterKit` — SMS messages don't need headings, lists, or marks, so we wire only the three base nodes plus our custom `VariableNode`.
 
 Design doc: `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md`.
+
+**D-355 — Variable grammar: canonical base form + context-aware rendering** (Date: 2026-04-18)
+
+Status: Active
+
+Decision: Variables fall into two categories based on content type, and the canonical-form rules apply only to common nouns.
+
+Common nouns (e.g., service_type) store a single canonical form: lowercase, singular. The renderer handles capitalization and pluralization at render time.
+
+Proper nouns (e.g., business_name, customer_name) store and render exactly as provided. No case transformation, no pluralization. :plural is a no-op on proper nouns.
+
+Qualifier syntax: {variable} renders the stored form, auto-capitalized when it falls at sentence start (common nouns only — proper nouns are already cased). {variable:plural} renders the plural form for common nouns. Other qualifiers may be added later if concrete needs emerge.
+
+Migration: Existing state.serviceType values normalize to canonical form. Templates referencing plural usage get :plural where appropriate. business_name and other proper-noun variables are unaffected.
+
+Why not multiple stored forms per variable: Multiplies authoring surface and invites drift. Pushes grammatical choices onto every author instead of centralizing them in the renderer.
+
+Scope at launch: English only. :plural is the only qualifier. No automatic article handling.
