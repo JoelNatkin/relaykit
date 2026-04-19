@@ -95,6 +95,7 @@ export function CustomMessageCard({
   const [editTemplate, setEditTemplate] = useState(message.template);
   const [aiInput, setAiInput] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [isFixLoading, setIsFixLoading] = useState(false);
   const [compliance, setCompliance] = useState<{ isCompliant: boolean; issues: string[] }>({
     isCompliant: true,
     issues: [],
@@ -142,6 +143,7 @@ export function CustomMessageCard({
       setEditTemplate(message.template);
       setAiInput("");
       setIsAiLoading(false);
+      setIsFixLoading(false);
       clearComplianceTimer();
       setCompliance({ isCompliant: true, issues: [] });
       setShowComplianceHint(false);
@@ -223,9 +225,34 @@ export function CustomMessageCard({
     }, 1500);
   }
 
+  function handleFixOptOut() {
+    if (isFixLoading) return;
+    setIsFixLoading(true);
+    // Matches built-in Fix's 1.5s simulated async (catalog-card.tsx:473)
+    // so the affordance feels consistent across built-in and custom. Post-
+    // Fix state is definitionally compliant by UX contract — set clean
+    // directly instead of re-running the check, same as the built-in path.
+    setTimeout(() => {
+      const trimmed = editTemplate.trimEnd();
+      let next: string;
+      if (trimmed.length === 0) {
+        next = "Reply STOP to opt out.";
+      } else {
+        const endsWithPunct = /[.!?]$/.test(trimmed);
+        next = trimmed + (endsWithPunct ? " " : ". ") + "Reply STOP to opt out.";
+      }
+      setEditTemplate(next);
+      clearComplianceTimer();
+      setCompliance({ isCompliant: true, issues: [] });
+      setShowComplianceHint(false);
+      setIsFixLoading(false);
+    }, 1500);
+  }
+
   function handleSave() {
     if (!compliance.isCompliant) return;
     if (!editName.trim()) return;
+    if (isAiLoading || isFixLoading) return;
     onSave(message.id, { name: editName.trim(), template: editTemplate });
     onEditRequest(null);
   }
@@ -280,12 +307,12 @@ export function CustomMessageCard({
 
   // Reason the Save button is disabled. Surfaced inline next to Save so
   // the user never sees silent disablement (PM bug 3). Omits the AI-loading
-  // case — that's already communicated loudly by the spinner + "Rewriting…"
-  // placeholder, and repeating it would add noise. Compliance issues bypass
-  // the 2s debounce here because the user is explicitly trying to commit;
-  // the debounced hint above the button row still exists for the while-typing
-  // awareness case.
-  const disableReason: string | null = isAiLoading
+  // and Fix-loading cases — those are already communicated by the editor
+  // opacity + spinner + "Rewriting…" / "Fixing…" label. Compliance issues
+  // bypass the 2s debounce here because the user is explicitly trying to
+  // commit; the debounced hint above the button row still exists for the
+  // while-typing awareness case.
+  const disableReason: string | null = isAiLoading || isFixLoading
     ? null
     : nameIsEmpty
       ? "Enter a name"
@@ -320,13 +347,13 @@ export function CustomMessageCard({
           <div className="mt-4">
             <div
               className={`w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs focus-within:border-border-brand transition duration-100 ease-linear ${
-                isAiLoading ? "opacity-60 cursor-not-allowed" : ""
+                isAiLoading || isFixLoading ? "opacity-60 cursor-not-allowed" : ""
               }`}
             >
               <MessageEditor
                 template={editTemplate}
                 categoryId={categoryId}
-                disabled={isAiLoading}
+                disabled={isAiLoading || isFixLoading}
                 /* min-h-[4.5rem] = 72px ≈ 3 lines at text-sm + leading-relaxed.
                    Built-in editor sizes to its canonical template so it's
                    never visibly short; a blank custom has no template, so
@@ -349,6 +376,15 @@ export function CustomMessageCard({
                     </p>
                   ))}
                 </div>
+                <button
+                  type="button"
+                  onClick={handleFixOptOut}
+                  disabled={isFixLoading}
+                  className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-md border border-border-primary px-2.5 py-1 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {isFixLoading && <Spinner className="size-3" />}
+                  {isFixLoading ? "Fixing…" : "Fix"}
+                </button>
               </div>
             )}
 
@@ -450,7 +486,7 @@ export function CustomMessageCard({
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={!compliance.isCompliant || isAiLoading || nameIsEmpty}
+                  disabled={!compliance.isCompliant || isAiLoading || isFixLoading || nameIsEmpty}
                   className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Save
