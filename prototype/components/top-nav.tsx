@@ -72,10 +72,27 @@ export function TopNav() {
     <select
       value=""
       onChange={(e) => {
-        if (e.target.value) {
-          router.push(e.target.value);
-          e.target.value = "";
+        const v = e.target.value;
+        if (!v) return;
+        if (v === "__reset__") {
+          // Full prototype reset — clear all persisted state (sessionStorage
+          // + localStorage — covers relaykit_prototype, relaykit_intake,
+          // relaykit_signup_email, relaykit_personalize, and any future
+          // keys we add) and hard-reload into step 1 so the app hydrates
+          // fresh from defaults.
+          try {
+            sessionStorage.clear();
+            localStorage.clear();
+          } catch {
+            // Storage unavailable — the reload alone won't reset state,
+            // but nothing we can do without storage access. The navigation
+            // still happens so the user lands on step 1.
+          }
+          window.location.href = "/start";
+          return;
         }
+        router.push(v);
+        e.target.value = "";
       }}
       className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
     >
@@ -91,6 +108,11 @@ export function TopNav() {
       <option value="/apps/glowstudio/signup">9. Signup</option>
       <option value="/apps/glowstudio/signup/verify">10. Email verify</option>
       <option value="/apps/glowstudio/get-started">11. Get started</option>
+      {/* Disabled-dash pattern — native <select> separators aren't portable
+          across browsers, so we use a row of em-dashes as a visual break.
+          Reset is an action (state mutation + navigation), not a step. */}
+      <option disabled>──────────</option>
+      <option value="__reset__">Reset</option>
     </select>
   );
 
