@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { InfoCircle, Stars02 } from "@untitledui/icons";
+import { InfoCircle, Plus, Stars02 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
+import { CustomMessageCard } from "@/components/catalog/custom-message-card";
 import type { LastSent, ActivityEntry } from "@/components/catalog/catalog-card";
 import { TestPhonesCard, INITIAL_TEST_PHONES, type TestPhone } from "@/components/test-phones-card";
 import { SetupInstructions, SetupToggle } from "@/components/setup-instructions";
@@ -157,7 +158,7 @@ const REGISTERED_VALUES: PersonalizeData = {
 /* ── Page ── */
 
 export default function AppMessagesPage() {
-  const { state, setField } = useSession();
+  const { state, setField, addCustomMessage, saveCustomMessage } = useSession();
 
   const isWizard = state.registrationState === "onboarding";
   const isBuilding = state.registrationState === "building";
@@ -264,9 +265,23 @@ export default function AppMessagesPage() {
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [monitoringMessageId, setMonitoringMessageId] = useState<string | null>(null);
 
+  // Tracks the id of a just-added custom message so the CustomMessageCard
+  // can auto-focus the name input on its first edit. Cleared as soon as the
+  // card exits edit state — subsequent edits of the same message don't
+  // re-focus the name.
+  const [freshlyAddedCustomId, setFreshlyAddedCustomId] = useState<string | null>(null);
+
   function requestEdit(id: string | null) {
     setEditingMessageId(id);
     if (id !== null) setMonitoringMessageId(null);
+    if (id === null) setFreshlyAddedCustomId(null);
+  }
+
+  function handleAddCustom() {
+    const id = addCustomMessage(categoryId);
+    setFreshlyAddedCustomId(id);
+    setEditingMessageId(id);
+    setMonitoringMessageId(null);
   }
 
   function requestMonitor(id: string | null) {
@@ -374,10 +389,39 @@ export default function AppMessagesPage() {
     />
   );
 
+  /* ── Custom messages (D-351 revised). Customs appear above built-ins and
+         marketing messages — a new custom inserted by "+ Add" lands at the
+         top of the stack. Wizard state doesn't expose the feature. ── */
+  const activeCustoms = state.customMessages.filter(
+    (m) => m.categoryId === categoryId && !m.archived
+  );
+
   /* ── Shared message list ── */
   const messageList = (
     <div>
       <div className="space-y-5">
+        {!isWizard && (
+          <button
+            type="button"
+            onClick={handleAddCustom}
+            className="w-full rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary hover:text-text-brand-secondary_hover hover:border-border-brand transition duration-100 ease-linear cursor-pointer inline-flex items-center justify-center gap-1.5"
+          >
+            <Plus className="size-4" />
+            Add message
+          </button>
+        )}
+        {!isWizard && activeCustoms.map((message) => (
+          <CustomMessageCard
+            key={message.id}
+            message={message}
+            categoryId={categoryId}
+            state={state}
+            isEditing={editingMessageId === message.id}
+            onEditRequest={requestEdit}
+            isFreshlyAdded={freshlyAddedCustomId === message.id}
+            onSave={saveCustomMessage}
+          />
+        ))}
         {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
           <CatalogCard
             key={message.id}
