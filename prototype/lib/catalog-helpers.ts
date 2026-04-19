@@ -94,6 +94,23 @@ export function getExampleValues(categoryId: string): Map<string, ExampleValue> 
   return new Map(values.map((v) => [v.key, v]));
 }
 
+/**
+ * Returns the variable key that represents "the business name" for a given
+ * category. `business_name` is not universal — appointments and verification
+ * use `app_name`, community uses `community_name`, most others have
+ * `business_name` directly. Callers that need a variable chip for the
+ * business name (custom-message pre-population, business-name compliance
+ * fix) use this so the chosen key always exists in the category's
+ * registered variables (= renders as a variable token, not plain text).
+ */
+export function getPrimaryBusinessVariable(categoryId: string): string | null {
+  const values = getExampleValues(categoryId);
+  if (values.has("business_name")) return "business_name";
+  if (values.has("community_name")) return "community_name";
+  if (values.has("app_name")) return "app_name";
+  return null;
+}
+
 /* ── Template interpolation ── */
 
 export interface InterpolatedSegment {

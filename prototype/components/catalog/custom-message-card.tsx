@@ -7,6 +7,7 @@ import type { CustomMessage, SessionState } from "@/context/session-context";
 import {
   interpolateTemplate,
   getExampleValues,
+  getPrimaryBusinessVariable,
 } from "@/lib/catalog-helpers";
 import { VARIABLE_TOKEN_CLASSES } from "@/lib/variable-token";
 import { getVariableScope } from "@/lib/variable-scope";
@@ -29,19 +30,43 @@ function PencilIcon({ className }: { className?: string }) {
   );
 }
 
-/** Minimal compliance check for custom messages.
- *  Opt-out language only — custom templates don't have a canonical variable
- *  set to require against (the user inserts what they want). Matches the
- *  rule CatalogCard uses for built-ins (requiresStop branch) but skips the
- *  required-variable check that only makes sense when a template was
- *  pre-authored. */
-function checkCustomCompliance(text: string): { isCompliant: boolean; issues: string[] } {
-  const issues: string[] = [];
-  const hasStop = /stop/i.test(text);
-  const hasExitWord = /opt[- ]?out|unsubscribe/i.test(text);
-  if (!(hasStop && hasExitWord)) {
-    issues.push("Needs opt-out language");
+type ComplianceIssueKind = "business_name" | "opt_out";
+interface ComplianceIssue {
+  kind: ComplianceIssueKind;
+  message: string;
+}
+
+/** Compliance rules for custom messages.
+ *  - business_name: the raw template must still contain the category's
+ *    primary business-name variable token (e.g. {app_name} for
+ *    appointments). Checks the TEMPLATE, not the interpolated text — we
+ *    care whether the variable chip is present, not what it resolves to.
+ *  - opt_out: the INTERPOLATED text must contain a STOP token and an
+ *    exit word (opt-out / unsubscribe). Interpolation first so a user
+ *    who builds the phrase via other variables still passes.
+ *
+ *  Returns issues in display order — business_name first (prepend), then
+ *  opt-out (append) — so the stacked error rows read in the same order
+ *  the Fix buttons apply to the template.
+ */
+function checkCustomCompliance(
+  interpolated: string,
+  rawTemplate: string,
+  categoryId: string
+): { isCompliant: boolean; issues: ComplianceIssue[] } {
+  const issues: ComplianceIssue[] = [];
+
+  const businessKey = getPrimaryBusinessVariable(categoryId);
+  if (businessKey && !rawTemplate.includes(`{${businessKey}}`)) {
+    issues.push({ kind: "business_name", message: "Needs business name" });
   }
+
+  const hasStop = /stop/i.test(interpolated);
+  const hasExitWord = /opt[- ]?out|unsubscribe/i.test(interpolated);
+  if (!(hasStop && hasExitWord)) {
+    issues.push({ kind: "opt_out", message: "Needs opt-out language" });
+  }
+
   return { isCompliant: issues.length === 0, issues };
 }
 
@@ -112,7 +137,7 @@ export function CustomMessageCard({
   const [aiInput, setAiInput] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isFixLoading, setIsFixLoading] = useState(false);
-  const [compliance, setCompliance] = useState<{ isCompliant: boolean; issues: string[] }>({
+  const [compliance, setCompliance] = useState<{ isCompliant: boolean; issues: ComplianceIssue[] }>({
     isCompliant: true,
     issues: [],
   });
@@ -186,15 +211,20 @@ export function CustomMessageCard({
     }
   }
 
-  function runComplianceCheck(text: string) {
+  function runComplianceCheck(text: string, revealImmediately = false) {
     const resolved = interpolateTemplate(text, categoryId, state)
       .map((s) => s.text)
       .join("");
-    const result = checkCustomCompliance(resolved);
+    const result = checkCustomCompliance(resolved, text, categoryId);
     setCompliance(result);
     clearComplianceTimer();
     if (result.isCompliant) {
       setShowComplianceHint(false);
+    } else if (revealImmediately) {
+      // Post-Fix re-checks bypass the 2s debounce: the user just acted,
+      // and if the action didn't fully resolve compliance we need to show
+      // the remaining issues right away so they know what's left.
+      setShowComplianceHint(true);
     } else {
       complianceTimerRef.current = setTimeout(() => {
         setShowComplianceHint(true);
@@ -300,9 +330,10 @@ export function CustomMessageCard({
     if (isFixLoading) return;
     setIsFixLoading(true);
     // Matches built-in Fix's 1.5s simulated async (catalog-card.tsx:473)
-    // so the affordance feels consistent across built-in and custom. Post-
-    // Fix state is definitionally compliant by UX contract — set clean
-    // directly instead of re-running the check, same as the built-in path.
+    // so the affordance feels consistent across built-in and custom.
+    // Re-runs compliance after the edit instead of setting clean directly
+    // — now that a second issue kind (business_name) can co-exist,
+    // resolving one doesn't imply overall compliance.
     setTimeout(() => {
       const trimmed = editTemplate.trimEnd();
       let next: string;
@@ -313,11 +344,30 @@ export function CustomMessageCard({
         next = trimmed + (endsWithPunct ? " " : ". ") + "Reply STOP to opt out.";
       }
       setEditTemplate(next);
-      clearComplianceTimer();
-      setCompliance({ isCompliant: true, issues: [] });
-      setShowComplianceHint(false);
+      runComplianceCheck(next, true);
       setIsFixLoading(false);
     }, 1500);
+  }
+
+  function handleFixBusinessName() {
+    if (isFixLoading) return;
+    const businessKey = getPrimaryBusinessVariable(categoryId);
+    if (!businessKey) return;
+    setIsFixLoading(true);
+    setTimeout(() => {
+      // Prepend {businessKey}: to the current body. trimStart so the
+      // variable token lands at position 0 even if the user left leading
+      // whitespace in the editor.
+      const next = `{${businessKey}}: ${editTemplate.trimStart()}`;
+      setEditTemplate(next);
+      runComplianceCheck(next, true);
+      setIsFixLoading(false);
+    }, 1500);
+  }
+
+  function handleFix(kind: ComplianceIssueKind) {
+    if (kind === "business_name") handleFixBusinessName();
+    else handleFixOptOut();
   }
 
   function handleSave() {
@@ -455,23 +505,21 @@ export function CustomMessageCard({
             </div>
 
             {showFix && compliance.issues.length > 0 && (
-              <div className="mt-1.5 flex items-start justify-end gap-4">
-                <div className="flex flex-col items-end gap-0.5">
-                  {compliance.issues.map((issue, i) => (
-                    <p key={i} className="text-xs text-text-error-primary">
-                      {issue}
-                    </p>
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  onClick={handleFixOptOut}
-                  disabled={isFixLoading}
-                  className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-md border border-border-primary px-2.5 py-1 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {isFixLoading && <Spinner className="size-3" />}
-                  {isFixLoading ? "Fixing…" : "Fix"}
-                </button>
+              <div className="mt-1.5 flex flex-col items-end gap-1.5">
+                {compliance.issues.map((issue) => (
+                  <div key={issue.kind} className="flex items-center gap-4">
+                    <p className="text-xs text-text-error-primary">{issue.message}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleFix(issue.kind)}
+                      disabled={isFixLoading}
+                      className="flex-shrink-0 inline-flex items-center gap-1.5 rounded-md border border-border-primary px-2.5 py-1 text-xs font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-secondary cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isFixLoading && <Spinner className="size-3" />}
+                      {isFixLoading ? "Fixing…" : "Fix"}
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
 

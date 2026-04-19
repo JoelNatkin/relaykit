@@ -11,6 +11,7 @@ import {
 import type { ReactNode } from "react";
 import { MESSAGES } from "@/data/messages";
 import { generateSlug } from "@/lib/slug";
+import { getPrimaryBusinessVariable } from "@/lib/catalog-helpers";
 
 const STORAGE_KEY = "relaykit_prototype";
 
@@ -227,17 +228,22 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const addCustomMessage = useCallback((categoryId: string): string => {
     const id = `custom_${Date.now()}`;
+    // Pre-populate: business-name variable chip + literal placeholder +
+    // opt-out phrase. The business variable key is category-specific
+    // (appointments → app_name, orders/etc → business_name, community →
+    // community_name), chosen via getPrimaryBusinessVariable so the token
+    // always parses as a variable chip instead of falling through as text.
+    // If the category has no registered business variable (shouldn't
+    // happen in practice), skip the chip and just include the literal
+    // placeholder + opt-out.
+    const businessKey = getPrimaryBusinessVariable(categoryId);
+    const prefix = businessKey ? `{${businessKey}}: ` : "";
     const newMsg: CustomMessage = {
       id,
       categoryId,
       name: "",
       trigger: "",
-      // Pre-populate with the opt-out phrase so a fresh custom row starts
-      // in a compliant state. The user types their message in front of it
-      // (cursor defaults to position 0 in Tiptap for a newly-mounted doc).
-      // If they delete the phrase, checkCustomCompliance flags "Needs
-      // opt-out language" and the existing Fix affordance re-inserts it.
-      template: "Reply STOP to opt out.",
+      template: `${prefix}[your message here] Reply STOP to opt out.`,
       slug: "",
       archived: false,
     };
