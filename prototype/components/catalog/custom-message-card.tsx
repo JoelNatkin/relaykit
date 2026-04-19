@@ -322,7 +322,7 @@ export function CustomMessageCard({
 
   return (
     <div
-      className={`relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs ${muted ? "opacity-70" : ""}`}
+      className={`relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs min-[860px]:max-w-[540px] ${muted ? "opacity-70" : ""}`}
     >
       {isEditing ? (
         <div>

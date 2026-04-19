@@ -473,7 +473,7 @@ export default function AppMessagesPage() {
           <button
             type="button"
             onClick={handleAddCustom}
-            className="w-full rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary hover:text-text-brand-secondary_hover hover:border-border-brand transition duration-100 ease-linear cursor-pointer inline-flex items-center justify-center gap-1.5"
+            className="w-full min-[860px]:max-w-[540px] rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary hover:text-text-brand-secondary_hover hover:border-border-brand transition duration-100 ease-linear cursor-pointer inline-flex items-center justify-center gap-1.5"
           >
             <Plus className="size-4" />
             Add message
