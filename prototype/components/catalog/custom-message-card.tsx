@@ -112,6 +112,12 @@ export interface CustomMessageCardProps {
   testRecipients?: string[];
   /** Click handler for the Ask Claude button in the monitor footer. */
   onAskClaude?: (messageName: string) => void;
+  /** When true, all edit/monitor-entry affordances on this card are
+   *  disabled and hovering the icon buttons shows lockedTooltip. Used to
+   *  lock every other card while a never-saved custom is being authored. */
+  locked?: boolean;
+  /** Tooltip text shown on hover of the disabled icons when locked. */
+  lockedTooltip?: string;
 }
 
 export function CustomMessageCard({
@@ -131,6 +137,8 @@ export function CustomMessageCard({
   onMonitorRequest,
   testRecipients,
   onAskClaude,
+  locked = false,
+  lockedTooltip,
 }: CustomMessageCardProps) {
   const [editName, setEditName] = useState(message.name);
   const [editTemplate, setEditTemplate] = useState(message.template);
@@ -144,12 +152,41 @@ export function CustomMessageCard({
   const [showComplianceHint, setShowComplianceHint] = useState(false);
   const [isInsertOpen, setIsInsertOpen] = useState(false);
   const [isKebabOpen, setIsKebabOpen] = useState(false);
+  const [showEditTooltip, setShowEditTooltip] = useState(false);
+  const [showMonitorTooltip, setShowMonitorTooltip] = useState(false);
   const complianceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const nameInputRef = useRef<HTMLInputElement | null>(null);
   const insertWrapperRef = useRef<HTMLDivElement>(null);
   const kebabWrapperRef = useRef<HTMLDivElement>(null);
   const prevIsEditingRef = useRef(false);
+  // Matches CatalogCard's tooltip cadence — 300ms delay in, clear on mouse
+  // leave. Drives both the normal-label and locked-reason tooltips on the
+  // pencil/activity icons.
+  const editTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const monitorTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  function scheduleEditTooltip() {
+    if (editTooltipTimerRef.current) clearTimeout(editTooltipTimerRef.current);
+    editTooltipTimerRef.current = setTimeout(() => setShowEditTooltip(true), 300);
+  }
+  function clearEditTooltipTimer() {
+    if (editTooltipTimerRef.current) {
+      clearTimeout(editTooltipTimerRef.current);
+      editTooltipTimerRef.current = null;
+    }
+    setShowEditTooltip(false);
+  }
+  function scheduleMonitorTooltip() {
+    if (monitorTooltipTimerRef.current) clearTimeout(monitorTooltipTimerRef.current);
+    monitorTooltipTimerRef.current = setTimeout(() => setShowMonitorTooltip(true), 300);
+  }
+  function clearMonitorTooltipTimer() {
+    if (monitorTooltipTimerRef.current) {
+      clearTimeout(monitorTooltipTimerRef.current);
+      monitorTooltipTimerRef.current = null;
+    }
+    setShowMonitorTooltip(false);
+  }
 
   // Send-test state (monitor expansion). Matches CatalogCard's pattern —
   // stubbed, no real delivery. Recipient list falls back to a static trio
@@ -197,6 +234,7 @@ export function CustomMessageCard({
     // first Save. The caller's UI gating enforces this too; the guard
     // here is defensive.
     if (!message.slug) return;
+    if (locked) return;
     onMonitorRequest?.(message.id);
   }
 
@@ -264,6 +302,8 @@ export function CustomMessageCard({
       if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
       if (sendTestTimerRef.current) clearTimeout(sendTestTimerRef.current);
       if (sentTestClearRef.current) clearTimeout(sentTestClearRef.current);
+      if (editTooltipTimerRef.current) clearTimeout(editTooltipTimerRef.current);
+      if (monitorTooltipTimerRef.current) clearTimeout(monitorTooltipTimerRef.current);
     };
   }, []);
 
@@ -399,6 +439,7 @@ export function CustomMessageCard({
   }
 
   function enterEdit() {
+    if (locked) return;
     onEditRequest(message.id);
   }
 
@@ -726,28 +767,49 @@ export function CustomMessageCard({
                   )}
                   {/* Activity icon — only on saved, non-archived rows.
                       Archived rows are read-only; never-saved rows have
-                      nothing to test yet. */}
+                      nothing to test yet. Disabled when locked (another
+                      unsaved custom is open in edit). */}
                   {!readOnly && message.slug && onMonitorRequest && (
-                    <button
-                      type="button"
-                      onClick={enterMonitor}
-                      className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                      aria-label="Test & debug"
-                    >
-                      <Activity className="size-[17px]" />
-                    </button>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={(e) => { if (locked) { e.preventDefault(); return; } enterMonitor(); }}
+                        onMouseEnter={scheduleMonitorTooltip}
+                        onMouseLeave={clearMonitorTooltipTimer}
+                        aria-disabled={locked}
+                        className={`p-1 text-fg-quaternary transition duration-100 ease-linear ${locked ? "cursor-not-allowed opacity-60" : "hover:text-fg-secondary cursor-pointer"}`}
+                        aria-label={locked ? "Locked" : "Test & debug"}
+                      >
+                        <Activity className="size-[17px]" />
+                      </button>
+                      {showMonitorTooltip && (
+                        <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                          {locked ? (lockedTooltip ?? "Locked") : "Test & debug"}
+                        </div>
+                      )}
+                    </div>
                   )}
                   {/* Pencil — hidden on archived rows (read-only until
                       restored). */}
                   {!readOnly && (
-                    <button
-                      type="button"
-                      onClick={enterEdit}
-                      className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                      aria-label="Edit message"
-                    >
-                      <PencilIcon />
-                    </button>
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={(e) => { if (locked) { e.preventDefault(); return; } enterEdit(); }}
+                        onMouseEnter={scheduleEditTooltip}
+                        onMouseLeave={clearEditTooltipTimer}
+                        aria-disabled={locked}
+                        className={`p-1 text-fg-quaternary transition duration-100 ease-linear ${locked ? "cursor-not-allowed opacity-60" : "hover:text-fg-secondary cursor-pointer"}`}
+                        aria-label={locked ? "Locked" : "Edit message"}
+                      >
+                        <PencilIcon />
+                      </button>
+                      {showEditTooltip && (
+                        <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                          {locked ? (lockedTooltip ?? "Locked") : "Edit message"}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </>
               )}
@@ -755,12 +817,12 @@ export function CustomMessageCard({
           </div>
 
           <div
-            className={readOnly || isMonitoring ? "mt-2" : "mt-2 cursor-pointer"}
-            onClick={readOnly || isMonitoring ? undefined : enterEdit}
-            role={readOnly || isMonitoring ? undefined : "button"}
-            tabIndex={readOnly || isMonitoring ? undefined : 0}
+            className={readOnly || isMonitoring || locked ? "mt-2" : "mt-2 cursor-pointer"}
+            onClick={readOnly || isMonitoring || locked ? undefined : enterEdit}
+            role={readOnly || isMonitoring || locked ? undefined : "button"}
+            tabIndex={readOnly || isMonitoring || locked ? undefined : 0}
             onKeyDown={
-              readOnly || isMonitoring
+              readOnly || isMonitoring || locked
                 ? undefined
                 : (e) => { if (e.key === "Enter") enterEdit(); }
             }

@@ -280,35 +280,31 @@ export default function AppMessagesPage() {
   // re-focus the name.
   const [freshlyAddedCustomId, setFreshlyAddedCustomId] = useState<string | null>(null);
 
-  // Discard an in-progress never-saved custom whenever the user navigates
-  // away from it (PM bug 5). "Navigation" covers any action that changes
-  // the open edit context: clicking another card's edit, entering monitor,
-  // opening Ask Claude, hitting + Add again. Without this, the pending row
-  // persists as an "Untitled / No message yet" zombie. Skips the discard
-  // when we're re-entering the same id (no-op) so the user can't lose
-  // their work by clicking their own open row.
-  function discardUnsavedCustomIfNeeded(incomingId: string | null) {
-    if (editingMessageId === null) return;
-    if (editingMessageId === incomingId) return;
-    const current = state.customMessages.find((m) => m.id === editingMessageId);
-    if (current && !current.slug) {
-      deleteCustomMessage(editingMessageId);
-      if (freshlyAddedCustomId === editingMessageId) setFreshlyAddedCustomId(null);
-    }
-  }
+  // Lock state. While a never-saved custom (empty slug) is open in edit,
+  // every other edit/monitor-entry affordance on the page is disabled and
+  // rendered with the lock tooltip. The authoring card itself stays
+  // interactive. Supersedes the earlier auto-discard-on-navigation helper
+  // (commit 33c015b) — the navigation it protected against can no longer
+  // happen because the triggering affordances are locked out.
+  const unsavedCustomId: string | null =
+    state.customMessages.find(
+      (m) => m.id === editingMessageId && !m.slug
+    )?.id ?? null;
+  const hasUnsavedCustomOpen = unsavedCustomId !== null;
+  const LOCK_TOOLTIP = "Save or cancel the current message first.";
 
   function requestEdit(id: string | null) {
-    discardUnsavedCustomIfNeeded(id);
+    // Defensive: buttons are disabled when the lock is active, but a
+    // programmatic or keyboard path could still invoke this. Reject the
+    // transition silently instead of clobbering the authoring edit.
+    if (hasUnsavedCustomOpen && id !== null && id !== unsavedCustomId) return;
     setEditingMessageId(id);
     if (id !== null) setMonitoringMessageId(null);
     if (id === null) setFreshlyAddedCustomId(null);
   }
 
   function handleAddCustom() {
-    // Entering + Add with another unsaved custom still open should discard
-    // the pending one before creating the new one — clicking + Add again
-    // is the same "I'm moving on" intent as clicking another card.
-    discardUnsavedCustomIfNeeded(null);
+    if (hasUnsavedCustomOpen) return;
     const id = addCustomMessage(categoryId);
     setFreshlyAddedCustomId(id);
     setEditingMessageId(id);
@@ -368,9 +364,7 @@ export default function AppMessagesPage() {
   );
 
   function requestMonitor(id: string | null) {
-    // Opening monitor on any card closes the current edit — discard if
-    // that edit is an unsaved custom.
-    if (id !== null) discardUnsavedCustomIfNeeded(null);
+    if (hasUnsavedCustomOpen && id !== null) return;
     setMonitoringMessageId(id);
     if (id !== null) setEditingMessageId(null);
   }
@@ -383,10 +377,7 @@ export default function AppMessagesPage() {
   const [askClaudeFocusedMessage, setAskClaudeFocusedMessage] = useState<string | null>(null);
 
   function openAskClaude(focusedMessageName: string | null = null) {
-    // Opening the panel closes the current edit/monitor — discard an
-    // in-progress never-saved custom before the row vanishes from the
-    // edit context.
-    discardUnsavedCustomIfNeeded(null);
+    if (hasUnsavedCustomOpen) return;
     setAskClaudeFocusedMessage(focusedMessageName);
     setAskClaudeOpen(true);
     setEditingMessageId(null);
@@ -457,14 +448,30 @@ export default function AppMessagesPage() {
       <h2 className="text-lg font-semibold text-text-primary">Messages</h2>
       <div className="ml-auto flex items-center gap-6">
         <SetupToggle checked={setupVisible} onChange={setupToggle} />
-        <button
-          type="button"
-          onClick={() => openAskClaude()}
-          className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
-        >
-          <Stars02 className="size-4 text-fg-brand-primary" />
-          Ask Claude
-        </button>
+        {/* Ask Claude — locked while a never-saved custom is in edit.
+            Wrapper div hosts a group-hover tooltip mirroring the pattern
+            the card icons use. aria-disabled rather than disabled so
+            hover events still fire on the (visually dimmed) button. */}
+        <div className="relative group">
+          <button
+            type="button"
+            onClick={(e) => { if (hasUnsavedCustomOpen) { e.preventDefault(); return; } openAskClaude(); }}
+            aria-disabled={hasUnsavedCustomOpen}
+            className={`inline-flex items-center gap-1.5 text-sm font-semibold transition duration-100 ease-linear ${
+              hasUnsavedCustomOpen
+                ? "cursor-not-allowed opacity-60 text-text-brand-secondary"
+                : "cursor-pointer text-text-brand-secondary hover:text-text-brand-secondary_hover"
+            }`}
+          >
+            <Stars02 className="size-4 text-fg-brand-primary" />
+            Ask Claude
+          </button>
+          {hasUnsavedCustomOpen && (
+            <div className="absolute right-0 top-full mt-1 z-[100] hidden group-hover:block rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+              {LOCK_TOOLTIP}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -498,14 +505,26 @@ export default function AppMessagesPage() {
     <div>
       <div className="space-y-5">
         {!isWizard && (
-          <button
-            type="button"
-            onClick={handleAddCustom}
-            className="w-full min-[860px]:max-w-[540px] rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary hover:text-text-brand-secondary_hover hover:border-border-brand transition duration-100 ease-linear cursor-pointer inline-flex items-center justify-center gap-1.5"
-          >
-            <Plus className="size-4" />
-            Add message
-          </button>
+          <div className="relative group w-full min-[860px]:max-w-[540px]">
+            <button
+              type="button"
+              onClick={(e) => { if (hasUnsavedCustomOpen) { e.preventDefault(); return; } handleAddCustom(); }}
+              aria-disabled={hasUnsavedCustomOpen}
+              className={`w-full rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium transition duration-100 ease-linear inline-flex items-center justify-center gap-1.5 ${
+                hasUnsavedCustomOpen
+                  ? "cursor-not-allowed opacity-60 text-text-brand-secondary"
+                  : "cursor-pointer text-text-brand-secondary hover:text-text-brand-secondary_hover hover:border-border-brand"
+              }`}
+            >
+              <Plus className="size-4" />
+              Add message
+            </button>
+            {hasUnsavedCustomOpen && (
+              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-[100] hidden group-hover:block rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+                {LOCK_TOOLTIP}
+              </div>
+            )}
+          </div>
         )}
         {!isWizard && activeCustoms.map((message) => (
           <CustomMessageCard
@@ -527,6 +546,8 @@ export default function AppMessagesPage() {
             onMonitorRequest={requestMonitor}
             testRecipients={testRecipientNames}
             onAskClaude={openAskClaude}
+            locked={hasUnsavedCustomOpen && message.id !== unsavedCustomId}
+            lockedTooltip={LOCK_TOOLTIP}
           />
         ))}
         {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
@@ -544,6 +565,8 @@ export default function AppMessagesPage() {
             onMonitorRequest={requestMonitor}
             testRecipients={testRecipientNames}
             onAskClaude={openAskClaude}
+            locked={hasUnsavedCustomOpen}
+            lockedTooltip={LOCK_TOOLTIP}
           />
         ))}
         {coreMessages.map((message, index) => (
@@ -562,6 +585,8 @@ export default function AppMessagesPage() {
             onMonitorRequest={requestMonitor}
             testRecipients={testRecipientNames}
             onAskClaude={openAskClaude}
+            locked={hasUnsavedCustomOpen}
+            lockedTooltip={LOCK_TOOLTIP}
           />
         ))}
       </div>

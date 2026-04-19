@@ -191,6 +191,15 @@ export interface CatalogCardProps {
   /** Invoked when the monitor expansion's "Ask Claude" button is clicked.
    *  Receives the current message name so the parent can focus the panel. */
   onAskClaude?: (messageName: string) => void;
+  /** When true, all edit/monitor-entry affordances on this card are
+   *  disabled — pencil, activity, preview click-to-edit — and hovering
+   *  the icon buttons surfaces the lockedTooltip text. Used to lock
+   *  every other card while a never-saved custom is open in edit; the
+   *  authoring card itself is not locked. */
+  locked?: boolean;
+  /** Tooltip text shown on hover of the disabled pencil/activity icons
+   *  when locked=true. Defaults to the standard icon tooltips otherwise. */
+  lockedTooltip?: string;
 }
 
 export function CatalogCard({
@@ -208,6 +217,8 @@ export function CatalogCard({
   activity,
   testRecipients,
   onAskClaude,
+  locked = false,
+  lockedTooltip,
 }: CatalogCardProps) {
   const isControlled = controlledIsEditing !== undefined;
   const isMonitoringControlled = controlledIsMonitoring !== undefined;
@@ -401,6 +412,10 @@ export function CatalogCard({
   }, [isEditing]);
 
   function enterEdit() {
+    // Defensive guard: even if a disabled button is bypassed (dev tools,
+    // keyboard activation on aria-disabled), don't transition state while
+    // another unsaved custom is being authored.
+    if (locked) return;
     clearEditTooltip();
     clearMonitorTooltip();
     // Opening edit closes any open monitor view.
@@ -423,6 +438,7 @@ export function CatalogCard({
 
   function enterMonitor() {
     if (!monitorMode) return;
+    if (locked) return;
     clearEditTooltip();
     clearMonitorTooltip();
     // Opening monitor closes any open edit (unsaved changes discarded, same as edit→edit).
@@ -631,17 +647,18 @@ export function CatalogCard({
                   <div className="relative">
                     <button
                       type="button"
-                      onClick={enterMonitor}
+                      onClick={(e) => { if (locked) { e.preventDefault(); return; } enterMonitor(); }}
                       onMouseEnter={scheduleMonitorTooltip}
                       onMouseLeave={clearMonitorTooltip}
-                      className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                      aria-label="Test & debug"
+                      aria-disabled={locked}
+                      className={`p-1 text-fg-quaternary transition duration-100 ease-linear ${locked ? "cursor-not-allowed opacity-60" : "hover:text-fg-secondary cursor-pointer"}`}
+                      aria-label={locked ? "Locked" : "Test & debug"}
                     >
                       <Activity className="size-[17px]" />
                     </button>
                     {showMonitorTooltip && (
                       <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                        Test & debug
+                        {locked ? (lockedTooltip ?? "Locked") : "Test & debug"}
                       </div>
                     )}
                   </div>
@@ -649,17 +666,18 @@ export function CatalogCard({
                 <div className="relative">
                   <button
                     type="button"
-                    onClick={enterEdit}
+                    onClick={(e) => { if (locked) { e.preventDefault(); return; } enterEdit(); }}
                     onMouseEnter={scheduleEditTooltip}
                     onMouseLeave={clearEditTooltip}
-                    className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                    aria-label="Edit message"
+                    aria-disabled={locked}
+                    className={`p-1 text-fg-quaternary transition duration-100 ease-linear ${locked ? "cursor-not-allowed opacity-60" : "hover:text-fg-secondary cursor-pointer"}`}
+                    aria-label={locked ? "Locked" : "Edit message"}
                   >
                     <PencilIcon />
                   </button>
                   {showEditTooltip && (
                     <div className="absolute right-0 bottom-full mb-1 z-[100] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                      Edit message
+                      {locked ? (lockedTooltip ?? "Locked") : "Edit message"}
                     </div>
                   )}
                 </div>
@@ -867,14 +885,14 @@ export function CatalogCard({
         ) : (
           <>
             {/* Read-only message text. Clickable to enter edit unless monitor
-                is open (monitor shows the text for reference, not for editing). */}
+                is open or the card is locked (another unsaved custom is open). */}
             <div
-              className={isMonitoring ? "mt-2" : "mt-2 cursor-pointer"}
-              onClick={isMonitoring ? undefined : enterEdit}
-              role={isMonitoring ? undefined : "button"}
-              tabIndex={isMonitoring ? undefined : 0}
+              className={isMonitoring || locked ? "mt-2" : "mt-2 cursor-pointer"}
+              onClick={isMonitoring || locked ? undefined : enterEdit}
+              role={isMonitoring || locked ? undefined : "button"}
+              tabIndex={isMonitoring || locked ? undefined : 0}
               onKeyDown={
-                isMonitoring
+                isMonitoring || locked
                   ? undefined
                   : (e) => { if (e.key === "Enter") enterEdit(); }
               }
