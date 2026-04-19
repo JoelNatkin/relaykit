@@ -567,7 +567,7 @@ export default function AppMessagesPage() {
                   state={state}
                   isEditing={false}
                   onEditRequest={requestEdit}
-                  muted
+                  readOnly
                   onSave={saveCustomMessage}
                   onRestoreRequest={(m) => restoreCustomMessage(m.id)}
                   onDeleteRequest={setDeleteTarget}

@@ -55,8 +55,11 @@ export interface CustomMessageCardProps {
    *  drives name-input auto-focus for the authoring flow. Parent tracks this
    *  because it owns the edit-state lifecycle. */
   isFreshlyAdded?: boolean;
-  /** Muted styling for archived rows. */
-  muted?: boolean;
+  /** Read-only rendering for archived rows — hides the edit affordance
+   *  and disables preview click-to-edit, but intentionally applies no
+   *  visual demotion. The "Archived (N)" disclosure on the page is the
+   *  only archived-state indicator (PM bug 4). */
+  readOnly?: boolean;
   /** Save commits the edits and assigns a slug on first save (D-351). */
   onSave: (messageId: string, updates: { name: string; template: string }) => void;
   /** Invoked when the kebab "Archive" item is chosen. Parent owns the modal
@@ -93,7 +96,7 @@ export function CustomMessageCard({
   isEditing,
   onEditRequest,
   isFreshlyAdded = false,
-  muted = false,
+  readOnly = false,
   onSave,
   onArchiveRequest,
   onDiscard,
@@ -352,7 +355,7 @@ export function CustomMessageCard({
   function renderPreview(template: string) {
     const segments = interpolateTemplate(template, categoryId, state);
     return (
-      <p className={`text-sm leading-relaxed ${muted ? "text-text-tertiary" : "text-text-secondary"}`}>
+      <p className="text-sm leading-relaxed text-text-secondary">
         {segments.map((seg, i) =>
           seg.isVariable ? (
             <span key={i} className={VARIABLE_TOKEN_CLASSES}>{seg.text}</span>
@@ -379,7 +382,7 @@ export function CustomMessageCard({
 
   return (
     <div
-      className={`relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs min-[860px]:max-w-[540px] ${muted ? "opacity-70" : ""}`}
+      className="relative rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs min-[860px]:max-w-[540px]"
     >
       {isEditing ? (
         <div>
@@ -587,7 +590,7 @@ export function CustomMessageCard({
               ever, for customs. */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 min-w-0 flex-1">
-              <span className={`text-sm font-semibold truncate ${muted ? "text-text-tertiary" : "text-text-primary"}`}>
+              <span className="text-sm font-semibold truncate text-text-primary">
                 {displayName}
               </span>
               {message.slug && (
@@ -671,7 +674,7 @@ export function CustomMessageCard({
                   {/* Activity icon — only on saved, non-archived rows.
                       Archived rows are read-only; never-saved rows have
                       nothing to test yet. */}
-                  {!muted && message.slug && onMonitorRequest && (
+                  {!readOnly && message.slug && onMonitorRequest && (
                     <button
                       type="button"
                       onClick={enterMonitor}
@@ -683,7 +686,7 @@ export function CustomMessageCard({
                   )}
                   {/* Pencil — hidden on archived rows (read-only until
                       restored). */}
-                  {!muted && (
+                  {!readOnly && (
                     <button
                       type="button"
                       onClick={enterEdit}
@@ -699,12 +702,12 @@ export function CustomMessageCard({
           </div>
 
           <div
-            className={muted || isMonitoring ? "mt-2" : "mt-2 cursor-pointer"}
-            onClick={muted || isMonitoring ? undefined : enterEdit}
-            role={muted || isMonitoring ? undefined : "button"}
-            tabIndex={muted || isMonitoring ? undefined : 0}
+            className={readOnly || isMonitoring ? "mt-2" : "mt-2 cursor-pointer"}
+            onClick={readOnly || isMonitoring ? undefined : enterEdit}
+            role={readOnly || isMonitoring ? undefined : "button"}
+            tabIndex={readOnly || isMonitoring ? undefined : 0}
             onKeyDown={
-              muted || isMonitoring
+              readOnly || isMonitoring
                 ? undefined
                 : (e) => { if (e.key === "Enter") enterEdit(); }
             }
