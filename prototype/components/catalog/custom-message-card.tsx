@@ -320,6 +320,7 @@ export function CustomMessageCard({
   function handleSave() {
     if (!compliance.isCompliant) return;
     if (!editName.trim()) return;
+    if (editTemplate.trim() === "") return;
     if (isAiLoading || isFixLoading) return;
     onSave(message.id, { name: editName.trim(), template: editTemplate });
     onEditRequest(null);
@@ -371,6 +372,9 @@ export function CustomMessageCard({
 
   const showFix = !compliance.isCompliant && showComplianceHint;
   const nameIsEmpty = !editName.trim();
+  // Trimmed-whitespace-only body counts as empty — whitespace alone isn't
+  // a message worth saving (PM bug 2).
+  const bodyIsEmpty = editTemplate.trim() === "";
   const displayName = message.name || "Untitled message";
 
   return (
@@ -564,7 +568,7 @@ export function CustomMessageCard({
                 <button
                   type="button"
                   onClick={handleSave}
-                  disabled={!compliance.isCompliant || isAiLoading || isFixLoading || nameIsEmpty}
+                  disabled={!compliance.isCompliant || isAiLoading || isFixLoading || nameIsEmpty || bodyIsEmpty}
                   className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   Save
