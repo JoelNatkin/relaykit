@@ -1229,11 +1229,10 @@ Reason: visibility and protection are separate problems. Purple color alone solv
 
 Implementation requires a contentEditable editor (Tiptap, Lexical, or Slate). Library choice is a separate decision CC makes when this task becomes active.
 
-**D-351 — Custom message delivery model: manual send only at launch** (Date: 2026-04-17)
-
-Custom messages created in the workspace are manual-send only at launch. They render in the dashboard and support Quick Send to a verified tester or live recipient. They do not generate an SDK method and cannot be wired to an event in the developer's app code.
-
-Reason: covers the day-one cases (announcements, weather closures, one-off promos) without the infrastructure cost of developer-defined events. Developer-defined events would require code generation, AGENTS.md updates, and an SDK regeneration story — all post-launch scope. Post-launch expansion: developer-defined events with auto-generated SDK methods. Track in BACKLOG when D-351 ships.
+**D-351 — Custom message delivery: generic SDK method with slug, plus manual Quick Send** (Date: 2026-04-17, revised 2026-04-18)
+Custom messages created in the workspace get a stable, immutable slug at creation time. Each namespace exposes one generic SDK method — `relaykit.appointments.sendCustom(slug, { to, data })` and equivalents per namespace — that the developer (or their AI tool) wires into their app the same way they wire built-in methods like `sendConfirmation`. The developer supplies recipient phone numbers from their own customer database; RelayKit's server uses the slug to look up the user-authored template and composes the message at send time.
+Manual Quick Send to verified Testers also works for custom messages, for previewing or one-off sends.
+Reason: custom messages need to reach real customers to be useful. A salon owner creating a "Holiday hours" announcement needs to send it to their actual customer list, not their 5 verified Testers. The generic-method-with-slug pattern delivers this without per-message SDK regeneration or code generation pipelines. Slug-to-template routing is server-side; the SDK stays statically declared (D-330 preserved).
 
 **D-352 — Custom messages classified by content at authoring time, not user self-selection** (Date: 2026-04-17)
 
@@ -1245,7 +1244,7 @@ Reason: matches the existing principle that compliance enforcement collapses to 
 
 Every message edit state (built-in and custom) includes a variable insertion affordance — a control that surfaces the variables available for that message and inserts them into the editor at cursor position as atomic tokens (per D-350).
 
-Variable scope is method-specific: each SDK method's `data` shape determines what's insertable for that message type. `sendConfirmation` exposes name/date/time/business; `sendReminder` adds time-until. For custom messages (per D-351, manual-send only), the available variable set defaults to the intersection of variables shared across all methods in the parent namespace.
+Variable scope is method-specific: each SDK method's `data` shape determines what's insertable for that message type. `sendConfirmation` exposes name/date/time/business; `sendReminder` adds time-until. For custom messages, the available variable set defaults to the intersection of variables shared across all methods in the parent namespace.
 
 Reason: D-350 prevents corruption of variables already in the editor, but a user still needs a way to ADD them — without an insert affordance, the only way to get a variable into a custom message is copy-paste. For built-in edits, the affordance also enables recovery: a user who deletes a variable then reconsiders can re-insert without abandoning their other edits via Restore. Method-specific scope matches the per-method data shape declared in the SDK and avoids the failure mode where a user inserts a variable the SDK call won't actually populate at send time.
 
