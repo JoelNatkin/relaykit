@@ -62,6 +62,13 @@ export interface CustomMessageCardProps {
   /** Invoked when the kebab "Archive" item is chosen. Parent owns the modal
    *  and the session action wiring — we just surface the intent. */
   onArchiveRequest?: (message: CustomMessage) => void;
+  /** Archived-row menu items. When either is present, the kebab renders
+   *  with Restore / Delete permanently instead of Archive. Mutually
+   *  exclusive with onArchiveRequest in practice — parent passes one or
+   *  the other based on whether the row sits in the active stack or the
+   *  archived disclosure. */
+  onRestoreRequest?: (message: CustomMessage) => void;
+  onDeleteRequest?: (message: CustomMessage) => void;
 }
 
 export function CustomMessageCard({
@@ -74,6 +81,8 @@ export function CustomMessageCard({
   muted = false,
   onSave,
   onArchiveRequest,
+  onRestoreRequest,
+  onDeleteRequest,
 }: CustomMessageCardProps) {
   const [editName, setEditName] = useState(message.name);
   const [editTemplate, setEditTemplate] = useState(message.template);
@@ -426,19 +435,24 @@ export function CustomMessageCard({
               )}
             </div>
             <div className="flex items-center flex-shrink-0 gap-1">
-              <button
-                type="button"
-                onClick={enterEdit}
-                className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                aria-label="Edit message"
-              >
-                <PencilIcon />
-              </button>
-              {/* Kebab menu. Saved (non-archived) customs show "Archive".
-                  Archived customs get a different menu in a later commit (e)
-                  — this component only exposes Archive for now. Parent owns
-                  the modal + session action via onArchiveRequest. */}
-              {message.slug && onArchiveRequest && (
+              {/* Pencil hidden on archived rows — they are read-only until
+                  restored. Kebab still renders (Restore / Delete). */}
+              {!muted && (
+                <button
+                  type="button"
+                  onClick={enterEdit}
+                  className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                  aria-label="Edit message"
+                >
+                  <PencilIcon />
+                </button>
+              )}
+              {/* Kebab menu. The parent chooses the action set by passing
+                  either onArchiveRequest (active rows → "Archive") or the
+                  pair onRestoreRequest + onDeleteRequest (archived rows →
+                  "Restore" / "Delete permanently"). Only renders after slug
+                  assignment — nothing to act on before first save. */}
+              {message.slug && (onArchiveRequest || onRestoreRequest || onDeleteRequest) && (
                 <div className="relative" ref={kebabWrapperRef}>
                   <button
                     type="button"
@@ -453,19 +467,47 @@ export function CustomMessageCard({
                   {isKebabOpen && (
                     <div
                       role="menu"
-                      className="absolute right-0 top-full mt-1 z-20 rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1 min-w-[160px]"
+                      className="absolute right-0 top-full mt-1 z-20 rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1 min-w-[180px]"
                     >
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          setIsKebabOpen(false);
-                          onArchiveRequest(message);
-                        }}
-                        className="flex w-full items-center px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
-                      >
-                        Archive
-                      </button>
+                      {onArchiveRequest && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setIsKebabOpen(false);
+                            onArchiveRequest(message);
+                          }}
+                          className="flex w-full items-center px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
+                        >
+                          Archive
+                        </button>
+                      )}
+                      {onRestoreRequest && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setIsKebabOpen(false);
+                            onRestoreRequest(message);
+                          }}
+                          className="flex w-full items-center px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
+                        >
+                          Restore
+                        </button>
+                      )}
+                      {onDeleteRequest && (
+                        <button
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setIsKebabOpen(false);
+                            onDeleteRequest(message);
+                          }}
+                          className="flex w-full items-center px-3 py-2 text-sm text-text-error-primary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
+                        >
+                          Delete permanently
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -474,11 +516,11 @@ export function CustomMessageCard({
           </div>
 
           <div
-            className="mt-2 cursor-pointer"
-            onClick={enterEdit}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => { if (e.key === "Enter") enterEdit(); }}
+            className={muted ? "mt-2" : "mt-2 cursor-pointer"}
+            onClick={muted ? undefined : enterEdit}
+            role={muted ? undefined : "button"}
+            tabIndex={muted ? undefined : 0}
+            onKeyDown={muted ? undefined : (e) => { if (e.key === "Enter") enterEdit(); }}
           >
             {message.template ? renderPreview(message.template) : (
               <p className="text-sm italic text-text-quaternary">No message yet.</p>

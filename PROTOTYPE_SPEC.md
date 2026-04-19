@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: April 18, 2026
+### Last updated: April 19, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -445,6 +445,46 @@ Triggered by Activity icon click. Mutually exclusive with edit mode.
 
 #### Per-state message card behavior
 Message card content, editing, and monitoring behavior is identical across all post-onboarding states. Registration state affects page layout (two-column vs single-column, right rail content, metrics cards) but not individual card rendering. Registered state uses `REGISTERED_VALUES` for personalization (GlowStudio, glowstudio.com, etc.).
+
+---
+
+#### Custom messages on the workspace Messages page (D-351 revised, D-353)
+
+**Files:** `prototype/components/catalog/custom-message-card.tsx`, `prototype/components/catalog/message-action-modal.tsx`, `prototype/lib/slug.ts`; wired into `prototype/app/apps/[appId]/page.tsx` for all post-onboarding states. Not rendered in wizard (onboarding) state.
+
+- **`+ Add message` button** at the top of the message stack (above any marketing cards and built-ins). Full-width `rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3`, purple tertiary text (`text-text-brand-secondary`) with a `Plus` icon. Click inserts a blank `CustomMessage` at index 0 of `state.customMessages` via `addCustomMessage(categoryId)` and puts the new row directly into edit state (authoring surface IS the row — no dialog, no modal). The row is tagged as "freshly added" via page-level `freshlyAddedCustomId` state so its editable name input auto-focuses on first open.
+- **Custom edit state** (`CustomMessageCard` — sibling of `CatalogCard`, NOT a variant via prop flag):
+  - **Editable name input** replaces the static title. Placeholder `New message`. Auto-focused on first open of a freshly-added row (ref callback).
+  - **Body editor** — same `MessageEditor` (Tiptap) used by built-ins. Starts empty on a new row.
+  - **No tone pills** — custom is its own thing (D-351 revised + design call).
+  - **`+ Variable` affordance** identical to the built-in version but scoped to the namespace default (intersection of variables across all built-in methods in the category, per D-353's custom-message fallback branch in `getVariableScope`).
+  - **Ask AI input** — `Stars02` icon, stubbed backend (1.5s `setTimeout` appending `(rewritten: …)`). Placeholder is body-state-aware: empty body → `Ask AI: write me a message`; non-empty body → `Ask AI: polish my edit`; loading → `Rewriting…`.
+  - **No info icon** (ⓘ) — customs never show one, in edit or default.
+  - **Compliance** is opt-out-only (STOP + one of opt-out / opt‑out / unsubscribe). The built-in required-variable check doesn't apply because customs have no canonical required set. Hint reveal is 2s debounced, same contract as built-ins. Check runs only from `handleTextChange` and `handleAiSubmit` — explicit-call only, no reactive `useEffect`.
+  - **Save / Cancel** right-aligned. Save disabled while non-compliant, AI loading, or name empty (`editName.trim() === ""`).
+- **Slug assignment on first Save (D-351 revised):** `saveCustomMessage` in `session-context.tsx` calls `generateSlug(name, existingSlugsExcludingSelf)` from `lib/slug.ts` (kebab-case from name, `-2`/`-3`/… numeric suffix on collision). Immutable after first save — subsequent saves preserve `slug`. Collision set includes archived slugs; deleted slugs are freed.
+- **Saved custom row** (non-archived, collapsed):
+  - **Title row:** name (`text-sm font-semibold text-text-primary truncate`) + slug (`text-xs text-text-quaternary ml-2 font-mono`, inline after the name) on the left; pencil + kebab (`DotsVertical`, 17px) icons on the right. No info icon. Activity icon is not rendered for customs in this task — Quick Send / monitor mode for customs is a followup.
+  - **Preview:** click anywhere on the preview or pencil to re-enter edit state. Empty template (first save with only a name) renders `No message yet.` italic `text-text-quaternary`.
+  - **Kebab menu** (`DotsVertical`): single item `Archive`. Opens via outside-click/Escape-closable popover pattern (matches `+ Variable`).
+- **Archive confirmation modal** (shared `MessageActionModal`):
+  - Title: `Archive this message?`
+  - Body: `Archived messages stay live. To stop sends, remove this message from your code:`
+  - Code block: `relaykit.<namespace>.sendCustom('<slug>', ...)` — namespace reads from the archived message's `categoryId`, slug from its `slug`.
+  - Buttons: `Cancel` / `Archive` (primary purple).
+- **Archived messages:**
+  - Filtered out of the active message stack.
+  - Rendered in a disclosure section at the bottom of the message list: `Archived (N)` toggle with `ChevronRight` collapsed / `ChevronDown` expanded, tertiary-tone (`text-sm font-semibold text-text-tertiary`). Collapsed by default; toggle state lives in component state (not session state) so a fresh session always starts collapsed.
+  - Expanded: cards render through `CustomMessageCard` with `muted` prop — opacity 70%, title color stepped down to `text-text-tertiary`, pencil icon hidden, preview is non-clickable. Kebab remains functional.
+  - Kebab on archived rows shows `Restore` + `Delete permanently` (the Archive item is not rendered; the three options are mutually exclusive in practice via the `onArchiveRequest` / `onRestoreRequest` / `onDeleteRequest` prop triplet on `CustomMessageCard`).
+  - `Restore` flips `archived` back to `false` inline — no modal (cheap, reversible action).
+  - `Delete permanently` opens `MessageActionModal` with destructive tone:
+    - Title: `Delete this message?`
+    - Body: `This removes the message permanently. If your code still calls it, sends will fail.`
+    - Code block: same `relaykit.<namespace>.sendCustom('<slug>', ...)` shape.
+    - Buttons: `Cancel` / `Delete` (`bg-bg-error-solid`).
+  - Deletion removes the message from `state.customMessages` entirely; the slug is freed (consistent with the "sends will fail" warning framing).
+- **Archive is display-only in session state** — archived customs aren't actually sent from the prototype, but the mental model surfaced to the developer is "sends would still work in production until you remove the code". That's why the Archive modal tells the developer to remove the call site themselves.
 
 ---
 

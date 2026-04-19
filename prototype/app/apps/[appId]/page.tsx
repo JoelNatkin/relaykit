@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { InfoCircle, Plus, Stars02 } from "@untitledui/icons";
+import { ChevronDown, ChevronRight, InfoCircle, Plus, Stars02 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession, type CustomMessage } from "@/context/session-context";
 import { CatalogCard } from "@/components/catalog/catalog-card";
@@ -165,6 +165,8 @@ export default function AppMessagesPage() {
     addCustomMessage,
     saveCustomMessage,
     archiveCustomMessage,
+    restoreCustomMessage,
+    deleteCustomMessage,
   } = useSession();
 
   const isWizard = state.registrationState === "onboarding";
@@ -295,6 +297,11 @@ export default function AppMessagesPage() {
   // the modal can render the slug + namespace in its code block even if the
   // underlying row unmounts between the kebab click and the confirm click.
   const [archiveTarget, setArchiveTarget] = useState<CustomMessage | null>(null);
+  // Delete-permanently modal state. Same reason for holding the full
+  // message object. Declared here (above messageList) so the archived
+  // disclosure rendered inside messageList can reference setDeleteTarget
+  // without tripping the temporal dead zone.
+  const [deleteTarget, setDeleteTarget] = useState<CustomMessage | null>(null);
 
   function handleConfirmArchive() {
     if (!archiveTarget) return;
@@ -317,6 +324,24 @@ export default function AppMessagesPage() {
       confirmLabel="Archive"
       onConfirm={handleConfirmArchive}
       onClose={() => setArchiveTarget(null)}
+    />
+  );
+
+  function handleConfirmDelete() {
+    if (!deleteTarget) return;
+    deleteCustomMessage(deleteTarget.id);
+    setDeleteTarget(null);
+  }
+  const deleteModal = (
+    <MessageActionModal
+      isOpen={deleteTarget !== null}
+      title="Delete this message?"
+      body="This removes the message permanently. If your code still calls it, sends will fail."
+      codeBlock={`relaykit.${deleteTarget?.categoryId ?? categoryId}.sendCustom('${deleteTarget?.slug ?? ""}', ...)`}
+      confirmLabel="Delete"
+      confirmTone="destructive"
+      onConfirm={handleConfirmDelete}
+      onClose={() => setDeleteTarget(null)}
     />
   );
 
@@ -431,6 +456,14 @@ export default function AppMessagesPage() {
   const activeCustoms = state.customMessages.filter(
     (m) => m.categoryId === categoryId && !m.archived
   );
+  const archivedCustoms = state.customMessages.filter(
+    (m) => m.categoryId === categoryId && m.archived
+  );
+
+  // Archived disclosure toggle. Collapsed by default per spec. Component
+  // state only — fresh sessions start collapsed so the archived list
+  // doesn't pull attention away from active work.
+  const [archivedExpanded, setArchivedExpanded] = useState(false);
 
   /* ── Shared message list ── */
   const messageList = (
@@ -495,6 +528,46 @@ export default function AppMessagesPage() {
           />
         ))}
       </div>
+
+      {/* Archived customs disclosure (D-351 revised). Rendered at the
+          bottom of the message stack, collapsed by default. Archived
+          messages are read-only; Restore flips archived=false and Delete
+          opens the destructive confirmation modal. */}
+      {!isWizard && archivedCustoms.length > 0 && (
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={() => setArchivedExpanded((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-tertiary hover:text-text-secondary transition duration-100 ease-linear cursor-pointer"
+            aria-expanded={archivedExpanded}
+          >
+            {archivedExpanded ? (
+              <ChevronDown className="size-4" />
+            ) : (
+              <ChevronRight className="size-4" />
+            )}
+            Archived ({archivedCustoms.length})
+          </button>
+          {archivedExpanded && (
+            <div className="mt-3 space-y-5">
+              {archivedCustoms.map((message) => (
+                <CustomMessageCard
+                  key={message.id}
+                  message={message}
+                  categoryId={categoryId}
+                  state={state}
+                  isEditing={false}
+                  onEditRequest={requestEdit}
+                  muted
+                  onSave={saveCustomMessage}
+                  onRestoreRequest={(m) => restoreCustomMessage(m.id)}
+                  onDeleteRequest={setDeleteTarget}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -745,6 +818,7 @@ export default function AppMessagesPage() {
           )}
         </div>
         {archiveModal}
+        {deleteModal}
       </div>
     );
   }
@@ -1045,6 +1119,7 @@ export default function AppMessagesPage() {
         )}
       </div>
       {archiveModal}
+      {deleteModal}
     </div>
   );
 }
