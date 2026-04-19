@@ -713,8 +713,11 @@ export function CatalogCard({
               </div>
             )}
 
-            {/* Edit controls — no divider, closer to textarea */}
-            <div className="mt-3 space-y-3">
+            {/* Edit controls — tightened to the editor (PM layout fix).
+                mt-1.5 sits the pills/+ Variable row closer to the message it
+                acts on. items-start inside the row top-aligns + Variable with
+                the tone pills so the top edges match. */}
+            <div className="mt-1.5 space-y-3">
               {/* Style pills + insert affordance (D-353).
                   Left cluster: tone pills (Standard / Friendly / Brief) + Custom.
                   Custom is a tone state (just user-authored), so it groups with
@@ -724,7 +727,7 @@ export function CatalogCard({
                   click doesn't blur the editor — keeping ProseMirror's selection
                   machinery live across tone swaps, which otherwise broke
                   click-to-select on tokens after any pill interaction. */}
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-start gap-2">
                 {variants && variants.length > 1 && variants.map((v) => {
                   const pillId = v.id as PillId;
                   const isActive = activePillId === pillId;

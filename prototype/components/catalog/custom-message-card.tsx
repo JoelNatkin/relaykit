@@ -475,9 +475,14 @@ export function CustomMessageCard({
               </div>
             )}
 
-            <div className="mt-3 space-y-3">
+            {/* Edit controls — tightened to the editor and + Variable
+                top-aligned, matching CatalogCard (PM layout fix). items-start
+                keeps customs visually consistent with built-ins even though
+                customs have no pills to align against today — if pills ever
+                return to customs the alignment is already correct. */}
+            <div className="mt-1.5 space-y-3">
               {/* + Variable affordance (no tone pills on customs — dropped by design) */}
-              <div className="flex items-center">
+              <div className="flex items-start">
                 <div className="ml-auto relative" ref={insertWrapperRef}>
                   <button
                     type="button"
