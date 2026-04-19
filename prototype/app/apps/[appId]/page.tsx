@@ -280,13 +280,35 @@ export default function AppMessagesPage() {
   // re-focus the name.
   const [freshlyAddedCustomId, setFreshlyAddedCustomId] = useState<string | null>(null);
 
+  // Discard an in-progress never-saved custom whenever the user navigates
+  // away from it (PM bug 5). "Navigation" covers any action that changes
+  // the open edit context: clicking another card's edit, entering monitor,
+  // opening Ask Claude, hitting + Add again. Without this, the pending row
+  // persists as an "Untitled / No message yet" zombie. Skips the discard
+  // when we're re-entering the same id (no-op) so the user can't lose
+  // their work by clicking their own open row.
+  function discardUnsavedCustomIfNeeded(incomingId: string | null) {
+    if (editingMessageId === null) return;
+    if (editingMessageId === incomingId) return;
+    const current = state.customMessages.find((m) => m.id === editingMessageId);
+    if (current && !current.slug) {
+      deleteCustomMessage(editingMessageId);
+      if (freshlyAddedCustomId === editingMessageId) setFreshlyAddedCustomId(null);
+    }
+  }
+
   function requestEdit(id: string | null) {
+    discardUnsavedCustomIfNeeded(id);
     setEditingMessageId(id);
     if (id !== null) setMonitoringMessageId(null);
     if (id === null) setFreshlyAddedCustomId(null);
   }
 
   function handleAddCustom() {
+    // Entering + Add with another unsaved custom still open should discard
+    // the pending one before creating the new one — clicking + Add again
+    // is the same "I'm moving on" intent as clicking another card.
+    discardUnsavedCustomIfNeeded(null);
     const id = addCustomMessage(categoryId);
     setFreshlyAddedCustomId(id);
     setEditingMessageId(id);
@@ -346,6 +368,9 @@ export default function AppMessagesPage() {
   );
 
   function requestMonitor(id: string | null) {
+    // Opening monitor on any card closes the current edit — discard if
+    // that edit is an unsaved custom.
+    if (id !== null) discardUnsavedCustomIfNeeded(null);
     setMonitoringMessageId(id);
     if (id !== null) setEditingMessageId(null);
   }
@@ -358,9 +383,12 @@ export default function AppMessagesPage() {
   const [askClaudeFocusedMessage, setAskClaudeFocusedMessage] = useState<string | null>(null);
 
   function openAskClaude(focusedMessageName: string | null = null) {
+    // Opening the panel closes the current edit/monitor — discard an
+    // in-progress never-saved custom before the row vanishes from the
+    // edit context.
+    discardUnsavedCustomIfNeeded(null);
     setAskClaudeFocusedMessage(focusedMessageName);
     setAskClaudeOpen(true);
-    // Close any open edit/monitor since the panel replaces the right rail.
     setEditingMessageId(null);
     setMonitoringMessageId(null);
   }
