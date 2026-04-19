@@ -6,11 +6,11 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-18 (Session 36 doc-only edits — D-355 recorded, D-351 revised)
-- **Decision count:** D-355 (next available: D-356)
+- **Last updated:** 2026-04-19 (Session 36 close-out — custom message CRUD + authoring lock)
+- **Decision count:** D-357 (next available: D-358)
 - **PM instructions synced (Claude.ai UI ↔ repo):** `true`
 - **Active CC session branch:** main
-- **Unpushed local commits:** 2 (`cc0b319` D-355, `9e7b35e` D-351 revision) — awaiting PM review approval
+- **Unpushed local commits:** 28 (Session 36 feature + PM-review polish; see change log below) — awaiting PM review approval
 
 ---
 
@@ -34,16 +34,16 @@
 
 | File | Last touched | Purpose |
 |------|-------------|---------|
-| `REPO_INDEX.md` | 2026-04-17 | This file |
-| `PM_PROJECT_INSTRUCTIONS.md` | 2026-04-17 | Canonical PM instructions (synced to Claude.ai UI) |
+| `REPO_INDEX.md` | 2026-04-19 | This file |
+| `PM_PROJECT_INSTRUCTIONS.md` | 2026-04-19 | Canonical PM instructions (synced to Claude.ai UI) |
 | `CLAUDE.md` | 2026-04-17 | CC standing instructions (pared to ~110 lines) |
-| `DECISIONS.md` | 2026-04-18 | Active decisions D-84+, index of D-01–D-83 |
+| `DECISIONS.md` | 2026-04-19 | Active decisions D-84+, index of D-01–D-83 |
 | `DECISIONS_ARCHIVE.md` | (stable) | Full text of D-01–D-83 |
-| `PROTOTYPE_SPEC.md` | 2026-04-18 | Screen specs for `/prototype` |
+| `PROTOTYPE_SPEC.md` | 2026-04-19 | Screen specs for `/prototype` |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-03-28 | Post-signup workspace architecture |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-04-17 | `/api` pipeline — Sessions A (done) / B / C |
 | `SDK_BUILD_PLAN.md` | 2026-04-17 | `/sdk` build + README + AGENTS.md + integration prompt |
-| `CC_HANDOFF.md` | 2026-04-18 | Previous CC session state |
+| `CC_HANDOFF.md` | 2026-04-19 | Previous CC session state |
 | `BACKLOG.md` | 2026-04-10 | Parked ideas, never build without promotion |
 | `README.md` | (stable) | Repo readme |
 
@@ -88,6 +88,12 @@ Notable subtrees added Session 35:
 - `lib/variable-token.ts` — shared color-only class for variable rendering across editor + previews
 - `lib/variable-scope.ts` — per-message variable scope helper (D-353)
 
+New files Session 36 (custom message CRUD — D-351 revised):
+- `lib/slug.ts` — kebab-case slug generator with numeric-suffix collision handling
+- `components/catalog/custom-message-card.tsx` — sibling of `CatalogCard`, authoring + monitor UI for custom messages
+- `components/catalog/message-action-modal.tsx` — parameterized modal reused by Archive + Delete permanently
+- `components/edit-business-details-modal.tsx` — prototype-only dev modal for swapping `appName` / `serviceType` from the state-switcher dropdown
+
 Removed Session 35 (dead code):
 - `components/plan-builder/message-card.tsx`
 - `components/plan-builder/message-tier.tsx`
@@ -118,13 +124,13 @@ Migrations and config.
 | MESSAGE_PIPELINE_SPEC Session B | BLOCKED | Waiting on Sinch account |
 | MESSAGE_PIPELINE_SPEC Session C | NOT STARTED | Buildable after Session A; needs B for end-to-end |
 | SDK_BUILD_PLAN | NOT STARTED | Spec ready |
-| Workspace message row evolution | IN PROGRESS | Shared grid + /account shipped Session 32–33; Tiptap editor + atomic variable tokens shipped Session 35 (D-350, D-353, D-354). Error-state bugs resolved this session (Tiptap setEditable emit-update fix). Task 2 — custom message CRUD (D-351) — is next |
+| Workspace message row evolution | IN PROGRESS | Shared grid + /account shipped Session 32–33; Tiptap editor + atomic variable tokens shipped Session 35 (D-350, D-353, D-354). Custom message CRUD shipped Session 36 (D-351 revised) — `+ Add`, edit/slug/save, Archive + Delete modals, archived disclosure, monitor mode on saved customs, pre-populated compliant body with business-name chip (D-356), lock-while-authoring (D-357). Next: D-352 (content-based marketing classification) and D-355 (variable grammar rendering). |
 
 ---
 
 ## Decision count verification
 
-Verify `D-355` against DECISIONS.md at chat start. If drifted, update this file.
+Verify `D-357` against DECISIONS.md at chat start. If drifted, update this file.
 
 ---
 
@@ -145,3 +151,5 @@ Verify `D-355` against DECISIONS.md at chat start. If drifted, update this file.
 - **2026-04-18 (Session 35 close-out):** Error-state bug resolution. Root cause was Tiptap's `Editor.setEditable` emitting the `update` event unconditionally with stale doc content. Two prior fix attempts (`cf09e61` `hasUserEdited` gate; `55a87e5` explicit-call compliance refactor) treated symptoms on the CatalogCard side and did not resolve. Final fix `858866d`: `editor.setEditable(!disabled, false)` in `message-editor.tsx`. The `55a87e5` architecture is retained as still correct. Design doc §15 added with the Tiptap usage rule + call-site audit. All 12 session commits pushed to `origin/main`.
 - 2026-04-18: D-351 revised — generic SDK method with slug supersedes prior manual-send-only formulation.
 - 2026-04-18 (Session 36 start): D-355 recorded — variable grammar: canonical base form for common nouns + context-aware rendering; proper nouns stored and rendered as-is.
+- **2026-04-19 (Session 36):** Custom message CRUD shipped end-to-end. `+ Add` inserts a pre-populated compliant row at the top of the stack with business-name chip + placeholder + opt-out phrase (D-356). Saved rows match built-in visual language — name + slug inline, kebab + activity + pencil chrome, monitor expansion with Test send / Ask Claude / Close. Archive + Delete permanently flows via shared `MessageActionModal`; Archived (N) disclosure at the bottom; archived rows render full-contrast (PM pushback on muted styling) and are read-only. Compliance gained a second rule for business-name with its own Fix button (D-356). Lock-while-authoring supersedes auto-discard: sibling affordances disabled with "Save or cancel the current message first." tooltip while a never-saved custom is open (D-357). User-facing "Testers" → "Preview list" copy rename (code identifiers untouched). Dashboard status indicator yellow-state "Test mode" → "Test messages only". Monitor-footer "Quick send" → "Test send" with source-of-message tooltip. Added Reset action to onboarding dropdown + Edit business details dev modal on the state-switcher dropdown. Tooltip token regression fix — Session 35's semantic-token migration referenced `--color-bg-primary-solid` without defining it; added both `bg-primary-solid` and `bg-secondary-solid` to `globals.css` @theme.
+- 2026-04-19: D-356 + D-357 recorded. PM_PROJECT_INSTRUCTIONS updated with response-brevity and step-by-step instruction guidelines; paste confirmed, `pm_instructions_synced` stays `true`.

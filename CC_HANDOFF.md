@@ -1,184 +1,215 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-18 (Session 35 — Tiptap editor + error-state resolution)
-**Branch:** main (all session commits pushed; close-out commit with doc updates will land locally on top and is NOT pushed per PM direction)
+**Date:** 2026-04-19 (Session 36 close-out — custom message CRUD + authoring lock)
+**Branch:** main (all commits local, **NOT** pushed — PM review happens first)
 
 ---
 
 ## Commits This Session
 
-All 12 pushed to `origin/main`:
+31 commits on top of Session 35's `5b0ced3`. Three broad phases:
 
+### Phase 1 — Session 36 doc updates (from start, 2026-04-18)
 ```
-989aac5  docs: add message editor Tiptap design doc (implements D-350/D-353)
-c984b6d  feat(prototype): add Tiptap message editor scaffolding (D-350/D-353/D-354)
-fdfeb58  feat(prototype): wire Tiptap editor into catalog-card; consolidate variable styling
-bf19374  fix(prototype): variable token click-select, drag-disable, visible states
-5e78377  fix(prototype): token states, drag kill, post-tone-swap click, row reorder, + Variable restyle
-4a948bb  fix(prototype): popover sizing, flat selection band, + Variable hover, CC_HANDOFF
-058a0df  fix(prototype): defer setContent to microtask to avoid flushSync warning
-7c338d5  fix(prototype): token band padding, pointer cursor, label-accurate compliance errors
-cf09e61  fix(prototype): band padding tightening, error gating, Fix copy
-59cc72a  docs: session 35 close-out — Tiptap editor, D-354, error-state bugs unverified
-55a87e5  fix(prototype): compliance check moved from reactive effect to explicit calls
-858866d  fix(prototype): pass emitUpdate:false to editor.setEditable — root cause of error-state bugs
+cc0b319  docs: record D-355 — variable grammar (canonical base form + context-aware rendering)
+9e7b35e  docs: revise D-351 to generic SDK method with slug; D-353 stale-reference cleanup
+52a6caa  docs: update REPO_INDEX meta for D-355 + unpushed commits tracking
 ```
 
-A final close-out commit containing this file + REPO_INDEX + PROTOTYPE_SPEC + design-doc §15 will follow and is intentionally unpushed.
+### Phase 2 — Custom message CRUD (D-351 revised) — Task 2
+```
+35f532b  feat(prototype): custom message CRUD scaffolding — + Add, editable name, slug-on-save, + Variable
+2911d07  feat(prototype): custom message kebab + Archive modal
+e06e258  feat(prototype): archived customs disclosure, Restore + Delete permanently
+```
+
+### Phase 3 — PM review rounds (polish + bug fixes + two new decisions)
+```
+ee66499  fix(prototype): set min-height on CustomMessageCard editor (PM bug 1)
+203a97b  fix(prototype): Cancel on never-saved custom row discards it (PM bug 2)
+693de78  fix(prototype): surface Save-disabled reason on CustomMessageCard (PM bug 3) ← later removed
+cda880e  fix(prototype): add Fix button for opt-out compliance on customs (PM bug 4)
+4a3d4d5  fix(prototype): explicit Name form field on custom rows (PM bug 1 + 6)
+9f8682c  fix(prototype): purge empty-custom zombies on hydration (PM bug 2)
+71575d4  fix(prototype): 540px max-width on custom surfaces (PM bug 3)
+e09faf0  fix(prototype): activity icon + monitor state on saved customs, kebab leftmost (PM bug 4 + kebab reorder)
+6392aeb  fix(prototype): keep Archive/Delete modal code block on one line (PM bug 5)
+3fad604  fix(prototype): remove disableReason footer hint on CustomMessageCard (PM bugs 1 + 3)
+66d86a0  fix(prototype): Save gates on non-empty body on customs (PM bug 2)
+b6bd107  fix(prototype): drop muted styling on archived customs, rename muted to readOnly (PM bug 4)
+33c015b  fix(prototype): auto-discard unsaved custom on navigation away (PM bug 5) ← later superseded
+9767d11  fix(prototype): tighten + Variable row to editor, top-align in both cards (PM layout fix)
+1b325ba  feat(prototype): pre-populate new custom body with opt-out phrase
+a413cd7  feat(prototype): business-name variable in custom pre-pop + compliance check
+b5ad6cd  feat(prototype): lock edit/monitor/+Add/AskClaude while an unsaved custom is open
+ab7943a  fix(prototype): define bg-primary-solid + bg-secondary-solid tokens — Session 35 regression
+bf72f19  feat(prototype): Reset action in onboarding step dropdown
+eafbb19  feat(prototype): Edit business details dev modal from state dropdown
+a79e3cc  fix(prototype): rename Quick send → Test send with clarifying hover tooltip
+7a5de22  fix(prototype): user-facing Testers → Preview list rename (copy only)
+95cbb0e  fix(prototype): revise Preview list panel subtext
+a11f8f8  fix(prototype): status indicator yellow-state label → Test messages only
+e1ee549  docs(pm): add response-brevity + step-by-step instruction guidelines
+```
 
 ---
 
 ## What Was Completed
 
-### Tiptap editor (D-354)
-Tiptap v3 wired into the workspace message editor. `prototype/lib/editor/`:
-- **`variable-node.ts`** — Tiptap atom node. `inline: true, atom: true, selectable: true, draggable: false`.
-- **`variable-node-view.tsx`** — React NodeView. Reads session state for live preview values. DOM-level drag suppression at three layers.
-- **`template-serde.ts`** — `templateToContent` / `docToTemplate`. Round-trip stable — verified headlessly via `@tiptap/pm/model` schema parse.
-- **`message-editor.tsx`** — thin Tiptap wrapper. Document + Paragraph + Text + VariableNode only (no StarterKit). Single-line (Enter suppressed). Editor-level drag kill. `setContent` deferred to `queueMicrotask` with `isDestroyed` guard to avoid `flushSync` commit-phase collision. `setEditable` called with `emitUpdate: false` (see §Gotcha below).
+### Custom message CRUD (D-351 revised)
+The `+ Add message` → edit → save → archive → delete flow is end-to-end. Not a separate UI — the row IS the authoring surface.
 
-### Atomic variable tokens (D-350)
-Variables render as indivisible atoms — cursor-before/after, click-selects-whole, backspace-deletes-whole, no cursor placement inside. Visual states:
-- Rest: color only (`text-text-brand-secondary`), no background.
-- Hover: flat horizontal band, `bg-bg-brand-primary`, `pt-[3px] pb-[3px] -mt-[3px] -mb-[3px]` padded footprint that preserves line height.
-- Selected: same band, `bg-bg-brand-secondary`.
+- **Data layer** — `CustomMessage` gains `slug: string` (empty until first save) and `archived: boolean`. `saveCustomMessage` generates an immutable kebab-case slug via `generateSlug(name, existingSlugsExcludingSelf)` from `prototype/lib/slug.ts`. Collision set includes archived slugs; deleted slugs are freed. Session-storage hydration drops empty-slug rows (one-time zombie cleanup + covers any future mid-edit reload).
+- **`CustomMessageCard`** — sibling of `CatalogCard`, not a prop variant. Reuses `MessageEditor`, `getVariableScope`, `VARIABLE_TOKEN_CLASSES`, `interpolateTemplate`. Zero edits to `CatalogCard` core or Tiptap internals beyond the `locked` prop addition.
+- **`MessageActionModal`** — shared shell for Archive + Delete permanently. Parameterized title/body/code-block/confirmLabel/tone. Code block uses `whitespace-nowrap overflow-x-auto` so quoted slugs stay on one line.
+- **Page integration** (`/apps/[appId]/page.tsx`) — `+ Add` button (dashed-border, 540px max on ≥860px), active customs at top of stack, marketing + built-ins below, archived disclosure at bottom (`Archived (N)` collapsed-by-default).
+- **Monitor mode on saved customs** — mirrors the built-in expansion: empty activity list + Test send + Preview list dropdown + Ask Claude + Close. Gated to saved non-archived rows.
+- **Archived rows are read-only, not muted** — same colors/contrast as active rows. The disclosure is the only indicator.
 
-### `+ Variable` insert affordance (D-353)
-Tertiary purple text button in the tone-pills row. Per-message scope via `Message.variables: string[]`. Custom messages use the intersection across all built-ins in the category. `prototype/lib/variable-scope.ts`.
+### Authoring-time compliance gains a second rule (D-356)
+Custom messages must contain the category's business-name variable token. Two rules now surface beneath the editor — each with its own Fix button. Save stays disabled until both pass.
 
-### Token-styling consolidation
-Single source `prototype/lib/variable-token.ts` (`VARIABLE_TOKEN_CLASSES`) used by the NodeView, catalog-card preview, `/sms/[category]/page.tsx`, and `/sms/[category]/messages/page.tsx`. Edit and preview now match exactly.
+- `getPrimaryBusinessVariable(categoryId)` in `catalog-helpers.ts` picks the right key per vertical: `app_name` for appointments/verification, `business_name` for orders/support/marketing/internal/waitlist/exploring, `community_name` for community.
+- Fresh rows pre-populate with `{businessKey}: [your message here] Reply STOP to opt out.` → compliant from the start.
+- Deleting the chip → Needs business name error → Fix prepends `{businessKey}: ` to the trimmed-start template.
 
-### Data model
-`Message.variables: string[]` added to every built-in message (8 verification + 6 appointments) and the 4 inline marketing messages on `apps/[appId]/page.tsx`.
+### Lock-while-authoring (D-357) — supersedes auto-discard
+While a never-saved custom (empty slug) is open, every other edit/monitor trigger on the page is disabled with tooltip `Save or cancel the current message first.`: `+ Add`, Ask Claude, every row's pencil + preview + activity icon. Authoring row itself stays fully interactive.
 
-### Copy change
-"Restore" button relabeled **Fix**; "Restoring…" → "Fixing…". Internal identifiers (`handleRestore`, `isFixLoading`) kept — not user-facing.
+- First attempt was auto-discard (commit `33c015b`). PM review flagged silent-loss-of-work. Reversed via `b5ad6cd` — `discardUnsavedCustomIfNeeded` helper deleted outright; defensive guards in `requestEdit` / `requestMonitor` / `openAskClaude` / `handleAddCustom` reject transitions while locked.
 
-### Raw-color cleanup (in files we touched)
-Three `bg-[#333333]` tooltips → `bg-bg-primary-solid text-text-white`. Marketing badge → `bg-bg-brand-secondary text-text-brand-secondary`. Compliance error `text-[#F97066]` → `text-text-error-primary`.
+### Session 35 regression fix — tooltip tokens
+`--color-bg-primary-solid` was never defined in `globals.css` — Session 35's semantic-token migration (`fdfeb58`) referenced the utility class without adding the variable. Tooltips rendered empty/transparent (shadow-only). Fixed in `ab7943a` by adding both `bg-primary-solid` and `bg-secondary-solid` to `@theme`. Five card-level tooltips + two lock-overlay tooltips + Test send tooltip all resolve to near-black background + white text now.
 
-### Dead-code deletion
-`plan-builder/message-card.tsx` and `plan-builder/message-tier.tsx` removed — pre-delete grep confirmed zero live references. The `MessageTier` *type* in `data/messages.ts` is a different entity and is kept.
+### User-facing rename: Testers → Preview list
+Panel title + subtext + cap tooltip updated. Code identifiers (`TestPhone`, `MAX_TEST_PHONES`, `testRecipients`, `test-phones-card.tsx`, `handleInviteTestPhone`, etc.) intentionally unchanged per the user-facing-vs-internal split in PM_PROJECT_INSTRUCTIONS. Test send tooltip also updated to drop "tester".
 
-### Compliance-error architecture (final form)
-Compliance check is an explicit-call function `runComplianceCheck(text)` — not a reactive `useEffect`. Called from `handleTextChange`, `handleAiSubmit`, and `handlePillClick`'s Custom branch. `initEditSession`, `handleRestore`, `handleCancel`, and `handlePillClick`'s canned branch set clean state directly (no re-check). Error labels derive from the same source as the `+ Variable` dropdown (`getExampleValues().label`), so label lists and dropdown labels can never drift. 2s debounce on hint reveal; immediate hide on compliant.
+### User-facing rename: Quick send → Test send
+Both monitor panels. New hover tooltip: `Sends from RelayKit to someone on your preview list. Not from your app.` clarifies the message source.
 
-### Error-state bugs — resolved (the saga)
+### Dev affordances on the state dropdowns
+- **Onboarding dropdown:** appended `Reset` — hard reload into `/start` after `sessionStorage.clear() + localStorage.clear()`.
+- **Workspace state dropdown:** appended `Edit business details` — opens a prototype-only modal for inline `appName` / `serviceType` edits. Service type is a per-vertical select (12 options for appointments) with text-input fallback. Hidden in Onboarding.
 
-Two PM-reported issues from mid-session:
-- **Bug A.** Cold-open edit on Booking confirmation showed red "Needs opt-out language" + "Needs Business name, Service type, Date, and Time" before any user interaction.
-- **Bug B.** Deleting `{app_name}` → click Fix once → "Needs Service type" persisted → second Fix click cleared it.
+### Status indicator label
+Yellow-state `Test mode` → `Test messages only`. Green-state `Live` unchanged. Applies to Building / Pending / Extended Review / Rejected via single string change in `StatusIndicator`.
 
-**Three attempts, one root cause in the last:**
+### Decisions recorded
+- **D-355** — Variable grammar: canonical base form + context-aware rendering. (Recorded at session start from a PM+Joel-aligned draft.)
+- **D-351 revised** — Custom message delivery: generic SDK method with slug, plus manual Test send. (Revised at session start.)
+- **D-356** — Custom messages require a business-name variable (compliance).
+- **D-357** — Lock-while-authoring on never-saved custom rows.
 
-1. **`cf09e61` — `hasUserEdited` gate (failed).** Added a flag that gated the reactive compliance `useEffect` on user typing. Reasoning: the effect was firing during edit-mode transitions against stale `editText`. The gate was bypassed by the very event it was meant to block — `handleTextChange` flipped the flag to true on the spurious emission, so the gate opened for exactly the wrong call.
-
-2. **`55a87e5` — explicit-call compliance refactor (failed).** Moved compliance out of a reactive `useEffect` into explicit calls from handlers. Architecturally correct — reactive effects for correctness-critical UI state are fragile — but *orthogonal* to the real bug. `handleTextChange` remained a call site; the spurious emission still reached it with the wrong text.
-
-3. **`858866d` — `emitUpdate: false` on `setEditable` (resolved).** Root cause: Tiptap's `Editor.setEditable(editable, emitUpdate = true)` unconditionally emits the `update` event via a direct `this.emit("update", ...)` call, bypassing the docChanged gating at `@tiptap/core dist/index.js:5131`. `message-editor.tsx` called `editor.setEditable(!disabled)` with no second argument, so every `disabled` flip synthesized an `update` event with whatever doc the editor currently held — which during React's effect sequence was stale relative to what the parent expected. Bug A: the first post-mount `setEditable(true)` fired against the empty-paragraph doc the editor was constructed with (because `editText` was still `""` when `useEditor` captured its options — `initEditSession`'s commit hadn't happened yet; the template-sync microtask ran *after* the setEditable effect). Bug B: `handleRestore`'s `isFixLoading: false` flipped `disabled` back before the template-sync microtask had replaced the modified doc with the original.
-
-**One-line fix.** `editor.setEditable(!disabled, false)` in `message-editor.tsx:104`. Fully resolved both bugs; browser-verified by PM. `55a87e5`'s explicit-call architecture is *retained* — it's the better design regardless.
-
-The saga is documented in the design doc at `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md` §15 with a call-site audit and a rule for future editor commands: **any Tiptap method that isn't a real doc change must pass `emitUpdate: false` (or method-specific equivalent).**
+### PM instructions sync
+`PM_PROJECT_INSTRUCTIONS.md` gained response-brevity + step-by-step instruction guidelines. Joel confirmed paste into Claude.ai UI — `pm_instructions_synced` stays `true`.
 
 ---
 
 ## Quality Checks Passed
 
-- `tsc --noEmit` clean on `/prototype` throughout the session and at close-out.
-- Dev server restarted fresh (`rm -rf .next`) after the final fix; Ready in 2.5s; `/apps/glowstudio` HTTP 200 with no compile or runtime error markers.
-- Bug A: browser-verified resolved by PM (cold-open edit → zero errors).
-- Bug B: browser-verified resolved by PM (single Fix click fully clears).
-- Token click-select, typing → compliance, `+ Variable` insertion, Save — all verified unregressed by PM.
-- Raw-color scan clean on all files this session touched. Pre-existing raw colors remain in `/sms/[category]/messages/page.tsx` (lines 242, 379, 951) — outside this PR's scope; flagged for a future sweep.
-- **ESLint — not verified.** No eslint config exists in `/prototype` or at repo root; `next lint` is deprecated and interactive. CLAUDE.md lists eslint as a gate but the tooling isn't wired. Unchanged from prior handoff.
+- **`tsc --noEmit` clean** on `/prototype` after every commit in the session.
+- Dev server recompiles cleanly (`Ready in ~2s` each restart; `/apps/glowstudio` HTTP 200 no runtime errors).
+- **ESLint:** not run — no eslint config exists in `/prototype` (eslint configs are under `/sdk` and `/api`, neither touched this session). Unchanged from prior handoff.
 
 ---
 
 ## In Progress / Partially Done
 
-Carried forward from prior sessions (unchanged this session):
+Carried forward (unchanged this session):
 - Signup backend stubbed (D-59)
 - EIN verification backend stubbed (D-302/D-303)
 - Phone OTP stubbed (D-46)
 - Marketing messages hardcoded for Appointments only
 - Ask Claude panel chat composer is a non-functional stub
-- Testers invite flow stubbed
+- Preview list invite flow is a 1.5s `setTimeout` — no real SMS yet
 - Registered state metrics are mock data
 - Marketing-only registration tracker transitions are prototype dropdowns
 - Settings Notifications toggle has no backend wiring
 - Cancel plan + Regenerate live key modals are close-modal no-ops
-- `/account` actions all brand-link no-ops (email "Change", Stripe "Manage billing", delete account)
+- `/account` actions all brand-link no-ops
+
+**Deferred this session:**
+- **Archive modal redesign (original PM bug 6 from round 2 of PM review)** — user confirmed the proposed body copy but we ran out of session before the redesign itself (larger modal, drop monospace, Copy affordance, expanded body). Proposed copy for when we pick it up: `"This message keeps sending from your app until you remove the line below. Your developer or AI coding tool can help."`
 
 ---
 
 ## Gotchas for Next Session
 
-### 1. Tiptap `emitUpdate: false` rule — load-bearing
-See design doc §15 for the full writeup. **Short version:** any Tiptap method that doesn't represent a real user-produced content change must pass `emitUpdate: false` (or method-specific equivalent). Currently `setContent` (line 98) and `setEditable` (line 104) in `message-editor.tsx` are correctly suppressed; `insertVariable` (catalog-card.tsx:525) is a real user transaction and correctly fires update. When adding any new editor command, audit the emit behavior before shipping.
+### 1. User-facing vs. internal naming split is now load-bearing
+The "Preview list" rename is copy-only; `TestPhone`, `testerId`, `test-phones-card.tsx`, `INITIAL_TEST_PHONES`, `MAX_TEST_PHONES`, and all related code identifiers stay as `tester` / `test`. Same applies to `muted` → `readOnly` (behavior prop, not a visual prop anymore). When adding new code near these surfaces, don't panic-rename to match the copy — PM_PROJECT_INSTRUCTIONS defines this boundary.
 
-### 2. D-355 variable grammar — must land as a decision before any related code
-`state.serviceType = "Beauty & wellness appointments"` (title case, plural) reads awkwardly mid-sentence and collides with literal "appointment" in many templates. The design requires a decision on canonical-form storage vs. context-aware rendering. **Do not attempt a code fix without a recorded decision.** Candidate for the next D-number.
+### 2. `addCustomMessage` pre-populates the template
+New custom rows mount with `{businessKey}: [your message here] Reply STOP to opt out.` — compliant from the start. Don't assume `message.template === ""` means unsaved; use `message.slug === ""` to test "never saved".
 
-### 3. `onMouseDown preventDefault` on tone pills — do not remove
-Every button in the tone-pills row (Standard, Friendly, Brief, Custom, `+ Variable`, popover items) uses this handler. Without it, clicking a tone pill blurs the editor and subsequent token clicks stop working (ProseMirror's click-to-select-atom requires a live editor view). The regression took a full diagnostic pass to find in `5e78377`.
+### 3. Hydration filter drops empty-slug rows
+`session-context.tsx`'s sessionStorage-read effect drops any `customMessages` entry where `slug === ""`. Unsaved work does not survive reload — matches built-in behavior where `messageEdits` only stores persisted changes. If you add a flow that writes to `customMessages` before Save, expect it to vanish on reload.
 
-### 4. `editText` holds a template, not resolved text
-All compliance/rendering code that expected resolved strings was updated in Session 35. If you add a new edit-mode consumer, run `interpolateTemplate(editText, categoryId, state)` to get the resolved form.
+### 4. Lock-while-authoring supersedes auto-discard
+Don't re-introduce a discard helper on navigation. The `locked` prop + parent guards in `requestEdit` / `requestMonitor` / `openAskClaude` / `handleAddCustom` are the current protection. The relevant page-level derivation is `hasUnsavedCustomOpen` / `unsavedCustomId`.
 
-### 5. `emitUpdate: false` + `queueMicrotask` in template-sync
-`setContent` runs in a microtask to dodge React's `flushSync` inside-commit warning. Calling `setContent` synchronously inside the effect reintroduces the warning. See `058a0df`.
+### 5. `bg-bg-primary-solid` token is now defined
+Fine to use across tooltips / dark pills. `--color-bg-secondary-solid` also defined (not yet consumed — Tailwind v4 only emits used tokens, so the compiled CSS won't carry `bg-bg-secondary-solid` until a class uses it, but the variable is there the moment it's needed).
 
-### 6. Compliance is explicit-call only
-`runComplianceCheck(text)` runs exclusively from user-action handlers. Do not re-introduce a reactive `useEffect` that watches `editText` — the `55a87e5` commit message explains why the deterministic model is load-bearing.
+### 6. `CustomMessageCard`'s tooltip infra mirrors CatalogCard's
+Same `showEditTooltip` / `showMonitorTooltip` state + 300ms schedule/clear ref pattern. Don't add a third pattern — reuse.
 
-### 7. Deferred delete-icon button
-PM flagged during paste testing. Not in scope Session 35. Revisit after the atomic-token model has more production use.
+### 7. Compliance is still explicit-call only
+Post-Fix re-checks now bypass the 2s debounce via `revealImmediately` flag on `runComplianceCheck`. Don't re-introduce a reactive `useEffect` that watches `editText` / `editTemplate` — the determinism of explicit-call-only is what made the Session 35 error-state bugs go away, and D-357's lock logic depends on it.
 
-### 8. `api/node_modules/` remains untracked
-Intentionally not in `.gitignore` at the `api/` layer. Don't `git add -A` without checking — it will try to include the entire vendored tree.
+### 8. `MAX_TEST_PHONES` cap is now visible, not silent
+Previously the `+ Invite someone` button was hidden at 5/5. Now it renders disabled with a tooltip. If you need to change the cap, `MAX_TEST_PHONES` in `test-phones-card.tsx` is the single source.
 
-### 9. Dev server
+### 9. Dev affordances live on the dropdowns
+Reset + Edit business details are sentinel options on `<select>` elements in top-nav + dashboard-layout. When adding more state switchers, follow the same sentinel pattern (disabled em-dash row + `__sentinel_key__` value + `onChange` interception).
+
+### 10. `api/node_modules/` remains untracked
+Intentionally not in `.gitignore` at the `api/` layer. Don't `git add -A`.
+
+### 11. Dev server
 `npm run dev` in `/prototype` → port 3001. Memory rule: always `rm -rf .next` before starting.
 
 ---
 
 ## Files Modified This Session
 
+### Added
 ```
-DECISIONS.md                                                      # +D-354
-REPO_INDEX.md                                                     # Meta + subtree index + change log; close-out bumps
-PROTOTYPE_SPEC.md                                                 # Edit State section rewritten (compliance + Fix behavior)
-CC_HANDOFF.md                                                     # This file (rewritten at close-out)
-docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md # Design doc + §15 Gotchas added at close-out
-prototype/package.json                                            # +@tiptap/{core,pm,react,extension-{document,paragraph,text}}
-prototype/package-lock.json                                       # install
-prototype/data/messages.ts                                        # +variables field on every Message
-prototype/app/apps/[appId]/page.tsx                               # +variables on inline MARKETING_MESSAGES
-prototype/app/sms/[category]/page.tsx                             # VARIABLE_TOKEN_CLASSES import
-prototype/app/sms/[category]/messages/page.tsx                    # VARIABLE_TOKEN_CLASSES import
-prototype/components/catalog/catalog-card.tsx                     # textarea → MessageEditor; + Variable popover; raw-color cleanup; Fix rename; compliance architecture refactor (55a87e5)
-prototype/lib/variable-token.ts                                   # NEW — shared classes
-prototype/lib/variable-scope.ts                                   # NEW — per-message scope (D-353)
-prototype/lib/editor/message-editor.tsx                           # NEW — Tiptap wrapper (+ setEditable emitUpdate fix in 858866d)
-prototype/lib/editor/variable-node.ts                             # NEW
-prototype/lib/editor/variable-node-view.tsx                       # NEW
-prototype/lib/editor/template-serde.ts                            # NEW
-prototype/components/plan-builder/message-card.tsx                # DELETED (dead code)
-prototype/components/plan-builder/message-tier.tsx                # DELETED (dead code)
+prototype/lib/slug.ts
+prototype/components/catalog/custom-message-card.tsx
+prototype/components/catalog/message-action-modal.tsx
+prototype/components/edit-business-details-modal.tsx
 ```
+
+### Modified
+```
+DECISIONS.md                                       # +D-355, D-351 revised, +D-356, +D-357
+PROTOTYPE_SPEC.md                                  # Custom messages section + Preview list + lock pattern + dev dropdown affordances
+REPO_INDEX.md                                      # Meta + subtree index + change log
+PM_PROJECT_INSTRUCTIONS.md                         # Response brevity + step-by-step instructions
+CC_HANDOFF.md                                      # This file
+prototype/app/globals.css                          # +--color-bg-{primary,secondary}-solid tokens
+prototype/app/apps/[appId]/page.tsx                # + Add, archived disclosure, modals, lock state, Edit business modal mount
+prototype/components/catalog/catalog-card.tsx      # locked prop + tooltip swap + layout tweak (min-h, items-start)
+prototype/components/dashboard-layout.tsx          # Edit business details sentinel + status label
+prototype/components/top-nav.tsx                   # Reset sentinel
+prototype/components/test-phones-card.tsx          # Preview list title + subtext + cap tooltip
+prototype/context/session-context.tsx              # CustomMessage shape + saveCustomMessage + archive/restore + hydrate filter
+prototype/lib/catalog-helpers.ts                   # +getPrimaryBusinessVariable
+```
+
+### Deleted
+None.
 
 ---
 
 ## Suggested Next Tasks (priority order)
 
-1. **D-355 — variable grammar decision.** Canonical-form storage (variables store base forms; renderer handles case + pluralization per insertion context) vs. context-aware rendering. Record as a decision *before* any code work. Blocks any polish pass on variable-heavy templates.
-2. **Task 2 — Custom message CRUD** (next logical step in the D-351 custom-message model). Wire the Add message button to the session's `addCustomMessage`, make inline-editing of name + trigger persist, implement the Delete kebab. D-352 (content-based marketing classification) remains deferred — separate session.
-3. **Stale pricing sweep.** $49 + $19/$29 is canonical; sweep residual `$199`/`$149` from prototype strings, PRDs, marketing copy. Not started.
-4. **Extract shared `APP_NAMES` into `lib/app-names.ts`** (overdue — 4 duplicate copies).
-5. **Session-aware "Back to {appName}" on `/account`.**
-6. **Ask Claude panel backend** (streaming AI route).
-7. **Wire signup / phone OTP / EIN verification to real backends** (D-59, D-46, D-302/D-303).
-8. **Error-state design pass** across all interaction failures before copy lock. (Not just the Tiptap bug — we want a coherent design system for failure states site-wide.)
-9. **Raw-color sweep** on pre-existing violations in `/sms/[category]/messages/page.tsx` (lines 242, 379, 951) and any others.
-10. **Delete icon button next to `+ Variable`** — deferred polish; revisit after the atomic-token model has more production use.
+1. **Archive modal redesign** (PM bug 6 deferred). Proposed body copy approved; ship the visual redesign (larger modal, non-monospace, Copy affordance on the code block, breathing room).
+2. **D-352 — content-based marketing classification.** When a user creates/edits a custom message, detect marketing-class content at authoring time. If detected without marketing enabled, block Save with explanation + path to add marketing.
+3. **D-355 — variable grammar rendering.** Canonical base form for common nouns + context-aware rendering (`{variable}` auto-capitalized at sentence start, `{variable:plural}` for common nouns only). Migrate existing state.serviceType values.
+4. **Preview list invite flow backend wiring.** Currently a stubbed `setTimeout`. Spec the invite SMS copy + the accept flow (outside scope of this session).
+5. **Stale-pricing sweep.** Residual `$199`/`$149` across prototype strings, PRDs, marketing copy. Canonical: $49 + $19/$29.
+6. **Session-aware "Back to {appName}" on `/account`.**
+7. **Ask Claude panel backend** (streaming AI route).
+8. **Wire signup / phone OTP / EIN verification to real backends** (D-59, D-46, D-302/D-303).
+9. **Error-state design pass** across all interaction failures before copy lock.
+10. **Raw-color sweep** on pre-existing violations in `/sms/[category]/messages/page.tsx` (lines 242, 379, 951).

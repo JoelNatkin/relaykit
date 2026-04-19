@@ -1273,3 +1273,23 @@ Migration: Existing state.serviceType values normalize to canonical form. Templa
 Why not multiple stored forms per variable: Multiplies authoring surface and invites drift. Pushes grammatical choices onto every author instead of centralizing them in the renderer.
 
 Scope at launch: English only. :plural is the only qualifier. No automatic article handling.
+
+**D-356 — Custom messages require a business-name variable (compliance)** (Date: 2026-04-19)
+
+Compliance enforcement on custom messages runs two rules: opt-out language (STOP + an exit word on the interpolated text, pre-existing) and presence of the category's business-name variable token on the raw template. Each rule surfaces as a separate red error row below the editor with its own Fix button. Save stays disabled until both pass.
+
+The business-name variable is category-specific — `{app_name}` for appointments/verification, `{business_name}` for orders/support/marketing/internal/waitlist/exploring, `{community_name}` for community. Resolved at call time via `getPrimaryBusinessVariable(categoryId)` in `lib/catalog-helpers.ts` so the chosen key always exists in the category's registered variables and renders as a chip rather than falling through to plain text.
+
+Reason: carrier compliance expects recipients to know the sender identity. Opt-out alone satisfies the exit path; business-name satisfies the identity disclosure. Requiring the variable TOKEN (not a literal name string) preserves deterministic template rendering (D-04) — the chip interpolates at send time against current session state, so renaming a business later re-interpolates without template rewrites. Fix prepends `{businessKey}: ` to the trimmed-start template.
+
+Affects: `prototype/components/catalog/custom-message-card.tsx` (`checkCustomCompliance`, `handleFixBusinessName`), `prototype/context/session-context.tsx` (pre-populated template in `addCustomMessage`), `prototype/lib/catalog-helpers.ts` (new `getPrimaryBusinessVariable` helper).
+
+**D-357 — Lock-while-authoring on never-saved custom rows** (Date: 2026-04-19)
+
+While a never-saved custom message (empty slug) is in edit state, every affordance on the Messages page that would transition the edit context is disabled with a "Save or cancel the current message first." tooltip: the `+ Add message` button, every other row's pencil/preview/activity icons, and the page-level Ask Claude button. The authoring row itself stays fully interactive — Save, Cancel, Fix, + Variable, Ask AI, editor all active.
+
+Reason: the first implementation of this protection auto-discarded the pending custom on navigation away (any `requestEdit` / `requestMonitor` / `openAskClaude` / `handleAddCustom` call while an unsaved custom was open). That silently dropped user work when the user didn't realize they'd triggered a transition (clicking another row's edit icon, a tone pill, a + Add). Silent discard violates the "never lose user work" principle. Disabling the triggers makes the state legible — grayed affordances + tooltip tell the user they need to commit or explicitly cancel before proceeding. The auto-discard helper was removed as dead code once the lock replaced it.
+
+Alternatives rejected: auto-discard-on-navigation (tried, silently lost work); auto-save-on-navigation (violates the "never save something you didn't mean to save" norm for compliance-gated content); modal confirmation on every transition (nag-heavy for a flow the user will use repeatedly).
+
+Affects: `prototype/app/apps/[appId]/page.tsx` (`hasUnsavedCustomOpen` derivation, defensive guards in `request*` / `handleAddCustom` / `openAskClaude`, disabled + tooltip on `+ Add` and Ask Claude buttons), `prototype/components/catalog/catalog-card.tsx` (`locked` prop, tooltip swap via existing `showEditTooltip` / `showMonitorTooltip` infra), `prototype/components/catalog/custom-message-card.tsx` (`locked` prop, new tooltip infra mirroring CatalogCard).
