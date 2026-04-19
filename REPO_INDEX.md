@@ -6,11 +6,11 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-18 (Session 35 close-out — Tiptap editor, D-354, error-state bugs resolved)
-- **Decision count:** D-354 (next available: D-355)
+- **Last updated:** 2026-04-18 (Session 36 doc-only edits — D-355 recorded, D-351 revised)
+- **Decision count:** D-355 (next available: D-356)
 - **PM instructions synced (Claude.ai UI ↔ repo):** `true`
 - **Active CC session branch:** main
-- **Unpushed local commits:** 0
+- **Unpushed local commits:** 2 (`cc0b319` D-355, `9e7b35e` D-351 revision) — awaiting PM review approval
 
 ---
 
@@ -124,7 +124,7 @@ Migrations and config.
 
 ## Decision count verification
 
-Verify `D-354` against DECISIONS.md at chat start. If drifted, update this file.
+Verify `D-355` against DECISIONS.md at chat start. If drifted, update this file.
 
 ---
 
@@ -144,3 +144,4 @@ Verify `D-354` against DECISIONS.md at chat start. If drifted, update this file.
 - **2026-04-18 (Session 35):** Tiptap v3 wired into the workspace message editor with atomic `VariableNode` atoms (D-350) and a `+ Variable` insert affordance scoped per-message (D-353). Library choice recorded as D-354. Added `prototype/lib/editor/` + `prototype/lib/variable-{token,scope}.ts`; deleted unused `plan-builder/message-{card,tier}.tsx`. Design doc at `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md`. PROTOTYPE_SPEC Edit-State section rewritten.
 - **2026-04-18 (Session 35 close-out):** Error-state bug resolution. Root cause was Tiptap's `Editor.setEditable` emitting the `update` event unconditionally with stale doc content. Two prior fix attempts (`cf09e61` `hasUserEdited` gate; `55a87e5` explicit-call compliance refactor) treated symptoms on the CatalogCard side and did not resolve. Final fix `858866d`: `editor.setEditable(!disabled, false)` in `message-editor.tsx`. The `55a87e5` architecture is retained as still correct. Design doc §15 added with the Tiptap usage rule + call-site audit. All 12 session commits pushed to `origin/main`.
 - 2026-04-18: D-351 revised — generic SDK method with slug supersedes prior manual-send-only formulation.
+- 2026-04-18 (Session 36 start): D-355 recorded — variable grammar: canonical base form for common nouns + context-aware rendering; proper nouns stored and rendered as-is.
