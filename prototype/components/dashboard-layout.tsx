@@ -8,6 +8,7 @@ import type { RegistrationState } from "@/context/session-context";
 import { loadWizardData, saveWizardData } from "@/lib/wizard-storage";
 import { useSetupToggle } from "@/components/setup-instructions";
 import { SetupToggleProvider } from "@/context/setup-toggle-context";
+import { EditBusinessDetailsModal } from "@/components/edit-business-details-modal";
 
 const APP_NAMES: Record<string, string> = {
   glowstudio: "GlowStudio",
@@ -49,6 +50,11 @@ export function DashboardLayout({
   // SetupInstructions panel it reveals can read the same visibility flag.
   const { visible: setupVisible, toggle: setupToggle } = useSetupToggle(registrationState);
 
+  // Edit business details modal — dev affordance for swapping business
+  // name / service type values mid-session without re-running onboarding.
+  // Opened via a sentinel option appended to the state switcher below.
+  const [editDetailsOpen, setEditDetailsOpen] = useState(false);
+
   // EIN prototype switcher — writes to wizard sessionStorage
   const [hasEin, setHasEin] = useState(true);
   useEffect(() => {
@@ -77,7 +83,18 @@ export function DashboardLayout({
           <div className="ml-auto flex items-center">
             <select
               value={registrationState}
-              onChange={(e) => onRegistrationStateChange(e.target.value as RegistrationState)}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v === "__edit_details__") {
+                  // Sentinel — opens the dev modal. The select is
+                  // controlled by registrationState, so React overwrites
+                  // this sentinel on the next render; no explicit reset
+                  // needed.
+                  setEditDetailsOpen(true);
+                  return;
+                }
+                onRegistrationStateChange(v as RegistrationState);
+              }}
               className="text-xs text-text-quaternary bg-transparent border-none cursor-pointer focus:outline-none"
             >
               <option value="onboarding">Onboarding</option>
@@ -86,6 +103,18 @@ export function DashboardLayout({
               <option value="changes_requested">Extended Review</option>
               <option value="registered">Registered</option>
               <option value="rejected">Rejected</option>
+              {/* Edit business details — dev affordance. Hidden in
+                  Onboarding because the wizard sets these values; the
+                  workspace affordance would compete with the flow.
+                  Disabled em-dash row separates the action from the
+                  state list (native <select> doesn't support a portable
+                  real divider). */}
+              {registrationState !== "onboarding" && (
+                <>
+                  <option disabled>──────────</option>
+                  <option value="__edit_details__">Edit business details</option>
+                </>
+              )}
             </select>
 
             <select
@@ -131,6 +160,11 @@ export function DashboardLayout({
           {children}
         </div>
       </div>
+
+      <EditBusinessDetailsModal
+        isOpen={editDetailsOpen}
+        onClose={() => setEditDetailsOpen(false)}
+      />
     </SetupToggleProvider>
   );
 }
