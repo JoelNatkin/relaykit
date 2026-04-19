@@ -62,6 +62,12 @@ export interface CustomMessageCardProps {
   /** Invoked when the kebab "Archive" item is chosen. Parent owns the modal
    *  and the session action wiring — we just surface the intent. */
   onArchiveRequest?: (message: CustomMessage) => void;
+  /** Invoked when Cancel is clicked on a never-saved row (slug === "").
+   *  The row has no deliverable identity yet and no edits worth keeping,
+   *  so the parent should delete it outright to avoid a zombie "Untitled
+   *  message" in the stack. Saved rows Cancel via onEditRequest(null)
+   *  instead, which preserves the last saved state. */
+  onDiscard?: (message: CustomMessage) => void;
   /** Archived-row menu items. When either is present, the kebab renders
    *  with Restore / Delete permanently instead of Archive. Mutually
    *  exclusive with onArchiveRequest in practice — parent passes one or
@@ -81,6 +87,7 @@ export function CustomMessageCard({
   muted = false,
   onSave,
   onArchiveRequest,
+  onDiscard,
   onRestoreRequest,
   onDeleteRequest,
 }: CustomMessageCardProps) {
@@ -227,7 +234,14 @@ export function CustomMessageCard({
     clearComplianceTimer();
     setCompliance({ isCompliant: true, issues: [] });
     setShowComplianceHint(false);
-    onEditRequest(null);
+    // Never-saved rows have no deliverable identity (empty slug) and nothing
+    // to roll back to — discard outright so they don't persist as zombies.
+    // Saved rows just exit edit state; their last saved content stays.
+    if (!message.slug && onDiscard) {
+      onDiscard(message);
+    } else {
+      onEditRequest(null);
+    }
   }
 
   function insertVariable(key: string) {

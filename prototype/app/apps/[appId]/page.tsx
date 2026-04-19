@@ -490,6 +490,11 @@ export default function AppMessagesPage() {
             isFreshlyAdded={freshlyAddedCustomId === message.id}
             onSave={saveCustomMessage}
             onArchiveRequest={setArchiveTarget}
+            onDiscard={(m) => {
+              deleteCustomMessage(m.id);
+              if (editingMessageId === m.id) setEditingMessageId(null);
+              if (freshlyAddedCustomId === m.id) setFreshlyAddedCustomId(null);
+            }}
           />
         ))}
         {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
