@@ -298,7 +298,12 @@ export function CustomMessageCard({
                 template={editTemplate}
                 categoryId={categoryId}
                 disabled={isAiLoading}
-                className="text-sm text-text-secondary leading-relaxed outline-none min-h-[1.25rem]"
+                /* min-h-[4.5rem] = 72px ≈ 3 lines at text-sm + leading-relaxed.
+                   Built-in editor sizes to its canonical template so it's
+                   never visibly short; a blank custom has no template, so
+                   we set a floor that reads as a message composer rather
+                   than a single-line input. */
+                className="text-sm text-text-secondary leading-relaxed outline-none min-h-[4.5rem]"
                 onChange={handleTextChange}
                 onReady={(editor) => {
                   editorRef.current = editor;
