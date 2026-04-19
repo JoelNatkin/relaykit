@@ -128,7 +128,7 @@ export function TestPhonesCard({ phones, onRemove, onInvite, onEdit }: TestPhone
           internal naming split — the boundary layer translates. */}
       <h3 className="text-base font-semibold text-text-primary">Preview list</h3>
       <p className="mt-1 text-sm text-text-tertiary">
-        People who can receive messages from RelayKit and from your app before you go live.
+        Your safe audience for sending test messages, before and after launch.
       </p>
 
       <ul ref={menuContainerRef} className="mt-4 divide-y divide-border-secondary">
