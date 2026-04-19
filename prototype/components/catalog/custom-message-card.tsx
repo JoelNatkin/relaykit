@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { DotsVertical, Plus, Stars02 } from "@untitledui/icons";
+import { Activity, Check, DotsVertical, Plus, Stars02 } from "@untitledui/icons";
 import type { Editor } from "@tiptap/react";
 import type { CustomMessage, SessionState } from "@/context/session-context";
 import {
@@ -75,6 +75,15 @@ export interface CustomMessageCardProps {
    *  archived disclosure. */
   onRestoreRequest?: (message: CustomMessage) => void;
   onDeleteRequest?: (message: CustomMessage) => void;
+  /** Controlled monitor state — same shape as CatalogCard's isMonitoring /
+   *  onMonitorRequest pair. Parent ensures mutual exclusivity with edit. */
+  isMonitoring?: boolean;
+  onMonitorRequest?: (messageId: string | null) => void;
+  /** Names shown in the monitor expansion's Send test dropdown. Synced
+   *  with the right-rail Testers card on the parent page. */
+  testRecipients?: string[];
+  /** Click handler for the Ask Claude button in the monitor footer. */
+  onAskClaude?: (messageName: string) => void;
 }
 
 export function CustomMessageCard({
@@ -90,6 +99,10 @@ export function CustomMessageCard({
   onDiscard,
   onRestoreRequest,
   onDeleteRequest,
+  isMonitoring = false,
+  onMonitorRequest,
+  testRecipients,
+  onAskClaude,
 }: CustomMessageCardProps) {
   const [editName, setEditName] = useState(message.name);
   const [editTemplate, setEditTemplate] = useState(message.template);
@@ -109,6 +122,59 @@ export function CustomMessageCard({
   const insertWrapperRef = useRef<HTMLDivElement>(null);
   const kebabWrapperRef = useRef<HTMLDivElement>(null);
   const prevIsEditingRef = useRef(false);
+
+  // Send-test state (monitor expansion). Matches CatalogCard's pattern —
+  // stubbed, no real delivery. Recipient list falls back to a static trio
+  // when the parent doesn't provide testRecipients (keeps the select
+  // populated in standalone/test scenarios).
+  const FALLBACK_RECIPIENTS = ["Joel", "Sarah", "Mike"];
+  const recipients =
+    testRecipients && testRecipients.length > 0 ? testRecipients : FALLBACK_RECIPIENTS;
+  const [selectedRecipient, setSelectedRecipient] = useState<string>(
+    () => recipients[0] ?? ""
+  );
+  const [isSendingTest, setIsSendingTest] = useState(false);
+  const [sentTestTo, setSentTestTo] = useState<string | null>(null);
+  const sendTestTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sentTestClearRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Keep the select in sync when the upstream Testers list changes
+  // (matches catalog-card.tsx:284 behavior).
+  useEffect(() => {
+    if (!recipients.includes(selectedRecipient)) {
+      setSelectedRecipient(recipients[0] ?? "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [testRecipients, selectedRecipient]);
+
+  function handleSendTest() {
+    if (isSendingTest) return;
+    const target = selectedRecipient;
+    setIsSendingTest(true);
+    setSentTestTo(null);
+    if (sentTestClearRef.current) {
+      clearTimeout(sentTestClearRef.current);
+      sentTestClearRef.current = null;
+    }
+    if (sendTestTimerRef.current) clearTimeout(sendTestTimerRef.current);
+    sendTestTimerRef.current = setTimeout(() => {
+      setIsSendingTest(false);
+      setSentTestTo(target);
+      sentTestClearRef.current = setTimeout(() => setSentTestTo(null), 3000);
+    }, 1500);
+  }
+
+  function enterMonitor() {
+    // Only saved rows can enter monitor — there's nothing to test before
+    // first Save. The caller's UI gating enforces this too; the guard
+    // here is defensive.
+    if (!message.slug) return;
+    onMonitorRequest?.(message.id);
+  }
+
+  function exitMonitor() {
+    onMonitorRequest?.(null);
+  }
 
   function clearComplianceTimer() {
     if (complianceTimerRef.current) {
@@ -163,6 +229,8 @@ export function CustomMessageCard({
   useEffect(() => {
     return () => {
       if (complianceTimerRef.current) clearTimeout(complianceTimerRef.current);
+      if (sendTestTimerRef.current) clearTimeout(sendTestTimerRef.current);
+      if (sentTestClearRef.current) clearTimeout(sentTestClearRef.current);
     };
   }, []);
 
@@ -524,9 +592,12 @@ export function CustomMessageCard({
         </div>
       ) : (
         <>
-          {/* Collapsed header — name + slug (muted), edit pencil only for now.
-              Activity icon + kebab land in subsequent commits (d, e). No info
-              icon, ever, for customs. */}
+          {/* Collapsed header — name + slug on the left; action icons on
+              the right. Icon order when no mode is active: [kebab]
+              [activity] [edit] — matches built-in alignment (PM follow-up).
+              In monitor mode, the icons collapse to a single Activity +
+              "Test & debug" label the same way built-ins do. No info icon,
+              ever, for customs. */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 min-w-0 flex-1">
               <span className={`text-sm font-semibold truncate ${muted ? "text-text-tertiary" : "text-text-primary"}`}>
@@ -539,97 +610,191 @@ export function CustomMessageCard({
               )}
             </div>
             <div className="flex items-center flex-shrink-0 gap-1">
-              {/* Pencil hidden on archived rows — they are read-only until
-                  restored. Kebab still renders (Restore / Delete). */}
-              {!muted && (
-                <button
-                  type="button"
-                  onClick={enterEdit}
-                  className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                  aria-label="Edit message"
-                >
-                  <PencilIcon />
-                </button>
-              )}
-              {/* Kebab menu. The parent chooses the action set by passing
-                  either onArchiveRequest (active rows → "Archive") or the
-                  pair onRestoreRequest + onDeleteRequest (archived rows →
-                  "Restore" / "Delete permanently"). Only renders after slug
-                  assignment — nothing to act on before first save. */}
-              {message.slug && (onArchiveRequest || onRestoreRequest || onDeleteRequest) && (
-                <div className="relative" ref={kebabWrapperRef}>
-                  <button
-                    type="button"
-                    onClick={() => setIsKebabOpen((v) => !v)}
-                    aria-haspopup="menu"
-                    aria-expanded={isKebabOpen}
-                    aria-label="More options"
-                    className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
-                  >
-                    <DotsVertical className="size-[17px]" />
-                  </button>
-                  {isKebabOpen && (
-                    <div
-                      role="menu"
-                      className="absolute right-0 top-full mt-1 z-20 rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1 min-w-[180px]"
-                    >
-                      {onArchiveRequest && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setIsKebabOpen(false);
-                            onArchiveRequest(message);
-                          }}
-                          className="flex w-full items-center px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
+              {isMonitoring ? (
+                <span className="flex items-center gap-1.5 p-1 text-fg-quaternary">
+                  <Activity className="size-[17px]" />
+                  <span className="text-sm">Test &amp; debug</span>
+                </span>
+              ) : (
+                <>
+                  {/* Kebab first (leftmost) — parent-controlled menu set.
+                      onArchiveRequest → "Archive" (active rows)
+                      onRestoreRequest + onDeleteRequest → "Restore" /
+                      "Delete permanently" (archived rows). */}
+                  {message.slug && (onArchiveRequest || onRestoreRequest || onDeleteRequest) && (
+                    <div className="relative" ref={kebabWrapperRef}>
+                      <button
+                        type="button"
+                        onClick={() => setIsKebabOpen((v) => !v)}
+                        aria-haspopup="menu"
+                        aria-expanded={isKebabOpen}
+                        aria-label="More options"
+                        className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                      >
+                        <DotsVertical className="size-[17px]" />
+                      </button>
+                      {isKebabOpen && (
+                        <div
+                          role="menu"
+                          className="absolute right-0 top-full mt-1 z-20 rounded-lg border border-border-secondary bg-bg-primary shadow-lg py-1 min-w-[180px]"
                         >
-                          Archive
-                        </button>
-                      )}
-                      {onRestoreRequest && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setIsKebabOpen(false);
-                            onRestoreRequest(message);
-                          }}
-                          className="flex w-full items-center px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Restore
-                        </button>
-                      )}
-                      {onDeleteRequest && (
-                        <button
-                          type="button"
-                          role="menuitem"
-                          onClick={() => {
-                            setIsKebabOpen(false);
-                            onDeleteRequest(message);
-                          }}
-                          className="flex w-full items-center px-3 py-2 text-sm text-text-error-primary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
-                        >
-                          Delete permanently
-                        </button>
+                          {onArchiveRequest && (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => {
+                                setIsKebabOpen(false);
+                                onArchiveRequest(message);
+                              }}
+                              className="flex w-full items-center px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
+                            >
+                              Archive
+                            </button>
+                          )}
+                          {onRestoreRequest && (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => {
+                                setIsKebabOpen(false);
+                                onRestoreRequest(message);
+                              }}
+                              className="flex w-full items-center px-3 py-2 text-sm text-text-secondary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
+                            >
+                              Restore
+                            </button>
+                          )}
+                          {onDeleteRequest && (
+                            <button
+                              type="button"
+                              role="menuitem"
+                              onClick={() => {
+                                setIsKebabOpen(false);
+                                onDeleteRequest(message);
+                              }}
+                              className="flex w-full items-center px-3 py-2 text-sm text-text-error-primary hover:bg-bg-primary_hover transition duration-100 ease-linear cursor-pointer"
+                            >
+                              Delete permanently
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   )}
-                </div>
+                  {/* Activity icon — only on saved, non-archived rows.
+                      Archived rows are read-only; never-saved rows have
+                      nothing to test yet. */}
+                  {!muted && message.slug && onMonitorRequest && (
+                    <button
+                      type="button"
+                      onClick={enterMonitor}
+                      className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                      aria-label="Test & debug"
+                    >
+                      <Activity className="size-[17px]" />
+                    </button>
+                  )}
+                  {/* Pencil — hidden on archived rows (read-only until
+                      restored). */}
+                  {!muted && (
+                    <button
+                      type="button"
+                      onClick={enterEdit}
+                      className="p-1 text-fg-quaternary hover:text-fg-secondary transition duration-100 ease-linear cursor-pointer"
+                      aria-label="Edit message"
+                    >
+                      <PencilIcon />
+                    </button>
+                  )}
+                </>
               )}
             </div>
           </div>
 
           <div
-            className={muted ? "mt-2" : "mt-2 cursor-pointer"}
-            onClick={muted ? undefined : enterEdit}
-            role={muted ? undefined : "button"}
-            tabIndex={muted ? undefined : 0}
-            onKeyDown={muted ? undefined : (e) => { if (e.key === "Enter") enterEdit(); }}
+            className={muted || isMonitoring ? "mt-2" : "mt-2 cursor-pointer"}
+            onClick={muted || isMonitoring ? undefined : enterEdit}
+            role={muted || isMonitoring ? undefined : "button"}
+            tabIndex={muted || isMonitoring ? undefined : 0}
+            onKeyDown={
+              muted || isMonitoring
+                ? undefined
+                : (e) => { if (e.key === "Enter") enterEdit(); }
+            }
           >
             {message.template ? renderPreview(message.template) : (
               <p className="text-sm italic text-text-quaternary">No message yet.</p>
             )}
           </div>
+
+          {/* Monitor expansion — mirrors CatalogCard's monitor view
+              (catalog-card.tsx:896). Recent activity is always empty for
+              customs in the prototype (no send history is tracked); Quick
+              Send is stubbed the same way built-ins stub it. Layout and
+              classes match the built-in deliberately so the two rendering
+              paths stay visually interchangeable. */}
+          {isMonitoring && (
+            <div className="mt-6">
+              <p className="text-xs font-medium text-text-tertiary uppercase tracking-wide">
+                Recent activity
+              </p>
+              <div className="mt-3">
+                <p className="text-sm text-text-tertiary text-center py-4">
+                  No activity yet. This message hasn{"\u2019"}t been sent by your app.
+                </p>
+              </div>
+
+              <div className="mt-6 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => onAskClaude?.(message.name)}
+                    className="text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer"
+                  >
+                    Ask Claude
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSendTest}
+                    disabled={isSendingTest}
+                    className="ml-2 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isSendingTest ? "Sending…" : "Quick send"}
+                  </button>
+                  <select
+                    value={selectedRecipient}
+                    onChange={(e) => setSelectedRecipient(e.target.value)}
+                    disabled={isSendingTest}
+                    className="bg-transparent border-0 p-0 text-sm font-normal text-text-primary transition duration-100 ease-linear cursor-pointer focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed"
+                    aria-label="Test recipient"
+                  >
+                    {recipients.map((name) => (
+                      <option key={name} value={name}>
+                        {name}
+                      </option>
+                    ))}
+                  </select>
+                  {sentTestTo && (
+                    <span
+                      key={sentTestTo}
+                      className="inline-flex items-center gap-1 text-xs font-medium text-text-success-primary whitespace-nowrap"
+                      style={{ animation: "testSentFade 3s ease-out forwards" }}
+                    >
+                      <Check className="size-3.5" />
+                      Sent to {sentTestTo}
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={exitMonitor}
+                  className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

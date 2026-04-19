@@ -495,6 +495,10 @@ export default function AppMessagesPage() {
               if (editingMessageId === m.id) setEditingMessageId(null);
               if (freshlyAddedCustomId === m.id) setFreshlyAddedCustomId(null);
             }}
+            isMonitoring={monitoringMessageId === message.id}
+            onMonitorRequest={requestMonitor}
+            testRecipients={testRecipientNames}
+            onAskClaude={openAskClaude}
           />
         ))}
         {showMarketingMessages && MARKETING_MESSAGES.map((message) => (
