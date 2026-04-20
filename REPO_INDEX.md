@@ -6,11 +6,11 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-19 (Session 36 close-out — custom message CRUD + authoring lock)
+- **Last updated:** 2026-04-20 (Session 37 — current-state audit, no build work)
 - **Decision count:** D-357 (next available: D-358)
 - **PM instructions synced (Claude.ai UI ↔ repo):** `true`
 - **Active CC session branch:** main
-- **Unpushed local commits:** 28 (Session 36 feature + PM-review polish; see change log below) — awaiting PM review approval
+- **Unpushed local commits:** Session 36's 31 commits + Session 37's audit commit — awaiting PM review approval
 
 ---
 
@@ -42,8 +42,9 @@
 | `PROTOTYPE_SPEC.md` | 2026-04-19 | Screen specs for `/prototype` |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-03-28 | Post-signup workspace architecture |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-04-17 | `/api` pipeline — Sessions A (done) / B / C |
-| `SDK_BUILD_PLAN.md` | 2026-04-17 | `/sdk` build + README + AGENTS.md + integration prompt |
-| `CC_HANDOFF.md` | 2026-04-19 | Previous CC session state |
+| `SDK_BUILD_PLAN.md` | 2026-04-17 | `/sdk` build + README + AGENTS.md + integration prompt (see audit §4.2 — now stale) |
+| `CURRENT_STATE_AUDIT.md` | 2026-04-20 | Session 37 audit — repo inventory, spec drift, weirdness log, Sinch readiness, recommendations |
+| `CC_HANDOFF.md` | 2026-04-20 | Previous CC session state |
 | `BACKLOG.md` | 2026-04-10 | Parked ideas, never build without promotion |
 | `README.md` | (stable) | Repo readme |
 
@@ -54,7 +55,7 @@
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `RELAYKIT_PRD_CONSOLIDATED.md` | 2026-04-15 | Product narrative, what's built, what's next |
-| `PRICING_MODEL.md` | 2026-03-15 | Tier definitions, costs, pricing logic |
+| `PRICING_MODEL.md` | 2026-04-08 (v6.0) | Tier definitions, costs, pricing logic |
 | `PRD_SETTINGS_v2_3.md` | 2026-04-15 | Settings page spec |
 | `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` | (stable) | Copy rules (Tier 1 in project knowledge) |
 | `UNTITLED_UI_REFERENCE.md` | (stable) | Design system reference (Tier 1 in project knowledge) |
@@ -153,3 +154,4 @@ Verify `D-357` against DECISIONS.md at chat start. If drifted, update this file.
 - 2026-04-18 (Session 36 start): D-355 recorded — variable grammar: canonical base form for common nouns + context-aware rendering; proper nouns stored and rendered as-is.
 - **2026-04-19 (Session 36):** Custom message CRUD shipped end-to-end. `+ Add` inserts a pre-populated compliant row at the top of the stack with business-name chip + placeholder + opt-out phrase (D-356). Saved rows match built-in visual language — name + slug inline, kebab + activity + pencil chrome, monitor expansion with Test send / Ask Claude / Close. Archive + Delete permanently flows via shared `MessageActionModal`; Archived (N) disclosure at the bottom; archived rows render full-contrast (PM pushback on muted styling) and are read-only. Compliance gained a second rule for business-name with its own Fix button (D-356). Lock-while-authoring supersedes auto-discard: sibling affordances disabled with "Save or cancel the current message first." tooltip while a never-saved custom is open (D-357). User-facing "Testers" → "Preview list" copy rename (code identifiers untouched). Dashboard status indicator yellow-state "Test mode" → "Test messages only". Monitor-footer "Quick send" → "Test send" with source-of-message tooltip. Added Reset action to onboarding dropdown + Edit business details dev modal on the state-switcher dropdown. Tooltip token regression fix — Session 35's semantic-token migration referenced `--color-bg-primary-solid` without defining it; added both `bg-primary-solid` and `bg-secondary-solid` to `globals.css` @theme.
 - 2026-04-19: D-356 + D-357 recorded. PM_PROJECT_INSTRUCTIONS updated with response-brevity and step-by-step instruction guidelines; paste confirmed, `pm_instructions_synced` stays `true`.
+- **2026-04-20 (Session 37 — audit-only, no build work):** `CURRENT_STATE_AUDIT.md` added at repo root. Documents per-directory inventory (`/src`, `/api`, `/sdk`, `/prototype`, `/supabase`, `/api/supabase`, `/docs`, `/docs/archive`), spec-to-reality gaps for MESSAGE_PIPELINE_SPEC / SDK_BUILD_PLAN / PROTOTYPE_SPEC / WORKSPACE_DESIGN_SPEC / RELAYKIT_PRD_CONSOLIDATED / PRICING_MODEL, end-to-end trace for the Verification-codes vertical (wizard→workspace handoff is broken; data is complete but unreachable), 26-item weirdness log, Sinch readiness review, and recommendations list. No decisions bumped, no sync flags flipped. `tsc --noEmit` clean on `/api`, `/sdk`, `/prototype` at audit time; `/api` tests 98/98 green. See audit §5 for drift summary (`rk_sandbox_`/`rk_test_` sweep deferred, two backends + two supabase dirs, inbound split-brain, SDK_BUILD_PLAN stale, CLAUDE.md key-name drift).

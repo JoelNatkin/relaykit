@@ -1,10 +1,57 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-19 (Session 36 close-out — custom message CRUD + authoring lock)
+**Date:** 2026-04-20 (Session 37 — audit session, no build work)
 **Branch:** main (all commits local, **NOT** pushed — PM review happens first)
 
 ---
 
-## Commits This Session
+## Session 37 Summary — Current-state audit
+
+One commit added on top of Session 36's `192cda4`:
+
+```
+[pending]  docs(audit): session 37 — CURRENT_STATE_AUDIT.md repo inventory
+```
+
+**Deliverable:** `CURRENT_STATE_AUDIT.md` at repo root — ~480 lines covering every directory, spec drift, weirdness log, Sinch readiness, and recommendations. Read this first before next build session; it is the current picture of the repo.
+
+**Five parallel investigation agents ran; main doc synthesizes their output.** `tsc --noEmit` passed clean on `/api`, `/sdk`, `/prototype`. No code modified. No decisions recorded — items are flagged for Joel + PM to decide, not for CC to resolve.
+
+**Top 5 findings:**
+1. Verification-vertical wizard→workspace handoff is broken — `state.selectedCategory` never reads `relaykit_wizard.vertical`. Every non-Appointments vertical is unreachable via the wizard flow. Data is fully populated in `data/messages.ts` and `catalog-helpers.ts`; the landing pages are placeholders.
+2. Inbound-message handling is a split-brain story: `/src` has Twilio webhook receiver + STOP processing + `messages.direction='inbound'` column; `/api`, `/sdk`, `/prototype` have zero inbound surface; `MESSAGE_PIPELINE_SPEC` A/B/C never scope it; `PRICING_MODEL` advertises it as a sandbox feature.
+3. Two parallel backends exist: `/src` (Next.js + Twilio, deployed, 319 files) and `/api` (Hono + Sinch-shaped, not deployed, ~1.5K LOC). Each has its own `supabase/migrations/` directory with a differently-shaped `messages` table. No migration plan documented.
+4. D-349 (`rk_sandbox_` → `rk_test_`) is recorded but not swept. The old prefix appears in 40+ files: PRICING_MODEL, PROTOTYPE_SPEC, WORKSPACE_DESIGN_SPEC, SDK_BUILD_PLAN itself, prototype code, `/src` code, and `/api/v1/signup/sandbox`.
+5. `SDK_BUILD_PLAN.md` is entirely stale — it describes a JavaScript mock needing TypeScript conversion, but `/sdk` is already a complete TypeScript-strict dual-published package at v0.1.0 (tgz pre-packed). SDK's `SendResult` shape diverges from what the plan documents; README.md still missing.
+
+**Other spec drift found:**
+- `CLAUDE.md` says wizard uses `relaykit_intake`; actual key is `relaykit_wizard`.
+- `REPO_INDEX.md` says 28 unpushed commits; `CC_HANDOFF` (Session 36) said 31.
+- `REPO_INDEX.md` PRICING_MODEL date shows 2026-03-15; actual file is v6.0 dated 2026-04-08.
+- `RELAYKIT_PRD_CONSOLIDATED.md` says "329+ decisions"; actual is D-357.
+- `MESSAGE_PIPELINE_SPEC.md` calls the consent API "Future"; `/api` shipped it with tests weeks ago.
+- `MESSAGE_PIPELINE_SPEC.md` doesn't mention `POST /v1/messages/preview`; `/api` implements it.
+- `RELAYKIT_PRD_CONSOLIDATED.md` lists `GET /v1/messages/:id`; `/api` doesn't implement it.
+- `createApp()` in `/api` has no `carrierSender` parameter; Session B spec assumes it.
+- `MessageContext.queuedUntil` missing from `/api/src/pipeline/types.ts`.
+- `/src/components/auth/magic-link-form.tsx` implements OTP, not magic link (filename unchanged since refactor).
+- Raw-color violations exist in `/prototype/components/top-nav.tsx` (247, 249) and `/prototype/app/apps/[appId]/page.tsx` (737, 914) — beyond the 3 lines flagged in Session 36 handoff.
+- `WORKSPACE_DESIGN_SPEC.md` get-started step still shows `rk_sandbox_*` API key example.
+
+**Build-health baseline at audit time:** `tsc --noEmit` passes on `/api`, `/sdk`, `/prototype`. `/api` tests 98/98 green. `/src` not re-validated in this audit.
+
+**Top recommendations (decisions needed, not actions):**
+- Reconcile `rk_sandbox_` → `rk_test_` across code + docs in one sweep.
+- Decide where inbound handling lives in `/api` (Session D? extension to B? deferred?).
+- Document the `/src` ↔ `/api` co-existence plan — parallel deploys, feature freeze on `/src`, or sunset date.
+- Either wire up workspace category hydration from wizard storage, or ship non-Appointments vertical content, or block those cards with a "coming soon" state.
+- Decide whether `SDK_BUILD_PLAN.md` gets rewritten as a post-ship doc (README + AGENTS.md + publish gates) or marked superseded.
+- Review `/supabase/migrations/20260307200000_audit_fixes.sql` — its `DELETE FROM customers WHERE TRUE;` content is version-controlled and destructive.
+
+See `CURRENT_STATE_AUDIT.md` §5 for the complete weirdness log (26 items) and §7 for the full recommendations list.
+
+---
+
+## Previous session (Session 36, 2026-04-19) — custom message CRUD + authoring lock
 
 31 commits on top of Session 35's `5b0ced3`. Three broad phases:
 
