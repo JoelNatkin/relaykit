@@ -1,167 +1,77 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-20 (Session 37 — audit session, no build work)
+**Date:** 2026-04-20 (Session 37 close-out — audit + MASTER_PLAN v1.0 + D-358–D-361)
 **Branch:** main (all commits local, **NOT** pushed — PM review happens first)
 
 ---
 
-## Session 37 Summary — Current-state audit
+## Commits This Session
 
-One commit added on top of Session 36's `192cda4`:
+Two commits added on top of Session 36's `192cda4`:
 
 ```
-[pending]  docs(audit): session 37 — CURRENT_STATE_AUDIT.md repo inventory
-```
-
-**Deliverable:** `CURRENT_STATE_AUDIT.md` at repo root — ~480 lines covering every directory, spec drift, weirdness log, Sinch readiness, and recommendations. Read this first before next build session; it is the current picture of the repo.
-
-**Five parallel investigation agents ran; main doc synthesizes their output.** `tsc --noEmit` passed clean on `/api`, `/sdk`, `/prototype`. No code modified. No decisions recorded — items are flagged for Joel + PM to decide, not for CC to resolve.
-
-**Top 5 findings:**
-1. Verification-vertical wizard→workspace handoff is broken — `state.selectedCategory` never reads `relaykit_wizard.vertical`. Every non-Appointments vertical is unreachable via the wizard flow. Data is fully populated in `data/messages.ts` and `catalog-helpers.ts`; the landing pages are placeholders.
-2. Inbound-message handling is a split-brain story: `/src` has Twilio webhook receiver + STOP processing + `messages.direction='inbound'` column; `/api`, `/sdk`, `/prototype` have zero inbound surface; `MESSAGE_PIPELINE_SPEC` A/B/C never scope it; `PRICING_MODEL` advertises it as a sandbox feature.
-3. Two parallel backends exist: `/src` (Next.js + Twilio, deployed, 319 files) and `/api` (Hono + Sinch-shaped, not deployed, ~1.5K LOC). Each has its own `supabase/migrations/` directory with a differently-shaped `messages` table. No migration plan documented.
-4. D-349 (`rk_sandbox_` → `rk_test_`) is recorded but not swept. The old prefix appears in 40+ files: PRICING_MODEL, PROTOTYPE_SPEC, WORKSPACE_DESIGN_SPEC, SDK_BUILD_PLAN itself, prototype code, `/src` code, and `/api/v1/signup/sandbox`.
-5. `SDK_BUILD_PLAN.md` is entirely stale — it describes a JavaScript mock needing TypeScript conversion, but `/sdk` is already a complete TypeScript-strict dual-published package at v0.1.0 (tgz pre-packed). SDK's `SendResult` shape diverges from what the plan documents; README.md still missing.
-
-**Other spec drift found:**
-- `CLAUDE.md` says wizard uses `relaykit_intake`; actual key is `relaykit_wizard`.
-- `REPO_INDEX.md` says 28 unpushed commits; `CC_HANDOFF` (Session 36) said 31.
-- `REPO_INDEX.md` PRICING_MODEL date shows 2026-03-15; actual file is v6.0 dated 2026-04-08.
-- `RELAYKIT_PRD_CONSOLIDATED.md` says "329+ decisions"; actual is D-357.
-- `MESSAGE_PIPELINE_SPEC.md` calls the consent API "Future"; `/api` shipped it with tests weeks ago.
-- `MESSAGE_PIPELINE_SPEC.md` doesn't mention `POST /v1/messages/preview`; `/api` implements it.
-- `RELAYKIT_PRD_CONSOLIDATED.md` lists `GET /v1/messages/:id`; `/api` doesn't implement it.
-- `createApp()` in `/api` has no `carrierSender` parameter; Session B spec assumes it.
-- `MessageContext.queuedUntil` missing from `/api/src/pipeline/types.ts`.
-- `/src/components/auth/magic-link-form.tsx` implements OTP, not magic link (filename unchanged since refactor).
-- Raw-color violations exist in `/prototype/components/top-nav.tsx` (247, 249) and `/prototype/app/apps/[appId]/page.tsx` (737, 914) — beyond the 3 lines flagged in Session 36 handoff.
-- `WORKSPACE_DESIGN_SPEC.md` get-started step still shows `rk_sandbox_*` API key example.
-
-**Build-health baseline at audit time:** `tsc --noEmit` passes on `/api`, `/sdk`, `/prototype`. `/api` tests 98/98 green. `/src` not re-validated in this audit.
-
-**Top recommendations (decisions needed, not actions):**
-- Reconcile `rk_sandbox_` → `rk_test_` across code + docs in one sweep.
-- Decide where inbound handling lives in `/api` (Session D? extension to B? deferred?).
-- Document the `/src` ↔ `/api` co-existence plan — parallel deploys, feature freeze on `/src`, or sunset date.
-- Either wire up workspace category hydration from wizard storage, or ship non-Appointments vertical content, or block those cards with a "coming soon" state.
-- Decide whether `SDK_BUILD_PLAN.md` gets rewritten as a post-ship doc (README + AGENTS.md + publish gates) or marked superseded.
-- Review `/supabase/migrations/20260307200000_audit_fixes.sql` — its `DELETE FROM customers WHERE TRUE;` content is version-controlled and destructive.
-
-See `CURRENT_STATE_AUDIT.md` §5 for the complete weirdness log (26 items) and §7 for the full recommendations list.
-
----
-
-## Previous session (Session 36, 2026-04-19) — custom message CRUD + authoring lock
-
-31 commits on top of Session 35's `5b0ced3`. Three broad phases:
-
-### Phase 1 — Session 36 doc updates (from start, 2026-04-18)
-```
-cc0b319  docs: record D-355 — variable grammar (canonical base form + context-aware rendering)
-9e7b35e  docs: revise D-351 to generic SDK method with slug; D-353 stale-reference cleanup
-52a6caa  docs: update REPO_INDEX meta for D-355 + unpushed commits tracking
-```
-
-### Phase 2 — Custom message CRUD (D-351 revised) — Task 2
-```
-35f532b  feat(prototype): custom message CRUD scaffolding — + Add, editable name, slug-on-save, + Variable
-2911d07  feat(prototype): custom message kebab + Archive modal
-e06e258  feat(prototype): archived customs disclosure, Restore + Delete permanently
-```
-
-### Phase 3 — PM review rounds (polish + bug fixes + two new decisions)
-```
-ee66499  fix(prototype): set min-height on CustomMessageCard editor (PM bug 1)
-203a97b  fix(prototype): Cancel on never-saved custom row discards it (PM bug 2)
-693de78  fix(prototype): surface Save-disabled reason on CustomMessageCard (PM bug 3) ← later removed
-cda880e  fix(prototype): add Fix button for opt-out compliance on customs (PM bug 4)
-4a3d4d5  fix(prototype): explicit Name form field on custom rows (PM bug 1 + 6)
-9f8682c  fix(prototype): purge empty-custom zombies on hydration (PM bug 2)
-71575d4  fix(prototype): 540px max-width on custom surfaces (PM bug 3)
-e09faf0  fix(prototype): activity icon + monitor state on saved customs, kebab leftmost (PM bug 4 + kebab reorder)
-6392aeb  fix(prototype): keep Archive/Delete modal code block on one line (PM bug 5)
-3fad604  fix(prototype): remove disableReason footer hint on CustomMessageCard (PM bugs 1 + 3)
-66d86a0  fix(prototype): Save gates on non-empty body on customs (PM bug 2)
-b6bd107  fix(prototype): drop muted styling on archived customs, rename muted to readOnly (PM bug 4)
-33c015b  fix(prototype): auto-discard unsaved custom on navigation away (PM bug 5) ← later superseded
-9767d11  fix(prototype): tighten + Variable row to editor, top-align in both cards (PM layout fix)
-1b325ba  feat(prototype): pre-populate new custom body with opt-out phrase
-a413cd7  feat(prototype): business-name variable in custom pre-pop + compliance check
-b5ad6cd  feat(prototype): lock edit/monitor/+Add/AskClaude while an unsaved custom is open
-ab7943a  fix(prototype): define bg-primary-solid + bg-secondary-solid tokens — Session 35 regression
-bf72f19  feat(prototype): Reset action in onboarding step dropdown
-eafbb19  feat(prototype): Edit business details dev modal from state dropdown
-a79e3cc  fix(prototype): rename Quick send → Test send with clarifying hover tooltip
-7a5de22  fix(prototype): user-facing Testers → Preview list rename (copy only)
-95cbb0e  fix(prototype): revise Preview list panel subtext
-a11f8f8  fix(prototype): status indicator yellow-state label → Test messages only
-e1ee549  docs(pm): add response-brevity + step-by-step instruction guidelines
+04655c9  docs(audit): session 37 — CURRENT_STATE_AUDIT.md repo inventory
+[pending] docs: session 37 close-out — MASTER_PLAN v1.0, D-358–D-361, PM instructions rewrite
 ```
 
 ---
 
 ## What Was Completed
 
-### Custom message CRUD (D-351 revised)
-The `+ Add message` → edit → save → archive → delete flow is end-to-end. Not a separate UI — the row IS the authoring surface.
+### CURRENT_STATE_AUDIT.md (commit `04655c9`, earlier today)
+Full repo inventory. ~480 lines covering every directory, spec-to-reality gaps, 26-item weirdness log, Sinch readiness, and recommendations. Five parallel investigation agents fed the synthesis. No code modified. Key findings:
 
-- **Data layer** — `CustomMessage` gains `slug: string` (empty until first save) and `archived: boolean`. `saveCustomMessage` generates an immutable kebab-case slug via `generateSlug(name, existingSlugsExcludingSelf)` from `prototype/lib/slug.ts`. Collision set includes archived slugs; deleted slugs are freed. Session-storage hydration drops empty-slug rows (one-time zombie cleanup + covers any future mid-edit reload).
-- **`CustomMessageCard`** — sibling of `CatalogCard`, not a prop variant. Reuses `MessageEditor`, `getVariableScope`, `VARIABLE_TOKEN_CLASSES`, `interpolateTemplate`. Zero edits to `CatalogCard` core or Tiptap internals beyond the `locked` prop addition.
-- **`MessageActionModal`** — shared shell for Archive + Delete permanently. Parameterized title/body/code-block/confirmLabel/tone. Code block uses `whitespace-nowrap overflow-x-auto` so quoted slugs stay on one line.
-- **Page integration** (`/apps/[appId]/page.tsx`) — `+ Add` button (dashed-border, 540px max on ≥860px), active customs at top of stack, marketing + built-ins below, archived disclosure at bottom (`Archived (N)` collapsed-by-default).
-- **Monitor mode on saved customs** — mirrors the built-in expansion: empty activity list + Test send + Preview list dropdown + Ask Claude + Close. Gated to saved non-archived rows.
-- **Archived rows are read-only, not muted** — same colors/contrast as active rows. The disclosure is the only indicator.
+- **Verification-vertical wizard→workspace handoff is broken.** `state.selectedCategory` never reads from `relaykit_wizard.vertical`. Every non-Appointments pick lands on Appointments content. Data is fully populated in `data/messages.ts` + `catalog-helpers.ts`; the landing pages `/sms/[non-appointments]/messages` are hardcoded placeholders.
+- **Inbound handling is split-brain.** `/src` has Twilio webhook receiver + STOP processing + `messages.direction='inbound'`; `/api`, `/sdk`, `/prototype` have none; MESSAGE_PIPELINE_SPEC Sessions A/B/C don't scope it; PRICING_MODEL advertises it as sandbox.
+- **Two parallel backends** (`/src` Next.js+Twilio deployed, `/api` Hono+Sinch-shaped not deployed) with two separate `supabase/migrations/` dirs and differently-shaped `messages` tables.
+- **D-349 (`rk_sandbox_` → `rk_test_`) never swept.** 40+ files still use the old prefix.
+- **SDK_BUILD_PLAN entirely stale.** `/sdk` already shipped as TypeScript-strict v0.1.0 dual-published package with `relaykit-0.1.0.tgz` pre-packed; plan still describes a JS mock needing conversion. `SendResult` shape diverges from plan; README missing.
 
-### Authoring-time compliance gains a second rule (D-356)
-Custom messages must contain the category's business-name variable token. Two rules now surface beneath the editor — each with its own Fix button. Save stays disabled until both pass.
+### MASTER_PLAN.md v1.0
+New canonical launch plan at repo root — 461 lines, 10 phases, North Star, ranked customer values (fast registration added as the Sinch differentiator), working principles, out-of-scope list (§16), risks (§17). Adopted per D-359.
 
-- `getPrimaryBusinessVariable(categoryId)` in `catalog-helpers.ts` picks the right key per vertical: `app_name` for appointments/verification, `business_name` for orders/support/marketing/internal/waitlist/exploring, `community_name` for community.
-- Fresh rows pre-populate with `{businessKey}: [your message here] Reply STOP to opt out.` → compliant from the start.
-- Deleting the chip → Needs business name error → Fix prepends `{businessKey}: ` to the trimmed-start template.
+### Four decisions recorded (D-358–D-361)
+- **D-358: /src sunset.** Rebuild registration pipeline, inbound, dashboard, billing webhooks, sandbox key management, compliance monitoring on `/api` + Sinch across MASTER_PLAN Phases 2–5. `/src` will not be maintained, federated, or preserved as fallback.
+- **D-359: MASTER_PLAN.md v1.0 adopted as canonical launch plan.** Reference for scope decisions, phase prioritization, conflict resolution. Each CC session reads at start alongside DECISIONS.md / CC_HANDOFF.md / PROTOTYPE_SPEC.md.
+- **D-360: OTP/Verification available both as cross-vertical auth primitive AND as its own dedicated vertical.** Every vertical can use OTP methods regardless of primary use case; Verification remains a standalone vertical for developers whose app IS identity verification.
+- **D-361: Review-request templates ship at launch as template additions within applicable verticals.** Developer supplies review URL at authoring time. Not a standalone vertical.
 
-### Lock-while-authoring (D-357) — supersedes auto-discard
-While a never-saved custom (empty slug) is open, every other edit/monitor trigger on the page is disabled with tooltip `Save or cancel the current message first.`: `+ Add`, Ask Claude, every row's pencil + preview + activity icon. Authoring row itself stays fully interactive.
+### REPO_INDEX.md updates
+- Meta: `Last updated`, `Decision count` (D-357 → D-361), `Master plan last updated` bumped, unpushed-commits note updated.
+- Canonical docs table: `MASTER_PLAN.md` and `CURRENT_STATE_AUDIT.md` added; `SDK_BUILD_PLAN.md` flagged stale; `STARTER_KIT_PROGRAM.md` noted superseded by Phase 9; `PRICING_MODEL.md` date corrected to v6.0 / 2026-04-08.
+- Subdirectory descriptions rewritten for `/src` (sunset), `/sdk` (shipped-ahead), `/api` (Session B unblocked), `/supabase` (slated for archive), added `/experiments/` (planned).
+- Build spec status table: Session B flipped BLOCKED → UNBLOCKED; Session C deferred; SDK_BUILD_PLAN marked stale; vertical hydration added as NOT STARTED (Phase 6).
+- Active plan pointer: Phase 0 ACTIVE, Phase 1 unblocked and running in parallel. D-358/D-359 references removed from "not yet recorded" — they're recorded now.
+- Change log: new Session 37 close-out entry.
 
-- First attempt was auto-discard (commit `33c015b`). PM review flagged silent-loss-of-work. Reversed via `b5ad6cd` — `discardUnsavedCustomIfNeeded` helper deleted outright; defensive guards in `requestEdit` / `requestMonitor` / `openAskClaude` / `handleAddCustom` reject transitions while locked.
+### PM_PROJECT_INSTRUCTIONS.md rewrite
+~273 lines of diff across the file. Paste into Claude.ai UI before next browser chat per existing sync protocol.
 
-### Session 35 regression fix — tooltip tokens
-`--color-bg-primary-solid` was never defined in `globals.css` — Session 35's semantic-token migration (`fdfeb58`) referenced the utility class without adding the variable. Tooltips rendered empty/transparent (shadow-only). Fixed in `ab7943a` by adding both `bg-primary-solid` and `bg-secondary-solid` to `@theme`. Five card-level tooltips + two lock-overlay tooltips + Test send tooltip all resolve to near-black background + white text now.
+### /experiments/ directory
+Planned but not yet created — will house Phase 1 Sinch proving-ground experiments + `experiments-log.md`.
 
-### User-facing rename: Testers → Preview list
-Panel title + subtext + cap tooltip updated. Code identifiers (`TestPhone`, `MAX_TEST_PHONES`, `testRecipients`, `test-phones-card.tsx`, `handleInviteTestPhone`, etc.) intentionally unchanged per the user-facing-vs-internal split in PM_PROJECT_INSTRUCTIONS. Test send tooltip also updated to drop "tester".
+---
 
-### User-facing rename: Quick send → Test send
-Both monitor panels. New hover tooltip: `Sends from RelayKit to someone on your preview list. Not from your app.` clarifies the message source.
+## Current State
 
-### Dev affordances on the state dropdowns
-- **Onboarding dropdown:** appended `Reset` — hard reload into `/start` after `sessionStorage.clear() + localStorage.clear()`.
-- **Workspace state dropdown:** appended `Edit business details` — opens a prototype-only modal for inline `appName` / `serviceType` edits. Service type is a per-vertical select (12 options for appointments) with text-input fallback. Hidden in Onboarding.
+**Phase 0 (doc reconciliation + architectural decisions) — ACTIVE.** Four of the phase's decisions landed this session (D-358, D-359, D-360, D-361). Remaining Phase 0 work is doc-reconciliation cleanup (see suggested next tasks below).
 
-### Status indicator label
-Yellow-state `Test mode` → `Test messages only`. Green-state `Live` unchanged. Applies to Building / Pending / Extended Review / Rejected via single string change in `StatusIndicator`.
+**Phase 1 (Sinch proving-ground experiments) — UNBLOCKED, ready to begin in parallel.** Sinch account active, $100 credit, phone number ready to provision. Goal: prove the Sinch surface (send, inbound, registration) with throwaway code in `/experiments/` before touching production pipeline.
 
-### Decisions recorded
-- **D-355** — Variable grammar: canonical base form + context-aware rendering. (Recorded at session start from a PM+Joel-aligned draft.)
-- **D-351 revised** — Custom message delivery: generic SDK method with slug, plus manual Test send. (Revised at session start.)
-- **D-356** — Custom messages require a business-name variable (compliance).
-- **D-357** — Lock-while-authoring on never-saved custom rows.
-
-### PM instructions sync
-`PM_PROJECT_INSTRUCTIONS.md` gained response-brevity + step-by-step instruction guidelines. Joel confirmed paste into Claude.ai UI — `pm_instructions_synced` stays `true`.
+**Later phases (2–9):** Covered in `MASTER_PLAN.md`. Phase 2 is Session B / Sinch send wiring, gated on Phase 1 findings. Phases 3–5 rebuild what `/src` does (registration, inbound, dashboard) on `/api`. Phase 8 publishes the SDK (npm + README + AGENTS.md). Phase 9 is the starter-kit integration strategy.
 
 ---
 
 ## Quality Checks Passed
 
-- **`tsc --noEmit` clean** on `/prototype` after every commit in the session.
-- Dev server recompiles cleanly (`Ready in ~2s` each restart; `/apps/glowstudio` HTTP 200 no runtime errors).
-- **ESLint:** not run — no eslint config exists in `/prototype` (eslint configs are under `/sdk` and `/api`, neither touched this session). Unchanged from prior handoff.
+- **`tsc --noEmit` clean** on `/api`, `/sdk`, `/prototype` at close-out time.
+- **ESLint:** not run — no `/prototype` eslint config (unchanged from prior sessions). `/api` and `/sdk` eslint not exercised this session (docs-only work).
+- **No code modified** this session. All changes are to documentation files.
 
 ---
 
 ## In Progress / Partially Done
 
-Carried forward (unchanged this session):
+Carried forward (unchanged this session — most items now covered by MASTER_PLAN Phases 2–9):
 - Signup backend stubbed (D-59)
 - EIN verification backend stubbed (D-302/D-303)
 - Phone OTP stubbed (D-46)
@@ -174,45 +84,36 @@ Carried forward (unchanged this session):
 - Cancel plan + Regenerate live key modals are close-modal no-ops
 - `/account` actions all brand-link no-ops
 
-**Deferred this session:**
-- **Archive modal redesign (original PM bug 6 from round 2 of PM review)** — user confirmed the proposed body copy but we ran out of session before the redesign itself (larger modal, drop monospace, Copy affordance, expanded body). Proposed copy for when we pick it up: `"This message keeps sending from your app until you remove the line below. Your developer or AI coding tool can help."`
+Deferred (from Session 36):
+- **Archive modal redesign** — proposed copy confirmed, visual redesign still pending. Possibly folds into Phase 6 workspace polish.
 
 ---
 
 ## Gotchas for Next Session
 
-### 1. User-facing vs. internal naming split is now load-bearing
-The "Preview list" rename is copy-only; `TestPhone`, `testerId`, `test-phones-card.tsx`, `INITIAL_TEST_PHONES`, `MAX_TEST_PHONES`, and all related code identifiers stay as `tester` / `test`. Same applies to `muted` → `readOnly` (behavior prop, not a visual prop anymore). When adding new code near these surfaces, don't panic-rename to match the copy — PM_PROJECT_INSTRUCTIONS defines this boundary.
+1. **Session 36's 31 commits + Session 37's audit commit + Session 37's close-out commit are all still local.** Push is gated on PM approval after this close-out.
 
-### 2. `addCustomMessage` pre-populates the template
-New custom rows mount with `{businessKey}: [your message here] Reply STOP to opt out.` — compliant from the start. Don't assume `message.template === ""` means unsaved; use `message.slug === ""` to test "never saved".
+2. **MASTER_PLAN.md is now canonical.** CC must read at session start alongside DECISIONS.md, CC_HANDOFF.md, PROTOTYPE_SPEC.md. Per D-359 it is the reference for scope decisions, phase prioritization, and conflict resolution.
 
-### 3. Hydration filter drops empty-slug rows
-`session-context.tsx`'s sessionStorage-read effect drops any `customMessages` entry where `slug === ""`. Unsaved work does not survive reload — matches built-in behavior where `messageEdits` only stores persisted changes. If you add a flow that writes to `customMessages` before Save, expect it to vanish on reload.
+3. **/src is slated for sunset (D-358) — no modifications.** Capabilities are being rebuilt on `/api` + Sinch across Phases 2–5. Do not add features, fix bugs, or port files into `/src` unless Joel explicitly overrides.
 
-### 4. Lock-while-authoring supersedes auto-discard
-Don't re-introduce a discard helper on navigation. The `locked` prop + parent guards in `requestEdit` / `requestMonitor` / `openAskClaude` / `handleAddCustom` are the current protection. The relevant page-level derivation is `hasUnsavedCustomOpen` / `unsavedCustomId`.
+4. **SDK_BUILD_PLAN.md is stale per audit §4.2.** Do not read it as a build source until Phase 0 reconciles it. Current SDK reality is documented in `CURRENT_STATE_AUDIT.md` §2.3 (shipped, v0.1.0, tsup-built, tests green, tgz packed, not yet published; missing README and AGENTS.md).
 
-### 5. `bg-bg-primary-solid` token is now defined
-Fine to use across tooltips / dark pills. `--color-bg-secondary-solid` also defined (not yet consumed — Tailwind v4 only emits used tokens, so the compiled CSS won't carry `bg-bg-secondary-solid` until a class uses it, but the variable is there the moment it's needed).
+5. **`/api/supabase/migrations/005_messages_table.sql` is still unapplied.** Deferred to Phase 2 (Session B) per MESSAGE_PIPELINE_SPEC. Do not apply out-of-band.
 
-### 6. `CustomMessageCard`'s tooltip infra mirrors CatalogCard's
-Same `showEditTooltip` / `showMonitorTooltip` state + 300ms schedule/clear ref pattern. Don't add a third pattern — reuse.
+6. **`/supabase/migrations/20260307200000_audit_fixes.sql` is destructive.** Contains `DELETE FROM customers WHERE TRUE;` — marked dev-only but lives in the migrations directory. Flagged in audit §5.13 for Phase 0 decision.
 
-### 7. Compliance is still explicit-call only
-Post-Fix re-checks now bypass the 2s debounce via `revealImmediately` flag on `runComplianceCheck`. Don't re-introduce a reactive `useEffect` that watches `editText` / `editTemplate` — the determinism of explicit-call-only is what made the Session 35 error-state bugs go away, and D-357's lock logic depends on it.
+7. **Two `messages` table schemas exist** — root `/supabase/` (body_hash, direction CHECK inbound/outbound, Twilio-named) vs `/api/supabase/005_messages_table.sql` (composed_text, outbound-only, carrier-agnostic). Phase 3 (database reconciliation) resolves this.
 
-### 8. `MAX_TEST_PHONES` cap is now visible, not silent
-Previously the `+ Invite someone` button was hidden at 5/5. Now it renders disabled with a tooltip. If you need to change the cap, `MAX_TEST_PHONES` in `test-phones-card.tsx` is the single source.
+8. **Verification-vertical workspace hydration is broken.** Audit §3 has the full trace. Data is complete; the fix is a small hydration in workspace init. Covered by MASTER_PLAN Phase 6. Until then, only Appointments is reachable end-to-end via the wizard.
 
-### 9. Dev affordances live on the dropdowns
-Reset + Edit business details are sentinel options on `<select>` elements in top-nav + dashboard-layout. When adding more state switchers, follow the same sentinel pattern (disabled em-dash row + `__sentinel_key__` value + `onChange` interception).
+9. **`rk_sandbox_` / `rk_test_` drift.** D-349 recorded 2026-04-17; still unswept across 40+ files. Phase 0 should include the sweep.
 
-### 10. `api/node_modules/` remains untracked
-Intentionally not in `.gitignore` at the `api/` layer. Don't `git add -A`.
+10. **PM_PROJECT_INSTRUCTIONS.md changed substantially** (~273 lines). If PM is starting a new Claude.ai browser chat, they need the updated paste.
 
-### 11. Dev server
-`npm run dev` in `/prototype` → port 3001. Memory rule: always `rm -rf .next` before starting.
+11. **`api/node_modules/` is untracked intentionally.** Do not `git add -A`.
+
+12. **`.next` cache recurring issue** — prototype dev server was stopped, `.next` deleted, and restarted as part of this close-out.
 
 ---
 
@@ -220,43 +121,60 @@ Intentionally not in `.gitignore` at the `api/` layer. Don't `git add -A`.
 
 ### Added
 ```
-prototype/lib/slug.ts
-prototype/components/catalog/custom-message-card.tsx
-prototype/components/catalog/message-action-modal.tsx
-prototype/components/edit-business-details-modal.tsx
+CURRENT_STATE_AUDIT.md                   # Session 37 audit (committed earlier in this session as 04655c9)
+MASTER_PLAN.md                           # v1.0 canonical launch plan (D-359)
 ```
 
 ### Modified
 ```
-DECISIONS.md                                       # +D-355, D-351 revised, +D-356, +D-357
-PROTOTYPE_SPEC.md                                  # Custom messages section + Preview list + lock pattern + dev dropdown affordances
-REPO_INDEX.md                                      # Meta + subtree index + change log
-PM_PROJECT_INSTRUCTIONS.md                         # Response brevity + step-by-step instructions
-CC_HANDOFF.md                                      # This file
-prototype/app/globals.css                          # +--color-bg-{primary,secondary}-solid tokens
-prototype/app/apps/[appId]/page.tsx                # + Add, archived disclosure, modals, lock state, Edit business modal mount
-prototype/components/catalog/catalog-card.tsx      # locked prop + tooltip swap + layout tweak (min-h, items-start)
-prototype/components/dashboard-layout.tsx          # Edit business details sentinel + status label
-prototype/components/top-nav.tsx                   # Reset sentinel
-prototype/components/test-phones-card.tsx          # Preview list title + subtext + cap tooltip
-prototype/context/session-context.tsx              # CustomMessage shape + saveCustomMessage + archive/restore + hydrate filter
-prototype/lib/catalog-helpers.ts                   # +getPrimaryBusinessVariable
+DECISIONS.md                             # +D-358, +D-359, +D-360, +D-361
+REPO_INDEX.md                            # Meta bump, new files registered, subdirs rewritten, change log
+PM_PROJECT_INSTRUCTIONS.md               # Substantial rewrite (~273 lines of diff)
+CC_HANDOFF.md                            # This file
 ```
 
 ### Deleted
 None.
 
+### Not modified (but flagged for Phase 0)
+```
+SDK_BUILD_PLAN.md                        # Stale — rewrite in Phase 0
+CLAUDE.md                                # Wizard key drift (relaykit_intake → relaykit_wizard per audit §5.4)
+docs/RELAYKIT_PRD_CONSOLIDATED.md        # "329+ decisions" should be 361+; endpoint list reconciliation
+MESSAGE_PIPELINE_SPEC.md                 # Move consent API from Future to Shipped; note Phase 1 dependency for B
+docs/PRICING_MODEL.md                    # Still references rk_sandbox_; inbound claim needs reconciling with Phase 3 plan
+WORKSPACE_DESIGN_SPEC.md                 # Get-started step still shows rk_sandbox_*
+docs/archive/PRD_04_TWILIO_SUBMISSION.md # Needs deprecation header per D-358
+docs/archive/PRICING_MODEL.md            # Archive v3.0 needs deprecation header
+docs/archive/VISION_IMPLEMENTATION_MEMO.md # "Consume and discard" — candidate for deletion
+```
+
 ---
 
-## Suggested Next Tasks (priority order)
+## Suggested Next Tasks (Phase 0 focused, with Phase 1 in parallel)
 
-1. **Archive modal redesign** (PM bug 6 deferred). Proposed body copy approved; ship the visual redesign (larger modal, non-monospace, Copy affordance on the code block, breathing room).
-2. **D-352 — content-based marketing classification.** When a user creates/edits a custom message, detect marketing-class content at authoring time. If detected without marketing enabled, block Save with explanation + path to add marketing.
-3. **D-355 — variable grammar rendering.** Canonical base form for common nouns + context-aware rendering (`{variable}` auto-capitalized at sentence start, `{variable:plural}` for common nouns only). Migrate existing state.serviceType values.
-4. **Preview list invite flow backend wiring.** Currently a stubbed `setTimeout`. Spec the invite SMS copy + the accept flow (outside scope of this session).
-5. **Stale-pricing sweep.** Residual `$199`/`$149` across prototype strings, PRDs, marketing copy. Canonical: $49 + $19/$29.
-6. **Session-aware "Back to {appName}" on `/account`.**
-7. **Ask Claude panel backend** (streaming AI route).
-8. **Wire signup / phone OTP / EIN verification to real backends** (D-59, D-46, D-302/D-303).
-9. **Error-state design pass** across all interaction failures before copy lock.
-10. **Raw-color sweep** on pre-existing violations in `/sms/[category]/messages/page.tsx` (lines 242, 379, 951).
+**Phase 0 — doc reconciliation:**
+
+1. **Rewrite `SDK_BUILD_PLAN.md`** to reflect shipped state + remaining work. Current SDK is v0.1.0 TypeScript-strict dual-published; remaining work is README (13 sections per original plan §3), AGENTS.md template (per `docs/AI_INTEGRATION_RESEARCH.md` §8), and npm publication (MASTER_PLAN Phase 8). Reconcile `SendResult` shape drift while rewriting.
+
+2. **Fix `CLAUDE.md` wizard storage key** — `relaykit_intake` → `relaykit_wizard` per audit §5.4. Also reconcile D-03 (magic-link wording) against actual OTP implementation in `/src`.
+
+3. **Update `RELAYKIT_PRD_CONSOLIDATED.md`** — decision count "329+" → "361+"; endpoint list reconciliation (`POST /v1/messages/preview` + `GET /v1/messages/:id` claims vs MESSAGE_PIPELINE_SPEC vs `/api` reality).
+
+4. **Update `MESSAGE_PIPELINE_SPEC.md`** — move consent API from Future to Shipped (it's done + tested); add note that Session B start depends on Phase 1 experiment findings; add `queuedUntil` to documented `MessageContext` or drop from future Session C plan.
+
+5. **Archive deprecations** — add deprecation headers to `/docs/archive/PRD_04_TWILIO_SUBMISSION.md` (Twilio sunset per D-358) and `/docs/archive/PRICING_MODEL.md` (v3.0 superseded by v6.0). Consider deleting `VISION_IMPLEMENTATION_MEMO.md` per its own "consume and discard" header.
+
+6. **`rk_sandbox_` → `rk_test_` sweep** across code + docs per D-349. 40+ files; audit §5.7 has the full list.
+
+7. **Document `/src` sunset plan** somewhere visible — which `/src` capabilities feed which MASTER_PLAN phases. Could live in MASTER_PLAN itself or a new `SRC_SUNSET.md`.
+
+**Phase 1 — Sinch experiments (in parallel):**
+
+8. **Experiment 1:** provision a Sinch phone number and send a single SMS to Joel's phone. Capture every API response, header, latency in `/experiments/experiments-log.md`. Throwaway code; goal is to discover the Sinch surface shape, not write production code.
+
+(Further experiments per MASTER_PLAN Phase 1.)
+
+---
+
+*End of close-out.*

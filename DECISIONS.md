@@ -1293,3 +1293,46 @@ Reason: the first implementation of this protection auto-discarded the pending c
 Alternatives rejected: auto-discard-on-navigation (tried, silently lost work); auto-save-on-navigation (violates the "never save something you didn't mean to save" norm for compliance-gated content); modal confirmation on every transition (nag-heavy for a flow the user will use repeatedly).
 
 Affects: `prototype/app/apps/[appId]/page.tsx` (`hasUnsavedCustomOpen` derivation, defensive guards in `request*` / `handleAddCustom` / `openAskClaude`, disabled + tooltip on `+ Add` and Ask Claude buttons), `prototype/components/catalog/catalog-card.tsx` (`locked` prop, tooltip swap via existing `showEditTooltip` / `showMonitorTooltip` infra), `prototype/components/catalog/custom-message-card.tsx` (`locked` prop, new tooltip infra mirroring CatalogCard).
+
+**D-358: Sunset /src codebase; rebuild on /api + Sinch**
+The Twilio-era /src codebase is retired. Capabilities it currently provides (carrier registration pipeline, inbound message handling, Stripe billing webhooks, dashboard, sandbox key management, compliance monitoring) are being rebuilt on /api with Sinch across MASTER_PLAN Phases 2–5. /src will not be maintained, federated with /api, or preserved as a fallback.
+Reasoning: /src is built around Twilio's registration timelines (weeks), which are incompatible with RelayKit's core positioning promise of fast registration (~3 days via Sinch). Federating would require maintaining two carrier integrations indefinitely; preserving /src as a fallback would compromise the speed claim the entire product is built on. The audit confirmed /api is the cleaner foundation and that rebuilding the missing capabilities is feasible phase by phase. Corner-cutting by keeping old Twilio code alive would create the exact kind of confusion and technical debt Joel has explicitly prioritized avoiding.
+Consequences:
+
+/src enters feature-freeze immediately. No modifications.
+/supabase/ (root-level migrations) will be archived in Phase 3.
+Registration, inbound, Stripe webhooks, dashboard get rebuilt on /api across Phases 2–5.
+Twilio column naming in migrations gets renamed to carrier-agnostic equivalents during Phase 3.
+
+
+**D-359: MASTER_PLAN.md adopted as canonical launch plan**
+MASTER_PLAN.md v1.0 (dated 2026-04-20) is adopted as the canonical holistic plan guiding all work through launch. The ten-phase structure, North Star, ranked customer values, working principles, out-of-scope list (Section 16), and risk register (Section 17) are the reference for scope decisions, phase prioritization, and conflict resolution.
+Reasoning: Without a single holistic plan, each chat operated on partial context and ad-hoc priorities, causing scope drift and duplicated planning work. The audit surfaced the magnitude of rebuilding cleanly on Sinch and the need for disciplined phase-by-phase proving-before-building. The master plan consolidates this into one document Joel can sniff-test and PM reads at every session start.
+Consequences:
+
+Every chat begins with reading MASTER_PLAN.md alongside REPO_INDEX and handoffs.
+Active work references the active phase, not a parallel priority list.
+Scope additions require either fitting an existing phase, being added to BACKLOG.md, or triggering a MASTER_PLAN amendment.
+Section 16 (out-of-scope) is the scope-creep firewall.
+
+
+**D-360: OTP / Verification available across all verticals as built-in auth primitive, AND as its own dedicated vertical**
+The Verification use case remains selectable as a dedicated vertical for developers whose entire SMS use is auth-related (login OTP, signup code, password reset, MFA challenge, new device alert — the full auth message family). Additionally, every other vertical automatically includes a basic verification-code capability in its SDK namespace (e.g., relaykit.salon.verifyCode()), so developers whose app needs OTP alongside their business vertical don't have to register a second campaign or pick between categories.
+Reasoning: Verification is already scoped as a vertical with templates, SDK methods, and UI card built. But OTP is also an auth primitive that most apps need alongside their business use case — forcing a salon developer to choose between "Salon" and "Verification" would be absurd and would conflict with D-333 (one transactional + one marketing per project). Carriers universally allow verification codes under any transactional registration, so no separate registration is required. Treating it as both a vertical and a built-in primitive matches how developers actually think about it: a dedicated auth app picks Verification; every other app gets OTP as a standard capability.
+Consequences:
+
+Phase 6 (vertical hydration) fixes Verification as a fully reachable vertical end-to-end.
+Every non-verification vertical gets a verifyCode() method added to its SDK namespace (trivial additions; most data already exists).
+OTP counts against monthly message allowance (no special pricing).
+Default code length: 6 digits. Default TTL: 10 minutes. Rate limiting: to be set during implementation per Phase 2/Phase 6 work.
+
+
+**D-361: Review request templates ship at launch as template additions within applicable verticals, using developer-supplied review URLs**
+Review request messages are a template type added to verticals where post-service review collection is a natural pattern: salon, dental, home services, auto services, fitness/wellness, tutoring. They are not their own vertical. The review URL is a developer-supplied variable — RelayKit does not own the review destination or integrate with specific review platforms. Developers can pass Google Business Profile links, Yelp links, Podium links, Birdeye links, or their own landing pages; RelayKit just delivers the SMS. Review requests ship as transactional messages at launch. Sentiment branching (routing high-rating customers to public reviews and low-rating customers to private feedback — Podium's controversial feature) is explicitly not shipped at launch.
+Reasoning: Review requests are a high-value, recognizable pattern for local-business verticals. Bundling them as template additions respects D-333 (one transactional + one marketing per project) — a salon can do appointment reminders AND review requests from the same registration. Keeping the review URL as an opaque developer-supplied variable avoids building review-collection infrastructure (which is its own product category) and positions RelayKit as complementary to existing review platforms rather than competitive. Transactional classification aligns with CTIA guidance that post-service review requests to existing customers are related to the completed transaction. Sentiment branching deferred because (a) it raises ethical questions around review gating, (b) it requires review-collection backend we don't have, and (c) the core value is captured by the well-timed SMS alone.
+Consequences:
+
+Each applicable vertical's SDK namespace gets a reviewRequest(...) method with customerName, reviewUrl, and other variable parameters.
+Default canonical template: "Hi {customerName}, thanks for visiting {businessName} today! If you had a good experience, we'd really appreciate a quick Google review: {reviewUrl}" — editable on website with compliance checker.
+Developer controls when to fire (no scheduling infrastructure built into RelayKit at launch).
+Marketing docs and site copy position reviews as vertical-native capability, not a separate product.

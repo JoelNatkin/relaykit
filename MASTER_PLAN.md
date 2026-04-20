@@ -1,0 +1,461 @@
+# RelayKit Master Plan
+### The holistic plan that guides all of our work
+### Version 1.0 — April 20, 2026
+
+> **Purpose:** A single plan that holds the entire picture of where RelayKit is going and how we get there, written so Joel (non-technical UX designer and founder) can read it, catch smells, and make sure the vision stays on track. This document supersedes ad-hoc priority lists and session-to-session planning for big-picture decisions. Detailed specs still live in their own docs (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN, PROTOTYPE_SPEC, etc.).
+>
+> **Posture:** Rebuild cleanly. No corner-cutting. Prove before we build. Test in the right order. Each phase ends with something that demonstrably works before the next phase starts. CC writes code; Joel is PM's hands for running experiments and reviewing work; PM plans, reviews, and maintains this document.
+>
+> **How to use this document:** Read the paragraphs. Skim the lists. If something feels wrong, say so. Update it when big things change. Reference specific phases by name when talking to PM or CC.
+
+---
+
+## 0. The North Star
+
+RelayKit exists so that an independent developer building an application that needs to send SMS can add it cleanly, compliantly, and confidently, without becoming an expert in carrier regulation. The developer's AI coding tool should be able to read our documentation and produce a working integration step by step, checking in at each stage, without hallucinations or shortcuts. The developer should be able to test real text messages to their own phone before committing any money, should be able to register their business for live messaging for $49 and have it approved within days (not weeks), and should never have to read a paragraph about 10DLC or carrier rules in our product. When something goes wrong, the product should tell them plainly what happened and what to do. When something is working, the product should be quiet and get out of the way. Pricing should be stated as facts on every surface, with no dark patterns.
+
+That is the whole thesis. Every phase of this plan serves it. If a phase stops serving it, we stop that phase.
+
+**The customer values, ranked:**
+
+1. **Fast registration** — the single biggest differentiator. Sinch's ~3 day approval vs. Twilio's weeks is launch-or-no-launch for an indie developer. Everything depends on Sinch actually delivering on this.
+2. **The AI tool integrates RelayKit correctly** — using an incremental, checkpoint-based workflow (Explore → Plan → Code → Verify per the AI integration research), with AGENTS.md, cursor rules, and per-builder guides making first-try success realistic.
+3. **Honest pricing, stated plainly** — $49 registration, $19/month, 500 messages included, full refund if rejected. No fine print anywhere.
+4. **Compliant by default, without teaching** — the developer never has to think about 10DLC, opt-out handling, or consent ledgers. The product handles it. Messages that can't comply can't be sent.
+5. **Free to prove it works** — sandbox, no credit card, no time limit, real text messages to verified phones. Pay only when going live.
+6. **One layer for everything SMS** — programmatic sends, verification codes, review requests, inbound replies, all through the same SDK and dashboard.
+7. **Quiet product, no jargon** — the voice principles. Words as last resort. Knowledgeable colleague tone.
+
+---
+
+## 1. The State of Things (April 20, 2026)
+
+Here is a picture of where we actually stand, as of the CURRENT_STATE_AUDIT done this session.
+
+There is more built than the documentation admits. The SDK — the npm package that developers will install — is essentially done. It's a complete TypeScript library with eight vertical namespaces (appointments, orders, verification, support, marketing, internal, community, waitlist), around thirty methods, dual-published, with tests, packed and ready to ship to npm. The message-authoring prototype — the UI developers will use to preview and customize their messages — is in good shape, with the appointments vertical working end-to-end. A new backend called `/api` has begun, built on clean modern foundations (Hono framework, strict TypeScript, 98 passing tests), and the first part of the message pipeline (Session A) is complete.
+
+There are also real gaps. `/api` cannot actually send a text message yet — the "call Sinch" step is a placeholder that just writes to a log. `/api` isn't deployed anywhere. The SDK isn't published to npm yet, just packed as a file. Only the Appointments vertical works end-to-end in the prototype — every other vertical has its data defined but the wizard doesn't hand off correctly to the workspace. There's no AGENTS.md, no SDK README, no cursor rules committed. The compliance site at msgverified.com doesn't exist yet. Email delivery through Resend isn't wired up.
+
+And there is a large piece of technical debt. The original RelayKit production app, built on Twilio, still exists in a directory called `/src`. It has real working code for things the new backend doesn't cover yet — carrier registration, inbound message handling, Stripe billing integration, the dashboard. We've decided to sunset `/src` rather than preserve or federate it, because keeping Twilio-era code alive would compromise the Sinch-driven fast-registration promise that is central to RelayKit's positioning. Rebuilding these capabilities on `/api` with Sinch is the path forward.
+
+Nothing is on fire. The foundation is solid. The work ahead is well-defined but substantial, and the discipline of proving things work before building on top of them is what will make this successful.
+
+---
+
+## 2. Working Principles
+
+These are the rules we operate by. If we violate one, we're probably making a mistake.
+
+**Prove, then build.** Before we build a feature that depends on external systems (Sinch, carrier rules, real webhook shapes), we run small experiments to confirm how those systems actually behave. Experiments are throwaway code kept in their own directory. Production code is built against real recorded responses, not assumptions.
+
+**One phase at a time.** Each phase ends with a demonstrable artifact — something Joel can see working. We don't start Phase N+1 until Phase N is proven. This prevents the "five things half-built" state.
+
+**No corner-cutting.** If a phase feels like it wants to skip a step to save time, we don't. The posture is "do it right." Shortcuts taken now become bugs and confusion later. Joel has explicitly agreed to accept real elapsed time in exchange for reliable outcomes.
+
+**Sunset over federate.** When old code and new code both want to do the same thing, we kill the old code. The `/src` Twilio codebase is being retired, not maintained alongside `/api`.
+
+**Documentation is part of the work.** Every phase ends with updated docs. Stale docs are as broken as stale code. REPO_INDEX, DECISIONS, spec documents, and this master plan all get updated at phase boundaries.
+
+**PM is the architect, CC is the builder, Joel is PM's hands and the decision-maker.** CC does not make strategic decisions. Joel does not write code. PM reviews CC's work before it ships. This three-way role structure is load-bearing.
+
+**The voice principles are not negotiable.** User-facing copy, error messages, dashboard labels, marketing copy — all of it runs through Voice & Product Principles v2.0. Tier 1 (show, don't tell) is the default. Tier 3 (full explanation) is only for people who go looking.
+
+**Pricing is transparent.** Every surface that mentions money states the price plainly. $49 registration. $19/month. $8 per 500 overage messages. Full refund if rejected. No "see pricing" links, no fine print.
+
+---
+
+## 3. The Ten Phases
+
+This is the whole plan from where we are to a launched product. Each phase has its own section below. The order is deliberate — each phase unlocks the next. Some phases can run in parallel tracks (explicitly called out), but most are sequential.
+
+A high-level summary of the whole path:
+
+1. **Phase 0: Doc reconciliation + architectural decisions** — Clean up what we know, record the `/src` sunset decision, get everyone aligned on ground truth before building anything.
+2. **Phase 1: Sinch proving ground** — Run experiments to prove Sinch does what we need, measure registration approval time, capture real response shapes.
+3. **Phase 2: Session B (Sinch outbound delivery)** — Build the "actually send a text message" step in `/api`, against proven Sinch behavior.
+4. **Phase 3: Database reconciliation** — Clean up the two-database situation. Single clean schema on `/api/supabase` going forward.
+5. **Phase 4: Inbound message handling** — Build Sinch webhook receiver in `/api`, handle STOP/START/HELP, forward to developer's webhook endpoint.
+6. **Phase 5: Registration pipeline on Sinch** — Rebuild brand and campaign submission against Sinch's APIs, verify fast registration end-to-end.
+7. **Phase 6: Vertical hydration** — Fix the wizard-to-workspace handoff so every vertical works end-to-end, not just appointments. Refactor the messages page to be data-driven.
+8. **Phase 7: `/api` deployment** — Stand up `api.relaykit.ai`. Staging first, then production.
+9. **Phase 8: SDK publication and AI-integration artifacts** — Publish RelayKit to npm. Ship AGENTS.md, cursor rules, README, per-builder guides.
+10. **Phase 9: Starter kit integration validation** — Download popular starters (KolbySisk, Vercel/Supabase), integrate RelayKit, prove the integration workflow works for real developers, approach starter maintainers.
+11. **Phase 10: Launch readiness** — Review request templates, OTP polish, two-way dashboard view, compliance site, email integration, pricing sweep, final quality pass.
+
+Two-way messaging, OTP verification, review requests, and other launch features live inside phases 6 and 10 rather than as their own phases, because they're applications of capabilities the earlier phases build, not separate projects.
+
+---
+
+## 4. Phase 0 — Doc Reconciliation + Architectural Decisions
+
+Before we start building, we get everyone and everything aligned on what's true right now. The audit produced a list of places where the specs say one thing and the code says another. Leaving those gaps in place means every future session starts with CC operating on partial lies. That's a silent tax on every decision that follows. Phase 0 pays that tax down.
+
+This phase also records the biggest architectural decision we've made: sunsetting the `/src` Twilio codebase entirely. That decision needs a D-number, a paragraph of reasoning in DECISIONS.md, and updates to every spec that currently assumes `/src` stays alive. Nothing can proceed cleanly without this.
+
+Phase 0 is not a build phase. It's a reading, writing, and deciding phase. Joel and PM do most of the work; CC only gets involved to apply the cleanup.
+
+**What gets done:**
+
+- Record `/src` sunset as an official decision with reasoning
+- Record `rk_sandbox_` → `rk_test_` prefix change (D-349 already exists) with a scheduled sweep phase
+- Update REPO_INDEX to reflect reality (commit counts, decision count, file ages)
+- Update CLAUDE.md where it references wrong storage keys or stale conventions
+- Update RELAYKIT_PRD_CONSOLIDATED to reflect current decision count and endpoint list
+- Rewrite SDK_BUILD_PLAN to reflect shipped state and remaining work (README, AGENTS.md, publication)
+- Update MESSAGE_PIPELINE_SPEC to note what Phase 1 experiments will inform
+- Archive superseded PRDs with explicit deprecation headers
+- Update this master plan as the canonical reference going forward
+
+**What does not get done in Phase 0:**
+
+Anything that depends on Sinch behaving a specific way. Those parts of the docs stay in draft state until Phase 1 experiments produce real evidence. Examples: exact Sinch response shapes in MESSAGE_PIPELINE_SPEC Session B, registration flow timing claims on the marketing site, inbound webhook payload shape.
+
+**Phase 0 demo moment:** Joel reads the updated docs, and they match his understanding of the product. No contradictions, no lies, no stale numbers.
+
+**Phase 0 output:** Updated repo with consistent documentation. New D-numbers recorded. This master plan becomes the operating reference.
+
+---
+
+## 5. Phase 1 — Sinch Proving Ground
+
+Before we build anything on top of Sinch, we prove Sinch actually does what we've been assuming it does. The whole product positioning rests on Sinch's fast carrier registration. If Sinch takes two weeks instead of three days, the marketing story has to change. If Sinch's inbound webhook payload looks different than we expect, the pipeline design changes. If Sinch handles STOP replies at the carrier layer automatically, our inbound logic is simpler; if not, it's bigger. These are unknowns we cannot afford to discover three weeks into building.
+
+The experiments run against a real Sinch account. Code written here is throwaway — it lives in an `/experiments/sinch/` directory and never gets ported directly into production. What gets ported is the *knowledge* — documented response shapes, measured timings, captured webhook payloads, screenshots of approval flows. This becomes the ground truth for Phases 2, 4, and 5.
+
+Joel is PM's hands for this phase. PM writes each experiment's procedure, what to observe, what to record. Joel runs the experiment (or has CC run it) and reports results. PM interprets and updates the experiments log.
+
+**The five experiments:**
+
+1. **Provision a phone number and send one SMS.** Simplest possible test. Proves the Sinch account works, proves the outbound API shape, produces a real response payload we can use as test fixture for Phase 2. Joel's phone receives the message; we keep the screenshot.
+
+2. **Receive an inbound SMS (reply).** Joel replies to Experiment 1's message. We configure a webhook (using a temporary tunneling service) and capture what Sinch sends us. This is the payload Phase 4 has to handle.
+
+3. **Submit a brand registration and measure time.** Register the RelayKit business (or a test business) with Sinch. Record the submission response shape. Time how long approval actually takes. This is the ground truth for the fast-registration claim.
+
+4. **Submit a campaign registration and measure time.** After brand is approved, submit a campaign for a test vertical. Record response shape. Time the approval. Campaign approval is what actually gates go-live for a customer.
+
+5. **Test STOP/START/HELP reply handling.** Send a message, reply STOP from Joel's phone. Observe: does Sinch auto-handle the opt-out at the carrier level? Do we receive notification? Do we need to block further messages ourselves? This determines how big our inbound logic needs to be.
+
+**Phase 1 demo moment:** An experiments log document that contains, for each experiment: what we did, what we observed, the real payload shapes captured, the timings measured, and screenshots. Joel and PM read it together and feel confident about what Sinch actually does.
+
+**Phase 1 output:** `/experiments/sinch/experiments-log.md`. Real fixtures captured. Confidence that the product promise is deliverable — or, if it isn't, early warning so we can adjust course.
+
+**Elapsed time estimate:** Experiments 1 and 2 can happen same-day. Experiments 3 and 4 take actual days of elapsed time waiting for Sinch to approve (which is the point — we're measuring this). Experiment 5 is quick. Expected phase duration: roughly one week of elapsed time, most of it waiting.
+
+---
+
+## 6. Phase 2 — Session B (Sinch Outbound Delivery)
+
+Now that we know what Sinch actually looks like, we can build the "actually send a text message" step in `/api`. This is what MESSAGE_PIPELINE_SPEC calls Session B. The `/api` backend currently receives a send request, validates it, applies compliance rules, interpolates template variables, and then… writes to a log and returns a fake success. Phase 2 replaces that placeholder with a real call to Sinch.
+
+The work is well-scoped. MESSAGE_PIPELINE_SPEC estimates around 250 lines of production code plus tests. The refactor to accept Sinch as an injected dependency is explicit in the spec. The test suite uses real Sinch response shapes captured in Phase 1 as fixtures, which means our tests are testing against reality, not guesses.
+
+Phase 2 also applies database migration 005, which creates the `messages` table that `/api` needs for logging. Up to this point the table has existed only as a migration file; Phase 2 actually runs it.
+
+**What gets done:**
+
+- Refactor `createApp()` to accept a Sinch sender via dependency injection
+- Build `/api/src/carrier/sinch.ts` — the module that actually calls Sinch
+- Replace the send-step stub with a real Sinch call
+- Replace the log-delivery stub with a real database write
+- Apply migration 005
+- Write tests using Phase 1's captured fixtures
+- Verify `/api` can send a real SMS end-to-end
+
+**What does not get done in Phase 2:**
+
+Inbound handling (that's Phase 4). Registration pipeline (that's Phase 5). Deployment (that's Phase 7). Quiet hours / queueing / Session C (deferred to post-launch unless a real customer need emerges).
+
+**Phase 2 demo moment:** Joel sends a curl command to `/api` running locally, and a real text message arrives on his phone via Sinch. The message is logged in the database. The response shape matches what the SDK expects.
+
+**Phase 2 output:** `/api` can reliably send SMS via Sinch. Database has a real `messages` table with logs. All tests still pass.
+
+---
+
+## 7. Phase 3 — Database Reconciliation
+
+We have two `supabase/` directories with different `messages` table shapes. One was built for `/src` with Twilio; the other was built for `/api` with carrier-agnostic language. With `/src` being sunset, this resolves cleanly: we pick `/api/supabase` as the single source of truth, extend its schema where needed to support inbound messages (currently it's outbound-only), archive the `/src` migrations directory, and confirm (or provision) the database that `/api` will run against.
+
+This phase is mostly structural cleanup. It's important because every phase after this assumes there's one database with one schema that everyone agrees on. Leaving two directories floating around is a confusion magnet.
+
+This is also the phase where we address the audit's destructive migration concern — the one containing `DELETE FROM customers WHERE TRUE;`. That file needs to leave version control or be clearly quarantined.
+
+**What gets done:**
+
+- Extend `/api/supabase/migrations/005_messages_table.sql` (or add 006) to support inbound direction and storage
+- Archive `/supabase/` (root-level) migrations — move to `/docs/archive/supabase-twilio-era/` with a README explaining
+- Quarantine or remove the destructive audit migration
+- Confirm which Supabase project `/api` runs against, document in README
+- Rename any Twilio-specific column names to carrier-agnostic equivalents (`twilio_sid` → `carrier_message_id`, etc.)
+- Confirm RLS policies are either committed to migrations or documented as service-role-only
+
+**Phase 3 demo moment:** A fresh Supabase instance can be provisioned from `/api/supabase/migrations/` alone, and `/api` runs against it cleanly. No reference to `/src` or Twilio anywhere in the schema.
+
+**Phase 3 output:** Single clean schema. One database. Documentation clearly states what tables exist and why.
+
+---
+
+## 8. Phase 4 — Inbound Message Handling
+
+RelayKit has promised inbound message forwarding as part of its sandbox and production offering (it's in PRICING_MODEL). Inbound is also required for two-way messaging, which we want at launch. The `/src` codebase has a working Twilio-era implementation we can learn from conceptually but won't port directly. `/api` needs inbound built from scratch against Sinch's webhook shape (captured in Phase 1 Experiment 2).
+
+Inbound means: when someone's customer replies to a message, Sinch's webhook fires to `/api`, `/api` figures out which developer's registration this reply belongs to, and either forwards it to the developer's own webhook endpoint or stores it for the developer to see on their dashboard (or both).
+
+STOP/START/HELP handling is its own concern within inbound. Depending on what Phase 1 Experiment 5 shows, we either trust Sinch to handle opt-outs at the carrier level (and just update our consent ledger from the notification), or we handle opt-outs ourselves (parse STOP, update ledger, suppress further sends). Phase 4's design follows the evidence.
+
+**What gets done:**
+
+- Inbound webhook endpoint in `/api`
+- Sinch signature verification (so we know the webhook is real)
+- Registration lookup (which developer does this phone number belong to)
+- Consent ledger update on STOP/START
+- Developer webhook forwarding (if the developer configured one)
+- Inbound message storage in the messages table
+- Tests against Phase 1 fixtures
+
+**What does not get done in Phase 4:**
+
+A full dashboard inbox UI. That's Phase 10. Phase 4 is the plumbing; the viewer comes later.
+
+**Phase 4 demo moment:** Joel sends a test message from `/api`, replies to it from his phone, and sees the reply land in the database. If a developer webhook is configured, the reply also arrives at that webhook. STOP from Joel's phone disables further sends to that number.
+
+**Phase 4 output:** Inbound works. Two-way messaging's foundation is in place.
+
+---
+
+## 9. Phase 5 — Registration Pipeline on Sinch
+
+This is the phase that delivers the fast-registration promise. Today's `/src` has a Twilio registration pipeline — it submits a brand to Twilio's Trust Hub, submits a campaign to The Campaign Registry, polls for approval, transitions the customer's registration state, and surfaces the result in the UI. Phase 5 rebuilds this entirely on Sinch, using the real Sinch registration APIs (shape captured in Phase 1 Experiments 3 and 4).
+
+The UI for registration already exists in the prototype — it's a well-designed flow with onboarding, building, pending, extended-review, registered, and rejected states. Phase 5's job is to wire that UI to real Sinch submissions and real state transitions, not to redesign the UI.
+
+This phase includes the compliance site (msgverified.com) if carriers require it for brand verification — Phase 1 Experiment 3 will tell us whether Sinch's flow expects us to host this.
+
+**What gets done:**
+
+- Sinch brand submission API integration
+- Sinch campaign submission API integration
+- Polling / webhook for status updates
+- State transition logic (Building → Pending → Registered, etc.)
+- UI wiring from prototype to production
+- Compliance site (msgverified.com) if required
+- Tests
+
+**What does not get done in Phase 5:**
+
+Marketing campaign expansion (that's a customer action post-registration, not part of the initial submission flow). Multi-project support. BYO Twilio.
+
+**Phase 5 demo moment:** Joel, simulating a new customer, clicks "register" in the prototype, pays $49, submits, and within a few days sees the registration move to approved and live. A real message from his app reaches a real phone number that isn't on his verified list.
+
+**Phase 5 output:** The fast-registration promise is real and demonstrable. The product can take a new customer from signup to go-live within days, not weeks.
+
+---
+
+## 10. Phase 6 — Vertical Hydration
+
+Right now, the prototype only works end-to-end for the Appointments vertical. Every other vertical — Verification, Orders, Support, Marketing, Internal, Community, Waitlist — has message data defined, SDK methods built, and helper functions in place, but the wizard-to-workspace handoff is broken, so selecting any of them dumps the user into Appointments content.
+
+The fix has two parts. The small part: hydrate `state.selectedCategory` from the wizard's `relaykit_wizard.vertical` on workspace entry. The big part: refactor the Messages page (currently 1,609 lines hardcoded to Appointments) to be data-driven so it renders correctly for any vertical.
+
+This phase is also where OTP / Verification becomes fully real. The SDK has three verification methods already built (sendCode, sendPasswordReset, sendNewDevice). The verification vertical has eight messages defined in data. What's missing is the wiring — and once that's fixed, OTP works out of the box for any customer who picks Verification.
+
+Review request templates also land in this phase. They're content additions to the relevant verticals (salon, dental, home services, auto, fitness, tutoring) with corresponding SDK methods (e.g., `relaykit.salon.reviewRequest()`). Small additions; mostly content work.
+
+**What gets done:**
+
+- Workspace hydrates `selectedCategory` from wizard on entry
+- Messages page refactored to be vertical-agnostic (data-driven)
+- Each vertical's landing page (`/sms/[category]`) rendered correctly
+- OTP/Verification works end-to-end as a selectable vertical
+- Review request templates added to service verticals
+- SDK method additions as needed
+
+**What does not get done in Phase 6:**
+
+Full two-way dashboard inbox (Phase 10). New verticals beyond the eight we already have (post-launch).
+
+**Phase 6 demo moment:** Joel picks any vertical in the wizard, completes signup, and sees the correct messages for that vertical in the workspace. For the Verification vertical specifically, he can install the SDK and trigger `relaykit.verification.sendCode()` and receive a login code on his phone.
+
+**Phase 6 output:** All eight verticals work. The product's breadth matches its promises.
+
+---
+
+## 11. Phase 7 — `/api` Deployment
+
+Up to this point, `/api` has only run on Joel's local machine. For the SDK to call it, for developers to use it, it needs to live at a public HTTPS URL — probably `api.relaykit.ai`. This phase stands it up in a deployable form.
+
+Deployment target is likely Cloudflare Workers, Railway, or Fly (to be decided in this phase based on cost and operational complexity). Staging environment first (`api-staging.relaykit.ai`) with a test Sinch account, then production once staging runs clean for a while.
+
+This phase also establishes operational basics: logging, error monitoring (Sentry or similar), health checks, basic metrics.
+
+**What gets done:**
+
+- Deployment target chosen and configured
+- Staging environment stood up
+- Production environment stood up
+- DNS configured (api.relaykit.ai, api-staging.relaykit.ai)
+- Monitoring and logging
+- Deployment documented for future changes
+
+**Phase 7 demo moment:** A curl request from anywhere on the internet to `https://api-staging.relaykit.ai/v1/messages` sends a real SMS via Sinch. The request is logged. Errors are visible.
+
+**Phase 7 output:** `/api` is live and accessible. The SDK, once published, can be pointed at it.
+
+---
+
+## 12. Phase 8 — SDK Publication + AI Integration Artifacts
+
+The SDK exists as a built package. It's not on npm yet. This phase publishes it and ships the AI-integration artifacts that make "your AI tool integrates RelayKit correctly on the first try" a real claim.
+
+The AI integration research document is the spec for this phase. Key deliverables: an AGENTS.md template developers paste into their own projects, a `.cursor/rules/` file, an SDK README (the AI integration research has a thirteen-section outline), per-builder integration guides (Lovable, Bolt, Replit, v0), and the Explore-Plan-Code-Verify workflow documented clearly.
+
+The research also warns against auto-generating AGENTS.md — it has to be hand-curated and surgical (under sixty lines). That's a design constraint we respect.
+
+**What gets done:**
+
+- `relaykit` published to npm at v1.0.0
+- SDK README (thirteen sections per AI integration research)
+- AGENTS.md template for developers
+- `.cursor/rules/relaykit.mdc` template
+- Per-builder guides (Lovable, Bolt, Replit, v0)
+- Quickstart documentation
+- Integration workflow documentation (Explore → Plan → Code → Verify)
+
+**What does not get done in Phase 8:**
+
+MCP server, llms.txt, agent skills via `npx skills add`. These are Resend-level polish that come post-launch.
+
+**Phase 8 demo moment:** Joel runs `npm install relaykit` from a fresh directory, pastes the AGENTS.md into a test app, asks Claude Code to add appointment reminder SMS, and watches it work correctly.
+
+**Phase 8 output:** RelayKit is a real, installable npm package with enough supporting material for AI coding tools to integrate it reliably.
+
+---
+
+## 13. Phase 9 — Starter Kit Integration Validation
+
+This phase validates the biggest strategic bet: that RelayKit can be embedded into popular third-party starter kits as the default SMS layer. We don't build our own starters (the previous plan). We integrate into existing ones, document every friction point, and fix issues until the integration workflow is clean.
+
+The sequence (from the research): start with the KolbySisk starter (free, open source, already uses Resend, matches our structure). Download it, integrate RelayKit using the SDK, README, and AGENTS.md we built in Phase 8, document every point where it was hard or confusing. Fix those issues. Then repeat with the Vercel/Supabase starter. Two clean integrations prove the pattern generalizes.
+
+These working forks become the basis for outreach to starter maintainers in Phase 10 (ShipFast, Supastarter, MakerKit, Vercel).
+
+**What gets done:**
+
+- Download and integrate RelayKit into KolbySisk starter
+- Document friction points in an integration journal
+- Fix README, AGENTS.md, or SDK based on findings
+- Repeat with Vercel/Supabase starter
+- Working forks published (RelayKit's own GitHub org)
+- Integration documentation polished based on real experience
+
+**Phase 9 demo moment:** A developer who has never seen RelayKit before can clone one of the integrated starters, set an environment variable, trigger a booking, and receive a real text message — with no other work.
+
+**Phase 9 output:** Two working integrations in established starters. A battle-tested integration workflow. Material for approaching starter maintainers.
+
+---
+
+## 14. Phase 10 — Launch Readiness
+
+The final phase. Everything built before this works in isolation. Phase 10 is the final polish: the details that make it a product a real customer pays for, trusts, and recommends.
+
+**What gets done:**
+
+- Two-way dashboard view — a basic inbox UI so developers and business users can see inbound messages (not a full inbox product; a functional viewer)
+- Email integration (Resend) — registration confirmations, approval notices, billing receipts
+- Compliance site finalization (msgverified.com) — privacy policy, terms, opt-in/out language, contact
+- `rk_sandbox_` → `rk_test_` prefix sweep across all code and docs (D-349 applied)
+- Raw-color-violation cleanup in prototype (per audit)
+- Stale-pricing sweep across marketing pages
+- Marketing site final copy pass against Voice Principles v2.0
+- Starter maintainer outreach (ShipFast, Supastarter, MakerKit, Vercel)
+- Final quality pass: end-to-end testing, error-state design, edge-case polish
+- Launch plan finalization
+
+**Phase 10 demo moment:** The whole product works. A stranger can visit the marketing site, sign up, build their integration using AI tools, test with real SMS, pay $49, get approved, go live, and handle two-way conversation — without any intervention from us.
+
+**Phase 10 output:** A launched product. Real customers onboard themselves. We have a support queue instead of a build queue.
+
+---
+
+## 15. Parallel Tracks
+
+Phases run mostly sequentially, but two things can usefully happen in parallel:
+
+**Track: Documentation and decisions.** Throughout the build, PM and Joel keep documentation current, record new decisions as they come up, and update this master plan. This isn't a phase; it's ongoing work.
+
+**Track: Phase 0 + Phase 1 experiments.** These run at the same time. Phase 0's doc reconciliation covers everything not dependent on Sinch reality. Phase 1 experiments run alongside because they have real elapsed time waiting for Sinch approval. By the time Phase 1 finishes, Phase 0 is also done, and we can start Phase 2 against finalized docs.
+
+No other phases benefit from parallelization. Each subsequent phase's work depends on the previous phase's demonstrated success.
+
+---
+
+## 16. What Is Not In This Plan
+
+There are real features and capabilities that RelayKit will want eventually. They are not in this plan because they are not launch-blocking. Naming them here so they don't secretly drift into scope:
+
+- **Full two-way inbox product** — compose, search, templates, assignment, multi-user roles, mobile app. Phase 10 has a minimal viewer; the full product is post-launch.
+- **Multi-project support** — one customer managing several apps. Single-project at launch.
+- **BYO Twilio / Sinch** — customers bringing their own carrier account. Launch is managed-only.
+- **Platform tier** — SaaS platforms registering their tenants. Post-launch.
+- **Marketing campaign expansion** — adding marketing post-registration. Scoped for launch (EIN-gated), but the full marketing feature set is limited at launch.
+- **Drip sequences / workflows** — multi-message flows. Post-launch.
+- **MMS / media attachments** — post-launch.
+- **RCS** — too early.
+- **WhatsApp** — wrong audience for launch.
+- **Link tracking / branded short links** — post-launch enhancement.
+- **Claude AI support slideout / App Doctor** — post-launch feature, already in backlog.
+- **Compliance audit log export for enterprise customers** — post-launch, when we move upmarket.
+- **Review request sentiment branching** — post-launch, and only if we decide we want to ship Podium-style review-gating at all (ethically contested).
+- **Starter kits we build ourselves** — superseded by third-party starter integration strategy.
+
+This list matters because scope creep is the single biggest risk to this plan. When Joel or CC or PM wants to add something, the question is: "is this in the master plan, or is it a distraction?" If it's a distraction, it goes to BACKLOG.md and we keep moving.
+
+---
+
+## 17. Risks and What Could Go Wrong
+
+Being honest about where the plan could break:
+
+**Sinch fails the fast-registration promise.** If Phase 1 Experiment 3 or 4 shows Sinch approval taking 2+ weeks instead of 3 days, we have a positioning crisis. Mitigations: this is exactly why Phase 1 runs early; we learn this before committing engineering time; alternatives (Telnyx, SignalWire) exist and can be evaluated.
+
+**`/src` sunset creates gaps we didn't anticipate.** Some capability in `/src` may turn out to be harder to rebuild cleanly than expected. Mitigation: discover this in a phase boundary, record it, adjust the affected phase rather than bulldoze through.
+
+**AI integration claims don't hold up in real starter integrations.** Phase 9 could surface that AI tools still hallucinate or break the integration despite our best AGENTS.md. Mitigation: this is why Phase 9 is validation, not assumption. We fix based on findings; we don't ship claims we can't back up.
+
+**Scope creep from Joel's enthusiasm or CC's helpfulness.** The biggest risk. Both parties tend to want to add "just one more thing." Mitigation: this plan is the counter. If it's not in here, it's not in scope.
+
+**PM instructions or memory drift causes PM to lose context mid-build.** Already a known risk addressed by REPO_INDEX, PM_HANDOFF, session-start audit discipline. This plan adds another layer.
+
+**One phase's demo passes but the underlying system has hidden bugs.** The demo moment isn't sufficient evidence alone. Mitigation: tests, code review, and the "push is gated by PM review" rule stay in force.
+
+**Joel burns out.** Long plan, high discipline, one person on the non-technical side. Mitigation: explicit brevity in communication, clear step-by-step instructions, no forced pace. Phases can breathe.
+
+---
+
+## 18. How This Plan Gets Used
+
+When PM and Joel start a chat, this is one of the documents PM reads first (along with REPO_INDEX and handoffs). The question "what are we working on right now?" has a clear answer: "we're in Phase N."
+
+When a new idea surfaces in a conversation, the question is: "is this in Phase X, a new phase, or out of scope?" If it's out of scope, it goes to BACKLOG.md. If it fits an existing phase, we note it. If it demands a new phase, we amend this document.
+
+When PM writes a CC prompt, the prompt references which phase and which subtask within the phase it addresses. CC's work stays scoped to that phase's deliverables.
+
+At each phase boundary, PM updates this document: what happened in the phase, what changed in scope, what went into the BACKLOG, what the next phase looks like given what we learned.
+
+This plan is a living document. It's not a contract; it's a compass. It should change when reality tells us it should. What it should not do is get ignored because it's inconvenient.
+
+---
+
+## 19. The First Move
+
+Phase 0 starts now. Specifically:
+
+1. Joel and PM agree on the `/src` sunset decision in the current chat. PM drafts it; Joel approves; CC records it as a new D-number in the next session.
+2. PM writes a Phase 0 CC prompt covering the doc reconciliation work. CC executes, commits, PM reviews.
+3. In parallel, PM writes Phase 1 Experiment 1 procedure (send one SMS via Sinch). Joel runs it. Results captured in a new `/experiments/sinch/experiments-log.md`.
+
+Everything else waits its turn.
+
+---
+
+*End of master plan v1.0*
