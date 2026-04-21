@@ -36,7 +36,7 @@ function CopyButton({ text }: { text: string }) {
 
 const PROMPT_TEXT = `I installed the RelayKit SDK. Add SMS to my app. I run a hair styling business called Club Woman. The SDK has my message templates — use them all.`;
 
-const ENV_COPY_TEXT = `Add this API key to my .env file: RELAYKIT_API_KEY=rk_sandbox_7Kx9mP2vL4qR8nJ5`;
+const ENV_COPY_TEXT = `Add this API key to my .env file: RELAYKIT_API_KEY=rk_test_7Kx9mP2vL4qR8nJ5`;
 
 /* ── Tool logos (same assets as home page hero) ── */
 

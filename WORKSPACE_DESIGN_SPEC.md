@@ -234,7 +234,7 @@ Tool logo farm: 6 left-aligned logos (40px circles) — Claude Code, Cursor, Win
 Three numbered cards with copy buttons (top-right, clipboard → check swap on copy):
 
 Install RelayKit — helper: "Run this in your project's terminal." Content: npm install relaykit
-Add your API key — helper: "Paste this prompt into your AI tool to add the key." Content: Add this API key to my .env file: RELAYKIT_API_KEY=rk_sandbox_7Kx9mP2vL4qR8nJ5
+Add your API key — helper: "Paste this prompt into your AI tool to add the key." Content: Add this API key to my .env file: RELAYKIT_API_KEY=rk_test_7Kx9mP2vL4qR8nJ5
 Add SMS to your app — helper: "Paste this prompt into your AI tool to start building." Content: I installed the RelayKit SDK. Add SMS to my app. I run a hair styling business called Club Woman. The SDK has my message templates — use them all.
 
 Card titles are numbered ("1. Install RelayKit"). Helper text is text-xs text-text-quaternary. Content blocks are bg-bg-secondary rounded-lg. All content is hardcoded for prototype — production generates from wizard sessionStorage data + server-created project.

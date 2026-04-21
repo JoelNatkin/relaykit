@@ -38,7 +38,7 @@ Everything a customer needs to stay compliant is included in full-stack. Marketi
 
 ### What's included (no credit card, no time limit)
 
-- Sandbox API key (`rk_sandbox_` prefix) — instant on signup
+- Sandbox API key (`rk_test_` prefix) — instant on signup
 - **SDK access** — `npm install relaykit` with sandbox key, same API surface as production
 - **Raw API access** — `POST /v1/messages` with sandbox key, same endpoints as SDK. SDK and API are equal paths (D-296).
 - **All namespaces including marketing** — full message library available from day one, not gated (D-294). Marketing usage in sandbox is tracked to determine whether the marketing campaign auto-submits at registration.
