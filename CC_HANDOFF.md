@@ -1,119 +1,118 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-20 (Session 37 close-out — audit + MASTER_PLAN v1.0 + D-358–D-361)
-**Branch:** main (all commits local, **NOT** pushed — PM review happens first)
+**Date:** 2026-04-21 (Session 38 close-out — Phase 0 doc reconciliation, Groups A–C complete)
+**Branch:** main (all commits local, **NOT** pushed — PM review gates push)
 
 ---
 
 ## Commits This Session
 
-Two commits added on top of Session 36's `192cda4`:
+Six commits on top of Session 37's `626dacb`:
 
 ```
-04655c9  docs(audit): session 37 — CURRENT_STATE_AUDIT.md repo inventory
-[pending] docs: session 37 close-out — MASTER_PLAN v1.0, D-358–D-361, PM instructions rewrite
+66f2872  docs(phase-0): Group B spot fixes - wizard key, decision count, archive deprecations
+cb25bd1  docs(phase-0): PRD endpoint list reflects six shipped /api endpoints
+54918a6  docs(decisions): append supersession note to D-104
+0e4f56e  docs(phase-0): Group C - MESSAGE_PIPELINE_SPEC consent + Session B gating
+939d83e  docs(pm): add File Requests + CC Mode Signaling sections
+[pending] docs: session 38 close-out — REPO_INDEX bump, CC_HANDOFF rewrite
 ```
+
+The first five are the work commits. The sixth is this close-out (REPO_INDEX + CC_HANDOFF).
 
 ---
 
 ## What Was Completed
 
-### CURRENT_STATE_AUDIT.md (commit `04655c9`, earlier today)
-Full repo inventory. ~480 lines covering every directory, spec-to-reality gaps, 26-item weirdness log, Sinch readiness, and recommendations. Five parallel investigation agents fed the synthesis. No code modified. Key findings:
+### Plan drafted
+Session opened in plan mode. Drafted `~/.claude/plans/phase-0-doc-reconciliation-work-temporal-brook.md` — seven groups (A–G), dependency order, session-rotation points, effort estimates, verification checks. Approved by PM before execution.
 
-- **Verification-vertical wizard→workspace handoff is broken.** `state.selectedCategory` never reads from `relaykit_wizard.vertical`. Every non-Appointments pick lands on Appointments content. Data is fully populated in `data/messages.ts` + `catalog-helpers.ts`; the landing pages `/sms/[non-appointments]/messages` are hardcoded placeholders.
-- **Inbound handling is split-brain.** `/src` has Twilio webhook receiver + STOP processing + `messages.direction='inbound'`; `/api`, `/sdk`, `/prototype` have none; MESSAGE_PIPELINE_SPEC Sessions A/B/C don't scope it; PRICING_MODEL advertises it as sandbox.
-- **Two parallel backends** (`/src` Next.js+Twilio deployed, `/api` Hono+Sinch-shaped not deployed) with two separate `supabase/migrations/` dirs and differently-shaped `messages` tables.
-- **D-349 (`rk_sandbox_` → `rk_test_`) never swept.** 40+ files still use the old prefix.
-- **SDK_BUILD_PLAN entirely stale.** `/sdk` already shipped as TypeScript-strict v0.1.0 dual-published package with `relaykit-0.1.0.tgz` pre-packed; plan still describes a JS mock needing conversion. `SendResult` shape diverges from plan; README missing.
+### Group A — PM clarifications (blockers resolved)
+Four PM questions answered:
+1. **D-03 "magic-link" wording** — retained as shorthand for Supabase's passwordless-email family; documented the `signInWithOtp` OTP-codes reality in CLAUDE.md; no new decision recorded. `/api` rebuild revisits auth mechanism in Phase 5.
+2. **Destructive migration `/supabase/migrations/20260307200000_audit_fixes.sql`** — add `-- DEV ONLY — DO NOT RUN IN PROD` banner. **NOT YET EXECUTED.** Approved scope but not assigned to a group. See gotcha 5 below.
+3. **`rk_sandbox_` sweep** — exclude `/src` entirely (matches D-358 freeze). Other file categories proceed per Group E plan.
+4. **`docs/archive/VISION_IMPLEMENTATION_MEMO.md`** — delete per its own "consume and discard" header.
 
-### MASTER_PLAN.md v1.0
-New canonical launch plan at repo root — 461 lines, 10 phases, North Star, ranked customer values (fast registration added as the Sinch differentiator), working principles, out-of-scope list (§16), risks (§17). Adopted per D-359.
+### Group B — Single-file spot fixes (`66f2872`)
+Five files, low-risk text edits:
+- `CLAUDE.md` — wizard sessionStorage key `relaykit_intake`→`relaykit_wizard` (prototype truth is `prototype/lib/wizard-storage.ts:5`); D-03 clarified as passwordless-email shorthand; note added that `/api` rebuild revisits auth in Phase 5.
+- `docs/RELAYKIT_PRD_CONSOLIDATED.md` — decision count `329+`→`361+` with DECISIONS_ARCHIVE.md reference.
+- `docs/archive/PRD_04_TWILIO_SUBMISSION.md` — prepended DEPRECATED header citing D-358.
+- `docs/archive/PRICING_MODEL.md` — prepended DEPRECATED header citing current v6.0.
+- `docs/archive/VISION_IMPLEMENTATION_MEMO.md` — deleted.
 
-### Four decisions recorded (D-358–D-361)
-- **D-358: /src sunset.** Rebuild registration pipeline, inbound, dashboard, billing webhooks, sandbox key management, compliance monitoring on `/api` + Sinch across MASTER_PLAN Phases 2–5. `/src` will not be maintained, federated, or preserved as fallback.
-- **D-359: MASTER_PLAN.md v1.0 adopted as canonical launch plan.** Reference for scope decisions, phase prioritization, conflict resolution. Each CC session reads at start alongside DECISIONS.md / CC_HANDOFF.md / PROTOTYPE_SPEC.md.
-- **D-360: OTP/Verification available both as cross-vertical auth primitive AND as its own dedicated vertical.** Every vertical can use OTP methods regardless of primary use case; Verification remains a standalone vertical for developers whose app IS identity verification.
-- **D-361: Review-request templates ship at launch as template additions within applicable verticals.** Developer supplies review URL at authoring time. Not a standalone vertical.
+### Follow-ups on Group B flags (`cb25bd1`, `54918a6`)
+- **PRD endpoint list** (`cb25bd1`): PRD lines 214–219 rewritten from "five total API endpoints" to "six" — added `POST /v1/signup/sandbox` (public, rate-limited sandbox bootstrap). `GET /` health check intentionally omitted. D-276 retained unchanged; lead line now notes D-276 originally enumerated five.
+- **D-104 supersession** (`54918a6`): appended dated note to D-104 citing D-358 and the 2026-04-21 deletion of VISION_IMPLEMENTATION_MEMO.md. Original D-104 text untouched.
 
-### REPO_INDEX.md updates
-- Meta: `Last updated`, `Decision count` (D-357 → D-361), `Master plan last updated` bumped, unpushed-commits note updated.
-- Canonical docs table: `MASTER_PLAN.md` and `CURRENT_STATE_AUDIT.md` added; `SDK_BUILD_PLAN.md` flagged stale; `STARTER_KIT_PROGRAM.md` noted superseded by Phase 9; `PRICING_MODEL.md` date corrected to v6.0 / 2026-04-08.
-- Subdirectory descriptions rewritten for `/src` (sunset), `/sdk` (shipped-ahead), `/api` (Session B unblocked), `/supabase` (slated for archive), added `/experiments/` (planned).
-- Build spec status table: Session B flipped BLOCKED → UNBLOCKED; Session C deferred; SDK_BUILD_PLAN marked stale; vertical hydration added as NOT STARTED (Phase 6).
-- Active plan pointer: Phase 0 ACTIVE, Phase 1 unblocked and running in parallel. D-358/D-359 references removed from "not yet recorded" — they're recorded now.
-- Change log: new Session 37 close-out entry.
+### Group C — MESSAGE_PIPELINE_SPEC updates (`0e4f56e`)
+Single file, coordinated edits:
+- **Status-at-a-glance table** — new `Consent API | COMPLETE` row; Session B changed from `BLOCKED (Sinch account)` to `GATED (Phase 1 Sinch experiments, MASTER_PLAN §5)`; obsolete Future/Consent row removed.
+- **New "Consent API [COMPLETE]" section** inserted after Session A — documents shipped endpoints, `sandbox_not_linked` 403 contract, `ConsentStore` interface, `002_consent.sql` migration presence, vitest coverage. Notes `consent-check` pipeline step is planned but not yet wired.
+- **Session B preamble blockquote** — start is gated on Phase 1 findings; drafted Sinch request/response contract should be treated as hypothesis and reconciled against real recorded shapes before implementation.
+- **Future additions section** — Consent API subsection removed (shipped); EIN verification retained.
+- `queuedUntil` verified present in both `MessageContext:51` and Session C plan — CC_HANDOFF's Session 37 flag was conservative; no edit needed.
 
-### PM_PROJECT_INSTRUCTIONS.md rewrite
-~273 lines of diff across the file. Paste into Claude.ai UI before next browser chat per existing sync protocol.
+### PM_PROJECT_INSTRUCTIONS.md committed standalone (`939d83e`)
+Working tree arrived with Joel's uncommitted edits already present (not Session 38 work). Committed separately at session close per Joel's instruction: "docs(pm): add File Requests + CC Mode Signaling sections."
 
-### /experiments/ directory
-Planned but not yet created — will house Phase 1 Sinch proving-ground experiments + `experiments-log.md`.
+### REPO_INDEX.md bumped
+Meta, canonical doc dates, `/src` / `/api` / `/docs/archive` subdirectory blurbs, build spec status table, active plan pointer (Groups A–C complete, D/E/F pending with per-group notes), and change log updated. Decision count stays D-361 (no new decisions).
+
+### PROTOTYPE_SPEC.md, MASTER_PLAN.md
+Not touched this session — confirmed.
+
+### DECISIONS.md
+Only the D-104 supersession note (`54918a6`). No new D-numbers. Session 38 produced zero new decisions — all work was documentation catching up to reality.
 
 ---
 
 ## Current State
 
-**Phase 0 (doc reconciliation + architectural decisions) — ACTIVE.** Four of the phase's decisions landed this session (D-358, D-359, D-360, D-361). Remaining Phase 0 work is doc-reconciliation cleanup (see suggested next tasks below).
+**Phase 0 (doc reconciliation + architectural decisions) — ACTIVE.** Groups A/B/C complete. Group D (SDK_BUILD_PLAN rewrite) next; Groups E (`rk_sandbox_` sweep) and F (`SRC_SUNSET.md`) follow. One residual action item (Group A #2 migration banner) unscoped — see gotcha 5.
 
-**Phase 1 (Sinch proving-ground experiments) — UNBLOCKED, ready to begin in parallel.** Sinch account active, $100 credit, phone number ready to provision. Goal: prove the Sinch surface (send, inbound, registration) with throwaway code in `/experiments/` before touching production pipeline.
-
-**Later phases (2–9):** Covered in `MASTER_PLAN.md`. Phase 2 is Session B / Sinch send wiring, gated on Phase 1 findings. Phases 3–5 rebuild what `/src` does (registration, inbound, dashboard) on `/api`. Phase 8 publishes the SDK (npm + README + AGENTS.md). Phase 9 is the starter-kit integration strategy.
+**Phase 1 (Sinch proving-ground experiments) — UNBLOCKED, runs in parallel.** Not worked this session (CC-side has nothing to do until Joel begins experiments).
 
 ---
 
 ## Quality Checks Passed
 
-- **`tsc --noEmit` clean** on `/api`, `/sdk`, `/prototype` at close-out time.
-- **ESLint:** not run — no `/prototype` eslint config (unchanged from prior sessions). `/api` and `/sdk` eslint not exercised this session (docs-only work).
-- **No code modified** this session. All changes are to documentation files.
+- **`tsc --noEmit` clean** on `/api`, `/sdk`, `/prototype` at close-out (exit 0 each).
+- **`eslint` clean** on `/api` and `/sdk` (exit 0 each).
+- **`/prototype` eslint** not run — no eslint config present (unchanged from prior sessions).
+- **No code modified this session.** All changes are to documentation files.
 
 ---
 
 ## In Progress / Partially Done
 
-Carried forward (unchanged this session — most items now covered by MASTER_PLAN Phases 2–9):
-- Signup backend stubbed (D-59)
-- EIN verification backend stubbed (D-302/D-303)
-- Phone OTP stubbed (D-46)
-- Marketing messages hardcoded for Appointments only
-- Ask Claude panel chat composer is a non-functional stub
-- Preview list invite flow is a 1.5s `setTimeout` — no real SMS yet
-- Registered state metrics are mock data
-- Marketing-only registration tracker transitions are prototype dropdowns
-- Settings Notifications toggle has no backend wiring
-- Cancel plan + Regenerate live key modals are close-modal no-ops
-- `/account` actions all brand-link no-ops
+None. All Group B/C tasks committed. No half-finished edits.
 
-Deferred (from Session 36):
-- **Archive modal redesign** — proposed copy confirmed, visual redesign still pending. Possibly folds into Phase 6 workspace polish.
+---
+
+## Pending in Phase 0
+
+1. **Group D — SDK_BUILD_PLAN rewrite.** Substantial single-file rewrite. Plan scope: retrospective preamble ("what shipped in v0.1.0"), delete §1 Steps 1–3 (done), keep §2/§5/§7/§8 (refresh refs), move §6 UI spec out or delete, reconcile `SendResult` shape drift between plan §8 and shipped `/sdk` code, retain §3 (README) and §4 (AGENTS.md template) as specs pointing delivery at Phase 8. ~2 CC hours estimated. Per the plan, recommend a session rotation before starting — benefits from fresh context.
+2. **Group E — `rk_sandbox_`→`rk_test_` sweep.** ~29 files excluding `/src`. Touches `/api/src/routes/signup.ts` (actual prefix generator — real behavior change), 7 `/api` test fixtures, 1 migration comment, 2 prototype UI strings, 2 user-facing docs (`PRICING_MODEL.md`, `WORKSPACE_DESIGN_SPEC.md`), and 8 root spec docs. Must rerun `tsc` + `vitest` on `/api` as quality gates. ~2.5 CC hours estimated. Per the plan, recommend a session rotation before starting.
+3. **Group F — `SRC_SUNSET.md`.** Deferred from Session 38. Maps `/src` capabilities (registration pipeline, inbound handling, Stripe webhooks, dashboard, sandbox key management, compliance monitoring) to target MASTER_PLAN phases (2/3/4/5) and target locations on `/api`. ~30 min estimated.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **Session 36's 31 commits + Session 37's audit commit + Session 37's close-out commit are all still local.** Push is gated on PM approval after this close-out.
+1. **Session rotation recommended before Group D.** Per the plan, the SDK_BUILD_PLAN rewrite is a focused single-file task that benefits from fresh context (no accumulated noise from Group B/C doc edits).
 
-2. **MASTER_PLAN.md is now canonical.** CC must read at session start alongside DECISIONS.md, CC_HANDOFF.md, PROTOTYPE_SPEC.md. Per D-359 it is the reference for scope decisions, phase prioritization, and conflict resolution.
+2. **Flagged — `consent-check` pipeline step belongs in Phase 2, not Phase 0.** MESSAGE_PIPELINE_SPEC now says this step is "planned but not yet wired" and "logically belongs with Session B or a dedicated Session D." MASTER_PLAN §6 (Phase 2 / Session B / Sinch send wiring) doesn't currently scope it. Tracking here for next-session PM discussion — the fix is either a one-line MASTER_PLAN amendment (extend Session B scope) or a separate sub-session.
 
-3. **/src is slated for sunset (D-358) — no modifications.** Capabilities are being rebuilt on `/api` + Sinch across Phases 2–5. Do not add features, fix bugs, or port files into `/src` unless Joel explicitly overrides.
+3. **Flagged — migration runtime-application status is a Phase 3 question.** Session 38 softened the Consent API section's claim about `002_consent.sql` to "present alongside other Session A migrations; runtime application status tracked in deploy infra, not this spec" rather than asserting "applied." Session A already says `005_messages_table.sql` "exists but is not run." There's ambiguity across the `/api/supabase/migrations/` tree about which are applied in which environment. Belongs to Phase 3 (database reconciliation) or deploy-infra work, not Phase 0.
 
-4. **SDK_BUILD_PLAN.md is stale per audit §4.2.** Do not read it as a build source until Phase 0 reconciles it. Current SDK reality is documented in `CURRENT_STATE_AUDIT.md` §2.3 (shipped, v0.1.0, tsup-built, tests green, tgz packed, not yet published; missing README and AGENTS.md).
+4. **`/src` remains frozen per D-358 — Group E sweep excludes it.** PM Group A #3 resolution. When executing Group E, exclude `/src`, `node_modules`, `.next`, `.git`, `dist`. The 10 `/src`-resident matches in the audit's 39-file list stay put.
 
-5. **`/api/supabase/migrations/005_messages_table.sql` is still unapplied.** Deferred to Phase 2 (Session B) per MESSAGE_PIPELINE_SPEC. Do not apply out-of-band.
+5. **Residual Group A #2 — migration banner not yet executed.** PM approved adding `-- DEV ONLY — DO NOT RUN IN PROD` to `/supabase/migrations/20260307200000_audit_fixes.sql` during Group A resolution, but it wasn't scoped into any subsequent group and Session 38 did not ship it. Next session can either: (a) bundle it into Group E's supabase-migration-comment touches, or (b) ship it standalone as a one-line follow-up before Group D. Trivial effort (~2 min); don't let it get lost.
 
-6. **`/supabase/migrations/20260307200000_audit_fixes.sql` is destructive.** Contains `DELETE FROM customers WHERE TRUE;` — marked dev-only but lives in the migrations directory. Flagged in audit §5.13 for Phase 0 decision.
+6. **`api/node_modules/` is untracked intentionally.** Do not `git add -A`.
 
-7. **Two `messages` table schemas exist** — root `/supabase/` (body_hash, direction CHECK inbound/outbound, Twilio-named) vs `/api/supabase/005_messages_table.sql` (composed_text, outbound-only, carrier-agnostic). Phase 3 (database reconciliation) resolves this.
-
-8. **Verification-vertical workspace hydration is broken.** Audit §3 has the full trace. Data is complete; the fix is a small hydration in workspace init. Covered by MASTER_PLAN Phase 6. Until then, only Appointments is reachable end-to-end via the wizard.
-
-9. **`rk_sandbox_` / `rk_test_` drift.** D-349 recorded 2026-04-17; still unswept across 40+ files. Phase 0 should include the sweep.
-
-10. **PM_PROJECT_INSTRUCTIONS.md changed substantially** (~273 lines). If PM is starting a new Claude.ai browser chat, they need the updated paste.
-
-11. **`api/node_modules/` is untracked intentionally.** Do not `git add -A`.
-
-12. **`.next` cache recurring issue** — prototype dev server was stopped, `.next` deleted, and restarted as part of this close-out.
+7. **Don't push.** All six session commits plus Session 36's 31 and Session 37's 2 remain local. PM review precedes push.
 
 ---
 
@@ -121,59 +120,42 @@ Deferred (from Session 36):
 
 ### Added
 ```
-CURRENT_STATE_AUDIT.md                   # Session 37 audit (committed earlier in this session as 04655c9)
-MASTER_PLAN.md                           # v1.0 canonical launch plan (D-359)
+(none)
 ```
 
 ### Modified
 ```
-DECISIONS.md                             # +D-358, +D-359, +D-360, +D-361
-REPO_INDEX.md                            # Meta bump, new files registered, subdirs rewritten, change log
-PM_PROJECT_INSTRUCTIONS.md               # Substantial rewrite (~273 lines of diff)
+CLAUDE.md                                # wizard key + D-03 passwordless-email clarification
+DECISIONS.md                             # D-104 supersession note (append-only)
+MESSAGE_PIPELINE_SPEC.md                 # Consent API COMPLETE section; Session B gated on Phase 1
+PM_PROJECT_INSTRUCTIONS.md               # File Requests + CC Mode Signaling sections (PM-side)
+REPO_INDEX.md                            # Meta bump, subdirectory blurbs, build spec table, change log
+docs/RELAYKIT_PRD_CONSOLIDATED.md        # decision count 329+→361+; endpoint list expanded to six
+docs/archive/PRD_04_TWILIO_SUBMISSION.md # DEPRECATED header (D-358)
+docs/archive/PRICING_MODEL.md            # DEPRECATED header (superseded by v6.0)
 CC_HANDOFF.md                            # This file
 ```
 
 ### Deleted
-None.
-
-### Not modified (but flagged for Phase 0)
 ```
-SDK_BUILD_PLAN.md                        # Stale — rewrite in Phase 0
-CLAUDE.md                                # Wizard key drift (relaykit_intake → relaykit_wizard per audit §5.4)
-docs/RELAYKIT_PRD_CONSOLIDATED.md        # "329+ decisions" should be 361+; endpoint list reconciliation
-MESSAGE_PIPELINE_SPEC.md                 # Move consent API from Future to Shipped; note Phase 1 dependency for B
-docs/PRICING_MODEL.md                    # Still references rk_sandbox_; inbound claim needs reconciling with Phase 3 plan
-WORKSPACE_DESIGN_SPEC.md                 # Get-started step still shows rk_sandbox_*
-docs/archive/PRD_04_TWILIO_SUBMISSION.md # Needs deprecation header per D-358
-docs/archive/PRICING_MODEL.md            # Archive v3.0 needs deprecation header
-docs/archive/VISION_IMPLEMENTATION_MEMO.md # "Consume and discard" — candidate for deletion
+docs/archive/VISION_IMPLEMENTATION_MEMO.md   # per its own "consume and discard" header
 ```
 
 ---
 
-## Suggested Next Tasks (Phase 0 focused, with Phase 1 in parallel)
+## Suggested Next Tasks
 
-**Phase 0 — doc reconciliation:**
+**Immediate:**
+1. **Group D (SDK_BUILD_PLAN rewrite)** — open next session in plan mode. The rewrite is substantial enough that PM should review the revised structure before CC executes. Reference the approved plan at `~/.claude/plans/phase-0-doc-reconciliation-work-temporal-brook.md` Group D.
+2. **Group A #2 residual** — 2-minute standalone commit to add the migration banner, either before Group D or bundled into Group E.
 
-1. **Rewrite `SDK_BUILD_PLAN.md`** to reflect shipped state + remaining work. Current SDK is v0.1.0 TypeScript-strict dual-published; remaining work is README (13 sections per original plan §3), AGENTS.md template (per `docs/AI_INTEGRATION_RESEARCH.md` §8), and npm publication (MASTER_PLAN Phase 8). Reconcile `SendResult` shape drift while rewriting.
+**After Group D:**
+3. **Group E (`rk_sandbox_` sweep)** — fresh session. Code-touching work; rerun `/api` `tsc` + `vitest` as quality gates. Follow the plan's E1→E2→E3 sub-batching.
+4. **Group F (`SRC_SUNSET.md`)** — can piggyback on Group E's session or follow it; small self-contained task.
 
-2. **Fix `CLAUDE.md` wizard storage key** — `relaykit_intake` → `relaykit_wizard` per audit §5.4. Also reconcile D-03 (magic-link wording) against actual OTP implementation in `/src`.
+**Estimate:** 2 more CC sessions after this one to close Phase 0, assuming a rotation between Group D and Group E (or E+F).
 
-3. **Update `RELAYKIT_PRD_CONSOLIDATED.md`** — decision count "329+" → "361+"; endpoint list reconciliation (`POST /v1/messages/preview` + `GET /v1/messages/:id` claims vs MESSAGE_PIPELINE_SPEC vs `/api` reality).
-
-4. **Update `MESSAGE_PIPELINE_SPEC.md`** — move consent API from Future to Shipped (it's done + tested); add note that Session B start depends on Phase 1 experiment findings; add `queuedUntil` to documented `MessageContext` or drop from future Session C plan.
-
-5. **Archive deprecations** — add deprecation headers to `/docs/archive/PRD_04_TWILIO_SUBMISSION.md` (Twilio sunset per D-358) and `/docs/archive/PRICING_MODEL.md` (v3.0 superseded by v6.0). Consider deleting `VISION_IMPLEMENTATION_MEMO.md` per its own "consume and discard" header.
-
-6. **`rk_sandbox_` → `rk_test_` sweep** across code + docs per D-349. 40+ files; audit §5.7 has the full list.
-
-7. **Document `/src` sunset plan** somewhere visible — which `/src` capabilities feed which MASTER_PLAN phases. Could live in MASTER_PLAN itself or a new `SRC_SUNSET.md`.
-
-**Phase 1 — Sinch experiments (in parallel):**
-
-8. **Experiment 1:** provision a Sinch phone number and send a single SMS to Joel's phone. Capture every API response, header, latency in `/experiments/experiments-log.md`. Throwaway code; goal is to discover the Sinch surface shape, not write production code.
-
-(Further experiments per MASTER_PLAN Phase 1.)
+**Before exiting Phase 0:** verify Joel reads REPO_INDEX.md, CLAUDE.md, MASTER_PLAN.md, SDK_BUILD_PLAN.md (post-rewrite), RELAYKIT_PRD_CONSOLIDATED.md, MESSAGE_PIPELINE_SPEC.md and reports no surprising contradictions with his mental model (plan verification step).
 
 ---
 
