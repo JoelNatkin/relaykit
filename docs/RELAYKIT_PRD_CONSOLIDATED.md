@@ -211,12 +211,13 @@ The SDK (`npm install relaykit`) is RelayKit's production delivery mechanism (D-
 
 **Direct send for custom messages and exploring:** `relaykit.send({ to, messageType, data })` — the escape hatch for developer-authored custom messages (D-280) and the `exploring` use case which has no domain semantics (D-275, D-282).
 
-**Single API endpoint:** All SDK calls hit `POST /v1/messages`. Five total API endpoints (D-276):
+**Single API endpoint for SDK sends:** All SDK send calls hit `POST /v1/messages`. Six total API endpoints currently shipped in `/api` (D-276 originally enumerated five; the signup endpoint was added as part of sandbox bootstrap work):
 - `POST /v1/messages` — send a message
+- `POST /v1/messages/preview` — validate before sending
 - `POST /v1/consent` — record consent
 - `GET /v1/consent/:phone` — check consent status
 - `DELETE /v1/consent/:phone` — revoke consent
-- `POST /v1/messages/preview` — validate before sending
+- `POST /v1/signup/sandbox` — create a sandbox account and issue a test API key (public, rate-limited)
 
 **Zero-config init:** `new RelayKit()` reads `RELAYKIT_API_KEY` from `process.env`. Explicit config available via `new RelayKit({ apiKey })` (D-278).
 
