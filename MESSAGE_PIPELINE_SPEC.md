@@ -13,9 +13,9 @@
 | Session | Scope | Status | Blocker |
 |---------|-------|--------|---------|
 | A | Foundation: phone normalization, messages table, pipeline refactor | COMPLETE | — |
-| B | Sinch SMS send step | BLOCKED | Sinch account |
+| Consent API | Endpoints: record / check / revoke | COMPLETE | — |
+| B | Sinch SMS send step | GATED | Phase 1 Sinch experiments (MASTER_PLAN §5) must produce recorded Sinch request/response shapes before start |
 | C | Quiet hours enforcement (marketing only) | NOT STARTED | None — buildable now with mocks |
-| Future | Consent API endpoints | NOT STARTED | Needs its own session prompt |
 | Future | EIN verification step | NOT STARTED | Blocked on Sinch registration flow details |
 
 ---
@@ -123,7 +123,41 @@ Migration file exists but is **not run**. Joel applies it in the Supabase dashbo
 
 ---
 
-## Session B: Sinch Send [BLOCKED — waiting on Sinch account]
+## Consent API [COMPLETE]
+
+Built and shipped alongside Session A foundation. Originally listed as "Future additions" in earlier drafts of this spec — promoted here in Phase 0 (2026-04-21) to reflect reality.
+
+### What's in place
+
+**Endpoints** (`/api/src/routes/consent.ts`, wired in `/api/src/app.ts`)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/v1/consent` | Record consent for a phone number (body: `{ phone, source }`) |
+| `GET` | `/v1/consent/:phone` | Check consent status — returns `{ phone, consented, consented_at? }` |
+| `DELETE` | `/v1/consent/:phone` | Revoke consent — returns `{ phone, status: 'revoked', revoked_at }` or `{ phone, status: 'not_found' }` |
+
+All three require an authenticated API key that is linked to a customer account (`user_id` present). Unlinked sandbox keys receive `403 sandbox_not_linked`.
+
+**Data layer** (`/api/src/types.ts` `ConsentStore` interface, Supabase-backed implementation)
+
+- `record(userId, phone, source, ip) → ConsentRecord`
+- `check(userId, phone) → ConsentRecord | null`
+- `revoke(userId, phone) → ConsentRecord | null`
+
+**Migration** (`/api/supabase/migrations/002_consent.sql`) — present alongside the other Session A migrations (001, 003, 004). Runtime application status tracked in deploy infra, not this spec.
+
+**Tests** (`/api/src/__tests__/consent.test.ts`, `consent-store.test.ts`) — passing under `vitest` with the in-memory store.
+
+### Pipeline integration (not yet wired)
+
+A `consent-check` step that runs before `send` and short-circuits if consent is missing or revoked is planned but not yet added to the pipeline order. Tracked as a follow-up — logically belongs with Session B (send wiring) or a dedicated Session D after Sinch lands.
+
+---
+
+## Session B: Sinch Send [GATED — Phase 1 experiments first]
+
+> **Dependency on Phase 1.** Per MASTER_PLAN §5, Session B start requires Phase 1 Sinch proving-ground experiments to complete and produce recorded Sinch request/response shapes, latency numbers, and failure modes. The request/response contract and failure-handling logic below were drafted before Sinch experience — treat them as a starting hypothesis and reconcile against Phase 1 findings before implementing. Update this spec in place if experiments reveal divergence.
 
 ### Dependencies
 
@@ -285,21 +319,6 @@ Mock `Date.now()` for deterministic timezone assertions. 8 test cases:
 ---
 
 ## Future additions
-
-### Consent API endpoints (D-274)
-
-Separate from the message pipeline but shares infrastructure (auth middleware, Supabase connection). Needs its own session prompt when ready to build.
-
-Planned endpoints:
-- `POST /v1/consent` — record consent for a phone number
-- `GET /v1/consent/:phone` — check consent status
-- `DELETE /v1/consent/:phone` — revoke consent
-
-Also requires:
-- `consent` table migration
-- Integration with the pipeline: a `consent-check` step that runs before `send` and short-circuits if consent is missing or revoked
-
-Not sessionized yet. When the decision to build lands, author a session prompt the same shape as Sessions B and C.
 
 ### EIN verification step (D-302, D-303)
 
