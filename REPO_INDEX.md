@@ -6,11 +6,11 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-21 (Session 40 close-out — Phase 0 Group E complete; three atomic commits pushed mid-session after PM approval)
-- **Decision count:** D-362 (next available: D-363). No new D-numbers this session; D-285 gained an appended partial-supersession note citing D-349 (not a new decision).
-- **Master plan last updated:** 2026-04-21 (v1.0 — L100 past-tensed with Group E completion annotation; L366 Phase 10 bullet deleted. No version bump — both changes are subtask clarifications, not scope changes per PM direction.)
+- **Last updated:** 2026-04-21 (Session 41 close-out — Phase 0 Group F complete; Phase 0 closes. `SRC_SUNSET.md` shipped as the `/src` capability-to-phase reference for Phase 2–5 rebuilds.)
+- **Decision count:** D-362 (next available: D-363). No new D-numbers Session 41 — SRC_SUNSET.md is a map, not a decision doc; five Open-F-N mappings surfaced inside the doc for target-phase resolution rather than new D-entries.
+- **Master plan last updated:** 2026-04-21 (v1.0 — §4 L101 past-tense Group F bullet added this session; L100 past-tensed Session 40 with Group E completion annotation; §14 former L366 Phase 10 bullet deleted Session 40. No version bump — all changes are subtask clarifications reflecting completed Phase 0 work, not scope changes.)
 - **Active CC session branch:** main
-- **Unpushed local commits:** 1 unpushed (this close-out). All three Group E commits (`136f2b5`, `7dcb02f`, `b093af0`) pushed to `origin/main` mid-session after PM approval; push pointer `d6a2c7a..b093af0`. Close-out push pending PM approval.
+- **Unpushed local commits:** 2 unpushed — `d7b71aa` (content: SRC_SUNSET.md + MASTER_PLAN §4 + REPO_INDEX canonical-docs-row) and this close-out. Both pending PM approval before push. All prior sessions' commits are on `origin/main` (tip: `874f76b`, confirmed at Session 41 start).
 
 ---
 
@@ -36,7 +36,7 @@
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `REPO_INDEX.md` | 2026-04-21 | This file |
-| `MASTER_PLAN.md` | 2026-04-20 | Holistic 10-phase launch plan, North Star, customer values ranking, out-of-scope list, risks (v1.0) |
+| `MASTER_PLAN.md` | 2026-04-21 | Holistic 10-phase launch plan, North Star, customer values ranking, out-of-scope list, risks (v1.0). §4 "What gets done" past-tensed for Groups E (Session 40) + F (Session 41) as subtask clarifications. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-04-21 | Canonical PM instructions (synced to Claude.ai UI) |
 | `CLAUDE.md` | 2026-04-21 | CC standing instructions (111 lines; file-size discipline added Session 39 — keep under 200, target ~80) |
 | `DECISIONS.md` | 2026-04-21 | Active decisions D-84+, index of D-01–D-83 |
