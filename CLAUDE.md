@@ -1,5 +1,8 @@
 # CLAUDE.md — RelayKit
 
+## File size discipline
+Keep this file under 200 lines; target ~80. When adding guidance, also cut. If you can't cut enough to stay under the ceiling, the new guidance probably belongs in a focused spec doc (DECISIONS, PROTOTYPE_SPEC, MESSAGE_PIPELINE_SPEC) with a one-line pointer here instead of inline expansion.
+
 ## Project
 SMS compliance + delivery service for indie developers. Prototype-first development; production code ports from `/prototype` (port 3001) to `/src` (port 3000) once screens stabilize. Current pricing: $49 registration + $19/mo (or $29/mo with marketing).
 
