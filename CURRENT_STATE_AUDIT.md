@@ -455,6 +455,7 @@ Each entry: **what**, **where**, **best guess at explanation** (or "unexplained"
 **Where (40+ files):** `PROTOTYPE_SPEC.md`, `DECISIONS.md`, `WORKSPACE_DESIGN_SPEC.md`, `SDK_BUILD_PLAN.md` itself, `docs/PRICING_MODEL.md`, `docs/PRD_SETTINGS_v2_3.md`, multiple `/prototype` screens (`get-started/page.tsx`, `settings/page.tsx`, `components/setup-instructions.tsx`), multiple `/src` files (`api/sandbox-key/route.ts`, `components/dashboard/sandbox-api-key-card.tsx`, `components/dashboard/live-api-key-card.tsx`), `/api/src/__tests__/*.ts`, `/api/src/routes/signup.ts`, `/api/supabase/migrations/001_api_keys.sql`.
 **Explanation:** D-349 was recorded (2026-04-17) but no sweep followed. SDK_BUILD_PLAN §9 explicitly acknowledges this follow-up is "not blocking SDK build".
 **Severity:** medium — a decision was made but the codebase and docs have not caught up.
+**Resolved:** Phase 0 Group E applied 2026-04-21 (three atomic commits E1/E2/E3). `/src` remains unswept per D-358 freeze; historical references in archive docs and this snapshot preserved intentionally.
 
 ### 5.8 Raw-color violations in prototype
 **Where:** `/prototype/app/sms/[category]/messages/page.tsx` lines 1255, 1558 (`text-gray-500`); `/prototype/app/apps/[appId]/page.tsx` lines 737, 914 (`bg-gray-50`); `/prototype/components/top-nav.tsx` lines 247, 249 (`bg-gray-200`, `text-gray-500`). CC_HANDOFF flagged only lines 242/379/951 in `/sms/[category]/messages/page.tsx` — violations exist beyond that file.

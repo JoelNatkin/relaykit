@@ -97,7 +97,7 @@ Phase 0 is not a build phase. It's a reading, writing, and deciding phase. Joel 
 **What gets done:**
 
 - Record `/src` sunset as an official decision with reasoning
-- Record `rk_sandbox_` → `rk_test_` prefix change (D-349 already exists) with a scheduled sweep phase
+- Record `rk_sandbox_` → `rk_test_` prefix change (D-349) and apply the sweep (Phase 0 Group E — completed 2026-04-21)
 - Update REPO_INDEX to reflect reality (commit counts, decision count, file ages)
 - Update CLAUDE.md where it references wrong storage keys or stale conventions
 - Update RELAYKIT_PRD_CONSOLIDATED to reflect current decision count and endpoint list
@@ -363,7 +363,6 @@ The final phase. Everything built before this works in isolation. Phase 10 is th
 - Two-way dashboard view — a basic inbox UI so developers and business users can see inbound messages (not a full inbox product; a functional viewer)
 - Email integration (Resend) — registration confirmations, approval notices, billing receipts
 - Compliance site finalization (msgverified.com) — privacy policy, terms, opt-in/out language, contact
-- `rk_sandbox_` → `rk_test_` prefix sweep across all code and docs (D-349 applied)
 - Raw-color-violation cleanup in prototype (per audit)
 - Stale-pricing sweep across marketing pages
 - Marketing site final copy pass against Voice Principles v2.0

@@ -568,7 +568,7 @@ The last screen before the dashboard. Developer has verified their email and lan
 - **Tool logo farm** (`mt-4 mb-5`): 6 left-aligned logos (40px circles, `border border-[#c4c4c4] bg-white p-1`) with `gap-3`: Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other (Code02 icon fallback). Same SVG assets as home page hero at smaller scale.
 - **Three numbered cards** (`space-y-4`): Each has rounded-xl border with label (top-left) + copy button (top-right, `Copy01` icon → `Check` for 2s) + helper text (`text-xs text-text-quaternary`) + content block (`bg-bg-secondary rounded-lg`):
   1. "1. Install RelayKit" / "Run this in your project's terminal." / `npm install relaykit`
-  2. "2. Add your API key" / "Paste this prompt into your AI tool to add the key." / `Add this API key to my .env file: RELAYKIT_API_KEY=rk_sandbox_7Kx9mP2vL4qR8nJ5`
+  2. "2. Add your API key" / "Paste this prompt into your AI tool to add the key." / `Add this API key to my .env file: RELAYKIT_API_KEY=rk_test_7Kx9mP2vL4qR8nJ5`
   3. "3. Add SMS to your app" / "Paste this prompt into your AI tool to start building." / hardcoded Club Woman prompt (production will generate from wizard data)
 - **CTA** (`mt-8`): Full-width purple "View on dashboard" button. On click: `setRegistrationState("building")` + navigate to `/apps/[appId]/messages`.
 

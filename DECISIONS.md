@@ -941,6 +941,8 @@ _Affects: API server architecture, deployment pipeline, /api directory._
 
 **D-285 — API keys: hashed storage, environment-prefixed, shown once** (Date: 2026-04-01)
 API keys use rk_sandbox_ (sandbox) and rk_live_ (production) prefixes. Keys are SHA-256 hashed before storage — the full key is shown exactly once at creation. Supabase table: api_keys with id, user_id, key_hash (indexed), key_prefix (first 12 chars for dashboard display), environment (sandbox/production), created_at, revoked_at. Validated via Authorization: Bearer header. No rate limiting in v1 (backlog).
+
+_⚠ Partial supersession: user-facing prefix is now `rk_test_` per D-349._
 _Affects: API server auth middleware, Supabase schema, dashboard Settings page._
 
 **D-286 — Template lookup: static JSON registry for sandbox, Supabase for production** (Date: 2026-04-01)

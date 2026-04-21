@@ -24,7 +24,7 @@
 | AGENTS.md template | **Pending — Phase 8** (spec in §5c) |
 | Integration prompt | **Drafted below** (§5d); finalize before first marketing use |
 | Module pattern (starter-kit wrapper) | **Specified** (§6); ships with Phase 9 starter-kit integration |
-| `rk_sandbox_` → `rk_test_` sweep | **Pending** — Phase 0 Group E covers docs and prototype; SDK side already uses `rk_test_` |
+| `rk_sandbox_` → `rk_test_` sweep | **Complete** — Phase 0 Group E applied 2026-04-21; SDK side already used `rk_test_` |
 
 ---
 
@@ -454,7 +454,7 @@ The AGENTS.md snippet says: prefer `lib/relaykit/` if one doesn't exist; match e
 
 User-facing API key prefix is `rk_test_` for test mode and `rk_live_` for live (D-349). Internal `environment` column stays `'sandbox' | 'live'`; the boundary layer translates at key generation.
 
-**Follow-up sweep:** stale `rk_sandbox_` references in docs, prototype strings, `PRICING_MODEL.md`, and `WORKSPACE_DESIGN_SPEC.md` are scoped into **Phase 0 Group E** (`rk_sandbox_` → `rk_test_` sweep). The SDK side already uses `rk_test_`; nothing to do in `/sdk`.
+**Follow-up sweep:** stale `rk_sandbox_` references in docs, prototype strings, `PRICING_MODEL.md`, and `WORKSPACE_DESIGN_SPEC.md` were scoped into **Phase 0 Group E** and swept 2026-04-21. The SDK side already used `rk_test_`; nothing to do in `/sdk`.
 
 ---
 

@@ -147,7 +147,7 @@ Will house Phase 1 Sinch proving-ground experiments. Throwaway code + `experimen
 - **Groups A/B/C — COMPLETE (Session 38).** See 2026-04-21 Session 38 change log entry.
 - **Group A #2 residual — COMPLETE (Session 39, `35a279a`).** `-- DEV ONLY — DO NOT RUN IN PROD` banner landed on `/supabase/migrations/20260307200000_audit_fixes.sql`.
 - **Group D — COMPLETE (Session 39, `a202b7d` + D-362 `165f30a`).** SDK_BUILD_PLAN rewritten as v0.1.0 retrospective plus Phase 8 delivery spec. D-362 recorded pinning the shipped `SendResult` shape as canonical (purely additive, no supersession of D-277). R1/R2/R3 folded into prose (no `⚠ CONFLICT` markers); R4 voice/pricing re-read of §5 integration prompt found clean, noted inline as 2026-04-21 voice check.
-- **Group E — PENDING:** `rk_sandbox_`→`rk_test_` sweep (~29 files excluding `/src`). Touches `/api` code + tests + docs; requires `tsc` + `vitest` reruns as quality gates. Recommended: open next session in plan mode given code-touching scope.
+- **Group E — COMPLETE (Session 40, 2026-04-21):** `rk_sandbox_`→`rk_test_` sweep applied across `/api` code + tests + user-facing copy + reference/spec docs in three atomic commits (E1/E2/E3). `tsc --noEmit` clean on `/api`, `/sdk`, `/prototype`; `/api` vitest 98/98 green. `/src` and archive docs intentionally excluded per D-358 freeze and historical-preservation rule.
 - **Group F — DEFERRED from Session 38:** `SRC_SUNSET.md` (`/src` capability → MASTER_PLAN phase map). Can piggyback on Group E's session or follow it.
 
 **Phase 1 scope:** Sinch proving-ground experiments in `/experiments/` (provision number → send real SMS → inbound webhook → registration API surface). Throwaway code + `experiments-log.md`.
