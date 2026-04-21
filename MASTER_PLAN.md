@@ -98,6 +98,7 @@ Phase 0 is not a build phase. It's a reading, writing, and deciding phase. Joel 
 
 - Record `/src` sunset as an official decision with reasoning
 - Record `rk_sandbox_` → `rk_test_` prefix change (D-349) and apply the sweep (Phase 0 Group E — completed 2026-04-21)
+- Write `SRC_SUNSET.md` — `/src` capability-to-phase map for the Phase 2–5 rebuilds (Phase 0 Group F — completed 2026-04-21)
 - Update REPO_INDEX to reflect reality (commit counts, decision count, file ages)
 - Update CLAUDE.md where it references wrong storage keys or stale conventions
 - Update RELAYKIT_PRD_CONSOLIDATED to reflect current decision count and endpoint list
