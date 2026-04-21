@@ -608,7 +608,7 @@ Joel is PM's hands. When PM asks for a file, Joel uploads it. This is not overhe
 
 ## CC Mode Signaling
 
-Every CC prompt PM gives Joel ends with an explicit mode line. No guessing, no scanning intent from context.
+Every CC prompt PM gives Joel begins with an explicit mode line. No guessing, no scanning intent from context. It should be before the prompt, outside of the prompt box.
 
 - **`Mode: bypass.`** — Joel pastes and sends immediately. Status bar should already read "bypass permissions on."
 - **`Mode: plan.`** — Joel presses Shift+Tab until status bar reads "plan mode," then pastes.
