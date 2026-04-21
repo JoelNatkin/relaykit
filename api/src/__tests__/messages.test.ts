@@ -6,7 +6,7 @@ const validKey: ApiKeyRecord = {
   id: 'key_1',
   user_id: 'user_42',
   key_hash: 'anything',
-  key_prefix: 'rk_sandbox_ab',
+  key_prefix: 'rk_test_ab',
   environment: 'sandbox',
   status: 'active',
   created_at: '2026-01-01T00:00:00Z',
@@ -22,7 +22,7 @@ alwaysValidLookup.mockResolvedValue(validKey);
 
 const app = createApp(alwaysValidLookup);
 
-const AUTH = { Authorization: 'Bearer rk_sandbox_testkey' };
+const AUTH = { Authorization: 'Bearer rk_test_testkey' };
 
 function post(body: unknown) {
   return app.request('/v1/messages', {

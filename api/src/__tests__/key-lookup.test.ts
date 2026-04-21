@@ -28,7 +28,7 @@ describe('createSupabaseKeyLookup', () => {
     const record = {
       id: 'uuid-1',
       user_id: 'user-1',
-      key_hash: hashKey('rk_sandbox_abc123'),
+      key_hash: hashKey('rk_test_abc123'),
       key_prefix: 'rk_sand',
       environment: 'sandbox' as const,
       status: 'active' as const,
@@ -56,7 +56,7 @@ describe('createSupabaseKeyLookup', () => {
       }),
     });
 
-    const result = await lookup(hashKey('rk_sandbox_abc123'));
+    const result = await lookup(hashKey('rk_test_abc123'));
 
     expect(result).toEqual(record);
     expect(mockFrom).toHaveBeenCalledWith('api_keys');
@@ -75,7 +75,7 @@ describe('createSupabaseKeyLookup', () => {
       }),
     });
 
-    const result = await lookup(hashKey('rk_sandbox_nonexistent'));
+    const result = await lookup(hashKey('rk_test_nonexistent'));
 
     expect(result).toBeNull();
     // No update call when key not found
@@ -94,7 +94,7 @@ describe('createSupabaseKeyLookup', () => {
       }),
     });
 
-    const result = await lookup(hashKey('rk_sandbox_revokedkey'));
+    const result = await lookup(hashKey('rk_test_revokedkey'));
 
     expect(result).toBeNull();
     expect(mockFrom).toHaveBeenCalledTimes(1);

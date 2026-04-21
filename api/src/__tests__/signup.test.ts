@@ -34,11 +34,11 @@ beforeEach(() => {
 });
 
 describe('POST /v1/signup/sandbox', () => {
-  it('returns 201 with api_key starting with rk_sandbox_ on empty body', async () => {
+  it('returns 201 with api_key starting with rk_test_ on empty body', async () => {
     const res = await post({});
     expect(res.status).toBe(201);
     const body = await res.json();
-    expect(body.api_key).toMatch(/^rk_sandbox_[0-9a-f]{32}$/);
+    expect(body.api_key).toMatch(/^rk_test_[0-9a-f]{32}$/);
   });
 
   it('returns environment: "sandbox"', async () => {
@@ -53,7 +53,7 @@ describe('POST /v1/signup/sandbox', () => {
     expect(mockInsert).toHaveBeenCalledTimes(1);
     const inserted = mockInsert.mock.calls[0][0];
     expect(inserted.environment).toBe('sandbox');
-    expect(inserted.raw_key).toMatch(/^rk_sandbox_/);
+    expect(inserted.raw_key).toMatch(/^rk_test_/);
     expect(inserted.key_hash).toBeTruthy();
     expect(inserted.key_hash).not.toBe(inserted.raw_key);
     expect(inserted.key_prefix).toBe(inserted.raw_key.slice(0, 12));

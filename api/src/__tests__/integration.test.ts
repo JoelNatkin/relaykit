@@ -6,15 +6,15 @@ import type { ApiKeyRecord } from '../types.js';
 
 // ── Test key setup ─────────────────────────────────────────────────
 
-const TEST_KEY = 'rk_sandbox_testkey123';
+const TEST_KEY = 'rk_test_testkey123';
 const TEST_KEY_HASH = hashApiKey(TEST_KEY);
-const BAD_KEY = 'rk_sandbox_badkey';
+const BAD_KEY = 'rk_test_badkey';
 
 const validKey: ApiKeyRecord = {
   id: 'key_integration',
   user_id: null,
   key_hash: TEST_KEY_HASH,
-  key_prefix: 'rk_sandbox_te',
+  key_prefix: 'rk_test_te',
   environment: 'sandbox',
   status: 'active',
   created_at: '2026-01-01T00:00:00Z',

@@ -6,7 +6,7 @@ const validKey: ApiKeyRecord = {
   id: 'key_1',
   user_id: 'user_42',
   key_hash: 'anything',
-  key_prefix: 'rk_sandbox_ab',
+  key_prefix: 'rk_test_ab',
   environment: 'sandbox',
   status: 'active',
   created_at: '2026-01-01T00:00:00Z',
@@ -26,7 +26,7 @@ const mockStore: ConsentStore = {
 };
 
 const app = createApp(alwaysValidLookup, mockStore);
-const AUTH = { Authorization: 'Bearer rk_sandbox_testkey' };
+const AUTH = { Authorization: 'Bearer rk_test_testkey' };
 
 beforeEach(() => {
   vi.mocked(mockStore.record).mockReset();
@@ -254,12 +254,12 @@ describe('consent endpoints with unlinked sandbox key (D-292)', () => {
     ...validKey,
     id: 'key_anon',
     user_id: null,
-    raw_key: 'rk_sandbox_anonkey',
+    raw_key: 'rk_test_anonkey',
   };
   const anonLookup = vi.fn<(keyHash: string) => Promise<ApiKeyRecord | null>>();
   anonLookup.mockResolvedValue(unlinkedKey);
   const anonApp = createApp(anonLookup, mockStore);
-  const ANON_AUTH = { Authorization: 'Bearer rk_sandbox_anonkey' };
+  const ANON_AUTH = { Authorization: 'Bearer rk_test_anonkey' };
 
   it('POST /v1/consent returns 403 sandbox_not_linked', async () => {
     const res = await anonApp.request('/v1/consent', {

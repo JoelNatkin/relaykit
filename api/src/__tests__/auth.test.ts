@@ -45,7 +45,7 @@ describe('auth middleware', () => {
     const app = buildApp(mockLookup);
     const res = await app.request('/v1/messages', {
       method: 'POST',
-      headers: { Authorization: 'Bearer rk_sandbox_fakekeyvalue' },
+      headers: { Authorization: 'Bearer rk_test_fakekeyvalue' },
     });
     expect(res.status).toBe(401);
     const body = await res.json();
@@ -59,7 +59,7 @@ describe('auth middleware', () => {
       id: 'key_1',
       user_id: 'user_42',
       key_hash: 'doesntmatter',
-      key_prefix: 'rk_sandbox_ab',
+      key_prefix: 'rk_test_ab',
       environment: 'sandbox',
       status: 'active',
       created_at: '2026-01-01T00:00:00Z',
@@ -71,7 +71,7 @@ describe('auth middleware', () => {
     const app = buildApp(mockLookup);
     const res = await app.request('/v1/messages', {
       method: 'POST',
-      headers: { Authorization: 'Bearer rk_sandbox_validkey123' },
+      headers: { Authorization: 'Bearer rk_test_validkey123' },
     });
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -83,7 +83,7 @@ describe('auth middleware', () => {
       id: 'key_1',
       user_id: 'user_1',
       key_hash: 'doesntmatter',
-      key_prefix: 'rk_sandbox_ab',
+      key_prefix: 'rk_test_ab',
       environment: 'sandbox',
       status: 'active',
       created_at: '2026-01-01T00:00:00Z',
@@ -95,7 +95,7 @@ describe('auth middleware', () => {
     const app = buildApp(mockLookup);
     const res = await app.request('/v1/messages', {
       method: 'POST',
-      headers: { Authorization: 'Bearer rk_sandbox_revokedkey' },
+      headers: { Authorization: 'Bearer rk_test_revokedkey' },
     });
     expect(res.status).toBe(401);
     const body = await res.json();
@@ -109,19 +109,19 @@ describe('auth middleware', () => {
       id: 'key_anon',
       user_id: null,
       key_hash: 'doesntmatter',
-      key_prefix: 'rk_sandbox_ab',
+      key_prefix: 'rk_test_ab',
       environment: 'sandbox',
       status: 'active',
       created_at: '2026-01-01T00:00:00Z',
       revoked_at: null,
       last_used_at: null,
       label: null,
-      raw_key: 'rk_sandbox_abc123',
+      raw_key: 'rk_test_abc123',
     });
     const app = buildApp(mockLookup);
     const res = await app.request('/v1/messages', {
       method: 'POST',
-      headers: { Authorization: 'Bearer rk_sandbox_abc123' },
+      headers: { Authorization: 'Bearer rk_test_abc123' },
     });
     expect(res.status).toBe(200);
     const body = await res.json();
@@ -129,7 +129,7 @@ describe('auth middleware', () => {
   });
 
   it('hashes the key before calling lookup (lookup receives SHA-256 hash, not raw key)', async () => {
-    const rawKey = 'rk_sandbox_testkey999';
+    const rawKey = 'rk_test_testkey999';
     const expectedHash = createHash('sha256').update(rawKey).digest('hex');
     mockLookup.mockResolvedValueOnce(null);
     const app = buildApp(mockLookup);

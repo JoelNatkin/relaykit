@@ -1,6 +1,6 @@
 -- api/supabase/migrations/001_api_keys.sql
 -- API key storage for RelayKit API server (D-285)
--- Keys are SHA-256 hashed, environment-prefixed (rk_sandbox_, rk_live_), shown once at creation.
+-- Keys are SHA-256 hashed, environment-prefixed (rk_test_, rk_live_), shown once at creation.
 
 CREATE TABLE api_keys (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

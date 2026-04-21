@@ -14,7 +14,7 @@ export async function handlePostSignupSandbox(c: Context) {
     );
   }
 
-  const rawKey = `rk_sandbox_${randomBytes(16).toString('hex')}`;
+  const rawKey = `rk_test_${randomBytes(16).toString('hex')}`;
   const keyHash = hashApiKey(rawKey);
   const keyPrefix = rawKey.slice(0, 12);
 
