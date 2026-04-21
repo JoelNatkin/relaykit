@@ -1,56 +1,38 @@
-# Untitled UI starter kit for Next.js
+# RelayKit
 
-This is an official Untitled UI starter kit for Next.js. Kickstart your Untitled UI project with Next.js in seconds.
+RelayKit is an SMS compliance + delivery service for indie developers. It exists so a developer building an application that needs to send SMS can add it cleanly, compliantly, and confidently, without becoming an expert in carrier regulation. The developer's AI coding tool reads our documentation and produces a working integration step by step; real test messages work before any money changes hands; live messaging costs $49 to register and $19/month thereafter. See `MASTER_PLAN.md` §0 for the full North Star.
 
-## Untitled UI React
+## Where to start reading
 
-[Untitled UI React](https://www.untitledui.com/react) is the world’s largest collection of open-source React UI components. Everything you need to design and develop modern, beautiful interfaces—fast.
+- `MASTER_PLAN.md` — strategy, phases, out-of-scope
+- `REPO_INDEX.md` — canonical docs index, current state, recent sessions
+- `CLAUDE.md` — CC working rules, quality gates, session protocol
+- `PROTOTYPE_SPEC.md` — UI screen specs (prototype is the UI source of truth)
+- `DECISIONS.md` — why-we-did-what (active D-84+; D-01–D-83 archived in `DECISIONS_ARCHIVE.md`)
 
-Built with React 19.1, Tailwind CSS v4.1, TypeScript 5.8, and React Aria, Untitled UI React components deliver modern performance, type safety, and maintainability.
+## Directory map
 
-[Learn more](https://www.untitledui.com/react) • [Documentation](https://www.untitledui.com/react/docs/introduction) • [Figma](https://www.untitledui.com/figma) • [FAQs](https://www.untitledui.com/faqs)
+- `/api` — new backend (Hono framework, strict TypeScript, 98 passing tests). Active rebuild target for Phases 2–5.
+- `/sdk` — TypeScript SDK, eight verticals, ~30 methods, v0.1.0 packed. Publication gated on Phase 8.
+- `/prototype` — UI source of truth. Production UI ports from here (port 3001).
+- `/src` — Twilio-era Next.js app, **sunset per D-358**. Feature-freeze. See `SRC_SUNSET.md` for the capability-to-phase rebuild map.
 
-## Getting started
+## Current phase
 
-First, run the development server:
+See `MASTER_PLAN.md` §3 for the phase list; the active phase is called out in `REPO_INDEX.md`.
 
-```bash
+## Local development
+
+The prototype is the only current run target:
+
+```
+cd prototype
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# → http://localhost:3001
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`/src` is frozen per D-358 and is not a run target. `/api` is not yet deployed (Phase 7); it runs locally via its own README when Phase 2 work is active.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Design system
 
-## Resources
-
-Untitled UI React is built on top of [Untitled UI Figma](https://www.untitledui.com/figma), the world's largest and most popular Figma UI kit and design system. Explore more:
-
-**[Untitled UI Figma:](https://www.untitledui.com/react/resources/figma-files)** The world's largest Figma UI kit and design system.
-<br/>
-**[Untitled UI Icons:](https://www.untitledui.com/react/resources/icons)** A clean, consistent, and neutral icon library crafted specifically for modern UI design.
-<br/>
-**[Untitled UI file icons:](https://www.untitledui.com/react/resources/file-icons)** Free file format icons, designed specifically for modern web and UI design.
-<br/>
-**[Untitled UI flag icons:](https://www.untitledui.com/react/resources/flag-icons)** Free country flag icons, designed specifically for modern web and UI design.
-<br/>
-**[Untitled UI avatars:](https://www.untitledui.com/react/resources/avatars)** Free placeholder user avatars and profile pictures to use in your projects.
-<br/>
-**[Untitled UI logos:](https://www.untitledui.com/react/resources/logos)** Free fictional company logos to use in your projects.
-
-## License
-
-Untitled UI React open-source components are licensed under the MIT license, which means you can use them for free in unlimited commercial projects.
-
-> [!NOTE]
-> This license applies only to the starter kit and to the components included in this open-source repository. [Untitled UI React PRO](https://www.untitledui.com/react) includes hundreds more advanced UI components and page examples and is subject to a separate [license agreement](https://www.untitledui.com/license).
-
-[Untitled UI license agreement →](https://www.untitledui.com/license)
-
-[Frequently asked questions →](https://www.untitledui.com/faqs)
+Untitled UI React + Tailwind v4.1. Full reference: `docs/UNTITLED_UI_REFERENCE.md`.

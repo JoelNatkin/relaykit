@@ -2,7 +2,7 @@
 
 > **Authority:** D-358 (`/src` sunset — rebuild on `/api` + Sinch). MASTER_PLAN.md phases 2–5 drive the rebuilds.
 > **Purpose:** Answer the question "where does `/src` capability X get rebuilt, and when?" for every capability surviving in the frozen legacy app.
-> **Companion to:** MASTER_PLAN.md (scope per phase), CURRENT_STATE_AUDIT.md §2.1 (source-of-truth `/src` inventory).
+> **Companion to:** MASTER_PLAN.md (scope per phase), docs/archive/CURRENT_STATE_AUDIT.md §2.1 (source-of-truth `/src` inventory).
 > **Last updated:** 2026-04-21 (Session 41 — Phase 0 Group F)
 > **Retires:** when Phase 5 demo passes and all non-excluded capabilities are marked "rebuilt." Moves to `docs/archive/` with a deprecation header citing MASTER_PLAN.md §9 completion.
 

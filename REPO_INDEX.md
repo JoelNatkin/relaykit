@@ -35,21 +35,20 @@
 
 | File | Last touched | Purpose |
 |------|-------------|---------|
+| `README.md` | 2026-04-21 | Repo-root orientation — 38-line dev-doc pointing at canonical docs. Overwrote Untitled UI boilerplate Session 42. Pointers only, no facts restated. |
 | `REPO_INDEX.md` | 2026-04-21 | This file |
 | `MASTER_PLAN.md` | 2026-04-21 | Holistic 10-phase launch plan, North Star, customer values ranking, out-of-scope list, risks (v1.0). §4 "What gets done" past-tensed for Groups E (Session 40) + F (Session 41) as subtask clarifications. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-04-21 | Canonical PM instructions (synced to Claude.ai UI) |
-| `CLAUDE.md` | 2026-04-21 | CC standing instructions (111 lines; file-size discipline added Session 39 — keep under 200, target ~80) |
+| `CLAUDE.md` | 2026-04-21 | CC standing instructions (file-size discipline added Session 39 — keep under 200, target ~80). Session 42: removed retired `RELAYKIT_PRD_CONSOLIDATED.md` pointer from §Key docs (6 bullets → 5). |
 | `DECISIONS.md` | 2026-04-21 | Active decisions D-84+, index of D-01–D-83 |
 | `DECISIONS_ARCHIVE.md` | (stable) | Full text of D-01–D-83 |
 | `PROTOTYPE_SPEC.md` | 2026-04-21 | Screen specs for `/prototype`. Session 40 Group E: example API key in Get-Started step flipped to `rk_test_` per D-349. |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-04-21 | Post-signup workspace architecture. Session 40 Group E: example API key flipped to `rk_test_` per D-349. |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-04-21 | `/api` pipeline — Session A + Consent API (complete), Session B (gated on Phase 1), Session C (not started) |
 | `SDK_BUILD_PLAN.md` | 2026-04-21 | `/sdk` retrospective (v0.1.0 shipped) + Phase 8 delivery spec (README, AGENTS.md, npm publish). Rewritten Session 39 (Phase 0 Group D); Session 40 Group E flipped §status-table and §7 follow-up from Pending to Complete. |
-| `CURRENT_STATE_AUDIT.md` | 2026-04-21 | Session 37 audit — repo inventory, spec drift, weirdness log, Sinch readiness, recommendations. Session 40 Group E: resolution banner appended to §5.7; §1/§2/§4/§7 preserved as frozen snapshot. |
-| `SRC_SUNSET.md` | 2026-04-21 | `/src` capability-to-phase map driving Phase 2–5 rebuilds per D-358. Active reference; retires when Phase 5 closes. Added Session 41 (Phase 0 Group F). |
+| `SRC_SUNSET.md` | 2026-04-21 | `/src` capability-to-phase map driving Phase 2–5 rebuilds per D-358. Active reference; retires when Phase 5 closes. Added Session 41 (Phase 0 Group F). Session 42: companion pointer L5 path updated to `docs/archive/CURRENT_STATE_AUDIT.md §2.1`. |
 | `CC_HANDOFF.md` | 2026-04-21 | Previous CC session state |
 | `BACKLOG.md` | 2026-04-10 | Parked ideas, never build without promotion |
-| `README.md` | (stable) | Repo readme |
 
 ---
 
@@ -57,7 +56,6 @@
 
 | File | Last touched | Purpose |
 |------|-------------|---------|
-| `RELAYKIT_PRD_CONSOLIDATED.md` | 2026-04-21 | Product narrative, what's built, what's next |
 | `PRICING_MODEL.md` | 2026-04-21 (v6.0) | Tier definitions, costs, pricing logic. Session 40 Group E: `rk_sandbox_`→`rk_test_` prefix flip in the sandbox-key-included bullet. No version bump — D-349 application, not a pricing-logic change. |
 | `PRD_SETTINGS_v2_3.md` | 2026-04-15 | Settings page spec |
 | `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` | (stable) | Copy rules (Tier 1 in project knowledge) |

@@ -101,7 +101,6 @@ Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts,
 - `.next` cache corruption is recurring: stop dev server → `rm -rf .next` → restart
 
 ## Key docs (load on demand, not at session start)
-- `docs/RELAYKIT_PRD_CONSOLIDATED.md` — product narrative, what's built, what's next
 - `docs/PRICING_MODEL.md` — tier definitions, costs, pricing logic
 - `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` — mandatory before user-facing copy
 - `docs/UNTITLED_UI_REFERENCE.md` — full design system reference

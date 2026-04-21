@@ -1,3 +1,8 @@
+> **ARCHIVED 2026-04-21.** Retired because the Session 37 audit snapshot's job — surfacing Phase 0 gaps — is complete now that Phase 0 has closed.
+> **See instead:** SRC_SUNSET.md (carries forward the actionable `/src` findings), MASTER_PLAN.md §1 (current state narrative).
+
+---
+
 # CURRENT_STATE_AUDIT.md
 ## RelayKit repo inventory — audit session
 ### Generated: 2026-04-20 (Session 37 audit pass)

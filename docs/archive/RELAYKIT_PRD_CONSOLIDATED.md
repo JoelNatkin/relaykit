@@ -1,3 +1,8 @@
+> **ARCHIVED 2026-04-21.** Retired because content duplicated canonical sources and drifted across docs.
+> **See instead:** MASTER_PLAN.md (North Star + phases + out-of-scope), PRICING_MODEL.md (pricing), SDK_BUILD_PLAN.md (SDK architecture), MESSAGE_PIPELINE_SPEC.md (pipeline architecture), SRC_SUNSET.md (/src rebuild mapping).
+
+---
+
 # RelayKit — Product Requirements Document
 ## Consolidated from prototype, decisions, and strategy sessions
 ### April 15, 2026 — Living document, not a build spec
