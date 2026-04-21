@@ -10,7 +10,7 @@
 - **Decision count:** D-361 (next available: D-362). Session 38 made no new decisions — all work was documentation catching up to reality.
 - **Master plan last updated:** 2026-04-20 (v1.0 — initial, adopted as canonical per D-359)
 - **Active CC session branch:** main
-- **Unpushed local commits:** Session 36's 31 commits + Session 37's 2 commits (audit + close-out) + Session 38's 5 commits (`66f2872`, `cb25bd1`, `54918a6`, `0e4f56e`, `939d83e`) — all awaiting PM review approval
+- **Unpushed local commits:** None as of 2026-04-21. Sessions 36 (31 commits), 37 (2 commits), and 38 (6 commits through `838525e`) are all pushed to `origin/main` after PM review. Future session commits stay local until PM approves push.
 
 ---
 

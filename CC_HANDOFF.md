@@ -1,6 +1,6 @@
 # CC_HANDOFF.md — Session Handoff
 **Date:** 2026-04-21 (Session 38 close-out — Phase 0 doc reconciliation, Groups A–C complete)
-**Branch:** main (all commits local, **NOT** pushed — PM review gates push)
+**Branch:** main (Session 38's six commits pushed to `origin/main` as of 2026-04-21 after PM review. Future session commits stay local until PM review approves push.)
 
 ---
 
@@ -112,7 +112,7 @@ None. All Group B/C tasks committed. No half-finished edits.
 
 6. **`api/node_modules/` is untracked intentionally.** Do not `git add -A`.
 
-7. **Don't push.** All six session commits plus Session 36's 31 and Session 37's 2 remain local. PM review precedes push.
+7. **Don't push by default.** Session 38's six commits (plus Session 36's 31 and Session 37's 2) are already pushed to `origin/main` as of 2026-04-21 — the previous handoff language was stale. The standing rule still holds for future work: commits from subsequent sessions stay local until PM review approves the push.
 
 ---
 
