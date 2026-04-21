@@ -205,6 +205,8 @@ Affects: PRD_06, message_plans table, Blueprint generator input.
 D-84 through D-103 represent significant product direction changes that are NOT yet reflected in the PRD files. Before CC builds production code from any PRD, that PRD must be updated to reflect current decisions. The change map (from VISION_IMPLEMENTATION_MEMO.md in docs/) lists specific changes per PRD. Priority order matches the build order: PRD_06 before Step 2, PRD_05 before Step 3, PRD_02 before Step 3, PRD_01 + Addendum before Step 4, PRD_04 before Step 5, PRD_07 before Step 7. CC must not build from a PRD that contradicts D-84–D-103 — if it encounters a conflict, flag it per the standard DECISIONS conflict protocol.
 Affects: All PRDs, build order timing, CC session planning.
 
+_Update 2026-04-21: Superseded by D-358 (/src sunset). The VISION_IMPLEMENTATION_MEMO.md referenced here was deleted 2026-04-21 per its own "consume and discard" header. PRD evolution is now governed by MASTER_PLAN.md phase work._
+
 **D-105 — Registration money-back guarantee** (Date: 2026-03-14)
 If a customer's 10DLC registration is not approved, they receive a full refund of the $199 setup fee. This guarantee is displayed on the marketing home page. Scope: covers registration rejection only, not account suspension due to customer violations post-approval. Terms to be detailed in ToS.
 Affects: Marketing home page, pricing display, ToS, Stripe refund logic (future).
