@@ -1,3 +1,9 @@
+> ⚠ **DEPRECATED (2026-04-21) — Superseded by current `docs/PRICING_MODEL.md` (v6.0).**
+> Pricing numbers here ($199 / $19 / $15, BYO Twilio tier, Full-Stack Setup language) no longer reflect the shipped product. Current pricing: **$49 registration + $19/mo transactional** (or $29/mo with marketing), **$8 per 500 overage**, full refund if rejected. BYO Twilio is retired as part of D-358 (Twilio sunset). Retained for historical reference only.
+> Current source of truth: `docs/PRICING_MODEL.md`.
+
+---
+
 # PRICING MODEL UPDATE
 ## RelayKit — Managed SMS Compliance Infrastructure with Free Sandbox
 ### Version 3.0 — Mar 3, 2026

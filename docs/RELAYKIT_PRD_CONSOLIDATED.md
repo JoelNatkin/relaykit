@@ -311,7 +311,7 @@ Full document: `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`
 - **Server-side only.** The SDK authenticates with a secret API key that must never reach the browser. Client-only apps need a server-side route to call the SDK. This is a hard constraint, not a recommendation.
 - **Incremental integration over one-shot.** One message type at a time, tested before moving to the next. Safer, more reliable, and faster to a working integration than a single monolithic prompt. The AI tool shows its plan before writing code.
 - **Website gathers context, AI tool executes.** The RelayKit website asks the business context questions and generates a fully specified brief. The developer's AI tool receives instructions, not questions. (D-300)
-- **Decisions are recorded.** 329+ decisions in DECISIONS.md govern everything from architecture to vocabulary. CC reads them every session.
+- **Decisions are recorded.** 361+ decisions in DECISIONS.md (+ DECISIONS_ARCHIVE.md) govern everything from architecture to vocabulary. CC reads them every session.
 - **One page, one purpose.** The post-signup workspace is a single Messages-centric page that evolves with the developer's lifecycle. No tabs. Setup, testing, registration, and metrics all live on one surface.
 
 ---

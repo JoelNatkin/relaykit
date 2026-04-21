@@ -1,3 +1,9 @@
+> ⚠ **DEPRECATED (2026-04-21) — Do not build from this document.**
+> Twilio is being sunset per **D-358** (April 20, 2026). The carrier stack is being rebuilt on Sinch across MASTER_PLAN Phases 2–5. Registration pipeline reconstruction lives in Phase 5. This PRD is retained for historical reference only — its architecture, API shapes, and operational assumptions no longer apply.
+> Current source of truth: `MASTER_PLAN.md` §Phases 2–5, `CURRENT_STATE_AUDIT.md`, DECISIONS.md D-358.
+
+---
+
 # PRD_04: TWILIO SUBMISSION ENGINE
 ## RelayKit — Programmatic 10DLC Registration Pipeline
 ### Version 2.0 — Mar 1, 2026

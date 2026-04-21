@@ -6,7 +6,7 @@ SMS compliance + delivery service for indie developers. Prototype-first developm
 ## Stack
 - Next.js 15 App Router, TypeScript strict, kebab-case filenames
 - Tailwind v4.1 + Untitled UI design system (`@untitledui/icons`)
-- Supabase (Postgres + Auth, magic-link only)
+- Supabase (Postgres + Auth, passwordless email only — see D-03/D-59)
 - Stripe Checkout, Cloudflare Pages
 
 ## Design system rules
@@ -19,7 +19,7 @@ SMS compliance + delivery service for indie developers. Prototype-first developm
 
 ## Architecture rules
 - All carrier API calls use `fetch()` — no Twilio/Sinch SDK (D-02)
-- Auth is magic-link only (D-03, D-59) — no passwords
+- Auth is passwordless email (D-03, D-59) — no passwords. `/src` currently uses `signInWithOtp` email OTP codes; "magic-link" in D-03 is shorthand for the passwordless-email family, not a click-link mechanism. `/api` rebuild revisits auth mechanism in Phase 5
 - Template engine is string interpolation — no LLM generation for compliance artifacts
 - Secrets only in env vars — never in code, never committed
 
@@ -93,7 +93,7 @@ Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts,
 - Before modifying any screen, read its section in PROTOTYPE_SPEC.md. If code and spec disagree, code wins — flag the discrepancy
 
 ## Implementation gotchas
-- Wizard uses sessionStorage key `relaykit_intake` — preserve in all wizard work
+- Wizard uses sessionStorage key `relaykit_wizard` — preserve in all wizard work (see `prototype/lib/wizard-storage.ts`)
 - sessionStorage reads happen in `useEffect`, not `useState` initializers (SSR hydration)
 - `.next` cache corruption is recurring: stop dev server → `rm -rf .next` → restart
 
