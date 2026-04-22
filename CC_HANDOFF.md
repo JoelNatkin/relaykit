@@ -1,155 +1,153 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-21 (Session 42 close-out — docs hygiene pass between Phase 0 close and Phase 1 start)
-**Branch:** main (one content commit + one close-out commit local, both pending PM approval; all prior sessions' commits on `origin/main`)
+**Date:** 2026-04-22 (Session 43 close-out — MASTER_PLAN cross-ref cleanup + `/experiments/sinch/` scaffold; doc-only, between Phase 0 close and Phase 1 Experiment 1)
+**Branch:** main (two unpushed commits local, pending PM approval; all prior sessions' commits on `origin/main`)
 
 ---
 
 ## Commits This Session
 
-Two atomic commits on top of Session 41's `b46bc9f`. Neither pushed.
+Two atomic commits on top of Session 42's `793a995`. Neither pushed.
 
 ```
-b7e93ad    docs: retire PRD_CONSOLIDATED + CURRENT_STATE_AUDIT; add root README
-[pending]  docs: session 42 close-out — REPO_INDEX meta + change-log bumps, CC_HANDOFF rewrite
+42b151d    docs: session 43 — MASTER_PLAN L33/L104 cleanup + /experiments/sinch/ scaffold
+[pending]  docs: session 43 close-out — REPO_INDEX + CC_HANDOFF bumps
 ```
 
-Session-start reality check: all Session 41 commits (`b46bc9f`, `d7b71aa`) plus PM edit `874f76b` confirmed on `origin/main`; working tree clean except intentional `api/node_modules/`. Phase 0 closed at Session 41 end. Session 42 is NOT Phase 1 work — it is a docs hygiene cleanup that happens between phases.
+Session-start reality check: HEAD was `793a995` = `origin/main` — Session 42's content + close-out commits (`b7e93ad`, `793a995`) had been pushed by Joel between sessions after PM approval. Zero unpushed at Session 43 start. Working tree: `M PM_PROJECT_INSTRUCTIONS.md` (Joel's standalone edit, intentionally not staged or touched per Session 40/41 discipline); untracked `api/node_modules/` (intentional). Session 43 is NOT a Phase 0 or Phase 1 deliverable — it's a cross-ref cleanup + directory scaffold that sits between Phase 0 close and Phase 1's first experiment run.
 
 ---
 
 ## What Was Completed
 
-### Docs hygiene pass — two retirements + new root README
+Plan: `~/.claude/plans/session-43-task-magical-llama.md`, PM-approved before execution. Three deliverables in two atomic commits.
 
-Session opened in plan mode. Plan drafted at `~/.claude/plans/reality-correction-before-planning-whimsical-tide.md`; PM approved with two clarifications before execution:
+### Deliverable 1 — MASTER_PLAN.md cross-ref cleanup (2 surgical edits, Commit 1)
 
-1. README Local development block must point at `/prototype` on port 3001, not `/src` on port 3000. `/src` is frozen per D-358 and is deliberately omitted from the run-target section.
-2. MASTER_PLAN.md:104 confirmed as an **open unfulfilled** Phase 0 task bullet (no `(completed …)` marker like L100/L101 have); the retirement in Session 42 supersedes it. CC_HANDOFF gotcha calls this out explicitly so PM resolves it on next MASTER_PLAN touch.
+Clears the two MASTER_PLAN-side cross-refs Session 42 flagged for PM resolution:
 
-**Content commit `b7e93ad` (6 files, 39/-50):**
+- **L33 narrative softened.** Was: `"Here is a picture of where we actually stand, as of the CURRENT_STATE_AUDIT done this session."` Now: `"Here is a picture of where we actually stand, as of the Session 37 audit (archived Session 42)."` The audit document is still referenced by name so the historical pointer resolves; `(archived Session 42)` signals post-archive path.
+- **L104 open Phase 0 task bullet deleted outright.** Was: `"- Update RELAYKIT_PRD_CONSOLIDATED to reflect current decision count and endpoint list"`. Session 42 retired the target doc; the task is superseded. Clean delete rather than a supersession note — the retirement is already captured in the REPO_INDEX Session 42 change-log entry, and a supersession note under the "What gets done" list would be archaeology noise (the list is a forward-looking action set, not a historical log).
 
-- **`docs/archive/RELAYKIT_PRD_CONSOLIDATED.md`** (renamed from `docs/RELAYKIT_PRD_CONSOLIDATED.md` via `git mv`; 98% similarity preserved) — two-line deprecation header prepended: `> **ARCHIVED 2026-04-21.** Retired because content duplicated canonical sources and drifted across docs.` followed by `> **See instead:** MASTER_PLAN.md (North Star + phases + out-of-scope), PRICING_MODEL.md (pricing), SDK_BUILD_PLAN.md (SDK architecture), MESSAGE_PIPELINE_SPEC.md (pipeline architecture), SRC_SUNSET.md (/src rebuild mapping).` Body preserved verbatim.
-- **`docs/archive/CURRENT_STATE_AUDIT.md`** (renamed from repo root via `git mv`; 99% similarity) — two-line deprecation header: `> **ARCHIVED 2026-04-21.** Retired because the Session 37 audit snapshot's job — surfacing Phase 0 gaps — is complete now that Phase 0 has closed.` followed by `> **See instead:** SRC_SUNSET.md (carries forward the actionable /src findings), MASTER_PLAN.md §1 (current state narrative).` Body preserved verbatim; §5.7 `rk_test_` resolution banner applied by Group E stays.
-- **`README.md`** (overwrite; was 57 lines of Untitled UI starter boilerplate with no RelayKit content) — now 38 lines of dev-doc. Structure: title + one-paragraph "what RelayKit is" (quoting MASTER_PLAN §0 North Star) + 5-item "Where to start reading" list (MASTER_PLAN, REPO_INDEX, CLAUDE.md, PROTOTYPE_SPEC, DECISIONS) + 4-item directory map (`/api`, `/sdk`, `/prototype`, `/src` with D-358 sunset note) + one-sentence "Current phase" pointer + 5-line Local development block (prototype only, port 3001) + design-system one-liner pointing to `docs/UNTITLED_UI_REFERENCE.md`. Zero duplication of pricing / SDK architecture / what-is-built details.
-- **`CLAUDE.md`** — §Key docs bullet list lost the `RELAYKIT_PRD_CONSOLIDATED.md` line (6 bullets → 5). No other changes to CLAUDE.md. Size discipline (target ~80 lines, ceiling 200) unaffected.
-- **`REPO_INDEX.md`** — canonical docs tables: root table gained a `README.md` row at the top (entry point, 38-line dev-doc pointers-only), lost the `CURRENT_STATE_AUDIT.md` row; `/docs` table lost the `RELAYKIT_PRD_CONSOLIDATED.md` row. Two surviving rows annotated with Session 42 changes: `CLAUDE.md` ("Session 42: removed retired `RELAYKIT_PRD_CONSOLIDATED.md` pointer from §Key docs (6 bullets → 5)") and `SRC_SUNSET.md` ("Session 42: companion pointer L5 path updated to `docs/archive/CURRENT_STATE_AUDIT.md §2.1`"). No meta or change-log changes in the content commit — those land in close-out.
-- **`SRC_SUNSET.md`** — L5 companion pointer path updated: `CURRENT_STATE_AUDIT.md §2.1` → `docs/archive/CURRENT_STATE_AUDIT.md §2.1`. One-word path change; keeps the live pointer resolving post-archive. No other SRC_SUNSET changes.
+No version bump. v1.0 stays. These are subtask clarifications to the Session 42 retirement cleanup, not plan-scope changes.
 
-**Close-out commit (pending, this file + REPO_INDEX meta + change-log bumps):**
+### Deliverable 2 — `/experiments/sinch/` scaffold (2 new files, Commit 1)
 
-- `CC_HANDOFF.md` rewritten (this file).
-- `REPO_INDEX.md` meta section: Last updated (Session 42 close-out), Decision count (D-362 unchanged), Master plan last updated (no Session 42 edits), Unpushed local commits (2: `b7e93ad` + this close-out).
-- `REPO_INDEX.md` change log: Session 42 entry appended with full rationale, drift-point summary, flagged cross-refs, and quality-gate verification.
+Phase 1 Experiment 1 (provision number + send one SMS) has a log file ready to fill when Joel runs it.
+
+- **`/experiments/sinch/experiments-log.md`** (59 lines) — Proving-ground preamble (disposable code, every experiment produces a log entry with captured fixtures + timings + behavior, production code in `/api` consumes recorded shapes never assumptions, per MASTER_PLAN §5) + Experiment 1 block:
+  - **Status:** not yet run
+  - **Goal:** characterize Sinch outbound SMS API — request/response shape, latency, quirks — output is the fixture Phase 2 Session B builds against
+  - **Procedure:** 5 steps (1) Sinch dashboard login with project `6bf3a837-d11d-486c-81db-fa907adc4dd4`, (2) provision US long code, record credentials, (3) create `send-one.mjs` with specific requirements (`fetch()` only per D-02, env-var credentials, body `"RelayKit experiment 1 — {ISO timestamp}"`, capture full request + full response + wall-clock timing, write formatted JSON to `/experiments/sinch/fixtures/exp-01-outbound.json`), (4) run + confirm phone receipt, (5) fill in Findings
+  - **Expected artifacts:** `send-one.mjs`, `exp-01-outbound.json`, completed Findings
+  - **Success criteria:** SMS within 60s, fixture includes full response body with message ID, Findings reflects what actually happened
+  - **Findings:** empty 7-bullet template (phone number, auth shape, request URL + method, timing, response shape highlights, gotchas/divergences, implications for Phase 2 Session B)
+
+- **`/experiments/sinch/fixtures/.gitkeep`** — empty file to track the fixtures directory.
+
+### Deliverable 3 — REPO_INDEX.md updates (Commit 2, this commit)
+
+- **Meta bumps:** `Last updated` → 2026-04-22 (Session 43 annotation); `Decision count` unchanged (still D-362, no D-numbers this session); `Master plan last updated` → 2026-04-22 with L33/L104 annotation explicitly calling out no version bump; `Unpushed local commits` → 2 (content `42b151d` + this close-out).
+- **Subdirectories entry** `/experiments/ (planned, not yet created)` flipped to `/experiments/sinch/` with scaffold description, Experiment 1 seeding note, fixtures directory reference, and sibling-directory convention for other carriers if ever evaluated.
+- **Active plan pointer** flipped off Phase 0 onto Phase 1. New top sentence: `"Active master plan phase: Phase 1 (Sinch proving-ground experiments) — ACTIVE, Joel-driven (PM writes procedures, Joel runs experiments, CC on standby for scaffolds). Phase 0 closed at Session 41 with Group F completion. Session 42 (docs hygiene) and Session 43 (MASTER_PLAN cross-ref cleanup + /experiments/sinch/ scaffold) run between Phase 0 close and the first experiment run."` Added a `Phase 1 scope (per MASTER_PLAN §5)` paragraph enumerating all five experiments (provision+send, inbound reply, brand registration, campaign registration, STOP/START/HELP) mirroring MASTER_PLAN §5 framing. Old one-sentence Phase 1 scope paragraph at former L162 deleted (superseded by the new expanded section). Phase 0 progress heading relabeled `Phase 0 progress (CLOSED — Session 41):` — bullets L145–L150 preserved as historical record (commit shas baked in).
+- **Change log:** Session 43 entry appended covering all three deliverables with the density pattern established by Session 40–42 entries.
+
+**Canonical-docs tables untouched** — `experiments-log.md` is a running log, not a canonical spec. The Subdirectories entry is its proper home.
 
 ### DECISIONS.md
 
-No new D-numbers. Archive moves, a new README, and reference cleanup are not architectural decisions.
+No new D-numbers. Cross-ref cleanup + directory scaffold are not architectural decisions.
 
-### MASTER_PLAN.md, SRC_SUNSET.md, other canonical docs
+### MASTER_PLAN.md
 
-MASTER_PLAN.md: **not touched** this session. Two stale references (L33 narrative + L104 open task bullet) flagged in Gotchas for PM resolution at next MASTER_PLAN touch.
+Only L33 (narrative soften) and L104 (bullet delete) in Commit 1. No other edits. v1.0 stays.
 
-SRC_SUNSET.md: one-line path micro-edit on L5. No body changes; scope stays as Session 41 shipped.
+### PROTOTYPE_SPEC.md, SDK_BUILD_PLAN.md, MESSAGE_PIPELINE_SPEC.md, SRC_SUNSET.md, PRICING_MODEL.md, DECISIONS.md, CLAUDE.md
 
-PRICING_MODEL.md, PRD_SETTINGS_v2_3.md, SDK_BUILD_PLAN.md, MESSAGE_PIPELINE_SPEC.md, PM_PROJECT_INSTRUCTIONS.md, DECISIONS.md: all untouched. PM_PROJECT_INSTRUCTIONS.md has 5 references to the retired docs — intentionally not edited per Session 40/41 discipline (Joel-owned file).
+All untouched Session 43. PM_PROJECT_INSTRUCTIONS.md has a working-tree edit from Joel that is intentionally not staged (Joel-owned per Session 40/41 discipline).
 
 ---
 
 ## Current State
 
-**Phase 0 — CLOSED** (ended Session 41). All seven groups (A/B/C/D/E/F + Group A #2 residual + Group G bookkeeping) complete across Sessions 38–41.
+**Phase 0 — CLOSED** (ended Session 41, Group F). Session 42 retired two drifted canonical docs; Session 43 cleared the MASTER_PLAN-side cross-refs against those retirements. The only outstanding Session 42 cross-ref flags live in Joel-owned (`PM_PROJECT_INSTRUCTIONS.md`) or immutable (`DECISIONS.md:867`, `docs/archive/PRD_04_TWILIO_SUBMISSION.md:3`) territory — deliberately not CC's to touch.
 
-**Phase 1 (Sinch proving-ground experiments) — UNBLOCKED and the active Joel-driven track.** Five experiments scoped in MASTER_PLAN §5. Not yet begun. Nothing for CC to do until Joel reports findings or asks for help with an experiment scaffold.
-
-**Session 42 — ad-hoc docs hygiene**, not part of any phase. Runs between Phase 0 close and Phase 1 start to eliminate the duplication-and-drift pattern that spawned the PRD_CONSOLIDATED drift. Session 42 closure does not advance any phase; Phase 1 remains unblocked and Joel-driven after this session.
+**Phase 1 — ACTIVE, Joel-driven.** Five experiments scoped in MASTER_PLAN §5. Experiment 1 procedure seeded in `/experiments/sinch/experiments-log.md`. Nothing for CC to do until Joel reports findings or asks for help with a `send-one.mjs` scaffold.
 
 ---
 
 ## Quality Checks Passed
 
-- **Doc-only session.** No code touched. No `tsc --noEmit`, `vitest`, or `eslint` runs required per CLAUDE.md close-out gates (which apply to modified *code* directories).
-- **Grep verification** post-content-commit:
+- **Doc-only session.** No code touched. No `tsc --noEmit`, `vitest`, or `eslint` runs required per CLAUDE.md close-out gates (which apply to modified code directories).
+- **Grep verification after Commit 1:**
   ```
-  grep -rn "RELAYKIT_PRD_CONSOLIDATED\|CURRENT_STATE_AUDIT" . \
-    --exclude-dir={node_modules,.next,.git,dist,api/node_modules}
+  grep -n "CURRENT_STATE_AUDIT\|RELAYKIT_PRD_CONSOLIDATED" MASTER_PLAN.md
   ```
-  Result: **no live references to the retired files remain in active canonical docs.** Remaining matches break down as:
-  - `docs/archive/RELAYKIT_PRD_CONSOLIDATED.md`, `docs/archive/CURRENT_STATE_AUDIT.md` — inside the archived files themselves (expected).
-  - `docs/archive/PRD_04_TWILIO_SUBMISSION.md:3` — stale pointer inside an already-archived file (not actionable; the containing file is itself deprecated).
-  - `REPO_INDEX.md` change log entries (Session 37 / Session 40 / Session 42) — historical record, not live pointers.
-  - `REPO_INDEX.md` canonical-docs table rows (CLAUDE.md, SRC_SUNSET.md annotations) — describe what Session 42 changed; these are correct references to the retirements, not live-active pointers to the retired files.
-  - `MASTER_PLAN.md:33, 104` — **flagged** for PM resolution (see Gotchas).
-  - `PM_PROJECT_INSTRUCTIONS.md:212, 312, 360, 451, 589` — **flagged**; Joel-owned.
-  - `DECISIONS.md:867` — **flagged**; historical.
-- **README length:** `wc -l README.md` = 38 lines. Under 60–80 target but all 6 structural sections present; dev-doc voice doesn't pad.
-- **Rename verification:** `git log --name-status` on `b7e93ad` shows `R98` and `R99` (98% / 99% similarity) for the two archive moves; `git log --follow` on both archived paths traces back to pre-Session-37 history.
-- **Source-path verification:** `ls /Users/macbookpro/relaykit/CURRENT_STATE_AUDIT.md` and `ls /Users/macbookpro/relaykit/docs/RELAYKIT_PRD_CONSOLIDATED.md` both return "No such file or directory" — moves completed cleanly.
-- **`git status` post-content-commit:** clean except `api/node_modules/` (intentional untracked). After close-out commit: same clean state expected.
+  Result: zero matches (exit 1, grep's "no matches" signal). MASTER_PLAN.md body now has no live references to either retired doc.
+- **Scaffold verification:** `experiments/sinch/experiments-log.md` (2319 bytes, tracked in `42b151d`) and `experiments/sinch/fixtures/.gitkeep` (0 bytes, tracked) both exist.
+- **Commit 1 stats verified** via `git log --oneline` + `git show --stat`: 3 files changed, 60 insertions / 2 deletions.
+- **`git status` post-Commit 1:** clean except `M PM_PROJECT_INSTRUCTIONS.md` (Joel-owned, unchanged) + untracked `api/node_modules/` (intentional). After Commit 2: same expected clean state.
 
 ---
 
 ## In Progress / Partially Done
 
-None. Session 42 is a single-pass docs hygiene cleanup. No partial work.
+None. Session 43 is a single-pass cleanup + scaffold. No partial work.
 
 ---
 
-## Pending (post-Session-42)
+## Pending (post-Session-43)
 
-Per MASTER_PLAN §5 and Session 41's pending list, unchanged by Session 42:
+1. **Phase 1 Experiment 1 run (Joel-driven):** provision a Sinch US long code, write `send-one.mjs` per procedure in `experiments-log.md`, send SMS to Joel's phone, capture fixture to `/experiments/sinch/fixtures/exp-01-outbound.json`, fill in Findings. CC on standby if Joel wants help with `send-one.mjs` scaffolding — throwaway code per MASTER_PLAN §5.
 
-1. **Phase 0 exit check (Joel-side):** Joel reads REPO_INDEX.md, CLAUDE.md, MASTER_PLAN.md, SDK_BUILD_PLAN.md, MESSAGE_PIPELINE_SPEC.md, and SRC_SUNSET.md in sequence and reports no surprising contradictions with his mental model. Note: the original Session 41 exit-check list included RELAYKIT_PRD_CONSOLIDATED.md — that doc is now retired and drops from the list. README.md is the new entry point and implicitly replaces it.
+2. **Phase 1 Experiments 2–5 (Joel-driven, PM writes procedures):** inbound reply webhook capture, brand registration submission + timing, campaign registration submission + timing, STOP/START/HELP handling. Each gets its own log entry with same Status/Goal/Procedure/Findings structure. PM writes each procedure when prior experiment unblocks it (some sequence dependencies — e.g., inbound reply needs a provisioned number from Experiment 1).
 
-2. **Phase 1 experiments (Joel + CC on-call for scaffolds):** five experiments in MASTER_PLAN §5 (provision + one SMS, inbound reply, brand registration, campaign registration, STOP/START/HELP). PM writes each experiment's procedure; Joel runs or supervises; results land in `/experiments/sinch/experiments-log.md` (directory not yet created — first experiment creates it).
+3. **Phase 2 Session B kickoff (post-Experiment 1):** Open-F-1 resolves here (delivery-status webhook scope). Implements `/api/src/carrier/sinch.ts` + replaces `send.ts` / `log-delivery.ts` stubs + applies migration 005. Tests use Phase 1 fixtures (Experiment 1's `exp-01-outbound.json`).
 
-3. **Phase 2 Session B kickoff (post-Experiment 1):** Open-F-1 resolves here (delivery-status webhook scope). Implements `/api/src/carrier/sinch.ts` + replaces `send.ts` / `log-delivery.ts` stubs + applies migration 005. Tests use Phase 1 fixtures.
+4. **Push Session 43's two commits** (`42b151d` + close-out) after PM approval.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **MASTER_PLAN.md L104 is an OPEN unfulfilled Phase 0 task bullet** (not a completed one — no `(Phase 0 Group X — completed YYYY-MM-DD)` marker like L100 and L101 have). The bullet reads: `- Update RELAYKIT_PRD_CONSOLIDATED to reflect current decision count and endpoint list`. Session 42's retirement of `RELAYKIT_PRD_CONSOLIDATED.md` supersedes the bullet. On next MASTER_PLAN touch, PM should either (a) mark it `(superseded by retirement 2026-04-21)` or (b) delete the bullet outright. Leaving it sitting in the "What gets done" list unflagged is misleading.
+1. **`PM_PROJECT_INSTRUCTIONS.md` has Joel's working-tree edit at Session 43 close.** At session start it was modified and unstaged; Session 43 did not touch it (Joel-owned per Session 40/41 discipline). If next CC session opens with the same `M PM_PROJECT_INSTRUCTIONS.md` in working tree, do NOT stage or touch it — Joel may still be in the middle of a separate PM-side commit.
 
-2. **MASTER_PLAN.md L33 has a stale narrative reference:** `Here is a picture of where we actually stand, as of the CURRENT_STATE_AUDIT done this session.` — CURRENT_STATE_AUDIT is now archived. Soften on next MASTER_PLAN touch (e.g., "as of Session 37's audit, archived in Session 42"). Stale-but-harmless; not blocking.
+2. **Two unpushed commits on `main` at Session 43 close:** `42b151d` (content) and this close-out. Both pending PM approval before push. A Session 44 opening with these still unpushed is valid state.
 
-3. **`PM_PROJECT_INSTRUCTIONS.md` has 5 references to the retired docs** at L212, L312, L360, L451, L589. This file is Joel-owned per Session 40/41 discipline — CC does not touch it. Joel should apply the cleanup next time he edits that file. Relevant changes: L212 row entry and L360 bullet both describe CURRENT_STATE_AUDIT as a load-on-demand doc (it still exists, just archived — either update path or remove entry); L312 mentions it in a list of on-demand files (same treatment); L451 cites `CURRENT_STATE_AUDIT §3` (update path to `docs/archive/CURRENT_STATE_AUDIT.md §3` or remove if stale); L589 names RELAYKIT_PRD_CONSOLIDATED in a Phase 0 example (Phase 0 is closed; example is outdated regardless).
+3. **Session 42 cross-ref flags still open (non-MASTER_PLAN targets):**
+   - `PM_PROJECT_INSTRUCTIONS.md` L212/L312/L360/L451/L589 — 5 references to retired docs. Joel-owned per Session 40/41 discipline; CC does not touch. Joel will apply cleanup next time he edits that file.
+   - `DECISIONS.md:867` — one historical reference to RELAYKIT_PRD_CONSOLIDATED inside a decision body. Immutable history — stays as-is.
+   - `docs/archive/PRD_04_TWILIO_SUBMISSION.md:3` — stale pointer inside an already-archived file. The containing file is itself deprecated with its own header; not actionable.
+   None of these three are Session 44 work.
 
-4. **`DECISIONS.md:867` has one historical reference** to RELAYKIT_PRD_CONSOLIDATED inside a decision body explaining a supersession. DECISIONS is immutable history — this reference stays as-is. Not actionable.
+4. **`api/node_modules/` remains untracked intentionally.** Do not `git add -A`.
 
-5. **`docs/archive/PRD_04_TWILIO_SUBMISSION.md:3`** has a stale "Current source of truth" pointer referencing CURRENT_STATE_AUDIT.md. The containing file is itself archived with its own deprecation header, so the stale pointer-within-archive is not actionable. Leave alone.
+5. **`/src` freeze still holds per D-358.** Session 43 did not touch `/src`. Phase 2–5 sessions read `/src` only for concept reference per `SRC_SUNSET.md` mapping, never modify it.
 
-6. **`api/node_modules/` remains untracked intentionally.** Do not `git add -A`.
+6. **MASTER_PLAN.md is now at v1.0 with L33 softened + L104 deleted — total changes from original v1.0:** Groups E (§4 L100 past-tensed + §14 former L366 deleted, Session 40) and F (§4 L101 past-tense bullet added, Session 41) applied earlier. Session 43's L33 + L104 edits are the newest touch. No version bump; v1.0 stays. Next MASTER_PLAN edit should confirm the version-bump rule (subtask clarifications stay v1.0; scope/phase changes bump to v1.1).
 
-7. **Two unpushed commits on `main` at Session 42 close:** `b7e93ad` (content) and this close-out. Both pending PM approval before push. A Session 43 opening with these still unpushed is valid state.
+7. **Session 42's Gotcha about the "duplication-and-drift pattern" still applies** — every fact lives in exactly one canonical doc; others reference, never restate. Session 43 followed this rule (MASTER_PLAN cites "archived Session 42" rather than duplicating the retirement details).
 
-8. **Session 41's own CC_HANDOFF Gotcha #5 (Mode Signaling banner) still holds** for any future sessions touching PM_PROJECT_INSTRUCTIONS.md — CC does not stage or edit that file. Session 42 did not touch it.
-
-9. **`/src` freeze still holds per D-358.** Session 42 did not touch `/src`. When a Phase 2–5 session rebuilds a `/src` capability, it reads `/src` code only for *concept reference* and builds fresh on `/api` per the `SRC_SUNSET.md` mapping.
+8. **If Joel asks CC to scaffold `send-one.mjs`:** it's throwaway per MASTER_PLAN §5. Use `fetch()` only (D-02), env-var credentials (do not hardcode), log the request object + response object + timing as JSON to `/experiments/sinch/fixtures/exp-01-outbound.json`. No tests. No production-quality error handling. The point is to learn Sinch's shape, not to ship.
 
 ---
 
 ## Files Modified This Session
 
-### Moved (via `git mv`)
+### Modified (Commit 1 — content `42b151d`)
 ```
-CURRENT_STATE_AUDIT.md                              → docs/archive/CURRENT_STATE_AUDIT.md
-docs/RELAYKIT_PRD_CONSOLIDATED.md                   → docs/archive/RELAYKIT_PRD_CONSOLIDATED.md
-```
-
-### Modified (content commit `b7e93ad`)
-```
-README.md                                           # full rewrite: Untitled UI boilerplate → RelayKit dev-doc (38 lines)
-docs/archive/RELAYKIT_PRD_CONSOLIDATED.md           # two-line deprecation header prepended
-docs/archive/CURRENT_STATE_AUDIT.md                 # two-line deprecation header prepended
-CLAUDE.md                                           # §Key docs: removed RELAYKIT_PRD_CONSOLIDATED bullet (6 → 5)
-REPO_INDEX.md                                       # canonical docs tables: removed 2 rows, added README.md row, annotated CLAUDE/SRC_SUNSET rows with Session 42 changes
-SRC_SUNSET.md                                       # L5 companion pointer path updated to docs/archive/CURRENT_STATE_AUDIT.md
+MASTER_PLAN.md                                      # §1 L33 narrative softened; §4 L104 task bullet deleted. v1.0 stays.
 ```
 
-### Modified (close-out commit, pending)
+### Created (Commit 1)
 ```
+experiments/sinch/experiments-log.md                # 59 lines — proving-ground preamble + Experiment 1 procedure
+experiments/sinch/fixtures/.gitkeep                 # empty, tracks fixtures directory
+```
+
+### Modified (Commit 2 — close-out, pending)
+```
+REPO_INDEX.md                                       # meta bumps + /experiments/sinch/ subdirectories flip + active plan pointer flip (Phase 0 → Phase 1) + Phase 1 scope expansion + Phase 0 progress CLOSED label + change log entry
 CC_HANDOFF.md                                       # close-out rewrite (this file)
-REPO_INDEX.md                                       # meta section bumps + Session 42 change-log entry
 ```
 
 ### Deleted
@@ -157,22 +155,30 @@ REPO_INDEX.md                                       # meta section bumps + Sessi
 (none)
 ```
 
+### Untouched (intentionally)
+```
+PM_PROJECT_INSTRUCTIONS.md                          # Joel-owned working-tree edit; Session 40/41 discipline
+DECISIONS.md                                        # no D-numbers this session
+PROTOTYPE_SPEC.md                                   # no screens touched
+SDK_BUILD_PLAN.md, MESSAGE_PIPELINE_SPEC.md, SRC_SUNSET.md, PRICING_MODEL.md, CLAUDE.md   # no relevant touches
+all /api, /sdk, /prototype, /src code               # doc-only session
+```
+
 ---
 
 ## Suggested Next Tasks
 
 **Immediate (Joel-side, no CC needed):**
-1. Push the two Session 42 commits after PM approval.
-2. Phase 0 exit read-through — README.md + REPO_INDEX.md + CLAUDE.md + MASTER_PLAN.md + SDK_BUILD_PLAN.md + MESSAGE_PIPELINE_SPEC.md + SRC_SUNSET.md. ~30 minutes. PRD_CONSOLIDATED drops from the list (retired); README is the new entry point.
-3. Begin Phase 1 Experiment 1 (provision Sinch number + send one SMS).
+1. Push the two Session 43 commits after PM approval.
+2. Run Phase 1 Experiment 1 per procedure in `/experiments/sinch/experiments-log.md`. If the write-up feels off before running, report back and PM will adjust.
 
 **CC on standby for:**
-- Scaffolding `/experiments/sinch/experiments-log.md` and a minimal Node script for Experiment 1 send, if Joel wants a starting point. Throwaway code per MASTER_PLAN §5.
+- Scaffolding `/experiments/sinch/send-one.mjs` if Joel asks (throwaway; `fetch()` + env vars + JSON capture).
+- PM writing Phase 1 Experiment 2 (inbound reply webhook) procedure — CC would append to `experiments-log.md`.
 - Phase 2 Session B planning prompt once Experiment 1 captures a real Sinch response shape.
-- Future cleanup of the three flagged docs (MASTER_PLAN L33/L104, PM_PROJECT_INSTRUCTIONS) whenever PM says those are in scope.
 
-**Estimate:** Next CC session depends on which Phase 1 experiment surfaces first. No CC work is currently gated on PM.
+**Estimate:** Next CC session depends on which Phase 1 checkpoint surfaces first. No CC work is currently gated on PM.
 
 ---
 
-*End of close-out. Session 42 docs hygiene complete. Duplication-and-drift pattern eliminated for the two retired docs; the canonical sources (MASTER_PLAN, PRICING_MODEL, SDK_BUILD_PLAN, MESSAGE_PIPELINE_SPEC, SRC_SUNSET) are the only remaining places those facts live.*
+*End of close-out. Session 43 cross-ref cleanup + Phase 1 scaffold complete. MASTER_PLAN is now consistent with the Session 42 retirements; Phase 1 Experiment 1 has a ready-to-fill log file.*
