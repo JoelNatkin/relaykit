@@ -30,7 +30,7 @@ That is the whole thesis. Every phase of this plan serves it. If a phase stops s
 
 ## 1. The State of Things (April 20, 2026)
 
-Here is a picture of where we actually stand, as of the CURRENT_STATE_AUDIT done this session.
+Here is a picture of where we actually stand, as of the Session 37 audit (archived Session 42).
 
 There is more built than the documentation admits. The SDK — the npm package that developers will install — is essentially done. It's a complete TypeScript library with eight vertical namespaces (appointments, orders, verification, support, marketing, internal, community, waitlist), around thirty methods, dual-published, with tests, packed and ready to ship to npm. The message-authoring prototype — the UI developers will use to preview and customize their messages — is in good shape, with the appointments vertical working end-to-end. A new backend called `/api` has begun, built on clean modern foundations (Hono framework, strict TypeScript, 98 passing tests), and the first part of the message pipeline (Session A) is complete.
 
@@ -101,7 +101,6 @@ Phase 0 is not a build phase. It's a reading, writing, and deciding phase. Joel 
 - Write `SRC_SUNSET.md` — `/src` capability-to-phase map for the Phase 2–5 rebuilds (Phase 0 Group F — completed 2026-04-21)
 - Update REPO_INDEX to reflect reality (commit counts, decision count, file ages)
 - Update CLAUDE.md where it references wrong storage keys or stale conventions
-- Update RELAYKIT_PRD_CONSOLIDATED to reflect current decision count and endpoint list
 - Rewrite SDK_BUILD_PLAN to reflect shipped state and remaining work (README, AGENTS.md, publication)
 - Update MESSAGE_PIPELINE_SPEC to note what Phase 1 experiments will inform
 - Archive superseded PRDs with explicit deprecation headers
