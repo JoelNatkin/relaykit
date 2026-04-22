@@ -1,6 +1,6 @@
 # RelayKit — Project Instructions
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: April 20, 2026
+### Updated: April 21, 2026
 
 ---
 
@@ -44,13 +44,34 @@ Joel uploads these every chat start. Muscle memory:
 - `PM_HANDOFF.md` — previous PM chat state (only if rotating)
 
 ### Tier 3 — Upload on demand (everything else)
-Strategy docs, PRDs, specs, build plans, design specs. Upload when the topic comes up, or when PM asks.
+Strategy docs, specs, build plans, design specs. Upload when the topic comes up, or when PM asks.
 
 ### PM instructions sync
 
 `PM_PROJECT_INSTRUCTIONS.md` is canonical in the repo. Claude.ai UI holds an identical copy. When PM proposes changes and Joel approves, Joel updates both simultaneously — edit the repo file and paste into Claude.ai UI in the same motion. No tracking flag, no async state.
 
 **Joel's rule of thumb:** Only act on proposed instructions changes if I explicitly say "update PM_PROJECT_INSTRUCTIONS.md." Otherwise assume the instructions stand.
+
+---
+
+## Docs Hygiene — The "One Source Rule"
+
+**Every fact lives in exactly one canonical doc. Other docs reference it, never restate it.**
+
+This rule exists because duplication causes drift. RELAYKIT_PRD_CONSOLIDATED.md drifted in five factual places during Phase 0 because pricing, SDK status, and scope lived in multiple docs simultaneously. Each copy updated on its own schedule. The rule prevents that.
+
+**Applying the rule:**
+- Pricing facts → PRICING_MODEL.md only. Other docs may point at it; they may not restate numbers.
+- SDK architecture → SDK_BUILD_PLAN.md only.
+- Pipeline behavior → MESSAGE_PIPELINE_SPEC.md only.
+- `/src` sunset mapping → SRC_SUNSET.md only.
+- North Star, phases, out-of-scope → MASTER_PLAN.md only.
+- Screen-level UI specs → PROTOTYPE_SPEC.md only.
+- Decision history → DECISIONS.md / DECISIONS_ARCHIVE.md only.
+
+**Exception:** The repo-root README.md may paraphrase a one-sentence summary of what's in a canonical doc (e.g., "live messaging costs $49 to register and $19/month thereafter") as part of orientation, but may not restate the full rules. When in doubt, paraphrase and point.
+
+**When PM spots drift (same fact in multiple docs):** flag it and propose consolidation. Either delete the duplicate, or replace it with a pointer.
 
 ---
 
@@ -111,7 +132,7 @@ RelayKit lets developers add compliant SMS to their apps by installing an SDK (`
 
 **Carrier strategy:** Sinch for both registration and delivery. Sinch's ~3 day campaign approval vs. Twilio's weeks is the single biggest differentiator — this is the foundational customer value the product is built around.
 
-**Pricing:** $49 registration fee (D-320) + $19/mo subscription, 500 messages included. Overages: $8 per 500 additional messages (D-321). Marketing campaigns available for $29/mo instead of $19/mo. Full refund if registration rejected.
+**Pricing:** $49 registration fee (D-320) + $19/mo subscription, 500 messages included. Overages: $8 per 500 additional messages (D-321). Marketing campaigns available for $29/mo instead of $19/mo. Full refund if registration rejected. Canonical source: PRICING_MODEL.md.
 
 **Decision count:** See REPO_INDEX.md (source of truth).
 
@@ -178,13 +199,13 @@ Per MASTER_PLAN working principles, when a phase depends on external systems (Si
 
 ### Active directories
 
-**`/sdk`** — The RelayKit npm package. TypeScript source, tsup build pipeline, dual ESM/CJS output. Shipped ahead of SDK_BUILD_PLAN — remaining work is README, AGENTS.md, publication (MASTER_PLAN Phase 8).
+**`/sdk`** — The RelayKit npm package. TypeScript source, tsup build pipeline, dual ESM/CJS output. Shipped as `relaykit@0.1.0` — remaining work is README, AGENTS.md, publication (MASTER_PLAN Phase 8).
 
 **`/prototype`** (port 3001) — The UI source of truth. Production-quality UI with mock data.
 
-**`/api`** — Message delivery backend. Hono + Vitest + Supabase. Session A complete. Session B (Sinch outbound) addressed by MASTER_PLAN Phase 2, blocked on Phase 1 Sinch experiments. Session C (quiet hours / queueing) deferred post-launch.
+**`/api`** — Message delivery backend. Hono + Vitest + Supabase. Session A complete (pipeline foundation + Consent API). Session B (Sinch outbound) addressed by MASTER_PLAN Phase 2, gated on Phase 1 Sinch experiments. Session C (quiet hours / queueing) deferred post-launch per MASTER_PLAN §6.
 
-**`/src`** — Legacy Twilio-era production codebase. **Slated for sunset per MASTER_PLAN.** Do not modify. Capabilities being rebuilt on `/api` across Phases 2–5.
+**`/src`** — Legacy Twilio-era production codebase. **Sunset per D-358.** Do not modify. Capabilities being rebuilt on `/api` across Phases 2–5. See `SRC_SUNSET.md` for capability-to-phase mapping.
 
 **`/supabase`** (root) — `/src`-era migrations. Slated for archive in MASTER_PLAN Phase 3.
 
@@ -196,12 +217,13 @@ Per MASTER_PLAN working principles, when a phase depends on external systems (Si
 
 **`/docs`** — Living reference and strategy documents.
 
-**`/docs/archive`** — Superseded PRDs, vision docs, and old strategy. Not operational.
+**`/docs/archive`** — Superseded PRDs, vision docs, and old strategy. Not operational. Includes `RELAYKIT_PRD_CONSOLIDATED.md` and `CURRENT_STATE_AUDIT.md` (both archived Session 42, 2026-04-21).
 
 ### Key repo files (root)
 
 | File | Purpose | CC reads when |
 |------|---------|---------------|
+| README.md | Repo-root orientation — 38 lines, pointers only, no facts restated | Only if Joel/CC is onboarding cold |
 | MASTER_PLAN.md | Canonical launch plan, active phase, out-of-scope list | Every session start |
 | REPO_INDEX.md | Canonical index of repo state | Every session start |
 | PM_PROJECT_INSTRUCTIONS.md | Canonical copy of PM instructions (synced to Claude.ai UI) | Not directly read by CC — PM references |
@@ -209,10 +231,10 @@ Per MASTER_PLAN working principles, when a phase depends on external systems (Si
 | DECISIONS_ARCHIVE.md | Full text of D-01–D-83 | Only when directed to a specific D-number |
 | CLAUDE.md | CC standing instructions | CC reads automatically |
 | PROTOTYPE_SPEC.md | Screen-level specifications | Every session start + before modifying screens |
-| CURRENT_STATE_AUDIT.md | Session 37 audit — ground truth for repo inventory, spec drift, weirdness | On demand when questions arise |
 | WORKSPACE_DESIGN_SPEC.md | Target architecture for workspace | Before structural changes to post-signup experience |
 | MESSAGE_PIPELINE_SPEC.md | Backend message pipeline (Sessions A/B/C) | Before any `/api` pipeline work |
-| SDK_BUILD_PLAN.md | SDK build steps (stale — see audit §4.2, reconcile in Phase 0) | Only after Phase 0 reconciliation |
+| SDK_BUILD_PLAN.md | SDK v0.1.0 retrospective + Phase 8 delivery spec | When SDK work is active |
+| SRC_SUNSET.md | `/src` capability-to-phase rebuild map | At Phase 2/3/4/5 kickoff |
 | CC_HANDOFF.md | Previous CC session summary | Every session start |
 | BACKLOG.md | Deferred ideas and future features | When future features come up |
 
@@ -305,45 +327,45 @@ When user-facing terminology shifts (e.g., "sandbox" → "test mode"), the chang
 ### CC Session Opening Prompt
 
 When Joel says **"open CC"** or **"starting CC"**, give him this to paste:
+
+```
 DECISIONS CHECK — Read DECISIONS.md, CC_HANDOFF.md, PROTOTYPE_SPEC.md, and MASTER_PLAN.md. Confirm with: active decision count, archived decision range noted, CC_HANDOFF summary, PROTOTYPE_SPEC acknowledgment, and active master plan phase. Do NOT read DECISIONS_ARCHIVE.md unless I tell you to check a specific decision.
+```
 
 CC should respond with: active decision count, archived decision range noted, CC_HANDOFF summary, PROTOTYPE_SPEC acknowledgment, and active master plan phase.
 
-**Task-specific specs (MESSAGE_PIPELINE_SPEC.md, SDK_BUILD_PLAN.md, WORKSPACE_DESIGN_SPEC.md, VOICE_AND_PRODUCT_PRINCIPLES_v2.md, CURRENT_STATE_AUDIT.md) are loaded on demand as part of the specific task prompt — not at session start.**
+**Task-specific specs (MESSAGE_PIPELINE_SPEC.md, SDK_BUILD_PLAN.md, WORKSPACE_DESIGN_SPEC.md, SRC_SUNSET.md, VOICE_AND_PRODUCT_PRINCIPLES_v2.md) are loaded on demand as part of the specific task prompt — not at session start.**
 
 ### CC Session Close-Out Prompt
 
 When Joel says **"close CC"** or **"closing CC"**:
+
+```
 Session close-out:
 
-Run tsc --noEmit and eslint on any modified directories. Fix any issues.
-Commit everything that's working.
-Append any unrecorded decisions to DECISIONS.md — apply the DECISIONS vs PROTOTYPE_SPEC vs MASTER_PLAN tests. Layout tweaks, visual polish, and code-only renames go in PROTOTYPE_SPEC or nowhere, not DECISIONS.
-Update PROTOTYPE_SPEC.md for any screens that changed.
-Update MASTER_PLAN.md if PM flagged a plan change this session — bump version if substantive, add changelog entry at top of doc. Update Master plan last updated field in REPO_INDEX.
-Update REPO_INDEX.md:
-
-Bump last_updated to today
-Update decision_count to latest D-number
-Update Master plan last updated if MASTER_PLAN changed
-Add any new repo files
-Remove any deleted/archived files
-Update Active plan pointer if phase changed
-
-
-Write CC_HANDOFF.md (overwrite existing) with:
-
-Commits this session
-What was completed
-What's in progress
-Quality checks passed (tsc, eslint, build)
-Gotchas for next session
-Files modified
-Suggested next tasks (aligned with active master plan phase)
-
+1. Run tsc --noEmit and eslint on any modified directories. Fix any issues.
+2. Commit everything that's working.
+3. Append any unrecorded decisions to DECISIONS.md — apply the DECISIONS vs PROTOTYPE_SPEC vs MASTER_PLAN tests. Layout tweaks, visual polish, and code-only renames go in PROTOTYPE_SPEC or nowhere, not DECISIONS.
+4. Update PROTOTYPE_SPEC.md for any screens that changed.
+5. Update MASTER_PLAN.md if PM flagged a plan change this session — bump version if substantive, add changelog entry at top of doc. Update Master plan last updated field in REPO_INDEX.
+6. Update REPO_INDEX.md:
+   - Bump last_updated to today
+   - Update decision_count to latest D-number
+   - Update Master plan last updated if MASTER_PLAN changed
+   - Add any new repo files
+   - Remove any deleted/archived files
+   - Update Active plan pointer if phase changed
+7. Write CC_HANDOFF.md (overwrite existing) with:
+   - Commits this session
+   - What was completed
+   - What's in progress
+   - Quality checks passed (tsc, eslint, build)
+   - Gotchas for next session
+   - Files modified
+   - Suggested next tasks (aligned with active master plan phase)
 
 Do NOT push to remote — PM review happens first.
-
+```
 
 **After close-out:** Joel shares key files for PM review. PM approves or requests fixes. Only after approval: `git push origin main`.
 
@@ -357,10 +379,10 @@ CC reads these every session (via opening prompt):
 
 CC reads these when the task requires them:
 - **DECISIONS_ARCHIVE.md** — only when Joel directs to a specific D-number
-- **CURRENT_STATE_AUDIT.md** — when questions about repo inventory or spec drift arise
 - **WORKSPACE_DESIGN_SPEC.md** — before structural changes to post-signup workspace
 - **MESSAGE_PIPELINE_SPEC.md** — before `/api` pipeline work
-- **SDK_BUILD_PLAN.md** — after Phase 0 reconciliation only
+- **SDK_BUILD_PLAN.md** — when SDK Phase 8 work is active
+- **SRC_SUNSET.md** — at Phase 2/3/4/5 kickoff
 - **BACKLOG.md** — when future features come up
 - **VOICE_AND_PRODUCT_PRINCIPLES_v2.md** — before user-facing copy work
 - **docs/*.md** — only when relevant to the task
@@ -416,6 +438,22 @@ CC reads these when the task requires them:
 
 ---
 
+## Temporal Drift Patterns (Bookkeeping Scars)
+
+Three recurring failure modes in session docs, all the same root cause — docs describing the wrong temporal state. Watch for them at close-out.
+
+**Backward drift.** Doc written before action A executes says "A is pending" but A was completed later in the session. The doc doesn't catch up. Example: Session 38 CC_HANDOFF said commits were unpushed, but they were pushed after handoff was written.
+
+**Forward drift.** Doc written before action A executes says "A is done" but A hasn't happened yet. The prose runs ahead of reality. Example: Session 39 close-out said "all pushed" before the actual push.
+
+**Unpushed-file drift.** CC's memory of what's on origin/main lags behind reality when pushes happen mid-session. CC_HANDOFF written at session close may still describe as unpushed what's actually already pushed. Example: Session 41 opening prompt confirmation claimed Session 41 close-out was pending PM approval, but it had pushed at end of previous session.
+
+**Mitigation at session start:** If CC reports unpushed commits, verify with `git status` and `git log --oneline -5` against origin/main before trusting. Correct CC's memory before proceeding.
+
+**Mitigation at close-out:** Doc language should describe current state at the moment of writing, not anticipated post-push state. "Commits pending PM approval" is accurate before push. "Commits pushed" is only accurate after push lands.
+
+---
+
 ## Current State and Architecture
 
 ### Registration States
@@ -448,7 +486,7 @@ The dashboard is a single Messages-centric page with no tabs. Key state as of Se
 - No marketing surfaces during onboarding except the tooltip on the messages page.
 - Post-signup workspace surfaces marketing invitation (EIN-aware).
 
-### Vertical Reachability (per CURRENT_STATE_AUDIT §3)
+### Vertical Reachability
 Only Appointments works end-to-end today. Verification, Orders, Support, Marketing, Internal, Community, Waitlist have complete data and SDK methods but broken wizard→workspace handoff. Fix is in MASTER_PLAN Phase 6.
 
 ---
@@ -466,6 +504,8 @@ When planning a CC session, the question is always: "what's the next concrete pi
 Settled. Reject alternatives unless Joel explicitly wants to revisit:
 
 - **SDK delivery model** — `npm install relaykit`, per-vertical namespaces (D-266, D-273)
+- **SDK v0.1.0 shipped** — TypeScript, tsup, 8 namespaces × 30 methods, tests, packed (not published yet)
+- **SDK SendResult shape canonical** — `{ id, status, reason? }` (D-362)
 - **Website is authoring surface** — SDK delivers, website authors (D-279)
 - **Single API endpoint** — `POST /v1/messages` (D-276)
 - **Zero-config init** — reads from process.env (D-278)
@@ -473,6 +513,7 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 - **Top-level consent** — not namespaced (D-274)
 - **Single-page workspace** — no tabs (D-332)
 - **Registration fee** — $49 flat (D-320)
+- **Marketing bundled in $49 registration** — EIN is the gate, not payment (D-334)
 - **Prototype is UI source of truth** — port from prototype (D-163)
 - **No Twilio/Sinch SDK** — fetch() only (D-02)
 - **Magic link auth** — no passwords (D-03, D-59)
@@ -481,6 +522,11 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 - **One transactional + one marketing per project** (D-333)
 - **SDK static for launch** — all namespaces exposed (D-330)
 - **Account-level vs app-level settings split** (D-347)
+- **`/src` sunset** — rebuild on `/api` + Sinch (D-358)
+- **MASTER_PLAN.md canonical** — v1.0 adopted (D-359)
+- **OTP/Verification** — dedicated vertical AND cross-vertical primitive (D-360)
+- **Review requests** — template additions within applicable verticals, developer-supplied URLs (D-361)
+- **User-facing API keys** — `rk_test_` / `rk_live_`; internal `environment` column stays `'sandbox' \| 'live'` (D-349)
 
 ---
 
@@ -550,7 +596,7 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 
 ## Standing Reminders
 
-- Delete `.next` before building. Every CC prompt involving building should end with: "Stop the dev server, delete `.next`, restart before building."
+- Delete `.next` before building. Every CC prompt involving building should end with: "Stop the dev server, delete `.next`, restart before building." **Doc-only sessions skip this — no dev server touched.**
 - Push after review, not before.
 - Push after every completed build task once PM approves it, and again at session close.
 - Separate large tasks into their own CC sessions.
@@ -560,6 +606,7 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 - Decision numbers must be accurate. Verify against REPO_INDEX.md before quoting.
 - User-facing terminology changes do NOT cascade into code. See User-facing vs. Internal Naming.
 - Master plan drift is silent. Check `Master plan last updated` against the date of the most recent substantive decision at session start.
+- Watch for temporal drift in doc language. See Temporal Drift Patterns section.
 
 **Response brevity.** Joel is reviewing and deciding all day — don't make him read more than necessary. Default to the shortest response that answers the question.
 
@@ -586,13 +633,13 @@ PM operates with less context than CC by design. The Tier 2 uploads (REPO_INDEX,
 **The rule: if PM needs a file to answer a question well, PM asks for it. PM does not guess, pattern-match, or answer from stale memory of prior chats.**
 
 ### At chat start
-After reading Tier 2 uploads, PM names any additional files needed for the active phase's work before proceeding. Example: "Phase 0 touches SDK_BUILD_PLAN, CLAUDE.md, RELAYKIT_PRD_CONSOLIDATED, and MESSAGE_PIPELINE_SPEC. Upload those when you want me reviewing CC's proposed edits to them — not all at once, just when each comes up."
+After reading Tier 2 uploads, PM names any additional files needed for the active phase's work before proceeding. Example: "Phase 2 touches MESSAGE_PIPELINE_SPEC and SDK_BUILD_PLAN. Upload those when you want me reviewing CC's proposed edits to them — not all at once, just when each comes up."
 
 ### During the chat
 When a question, review, or decision would benefit from a file PM doesn't have, PM asks. No caveats like "I'd guess..." or "based on what I remember..." If PM starts a sentence that way, PM stops and requests the file instead.
 
 ### When reviewing CC's work
-Before reviewing proposed changes, PM requests the file being changed. Reviewing a diff without seeing the file it's applied to is not review.
+Before reviewing proposed changes, PM requests the file being changed. Reviewing a diff without seeing the file it's applied to is not review. When CC claims to have run a command (like `cat`), verify the output actually rendered in what Joel shared — CC sometimes reports a command but the output doesn't surface. Ask for a re-run if contents aren't visible.
 
 ### When recording or evaluating decisions
 If a potential decision might duplicate or conflict with an existing one, and PM doesn't have DECISIONS.md in context, PM asks Joel to upload it before drafting or approving.
@@ -605,6 +652,30 @@ Joel is PM's hands. When PM asks for a file, Joel uploads it. This is not overhe
 - Review CC's output without seeing the file(s) being modified
 - Draft a decision without checking DECISIONS.md for conflicts
 - Pretend to remember prior chat content PM can't actually see
+
+---
+
+## Doc-only vs. Code-touching Sessions
+
+Not every session modifies code. Adjust discipline accordingly.
+
+**Doc-only sessions** (like Phase 0 Groups A/B/C/D/F, and Session 42 docs hygiene):
+- Skip `tsc --noEmit` / `eslint` / `vitest` unless a TypeScript file was incidentally touched
+- Skip the `.next` delete-and-restart rule — no dev server involved
+- Grep verification often replaces build verification (e.g., "no live references to archived docs remain in active canonical docs")
+- Commit discipline still applies: atomic commits, descriptive messages, PR review before push
+- Close-out still produces CC_HANDOFF and updates REPO_INDEX
+
+**Code-touching sessions**:
+- All quality gates apply
+- `tsc --noEmit` clean on modified directories
+- `eslint` clean
+- Test suite green (vitest on `/api` if touched)
+- Build verification if a build artifact is produced
+
+PM writes the prompt with the appropriate expectations built in. When in doubt, ask CC to confirm at close-out whether code was touched.
+
+---
 
 ## CC Mode Signaling
 
@@ -620,6 +691,7 @@ If PM forgets the mode line, Joel calls it out before sending. If a prompt is am
 - New substantial work CC hasn't scoped yet (new phase, new task cluster, new feature)
 - Work where CC's approach could vary meaningfully and PM wants to review the breakdown before execution
 - Code-touching work in a new directory where quality gates and file boundaries need checking upfront
+- Doc cleanup that involves archive moves, new file creation, or content that has voice/substance choices worth reviewing
 
 ### When PM specifies `Mode: bypass`
 
