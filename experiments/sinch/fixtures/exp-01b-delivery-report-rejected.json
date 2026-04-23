@@ -1,0 +1,17 @@
+{
+  "experiment": "1b",
+  "timestamp_utc": "2026-04-23T17:31:40Z",
+  "auth_method": "legacy_xms_bearer_token",
+  "endpoint": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+  "method": "POST",
+  "request_body_addition": {
+    "delivery_report": "full"
+  },
+  "response_status": 403,
+  "response_latency_ms": 129,
+  "response_body": {
+    "code": "missing_callback_url",
+    "text": "Requesting delivery report without any callback URL."
+  },
+  "notes": "Sinch rejects delivery_report=full when no callback URL is configured on the Service Plan. Configure callback URL first (Service Plan settings), then re-attempt to capture actual delivery report payload shape."
+}
