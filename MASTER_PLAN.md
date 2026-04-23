@@ -1,6 +1,6 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.0 — April 20, 2026
+### Version 1.1 — April 23, 2026
 
 > **Purpose:** A single plan that holds the entire picture of where RelayKit is going and how we get there, written so Joel (non-technical UX designer and founder) can read it, catch smells, and make sure the vision stays on track. This document supersedes ad-hoc priority lists and session-to-session planning for big-picture decisions. Detailed specs still live in their own docs (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN, PROTOTYPE_SPEC, etc.).
 >
@@ -128,7 +128,7 @@ Joel is PM's hands for this phase. PM writes each experiment's procedure, what t
 
 1. **Provision a phone number and send one SMS.** Simplest possible test. Proves the Sinch account works, proves the outbound API shape, produces a real response payload we can use as test fixture for Phase 2. Joel's phone receives the message; we keep the screenshot.
 
-2. **Receive an inbound SMS (reply).** Joel replies to Experiment 1's message. We configure a webhook (using a temporary tunneling service) and capture what Sinch sends us. This is the payload Phase 4 has to handle.
+2. **Configure webhook receiver, capture callback payloads.** Two parts: 2a captures the delivery-report callback shape (runnable now; Phase 2 depends on this to distinguish "submitted to Sinch" from "delivered" after Experiment 1's silent-drop finding). 2b captures the mobile-originated reply payload (Phase 4 contract; blocked on Experiments 3 + 4 since unregistered traffic can't be replied to).
 
 3. **Submit a brand registration and measure time.** Register the RelayKit business (or a test business) with Sinch. Record the submission response shape. Time how long approval actually takes. This is the ground truth for the fast-registration claim.
 
@@ -144,13 +144,15 @@ Joel is PM's hands for this phase. PM writes each experiment's procedure, what t
 
 ---
 
-## 6. Phase 2 — Session B (Sinch Outbound Delivery)
+## 6. Phase 2 — Session B (Sinch Outbound Delivery + Delivery-Report Callbacks)
 
 Now that we know what Sinch actually looks like, we can build the "actually send a text message" step in `/api`. This is what MESSAGE_PIPELINE_SPEC calls Session B. The `/api` backend currently receives a send request, validates it, applies compliance rules, interpolates template variables, and then… writes to a log and returns a fake success. Phase 2 replaces that placeholder with a real call to Sinch.
 
-The work is well-scoped. MESSAGE_PIPELINE_SPEC estimates around 250 lines of production code plus tests. The refactor to accept Sinch as an injected dependency is explicit in the spec. The test suite uses real Sinch response shapes captured in Phase 1 as fixtures, which means our tests are testing against reality, not guesses.
+Phase 1 Experiment 1 revealed that a 201 response from Sinch is not evidence of delivery — unregistered 10DLC traffic silently drops at the carrier despite a success response at the API layer. Phase 2 therefore cannot truthfully implement outbound delivery without also implementing the delivery-report callback loop: Sinch POSTs to a webhook we own, we update the message row from an intermediate state to a terminal one, and `/api` is finally able to report accurate delivery status. The callback infrastructure originates as the experimental Cloudflare Worker from Phase 1 Experiment 2a; Phase 2 ports it into `/api` as a real route and wires it to the `messages` table.
 
-Phase 2 also applies database migration 005, which creates the `messages` table that `/api` needs for logging. Up to this point the table has existed only as a migration file; Phase 2 actually runs it.
+The refactor to accept Sinch as an injected dependency is explicit in MESSAGE_PIPELINE_SPEC. The test suite uses real Sinch response shapes captured in Phase 1 as fixtures — both the send-path fixtures from Experiment 1 and the callback-payload fixture from Experiment 2a — which means our tests are testing against reality, not guesses.
+
+Phase 2 also applies database migration 005, which creates the `messages` table that `/api` needs for logging. Up to this point the table has existed only as a migration file; Phase 2 actually runs it. The status column's enumerated values need revisiting in light of Experiment 1 — a decision to land at Phase 2 Session B kickoff (likely a new D-number) settles whether `'sent'` means "submitted to carrier" or "delivered per callback" and introduces whatever intermediate state is required.
 
 **What gets done:**
 
@@ -158,17 +160,22 @@ Phase 2 also applies database migration 005, which creates the `messages` table 
 - Build `/api/src/carrier/sinch.ts` — the module that actually calls Sinch
 - Replace the send-step stub with a real Sinch call
 - Replace the log-delivery stub with a real database write
+- Build the delivery-report callback receiver in `/api` (ports the Experiment 2a Worker into a real route)
+- Implement Sinch webhook signature verification (covers both delivery reports in Phase 2 and MO payloads in Phase 4 — one verification layer, two payload types on top)
+- Configure the Sinch Service Plan callback URL to point at the deployed `/api` endpoint
+- Implement the status-transition flow from submission-time state to terminal state on callback, plus a timeout-based "presumed failed" fallback for the silent-drop case
 - Apply migration 005
-- Write tests using Phase 1's captured fixtures
-- Verify `/api` can send a real SMS end-to-end
+- Revise `messages.status` enum semantics per the kickoff decision
+- Write tests using Phase 1's captured fixtures (both send-path and callback-path)
+- Verify `/api` can send a real SMS and receive its delivery report end-to-end
 
 **What does not get done in Phase 2:**
 
-Inbound handling (that's Phase 4). Registration pipeline (that's Phase 5). Deployment (that's Phase 7). Quiet hours / queueing / Session C (deferred to post-launch unless a real customer need emerges).
+Mobile-originated (MO) inbound messages — replies from recipients — are Phase 4. Phase 2 builds the webhook receiver infrastructure and handles delivery-report payloads only; Phase 4 extends the same receiver to dispatch MO payloads into the inbound-handler logic. Registration pipeline is Phase 5. Deployment is Phase 7. Quiet hours / queueing / Session C is deferred to post-launch unless a real customer need emerges.
 
-**Phase 2 demo moment:** Joel sends a curl command to `/api` running locally, and a real text message arrives on his phone via Sinch. The message is logged in the database. The response shape matches what the SDK expects.
+**Phase 2 demo moment:** Joel sends a curl command to `/api` running locally, a real text message arrives on his phone via Sinch, and the `messages` row transitions from its submission-time state to `'sent'` (or `'failed'`, if carrier-side issues arise) based on the delivery-report callback. The response shape matches what the SDK expects.
 
-**Phase 2 output:** `/api` can reliably send SMS via Sinch. Database has a real `messages` table with logs. All tests still pass.
+**Phase 2 output:** `/api` can reliably send SMS via Sinch *and* accurately report delivery outcomes. Database has a real `messages` table with logs. Webhook receiver infrastructure is production-grade and ready for Phase 4 to extend. All tests still pass.
 
 ---
 
@@ -195,9 +202,11 @@ This is also the phase where we address the audit's destructive migration concer
 
 ---
 
-## 8. Phase 4 — Inbound Message Handling
+## 8. Phase 4 — Inbound Message Handling (MO Replies)
 
-RelayKit has promised inbound message forwarding as part of its sandbox and production offering (it's in PRICING_MODEL). Inbound is also required for two-way messaging, which we want at launch. The `/src` codebase has a working Twilio-era implementation we can learn from conceptually but won't port directly. `/api` needs inbound built from scratch against Sinch's webhook shape (captured in Phase 1 Experiment 2).
+RelayKit has promised inbound message forwarding as part of its sandbox and production offering (it's in PRICING_MODEL). Inbound is also required for two-way messaging, which we want at launch. The `/src` codebase has a working Twilio-era implementation we can learn from conceptually but won't port directly. `/api` needs inbound built from scratch against Sinch's MO webhook shape (captured in Phase 1 Experiment 2b, which is blocked on Experiments 3 + 4 landing a delivery-capable sender).
+
+The webhook receiver endpoint itself is already live in `/api` as of Phase 2 — it was built there to handle delivery-report callbacks, which Phase 2 scope requires for truthful delivery semantics. Phase 4 extends that same receiver to recognize MO payload types, route them into the inbound-handler logic, and perform all the inbound-specific work: registration lookup, consent updates, developer-webhook forwarding, storage. The receiver endpoint is not new work in Phase 4; the MO-specific logic is.
 
 Inbound means: when someone's customer replies to a message, Sinch's webhook fires to `/api`, `/api` figures out which developer's registration this reply belongs to, and either forwards it to the developer's own webhook endpoint or stores it for the developer to see on their dashboard (or both).
 
@@ -205,21 +214,20 @@ STOP/START/HELP handling is its own concern within inbound. Depending on what Ph
 
 **What gets done:**
 
-- Inbound webhook endpoint in `/api`
-- Sinch signature verification (so we know the webhook is real)
+- MO payload type detection in the existing `/api` webhook receiver (routes delivery-report vs. MO to different handlers; signature verification is already in place from Phase 2)
 - Registration lookup (which developer does this phone number belong to)
 - Consent ledger update on STOP/START
 - Developer webhook forwarding (if the developer configured one)
-- Inbound message storage in the messages table
-- Tests against Phase 1 fixtures
+- Inbound message storage in the messages table (schema extension handled in Phase 3)
+- Tests against Phase 1 Experiment 2b fixtures
 
 **What does not get done in Phase 4:**
 
-A full dashboard inbox UI. That's Phase 10. Phase 4 is the plumbing; the viewer comes later.
+Delivery-report callbacks — those ship in Phase 2. Building the webhook receiver route itself — also Phase 2. Signature verification — also Phase 2. A full dashboard inbox UI — that's Phase 10. Phase 4 is the MO-specific plumbing; the viewer comes later.
 
 **Phase 4 demo moment:** Joel sends a test message from `/api`, replies to it from his phone, and sees the reply land in the database. If a developer webhook is configured, the reply also arrives at that webhook. STOP from Joel's phone disables further sends to that number.
 
-**Phase 4 output:** Inbound works. Two-way messaging's foundation is in place.
+**Phase 4 output:** Inbound MO handling works. Two-way messaging's foundation is in place.
 
 ---
 
