@@ -86,12 +86,117 @@ _Captured 2026-04-23._
 
 ---
 
-## Experiment 2 — Inbound webhook + delivery report callback shape
+## Experiment 2a — Delivery-report callback shape
 
 **Status:** not yet run
-**Goal:** Stand up a public webhook endpoint, configure as Service Plan callback URL, send with delivery_report:full, capture the actual delivery report payload Sinch posts to the callback. Also tests inbound MO message handling (reply to the test send).
+**Goal:** capture the asynchronous callback payload Sinch POSTs to the Service Plan callback URL when a batch is sent with `delivery_report: "full"`. Output is the recorded fixture Phase 2 Session B will use to detect carrier-side drops (per Experiment 1 finding: unregistered 10DLC drops silently at the carrier — Phase 2 cannot detect this from the send-path response alone).
 
 ### Procedure
-_To be drafted before running._
+
+1. **Build the webhook receiver** at `/experiments/sinch/webhook-receiver/`:
+   - `src/index.js`:
+```js
+     export default {
+       async fetch(request) {
+         const captured = {
+           timestamp: new Date().toISOString(),
+           method: request.method,
+           path: new URL(request.url).pathname,
+           headers: Object.fromEntries(request.headers.entries()),
+           body: await safeBody(request),
+         };
+         console.log(JSON.stringify(captured, null, 2));
+         return new Response('', { status: 200 });
+       }
+     };
+
+     async function safeBody(req) {
+       const text = await req.text();
+       try { return JSON.parse(text); } catch { return text; }
+     }
+```
+   - `wrangler.toml`:
+```toml
+     name = "sinch-webhook-receiver"
+     main = "src/index.js"
+     compatibility_date = "2026-04-01"
+```
+   - Deploy: `wrangler deploy` (wrangler is already configured from the relaykit.ai work). Record the resulting `.workers.dev` URL.
+
+2. **Configure the Service Plan callback URL in Sinch:**
+   - Dashboard → SMS → Service APIs → REST configuration (same panel where you retrieved the legacy XMS Bearer token in Experiment 1).
+   - Set the callback URL to the deployed Worker URL.
+   - Save. Confirm the dashboard reflects the new URL before proceeding.
+
+3. **Send with `delivery_report: "full"`.** Open a second terminal and start `wrangler tail` against the deployed Worker so incoming callbacks stream live. Then trigger the same send as Experiment 1 but with the added field:
+```
+   POST https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches
+   Authorization: Bearer {SINCH_API_TOKEN}
+   Content-Type: application/json
+
+   {
+     "from": "+12013619609",
+     "to": ["+1<your phone>"],
+     "body": "RelayKit experiment 2a — {ISO timestamp}",
+     "delivery_report": "full"
+   }
+```
+   Capture the immediate API response (expect 201, not Experiment 1b's 403, because the callback URL is now configured).
+
+4. **Wait and observe the callback.** Two possible outcomes, both informative:
+   - **Callback arrives** (typically within ~60 seconds, possibly several minutes): `wrangler tail` logs the POST from Sinch. Copy the full payload — method, path, headers, body — for the fixture. This gives Phase 2 Session B the canonical delivery-report shape.
+   - **No callback within 10 minutes**: document the non-arrival and the elapsed time. Implication: unregistered 10DLC drops end-to-end silently — the MNO doesn't notify Sinch either — meaning Phase 2 needs a timeout-based "presumed failed" heuristic alongside callback-driven state, not just callback-driven state.
+
+5. **Write fixture** to `/experiments/sinch/fixtures/exp-02a-delivery-report.json`:
+```json
+   {
+     "api_request": { "url": "...", "method": "POST", "headers": { /* Bearer token as {SINCH_API_TOKEN} placeholder */ }, "body": { /* ... */ } },
+     "api_response": { "status": 201, "headers": { /* ... */ }, "body": { /* ... */ } },
+     "api_timing_ms": 0,
+     "callback_received": true,
+     "callback_request": { "method": "POST", "path": "/", "headers": { /* ... */ }, "body": { /* ... */ } },
+     "callback_delay_ms": 0,
+     "captured_at": "2026-04-23T...",
+     "notes": "..."
+   }
+```
+   Placeholders for all credentials — no live tokens in the fixture.
+
+6. Fill in Findings section below.
+
+### Expected artifacts
+- `/experiments/sinch/webhook-receiver/src/index.js` + `wrangler.toml` (kept — per the One Source Rule, this code becomes a real Phase 2/4 prototype, not throwaway)
+- `/experiments/sinch/fixtures/exp-02a-delivery-report.json`
+- Findings below, completed
+
+### Success criteria
+- Service Plan callback URL configured; dashboard confirms
+- Send returns 201 (no more `missing_callback_url` 403)
+- Either a delivery-report callback captured OR a documented timeout with non-arrival measured
+- Either outcome directly informs Phase 2 Session B's failure-detection strategy
+
+### Findings
+_To be filled in after run._
+
+- **Callback URL configured:**
+- **Send response status / timing:**
+- **Callback received:** (yes / no)
+- **Callback delay (if received):**
+- **Callback payload shape (if received):**
+- **Callback event types observed (e.g. `delivery_report_sms`, statuses like `Dispatched` / `Delivered` / `Failed`):**
+- **Implication for silent-drop detection in Phase 2 Session B:**
 
 ### Status: NOT STARTED.
+
+---
+
+## Experiment 2b — Inbound MO message shape
+
+**Status:** BLOCKED — requires a delivery-capable sender. Unregistered 10DLC traffic from Experiment 1 does not reach the recipient phone, so there is no message to reply to and no inbound MO to capture. Unblocks when Experiments 3 + 4 produce a registered brand + campaign.
+
+**Goal:** capture the payload Sinch POSTs to the Service Plan callback URL when a recipient replies (mobile-originated, MO) to a message. This is the Phase 4 inbound-handler contract.
+
+### Procedure
+_To be drafted after Experiments 3 + 4 land and a registered sender exists. Reuses the webhook receiver from 2a; adds: send a real deliverable message to your phone → reply → capture the resulting MO callback. Likely also captures a success-side delivery-report callback, which complements 2a's failure-side capture._
+
+### Status: BLOCKED on Experiments 3 + 4.
