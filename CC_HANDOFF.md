@@ -1,153 +1,149 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-22 (Session 43 close-out — MASTER_PLAN cross-ref cleanup + `/experiments/sinch/` scaffold; doc-only, between Phase 0 close and Phase 1 Experiment 1)
-**Branch:** main (two unpushed commits local, pending PM approval; all prior sessions' commits on `origin/main`)
+**Date:** 2026-04-23 (Session 44 — Phase 1 Experiment 1 + 1b capture; doc-only, first Phase 1 finding landing in `/experiments/sinch/experiments-log.md`)
+**Branch:** main (two unpushed commits local, pending PM approval; Session 43's commits + Joel's standalone PM-instructions edit all on `origin/main` at session start)
 
 ---
 
 ## Commits This Session
 
-Two atomic commits on top of Session 42's `793a995`. Neither pushed.
+Two atomic commits on top of `bd5f425`. Neither pushed.
 
 ```
-42b151d    docs: session 43 — MASTER_PLAN L33/L104 cleanup + /experiments/sinch/ scaffold
-[pending]  docs: session 43 close-out — REPO_INDEX + CC_HANDOFF bumps
+58e95a6    docs: session 44 — Experiment 1 + 1b capture (Phase 1)
+[pending]  docs: session 44 close-out — CC_HANDOFF + REPO_INDEX + BACKLOG bumps
 ```
 
-Session-start reality check: HEAD was `793a995` = `origin/main` — Session 42's content + close-out commits (`b7e93ad`, `793a995`) had been pushed by Joel between sessions after PM approval. Zero unpushed at Session 43 start. Working tree: `M PM_PROJECT_INSTRUCTIONS.md` (Joel's standalone edit, intentionally not staged or touched per Session 40/41 discipline); untracked `api/node_modules/` (intentional). Session 43 is NOT a Phase 0 or Phase 1 deliverable — it's a cross-ref cleanup + directory scaffold that sits between Phase 0 close and Phase 1's first experiment run.
+Session-start reality check: HEAD was `bd5f425` = `origin/main`. Joel pushed Session 43's two commits (`42b151d` + `7393029`) between sessions and also committed his own `PM_PROJECT_INSTRUCTIONS.md` edit (`bd5f425 docs: update PM instructions — docs hygiene, temporal drift, doc-only session guidance`). Zero unpushed at Session 44 start. Working tree clean except the intentional untracked `api/node_modules/`. `PM_PROJECT_INSTRUCTIONS.md` is NOT modified this session — Joel's Session 43-era working-tree edit is now committed and pushed as `bd5f425`; Session 44 did not touch that file.
 
 ---
 
 ## What Was Completed
 
-Plan: `~/.claude/plans/session-43-task-magical-llama.md`, PM-approved before execution. Three deliverables in two atomic commits.
+Three deliverables in two atomic commits. All executing against Phase 1 of MASTER_PLAN — the Sinch proving-ground experiments. First real external-behavior finding lands this session.
 
-### Deliverable 1 — MASTER_PLAN.md cross-ref cleanup (2 surgical edits, Commit 1)
+### Deliverable 1 — Raw fixtures captured (2 new files, Commit 1)
 
-Clears the two MASTER_PLAN-side cross-refs Session 42 flagged for PM resolution:
+- **`/experiments/sinch/fixtures/exp-01-outbound.json`** (33 lines) — full request/response capture from a successful XMS API send at 2026-04-23T17:24:48Z. Request: POST `https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches` with `{ from: "+12013619609", to: ["+12066013506"], body: "..." }` and Bearer token auth. Response: HTTP 201 in 240ms with full Sinch batch object (`id` ULID `01KPXNYXGCX1GYDBJ9HF0Y9CCM`, `type: "mt_text"`, `canceled: false`, `delivery_report: "none"`, `expire_at` +72h, `flash_message: false`, etc.). `phone_received: false` recorded — key finding is the silent carrier-side drop on unregistered 10DLC.
+- **`/experiments/sinch/fixtures/exp-01b-delivery-report-rejected.json`** (17 lines) — error-shape capture at 17:31:40Z. Same endpoint + auth; adding `delivery_report: "full"` to the request body returns HTTP 403 in 129ms with `{ code: "missing_callback_url", text: "Requesting delivery report without any callback URL." }`. Establishes Sinch's error-object shape (code + text, snake_case identifier + human message) — a separate dimension from the success-path shape.
 
-- **L33 narrative softened.** Was: `"Here is a picture of where we actually stand, as of the CURRENT_STATE_AUDIT done this session."` Now: `"Here is a picture of where we actually stand, as of the Session 37 audit (archived Session 42)."` The audit document is still referenced by name so the historical pointer resolves; `(archived Session 42)` signals post-archive path.
-- **L104 open Phase 0 task bullet deleted outright.** Was: `"- Update RELAYKIT_PRD_CONSOLIDATED to reflect current decision count and endpoint list"`. Session 42 retired the target doc; the task is superseded. Clean delete rather than a supersession note — the retirement is already captured in the REPO_INDEX Session 42 change-log entry, and a supersession note under the "What gets done" list would be archaeology noise (the list is a forward-looking action set, not a historical log).
+Both fixtures follow the `{servicePlanId}` / `{SINCH_API_TOKEN}` placeholder convention so they're safe to commit. No live credentials in git.
 
-No version bump. v1.0 stays. These are subtask clarifications to the Session 42 retirement cleanup, not plan-scope changes.
+### Deliverable 2 — `experiments-log.md` Findings filled in + Experiment 1b section added (1 file modified, Commit 1)
 
-### Deliverable 2 — `/experiments/sinch/` scaffold (2 new files, Commit 1)
+- **Experiment 1 Findings block** — the empty 7-bullet template Session 43 seeded is replaced with a 9-bullet captured-result block (phone number + cost, auth shape including the OAuth2-vs-XMS-token distinction, endpoint + region, request/response shapes, 201 status, 240ms latency, `phone_received: NO`, error-shape cross-reference to 1b) plus a 5-item Implications-for-Phase-2-Session-B subsection (auth choice is legacy XMS not OAuth2; silent carrier drops are baseline failure mode; ID is ULID not UUID; Sinch dashboard "Try the service" UI is broken and unusable for debugging; Open-F-1 delivery-status webhook scope gains real urgency). Status footer: `COMPLETE — captured 2026-04-23.`
+- **Experiment 1b section** — new H2 block appended after Experiment 1. Status + Goal + Findings (4-item bullet list: 403 status, error shape, 129ms latency on rejection, implication that callback URL is prerequisite for ANY delivery-report capture) + `COMPLETE — captured 2026-04-23.` footer. Separate from Experiment 1 because it's a distinct characterization (rejection-path shape, not happy-path shape) and worth finding-level visibility for Phase 2 planning.
 
-Phase 1 Experiment 1 (provision number + send one SMS) has a log file ready to fill when Joel runs it.
+### Deliverable 3 — Experiment 2 stub added to `experiments-log.md` (same file, same commit)
 
-- **`/experiments/sinch/experiments-log.md`** (59 lines) — Proving-ground preamble (disposable code, every experiment produces a log entry with captured fixtures + timings + behavior, production code in `/api` consumes recorded shapes never assumptions, per MASTER_PLAN §5) + Experiment 1 block:
-  - **Status:** not yet run
-  - **Goal:** characterize Sinch outbound SMS API — request/response shape, latency, quirks — output is the fixture Phase 2 Session B builds against
-  - **Procedure:** 5 steps (1) Sinch dashboard login with project `6bf3a837-d11d-486c-81db-fa907adc4dd4`, (2) provision US long code, record credentials, (3) create `send-one.mjs` with specific requirements (`fetch()` only per D-02, env-var credentials, body `"RelayKit experiment 1 — {ISO timestamp}"`, capture full request + full response + wall-clock timing, write formatted JSON to `/experiments/sinch/fixtures/exp-01-outbound.json`), (4) run + confirm phone receipt, (5) fill in Findings
-  - **Expected artifacts:** `send-one.mjs`, `exp-01-outbound.json`, completed Findings
-  - **Success criteria:** SMS within 60s, fixture includes full response body with message ID, Findings reflects what actually happened
-  - **Findings:** empty 7-bullet template (phone number, auth shape, request URL + method, timing, response shape highlights, gotchas/divergences, implications for Phase 2 Session B)
+- **Experiment 2 block** — new H2 block appended after Experiment 1b. Status: `not yet run`. Goal: stand up public webhook endpoint, configure as Service Plan callback URL, send with `delivery_report:full`, capture delivery-report payload Sinch posts to the callback; also tests inbound MO message handling (reply to the test send). Procedure section stubbed with `_To be drafted before running._` — PM writes the procedure before Joel runs the experiment, consistent with Experiment 1's model. Status footer: `NOT STARTED.`
 
-- **`/experiments/sinch/fixtures/.gitkeep`** — empty file to track the fixtures directory.
+Experiment 2 is the natural next Phase 1 step for two independent reasons: (a) Experiment 1b established that no delivery-report payload can be captured without a callback URL, and (b) inbound webhook capture was already the planned Experiment 2 scope from MASTER_PLAN §5. These two needs converge cleanly into a single experiment.
 
-### Deliverable 3 — REPO_INDEX.md updates (Commit 2, this commit)
+### Deliverable 4 — Close-out (Commit 2, this commit)
 
-- **Meta bumps:** `Last updated` → 2026-04-22 (Session 43 annotation); `Decision count` unchanged (still D-362, no D-numbers this session); `Master plan last updated` → 2026-04-22 with L33/L104 annotation explicitly calling out no version bump; `Unpushed local commits` → 2 (content `42b151d` + this close-out).
-- **Subdirectories entry** `/experiments/ (planned, not yet created)` flipped to `/experiments/sinch/` with scaffold description, Experiment 1 seeding note, fixtures directory reference, and sibling-directory convention for other carriers if ever evaluated.
-- **Active plan pointer** flipped off Phase 0 onto Phase 1. New top sentence: `"Active master plan phase: Phase 1 (Sinch proving-ground experiments) — ACTIVE, Joel-driven (PM writes procedures, Joel runs experiments, CC on standby for scaffolds). Phase 0 closed at Session 41 with Group F completion. Session 42 (docs hygiene) and Session 43 (MASTER_PLAN cross-ref cleanup + /experiments/sinch/ scaffold) run between Phase 0 close and the first experiment run."` Added a `Phase 1 scope (per MASTER_PLAN §5)` paragraph enumerating all five experiments (provision+send, inbound reply, brand registration, campaign registration, STOP/START/HELP) mirroring MASTER_PLAN §5 framing. Old one-sentence Phase 1 scope paragraph at former L162 deleted (superseded by the new expanded section). Phase 0 progress heading relabeled `Phase 0 progress (CLOSED — Session 41):` — bullets L145–L150 preserved as historical record (commit shas baked in).
-- **Change log:** Session 43 entry appended covering all three deliverables with the density pattern established by Session 40–42 entries.
-
-**Canonical-docs tables untouched** — `experiments-log.md` is a running log, not a canonical spec. The Subdirectories entry is its proper home.
+- **CC_HANDOFF.md** — overwritten (this file).
+- **REPO_INDEX.md** — `Last updated` bumped to 2026-04-23 Session 44. `Unpushed local commits` updated (2 commits `58e95a6` + this close-out; Session 43's commits pushed between sessions). Subdirectories `/experiments/sinch/` entry notes fixtures directory now holds 2 captured fixtures. Change log Session 44 entry appended with all deliverables + key findings.
+- **BACKLOG.md** — new entry under Infrastructure & Operations: pre-Phase-2 DECISIONS.md audit (review D-84 through D-362 for internal consistency, identify superseded/conflicting decisions, propose consolidation; 3–4 hours CC + 1–2 hours PM↔Joel resolution; run before Phase 2 Session B kickoff).
 
 ### DECISIONS.md
 
-No new D-numbers. Cross-ref cleanup + directory scaffold are not architectural decisions.
+No new D-numbers. Experiment captures are observations, not architectural decisions. The implications flagged in Findings may surface D-numbers in later sessions (e.g., "carrier_message_id column accepts ULIDs" could become a schema decision during Phase 2 planning), but nothing that needs recording now.
 
-### MASTER_PLAN.md
+### MASTER_PLAN.md, PROTOTYPE_SPEC.md, CLAUDE.md, all spec docs
 
-Only L33 (narrative soften) and L104 (bullet delete) in Commit 1. No other edits. v1.0 stays.
-
-### PROTOTYPE_SPEC.md, SDK_BUILD_PLAN.md, MESSAGE_PIPELINE_SPEC.md, SRC_SUNSET.md, PRICING_MODEL.md, DECISIONS.md, CLAUDE.md
-
-All untouched Session 43. PM_PROJECT_INSTRUCTIONS.md has a working-tree edit from Joel that is intentionally not staged (Joel-owned per Session 40/41 discipline).
+Untouched Session 44. No scope shifts, no screen changes, no standing-instruction changes.
 
 ---
 
 ## Current State
 
-**Phase 0 — CLOSED** (ended Session 41, Group F). Session 42 retired two drifted canonical docs; Session 43 cleared the MASTER_PLAN-side cross-refs against those retirements. The only outstanding Session 42 cross-ref flags live in Joel-owned (`PM_PROJECT_INSTRUCTIONS.md`) or immutable (`DECISIONS.md:867`, `docs/archive/PRD_04_TWILIO_SUBMISSION.md:3`) territory — deliberately not CC's to touch.
+**Phase 0 — CLOSED** (Session 41 Group F).
 
-**Phase 1 — ACTIVE, Joel-driven.** Five experiments scoped in MASTER_PLAN §5. Experiment 1 procedure seeded in `/experiments/sinch/experiments-log.md`. Nothing for CC to do until Joel reports findings or asks for help with a `send-one.mjs` scaffold.
+**Phase 1 — ACTIVE, Joel-driven.** Progress update:
+- Experiment 1 (provision number + send one SMS, capture outbound shape): **COMPLETE** (2026-04-23). Fixture + Findings captured.
+- Experiment 1b (delivery-report rejection shape): **COMPLETE** (2026-04-23). Fixture + Findings captured. Added as a bonus finding surfaced during Experiment 1 execution.
+- Experiment 2 (inbound webhook + delivery report callback): **NOT STARTED**. Procedure stub seeded; PM writes the procedure before next Joel-driven run.
+- Experiments 3, 4, 5: not started. Sequence dependencies still apply (brand registration + campaign registration run in real carrier-approval time; STOP/START/HELP can run after any registered campaign exists).
+
+**Phase 2 Session B** — still GATED on Phase 1. Session B now has real fixtures (Experiment 1 success-path + Experiment 1b rejection-path) plus clear direction on auth choice, ID format, failure-detection strategy. Full unblock depends on Experiment 2 closing the delivery-report-payload-shape gap (Open-F-1 on delivery-status webhook scope converges here).
 
 ---
 
 ## Quality Checks Passed
 
-- **Doc-only session.** No code touched. No `tsc --noEmit`, `vitest`, or `eslint` runs required per CLAUDE.md close-out gates (which apply to modified code directories).
-- **Grep verification after Commit 1:**
+- **Doc-only session.** No code touched. `tsc --noEmit` / `eslint` / `vitest` not required per CLAUDE.md close-out gates (which apply to modified code directories).
+- **Fixture-file verification post-Commit 1:**
   ```
-  grep -n "CURRENT_STATE_AUDIT\|RELAYKIT_PRD_CONSOLIDATED" MASTER_PLAN.md
+  $ git ls-files experiments/sinch/fixtures/
+  experiments/sinch/fixtures/.gitkeep
+  experiments/sinch/fixtures/exp-01-outbound.json
+  experiments/sinch/fixtures/exp-01b-delivery-report-rejected.json
   ```
-  Result: zero matches (exit 1, grep's "no matches" signal). MASTER_PLAN.md body now has no live references to either retired doc.
-- **Scaffold verification:** `experiments/sinch/experiments-log.md` (2319 bytes, tracked in `42b151d`) and `experiments/sinch/fixtures/.gitkeep` (0 bytes, tracked) both exist.
-- **Commit 1 stats verified** via `git log --oneline` + `git show --stat`: 3 files changed, 60 insertions / 2 deletions.
-- **`git status` post-Commit 1:** clean except `M PM_PROJECT_INSTRUCTIONS.md` (Joel-owned, unchanged) + untracked `api/node_modules/` (intentional). After Commit 2: same expected clean state.
+  Both new fixtures tracked.
+- **Commit 1 stats via `git show --stat`:** 3 files changed, 97 insertions / 9 deletions (experiments-log.md +56/-9, exp-01-outbound.json +33, exp-01b-delivery-report-rejected.json +17).
+- **Markdown visual scan** of `experiments-log.md` — 3 H2-level experiment blocks render correctly, `---` dividers separate them, status footers all formatted consistently.
+- **`git status` post-Commit 1:** clean except untracked `api/node_modules/` (intentional).
 
 ---
 
 ## In Progress / Partially Done
 
-None. Session 43 is a single-pass cleanup + scaffold. No partial work.
+None. Session 44 is a single-pass capture + close-out.
 
 ---
 
-## Pending (post-Session-43)
+## Pending (post-Session-44)
 
-1. **Phase 1 Experiment 1 run (Joel-driven):** provision a Sinch US long code, write `send-one.mjs` per procedure in `experiments-log.md`, send SMS to Joel's phone, capture fixture to `/experiments/sinch/fixtures/exp-01-outbound.json`, fill in Findings. CC on standby if Joel wants help with `send-one.mjs` scaffolding — throwaway code per MASTER_PLAN §5.
-
-2. **Phase 1 Experiments 2–5 (Joel-driven, PM writes procedures):** inbound reply webhook capture, brand registration submission + timing, campaign registration submission + timing, STOP/START/HELP handling. Each gets its own log entry with same Status/Goal/Procedure/Findings structure. PM writes each procedure when prior experiment unblocks it (some sequence dependencies — e.g., inbound reply needs a provisioned number from Experiment 1).
-
-3. **Phase 2 Session B kickoff (post-Experiment 1):** Open-F-1 resolves here (delivery-status webhook scope). Implements `/api/src/carrier/sinch.ts` + replaces `send.ts` / `log-delivery.ts` stubs + applies migration 005. Tests use Phase 1 fixtures (Experiment 1's `exp-01-outbound.json`).
-
-4. **Push Session 43's two commits** (`42b151d` + close-out) after PM approval.
+1. **Push Session 44's two commits** (`58e95a6` + close-out) after PM approval.
+2. **PM writes Experiment 2 procedure** before Joel runs it. Procedure needs to cover: public tunnel setup (ngrok or equivalent), Sinch Service Plan callback URL configuration, outbound send with `delivery_report:full`, capture payload shape, then inbound MO test (reply from Joel's phone) capturing that payload shape separately. Two fixture files expected: `exp-02-delivery-report.json` and `exp-02b-inbound-mo.json`.
+3. **Phase 1 Experiments 3–5 (Joel-driven, PM writes procedures):** brand registration submission + timing, campaign registration submission + timing, STOP/START/HELP handling. Sequence dependencies apply — brand must be registered before campaign.
+4. **Phase 2 Session B kickoff (post-Experiment 2):** Open-F-1 resolves here. Real fixtures now exist; Session B has everything it needs for outbound + delivery-report handling once Experiment 2 closes the callback-payload-shape gap.
+5. **Pre-Phase-2 DECISIONS.md audit (new BACKLOG entry this session):** review D-84 through D-362 for internal consistency, superseded/conflicting decisions, propose consolidation. Run before Session B kickoff.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **`PM_PROJECT_INSTRUCTIONS.md` has Joel's working-tree edit at Session 43 close.** At session start it was modified and unstaged; Session 43 did not touch it (Joel-owned per Session 40/41 discipline). If next CC session opens with the same `M PM_PROJECT_INSTRUCTIONS.md` in working tree, do NOT stage or touch it — Joel may still be in the middle of a separate PM-side commit.
+1. **`PM_PROJECT_INSTRUCTIONS.md` may have a new working-tree edit at Session 45 start.** Session 43's edit was committed and pushed as `bd5f425` between sessions. Session 44 did not touch the file. If next CC session opens with `M PM_PROJECT_INSTRUCTIONS.md` in working tree, that's a new Joel-side edit — do NOT stage or touch it per Session 40/41 discipline.
 
-2. **Two unpushed commits on `main` at Session 43 close:** `42b151d` (content) and this close-out. Both pending PM approval before push. A Session 44 opening with these still unpushed is valid state.
+2. **Two unpushed commits on `main` at Session 44 close:** `58e95a6` (content) and this close-out. Both pending PM approval before push.
 
-3. **Session 42 cross-ref flags still open (non-MASTER_PLAN targets):**
-   - `PM_PROJECT_INSTRUCTIONS.md` L212/L312/L360/L451/L589 — 5 references to retired docs. Joel-owned per Session 40/41 discipline; CC does not touch. Joel will apply cleanup next time he edits that file.
-   - `DECISIONS.md:867` — one historical reference to RELAYKIT_PRD_CONSOLIDATED inside a decision body. Immutable history — stays as-is.
-   - `docs/archive/PRD_04_TWILIO_SUBMISSION.md:3` — stale pointer inside an already-archived file. The containing file is itself deprecated with its own header; not actionable.
-   None of these three are Session 44 work.
+3. **`api/node_modules/` remains untracked intentionally.** Do not `git add -A`.
 
-4. **`api/node_modules/` remains untracked intentionally.** Do not `git add -A`.
+4. **`/src` freeze still holds per D-358.** Session 44 did not touch `/src`.
 
-5. **`/src` freeze still holds per D-358.** Session 43 did not touch `/src`. Phase 2–5 sessions read `/src` only for concept reference per `SRC_SUNSET.md` mapping, never modify it.
+5. **Experiment 1 fixture placeholders:** `{servicePlanId}` and `{SINCH_API_TOKEN}` in `exp-01-outbound.json` are intentional — the fixture file is committed, so no live credentials may appear. When Phase 2 Session B writes tests against these fixtures, swap placeholders for env-var interpolation at test-fixture-load time.
 
-6. **MASTER_PLAN.md is now at v1.0 with L33 softened + L104 deleted — total changes from original v1.0:** Groups E (§4 L100 past-tensed + §14 former L366 deleted, Session 40) and F (§4 L101 past-tense bullet added, Session 41) applied earlier. Session 43's L33 + L104 edits are the newest touch. No version bump; v1.0 stays. Next MASTER_PLAN edit should confirm the version-bump rule (subtask clarifications stay v1.0; scope/phase changes bump to v1.1).
+6. **Sinch "Try the service" dashboard UI is broken.** Captured in Implications bullet 4. Do not recommend it as a debugging tool to anyone. Direct curl or the SDK is the only reliable send path. If a future session wants to validate a send without writing a script, copy the captured request from `exp-01-outbound.json` into a curl and run it — do not use the dashboard.
 
-7. **Session 42's Gotcha about the "duplication-and-drift pattern" still applies** — every fact lives in exactly one canonical doc; others reference, never restate. Session 43 followed this rule (MASTER_PLAN cites "archived Session 42" rather than duplicating the retirement details).
+7. **The silent carrier-side drop is the most important Phase 2 design constraint.** An unregistered-traffic send produces HTTP 201 from Sinch with no warning, then dies at the carrier. Phase 2 cannot surface delivery failures from the send-path response alone — must wire delivery-report callbacks (which requires Phase 4 webhook infrastructure) to close the loop. This pushes the practical Phase 2/Phase 4 dependency harder than MASTER_PLAN §6/§8 implies. May surface a MASTER_PLAN amend request at Phase 2 kickoff.
 
-8. **If Joel asks CC to scaffold `send-one.mjs`:** it's throwaway per MASTER_PLAN §5. Use `fetch()` only (D-02), env-var credentials (do not hardcode), log the request object + response object + timing as JSON to `/experiments/sinch/fixtures/exp-01-outbound.json`. No tests. No production-quality error handling. The point is to learn Sinch's shape, not to ship.
+8. **ULID vs UUID for `carrier_message_id`.** Sinch returns 26-char ULIDs (`01KPXNYXGCX1GYDBJ9HF0Y9CCM`). If the `/api/supabase/migrations/005_messages_table.sql` `carrier_message_id` column was typed as UUID, it will reject Sinch IDs. Phase 3 database-reconciliation session should verify column type; Phase 2 Session B should verify before applying migration 005.
+
+9. **Legacy XMS API token vs OAuth2 Project Access Key.** Phase 2 Session B must use the legacy XMS Bearer token (from the Service Plan's REST API configuration), not the project-level OAuth2 access key. OAuth2 keys return 401 against XMS endpoints. If MESSAGE_PIPELINE_SPEC's drafted request/response contract assumed OAuth2 (draft state, pre-real-capture), update it to match the captured Experiment 1 shape.
+
+10. **Experiment 2 sits at the intersection of inbound (Phase 4) and delivery-reports (Phase 2).** PM should be intentional about whether to capture both payloads in a single experiment run (efficient, but risks conflating two concerns) or split into 2a (delivery-report callback) + 2b (inbound MO). Recommendation: single run with two fixture files (`exp-02-delivery-report.json` + `exp-02b-inbound-mo.json`) — captures both shapes, keeps them logically separate, doesn't require two setup cycles.
 
 ---
 
 ## Files Modified This Session
 
-### Modified (Commit 1 — content `42b151d`)
+### Modified (Commit 1 — content `58e95a6`)
 ```
-MASTER_PLAN.md                                      # §1 L33 narrative softened; §4 L104 task bullet deleted. v1.0 stays.
+experiments/sinch/experiments-log.md                # Findings filled in (9-bullet + 5-item Implications); Experiment 1b section added; Experiment 2 stub appended
 ```
 
 ### Created (Commit 1)
 ```
-experiments/sinch/experiments-log.md                # 59 lines — proving-ground preamble + Experiment 1 procedure
-experiments/sinch/fixtures/.gitkeep                 # empty, tracks fixtures directory
+experiments/sinch/fixtures/exp-01-outbound.json                      # 33 lines — successful XMS send capture
+experiments/sinch/fixtures/exp-01b-delivery-report-rejected.json     # 17 lines — delivery_report rejection capture
 ```
 
 ### Modified (Commit 2 — close-out, pending)
 ```
-REPO_INDEX.md                                       # meta bumps + /experiments/sinch/ subdirectories flip + active plan pointer flip (Phase 0 → Phase 1) + Phase 1 scope expansion + Phase 0 progress CLOSED label + change log entry
 CC_HANDOFF.md                                       # close-out rewrite (this file)
+REPO_INDEX.md                                       # meta bumps + Subdirectories update + Session 44 change-log entry
+BACKLOG.md                                          # Infrastructure & Operations: pre-Phase-2 DECISIONS audit entry
 ```
 
 ### Deleted
@@ -157,10 +153,10 @@ CC_HANDOFF.md                                       # close-out rewrite (this fi
 
 ### Untouched (intentionally)
 ```
-PM_PROJECT_INSTRUCTIONS.md                          # Joel-owned working-tree edit; Session 40/41 discipline
+PM_PROJECT_INSTRUCTIONS.md                          # Joel's prior edit committed as bd5f425; no Session 44 touch
+MASTER_PLAN.md                                      # no scope shift this session; Experiment 1 findings don't amend the plan (yet)
 DECISIONS.md                                        # no D-numbers this session
-PROTOTYPE_SPEC.md                                   # no screens touched
-SDK_BUILD_PLAN.md, MESSAGE_PIPELINE_SPEC.md, SRC_SUNSET.md, PRICING_MODEL.md, CLAUDE.md   # no relevant touches
+PROTOTYPE_SPEC.md, SDK_BUILD_PLAN.md, MESSAGE_PIPELINE_SPEC.md, SRC_SUNSET.md, PRICING_MODEL.md, CLAUDE.md   # no relevant touches
 all /api, /sdk, /prototype, /src code               # doc-only session
 ```
 
@@ -169,16 +165,17 @@ all /api, /sdk, /prototype, /src code               # doc-only session
 ## Suggested Next Tasks
 
 **Immediate (Joel-side, no CC needed):**
-1. Push the two Session 43 commits after PM approval.
-2. Run Phase 1 Experiment 1 per procedure in `/experiments/sinch/experiments-log.md`. If the write-up feels off before running, report back and PM will adjust.
+1. Push the two Session 44 commits after PM approval.
+2. Set up the Service Plan callback URL + public tunnel for Experiment 2 when PM has written the procedure.
 
 **CC on standby for:**
-- Scaffolding `/experiments/sinch/send-one.mjs` if Joel asks (throwaway; `fetch()` + env vars + JSON capture).
-- PM writing Phase 1 Experiment 2 (inbound reply webhook) procedure — CC would append to `experiments-log.md`.
-- Phase 2 Session B planning prompt once Experiment 1 captures a real Sinch response shape.
+- PM writing Experiment 2 procedure — CC would append to `experiments-log.md` (procedure section currently stubbed).
+- Scaffolding a throwaway webhook receiver if Joel asks (Hono or minimal Node HTTP server is fine — lives in `/experiments/sinch/` per MASTER_PLAN §5 throwaway-code rule; not in `/api`).
+- Phase 2 Session B planning prompt once Experiment 2 closes the callback-payload gap.
+- Pre-Phase-2 DECISIONS.md audit when promoted from BACKLOG (3–4 hours CC time).
 
-**Estimate:** Next CC session depends on which Phase 1 checkpoint surfaces first. No CC work is currently gated on PM.
+**Estimate:** Next CC session depends on which Phase 1 checkpoint surfaces first. If Joel is ready to run Experiment 2, PM writes the procedure before the next CC session (or CC appends a PM-provided procedure to the log and then waits). If Joel wants the DECISIONS audit before moving on, that's a standalone CC session.
 
 ---
 
-*End of close-out. Session 43 cross-ref cleanup + Phase 1 scaffold complete. MASTER_PLAN is now consistent with the Session 42 retirements; Phase 1 Experiment 1 has a ready-to-fill log file.*
+*End of close-out. Session 44 Experiment 1 + 1b capture complete. First real Phase 1 finding is in the log: unregistered 10DLC traffic drops silently at the carrier with no API-response warning, which is the most important design constraint Phase 2 Session B has to handle.*

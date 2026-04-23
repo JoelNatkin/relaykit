@@ -127,6 +127,8 @@
 
 - **Custom template database lookup path (D-280)** — Current `lookupTemplate(namespace, event)` only checks the static TypeScript registry. Custom messages (D-280) will live in a database. When built, lookupTemplate falls through: static registry first, then `custom_templates` table query with user_id scope. Current function signature is fine — don't couple anything to the assumption that all templates are static. (Origin: April 3 architecture audit, D-280)
 
+- **Pre-Phase-2 DECISIONS.md audit** — Review D-84 through D-362 for internal consistency, identify superseded/conflicting decisions, propose consolidation. Estimated 3–4 hours CC + 1–2 hours PM↔Joel resolution. Run before Phase 2 Session B kickoff. (Origin: Session 44, 2026-04-23 — flagged during Phase 1 Experiment 1 capture when Implications-for-Phase-2 surfaced that the MESSAGE_PIPELINE_SPEC drafted contract may need updates against real-world Sinch behavior)
+
 ### Marketing & Growth
 
 - **Lovable/Bolt/Replit connector exploration** — Investigate Lovable's connector program. Build a dead-simple landing page aimed at no-code builders. Measure signup interest. API endpoint already exists — connector is a distribution play. Post-launch, after SDK path has paying customers. (Origin: April 2 strategy session, D-296/D-297)
