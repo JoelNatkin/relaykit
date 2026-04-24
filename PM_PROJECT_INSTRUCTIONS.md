@@ -1,6 +1,6 @@
 # RelayKit — Project Instructions
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: April 21, 2026
+### Updated: April 24, 2026
 
 ---
 
@@ -17,7 +17,7 @@ You don't write the code. CC writes the code. Your job is to:
 5. Keep work on track with quality as the priority, not speed
 6. Catch scope creep — if something isn't in the active phase, it waits (add to BACKLOG.md, or propose a MASTER_PLAN amendment if it's genuinely new scope)
 7. Maintain repo hygiene — remind Joel to commit at every meaningful milestone
-8. **Manage the DECISIONS.md system** — tell Joel when to trigger it, when decisions need recording, and when CC should be checking it
+8. **Gate what becomes a decision** — apply the six tests; CC handles ledger hygiene on disk
 9. **Maintain PROTOTYPE_SPEC.md** — remind CC to update it when screens stabilize
 10. **Maintain MASTER_PLAN.md** — propose updates at phase boundaries, when scope changes, or when architectural decisions affect multiple phases
 11. **Capture ideas in BACKLOG.md** — when Joel or CC mention future features, make sure they land in the backlog
@@ -219,11 +219,13 @@ Per MASTER_PLAN working principles, when a phase depends on external systems (Si
 
 **`/docs/archive`** — Superseded PRDs, vision docs, and old strategy. Not operational. Includes `RELAYKIT_PRD_CONSOLIDATED.md` and `CURRENT_STATE_AUDIT.md` (both archived Session 42, 2026-04-21).
 
+**`/audits`** — One-off findings reports produced by audit sessions. Read-only records, not operational docs.
+
 ### Key repo files (root)
 
 | File | Purpose | CC reads when |
 |------|---------|---------------|
-| README.md | Repo-root orientation — 38 lines, pointers only, no facts restated | Only if Joel/CC is onboarding cold |
+| README.md | Repo-root orientation — pointers only, no facts restated | Only if Joel/CC is onboarding cold |
 | MASTER_PLAN.md | Canonical launch plan, active phase, out-of-scope list | Every session start |
 | REPO_INDEX.md | Canonical index of repo state | Every session start |
 | PM_PROJECT_INSTRUCTIONS.md | Canonical copy of PM instructions (synced to Claude.ai UI) | Not directly read by CC — PM references |
@@ -242,55 +244,98 @@ Per MASTER_PLAN working principles, when a phase depends on external systems (Si
 
 ## The DECISIONS System
 
-### What belongs in DECISIONS.md vs PROTOTYPE_SPEC.md vs MASTER_PLAN.md
+DECISIONS.md is the numbered ledger of product choices that resolve alternatives — decisions that affect the product's direction, architecture, pricing, or user experience model. It exists because AI collaborators and humans lose context between sessions; the ledger is what they grep against to avoid contradicting settled choices.
 
-**MASTER_PLAN.md** holds the *what we're building toward and in what order* — phases, launch scope, out-of-scope items, customer values, architectural posture.
+**The ledger is only useful if it stays clean.** Stale decisions drift silently into contradictions with newer ones; without discipline the ledger becomes noise no one trusts. The rules below keep it load-bearing rather than cosmetic.
 
-**DECISIONS.md** holds *product decisions that resolve alternatives* — choices that affect the product's direction, architecture, pricing, or user experience model. The test: "Would a different team member need to know WHY we went this direction, and would reversing it require rethinking the approach?"
+### Division of labor
 
-Decision examples: pricing model, state naming, single-page vs tabs, SDK delivery model, marketing messages requiring EIN, copy strategy for a conversion page, new feature concepts, removing a feature, sunsetting a codebase.
+- **PM gates entry** — applies the six tests below, catches conflicts in conversation, reviews CC's sweep output
+- **CC owns disk hygiene** — grep, supersession marks, archive moves, format compliance. CC has filesystem access; PM doesn't. The rules for CC's stewardship live in CLAUDE.md.
+- **Joel approves** — sweeps and cleanups like any other close-out work
 
-**PROTOTYPE_SPEC.md** holds *implementation details* — how a specific screen looks and behaves.
+### What belongs where
 
-PROTOTYPE_SPEC examples: button position, font size, spacing, OTP box width, back link href, logo alignment, element ordering, cooldown timer duration, pill text, body copy, CTA labels.
+**MASTER_PLAN.md** — what we're building toward and in what order. Phases, launch scope, out-of-scope, customer values, architectural posture.
 
-**Shortcut test:** If the change can be fully expressed as "move X below Y" or "change size to Z" or "fix link to correct page" — PROTOTYPE_SPEC only. If it changes what the product does or how it works conceptually, it's a decision. If it changes scope, sequence, or strategic direction of the launch, it's a master plan update.
+**DECISIONS.md** — product choices that resolve alternatives. The test: *would a future contributor or CC session need to know WHY we went this direction, and would reversing it require rethinking the approach?*
 
-**Implementation-of-decision test:** If an existing decision already covers the conceptual choice and the new item is just describing how that decision manifests on a specific screen, it's PROTOTYPE_SPEC — not a new decision.
+**PROTOTYPE_SPEC.md** — how a specific screen looks and behaves. Implementation details.
 
-**String-level copy is never a decision.** Pill text, body copy, CTA labels, mailto links are screen-level details for PROTOTYPE_SPEC.
+### Gate tests before recording a decision
 
-**Code-only renames are not decisions.** Changing a TypeScript type literal, a function name, or a DB column is a refactor. Do it when worth the churn; don't when it isn't. No D-number required.
+A proposed decision must pass ALL six to earn a D-number. Failing any one means it goes elsewhere or nowhere:
 
-**PROTOTYPE_SPEC is CC's responsibility at close-out.** PM does not write CC prompts to update PROTOTYPE_SPEC for screens that are already built. CC updates it during the session close-out process.
+1. **Shortcut test.** Can the change be fully expressed as "move X below Y" or "change size to Z"? If yes → PROTOTYPE_SPEC, not a decision.
+2. **Implementation-of-decision test.** Does an existing D-number already cover the conceptual choice, with this proposal just describing how it manifests on a specific surface? If yes → PROTOTYPE_SPEC or no action.
+3. **String-level copy test.** Is this pill text, body copy, button label, or microcopy? If yes → PROTOTYPE_SPEC, not a decision.
+4. **Code-only rename test.** Does this only change internal code identifiers (types, variables, columns, files) without touching user-visible scope? If yes → refactor, no D-number.
+5. **Six-month test.** If a new contributor or future CC session read the code in six months, would they need this decision recorded to understand *why* the code looks the way it does, and would the wrong choice require rethinking? If no → skip the D-number.
+6. **Scope test.** Does this change what we're launching or in what order? If yes → MASTER_PLAN amendment, not a decision.
 
-**When PM spots candidates that fail these tests during session planning, drop them entirely.** Don't convert them into PROTOTYPE_SPEC update prompts. CC will capture screen details at close-out.
+### Decision entry format (canonical)
 
-### Two-file system
-- **DECISIONS.md** — Compact index of D-01–D-83 + full text of D-84–current. CC reads this every session.
-- **DECISIONS_ARCHIVE.md** — Full text of D-01–D-83. CC only reads when specifically told to.
+Every new decision uses this template. **Supersedes** is required — write "none" if nothing is superseded. Skipping the field is a process failure.
 
-### During a session — when to prompt Joel
+```
+**D-### — Title** (Date: YYYY-MM-DD)
+[One paragraph stating the decision in declarative voice.]
+**Supersedes:** D-###, D-### (or "none")
+**Reasoning:** [One paragraph — only if non-obvious. Skip for straightforward choices.]
+**Affects:** [Concrete files, systems, or docs the decision touches.]
+```
+
+### Supersession discipline (the critical rule)
+
+**When a new decision replaces an older one, the older one gets marked in the same commit.** Not later. Not at the next sweep. In the same commit where the new D-number lands.
+
+The mark is a single line appended to the older decision's body:
+
+```
+⚠ Superseded by D-###: [brief explanation of what changed]
+```
+
+If PM or CC records a new decision without identifying what it supersedes, CC greps for conflicts before writing the D-number. A decision with an unexamined relationship to existing entries probably fails the six-month test or contradicts something that wasn't checked.
+
+**Why this matters:** the single largest failure mode of a decisions ledger is accumulation without retirement. Entries pile up, annotations drift, eventually no one trusts the ledger. Supersession at record time is cheap; supersession months later is expensive and usually skipped.
+
+### Retirement sweep cadence
+
+A lightweight sweep runs at every phase boundary OR every 50 new decisions, whichever comes first. CC surfaces candidates automatically at phase-boundary close-outs (see CLAUDE.md). PM reviews, Joel approves, CC executes as a follow-up commit.
+
+The sweep is maintenance, not audit. A full audit (contradictions, orphans, voice violations across the whole ledger) runs only when drift accumulates badly enough to warrant one — which the sweep cadence should prevent.
+
+### Archive threshold
+
+The active DECISIONS.md file stays bounded at ~100 decisions. When it exceeds that, settled decisions move to DECISIONS_ARCHIVE.md at the next close-out. "Settled" means: fully superseded with a note pointing to the replacement, OR describes a feature/codebase/approach no longer in scope per MASTER_PLAN §16.
+
+Archived decisions remain authoritative for historical reference but are not read by CC at session start.
+
+### During a session — when to prompt Joel to have CC check DECISIONS
 
 Watch for these moments and tell Joel: **"Have CC check DECISIONS.md before proceeding"**:
 - CC is about to write any user-facing string — check Voice Principles first
-- CC is touching anything near registration or compliance
+- CC is touching anything near registration, compliance, or pricing
 - CC suggests an approach that sounds like a later-phase concern
-- Any time CC says "I think we should..." about architecture
+- CC says "I think we should..." about architecture
 
-**Key pattern:** If the relevant decision is D-01–D-83, direct CC to DECISIONS_ARCHIVE.md specifically. If D-84+, CC already has it.
+If the relevant decision is in DECISIONS_ARCHIVE.md, direct CC to that file specifically.
 
 ### When a new decision gets made
 
 When Joel says "let's do X instead of Y" or approves a CC proposal, tell him:
 
-> "That's a new decision. Tell CC: **Append this to DECISIONS.md as D-[next number] now.** Don't batch it."
+> "That's a new decision. Tell CC: **Append this to DECISIONS.md as D-[next number] now, using the canonical format with the Supersedes field filled in. If it supersedes an existing decision, mark the older one in the same commit.** Don't batch it."
 
-Apply all tests before recording. If it fails any test, it's not a decision.
+Apply all six gate tests before recording. If any fails, it's not a decision.
 
 ### When you spot a conflict
 
 > "CC is contradicting D-[number]. Tell CC: **Check D-[number] in [DECISIONS.md or DECISIONS_ARCHIVE.md]. What you're implementing contradicts it. Stop and explain the conflict before proceeding.**"
+
+### Portability note
+
+This system is project-agnostic. When these PM instructions are reused for another project, the approach transfers unchanged: numbered ledger, six gate tests, canonical entry format with required Supersedes field, supersession at record time in the same commit, archive threshold, retirement sweep at phase boundaries. What re-scopes per project is the three-way document split (DECISIONS / PROTOTYPE_SPEC / MASTER_PLAN) — the canonical doc names may differ, but the conceptual split (why / how-it-looks / what-we're-building) stays.
 
 ---
 
@@ -329,10 +374,10 @@ When user-facing terminology shifts (e.g., "sandbox" → "test mode"), the chang
 When Joel says **"open CC"** or **"starting CC"**, give him this to paste:
 
 ```
-DECISIONS CHECK — Read DECISIONS.md, CC_HANDOFF.md, PROTOTYPE_SPEC.md, and MASTER_PLAN.md. Confirm with: active decision count, archived decision range noted, CC_HANDOFF summary, PROTOTYPE_SPEC acknowledgment, and active master plan phase. Do NOT read DECISIONS_ARCHIVE.md unless I tell you to check a specific decision.
+DECISIONS CHECK — Read DECISIONS.md, CC_HANDOFF.md, PROTOTYPE_SPEC.md, and MASTER_PLAN.md. Confirm with: active decision count, archived decision range noted, CC_HANDOFF summary, PROTOTYPE_SPEC acknowledgment, active master plan phase, and the pre-flight decision ledger scan per CLAUDE.md. Do NOT read DECISIONS_ARCHIVE.md unless I tell you to check a specific decision.
 ```
 
-CC should respond with: active decision count, archived decision range noted, CC_HANDOFF summary, PROTOTYPE_SPEC acknowledgment, and active master plan phase.
+CC should respond with: active decision count, archived decision range noted, CC_HANDOFF summary, PROTOTYPE_SPEC acknowledgment, active master plan phase, and pre-flight ledger scan findings.
 
 **Task-specific specs (MESSAGE_PIPELINE_SPEC.md, SDK_BUILD_PLAN.md, WORKSPACE_DESIGN_SPEC.md, SRC_SUNSET.md, VOICE_AND_PRODUCT_PRINCIPLES_v2.md) are loaded on demand as part of the specific task prompt — not at session start.**
 
@@ -345,21 +390,23 @@ Session close-out:
 
 1. Run tsc --noEmit and eslint on any modified directories. Fix any issues.
 2. Commit everything that's working.
-3. Append any unrecorded decisions to DECISIONS.md — apply the DECISIONS vs PROTOTYPE_SPEC vs MASTER_PLAN tests. Layout tweaks, visual polish, and code-only renames go in PROTOTYPE_SPEC or nowhere, not DECISIONS.
+3. Append any unrecorded decisions to DECISIONS.md using the canonical format including a filled-in Supersedes field. Apply all six gate tests (shortcut, implementation-of-decision, string-level copy, code-only rename, six-month, scope). If any new decision supersedes an existing one, append the supersession note to the older decision in the same commit. Layout tweaks, visual polish, and code-only renames go in PROTOTYPE_SPEC or nowhere, not DECISIONS.
 4. Update PROTOTYPE_SPEC.md for any screens that changed.
 5. Update MASTER_PLAN.md if PM flagged a plan change this session — bump version if substantive, add changelog entry at top of doc. Update Master plan last updated field in REPO_INDEX.
-6. Update REPO_INDEX.md:
+6. If this close-out crosses a MASTER_PLAN phase boundary, run the retirement sweep per CLAUDE.md and include findings block in CC_HANDOFF (do not execute sweep findings — await PM approval).
+7. Update REPO_INDEX.md:
    - Bump last_updated to today
    - Update decision_count to latest D-number
    - Update Master plan last updated if MASTER_PLAN changed
    - Add any new repo files
    - Remove any deleted/archived files
    - Update Active plan pointer if phase changed
-7. Write CC_HANDOFF.md (overwrite existing) with:
+8. Write CC_HANDOFF.md (overwrite existing) with:
    - Commits this session
    - What was completed
    - What's in progress
    - Quality checks passed (tsc, eslint, build)
+   - Retirement sweep findings (if phase-boundary close-out)
    - Gotchas for next session
    - Files modified
    - Suggested next tasks (aligned with active master plan phase)
@@ -378,7 +425,7 @@ CC reads these every session (via opening prompt):
 - **PROTOTYPE_SPEC.md**
 
 CC reads these when the task requires them:
-- **DECISIONS_ARCHIVE.md** — only when Joel directs to a specific D-number
+- **DECISIONS_ARCHIVE.md** — only when Joel directs to a specific D-number, OR when CC is greping for supersession candidates before appending a new decision
 - **WORKSPACE_DESIGN_SPEC.md** — before structural changes to post-signup workspace
 - **MESSAGE_PIPELINE_SPEC.md** — before `/api` pipeline work
 - **SDK_BUILD_PLAN.md** — when SDK Phase 8 work is active
@@ -409,7 +456,7 @@ CC reads these when the task requires them:
 4. Push after approval
 5. Joel opens fresh CC session
 6. Joel pastes session opening prompt
-7. CC confirms all four files
+7. CC confirms all four files + pre-flight ledger scan
 8. PM gives next task prompt
 
 ### When to Start a New Browser Chat (PM ↔ Joel)
@@ -429,7 +476,7 @@ CC reads these when the task requires them:
 7. Pending decisions with their planned D-numbers
 
 **Rules for the "pending decisions" list:**
-- Every item must pass all tests (shortcut, implementation-of-decision, string-level copy, code-only-rename).
+- Every item must pass all six gate tests.
 - Never list implementation details of already-recorded decisions.
 - Never list string-level copy changes or code-only renames.
 - Never list behavior already built in the prototype.
@@ -559,6 +606,7 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 - If CC writes user-facing copy without reading Voice Principles first, reject
 - If CC uses `any`, disables a lint rule, or skips error handling, reject
 - If CC tries to record implementation details or code-only renames as decisions, redirect
+- If CC appends a new decision without a filled-in Supersedes field, reject and have CC re-record
 
 ---
 

@@ -10,6 +10,28 @@
 
 ---
 
+Every new decision uses this template. Supersedes is required — write "none" if nothing is superseded. Skipping the field is a process failure.
+**D-### — Title** (Date: YYYY-MM-DD)
+[One paragraph stating the decision in declarative voice. What was chosen, and what that means concretely.]
+**Supersedes:** D-###, D-### (or "none")
+**Reasoning:** [One paragraph — only if non-obvious. Skip for straightforward choices.]
+**Affects:** [Concrete files, systems, or docs the decision touches.]
+Six gate tests — a proposed decision must pass ALL six
+
+Shortcut test. Can the change be fully expressed as "move X below Y" or "change size to Z"? → PROTOTYPE_SPEC, not a decision.
+Implementation-of-decision test. Does an existing D-number already cover the conceptual choice? → PROTOTYPE_SPEC or no action.
+String-level copy test. Is this pill text, body copy, button label, or microcopy? → PROTOTYPE_SPEC, not a decision.
+Code-only rename test. Does this only change internal code identifiers without touching user-visible scope? → Refactor, no D-number.
+Six-month test. Would a future contributor or CC session need this recorded to understand why the code looks the way it does? If no → skip the D-number.
+Scope test. Does this change what we're launching or in what order? → MASTER_PLAN amendment, not a decision.
+
+Supersession rule (the critical one)
+When a new decision replaces an older one, the older one gets marked in the same commit — not later, not at the next sweep. The mark is a single line appended to the older decision's body:
+⚠ Superseded by D-###: [brief explanation of what changed]
+Full stewardship rules — pre-flight scan, inline supersession enforcement, retirement sweep — live in CLAUDE.md. Full PM-side rules live in PM_PROJECT_INSTRUCTIONS.md.
+
+---
+
 ## Archived Decision Index (D-01–D-83)
 
 Full text in DECISIONS_ARCHIVE.md. One-line summaries for quick reference:
