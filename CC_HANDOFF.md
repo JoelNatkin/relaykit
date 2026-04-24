@@ -1,21 +1,24 @@
 # CC_HANDOFF.md — Session Handoff
 **Date:** 2026-04-24 (Session 47 — pre-Phase-2 DECISIONS audit, BACKLOG-promoted; doc-only, audit-only — no DECISIONS edits)
-**Branch:** main (four unpushed commits local at session close, all pending PM approval; Session 46's two commits still unpushed at Session 47 start)
+**Branch:** main (two unpushed commits local at session close, both pending PM approval; Session 46's two commits were already on `origin/main` at Session 47 start — Joel/PM pushed them between sessions, same pattern as Sessions 44→45 and 45→46)
 
 ---
 
 ## Commits This Session
 
-Two atomic commits on top of `950e824` (Session 46 close-out, still unpushed). Neither pushed.
+Two atomic commits on top of `950e824` (Session 46 close-out, on `origin/main`). Neither pushed.
 
 ```
 071f9b8    docs: decisions audit 2026-04-24 — findings report
-[pending]  docs: session 47 close-out — REPO_INDEX + CC_HANDOFF bumps
+2e2207c    docs: session 47 close-out — REPO_INDEX + CC_HANDOFF bumps   (since amended by fix-up commit below)
+[fix-up]   docs: session 47 fix-up — correct unpushed-count from 4 to 2
 ```
 
-Combined with Session 46's two unpushed commits, **the local branch is now 4 commits ahead of `origin/main`**. All four pending PM approval before push.
+**The local branch is 2 commits ahead of `origin/main`** (3 once the fix-up lands). All pending PM approval before push.
 
-Session-start reality check: HEAD was `950e824` (Session 46 close-out) at session start, ahead of `origin/main` (`4372271`) by 2. Working tree carried intentional unstaged edits to `CLAUDE.md`, `DECISIONS.md`, `PM_PROJECT_INSTRUCTIONS.md` — coordinated PM-side rewrite formalizing DECISIONS ledger stewardship. Per Session 40/41 PM-edit-discipline these were left untouched and unstaged throughout this session — they belong to PM. Untracked `api/node_modules/` (intentional). Plan approved in plan mode at `~/.claude/plans/decisions-audit-produce-a-giggly-umbrella.md` before execution.
+Session-start reality check (correction): HEAD was `950e824` at session start, but `origin/main` was ALSO at `950e824` — Joel/PM had pushed Session 46's two commits between sessions, same pattern as Sessions 44→45 and 45→46. Session 47's initial close-out (`2e2207c`) inherited Session 46's "two unpushed pending PM approval" language without re-verifying against the remote, which led to incorrect counts in REPO_INDEX and the initial CC_HANDOFF. The fix-up commit corrects the count and adds a corresponding note in the REPO_INDEX Meta block. **Lesson for next session:** the standard `HEAD == origin/main` reality-check at session start (per Sessions 43/44/45/46 patterns) is non-optional. Do it before writing the close-out, not after.
+
+Working tree carried intentional unstaged edits to `CLAUDE.md`, `DECISIONS.md`, `PM_PROJECT_INSTRUCTIONS.md` — coordinated PM-side rewrite formalizing DECISIONS ledger stewardship. Per Session 40/41 PM-edit-discipline these were left untouched and unstaged throughout this session — they belong to PM. Untracked `api/node_modules/` (intentional). Plan approved in plan mode at `~/.claude/plans/decisions-audit-produce-a-giggly-umbrella.md` before execution.
 
 ---
 
@@ -43,7 +46,7 @@ Commit stats: 1 file created, +148 / -0.
 
 ### Deliverable 2 — Close-out (Commit 2, this commit)
 
-- **REPO_INDEX.md** — Meta: `Last updated` bumped to Session 47 with audit summary; `Decision count` unchanged at D-362 (audit findings-only, no D-numbers added); `Master plan last updated` unchanged from Session 46 (MASTER_PLAN untouched); `Unpushed local commits` updated to 4 (Session 46's 2 still pending + Session 47's 2). Canonical-docs table at repo-root section gained one row at the bottom for `audits/DECISIONS_AUDIT_2026-04-24.md` (date 2026-04-24, description noting it's the first audit, convention is dated-and-never-overwritten). New `### /audits` section added under Subdirectories establishing the directory convention. Change-log Session 47 entry appended chronologically after Session 46 with full verbose-diff pattern per Sessions 43/44/45/46 (deliverables, summary counts of all five categories with D-number enumeration, methodology, out-of-scope explicit list, pre-flight git state, in-session verification, post-Commit-1 verification, quality gates, explicit handoff-to-PM language, four-unpushed-commits status).
+- **REPO_INDEX.md** — Meta: `Last updated` bumped to Session 47 with audit summary; `Decision count` unchanged at D-362 (audit findings-only, no D-numbers added); `Master plan last updated` unchanged from Session 46 (MASTER_PLAN untouched); `Unpushed local commits` updated (corrected by fix-up) to 2 — only Session 47's two commits, since Session 46's two are on `origin/main`. Canonical-docs table at repo-root section gained one row at the bottom for `audits/DECISIONS_AUDIT_2026-04-24.md` (date 2026-04-24, description noting it's the first audit, convention is dated-and-never-overwritten). New `### /audits` section added under Subdirectories establishing the directory convention. Change-log Session 47 entry appended chronologically after Session 46 with full verbose-diff pattern per Sessions 43/44/45/46 (deliverables, summary counts of all five categories with D-number enumeration, methodology, out-of-scope explicit list, pre-flight git state, in-session verification, post-Commit-1 verification, quality gates, explicit handoff-to-PM language, unpushed-commits status (initially overstated as 4, corrected to 2 by fix-up commit)).
 - **CC_HANDOFF.md** — overwritten (this file).
 
 ### DECISIONS.md, DECISIONS_ARCHIVE.md, MASTER_PLAN.md, all other docs
@@ -106,7 +109,7 @@ None. Session 47 is a single-pass audit + close-out. Audit produces findings; PM
 
 **Pre-existing pending (carried from Session 46):**
 
-4. **Push Sessions 46 + 47's four commits** after PM approval.
+4. **Push Session 47's commits** after PM approval (Session 46's two commits are already on `origin/main`).
 5. **MESSAGE_PIPELINE_SPEC.md Session B spec catch-up** — deferred to Phase 2 kickoff per Session 46 boundary.
 6. **`messages.status` enum-semantics D-number** — deferred to Phase 2 kickoff per Session 46 boundary.
 7. **Joel runs Experiment 2a** per the procedure in `experiments/sinch/experiments-log.md`.
@@ -119,7 +122,7 @@ None. Session 47 is a single-pass audit + close-out. Audit produces findings; PM
 
 ## Gotchas for Next Session
 
-1. **Four unpushed commits on `main` at Session 47 close.** In order from oldest: Session 46's `1358f99` (MASTER_PLAN v1.1), Session 46 close-out, Session 47's `071f9b8` (DECISIONS audit), this Session 47 close-out. All four pending PM approval before push. Do NOT push without explicit PM go-ahead.
+1. **Two unpushed commits on `main` at Session 47 close** (three once the fix-up lands). In order from oldest: Session 47's `071f9b8` (DECISIONS audit), Session 47's `2e2207c` close-out (overstated unpushed count as 4), and the fix-up commit correcting the count. All pending PM approval before push. Do NOT push without explicit PM go-ahead. Session 46's two commits (`1358f99` + `950e824`) are already on `origin/main` — pushed by Joel/PM between sessions.
 
 2. **CLAUDE.md / DECISIONS.md / PM_PROJECT_INSTRUCTIONS.md carry intentional unstaged edits** at Session 47 close (entered Session 47 already drifted; Session 47 left them untouched per Session 40/41 discipline). The drift is a coordinated PM-side rewrite formalizing DECISIONS ledger stewardship: CLAUDE.md adds pre-flight ledger scan / inline supersession enforcement with six gate tests / retirement sweep at phase boundaries; DECISIONS.md adds canonical entry template + six gate tests + supersession rule pointer at the top; PM_PROJECT_INSTRUCTIONS.md adds +112/-43 lines of corresponding PM-side rules. **Do NOT stage or commit these.** They belong to PM and will be committed when PM is ready. Their presence does not block CC work — leave them in the working tree.
 
@@ -177,7 +180,7 @@ experiments/sinch/                              # no touches this session.
 
 **Immediate (PM + Joel-side, no CC needed):**
 1. PM + Joel triage `audits/DECISIONS_AUDIT_2026-04-24.md` and decide which findings to action. Anything from "execute all 8 B-category supersession notes" to "defer all cleanup until post-Phase-2" is on the table.
-2. Push Sessions 46 + 47's four commits after PM approval. (Sessions 46 and 47 stack — pushing happens in one operation.)
+2. Push Session 47's commits after PM approval. (Session 46's two commits already on `origin/main` — pushing only Session 47's stack.)
 3. Joel runs Experiment 2a per the procedure in `experiments/sinch/experiments-log.md`. (Independent of audit triage.)
 
 **CC on standby for:**
@@ -190,4 +193,4 @@ experiments/sinch/                              # no touches this session.
 
 ---
 
-*End of close-out. Session 47 DECISIONS audit complete. Findings-only — pending PM + Joel triage. Four commits unpushed pending PM approval. CLAUDE.md / DECISIONS.md / PM_PROJECT_INSTRUCTIONS.md working-tree drift left untouched per Session 40/41 PM-edit-discipline.*
+*End of close-out. Session 47 DECISIONS audit complete. Findings-only — pending PM + Joel triage. Two commits unpushed pending PM approval. CLAUDE.md / DECISIONS.md / PM_PROJECT_INSTRUCTIONS.md working-tree drift left untouched per Session 40/41 PM-edit-discipline.*
