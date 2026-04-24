@@ -1,23 +1,24 @@
 # CC_HANDOFF.md — Session Handoff
 **Date:** 2026-04-24 (Session 48 — DECISIONS audit cleanup execution; doc-only)
-**Branch:** main (4 unpushed commits local at session close, all pending PM approval; Session 47's stack and the new DECISIONS-stewardship-rules commit `b3b1def` were already on `origin/main` at Session 48 start — Joel/PM pushed them between sessions along with the formalization of the ledger stewardship working-tree drift)
+**Branch:** main (0 unpushed — all four Session 48 commits pushed to `origin/main` at close; HEAD == origin/main == `e0ea648`)
 
 ---
 
 ## Commits This Session
 
-Four atomic commits on top of `b3b1def` (Session 47 + stewardship-rules commit, on `origin/main`). None pushed.
+Four atomic commits on top of `b3b1def` (Session 47 stack + DECISIONS stewardship formalization). All four pushed to `origin/main` at close.
 
 ```
 ab0730f    docs: session 48 audit cleanup — inline annotations on active DECISIONS
 f174f94    docs: session 48 — D-363 + D-364 + reciprocal marks on D-101/D-201/D-239
 73eed86    docs: session 48 audit cleanup — inline annotations on archived DECISIONS
-[this]     docs: session 48 close-out — REPO_INDEX + CC_HANDOFF bumps
+e0ea648    docs: session 48 close-out — REPO_INDEX + CC_HANDOFF bumps
+[this]     docs: session 48 handoff fix-up — reflect pushed state (b3b1def..e0ea648 on origin/main)
 ```
 
-**The local branch is 4 commits ahead of `origin/main`.** All pending PM approval before push.
+Push landed in-session per PM direction. `git rev-list --left-right --count HEAD...origin/main` returns `0 0` post-push. Working tree clean except untracked `api/node_modules/` (intentional).
 
-**Session-start reality check (performed per Session 47 fix-up lesson):** HEAD == `b3b1def` == `origin/main` at session start. Joel/PM had pushed Session 47's full stack (`071f9b8` + `2e2207c` + `efdb57c`) plus the new formalization commit `b3b1def` (committing the coordinated working-tree drift on CLAUDE.md / DECISIONS.md / PM_PROJECT_INSTRUCTIONS.md that persisted across Sessions 40–47) between sessions. Working tree clean except untracked `api/node_modules/` (intentional).
+**Session-start reality check (performed per Session 47 fix-up lesson):** HEAD == `b3b1def` == `origin/main` at session start. Joel/PM had pushed Session 47's full stack (`071f9b8` + `2e2207c` + `efdb57c`) plus the new formalization commit `b3b1def` (committing the coordinated working-tree drift on CLAUDE.md / DECISIONS.md / PM_PROJECT_INSTRUCTIONS.md that persisted across Sessions 40–47) between sessions. Session-start check caught and confirmed parity before work began.
 
 ---
 
@@ -44,7 +45,7 @@ Executed PM + Joel's approved triage of audit `audits/DECISIONS_AUDIT_2026-04-24
 
 ### Commit 2 — D-363 + D-364 + reciprocal marks (`f174f94`, 1 file, +15/-1)
 
-**Appended after D-362 (ends at DECISIONS.md L1388 pre-commit):**
+**Appended after D-362:**
 
 **D-363 — Opt-in disclosure uses generic language, not enumerated message types** (Date: 2026-04-24). Supersedes D-101. Resolves audit §E-1. Generic language ("you agree to receive automated texts from {business}") replaces per-type enumeration. Carrier-acceptable; matches industry norm; hidden from Messages workspace + onboarding for clutter reduction; surfaces in developer-facing documentation.
 
@@ -69,10 +70,10 @@ Executed PM + Joel's approved triage of audit `audits/DECISIONS_AUDIT_2026-04-24
 - **C-3**: D-64, D-72, D-79 each get `**⚠ Orphaned by D-280:** website-side authoring is canonical.`; D-72 additionally gets `_(Note: near-duplicate of D-64; both orphaned per C-3.)_`.
 - **C-5 archive**: D-47 gets `**⚠ Orphaned:** plan-builder UI fully retired per D-280 + D-279 + D-332.`
 
-### Commit 4 — Close-out (this commit)
+### Commit 4 — Close-out (`e0ea648`)
 
-- **REPO_INDEX.md** — Meta block: `Last updated` bumped to Session 48 with audit-cleanup summary; `Decision count` advanced D-362 → D-364 (next D-365); `Unpushed local commits` updated to 4. Canonical-docs row for `audits/DECISIONS_AUDIT_2026-04-24.md` annotated as **Resolved Session 48** (file remains per dated-report convention — never overwritten). Change-log Session 48 entry appended chronologically after Session 46 per existing file order, with full verbose-diff pattern covering all four commits, audit resolution status, verification suite, quality gates, out-of-scope enumeration.
-- **CC_HANDOFF.md** — overwritten (this file).
+- **REPO_INDEX.md** — Meta block: `Last updated` bumped to Session 48 with audit-cleanup summary; `Decision count` advanced D-362 → D-364 (next D-365); `Unpushed local commits` updated to 4 at commit time (since pushed — now 0). Canonical-docs row for `audits/DECISIONS_AUDIT_2026-04-24.md` annotated as **Resolved Session 48** (file remains per dated-report convention — never overwritten). Change-log Session 48 entry appended chronologically with full verbose-diff pattern covering all four commits, audit resolution status, verification suite, quality gates, out-of-scope enumeration.
+- **CC_HANDOFF.md** — overwritten at Commit 4 (since fixed-up this close-out to reflect pushed state).
 
 ### Decisions touched — quick reference
 
@@ -111,7 +112,7 @@ Executed PM + Joel's approved triage of audit `audits/DECISIONS_AUDIT_2026-04-24
 
 **Phase 4** — still narrowed (Session 46) to MO-specific work.
 
-**DECISIONS audit triage** — **18/18 resolved** (16 executed + 1 no-action C-4 + 1 unsupported-claim appendix item deferred to PM). Audit report stays on disk as historical record per `audits/` directory convention.
+**DECISIONS ledger** — **clean under new stewardship rules.** Audit `audits/DECISIONS_AUDIT_2026-04-24.md` fully resolved: 18/18 findings (16 executed + 1 no-action C-4 + 1 unsupported-claim appendix item deferred to PM). Active count D-364 (was D-362); archive unchanged at D-83. Audit report stays on disk as historical record per `audits/` dated-report convention.
 
 ---
 
@@ -130,24 +131,23 @@ Executed PM + Joel's approved triage of audit `audits/DECISIONS_AUDIT_2026-04-24
   - `grep -c "carrier registration is not approved" DECISIONS.md` returned **1** ✓
   - `grep -c "These commands leverage" DECISIONS.md` returned **0** (was 1 pre-session) ✓
   - `grep -c "These commands use the AI tool" DECISIONS.md` returned **1** ✓
-  - `git log --oneline b3b1def..HEAD` shows only 3 content commits touching only DECISIONS.md + DECISIONS_ARCHIVE.md ✓
-- **`git status` post-Commit 3:** clean working tree except untracked `api/node_modules/` (intentional).
+  - `git log --oneline b3b1def..HEAD` shows the 3 content commits + close-out touching only DECISIONS.md, DECISIONS_ARCHIVE.md, REPO_INDEX.md, CC_HANDOFF.md ✓
+- **Post-push parity:** `git rev-list --left-right --count HEAD...origin/main` returned `0 0`. Clean working tree except untracked `api/node_modules/`.
 
 ---
 
 ## In Progress / Partially Done
 
-None. Session 48 executed the audit triage cleanly — all approved findings landed.
+None. Session 48 executed the audit triage cleanly — all approved findings landed and pushed.
 
 ---
 
 ## Pending (post-Session-48)
 
-1. **Push Session 48's 4 commits** (`ab0730f` + `f174f94` + `73eed86` + this close-out) after PM approval.
-2. **PM review of appendix-item D-241 → D-211 audit claim** — the claim is unsupported by the decision texts (D-211 = sandbox API key Regenerate behavior; D-241 = three compliance copy touchpoints; zero topical overlap). No annotation added this session. PM should decide whether the audit appendix wording itself needs correction or whether the claim had a different D-number in mind.
-3. **PM review of D-101 pre-existing structural drift** — D-101 title line runs into body with no newline separator and carries no `Date:` field (line 212 DECISIONS.md). Predates the audit; not in triage scope; not fixed. PM may want a cleanup-only normalization.
-4. **PM review of DECISIONS.md index-summary table** (L57–L136) — C-3 / C-5 archive index lines don't reflect the new inline orphan notes. Plan intentionally left inline-only to stay scoped. Index-summary harmonization is a separate ticket if PM wants consistency.
-5. **Pre-existing pending (carried):**
+1. **PM review of appendix-item D-241 → D-211 audit claim** — the claim is unsupported by the decision texts (D-211 = sandbox API key Regenerate behavior; D-241 = three compliance copy touchpoints; zero topical overlap). No annotation added this session. PM should decide whether the audit appendix wording itself needs correction or whether the claim had a different D-number in mind.
+2. **PM review of D-101 pre-existing structural drift** — D-101 title line runs into body with no newline separator and carries no `Date:` field (line 212 DECISIONS.md). Predates the audit; not in triage scope; not fixed. PM may want a cleanup-only normalization.
+3. **PM review of DECISIONS.md index-summary table** (L57–L136) — C-3 / C-5 archive index lines don't reflect the new inline orphan notes. Plan intentionally left inline-only to stay scoped. Index-summary harmonization is a separate ticket if PM wants consistency.
+4. **Pre-existing pending (carried):**
    - MESSAGE_PIPELINE_SPEC.md Session B spec catch-up — deferred to Phase 2 kickoff per Session 46 boundary.
    - `messages.status` enum-semantics D-number — deferred to Phase 2 kickoff per Session 46 boundary.
    - Joel runs Experiment 2a per procedure in `experiments/sinch/experiments-log.md`.
@@ -160,7 +160,7 @@ None. Session 48 executed the audit triage cleanly — all approved findings lan
 
 ## Gotchas for Next Session
 
-1. **Four unpushed commits on `main` at Session 48 close.** In order: `ab0730f` (active annotations), `f174f94` (D-363 + D-364), `73eed86` (archive annotations), this close-out. All pending PM approval. Do NOT push without explicit PM go-ahead. Session 47's stack + `b3b1def` (stewardship formalization) are on `origin/main`.
+1. **All Session 48 commits are on `origin/main` at close** (no unpushed work). Next session starts from `e0ea648` with a clean HEAD == origin/main state. The pre-flight ledger scan at session start should report D-364 as latest active and D-83 as latest archive.
 
 2. **Appendix item D-241 → D-211 was NOT annotated.** The audit appendix claims "D-241 (per index) supersedes D-211" but direct reading of both decision texts shows no topical overlap — D-211 is about sandbox API key Regenerate; D-241 is about three compliance copy touchpoints. No supersession relationship exists. Per CLAUDE.md stewardship guardrail ("one-sentence conflict test"), the claim fails and the annotation was not added. Flagged here for PM appendix-wording review.
 
@@ -172,7 +172,7 @@ None. Session 48 executed the audit triage cleanly — all approved findings lan
 
 6. **`/src` freeze still holds per D-358.** Session 48 did not touch `/src`.
 
-7. **Stewardship-rules commit `b3b1def`** (on origin/main) is the baseline for this session. The pre-flight ledger scan at session start, inline supersession enforcement (same-commit reciprocals on D-363 and D-364), and the general "do not silently fix — PM directs" guardrail all apply here. This session was the first concrete execution of an audit triage under those rules; the pattern worked cleanly.
+7. **Stewardship-rules commit `b3b1def`** (on origin/main since before session start) is the governance baseline. The pre-flight ledger scan at session start, inline supersession enforcement (same-commit reciprocals on D-363 and D-364), and the general "do not silently fix — PM directs" guardrail all apply here. This session was the first concrete execution of an audit triage under those rules; the pattern worked cleanly.
 
 8. **Plan file archived at `~/.claude/plans/decisions-audit-cleanup-session-robust-thacker.md`.** Keep for reference if future cleanup sessions follow the same pattern (audit → triage → three-commit execution → close-out).
 
@@ -182,16 +182,16 @@ None. Session 48 executed the audit triage cleanly — all approved findings lan
 
 ## Files Modified This Session
 
-### Modified (across Commits 1–3)
+### Modified (across Commits 1–3, pushed)
 ```
-DECISIONS.md                                    # +21 content / -2 (Commit 1) + +15/-1 (Commit 2) = 36 insertions, 3 deletions total
+DECISIONS.md                                    # +21 / -2 (Commit 1) + +15/-1 (Commit 2) = 36 insertions, 3 deletions total
 DECISIONS_ARCHIVE.md                            # +14 / -0 (Commit 3)
 ```
 
-### Modified (Commit 4 — close-out, this commit)
+### Modified (Commit 4 close-out + this handoff fix-up, pushed)
 ```
-CC_HANDOFF.md                                   # close-out rewrite (this file)
-REPO_INDEX.md                                   # Meta bumps (Last updated → Session 48, Decision count 362 → 364, Unpushed local commits 2 → 4) + canonical-docs audit-row annotated as resolved + Session 48 change-log entry appended
+REPO_INDEX.md                                   # Meta bumps (Last updated → Session 48, Decision count 362 → 364, Unpushed local commits initially 4 at commit time) + canonical-docs audit-row annotated as resolved + Session 48 change-log entry appended
+CC_HANDOFF.md                                   # Commit 4 overwrite + this close-out fix-up reflecting pushed state
 ```
 
 ### Untouched (intentionally)
@@ -209,10 +209,15 @@ experiments/sinch/                              # no touches this session.
 
 ## Suggested Next Tasks
 
-**Immediate (PM + Joel-side, no CC needed):**
-1. Push Session 48's 4 commits after PM approval.
-2. Joel runs Experiment 2a per procedure in `experiments/sinch/experiments-log.md` (independent of cleanup — can proceed now).
-3. PM reviews the 3 deferred items in §Pending: appendix D-241→D-211 audit-wording question; D-101 structural drift; index-summary harmonization.
+**Next session resumes Phase 1** per PM direction — either Experiment 2a Findings capture (after Joel runs the procedure) or Experiment 3 procedure drafting (if PM hands it over), depending on Joel's progress.
+
+**Joel-side (no CC needed):**
+- Joel runs Experiment 2a per procedure in `experiments/sinch/experiments-log.md`.
+
+**PM review queue (deferred from Session 48):**
+- Appendix D-241 → D-211 audit-wording question (see Gotcha 2).
+- D-101 structural drift normalization (see Gotcha 3).
+- Index-summary harmonization (see Gotcha 4).
 
 **CC on standby for:**
 - Filling in Experiment 2a Findings after Joel reports results.
@@ -224,4 +229,4 @@ experiments/sinch/                              # no touches this session.
 
 ---
 
-*End of close-out. Session 48 DECISIONS audit cleanup complete. 18/18 findings resolved (16 executed + 1 no-action + 1 unsupported-claim deferred). Four commits unpushed pending PM approval. Working tree clean.*
+*End of close-out. Session 48 DECISIONS audit cleanup complete. 18/18 findings resolved (16 executed + 1 no-action + 1 unsupported-claim deferred). All four commits pushed to origin/main at `e0ea648`. Working tree clean. Ledger clean under new stewardship rules. Next session resumes Phase 1.*
