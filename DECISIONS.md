@@ -146,6 +146,7 @@ _Affects: PRD_05, PRD_06, all customer-facing copy, download UI, email templates
 **D-85 — No plan builder — category selection is sufficient for registration scope** (Date: 2026-03-13)
 **Supersedes plan builder concept in PRD_06. Extends D-74, D-75.** There is no message selection step, no enable/disable toggle, no curation UI at the RelayKit level. The developer picks a category; RelayKit determines campaign type, generates artifacts, and submits. All messages in the category library are available as reference. The intelligence about "which messages should I implement?" lives in the conversation between the developer and their AI coding tool, not in a RelayKit UI.
 _Affects: PRD_06 (significant simplification), PRD_01, PRD_02, PRD_05._
+⚠ Orphaned: plan-builder UI fully retired per D-280 + D-279 + D-332.
 
 **D-86 — Full-library Blueprint — all messages for the category** (Date: 2026-03-13)
 The SMS Blueprint includes every message type for the developer's category, not a curated subset. `generateBuildSpec()` (or equivalent) takes category + customer data and returns the full library rendered with their business details. No `messagePlan` with per-message enabled state. The AI coding tool sees the full landscape and helps the developer choose which to implement during the build conversation.
@@ -230,8 +231,9 @@ Affects: All PRDs, build order timing, CC session planning.
 _Update 2026-04-21: Superseded by D-358 (/src sunset). The VISION_IMPLEMENTATION_MEMO.md referenced here was deleted 2026-04-21 per its own "consume and discard" header. PRD evolution is now governed by MASTER_PLAN.md phase work._
 
 **D-105 — Registration money-back guarantee** (Date: 2026-03-14)
-If a customer's 10DLC registration is not approved, they receive a full refund of the $199 setup fee. This guarantee is displayed on the marketing home page. Scope: covers registration rejection only, not account suspension due to customer violations post-approval. Terms to be detailed in ToS.
+If a customer's carrier registration is not approved, they receive a full refund of the $199 setup fee. This guarantee is displayed on the marketing home page. Scope: covers registration rejection only, not account suspension due to customer violations post-approval. Terms to be detailed in ToS.
 Affects: Marketing home page, pricing display, ToS, Stripe refund logic (future).
+⚠ Amount superseded by D-320 (now $49); intent preserved.
 
 **D-106 — Category landing page has message style preview with variant toggle** (Date: 2026-03-15)
 The `/sms/[category]` landing page includes a message preview section below the hero with three style pills (Brand-first / Action-first / Context-first) and three sample message cards (Booking confirmation, Appointment reminder, Cancellation notice). Each card shows the message text in the selected variant with interpolated preview values. Variable values render as `font-medium text-text-brand-tertiary` (subtle purple, medium weight) to distinguish from static text without competing with card titles. Trigger lines use "Sent when..." format, not "Triggers when...". This section demonstrates the anti-cookie-cutter strategy (D-91) on the marketing page.
@@ -430,7 +432,7 @@ Plan runs through end of current billing period, then live sending stops, sandbo
 Offered as a self-service export (registration data) and assisted transfer (phone number via Twilio porting). Surfaced in Settings, not hidden.
 
 **D-157 — Messages page AI command shortlist** (Date: 2026-03-18)
-Messages page post-download includes a shortlist of common AI commands developers can copy and use with their AI coding tool and RelayKit files loaded. Examples: "Review my messages for compliance" (use along the way and before registering), "Write a message that lets us tell users [goal]" (expand messages and stay compliant). These commands leverage the AI tool + SMS_GUIDELINES.md as the compliance authoring and verification layer. No built-in composer in v1.
+Messages page post-download includes a shortlist of common AI commands developers can copy and use with their AI coding tool and RelayKit files loaded. Examples: "Review my messages for compliance" (use along the way and before registering), "Write a message that lets us tell users [goal]" (expand messages and stay compliant). These commands use the AI tool + SMS_GUIDELINES.md as the compliance authoring and verification layer. No built-in composer in v1.
 _Affects: Messages page (post-download state), SMS_GUIDELINES.md deliverable._
 
 **D-158 — Sandbox compliance analysis and pre-registration review** (Date: 2026-03-18)
@@ -579,6 +581,7 @@ _Affects: `prototype/app/apps/[appId]/messages/page.tsx`, `prototype/app/sms/[ca
 **D-193 — Registration fee split: $49 on submission, $150 on approval** (Date: 2026-03-22)
 Registration fee ($199 total) collected in two payments. $49 charged when developer submits registration (covers brand + campaign submission to TCR). $150 charged when carriers approve the campaign. User-facing framing: "$49 to start, $150 when you're cleared to send." Full $49 refund if campaign rejected. Second payment is customer-initiated, not auto-charged.
 _Affects: Stripe integration, registration flow UI, pricing display, Settings billing section._
+⚠ Superseded by D-320: registration pricing is $49 flat; prior split retired.
 
 **D-194 — Customer-initiated second payment, not auto-charge** (Date: 2026-03-22)
 The $150 approval payment is triggered by the developer, not automatically charged to a saved card. Developer receives notification of approval and completes payment themselves. Rationale: matches transparency positioning, avoids negative emotional sequence of charge before excitement lands, developers are allergic to feeling enrolled.
@@ -591,6 +594,7 @@ _Affects: Twilio ISV account, Stripe account, compliance site footer, legal refe
 **D-196 — Beta pricing: $49 flat, no second payment** (Date: 2026-03-22)
 Beta users pay $49 total for registration (no $150 on approval). Framed as early access pricing. Beta users keep their registration at full pricing launch. Cap at 25–50 slots to create natural urgency and clean cutover.
 _Affects: Stripe integration, registration flow, marketing copy._
+⚠ Superseded by D-320: $49 flat is now baseline, no longer a beta-only price.
 
 **D-197 — Beta access requires prototype user testing** (Date: 2026-03-22)
 Developers earn beta access ($49 pricing) by completing a user test session on the prototype. Mix of unmoderated (majority, ~3:1 ratio) and moderated sessions. Target 8–12 total sessions. Recruitment: Reddit, HN, AI tool Discords, Indie Hackers, Twitter/X.
@@ -603,6 +607,8 @@ _Affects: All production build planning, PRD lifecycle, D-104 gate resolution._
 **D-199 — Sinch carrier layer evaluation (PENDING — do not build)** (Date: 2026-03-22)
 Evaluating Sinch to replace Twilio as carrier for production SMS and 10DLC registration. Key advantage: standard use case campaigns auto-approved for qualified brands (3–5 days vs. Twilio's 10–15 business day queue). Three questions pending: ISV/reseller support via Registration API, real-world approval timeline, account tier requirements. If confirmed, migration is contained to PRD_04's six API modules. Template engine, compliance site, dashboard, all UI unaffected. DO NOT build anything against Sinch until this decision is confirmed.
 _Affects: PRD_04, carrier integration, registration timeline promises (may supersede D-17 if confirmed)._
+⚠ Orphaned by D-358: /src sunset.
+⚠ Also resolved by D-215 (Sinch confirmed).
 
 **D-200 — Self-guided usability test instrument in prototype** (Date: 2026-03-22)
 Build a /test route in the prototype with lightweight instrumentation layer: task prompts, confidence checks (1–5 scale), page visit logging, completion tracking, debrief survey. Four test tasks: Discovery, Acquisition, Orientation, Activation. Results stored in Supabase or Google Sheet webhook. Run alongside 3–4 live Zoom calls. Prototype screens stay untouched — test wrapper provides instrumentation overlay. State switchers become testing assets for routing testers to specific lifecycle states.
@@ -671,6 +677,7 @@ _Affects: All user-facing timeline copy, PRD_04 carrier integration, registratio
 **D-216 — Registration fee display: $199 headline with $49/$150 split in details** (Date: 2026-03-23)
 Pricing cards and user-facing copy show `$199 to register + $19/mo` as the headline price. The $49/$150 split (D-193) is explained in a feature bullet: "$49 to register. $150 only after you're approved. Full refund if not." This keeps the headline scannable while the bullet handles the nuance. **Extends D-193 with display guidance.**
 _Affects: Home page pricing cards, How it works modal, marketing copy._
+⚠ Superseded by D-320: no split pricing; $49 flat displayed as a single fee.
 
 **D-217 — Playbook summary section on Messages pages** (Date: 2026-03-23)
 Both the public Messages page and logged-in app Messages page include a "playbook summary" section showing the complete SMS system flow for the category. Appointments example: "Booking confirmed → Reminder sent → No response followed up → No-show rebooked → Cancellation handled." Flow labels describe system behavior, not message card titles. Horizontal on desktop (hollow circles, arrows, filled end dot), vertical stepper on mobile. Data keyed by category slug for easy extension. On the public page, sits between gray hero band (bg-bg-tertiary) and messages section with its own bg-bg-secondary band. On the app page, sits in a full-width gray band below the tab bar.
@@ -736,10 +743,12 @@ _Affects: `prototype/app/sms/[category]/page.tsx`._
 **D-232 — Twilio-only registration service rejected** (Date: 2026-03-24)
 Decided not to build a standalone Twilio registration product. Intake wizard components remain for ISV registration flow only. RelayKit's value is the full stack (registration + proxy + compliance monitoring), not registration as an isolated service.
 _Affects: Product strategy, no code changes._
+⚠ Orphaned by D-358: /src sunset.
 
 **D-233 — Overview page restructure — sandbox build dashboard** (Date: 2026-03-24)
 Remove "Register your app" and "Monitor your compliance" expanders from the Overview page left column. Replace with a sandbox compliance card above the Build steps (visible once developer has sent at least one message). Card shows: messages sent count, compliance rate (green/amber/red), active issues with Fix/View links opening the existing compliance detail modal. Registration sidebar (right column) handles registration pitch. Build steps expander collapses to a single completed row once all 4 steps are done (follow-up task). Post-registration Approved state changes from 6 cards (3×2) to a full-width message types table plus 3 cards below (follow-up task). MESSAGE TYPES and SENDING PATTERNS cards replaced by the table.
 _Affects: `prototype/app/apps/[appId]/overview/page.tsx`, `prototype/app/apps/[appId]/overview/approved-dashboard.tsx`._
+⚠ Superseded by D-244.
 
 **D-234 — Admin dashboard in prototype** (Date: 2026-03-25)
 Operator/admin dashboard at `/admin` route with its own layout, separate from customer-facing app. Same design system (Tailwind, Untitled UI patterns) but distinct nav and context. Five screens: Control room (home), Registration pipeline, Customer list, Customer detail, Revenue/metrics. Built with mock data in prototype, same as all other prototype screens. This is the operational backend for RelayKit as a business — not customer-facing.
@@ -764,6 +773,7 @@ Layer 1 (Proxy fixes): Mechanical issues (missing opt-out suffix, URL shorteners
 Layer 2 (Customer informed): Periodic email digest reminds customer of active rewrites: "RelayKit is still rewriting N of your messages. Here's what to update when you get a chance." SMS compliance alerts are the primary real-time notification channel. Digest is the passive channel for non-urgent accumulated items.
 Layer 3 (Disengaged customer backstop): Only activates when customer has SMS alerts off AND ignores emails AND same problematic pattern persists for extended period. Escalation sequence: final warning email with specific deadline → block the specific message type (other types unaffected) → suspend all sending (only for systemic/egregious patterns or external carrier flags). This layer almost never fires for good-faith customers. It protects the platform from customers who opted out of every lifeline offered to them.
 _Affects: PRD_09 compliance proxy, PRD_08 compliance monitoring, admin Control Room, customer Settings, email notifications._
+⚠ Superseded by D-293: runtime enforcement removed; authoring-time model.
 
 **D-238 — Control Room attention queue — inline expansion with enforcement state** (Date: 2026-03-25)
 Each queue item expands in place to show: flagged message content, recipient (masked), timestamp, what the compliance filter detected, current enforcement layer and state, time remaining until auto-escalation (Layer 3 only), and operator override buttons (Dismiss, Escalate, Suspend). No navigation to Customer Detail for daily resolution workflow — everything happens inline. Customer Detail remains for deep-dive context when needed (e.g., customer emails you).
@@ -804,10 +814,12 @@ Sandbox behavior: same UI pattern, advisory framing. "If this were live, carrier
 The attention section only shows messages that need action or acknowledgment. Clean messages don't appear. Dismissed items don't reappear unless the same issue recurs from code.
 Harmony with admin: same underlying compliance record. What the operator sees in Control Room, the customer sees here with customer-appropriate framing and editing controls instead of operator overrides.
 _Affects: Overview page (post-approval + sandbox), D-240 inline editor, compliance data model, Control Room (shared records)._
+⚠ Superseded by D-293: runtime enforcement removed; authoring-time model.
 
 **D-244 — Approved dashboard layout supersedes D-233** (Date: 2026-03-26)
 The Approved Overview uses a 3-metric row (Delivery, Recipients, Usage & Billing) followed by a compliance attention section with per-message cards. This replaces the D-233 spec (message types table + 3 summary cards). The metric row + attention section layout is the canonical spec.
 _Affects: Overview page (Approved state), D-233 (superseded)._
+⚠ Superseded by D-293: runtime enforcement removed; authoring-time model.
 
 **D-245 — Marketing expansion is always a second MARKETING campaign, never MIXED** (Date: 2026-03-27)
 Marketing capability is added post-registration by registering a second MARKETING campaign on the existing subaccount. Initial registration is always the narrow transactional type for the category (e.g., CUSTOMER_CARE for appointments). The MIXED campaign type is never used — not at intake, not as an expansion. Mixed Campaign Addendum A2 (MIXED registration option at intake) is superseded by the Vision Implementation Memo direction. The proxy routes messages to the correct campaign transparently. Supersedes: Addendum A2.
@@ -859,18 +871,23 @@ No embeds, no iframes. RelayKit's deliverable files include the complete opt-in 
 
 **D-257 — Do not reference "two files" in marketing or public-facing copy**
 The delivery mechanism (files dropped into AI coding tools) is not advertised. Marketing copy references the outcome ("your AI tool builds your SMS integration") not the method. The developer discovers the mechanism when they use the product. Applies to: home page, category landing, messages page hero, How it Works modal, and any future marketing surfaces.
+⚠ Superseded by D-266 + D-279: SDK delivery model + website authoring surface.
 
 **D-258 — Thin spec file in repo, intelligence behind the wall**
 The deliverable file dropped into the developer's repo is small and focused — just enough for the AI tool to execute (messages, API endpoint, consent form spec, wiring instructions). Comprehensive content (full compliance guidelines, carrier rules, edge cases, message library, consent mechanics) lives on RelayKit's servers, accessible via dashboard or authenticated API. Keeps the repo clean, protects IP, enables continuous improvement without developer repo changes.
+⚠ Superseded by D-266 + D-279: SDK delivery model + website authoring surface.
 
 **D-259 — Living service architecture**
 RelayKit improves for all customers simultaneously without developer action. Template updates, consent language changes, compliance rule refinements, and new message types flow through the API and proxy. The developer's code calls RelayKit's API; the intelligence behind it evolves continuously. The spec file in the repo is a thin pointer; the service behind it is alive.
+⚠ Superseded by D-266 + D-279: SDK delivery model + website authoring surface.
 
 **D-260 — Build spec is the highest-priority production deliverable**
 The build spec (PRD_05 deliverable) that the developer's AI tool reads is the single most important artifact RelayKit produces. It must be tested empirically with real AI tools (Claude Code, Cursor, Windsurf, Copilot, Cline) before launch. Every failure mode becomes a spec improvement. The spec is a product to iterate, not a document to ship.
+⚠ Superseded by D-266 + D-279: SDK delivery model + website authoring surface.
 
 **D-261 — Build spec testing does not require carrier integration**
 RelayKit's build spec can be tested and iterated using mock API endpoints and placeholder credentials. Real Sinch integration is not needed to validate whether AI tools can read the spec and produce working integration code. This unblocks the highest-priority validation work (D-260) immediately.
+⚠ Superseded by D-266 + D-279: SDK delivery model + website authoring surface.
 
 **D-262 — UX simplicity audit required before launch**
 A dedicated review pass with naive eyes — no project context, just the prototype — evaluating every page for information density, jargon, and unnecessary complexity. Standard: would a developer who just wants to add SMS feel overwhelmed? Inline explanations that exist "just in case" move to FAQ sections. Main content should be confident, simple, unequivocal claims. Apple-level user friendliness is the bar.
@@ -970,6 +987,7 @@ _Affects: API server auth middleware, Supabase schema, dashboard Settings page._
 **D-286 — Template lookup: static JSON registry for sandbox, Supabase for production** (Date: 2026-04-01)
 Sandbox uses a static JSON template registry extracted from the /src template engine (PRD_02), loaded at API server startup. Contains template ID, vertical, event name, template string with interpolation slots, required data fields. Production adds Supabase lookup for user-specific registered/customized templates. The extraction creates a shared format both paths consume.
 _Affects: API server template resolution, template engine extraction, Supabase schema._
+⚠ Partially orphaned by D-266 + D-279; JSON registry path may survive in /api — confirm at Phase 2 kickoff.
 
 **D-287 — API response contract: msg_ IDs, structured errors, standard HTTP codes** (Date: 2026-04-01)
 Success: { id: "msg_...", status: "sent" | "queued", timestamp }. Failure: { error: { code, message } }. Error codes: invalid_api_key, template_not_found, invalid_data, send_failed. HTTP status: 200 sent, 202 queued, 400 bad request, 401 bad key, 422 template/data mismatch, 500 carrier failure. The msg_ prefix provides a correlation ID through to Sinch.
@@ -1100,6 +1118,7 @@ _Affects: API design, pre-auth messages page, rate limiting, abuse prevention._
 The two-fee structure ($49 at submission, $150 at approval) mapped to internal process steps the developer shouldn't know about. The wizard-to-workspace flow presents "Go live" as a single action — pricing matches. $99 one-time + $19/mo ongoing. Full refund if registration is rejected. $99 stays in impulse range for indie developers while filtering uncommitted signups. The monthly subscription is the real revenue model; the setup fee is cost recovery and a quality filter.
 Supersedes: D-193 ($49 at submission), D-216 ($150 at approval). Amends: D-196 (beta pricing — update to $99 flat, capped slots).
 _Affects: Pricing model, Stripe configuration, go-live screen copy, PRICING_MODEL.md, marketing site._
+⚠ Superseded by D-320: $49 flat fee, not $99.
 
 **D-315 — Price revealed at signup step, not at go-live or on arrival** (Date: 2026-04-04)
 Pricing is shown at the signup step (Step 6 in the wizard): "Free while you build. $99 + $19/mo when you're ready for real delivery." The developer has completed intake, seen their messages, and optionally sent a test — they understand the value before seeing the cost. No pricing on the arrival/landing frame (premature, they haven't felt the value). No deferring to go-live (surprise after hours of building). Signup itself is free. The line is informational, not a gate. The developer builds with full knowledge of the cost from signup onward.
