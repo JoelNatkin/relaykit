@@ -18,6 +18,7 @@ _Affects: PRD_04, PRD_09, all Twilio API calls_
 All Twilio API calls use `fetch()` against the Twilio REST API directly. No `twilio` npm package anywhere in the codebase.
 _Reason: Avoids SDK version lock, keeps the dependency surface small, works identically across Edge Runtime and Node._
 _Affects: PRD_04, PRD_09, all lib/twilio/ files_
+**⚠ Orphaned by D-358:** /src sunset.
 
 **D-03 — Magic link auth only — no passwords**
 Authentication is Supabase magic link exclusively. No password fields, no OAuth, no session tokens beyond what Supabase manages.
@@ -85,14 +86,17 @@ _Affects: PRD_08 BM-10, PRD_09 /v1/consents endpoint, lib/proxy/compliance-pipel
 An approved TCR campaign cannot be modified. Adding marketing capability post-registration requires registering a **second campaign** on the existing subaccount — not upgrading or modifying the existing one.
 _Copy rule: "We'll register an additional campaign" — never "upgrade your registration."_
 _Affects: PRD_01 expansion logic, PRD_04, PRD_06 dashboard expansion CTA, all UX copy_
+**⚠ Superseded by D-294:** marketing auto-submits at registration; no post-registration expansion step.
 
 **D-16 — MIXED tier registered from day one**
 If a customer selects marketing capability (via expansion options or explicit MIXED election), their campaign type is determined at intake and registered as MIXED from the start. There is no upgrade path from transactional to MIXED within the same campaign.
 _Affects: PRD_01 determineCampaignType(), PRD_04 submission, PRICING_MODEL_
+**⚠ Superseded by D-89.**
 
 **D-17 — Campaign review timing is 2–3 weeks**
 Current TCR baseline is 10–15 business days (~2–3 weeks). Never write "5–7 days" or "3–10 business days" anywhere — in UI copy, emails, PRDs, or documentation.
 _Affects: PRD_06 pending state copy, PRD_09 engagement nudge copy, all email templates, all marketing copy_
+**⚠ Superseded by D-215:** Sinch approval timeline is a few days, not 2–3 weeks.
 
 **D-18 — Healthcare/HIPAA is a hard decline at intake**
 Healthcare and HIPAA-adjacent use cases are declined during intake. No BAA. No PHI routing through the proxy. This is a platform constraint, not a product gap.
@@ -102,6 +106,7 @@ _Affects: PRD_01 use case selection, prohibited business screening_
 Drift detection and inline compliance enforcement apply to all paying customers. There is no opt-out and no paid tier for compliance. Charging separately would create ISV liability without visibility.
 _Reason: RelayKit shares ISV account risk. A customer who opts out and sends noncompliant content puts the entire platform at risk._
 _Affects: PRD_08, PRD_09 compliance pipeline, PRICING_MODEL_
+**⚠ Reframed by D-293:** enforcement at authoring time, not send time.
 
 **D-20 — $15 re-vetting fee absorbed by RelayKit**
 Campaign resubmission after rejection incurs a $15 Twilio/TCR vetting fee. RelayKit absorbs this as a COGS line item. It is not passed to the customer. Track `resubmission_count` per registration; 3+ rejections flagged for manual review as a margin risk signal.
@@ -132,6 +137,8 @@ BYO Twilio registration creates a Primary Customer Profile in the customer's own
 _Reason: Model 3 (subaccount under ISV + direct credentials) would route their traffic through our ISV account without proxy coverage. Unmonitorable ISV risk._
 _Phase 2 — do not build in v1._
 _Affects: PRD_09 Section 11, PRICING_MODEL Section 3_
+**⚠ Orphaned by D-358:** /src sunset.
+**⚠ Also out of scope per MASTER_PLAN §16** (BYO Twilio/Sinch).
 
 ---
 
@@ -191,6 +198,7 @@ _Affects: PRD_06 message library, PRD_08 drift alert copy, all developer-facing 
 **D-37 — Expansion options are "second campaign," never "upgrade"**
 When a customer adds marketing capability post-registration, it is a second campaign registration. Copy must say "We'll register an additional campaign" — never "upgrade your registration" or "expand your plan."
 _Affects: PRD_01 expansion UI, PRD_06 dashboard expansion CTA, PRD_04 TODO-P2-02_
+**⚠ Superseded by D-294.**
 
 **D-38 — ISV legal posture: never guarantee compliance outcomes**
 RelayKit is a telecom compliance registration platform, not a compliance attorney. Never write copy implying compliance outcomes are guaranteed.
@@ -221,6 +229,7 @@ _Affects: PRD_05, PRD_06 Section 5_
 **D-42 — generateArtifacts() selects exactly 3 messages for TCR**
 `generateArtifacts()` selects exactly 3 messages from the full template set for Twilio/TCR campaign submission. `getMessageTemplates()` returns the full library for the dashboard plan builder. These are two separate functions with separate purposes.
 _Affects: PRD_02, lib/templates/_
+**⚠ Superseded by D-90.**
 
 ---
 
@@ -256,6 +265,7 @@ _Affects: `src/app/api/phone-verify/route.ts`, `src/components/dashboard/phone-v
 The Messages tab shows a read-only message library with a "Edit your message plan" link back to the Overview tab. The plan builder component is not duplicated on the Messages tab to avoid dual-instance sync issues (two interactive instances of the same component writing to the same `/api/message-plan` endpoint). Post-registration, the Messages tab shows canon messages (from registration JSONB) marked with a star badge and "Registered message" label (D-36).
 _Alternative rejected: Rendering the plan builder on both tabs — would require shared state synchronization or real-time updates between two instances of the same component._
 _Affects: `src/app/dashboard/messages/page.tsx`, `src/components/dashboard/message-library.tsx`, `src/components/dashboard/message-library-entry.tsx`._
+**⚠ Orphaned:** plan-builder UI fully retired per D-280 + D-279 + D-332.
 
 **D-48 — Email templates are deterministic functions, no provider wired yet** (Date: 2026-03-05)
 Email templates (Emails 0–5) are implemented as deterministic string interpolation functions in `src/lib/emails/templates.ts` returning `{ subject, body }` objects. No email provider (Resend, SendGrid, etc.) is integrated yet — templates are ready to plug into any provider. Emails 6–7 (drift alert, message blocked) are deferred to the PRD_08 compliance monitoring build since they depend on drift detection infrastructure that doesn't exist yet.
@@ -325,6 +335,7 @@ _Affects: `prototype/data/messages.ts` (variable definitions), `prototype/compon
 **D-64 — Custom messages via Add message card** (Date: 2026-03-09)
 Developers can add new messages via an "Add message" card at the bottom of each tier group. Custom messages get a "Custom" badge and are deletable. Default messages (from the category data) can only be toggled off, never deleted. Not yet built — next session.
 _Affects: `prototype/components/plan-builder/message-card.tsx` (future), `prototype/components/plan-builder/message-tier.tsx` (future Add card)._
+**⚠ Orphaned by D-280:** website-side authoring is canonical.
 
 **D-65 — Trigger line format is "Triggers when..." or "Triggers..."** (Date: 2026-03-09)
 Trigger lines on message cards use the format "Triggers when appointment booked" (event-based) or "Triggers 24h before appointment" (time-based). The word "Triggers" is always prepended; the original trigger text is lowercased if it starts with a capital letter. Shown in both preview and edit modes.
@@ -357,6 +368,8 @@ _Affects: `prototype/components/plan-builder/message-card.tsx`, `CATEGORY_VARIAB
 **D-72 — Custom messages via Add message card** (Date: 2026-03-09)
 "+ Add message" card at the bottom of each tier group creates a new custom message. Custom messages get a "Custom" badge (neutral gray), editable title and trigger fields, and a Delete button. Default messages from category data can only be toggled off — never deleted. Custom messages are stored in `sessionState.customMessages` array. Implements D-64.
 _Affects: `prototype/components/plan-builder/message-card.tsx` (AddMessageCard), `prototype/components/plan-builder/message-tier.tsx`, `prototype/context/session-context.tsx`._
+**⚠ Orphaned by D-280:** website-side authoring is canonical.
+_(Note: near-duplicate of D-64; both orphaned per C-3.)_
 
 **D-73 — Catalog page is flat with nature badges, not tier grouping** (Date: 2026-03-10)
 The read-only message catalog page (`/c/[category]/messages`) displays all messages in a single flat list — no Core/Available/Add-on tier sections. Each card shows a "Transactional" or "Marketing" nature badge based on `expansionType`, not the tier badge used on the plan page. This is intentional: the catalog is a copy-and-go reference for developers, not a plan builder. Tier structure is only relevant on the interactive plan page (`/c/[category]/plan`).
@@ -379,6 +392,7 @@ SMS_GUIDELINES.md must be comprehensive enough that an AI coding assistant with 
 
 **D-79 — Message composer/editor cut entirely** (Date: 2026-03-11)
 Message composer/editor cut entirely. Developers write their own messages using catalog templates and AI prompt nudges as guidance.
+**⚠ Orphaned by D-280:** website-side authoring is canonical.
 
 **D-80 — Catalog page tone is browse-and-reference** (Date: 2026-03-11)
 UI tone for catalog page is browse-and-reference, not task-and-configure. Subtle interactions, magazine-style layout.
