@@ -176,17 +176,31 @@ _Captured 2026-04-23._
 - Either outcome directly informs Phase 2 Session B's failure-detection strategy
 
 ### Findings
-_To be filled in after run._
 
-- **Callback URL configured:**
-- **Send response status / timing:**
-- **Callback received:** (yes / no)
-- **Callback delay (if received):**
-- **Callback payload shape (if received):**
-- **Callback event types observed (e.g. `delivery_report_sms`, statuses like `Dispatched` / `Delivered` / `Failed`):**
-- **Implication for silent-drop detection in Phase 2 Session B:**
+- **Callback URL configured:** Yes. Set via Sinch dashboard → SMS → Service APIs → REST configuration → Callback URLs → Default URL field. URL: `https://sinch-webhook-receiver.joelnatkin.workers.dev` (the Cloudflare Worker scaffolded Session 49 at `experiments/sinch/webhook-receiver/` and deployed via `wrangler deploy`). Dashboard confirmed "Active" status before the send.
 
-### Status: NOT STARTED.
+- **Send response status / timing:** HTTP/2 201 — not Experiment 1b's 403, since the callback URL is now configured. Batch ID: `01KQ0KF3Z9EM2JZZ468HVYZ9PD` (ULID, matches Experiment 1's ID format). Precise send-path latency not measured this run (curl -i without timing flags); response returned immediately with no observable delay.
+
+- **Callback received:** Yes.
+
+- **Callback delay:** ~1.77 seconds (send at `2026-04-24T20:38:57.257Z`, callback arrived at `2026-04-24T20:38:59.026Z` — delta 1.769s / 1769ms). Noteworthy: the procedure estimated "typically within ~60 seconds, possibly several minutes" — actual behavior is near-realtime for the failure case. Phase 2 Session B should not design around multi-second latency as the normal case.
+
+- **Callback payload shape (canonical for Phase 2 Session B):**
+  - Top-level event discriminator: `type: "delivery_report_sms"` (string enum)
+  - Correlation key: `batch_id` (ULID `01KQ0KF3Z9EM2JZZ468HVYZ9PD`) — matches the `id` from the send response
+  - Status array: `statuses[]` with per-entry shape `{ code: number, count: number, recipients: string[], status: string }`
+  - `statuses[].code: 310` — Sinch-specific carrier-layer numeric code (Phase 2 should catalog known codes as they surface)
+  - `statuses[].status: "Failed"` — human-readable string enum
+  - `statuses[].recipients[]` — phone numbers in **non-E.164 format (no leading `+`)**, differs from send-path request which required `+`. Phase 2 data-layer must normalize when correlating callback recipient to send-side record.
+  - `total_message_count: 1` — useful for multi-recipient batches
+
+- **Callback event types observed:** Only `delivery_report_sms` in this run. Phase 2 should treat `type` as the top-level discriminator and reserve other values (e.g., for MO messages per Experiment 2b, other lifecycle events Sinch may emit).
+
+- **Transport signals on callback (user-agent, signature):** User-agent `Apache-HttpClient/5.5.1 (Java/21.0.5)` identifies Sinch's backend sender. Cloudflare proxy headers visible because the Worker sits behind Cloudflare (`cf-connecting-ip: 54.173.29.238`, `cf-ipcountry: US`). **No signature / HMAC header on the callback** — Phase 2 webhook signature verification cannot rely on a standard signed-header mechanism from Sinch for XMS delivery reports. If signature verification is required, alternative mechanisms are needed: IP allowlist of Sinch's egress ranges, mTLS, secret path segment, or a Sinch dashboard feature not enabled by default. **Flag as Phase 2 Session B kickoff discussion item** — successor question to the original Open-F-1 (delivery-status webhook scope from SRC_SUNSET).
+
+- **Implication for silent-drop detection in Phase 2 Session B:** **Sinch DOES notify us of carrier failures via the delivery-report callback, within ~2 seconds.** This **overturns the Session 45 hypothesis** that "no callback within 10 minutes → MNO doesn't notify Sinch either." Phase 2's failure-detection strategy is simpler than anticipated: callback-driven terminal state (`Failed` / `Delivered` / intermediate statuses per Sinch's code catalog) is the **primary** mechanism. A timeout-based "presumed failed" fallback remains valuable as a safety net for the case where Sinch's own callback fails to arrive (Worker downtime, Sinch bug, transport failure), but is **secondary**, not primary. The `messages.status` enum revision already reserved for Phase 2 Session B kickoff (per MASTER_PLAN §6) now has concrete input: `'sent'` = "submitted to carrier" at api-request time; terminal states `'delivered'` / `'failed'` set from the callback; at least one intermediate "submitted, awaiting callback" state is required between them. Exact enum values + semantics land at kickoff.
+
+### Status: COMPLETE — captured 2026-04-24.
 
 ---
 

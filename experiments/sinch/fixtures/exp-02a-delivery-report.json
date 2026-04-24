@@ -1,0 +1,66 @@
+{
+  "api_request": {
+    "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer {SINCH_API_TOKEN}",
+      "Content-Type": "application/json"
+    },
+    "body": {
+      "from": "+12013619609",
+      "to": ["+12066013506"],
+      "body": "RelayKit experiment 2a delivery report test",
+      "delivery_report": "full"
+    }
+  },
+  "api_response": {
+    "status": 201,
+    "headers": {
+      "content-type": "application/json",
+      "content-length": "331",
+      "x-application-context": "application:production:8080"
+    },
+    "body": {
+      "id": "01KQ0KF3Z9EM2JZZ468HVYZ9PD",
+      "to": ["12066013506"],
+      "from": "12013619609",
+      "canceled": false,
+      "body": "RelayKit experiment 2a delivery report test",
+      "type": "mt_text",
+      "created_at": "2026-04-24T20:38:57.257Z",
+      "modified_at": "2026-04-24T20:38:57.257Z",
+      "delivery_report": "full",
+      "expire_at": "2026-04-27T20:38:57.257Z",
+      "flash_message": false
+    }
+  },
+  "api_timing_ms": null,
+  "callback_received": true,
+  "callback_request": {
+    "method": "POST",
+    "path": "/",
+    "headers": {
+      "content-type": "application/json",
+      "content-length": "177",
+      "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+      "cf-connecting-ip": "54.173.29.238",
+      "cf-ipcountry": "US"
+    },
+    "body": {
+      "batch_id": "01KQ0KF3Z9EM2JZZ468HVYZ9PD",
+      "statuses": [
+        {
+          "code": 310,
+          "count": 1,
+          "recipients": ["12066013506"],
+          "status": "Failed"
+        }
+      ],
+      "total_message_count": 1,
+      "type": "delivery_report_sms"
+    }
+  },
+  "callback_delay_ms": 1769,
+  "captured_at": "2026-04-24T20:38:59.026Z",
+  "notes": "Experiment 2a — delivery-report callback shape capture. Sent an unregistered-10DLC message (same sender + recipient as Experiment 1) with delivery_report=\"full\" after configuring the Cloudflare Worker at sinch-webhook-receiver.joelnatkin.workers.dev as the Service Plan callback URL. Send returned HTTP 201 with a normal batch envelope. Phone did NOT receive the SMS — same silent carrier-side drop as Experiment 1. Sinch POST-ed a delivery-report callback to the Worker 1.769 seconds after the send response was issued, carrying batch_id correlation + a statuses[] array with code=310 / status=\"Failed\". Key Phase 2 finding: the carrier-failure signal is delivered to Sinch (and onward to us) via callback in near-realtime (not the ~60s the procedure estimated) — overturns the Session 45 hypothesis that unregistered-10DLC drops might go unreported by the MNO. Phase 2 Session B's failure-detection strategy can be callback-primary with timeout fallback, not the other way around. api_timing_ms is null because curl -i was used without timing flags; send was observably fast but not precisely measured. Recipient phone number appears WITH leading + in the send request and WITHOUT it in both the send response and the callback payload — Phase 2 data layer must normalize. No signature / HMAC header on the callback (verification by header alone is not viable for Sinch XMS delivery reports; Phase 2 signature-verification design must rely on IP allowlist, mTLS, secret path segment, or a Sinch feature not enabled by default). Authorization header redacted as {SINCH_API_TOKEN}; no live credentials in this fixture."
+}
