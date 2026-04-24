@@ -1,48 +1,46 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-24 (Session 49 — Experiment 2a webhook-receiver scaffold; throwaway Worker code retained under One Source Rule)
-**Branch:** main (3 unpushed — all pending PM approval before push; HEAD built on top of `90a960c`)
+**Date:** 2026-04-24 (Session 50 — Experiment 2a Findings capture + fixture write; doc-only)
+**Branch:** main (2 unpushed — both pending PM approval before push; HEAD built on top of `3d397a6`)
 
 ---
 
 ## Commits This Session
 
-Three atomic commits on top of `90a960c` (Session 48 handoff fix-up, already on `origin/main`). None pushed this session.
+Two atomic commits on top of `3d397a6` (Session 49 fix-up, already on `origin/main`). Neither pushed this session.
 
 ```
-3d99a69    feat(experiments): scaffold Experiment 2a webhook receiver
-58ed165    docs: session 49 close-out — REPO_INDEX + CC_HANDOFF bumps
-[this]     docs: session 49 fix-up — correct pre-flight git state reference to 90a960c
+e811523    feat(experiments): capture Experiment 2a findings
+[this]     docs: session 50 close-out — REPO_INDEX + CC_HANDOFF bumps
 ```
 
-Pre-flight session-start reality check (per Session 47 fix-up lesson): HEAD == `90a960c` == `origin/main` at session start. All four Session 48 content commits (`ab0730f` + `f174f94` + `73eed86` + `e0ea648`) plus the Session 48 handoff fix-up commit (`90a960c`) were pushed by Joel/PM at Session 48 close; session started from a clean 0-unpushed state.
-
-**Why the third commit this session:** Session 49's initial close-out (`58ed165`) cited `e0ea648` as session-start HEAD, inheriting that reference from the Session 48 CC_HANDOFF header. But the Session 48 handoff's own fix-up commit `90a960c` advanced HEAD one past `e0ea648` — a stale claim inside its own fix-up. Session 49 caught this only after landing Commit 2, so this Commit 3 corrects the pre-flight reference in both REPO_INDEX.md Meta + Session 49 change-log entry and CC_HANDOFF.md. Matches the Session 47 + Session 48 fix-up pattern: when post-commit verification reveals a factual drift in a load-bearing field (pre-flight git state), land a discrete fix-up commit rather than amend or leave stale. Working tree clean at session start except intentional untracked `api/node_modules/`.
+Pre-flight session-start reality check (per Session 47 fix-up lesson): HEAD == `3d397a6` == `origin/main` at session start. All three Session 49 commits (`3d99a69` scaffold + `58ed165` initial close-out + `3d397a6` pre-flight fix-up) were pushed in-session by Joel via `git push origin main` at Session 49 close; `90a960c..3d397a6` landed on remote cleanly. `git rev-list --left-right --count HEAD...origin/main` at session start → `0 0`. Working tree clean except intentional untracked `api/node_modules/`.
 
 ---
 
 ## What Was Completed
 
-Scaffold of the Cloudflare Worker webhook receiver specified in `experiments/sinch/experiments-log.md §Experiment 2a Procedure step 1`. Plan approved in plan mode at `~/.claude/plans/task-scaffold-the-cloudflare-atomic-prism.md`.
+Experiment 2a Findings populated + fixture written. Joel deployed the Cloudflare Worker scaffolded Session 49 (`sinch-webhook-receiver.joelnatkin.workers.dev`), configured it as the Sinch Service Plan callback URL, fired the send with `delivery_report:"full"`, and observed the callback arriving ~2 seconds later — all between Session 49 and Session 50. CC captured the raw data Joel provided and wrote it up.
 
-### Commit 1 — scaffold (`3d99a69`, 2 files created, 21 insertions)
+### Commit 1 — content (`e811523`, 2 files changed, +89 / -9)
 
-Two new files under new directory `/experiments/sinch/webhook-receiver/`:
+- **`experiments/sinch/experiments-log.md §Experiment 2a Findings`** — 7-bullet empty template replaced with 8 populated bullets:
+  1. Callback URL configured (dashboard path, Worker URL, "Active" confirmation).
+  2. Send response (HTTP/2 201, batch ULID `01KQ0KF3Z9EM2JZZ468HVYZ9PD`).
+  3. Callback received (yes).
+  4. Callback delay (~1.77s, precise 1769ms — near-realtime, overruns the procedure's "~60s possibly several minutes" estimate).
+  5. Canonical payload shape (type discriminator `delivery_report_sms`, batch_id correlation, statuses[] per-entry shape, code 310 + status "Failed", non-E.164 recipient format — phone numbers without leading `+` in callback vs. with `+` in send-path).
+  6. Callback event types observed (only `delivery_report_sms` this run; `type` is the discriminator).
+  7. Transport signals (user-agent `Apache-HttpClient/5.5.1 (Java/21.0.5)`, Cloudflare proxy headers, **no signature / HMAC header** — flag for Phase 2 Session B kickoff).
+  8. Implication for silent-drop detection (**Session 45 hypothesis overturned** — callbacks DO arrive for carrier failures; Phase 2 failure-detection is callback-primary with timeout fallback as safety net, not the other way around).
 
-- **`src/index.js`** (18 lines): minimal Cloudflare Worker. Exports a default object with `async fetch(request)` that assembles a `captured` object (`timestamp`, `method`, `path` via `new URL(request.url).pathname`, `headers` via `Object.fromEntries(request.headers.entries())`, `body` via `await safeBody(request)`), logs it as pretty-printed JSON, and returns `new Response('', { status: 200 })`. Helper `async function safeBody(req)` reads `req.text()`, tries `JSON.parse`, falls back to raw text on parse failure.
-- **`wrangler.toml`** (3 lines): `name = "sinch-webhook-receiver"`, `main = "src/index.js"`, `compatibility_date = "2026-04-01"`.
+- **`experiments/sinch/experiments-log.md §Experiment 2a Status`** — footer flipped `NOT STARTED` → `COMPLETE — captured 2026-04-24`.
 
-Both files reproduced **verbatim** from experiments-log.md step 1 — no new authoring, no extra scaffolding. The markdown's 5-space indent (list-nesting artifact) was stripped; content itself is character-for-character the spec. Code retained under the One Source Rule per Session 45's expected-artifacts note: Phase 2/4 port reuses this as a starting point rather than rewriting from scratch.
+- **`experiments/sinch/fixtures/exp-02a-delivery-report.json`** (new, 61 lines) — using the log step-5 nested schema (`api_request` / `api_response` / `api_timing_ms` / `callback_received` / `callback_request` / `callback_delay_ms` / `captured_at` / `notes`), different from exp-01 / exp-01b's flat schema because 2a captures both send-path + callback-path. `{SINCH_API_TOKEN}` + `{servicePlanId}` placeholders redact live credentials. `api_timing_ms: null` (curl -i without timing flags) with explanation in top-level `notes`. Validated JSON via `python3 -m json.tool`.
 
-### Commit 2 — close-out (`58ed165`)
+### Commit 2 — close-out (this commit)
 
-- **REPO_INDEX.md** — Meta block: `Last updated` bumped to Session 49 with scaffold summary; `Decision count` unchanged at D-364 (Session 49 added zero); `Unpushed local commits` updated with pre-flight state note (subsequently corrected by Commit 3 below). Subdirectories `/experiments/sinch/` entry: the phrase `Code in \`webhook-receiver/\` (not yet created — will land when Joel runs 2a)` replaced with `Code in \`webhook-receiver/\` (scaffolded Session 49 with \`src/index.js\` + \`wrangler.toml\`, verbatim from experiments-log.md §Experiment 2a Procedure step 1; awaiting Joel's \`wrangler deploy\` + Sinch Service Plan callback URL config)`. One Source Rule clause + Phase 2/4 port note preserved verbatim. Change log: Session 49 entry appended chronologically after Session 48's entry using the verbose-diff pattern.
-- **CC_HANDOFF.md** — overwritten with Session 49 content.
-
-### Commit 3 — fix-up (this commit)
-
-Corrects the pre-flight git state reference from `e0ea648` to `90a960c` in REPO_INDEX Meta + Session 49 change-log entry + CC_HANDOFF header + Commits-This-Session section + Quality-Checks post-commit verification + Gotcha 1 + Gotcha 6. Root cause: Session 49's initial close-out inherited `e0ea648` from the Session 48 CC_HANDOFF header. In reality, the Session 48 handoff fix-up commit (`90a960c`) had advanced HEAD one past `e0ea648` — a stale claim inside its own fix-up commit. Session 49 caught this only after running `git log --oneline -5 origin/main` post-close-out and noticing `90a960c` sits above `e0ea648` on origin/main. Matches the Session 47 + Session 48 fix-up pattern: when post-commit verification reveals a factual drift in a load-bearing field, land a discrete fix-up commit rather than amend or leave stale.
-
-No production code touched. No new D-numbers. No changes to the scaffold files from Commit 1.
+- **REPO_INDEX.md** — Meta: `Last updated` bumped to Session 50 summary; `Decision count` unchanged at D-364 (Session 49 + 50 added zero); `Unpushed local commits` → 2 with hashes + pre-flight `HEAD == 3d397a6 == origin/main` note. Subdirectories `/experiments/sinch/` entry: Session 49 scaffold language replaced with Session 50 COMPLETE language for 2a (fixture count 2 → 3; canonical payload shape + 1.77s callback delay + Session 45 hypothesis overturn + no-signature-header flag all noted inline); 2b still BLOCKED clause preserved; One Source Rule + Phase 2/4 port clauses preserved. Build spec status MESSAGE_PIPELINE_SPEC Session B row — status column stays `GATED` (Experiments 3 + 4 + 5 still outstanding), description expanded to note 2a closure + hypothesis overturn + callback-primary failure-detection pattern + remaining gates. Active plan pointer Experiment 2 line flipped from Session 43's original "inbound reply webhook" seed to the 2a/2b split (2a COMPLETE with key captured-data bullets, 2b still BLOCKED on 3 + 4). Change log: Session 50 entry appended chronologically after Session 49 entry using verbose-diff pattern.
+- **CC_HANDOFF.md** — this file, overwritten with Session 50 content.
 
 ---
 
@@ -51,147 +49,123 @@ No production code touched. No new D-numbers. No changes to the scaffold files f
 **Phase 0 — CLOSED** (Session 41 Group F).
 
 **Phase 1 — ACTIVE, Joel-driven.** Progress this session:
-- Experiment 1: COMPLETE (2026-04-23, Session 44).
-- Experiment 1b: COMPLETE (2026-04-23, Session 44).
-- Experiment 2a: **PROCEDURE DRAFTED + SCAFFOLD LANDED, awaiting Joel's `wrangler deploy` + Sinch callback URL config + send-and-observe run** (advanced from Session 48's "PROCEDURE DRAFTED, NOT STARTED" status by this session's scaffold commit).
+- Experiment 1: COMPLETE (Session 44).
+- Experiment 1b: COMPLETE (Session 44).
+- Experiment 2a: **COMPLETE (Session 50, 2026-04-24).** Advanced from Session 49's "SCAFFOLD LANDED, awaiting Joel deploy" → Joel deployed + ran + reported raw data → CC captured this session.
 - Experiment 2b: BLOCKED on Experiments 3 + 4 (no change).
 - Experiments 3, 4, 5: not started, procedures not yet drafted (no change).
 
-**Phase 2 Session B** — still GATED on Phase 1. Scope as expanded by Session 46 unchanged (delivery-report callbacks, signature verification, callback URL config, status-transition flow + timeout fallback, `messages.status` enum revision deferred to kickoff). MESSAGE_PIPELINE_SPEC catch-up + `messages.status` enum-semantics D-number both still parked at kickoff per Session 46 design.
+**Phase 2 Session B** — still GATED. Delivery-path axis is now fully unblocked by Experiment 2a's captured shapes + hypothesis overturn. Remaining gate is registration + STOP/START/HELP evidence from Experiments 3 + 4 + 5. Kickoff remains the correct boundary for the enum-semantics D-number + MESSAGE_PIPELINE_SPEC spec catch-up + signature-verification design decision.
 
-**Phase 4** — still narrowed (Session 46) to MO-specific work.
+**Phase 4** — still narrowed (Session 46) to MO-specific work. Session 2b fixture still the gating input.
 
-**DECISIONS ledger** — unchanged from Session 48 close: active count D-364 (latest), archive range D-01 through D-83. Session 49 added no new D-numbers.
+**DECISIONS ledger** — unchanged from Session 48 close: active count D-364 (latest), archive range D-01 through D-83. Session 50 added no new D-numbers — the hypothesis overturn is a finding about Sinch's behavior, not a RelayKit decision. The enum-semantics decision already reserved for Phase 2 Session B kickoff per MASTER_PLAN §6 now has concrete input; the D-number itself still lands at kickoff.
 
 ---
 
 ## Quality Checks Passed
 
-- **Prototype-phase experiment code; no production code touched.** `tsc --noEmit` / `eslint` / `vitest` not applicable to the throwaway Cloudflare Worker per MASTER_PLAN §5. CLAUDE.md close-out gates apply to modified code directories under `/api`, `/sdk`, `/prototype` — none touched this session.
-- **Verbatim-reproduction verification (pre-Commit-1):**
-  - Read `experiments/sinch/experiments-log.md` lines 94–123 to extract the exact JS + TOML code blocks from Procedure step 1.
-  - Stripped the 5-space list-nesting indent when transcribing — the spec's code blocks are nested inside a numbered-list item, so the indentation is markdown structure, not file content.
-- **Post-Write verification:**
-  - `wc -l experiments/sinch/webhook-receiver/src/index.js` → `18` ✓
-  - `wc -l experiments/sinch/webhook-receiver/wrangler.toml` → `3` ✓
-  - `grep -c "export default" experiments/sinch/webhook-receiver/src/index.js` → `1` ✓
-  - `grep -c "sinch-webhook-receiver" experiments/sinch/webhook-receiver/wrangler.toml` → `1` ✓
-- **Post-Commit-1 verification:**
-  - `git log --oneline 90a960c..HEAD` → `3d99a69 feat(experiments): scaffold Experiment 2a webhook receiver` (one commit at that point) ✓
-  - `git show --stat 3d99a69` → 2 files / +21 / -0 ✓
-  - `git status --short` → clean except untracked `api/node_modules/` ✓
+- **Doc-only session; no production code touched.** `tsc --noEmit` / `eslint` / `vitest` not required per CLAUDE.md close-out gates.
+- **Fixture JSON validity:** `python3 -m json.tool experiments/sinch/fixtures/exp-02a-delivery-report.json > /dev/null` → exit 0.
+- **Fixture credential redaction:** `grep -c "{SINCH_API_TOKEN}" experiments/sinch/fixtures/exp-02a-delivery-report.json` → 1; `grep -c "{servicePlanId}" experiments/sinch/fixtures/exp-02a-delivery-report.json` → 1. No live Bearer tokens, no live service plan IDs. Verified the raw captured data contained real values (Sinch dashboard panel + send curl) and they were replaced with placeholders in the fixture.
+- **Log status-footer integrity:** `grep -n "^### Status" experiments/sinch/experiments-log.md` → four status footers (1: COMPLETE 2026-04-23; 1b: COMPLETE 2026-04-23; 2a: COMPLETE 2026-04-24; 2b: BLOCKED on Experiments 3 + 4).
+- **Post-Commit-1:** `git log --oneline 3d397a6..HEAD` → `e811523 feat(experiments): capture Experiment 2a findings`; `git show --stat e811523` → 2 files / +89 / -9. `git status --short` → clean except untracked `api/node_modules/`.
+- **Findings-bullet coverage audit:** the 7-bullet empty template became 8 populated bullets, adding "transport signals + no-signature-header" as bullet #7 per the task spec. All original template bullets retained and populated; no template bullet removed.
+- **Delay computation:** `20:38:59.026Z − 20:38:57.257Z = 1.769s = 1769ms`. Cross-checked against the raw timestamps Joel captured.
 
 ---
 
 ## In Progress / Partially Done
 
-**Joel's next step (out of scope this session):**
-1. `cd experiments/sinch/webhook-receiver && wrangler deploy` — wrangler is already configured from prior relaykit.ai work per experiments-log.md step 1.
-2. Record the resulting `.workers.dev` URL.
-3. Sinch dashboard → SMS → Service APIs → REST configuration (same panel as the legacy XMS Bearer token from Experiment 1). Paste the Worker URL as the callback URL. Save. Confirm.
-4. In a second terminal: `wrangler tail` against the deployed Worker.
-5. In a third terminal: send with `delivery_report: "full"` per experiments-log.md step 3 (POST to `https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches` with the same shape as Experiment 1 plus the extra field).
-6. Wait and observe — two informative outcomes:
-   - **Callback arrives** (~60s typical, possibly several minutes): `wrangler tail` streams the POST; copy the full method/path/headers/body for the fixture.
-   - **No callback within 10 minutes**: document the non-arrival and elapsed time. Implication = MNO doesn't notify Sinch for unregistered 10DLC drops, so Phase 2 needs a timeout-based "presumed failed" heuristic alongside callback-driven state.
-
-Both outcomes are informative for Phase 2 Session B failure-detection strategy.
+None. Session 50 executed the Findings capture cleanly — all data landed, fixture written, log updated, index + handoff bumps done.
 
 ---
 
-## Pending (post-Session-49)
+## Pending (post-Session-50)
 
-1. **Findings-capture session** — happens after Joel runs the experiment. Inputs needed:
-   - `wrangler tail` output from the send attempt (screenshot or pasted log).
-   - API response body from the POST to Sinch (expected 201 this time, not Experiment 1b's 403 — callback URL is configured now).
-   - API latency measurement.
-   - Callback payload (if received): full method/path/headers/body JSON. Or: non-arrival time measurement (if no callback within 10 min).
-   - Any other observations Joel flags from running the experiment.
+1. **Experiments 3, 4, 5 procedure drafting (PM-side work).** PM writes procedures; CC drafts based on PM handover; Joel runs. Natural next Phase 1 step since 2a closed the delivery-path gap. Three procedures to write:
+   - **Experiment 3** — brand registration submission + timing measurement. The fast-registration-promise load-bearer (MASTER_PLAN §0 customer value #1).
+   - **Experiment 4** — campaign registration submission + timing measurement. Gates go-live for any customer.
+   - **Experiment 5** — STOP/START/HELP handling. Determines whether Sinch auto-handles opt-outs at carrier-layer (affects Phase 4 scope).
 
-   CC's work at that session: fill the 7-bullet Findings template at `experiments/sinch/experiments-log.md §Experiment 2a`, write `fixtures/exp-02a-delivery-report.json` with `{servicePlanId}`/`{SINCH_API_TOKEN}` placeholders, update status footer from `NOT STARTED` → `COMPLETE — captured [date]`, add Implications-for-Phase-2-Session-B block.
+2. **Phase 2 Session B kickoff prep.** Gating items as of Session 50 close:
+   - MESSAGE_PIPELINE_SPEC Session B spec catch-up (Session 46 boundary — lands at kickoff).
+   - `messages.status` enum-semantics D-number (Session 46 boundary — lands at kickoff; now has concrete input from 2a: `'sent'` = submitted-to-carrier at api-request; terminal `'delivered'` / `'failed'` from callback; intermediate "submitted, awaiting callback" state required).
+   - **Webhook signature verification design decision** (new this session — no HMAC header on Sinch XMS callbacks; options are IP allowlist, mTLS, secret path segment, unenabled Sinch feature). Successor question to Open-F-1 from `SRC_SUNSET.md`. Probably a new D-number at kickoff.
+   - Experiments 3 + 4 + 5 results (to fully unblock registration + STOP/START/HELP axes).
 
-2. **Pre-existing pending (carried from Session 48 and earlier):**
-   - PM review of appendix-item D-241 → D-211 audit-wording question (Session 48 gotcha 2).
-   - PM review of D-101 pre-existing structural drift (Session 48 gotcha 3).
-   - PM review of DECISIONS.md index-summary harmonization with the new inline notes (Session 48 gotcha 4).
-   - MESSAGE_PIPELINE_SPEC.md Session B spec catch-up — deferred to Phase 2 kickoff per Session 46 boundary.
-   - `messages.status` enum-semantics D-number — deferred to Phase 2 kickoff per Session 46 boundary.
-   - PM drafts Experiment 3 procedure (brand registration + timing).
-   - PM drafts Experiment 4 procedure (campaign registration + timing).
-   - PM drafts Experiment 5 procedure (STOP/START/HELP).
-   - Phase 2 Session B kickoff — gated on 2a outcome + MESSAGE_PIPELINE_SPEC catch-up + enum D-number.
-
-3. **Pre-existing drift in REPO_INDEX Active plan pointer (noted, not fixed):** §Active plan pointer at L146–L158 still lists the five Phase 1 experiments in their Session 43 original form — Experiment 1 labeled "not yet run" (despite Session 44 completion); Experiment 2 labeled "inbound reply webhook" (despite Session 45's 2a/2b split). Not in scope for Session 49's scaffold task. Surfacing for PM discretion — a standalone Active-plan-pointer harmonization pass may be warranted at some point (or it may be intentional to preserve Session 43's seed text as historical record).
+3. **Pre-existing pending (carried from prior sessions):**
+   - PM review of appendix-item D-241 → D-211 audit-wording question (Session 48 gotcha).
+   - PM review of D-101 pre-existing structural drift (Session 48 gotcha).
+   - PM review of DECISIONS.md index-summary harmonization with the new inline notes (Session 48 gotcha).
+   - Active plan pointer Experiment 1 line at L152 still says "not yet run" (stale since Session 44); task scope this session was Experiment 2 line only. **Deferred.**
+   - Phase 2 Session B kickoff — gated on 3 + 4 + 5 outcomes + the items above. Multi-session effort.
 
 ---
 
 ## Gotchas for Next Session
 
-1. **Session 49 commits unpushed at close** (by PM instruction — CC never pushes without PM review). Next session's pre-flight check: `git rev-list --left-right --count HEAD...origin/main`. If Joel/PM pushed between sessions, expect `0 0`; if not, expect `3 0` with `3d99a69` (scaffold) + `58ed165` (initial close-out) + this fix-up commit still local. Per the Session 47 fix-up lesson: **perform the reality check, don't assume.** Especially: do not inherit HEAD claims from the prior handoff header without verifying against `git log origin/main` — Session 49 got caught doing exactly that (see "Why the third commit" above).
+1. **Session 50 commits unpushed at close** (by PM instruction — CC never pushes without PM review). Next session's pre-flight check: `git rev-list --left-right --count HEAD...origin/main`. If Joel/PM pushed between sessions, expect `0 0`; if not, expect `2 0` with `e811523` + this close-out still local. **Perform the reality check, don't assume** — especially: do not inherit HEAD claims from the prior handoff header without verifying against `git log origin/main` (Session 49's fix-up lesson).
 
 2. **`api/node_modules/` remains untracked intentionally.** Do not `git add -A` or `git add .`; stage specific paths only.
 
-3. **Worker directory now exists.** Subsequent sessions should not regenerate `src/index.js` or `wrangler.toml` — modifications, if any, are user-directed edits or the Phase 2 port refactor. If the Findings-capture session surfaces a need to adjust the Worker (e.g., Sinch's callback shape reveals a field the current capture misses), that's a new plan-mode discussion, not a silent rewrite.
+3. **Active plan pointer Experiment 1 line at L152 is stale** — still says "not yet run" despite Session 44's COMPLETE capture. Not fixed this session because Session 50 task scope was the Experiment 2 line only. A future harmonization pass could flip L152 to `COMPLETE (Session 44, 2026-04-23)` + similar for the other Phase 1 items. Low priority; surface if PM wants consistency.
 
-4. **Findings-capture session needs ALL of:** Joel's `wrangler tail` output, the API response body + latency from the send, the callback payload (if any) OR the non-arrival time (if no callback within 10 min). Without any of these, Findings can't be fully populated and the session should pause rather than guess. Partial inputs produce partial Findings with explicit placeholders — don't fabricate.
+4. **No signature / HMAC header on Sinch XMS delivery-report callbacks** — this is a real Phase 2 Session B kickoff discussion item. The options (IP allowlist, mTLS, secret path segment, unenabled Sinch feature) each have tradeoffs; the decision will probably become a new D-number at kickoff. Don't silently assume signature verification is possible on a Sinch-signed header — it isn't, for XMS delivery reports in this account config.
 
-5. **`/src` freeze still holds per D-358.** Session 49 did not touch `/src`.
+5. **Callback recipient format differs from send-path recipient format.** Send-path requires `+12066013506` (E.164 with leading `+`); callback `statuses[].recipients[]` returns `12066013506` (no `+`). Phase 2 data layer must normalize when correlating callback recipient to send-side record. This is a Sinch quirk, not a mistake — both formats are verbatim from the raw capture.
 
-6. **No push this session per standing close-out rule.** PM reviews before push — same as every prior session. If PM directs an in-session push later, HEAD at that moment is `[this fix-up hash]` built on `58ed165` built on `3d99a69` built on `90a960c`.
+6. **The Session 45 hypothesis is overturned.** Any doc or thread that says "no callback within 10 min → MNO doesn't notify Sinch either" should be read in light of Session 50's finding: callbacks arrive fast (~2s) for carrier failures on unregistered 10DLC. The Session 45 wording survives in the Procedure's step-4 "two possible outcomes" list (both-outcomes-are-informative is still true; only one outcome manifested this run), and in the Session 45 change-log entry (historical). Don't rewrite those — they're the record of what was hypothesized. The Findings block + fixture + Session 50 change-log entry are the corrective.
 
-7. **One Source Rule means `/experiments/sinch/webhook-receiver/` is NOT throwaway-after-use.** Phase 2's callback receiver (MASTER_PLAN §6 Phase 2 "build the delivery-report callback receiver in `/api` (ports the Experiment 2a Worker into a real route)") is explicitly a port of this code, not a rewrite. Don't delete the directory after Findings capture; don't delete it after Phase 2 ships. Retirement happens when MASTER_PLAN §6 port is complete and the Worker is cleanly superseded by the `/api` route.
+7. **Worker still deployed at `sinch-webhook-receiver.joelnatkin.workers.dev`** — configured as Sinch Service Plan callback URL. If Joel wants to take it down between experiments (to avoid accidental callback captures or to rotate), `wrangler delete sinch-webhook-receiver` works. Currently it's useful to leave up — further sends during Experiments 3 + 4 may generate additional delivery-report callbacks worth observing.
 
-8. **Plan file at `~/.claude/plans/task-scaffold-the-cloudflare-atomic-prism.md`.** Keep for reference if future scaffold-to-experiment sessions follow the same pattern.
+8. **`/src` freeze still holds per D-358.** Session 50 did not touch `/src`.
+
+9. **Plan notes were surfaced inline this session, not in a plan file.** Task was prescriptive enough that plan mode wasn't invoked; flags were raised in the text response before execution. If future findings-capture sessions follow this pattern, same approach works.
 
 ---
 
 ## Files Modified This Session
 
-### Created (Commit 1, pushed pending PM approval)
+### Created + Modified (Commit 1, pushed pending PM approval)
 ```
-experiments/sinch/webhook-receiver/src/index.js     # 18 lines — verbatim from experiments-log.md §Experiment 2a Procedure step 1
-experiments/sinch/webhook-receiver/wrangler.toml    # 3 lines — verbatim from experiments-log.md §Experiment 2a Procedure step 1
+experiments/sinch/experiments-log.md                       # +65 / -9 — Findings block populated + Status footer flipped
+experiments/sinch/fixtures/exp-02a-delivery-report.json    # new, 61 lines — canonical fixture for Phase 2 Session B + Phase 4 reference
 ```
 
 ### Modified (Commit 2, pushed pending PM approval)
 ```
-REPO_INDEX.md      # Meta: Last updated + Decision count note + Unpushed commits; Subdirectories /experiments/sinch/ webhook-receiver phrasing; Change log Session 49 entry
-CC_HANDOFF.md      # Overwritten with Session 49 handoff
+REPO_INDEX.md      # Meta: Last updated + Decision count note + Unpushed commits; Subdirectories /experiments/sinch/ Session 50 rewrite; Build spec status Session B amended; Active plan pointer Experiment 2 line; Change log Session 50 entry
+CC_HANDOFF.md      # Overwritten with Session 50 handoff
 ```
 
 ### Untouched (intentionally)
 ```
-experiments/sinch/experiments-log.md                            # Findings capture is a later session after Joel runs the experiment
-experiments/sinch/fixtures/                                     # exp-02a-delivery-report.json lands at Findings capture, not here
-DECISIONS.md, DECISIONS_ARCHIVE.md                              # No D-numbers this session
+experiments/sinch/webhook-receiver/                         # Session 49's scaffold unchanged — still the deployed Worker
+experiments/sinch/fixtures/exp-01-outbound.json,
+experiments/sinch/fixtures/exp-01b-delivery-report-rejected.json   # prior fixtures preserved
+DECISIONS.md, DECISIONS_ARCHIVE.md                          # No D-numbers this session
 MASTER_PLAN.md, PROTOTYPE_SPEC.md, MESSAGE_PIPELINE_SPEC.md,
 SDK_BUILD_PLAN.md, SRC_SUNSET.md, PRICING_MODEL.md,
 BACKLOG.md, WORKSPACE_DESIGN_SPEC.md, CLAUDE.md,
-PM_PROJECT_INSTRUCTIONS.md, README.md                           # Not in scope
-/api, /sdk, /prototype, /src                                    # No code touches — Worker scaffold is experiment-tier, not production
-audits/DECISIONS_AUDIT_2026-04-24.md                            # Per dated-report convention — never overwritten; Session 48 resolution status captured in REPO_INDEX canonical-docs row
+PM_PROJECT_INSTRUCTIONS.md, README.md                        # Not in scope
+/api, /sdk, /prototype, /src                                 # No code touches — doc-only session
+audits/DECISIONS_AUDIT_2026-04-24.md                         # Per dated-report convention — never overwritten
 ```
 
 ---
 
 ## Suggested Next Tasks
 
-**Next session depends on Joel's progress with the experiment:**
+**Natural next Phase 1 step:** Experiments 3 → 4 → 5 procedure drafting. PM hands over the procedure content; CC drafts per the Session 45 2a pattern (~30 min per experiment). Experiment 3 (brand registration + timing) is the highest-value next one — the fast-registration promise is MASTER_PLAN §0 customer value #1, and Experiment 3's timing measurement is the load-bearing evidence.
 
-**If Joel has run the experiment:**
-- CC does the Findings-capture session — fills in `experiments-log.md §Experiment 2a Findings`, writes `fixtures/exp-02a-delivery-report.json` with placeholders, flips status footer to `COMPLETE — captured [date]`, adds Implications block. ~30 min per the Session 44 pattern.
-
-**If Joel has not yet run the experiment:**
-- PM may hand over Experiment 3 procedure drafting (brand registration + timing) — CC drafts per the Session 45 2a pattern. ~30 min.
-- Or Experiment 4 procedure drafting (campaign registration + timing) — similar scope.
-- Or Experiment 5 procedure drafting (STOP/START/HELP).
+**Alternative next step (PM discretion):** Phase 2 Session B kickoff prep can begin in parallel with Experiments 3 + 4 + 5 — the MESSAGE_PIPELINE_SPEC Session B spec catch-up + `messages.status` enum D-number draft + signature-verification design exploration can all start now that the delivery-path shapes are recorded. But execution of Session B still waits for 3 + 4 + 5 outcomes (registration shapes + STOP/START/HELP behavior).
 
 **Joel-side (no CC needed):**
-- Deploy the Worker (`wrangler deploy`), configure Sinch callback URL, fire the send, observe outcome.
+- If PM has Experiment 3 procedure ready: run it (submit brand registration, measure approval time — this is the ~3-day wall-clock wait that MASTER_PLAN §5 flagged).
 
-**Further out:**
-- Phase 2 Session B kickoff — gated on Experiment 2a outcome + MESSAGE_PIPELINE_SPEC catch-up + `messages.status` enum-semantics D-number + Session B implementation start. Multi-session effort.
+**Estimate:** Next findings-capture session (post-Experiment-3) is ~30 min CC, same pattern as Session 50.
 
 ---
 
-*End of close-out. Session 49 scaffolded the Cloudflare Worker webhook receiver for Experiment 2a per experiments-log.md §Experiment 2a Procedure step 1, verbatim. Three commits unpushed (scaffold + close-out + pre-flight-reference fix-up). Joel's next step is `wrangler deploy` + Sinch callback URL config + send-and-observe. Findings capture happens in a later session.*
+*End of close-out. Session 50 captured Experiment 2a end-to-end: Joel deployed the Session 49 Worker + configured Sinch callback URL + fired the send + observed callback; CC populated Findings + wrote fixture. Session 45 silent-drop hypothesis overturned — Sinch DOES deliver carrier-failure signals via callback within ~2s. Phase 2 Session B's failure-detection strategy is callback-primary with timeout fallback. No new D-numbers; enum-semantics + signature-verification decisions reserved for Session B kickoff. Two commits unpushed pending PM approval.*
