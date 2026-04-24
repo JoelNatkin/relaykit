@@ -1,19 +1,22 @@
 # CC_HANDOFF.md — Session Handoff
 **Date:** 2026-04-24 (Session 49 — Experiment 2a webhook-receiver scaffold; throwaway Worker code retained under One Source Rule)
-**Branch:** main (2 unpushed — both pending PM approval before push; HEAD built on top of `e0ea648`)
+**Branch:** main (3 unpushed — all pending PM approval before push; HEAD built on top of `90a960c`)
 
 ---
 
 ## Commits This Session
 
-Two atomic commits on top of `e0ea648` (Session 48 close-out, already on `origin/main`). Neither pushed this session.
+Three atomic commits on top of `90a960c` (Session 48 handoff fix-up, already on `origin/main`). None pushed this session.
 
 ```
 3d99a69    feat(experiments): scaffold Experiment 2a webhook receiver
-[this]     docs: session 49 close-out — REPO_INDEX + CC_HANDOFF bumps
+58ed165    docs: session 49 close-out — REPO_INDEX + CC_HANDOFF bumps
+[this]     docs: session 49 fix-up — correct pre-flight git state reference to 90a960c
 ```
 
-Pre-flight session-start reality check (per Session 47 fix-up lesson): HEAD == `e0ea648` == `origin/main` at session start. All four Session 48 commits (`ab0730f` + `f174f94` + `73eed86` + `e0ea648`) were pushed in-session by Joel/PM at Session 48 close; session started from a clean 0-unpushed state. Working tree clean at session start except intentional untracked `api/node_modules/`.
+Pre-flight session-start reality check (per Session 47 fix-up lesson): HEAD == `90a960c` == `origin/main` at session start. All four Session 48 content commits (`ab0730f` + `f174f94` + `73eed86` + `e0ea648`) plus the Session 48 handoff fix-up commit (`90a960c`) were pushed by Joel/PM at Session 48 close; session started from a clean 0-unpushed state.
+
+**Why the third commit this session:** Session 49's initial close-out (`58ed165`) cited `e0ea648` as session-start HEAD, inheriting that reference from the Session 48 CC_HANDOFF header. But the Session 48 handoff's own fix-up commit `90a960c` advanced HEAD one past `e0ea648` — a stale claim inside its own fix-up. Session 49 caught this only after landing Commit 2, so this Commit 3 corrects the pre-flight reference in both REPO_INDEX.md Meta + Session 49 change-log entry and CC_HANDOFF.md. Matches the Session 47 + Session 48 fix-up pattern: when post-commit verification reveals a factual drift in a load-bearing field (pre-flight git state), land a discrete fix-up commit rather than amend or leave stale. Working tree clean at session start except intentional untracked `api/node_modules/`.
 
 ---
 
@@ -30,10 +33,16 @@ Two new files under new directory `/experiments/sinch/webhook-receiver/`:
 
 Both files reproduced **verbatim** from experiments-log.md step 1 — no new authoring, no extra scaffolding. The markdown's 5-space indent (list-nesting artifact) was stripped; content itself is character-for-character the spec. Code retained under the One Source Rule per Session 45's expected-artifacts note: Phase 2/4 port reuses this as a starting point rather than rewriting from scratch.
 
-### Commit 2 — close-out (this commit)
+### Commit 2 — close-out (`58ed165`)
 
-- **REPO_INDEX.md** — Meta block: `Last updated` bumped to Session 49 with scaffold summary; `Decision count` unchanged at D-364 (Session 49 added zero); `Unpushed local commits` updated to 2 (`3d99a69` + this close-out) with pre-flight state note. Subdirectories `/experiments/sinch/` entry: the phrase `Code in \`webhook-receiver/\` (not yet created — will land when Joel runs 2a)` replaced with `Code in \`webhook-receiver/\` (scaffolded Session 49 with \`src/index.js\` + \`wrangler.toml\`, verbatim from experiments-log.md §Experiment 2a Procedure step 1; awaiting Joel's \`wrangler deploy\` + Sinch Service Plan callback URL config)`. One Source Rule clause + Phase 2/4 port note preserved verbatim. Change log: Session 49 entry appended chronologically after Session 48's entry using the verbose-diff pattern.
-- **CC_HANDOFF.md** — this file, overwritten with Session 49 content.
+- **REPO_INDEX.md** — Meta block: `Last updated` bumped to Session 49 with scaffold summary; `Decision count` unchanged at D-364 (Session 49 added zero); `Unpushed local commits` updated with pre-flight state note (subsequently corrected by Commit 3 below). Subdirectories `/experiments/sinch/` entry: the phrase `Code in \`webhook-receiver/\` (not yet created — will land when Joel runs 2a)` replaced with `Code in \`webhook-receiver/\` (scaffolded Session 49 with \`src/index.js\` + \`wrangler.toml\`, verbatim from experiments-log.md §Experiment 2a Procedure step 1; awaiting Joel's \`wrangler deploy\` + Sinch Service Plan callback URL config)`. One Source Rule clause + Phase 2/4 port note preserved verbatim. Change log: Session 49 entry appended chronologically after Session 48's entry using the verbose-diff pattern.
+- **CC_HANDOFF.md** — overwritten with Session 49 content.
+
+### Commit 3 — fix-up (this commit)
+
+Corrects the pre-flight git state reference from `e0ea648` to `90a960c` in REPO_INDEX Meta + Session 49 change-log entry + CC_HANDOFF header + Commits-This-Session section + Quality-Checks post-commit verification + Gotcha 1 + Gotcha 6. Root cause: Session 49's initial close-out inherited `e0ea648` from the Session 48 CC_HANDOFF header. In reality, the Session 48 handoff fix-up commit (`90a960c`) had advanced HEAD one past `e0ea648` — a stale claim inside its own fix-up commit. Session 49 caught this only after running `git log --oneline -5 origin/main` post-close-out and noticing `90a960c` sits above `e0ea648` on origin/main. Matches the Session 47 + Session 48 fix-up pattern: when post-commit verification reveals a factual drift in a load-bearing field, land a discrete fix-up commit rather than amend or leave stale.
+
+No production code touched. No new D-numbers. No changes to the scaffold files from Commit 1.
 
 ---
 
@@ -68,7 +77,7 @@ Both files reproduced **verbatim** from experiments-log.md step 1 — no new aut
   - `grep -c "export default" experiments/sinch/webhook-receiver/src/index.js` → `1` ✓
   - `grep -c "sinch-webhook-receiver" experiments/sinch/webhook-receiver/wrangler.toml` → `1` ✓
 - **Post-Commit-1 verification:**
-  - `git log --oneline e0ea648..HEAD` → `3d99a69 feat(experiments): scaffold Experiment 2a webhook receiver` (one commit at that point) ✓
+  - `git log --oneline 90a960c..HEAD` → `3d99a69 feat(experiments): scaffold Experiment 2a webhook receiver` (one commit at that point) ✓
   - `git show --stat 3d99a69` → 2 files / +21 / -0 ✓
   - `git status --short` → clean except untracked `api/node_modules/` ✓
 
@@ -118,7 +127,7 @@ Both outcomes are informative for Phase 2 Session B failure-detection strategy.
 
 ## Gotchas for Next Session
 
-1. **Session 49 commits unpushed at close** (by PM instruction — CC never pushes without PM review). Next session's pre-flight check: `git rev-list --left-right --count HEAD...origin/main`. If Joel/PM pushed between sessions, expect `0 0`; if not, expect `2 0` with `3d99a69` + this close-out still local. Per the Session 47 fix-up lesson: **perform the reality check, don't assume.**
+1. **Session 49 commits unpushed at close** (by PM instruction — CC never pushes without PM review). Next session's pre-flight check: `git rev-list --left-right --count HEAD...origin/main`. If Joel/PM pushed between sessions, expect `0 0`; if not, expect `3 0` with `3d99a69` (scaffold) + `58ed165` (initial close-out) + this fix-up commit still local. Per the Session 47 fix-up lesson: **perform the reality check, don't assume.** Especially: do not inherit HEAD claims from the prior handoff header without verifying against `git log origin/main` — Session 49 got caught doing exactly that (see "Why the third commit" above).
 
 2. **`api/node_modules/` remains untracked intentionally.** Do not `git add -A` or `git add .`; stage specific paths only.
 
@@ -128,7 +137,7 @@ Both outcomes are informative for Phase 2 Session B failure-detection strategy.
 
 5. **`/src` freeze still holds per D-358.** Session 49 did not touch `/src`.
 
-6. **No push this session per standing close-out rule.** PM reviews before push — same as every prior session. If PM directs an in-session push later, HEAD at that moment is `[this close-out hash]` built on `e0ea648`.
+6. **No push this session per standing close-out rule.** PM reviews before push — same as every prior session. If PM directs an in-session push later, HEAD at that moment is `[this fix-up hash]` built on `58ed165` built on `3d99a69` built on `90a960c`.
 
 7. **One Source Rule means `/experiments/sinch/webhook-receiver/` is NOT throwaway-after-use.** Phase 2's callback receiver (MASTER_PLAN §6 Phase 2 "build the delivery-report callback receiver in `/api` (ports the Experiment 2a Worker into a real route)") is explicitly a port of this code, not a rewrite. Don't delete the directory after Findings capture; don't delete it after Phase 2 ships. Retirement happens when MASTER_PLAN §6 port is complete and the Worker is cleanly superseded by the `/api` route.
 
@@ -185,4 +194,4 @@ audits/DECISIONS_AUDIT_2026-04-24.md                            # Per dated-repo
 
 ---
 
-*End of close-out. Session 49 scaffolded the Cloudflare Worker webhook receiver for Experiment 2a per experiments-log.md §Experiment 2a Procedure step 1, verbatim. Two commits unpushed. Joel's next step is `wrangler deploy` + Sinch callback URL config + send-and-observe. Findings capture happens in a later session.*
+*End of close-out. Session 49 scaffolded the Cloudflare Worker webhook receiver for Experiment 2a per experiments-log.md §Experiment 2a Procedure step 1, verbatim. Three commits unpushed (scaffold + close-out + pre-flight-reference fix-up). Joel's next step is `wrangler deploy` + Sinch callback URL config + send-and-observe. Findings capture happens in a later session.*
