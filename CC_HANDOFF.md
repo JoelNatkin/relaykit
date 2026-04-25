@@ -1,46 +1,62 @@
 # CC_HANDOFF.md — Session Handoff
-**Date:** 2026-04-24 (Session 50 — Experiment 2a Findings capture + fixture write; doc-only)
-**Branch:** main (2 unpushed — both pending PM approval before push; HEAD built on top of `3d397a6`)
+**Date:** 2026-04-25 (Session 51 — Experiment 3a brand-registration findings capture + new docs reference + BACKLOG entries + D-18 archive annotation; doc-only)
+**Branch:** main (4 unpushed — all pending PM approval before push; HEAD built on top of `5695870`)
 
 ---
 
 ## Commits This Session
 
-Two atomic commits on top of `3d397a6` (Session 49 fix-up, already on `origin/main`). Neither pushed this session.
+Four atomic commits on top of `5695870` (Session 50 close-out, already on `origin/main`). None pushed this session.
 
 ```
-e811523    feat(experiments): capture Experiment 2a findings
-[this]     docs: session 50 close-out — REPO_INDEX + CC_HANDOFF bumps
+[c1]    feat(experiments): capture Experiment 3a brand-registration findings + fixture
+[c2]    docs(carrier): land brand-registration fields reference + revisions
+[c3]    docs: BACKLOG entries A/B/C + D-18 contextual annotation
+[c4]    docs: session 51 close-out — REPO_INDEX + CC_HANDOFF bumps
 ```
 
-Pre-flight session-start reality check (per Session 47 fix-up lesson): HEAD == `3d397a6` == `origin/main` at session start. All three Session 49 commits (`3d99a69` scaffold + `58ed165` initial close-out + `3d397a6` pre-flight fix-up) were pushed in-session by Joel via `git push origin main` at Session 49 close; `90a960c..3d397a6` landed on remote cleanly. `git rev-list --left-right --count HEAD...origin/main` at session start → `0 0`. Working tree clean except intentional untracked `api/node_modules/`.
+Pre-flight session-start reality check (per Session 47 fix-up lesson): HEAD == `5695870` == `origin/main` at session start. Both Session 50 commits (`e811523` + `5695870`) were pushed by Joel between Session 50 close and Session 51 start; `git rev-list --left-right --count HEAD...origin/main` at session start → `0 0`. Working tree at session start: clean except untracked `api/node_modules/` (intentional) and untracked `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` (Joel's working-tree draft from the chat — committed this session as part of Commit 2).
 
 ---
 
 ## What Was Completed
 
-Experiment 2a Findings populated + fixture written. Joel deployed the Cloudflare Worker scaffolded Session 49 (`sinch-webhook-receiver.joelnatkin.workers.dev`), configured it as the Sinch Service Plan callback URL, fired the send with `delivery_report:"full"`, and observed the callback arriving ~2 seconds later — all between Session 49 and Session 50. CC captured the raw data Joel provided and wrote it up.
+Joel ran the brand-registration leg of Experiment 3 via Sinch's dashboard between sessions: Brand `BTTC6XS` (Bundle `01kq2jqyhjynvr2wcpp0bbppgr`, Simplified path, Private Profit / `PRIVATE`, Information Technology Services / `TECHNOLOGY` vertical) submitted ~11:20 ET 2026-04-25 and approved ~11:21 ET — ~60 seconds end-to-end via a `BRAND_IDENTITY_STATUS_UPDATE` webhook event observed on the dashboard activity feed. CC captured the data, surfaced six findings worth recording for Phase 2 Session B + Phase 5 design, and landed all the doc work this session.
 
-### Commit 1 — content (`e811523`, 2 files changed, +89 / -9)
+### Commit 1 — Experiment 3a/3b log + 3a fixture
 
-- **`experiments/sinch/experiments-log.md §Experiment 2a Findings`** — 7-bullet empty template replaced with 8 populated bullets:
-  1. Callback URL configured (dashboard path, Worker URL, "Active" confirmation).
-  2. Send response (HTTP/2 201, batch ULID `01KQ0KF3Z9EM2JZZ468HVYZ9PD`).
-  3. Callback received (yes).
-  4. Callback delay (~1.77s, precise 1769ms — near-realtime, overruns the procedure's "~60s possibly several minutes" estimate).
-  5. Canonical payload shape (type discriminator `delivery_report_sms`, batch_id correlation, statuses[] per-entry shape, code 310 + status "Failed", non-E.164 recipient format — phone numbers without leading `+` in callback vs. with `+` in send-path).
-  6. Callback event types observed (only `delivery_report_sms` this run; `type` is the discriminator).
-  7. Transport signals (user-agent `Apache-HttpClient/5.5.1 (Java/21.0.5)`, Cloudflare proxy headers, **no signature / HMAC header** — flag for Phase 2 Session B kickoff).
-  8. Implication for silent-drop detection (**Session 45 hypothesis overturned** — callbacks DO arrive for carrier failures; Phase 2 failure-detection is callback-primary with timeout fallback as safety net, not the other way around).
+- **`experiments/sinch/experiments-log.md`** — two new H2 sections appended after Experiment 2b, mirroring the 2a/2b precedent:
+  - **Experiment 3a — Brand registration submission + timing** (Status: COMPLETE — captured 2026-04-25). Procedure subsection (replicable dashboard steps), Findings (10 bullets covering timing, brand created, IdentityStatus terminal value `VERIFIED`, Bundle state transitions `In review → Approved`, webhook event observed, Sole Prop API gap, state machine 5-vs-7 mismatch, Simplified pricing $10-vs-$6 inconsistency, vertical enum mapping, HEALTHCARE-D-18 annotation context, IRS name-change-letter grace window observation), Implications-for-Phase-2-Session-B (3 inconsistencies for Sinch BDR verification + signature-verification design follow-on), Implications-for-Phase-5-Registration-Pipeline (Sole Prop ICP routing decision, customer fee tiering, BYO TCR brand import).
+  - **Experiment 3b — Campaign registration submission + timing** (Status: BLOCKED on procedure drafting). Stub block with goal, procedure-TBD note, status footer.
 
-- **`experiments/sinch/experiments-log.md §Experiment 2a Status`** — footer flipped `NOT STARTED` → `COMPLETE — captured 2026-04-24`.
+- **`experiments/sinch/fixtures/exp-03a-brand-registration.json`** (new, 33 lines) — adapted dashboard-capture schema with `submission` / `response` / `webhook_event` / `timing_seconds` / `captured_at` / `notes` keys (deviates from exp-02a's API-shaped `api_request` / `api_response` keys because 3a was dashboard-driven, not API-driven). Two distinct state-tracking concepts captured separately: `identity_status_observed: ["VERIFIED"]` (TCR-level brand identity, terminal value only) and `bundle_state_transitions: ["In review", "Approved"]` (Sinch lifecycle, full sequence visible). PII redacted with `{IRS_ON_FILE_ADDRESS}` + `{CONTACT_DETAILS}` placeholders; EIN value not stored. Validated JSON via `python3 -m json.tool`.
 
-- **`experiments/sinch/fixtures/exp-02a-delivery-report.json`** (new, 61 lines) — using the log step-5 nested schema (`api_request` / `api_response` / `api_timing_ms` / `callback_received` / `callback_request` / `callback_delay_ms` / `captured_at` / `notes`), different from exp-01 / exp-01b's flat schema because 2a captures both send-path + callback-path. `{SINCH_API_TOKEN}` + `{servicePlanId}` placeholders redact live credentials. `api_timing_ms: null` (curl -i without timing flags) with explanation in top-level `notes`. Validated JSON via `python3 -m json.tool`.
+### Commit 2 — `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` doc landing + revision
 
-### Commit 2 — close-out (this commit)
+Joel's working-tree draft (untracked at session start) committed after CC revisions:
 
-- **REPO_INDEX.md** — Meta: `Last updated` bumped to Session 50 summary; `Decision count` unchanged at D-364 (Session 49 + 50 added zero); `Unpushed local commits` → 2 with hashes + pre-flight `HEAD == 3d397a6 == origin/main` note. Subdirectories `/experiments/sinch/` entry: Session 49 scaffold language replaced with Session 50 COMPLETE language for 2a (fixture count 2 → 3; canonical payload shape + 1.77s callback delay + Session 45 hypothesis overturn + no-signature-header flag all noted inline); 2b still BLOCKED clause preserved; One Source Rule + Phase 2/4 port clauses preserved. Build spec status MESSAGE_PIPELINE_SPEC Session B row — status column stays `GATED` (Experiments 3 + 4 + 5 still outstanding), description expanded to note 2a closure + hypothesis overturn + callback-primary failure-detection pattern + remaining gates. Active plan pointer Experiment 2 line flipped from Session 43's original "inbound reply webhook" seed to the 2a/2b split (2a COMPLETE with key captured-data bullets, 2b still BLOCKED on 3 + 4). Change log: Session 50 entry appended chronologically after Session 49 entry using verbose-diff pattern.
-- **CC_HANDOFF.md** — this file, overwritten with Session 50 content.
+- Header gains `**Sources:**` line citing Sinch dashboard 2026-04-25 session + Sinch 10DLC OpenAPI spec.
+- §Bundle / Company / Contact field tables preserved verbatim from Joel's draft.
+- §Financial details — Entity type row rewritten to API truth (3 enum values + dashboard labels + EIN-required column + no-Sole-Prop note); Corporate tax ID row updated to "required for all 3 supported entity types"; italicized history note added below the section per the strike + history-note hybrid approach (`_Note (2026-04-25): Earlier draft assumed Sole Proprietor was supported; Sinch's 10DLC API enum confirms it isn't. See BACKLOG entry on Sole Proprietor segment gap for product implications._`).
+- New §`brandEntityType` enum (load-bearing) section — 3-value table + Phase 5 wizard-design implication.
+- New §`brandVerticalType` enum mapping section — 22 values, 1 observed mapping (Information Technology Services → `TECHNOLOGY`), 21 TBD; HEALTHCARE-as-valid-API-vertical note pointing at D-18.
+- New §Brand state machine section — two sub-sections (`IdentityStatus` TCR-level + `brandRegistrationStatus`/Bundle-state Sinch-level), 5-vs-7 dashboard-mapping table with explicit unknown cells, Sinch-BDR-verification flag.
+- §Field constraints we learned the hard way — added 3 entries (Website-must-be-live, EIN-required-for-all-3-supported-types, IRS-records-grace-windows); rewrote No-EIN constraint to explicit "cannot onboard via Sinch's 10DLC API" with route options.
+- §Field-to-wizard-step mapping — title and body retitled from Phase 7 → Phase 5 per the phasing clarification.
+
+### Commit 3 — BACKLOG entries A/B/C + D-18 archive annotation
+
+- **`BACKLOG.md`** — three new entries inserted in Likely → Product Features, before the Infrastructure & Operations subheading:
+  - Customer brand registration path tiering (Simplified $13–28 margin vs Full $16–31 loss; three response options).
+  - Sole Proprietor customer segment Sinch gap (three response options: cut from ICP / secondary carrier / TFN routing).
+  - BYO existing TCR brand import (Sinch UI surfaces the path; TCR cross-CSP portability per CSP docs).
+  - All three reference Phase 5 design context (Phase 7 in Joel's spec corrected to Phase 5 per MASTER_PLAN §9).
+
+- **`DECISIONS_ARCHIVE.md`** — D-18 body annotated with one new italicized line: `_Note (2026-04-25): HEALTHCARE is a valid \`brandVerticalType\` value in Sinch's 10DLC API; this decline is a RelayKit policy choice, not a carrier-level constraint._` Appended after the existing `_Affects:_` line at L103. **Establishes the format precedent for non-supersession contextual annotations on archived (or active) decisions** — distinct from the existing `**⚠ Superseded by D-###:**` and `**⚠ Reframed by D-###:**` markers, which are supersession-class.
+
+### Commit 4 — close-out (this commit)
+
+REPO_INDEX.md + CC_HANDOFF.md bumped per Session 50 pattern. Verbose-diff change-log entry for Session 51 appended chronologically.
 
 ---
 
@@ -51,121 +67,149 @@ Experiment 2a Findings populated + fixture written. Joel deployed the Cloudflare
 **Phase 1 — ACTIVE, Joel-driven.** Progress this session:
 - Experiment 1: COMPLETE (Session 44).
 - Experiment 1b: COMPLETE (Session 44).
-- Experiment 2a: **COMPLETE (Session 50, 2026-04-24).** Advanced from Session 49's "SCAFFOLD LANDED, awaiting Joel deploy" → Joel deployed + ran + reported raw data → CC captured this session.
-- Experiment 2b: BLOCKED on Experiments 3 + 4 (no change).
-- Experiments 3, 4, 5: not started, procedures not yet drafted (no change).
+- Experiment 2a: COMPLETE (Session 50).
+- Experiment 2b: BLOCKED on Experiments 3 + 4.
+- **Experiment 3a: COMPLETE (Session 51, 2026-04-25).** Brand `BTTC6XS` approved in ~60s via Sinch dashboard.
+- **Experiment 3b: BLOCKED on procedure drafting.** Brand `BTTC6XS` available for the run.
+- Experiments 4, 5: not started, procedures not yet drafted.
 
-**Phase 2 Session B** — still GATED. Delivery-path axis is now fully unblocked by Experiment 2a's captured shapes + hypothesis overturn. Remaining gate is registration + STOP/START/HELP evidence from Experiments 3 + 4 + 5. Kickoff remains the correct boundary for the enum-semantics D-number + MESSAGE_PIPELINE_SPEC spec catch-up + signature-verification design decision.
+**Phase 2 Session B** — still GATED. Delivery-path axis fully unblocked by 2a's captured shapes; brand-registration axis unblocked by 3a. Remaining gates: campaign registration shapes (3b), STOP/START/HELP evidence (5), and the three new Session-51-surfaced API/dashboard inconsistencies for Sinch BDR verification at kickoff. Kickoff remains the correct boundary for the enum-semantics D-number + MESSAGE_PIPELINE_SPEC spec catch-up + signature-verification design decision.
 
-**Phase 4** — still narrowed (Session 46) to MO-specific work. Session 2b fixture still the gating input.
+**Phase 5 (Registration Pipeline on Sinch)** — design context now has concrete inputs from 3a: field reference doc landed (`docs/CARRIER_BRAND_REGISTRATION_FIELDS.md`), 3 BACKLOG-tracked product questions (tiering, Sole Prop routing, BYO brand import), state-machine + enum mappings to be filled in incrementally. Phase 5 design itself remains future work (waits on Phase 2 Session B completion per MASTER_PLAN §9).
 
-**DECISIONS ledger** — unchanged from Session 48 close: active count D-364 (latest), archive range D-01 through D-83. Session 50 added no new D-numbers — the hypothesis overturn is a finding about Sinch's behavior, not a RelayKit decision. The enum-semantics decision already reserved for Phase 2 Session B kickoff per MASTER_PLAN §6 now has concrete input; the D-number itself still lands at kickoff.
+**DECISIONS ledger** — unchanged from Session 50 close: active count D-364 (latest), archive range D-01 through D-83. Session 51 added no new D-numbers; D-18 received an inline contextual note in the archive (not a new decision, not a supersession). Sessions 49 + 50 + 51 added zero new D-numbers cumulatively.
 
 ---
 
 ## Quality Checks Passed
 
 - **Doc-only session; no production code touched.** `tsc --noEmit` / `eslint` / `vitest` not required per CLAUDE.md close-out gates.
-- **Fixture JSON validity:** `python3 -m json.tool experiments/sinch/fixtures/exp-02a-delivery-report.json > /dev/null` → exit 0.
-- **Fixture credential redaction:** `grep -c "{SINCH_API_TOKEN}" experiments/sinch/fixtures/exp-02a-delivery-report.json` → 1; `grep -c "{servicePlanId}" experiments/sinch/fixtures/exp-02a-delivery-report.json` → 1. No live Bearer tokens, no live service plan IDs. Verified the raw captured data contained real values (Sinch dashboard panel + send curl) and they were replaced with placeholders in the fixture.
-- **Log status-footer integrity:** `grep -n "^### Status" experiments/sinch/experiments-log.md` → four status footers (1: COMPLETE 2026-04-23; 1b: COMPLETE 2026-04-23; 2a: COMPLETE 2026-04-24; 2b: BLOCKED on Experiments 3 + 4).
-- **Post-Commit-1:** `git log --oneline 3d397a6..HEAD` → `e811523 feat(experiments): capture Experiment 2a findings`; `git show --stat e811523` → 2 files / +89 / -9. `git status --short` → clean except untracked `api/node_modules/`.
-- **Findings-bullet coverage audit:** the 7-bullet empty template became 8 populated bullets, adding "transport signals + no-signature-header" as bullet #7 per the task spec. All original template bullets retained and populated; no template bullet removed.
-- **Delay computation:** `20:38:59.026Z − 20:38:57.257Z = 1.769s = 1769ms`. Cross-checked against the raw timestamps Joel captured.
+- **Fixture JSON validity:** `python3 -m json.tool experiments/sinch/fixtures/exp-03a-brand-registration.json > /dev/null` → exit 0.
+- **Fixture credential / PII redaction:** `grep -c "{IRS_ON_FILE_ADDRESS}\|{CONTACT_DETAILS}" experiments/sinch/fixtures/exp-03a-brand-registration.json` → 3 (1 address placeholder, 1 contact placeholder, 1 reference in the notes field). No live EIN string in fixture; `ein_present: true` only.
+- **Log status-footer integrity:** `grep -n "^### Status" experiments/sinch/experiments-log.md` → 6 status footers (1: COMPLETE 2026-04-23; 1b: COMPLETE 2026-04-23; 2a: COMPLETE 2026-04-24; 2b: BLOCKED on Experiments 3 + 4; 3a: COMPLETE 2026-04-25; 3b: BLOCKED on procedure drafting).
+- **Phase phasing harmonization:** `grep -in "Phase 7" docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` → 0 hits (all Phase 7 references in Joel's working-tree draft and the user-spec BACKLOG entries swapped to Phase 5 per MASTER_PLAN §9 prior to commit).
+- **D-18 annotation format:** `grep -nE "^_Note \(2026-04-25\)" DECISIONS_ARCHIVE.md` → 1 line on D-18.
+- **BACKLOG entries landed:** `grep -cE "Customer brand registration path tiering|Sole Proprietor customer segment|BYO existing TCR brand import" BACKLOG.md` → 3 (one per heading line).
+- **API enum truth in registration-fields doc:** `grep -c "PUBLIC.*PRIVATE.*CHARITY_NON_PROFIT\|brandEntityType" docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` → ≥3.
 
 ---
 
 ## In Progress / Partially Done
 
-None. Session 50 executed the Findings capture cleanly — all data landed, fixture written, log updated, index + handoff bumps done.
+None. Session 51 executed cleanly — all data captured, fixture written, registration-fields doc landed, BACKLOG entries added, D-18 annotated, REPO_INDEX + CC_HANDOFF bumped.
 
 ---
 
-## Pending (post-Session-50)
+## Pending (post-Session-51)
 
-1. **Experiments 3, 4, 5 procedure drafting (PM-side work).** PM writes procedures; CC drafts based on PM handover; Joel runs. Natural next Phase 1 step since 2a closed the delivery-path gap. Three procedures to write:
-   - **Experiment 3** — brand registration submission + timing measurement. The fast-registration-promise load-bearer (MASTER_PLAN §0 customer value #1).
-   - **Experiment 4** — campaign registration submission + timing measurement. Gates go-live for any customer.
-   - **Experiment 5** — STOP/START/HELP handling. Determines whether Sinch auto-handles opt-outs at carrier-layer (affects Phase 4 scope).
+1. **Experiment 3b — campaign-registration leg.** PM drafts procedure → Joel runs (or CC scaffolds if API-driven). Brand `BTTC6XS` is live and available. Natural next Phase 1 step.
 
-2. **Phase 2 Session B kickoff prep.** Gating items as of Session 50 close:
+2. **Experiments 4 + 5 procedure drafting (PM-side work).**
+   - Experiment 4 — additional registration scope if needed beyond 3a/3b.
+   - Experiment 5 — STOP/START/HELP handling. Determines whether Sinch auto-handles opt-outs at carrier-layer (affects Phase 4 scope).
+
+3. **Phase 2 Session B kickoff prep.** Gating items as of Session 51 close:
    - MESSAGE_PIPELINE_SPEC Session B spec catch-up (Session 46 boundary — lands at kickoff).
-   - `messages.status` enum-semantics D-number (Session 46 boundary — lands at kickoff; now has concrete input from 2a: `'sent'` = submitted-to-carrier at api-request; terminal `'delivered'` / `'failed'` from callback; intermediate "submitted, awaiting callback" state required).
-   - **Webhook signature verification design decision** (new this session — no HMAC header on Sinch XMS callbacks; options are IP allowlist, mTLS, secret path segment, unenabled Sinch feature). Successor question to Open-F-1 from `SRC_SUNSET.md`. Probably a new D-number at kickoff.
-   - Experiments 3 + 4 + 5 results (to fully unblock registration + STOP/START/HELP axes).
+   - `messages.status` enum-semantics D-number (Session 46 boundary — lands at kickoff; concrete input from 2a still applies).
+   - Webhook signature verification design decision (Session 50 finding — no HMAC header on XMS callbacks; alternatives are IP allowlist, mTLS, secret path segment, unenabled Sinch feature).
+   - **Three Sinch API/dashboard inconsistencies (new this session — verify with Sinch BDR Elizabeth Garner before kickoff):** brand state machine (5 API vs 7 dashboard), Simplified pricing ($10 docs vs $6 charged), webhook policy (poll-only docs vs internal-fire observed during 3a).
+   - Experiment 3b + 5 results (to fully unblock the registration + STOP/START/HELP axes).
 
-3. **Pre-existing pending (carried from prior sessions):**
-   - PM review of appendix-item D-241 → D-211 audit-wording question (Session 48 gotcha).
-   - PM review of D-101 pre-existing structural drift (Session 48 gotcha).
-   - PM review of DECISIONS.md index-summary harmonization with the new inline notes (Session 48 gotcha).
-   - Active plan pointer Experiment 1 line at L152 still says "not yet run" (stale since Session 44); task scope this session was Experiment 2 line only. **Deferred.**
-   - Phase 2 Session B kickoff — gated on 3 + 4 + 5 outcomes + the items above. Multi-session effort.
+4. **Phase 5 design context.** Three BACKLOG-tracked product questions seeded this session (path tiering, Sole Prop routing, BYO TCR brand import). Phase 5 design itself remains future work; entries are parking-lot per BACKLOG protocol.
+
+5. **Pre-existing pending (carried from prior sessions):**
+   - PM review of appendix-item D-241 → D-211 audit-wording question (Session 48 gotcha, still open).
+   - PM review of D-101 pre-existing structural drift (Session 48 gotcha, still open).
+   - PM review of DECISIONS.md index-summary harmonization with the new inline notes (Session 48 gotcha, still open).
+   - Active plan pointer Experiment 1 line still says "not yet run" (stale since Session 44; Session 50 deferred; not in scope this session).
 
 ---
 
 ## Gotchas for Next Session
 
-1. **Session 50 commits unpushed at close** (by PM instruction — CC never pushes without PM review). Next session's pre-flight check: `git rev-list --left-right --count HEAD...origin/main`. If Joel/PM pushed between sessions, expect `0 0`; if not, expect `2 0` with `e811523` + this close-out still local. **Perform the reality check, don't assume** — especially: do not inherit HEAD claims from the prior handoff header without verifying against `git log origin/main` (Session 49's fix-up lesson).
+1. **Session 51 commits unpushed at close** (by PM instruction — CC never pushes without PM review). Next session's pre-flight check: `git rev-list --left-right --count HEAD...origin/main`. If Joel/PM pushed between sessions, expect `0 0`; if not, expect `4 0` with the four Session 51 commits still local. **Perform the reality check, don't assume** — especially: do not inherit HEAD claims from this handoff header without verifying against `git log origin/main` (Session 49's fix-up lesson).
 
 2. **`api/node_modules/` remains untracked intentionally.** Do not `git add -A` or `git add .`; stage specific paths only.
 
-3. **Active plan pointer Experiment 1 line at L152 is stale** — still says "not yet run" despite Session 44's COMPLETE capture. Not fixed this session because Session 50 task scope was the Experiment 2 line only. A future harmonization pass could flip L152 to `COMPLETE (Session 44, 2026-04-23)` + similar for the other Phase 1 items. Low priority; surface if PM wants consistency.
+3. **`docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` is now committed**, no longer untracked. Joel's working-tree draft → CC revisions → Commit 2 of this session. Future edits land in regular session flow.
 
-4. **No signature / HMAC header on Sinch XMS delivery-report callbacks** — this is a real Phase 2 Session B kickoff discussion item. The options (IP allowlist, mTLS, secret path segment, unenabled Sinch feature) each have tradeoffs; the decision will probably become a new D-number at kickoff. Don't silently assume signature verification is possible on a Sinch-signed header — it isn't, for XMS delivery reports in this account config.
+4. **Brand `BTTC6XS` is live.** It's RelayKit's actual Sinch brand registration. It's available for Experiment 3b campaign registration submission and for any future end-to-end testing. Do not delete or archive without explicit PM direction.
 
-5. **Callback recipient format differs from send-path recipient format.** Send-path requires `+12066013506` (E.164 with leading `+`); callback `statuses[].recipients[]` returns `12066013506` (no `+`). Phase 2 data layer must normalize when correlating callback recipient to send-side record. This is a Sinch quirk, not a mistake — both formats are verbatim from the raw capture.
+5. **Three Sinch API/dashboard inconsistencies are open questions** for Phase 2 Session B kickoff:
+   - Brand state machine: 5 API states vs 7 dashboard states (extra Queue + Archived). Mapping table in `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` flags unknown cells.
+   - Simplified registration pricing: $10 in API docs vs $6 charged on dashboard. To verify before pricing-model claims become customer-facing.
+   - Webhook policy: API docs say "initial release will not include a webhook service, you will need to poll" — but `BRAND_IDENTITY_STATUS_UPDATE` fired internally during 3a's run. Either docs are stale, or webhooks fire to dashboard internally only.
+   Each needs PM-side confirmation with Sinch BDR (Elizabeth Garner). Do not silently assume the API docs are authoritative — observed dashboard behavior contradicts them in all three cases.
 
-6. **The Session 45 hypothesis is overturned.** Any doc or thread that says "no callback within 10 min → MNO doesn't notify Sinch either" should be read in light of Session 50's finding: callbacks arrive fast (~2s) for carrier failures on unregistered 10DLC. The Session 45 wording survives in the Procedure's step-4 "two possible outcomes" list (both-outcomes-are-informative is still true; only one outcome manifested this run), and in the Session 45 change-log entry (historical). Don't rewrite those — they're the record of what was hypothesized. The Findings block + fixture + Session 50 change-log entry are the corrective.
+6. **Two distinct state-tracking concepts at Sinch.** When working on Phase 5 wizard or Phase 2 Session B status logic, do not conflate them:
+   - `IdentityStatus` — TCR-level brand identity field. Terminal value `VERIFIED` observed; intermediate transitions not visible from dashboard.
+   - `brandRegistrationStatus` / Bundle state — Sinch's bundle-level lifecycle. Observed transition `In review → Approved`. API enum has 5 values; dashboard exposes 7.
+   These are separate fields tracking separate concerns. Treat them independently in any data model.
 
-7. **Worker still deployed at `sinch-webhook-receiver.joelnatkin.workers.dev`** — configured as Sinch Service Plan callback URL. If Joel wants to take it down between experiments (to avoid accidental callback captures or to rotate), `wrangler delete sinch-webhook-receiver` works. Currently it's useful to leave up — further sends during Experiments 3 + 4 may generate additional delivery-report callbacks worth observing.
+7. **Sole Proprietor is not a Sinch 10DLC option.** API `brandEntityType` enum is exactly `PUBLIC | PRIVATE | CHARITY_NON_PROFIT`. The `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` doc and Phase 5 design discussions should treat no-EIN customers as a routing problem (TFN, secondary carrier, ICP cut), not a Sinch 10DLC entity-type-selection problem. BACKLOG entry on Sole Prop segment gap captures the design tradeoffs.
 
-8. **`/src` freeze still holds per D-358.** Session 50 did not touch `/src`.
+8. **D-18 contextual annotation format precedent.** The `_Note (YYYY-MM-DD): ..._` italicized line on D-18 is the first non-supersession contextual annotation in `DECISIONS_ARCHIVE.md`. Future contextual notes (on archived or active decisions) should follow this format unless a different precedent is explicitly chosen. Distinct from the existing `**⚠ Superseded by D-###:**` and `**⚠ Reframed by D-###:**` markers, which are supersession-class.
 
-9. **Plan notes were surfaced inline this session, not in a plan file.** Task was prescriptive enough that plan mode wasn't invoked; flags were raised in the text response before execution. If future findings-capture sessions follow this pattern, same approach works.
+9. **`/src` freeze still holds per D-358.** Session 51 did not touch `/src`.
+
+10. **Worker still deployed** at `sinch-webhook-receiver.joelnatkin.workers.dev` (per Session 49 scaffold + Joel's deployment between Sessions 49 and 50). Configured as Sinch Service Plan callback URL. Useful for Experiment 3b (campaign send-and-observe) and any future delivery-report capture.
 
 ---
 
 ## Files Modified This Session
 
-### Created + Modified (Commit 1, pushed pending PM approval)
+### Modified + Created (Commit 1, pending PM approval)
 ```
-experiments/sinch/experiments-log.md                       # +65 / -9 — Findings block populated + Status footer flipped
-experiments/sinch/fixtures/exp-02a-delivery-report.json    # new, 61 lines — canonical fixture for Phase 2 Session B + Phase 4 reference
+experiments/sinch/experiments-log.md                          # +75 lines — appended 3a + 3b H2 blocks after 2b
+experiments/sinch/fixtures/exp-03a-brand-registration.json    # new, 33 lines — Experiment 3a fixture (dashboard capture schema)
 ```
 
-### Modified (Commit 2, pushed pending PM approval)
+### Created (Commit 2, pending PM approval)
 ```
-REPO_INDEX.md      # Meta: Last updated + Decision count note + Unpushed commits; Subdirectories /experiments/sinch/ Session 50 rewrite; Build spec status Session B amended; Active plan pointer Experiment 2 line; Change log Session 50 entry
-CC_HANDOFF.md      # Overwritten with Session 50 handoff
+docs/CARRIER_BRAND_REGISTRATION_FIELDS.md                     # new — Joel's working-tree draft + CC revisions (Sole Prop strike + history note, brandEntityType enum section, brandVerticalType enum mapping section, Brand state machine section, refined constraints, Phase 5 retitling)
+```
+
+### Modified (Commit 3, pending PM approval)
+```
+BACKLOG.md            # +3 entries (Customer brand registration tiering, Sole Prop segment gap, BYO TCR brand import)
+DECISIONS_ARCHIVE.md  # +1 line (D-18 contextual annotation: HEALTHCARE-is-valid-API-vertical / D-18-is-RelayKit-policy)
+```
+
+### Modified (Commit 4, pending PM approval)
+```
+REPO_INDEX.md         # Meta: Last updated + Decision count note + Unpushed commits; Canonical /docs table: + CARRIER_BRAND_REGISTRATION_FIELDS.md row; Subdirectories /experiments/sinch/ Session 51 rewrite (3a COMPLETE + 3b BLOCKED + 4 fixtures); Build spec status Session B amended with 3 inconsistencies; Active plan pointer Experiment 3 split to 3a/3b lines; Change log Session 51 entry
+CC_HANDOFF.md         # Overwritten with Session 51 handoff
 ```
 
 ### Untouched (intentionally)
 ```
-experiments/sinch/webhook-receiver/                         # Session 49's scaffold unchanged — still the deployed Worker
-experiments/sinch/fixtures/exp-01-outbound.json,
-experiments/sinch/fixtures/exp-01b-delivery-report-rejected.json   # prior fixtures preserved
-DECISIONS.md, DECISIONS_ARCHIVE.md                          # No D-numbers this session
+experiments/sinch/webhook-receiver/                           # Session 49 scaffold preserved — still the deployed Worker
+experiments/sinch/fixtures/exp-01-outbound.json
+experiments/sinch/fixtures/exp-01b-delivery-report-rejected.json
+experiments/sinch/fixtures/exp-02a-delivery-report.json       # prior fixtures preserved
+DECISIONS.md                                                  # No D-numbers this session; D-18 annotation lives in DECISIONS_ARCHIVE.md per location decision
 MASTER_PLAN.md, PROTOTYPE_SPEC.md, MESSAGE_PIPELINE_SPEC.md,
 SDK_BUILD_PLAN.md, SRC_SUNSET.md, PRICING_MODEL.md,
-BACKLOG.md, WORKSPACE_DESIGN_SPEC.md, CLAUDE.md,
-PM_PROJECT_INSTRUCTIONS.md, README.md                        # Not in scope
-/api, /sdk, /prototype, /src                                 # No code touches — doc-only session
-audits/DECISIONS_AUDIT_2026-04-24.md                         # Per dated-report convention — never overwritten
+WORKSPACE_DESIGN_SPEC.md, CLAUDE.md,
+PM_PROJECT_INSTRUCTIONS.md, README.md                          # Not in scope
+/api, /sdk, /prototype, /src                                   # No code touches — doc-only session
+audits/DECISIONS_AUDIT_2026-04-24.md                           # Per dated-report convention — never overwritten
 ```
 
 ---
 
 ## Suggested Next Tasks
 
-**Natural next Phase 1 step:** Experiments 3 → 4 → 5 procedure drafting. PM hands over the procedure content; CC drafts per the Session 45 2a pattern (~30 min per experiment). Experiment 3 (brand registration + timing) is the highest-value next one — the fast-registration promise is MASTER_PLAN §0 customer value #1, and Experiment 3's timing measurement is the load-bearing evidence.
+**Natural next Phase 1 step:** Experiment 3b campaign-registration procedure drafting. PM hands over procedure content; CC drafts per the Session 45 2a pattern (~30 min); Joel runs against brand `BTTC6XS`. Same fast-registration timing measurement as 3a but for the campaign axis — campaign approval is what actually gates customer go-live per MASTER_PLAN §9.
 
-**Alternative next step (PM discretion):** Phase 2 Session B kickoff prep can begin in parallel with Experiments 3 + 4 + 5 — the MESSAGE_PIPELINE_SPEC Session B spec catch-up + `messages.status` enum D-number draft + signature-verification design exploration can all start now that the delivery-path shapes are recorded. But execution of Session B still waits for 3 + 4 + 5 outcomes (registration shapes + STOP/START/HELP behavior).
+**Alternative next step (PM discretion):** push the Session 51 stack to `origin/main` first if PM approves the four commits cleanly, then move into 3b drafting. Or pivot to Phase 2 Session B kickoff prep in parallel — the MESSAGE_PIPELINE_SPEC spec catch-up + enum-semantics D-number draft + signature-verification design exploration + Sinch-BDR conversation about the three inconsistencies can all start now.
 
 **Joel-side (no CC needed):**
-- If PM has Experiment 3 procedure ready: run it (submit brand registration, measure approval time — this is the ~3-day wall-clock wait that MASTER_PLAN §5 flagged).
+- Run a Sinch-BDR conversation to clarify the three Session-51-surfaced API/dashboard inconsistencies (state machine, Simplified pricing, webhook policy) before Phase 2 Session B kickoff.
+- If PM has Experiment 3b procedure ready: run it (submit campaign for `TECHNOLOGY` vertical against brand `BTTC6XS`, measure approval time).
 
-**Estimate:** Next findings-capture session (post-Experiment-3) is ~30 min CC, same pattern as Session 50.
+**Estimate:** Next findings-capture session (post-Experiment-3b) is ~30 min CC, same pattern as Sessions 50 + 51.
 
 ---
 
-*End of close-out. Session 50 captured Experiment 2a end-to-end: Joel deployed the Session 49 Worker + configured Sinch callback URL + fired the send + observed callback; CC populated Findings + wrote fixture. Session 45 silent-drop hypothesis overturned — Sinch DOES deliver carrier-failure signals via callback within ~2s. Phase 2 Session B's failure-detection strategy is callback-primary with timeout fallback. No new D-numbers; enum-semantics + signature-verification decisions reserved for Session B kickoff. Two commits unpushed pending PM approval.*
+*End of close-out. Session 51 captured Experiment 3a end-to-end: brand `BTTC6XS` approved in ~60 seconds via Sinch dashboard, two distinct state-tracking concepts captured separately (`IdentityStatus: VERIFIED` at TCR level + `Bundle state: In review → Approved` at Sinch level), Sole Prop API gap surfaced, three API/dashboard inconsistencies flagged for Sinch-BDR verification before Phase 2 Session B kickoff. New `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` reference document landed (Joel's working-tree draft + CC revisions). Three BACKLOG entries added for Phase 5 design (path tiering, Sole Prop routing, BYO TCR brand import). D-18 received the first non-supersession contextual annotation in `DECISIONS_ARCHIVE.md` (precedent format: `_Note (YYYY-MM-DD): ..._`). No new D-numbers; Phase 2 Session B kickoff and Phase 5 design will spawn D-numbers from Session 51's findings at design time. Four commits unpushed pending PM approval.*
