@@ -214,3 +214,56 @@ _Captured 2026-04-23._
 _To be drafted after Experiments 3 + 4 land and a registered sender exists. Reuses the webhook receiver from 2a; adds: send a real deliverable message to your phone → reply → capture the resulting MO callback. Likely also captures a success-side delivery-report callback, which complements 2a's failure-side capture._
 
 ### Status: BLOCKED on Experiments 3 + 4.
+
+---
+
+## Experiment 3a — Brand registration submission + timing
+
+**Status:** complete (2026-04-25)
+**Goal:** characterize Sinch's brand registration flow (form fields, state machine, timing, webhook events) and validate the fast-registration claim that anchors MASTER_PLAN §0 customer value #1.
+
+### Procedure
+1. Sign in to dashboard.sinch.com → 10DLC → Brands → Register new brand.
+2. Select Simplified path. Choose entity type `Private Profit`.
+3. Fill Company / Financial / Contact details (full field reference in `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md`).
+4. Submit; observe submission timestamp + Bundle ID assigned.
+5. Watch the dashboard activity feed for `BRAND_IDENTITY_STATUS_UPDATE` webhook events and Brand ID assignment.
+6. Record the approval timestamp, Bundle state transitions, and IdentityStatus values observed during the lifecycle.
+
+### Findings
+_Captured 2026-04-25._
+
+- **Timing:** ~60 seconds end-to-end. Submission 11:20 ET → Bundle state `Approved` 11:21 ET (2026-04-25). Materially better than the "a few days" language in D-215 — but **one** data point on the Simplified path with all-correct inputs; not yet representative. Marketing should not retune copy against a 60s anchor without more samples.
+- **Brand created:** Brand ID `BTTC6XS`, Bundle ID `01kq2jqyhjynvr2wcpp0bbppgr`, registration type Simplified, entity type Private Profit (API enum `PRIVATE`), vertical `TECHNOLOGY` (dashboard label "Information Technology Services").
+- **IdentityStatus observed:** terminal value `VERIFIED` only; intermediate transitions not visible from the dashboard event log. (`IdentityStatus` is TCR-level brand identity; distinct from Sinch's bundle-level lifecycle.)
+- **Bundle state transitions observed:** `In review` → `Approved`. (Sinch's bundle-level lifecycle; distinct from `IdentityStatus`. **Two state-tracking concepts exist at the Sinch level — see `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` §Brand state machine.**)
+- **Webhook event observed:** `BRAND_IDENTITY_STATUS_UPDATE` fired during the lifecycle. Visible from the dashboard activity feed; raw payload not accessible to us through the dashboard UI. Notable: Sinch's API docs say "initial release will not include a webhook service, you will need to poll" — but the webhook fired internally during this run, so **either the docs are stale or webhooks fire to dashboard internally but aren't yet exposed to API consumers**. Confirm with Sinch BDR before Phase 2 Session B kickoff.
+- **Sole Proprietor gap:** API `brandEntityType` enum is exactly `PUBLIC | PRIVATE | CHARITY_NON_PROFIT`. **There is no SOLE_PROPRIETOR option.** This is a real product gap for RelayKit's no-EIN ICP segment (vibe coders, hobbyists, indie devs without an EIN). See BACKLOG entry on Sole Proprietor segment gap.
+- **State machine mismatch:** API exposes 5 brand states (`DRAFT`, `IN_PROGRESS`, `REJECTED`, `APPROVED`, `UPGRADE`); the dashboard shows 7 (adds Queue, Archived). To verify against Sinch API docs before Phase 2 Session B kickoff. (See `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` §Brand state machine.)
+- **Pricing inconsistency:** API docs cite Simplified at $10; dashboard charged $6 for this run. To verify before pricing-model claims become customer-facing.
+- **Vertical enum mapping:** dashboard display labels do not equal API enum values. Observed this run: "Information Technology Services" → `TECHNOLOGY`. Mapping table for all 22 verticals lives in `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md`; remaining 21 entries TBD as future experiments observe them.
+- **HEALTHCARE annotation on D-18:** HEALTHCARE is a valid `brandVerticalType` value at the Sinch API level. **D-18's healthcare decline is a RelayKit policy choice, not a carrier-level constraint.** D-18 annotated this session in `DECISIONS_ARCHIVE.md` with this context.
+- **IRS name change letter:** Joel's IRS name change letter (sent 2026-04-24, the day before this run) was not yet processed by the IRS at submission time, but registration succeeded anyway. Implication for the wizard: legal-name verification may have grace periods or pre-processed cache windows we can't predict; do not assume IRS records update immediately when designing the customer wizard's name-mismatch handling.
+
+### Implications for Phase 2 Session B kickoff:
+1. **Three Sinch API/dashboard inconsistencies to verify before Session B:** the brand state machine (5 vs 7), Simplified pricing ($10 vs $6), and webhook policy (poll-only docs vs internal-fire observed). Each needs PM-side confirmation with Sinch BDR (Elizabeth Garner).
+2. **Webhook signature verification design (already flagged from 2a, reaffirmed here):** if `BRAND_IDENTITY_STATUS_UPDATE` is exposed to API consumers in a future Sinch release, the signature-verification design from Session B's kickoff discussion will need to cover this event-type alongside `delivery_report_sms`.
+
+### Implications for Phase 5 (Registration Pipeline) wizard design:
+1. **Sole Prop ICP segment cannot onboard via Sinch's 10DLC API.** Phase 5 design must decide between TFN routing, secondary carrier for Sole Prop, or removing Sole Prop from ICP. See BACKLOG entry on Sole Prop segment gap.
+2. **Customer registration fee tiering needs design.** $49 covers Simplified margin comfortably; loses money on Full path. See BACKLOG entry on customer brand registration path tiering.
+3. **BYO existing TCR brand import is a real option.** Sinch's UI surfaces an import path; relevant for capturing churned customers from other CSPs. See BACKLOG entry on BYO TCR brand import.
+
+### Status: COMPLETE — captured 2026-04-25.
+
+---
+
+## Experiment 3b — Campaign registration submission + timing
+
+**Status:** BLOCKED on procedure drafting. Approved brand `BTTC6XS` (from 3a) is live and available for campaign submission.
+**Goal:** measure Sinch's campaign-registration submission shape, the IdentityStatus / bundle-level state machine for campaigns, approval timing, and any webhook events fired during the campaign lifecycle. Output is the Phase 5 campaign-submission fixture and confirmation that the fast-registration claim extends to campaign-level approval (registration is only customer-go-live-ready after campaign approval per MASTER_PLAN §9).
+
+### Procedure
+_To be drafted by PM and executed by Joel in a future session. Reuses the brand from 3a; targets a transactional campaign for the Information Technology Services / TECHNOLOGY vertical._
+
+### Status: BLOCKED on procedure drafting.

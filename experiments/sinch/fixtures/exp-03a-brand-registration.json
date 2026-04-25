@@ -1,0 +1,38 @@
+{
+  "submission": {
+    "method": "dashboard",
+    "submitted_at_local": "2026-04-25T11:20:00-04:00",
+    "submitted_at_utc": "2026-04-25T15:20:00Z",
+    "form_data": {
+      "registration_type": "Simplified",
+      "entity_type_dashboard_label": "Private Profit",
+      "entity_type_api_enum": "PRIVATE",
+      "company_name": "VAULTED PRESS LLC",
+      "brand_name": "RelayKit",
+      "vertical_dashboard_label": "Information Technology Services",
+      "vertical_api_enum": "TECHNOLOGY",
+      "country": "United States",
+      "ein_present": true,
+      "address_redacted": "{IRS_ON_FILE_ADDRESS}",
+      "website": "https://relaykit.ai",
+      "contact_redacted": "{CONTACT_DETAILS}"
+    }
+  },
+  "response": {
+    "bundle_id": "01kq2jqyhjynvr2wcpp0bbppgr",
+    "brand_id": "BTTC6XS",
+    "identity_status_observed": ["VERIFIED"],
+    "bundle_state_transitions": ["In review", "Approved"],
+    "approved_at_local": "2026-04-25T11:21:00-04:00",
+    "approved_at_utc": "2026-04-25T15:21:00Z"
+  },
+  "webhook_event": {
+    "type": "BRAND_IDENTITY_STATUS_UPDATE",
+    "observed_via": "dashboard activity feed",
+    "raw_payload_available": false,
+    "note": "Webhook fired internally during this run despite Sinch API docs saying webhooks aren't exposed to API consumers; payload not visible through dashboard UI."
+  },
+  "timing_seconds": 60,
+  "captured_at": "2026-04-25T15:21:00Z",
+  "notes": "Experiment 3a brand-registration leg, captured via Sinch dashboard not API. Two distinct state-tracking concepts captured: identity_status_observed (TCR-level brand identity field, terminal value VERIFIED only) and bundle_state_transitions (Sinch's bundle-level lifecycle, full sequence In review -> Approved). Sole Prop is not a supported brandEntityType in the Sinch 10DLC API enum (PUBLIC | PRIVATE | CHARITY_NON_PROFIT). HEALTHCARE is a valid brandVerticalType at the API level — D-18 healthcare decline is RelayKit policy, not carrier constraint. Three API-vs-dashboard inconsistencies observed: state machine (5 API states vs 7 dashboard states), Simplified pricing ($10 API docs vs $6 dashboard charged), webhook policy (API docs say poll-only but BRAND_IDENTITY_STATUS_UPDATE fired internally). All three flagged for Phase 2 Session B kickoff verification with Sinch BDR. PII redacted with placeholders ({IRS_ON_FILE_ADDRESS}, {CONTACT_DETAILS}); EIN value not stored in fixture. Brand BTTC6XS is live and available for the campaign-registration leg of Experiment 3 (Experiment 3b, BLOCKED on procedure drafting). Joel's IRS name change letter was sent 2026-04-24 and not yet processed at submission time; registration succeeded anyway — implication: legal-name verification may have grace windows in Sinch/TCR's flow."
+}
