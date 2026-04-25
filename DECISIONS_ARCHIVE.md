@@ -101,6 +101,7 @@ _Affects: PRD_06 pending state copy, PRD_09 engagement nudge copy, all email tem
 **D-18 — Healthcare/HIPAA is a hard decline at intake**
 Healthcare and HIPAA-adjacent use cases are declined during intake. No BAA. No PHI routing through the proxy. This is a platform constraint, not a product gap.
 _Affects: PRD_01 use case selection, prohibited business screening_
+_Note (2026-04-25): HEALTHCARE is a valid `brandVerticalType` value in Sinch's 10DLC API; this decline is a RelayKit policy choice, not a carrier-level constraint._
 
 **D-19 — Compliance monitoring is non-optional for all customers**
 Drift detection and inline compliance enforcement apply to all paying customers. There is no opt-out and no paid tier for compliance. Charging separately would create ISV liability without visibility.
