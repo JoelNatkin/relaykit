@@ -36,11 +36,12 @@ Only these two live in project knowledge. Stable for months.
 
 Everything else should be removed from Claude.ai project knowledge.
 
-### Tier 2 — Upload at every new browser chat (3-4 files)
+### Tier 2 — Upload at every new browser chat (4-5 files)
 Joel uploads these every chat start. Muscle memory:
 - `REPO_INDEX.md` — PM's first read, orients the chat
 - `MASTER_PLAN.md` — holistic launch plan, active phase, out-of-scope list
 - `CC_HANDOFF.md` — previous CC session state
+- `PRODUCT_SUMMARY.md` — PM-facing customer experience reference; lets PM reason from product reality, not priors, when the conversation touches customer-facing surfaces
 - `PM_HANDOFF.md` — previous PM chat state (only if rotating)
 
 ### Tier 3 — Upload on demand (everything else)
@@ -645,6 +646,7 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 ## Standing Reminders
 
 - Delete `.next` before building. Every CC prompt involving building should end with: "Stop the dev server, delete `.next`, restart before building." **Doc-only sessions skip this — no dev server touched.**
+— **Use PRODUCT_SUMMARY proactively.** When the conversation touches anything customer-facing — registration, onboarding, intake, workspace, pricing, billing, settings, compliance UX, customer journey — read PRODUCT_SUMMARY first instead of reasoning from priors or carrier-side facts. PRODUCT_SUMMARY is the canonical "what does the product actually do" reference. If a question can't be answered from it, that's a signal either (a) PRODUCT_SUMMARY needs updating to capture the answer, or (b) the question is in legitimately undefined territory and should be flagged as TBD rather than guessed at. Do not invent product behavior, do not extrapolate from carrier-side knowledge, do not pattern-match from past chats — read PRODUCT_SUMMARY.
 - Push after review, not before.
 - Push after every completed build task once PM approves it, and again at session close.
 - Separate large tasks into their own CC sessions.
@@ -655,6 +657,7 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 - User-facing terminology changes do NOT cascade into code. See User-facing vs. Internal Naming.
 - Master plan drift is silent. Check `Master plan last updated` against the date of the most recent substantive decision at session start.
 - Watch for temporal drift in doc language. See Temporal Drift Patterns section.
+- **Try the simplest fix first.** When something breaks or needs diagnosis, default to the single most likely cause and the single command that addresses it. Reach for comprehensive multi-step troubleshooting only after the simple fix fails or when the situation genuinely warrants it (production code, ambiguous symptoms, multiple plausible causes that contradict each other). The same applies to BACKLOG entries, decision drafts, and prompt scopes: match the depth of surrounding precedent unless the substance demands more. "Boiling the ocean" — exhaustive options, defensive coverage, comprehensive diagnostics where one likely answer would do — wastes Joel's time and CC's tokens. Quality-first does not mean comprehensive-first; it means right-first. The shortest correct response is the best correct response.
 
 **Response brevity.** Joel is reviewing and deciding all day — don't make him read more than necessary. Default to the shortest response that answers the question.
 
