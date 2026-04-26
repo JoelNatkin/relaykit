@@ -225,6 +225,9 @@ export default function VerifyPage() {
                 {step === "sending" ? "Sending…" : "Send code"}
               </button>
             </div>
+            <p className="mt-3 text-xs text-text-tertiary leading-snug">
+              We&apos;ll text you a verification code. By verifying, you agree to receive test messages at this number when you trigger them. Standard rates apply. Reply STOP anytime, HELP for help.
+            </p>
           </div>
         )}
 
