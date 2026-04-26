@@ -140,6 +140,9 @@ Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts,
 - State switcher dropdowns are allowed (development tools, not user-facing). Style: `text-quaternary text-xs`, right-aligned
 - Before modifying any screen, read its section in PROTOTYPE_SPEC.md. If code and spec disagree, code wins — flag the discrepancy
 
+## PRODUCT_SUMMARY.md maintenance
+`docs/PRODUCT_SUMMARY.md` is the PM-facing customer-experience reference, intended to be loaded into PM browser-chat contexts. Update it when product behavior changes substantively — new screens, new flows, removed features, changed customer journey, new architectural commitments that affect what the customer sees or does. Do NOT update for copy tweaks, layout adjustments, or implementation refactors (those remain a PROTOTYPE_SPEC.md concern). At session close-out, ask: "did this session change what a customer would experience differently?" If yes, update PRODUCT_SUMMARY.md alongside PROTOTYPE_SPEC.md and bump its "Last reviewed" date. If no, leave it alone. The doc lives at ~500 lines max; if a new substantive change pushes it over, prune lower-value content rather than expand the ceiling.
+
 ## Implementation gotchas
 - Wizard uses sessionStorage key `relaykit_wizard` — preserve in all wizard work (see `prototype/lib/wizard-storage.ts`)
 - sessionStorage reads happen in `useEffect`, not `useState` initializers (SSR hydration)
