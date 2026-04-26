@@ -326,6 +326,59 @@ _Captured 2026-04-26 at submission time. Approval-time findings to be appended o
 
 ---
 
+## Experiment 3c — Brand SIMPLIFIED → FULL upgrade
+
+**Status:** BLOCKED on Experiment 3b approval. Reason: running 3c against brand `BTTC6XS` while 3b is `PENDING_REVIEW` against the same brand may contaminate 3b's approval-timing measurement, and could potentially invalidate or pause 3b mid-review. Run 3c only after 3b transitions to `APPROVED` and TCR Campaign ID is assigned. (Whether upgrade-during-campaign-review breaks the campaign is itself a Phase 5 design question, but worth answering as a separate follow-up experiment, not by accidentally crashing our only approved campaign.)
+
+**Goal:** characterize Sinch's brand upgrade flow from Simplified to Full registration. Output answers five Phase 5 design questions: (1) does the upgrade fee match the rumored $50 / API docs, or is there a third pricing-disclosure inconsistency to add to the four cumulative? (2) does brand `BTTC6XS` retain its ID across upgrade, and do 3a/3b approvals survive? (3) does FULL approval take ~60s like Simplified, or does this leg hit the multi-day timing? (4) what does FULL unlock — higher throughput tiers, additional verticals, Sole Proprietor segment, or other capabilities? (5) is upgrade a form-fill like initial registration, a re-vetting flow with document upload, or something else entirely?
+
+### Procedure
+
+Run on the live RelayKit brand `BTTC6XS`. Eventual RelayKit goal is FULL anyway (higher trust tier, better throughput), so this isn't a throwaway test — it's the real upgrade RelayKit will use. Cost is real ($50 rumored, to verify).
+
+1. **Pre-flight.** Confirm brand `BTTC6XS` is in `APPROVED` state and Bundle `01kq2jqyhjynvr2wcpp0bbppgr` shows terminal `VERIFIED` IdentityStatus (per 3a fixture). Confirm Experiment 3b has reached `APPROVED` state and TCR Campaign ID has been assigned. Capture pre-upgrade snapshot: brand state, bundle state, IdentityStatus, list of campaigns under the brand (should show 3b's approved campaign). Note current account balance.
+
+2. **Find the upgrade path in the dashboard.** Navigate to the brand detail view for `BTTC6XS`. Capture the UI path verbatim (e.g., "10DLC → Brands → BTTC6XS → Upgrade to Full" or whatever Sinch exposes). If no upgrade affordance is visible from the brand view, check Bundle `01kq2jqyhjynvr2wcpp0bbppgr`'s detail view. If still nothing, check the Sinch 10DLC API for an upgrade endpoint and document — finding "no UI path exists for upgrade" is itself a useful capture.
+
+3. **Capture the upgrade form's field deltas.** Open the upgrade form. Note which existing 3a fields are pre-populated (read-only or editable?), and which fields are new beyond what 3a's Simplified form collected. The 3a field reference (`docs/CARRIER_BRAND_REGISTRATION_FIELDS.md`) defines our Simplified baseline; anything FULL adds beyond that is a Phase 5 wizard expansion. Common candidates: incorporation documents, articles of incorporation, EIN verification letter, additional officer/contact details, secondary verification methods. Document each new field with type + whether it appears required.
+
+4. **Capture cost disclosure at every layer.** Note the upgrade fee disclosed at: (a) the upgrade affordance/CTA before clicking through, (b) any pricing disclosure on the form itself, (c) the submission confirmation dialog, (d) post-submission account balance debit. Record all values. If multiple values appear, this is a fifth API/dashboard inconsistency to add to the cumulative four. Match against the rumored $50 figure.
+
+5. **Submit and capture immediate response.** Record the submission timestamp, any dialog shown, balance debit timing, and any registration ID / job ID assigned for the upgrade itself (separate from the original Bundle ID? same? unclear pre-execution).
+
+6. **Watch dashboard activity feed during upgrade lifecycle.** Same channels as 3a: capture any `BRAND_IDENTITY_STATUS_UPDATE` events, any new event types specific to upgrade (e.g., `BRAND_UPGRADE_STATUS_CHANGE`), and the order in which they fire. Webhook receiver at `sinch-webhook-receiver.joelnatkin.workers.dev` is still configured as Default Callback URL — `wrangler tail` to capture any payloads exposed there.
+
+7. **Capture state transitions during upgrade.** Both state-tracking concepts from 3a need re-observation here: does `IdentityStatus` change (e.g., re-enter a non-`VERIFIED` state during re-vetting, then return to `VERIFIED`), and what does Bundle state do? The API enum `UPGRADE` is one of the 5 documented brand states (per `CARRIER_BRAND_REGISTRATION_FIELDS.md` §Brand state machine) — confirm whether the bundle moves into `UPGRADE` during the process, what comes after, and what dashboard label maps to it.
+
+8. **Record approval timestamp and total elapsed time.** Whether ~60s like Simplified or substantially longer, this is a load-bearing data point for the customer-facing "upgrade your account to Full" Phase 5 wizard timing claims.
+
+9. **Post-approval continuity check.** Verify brand `BTTC6XS` ID is unchanged. Verify Bundle `01kq2jqyhjynvr2wcpp0bbppgr` ID is unchanged (or document if a new Bundle is minted). Verify the 3b campaign (TCR Campaign ID assigned at 3b approval) is still `APPROVED` and unaffected. Verify the number-to-campaign association from 3b is preserved.
+
+10. **Capture what FULL unlocks.** With brand now in FULL state, observe the dashboard for: (a) higher throughput tiers visible on existing campaigns, (b) additional use cases / verticals in the campaign-creation flow that weren't available under Simplified, (c) any new affordances or panels not previously visible, (d) whether `brandEntityType` enum gains new values (specifically Sole Proprietor — answers Phase 5's Sole Prop ICP question definitively).
+
+### Expected artifacts
+
+- `experiments/sinch/fixtures/exp-03c-brand-upgrade.json` — schema mirrors 3a's plus upgrade-specific keys: `pre_upgrade_snapshot`, `upgrade_form_field_deltas`, `cost_disclosures` (array of `{layer, value}`), `submission`, `state_transitions`, `webhook_events`, `timing` (submitted_at, approved_at, elapsed_seconds), `post_upgrade_continuity` (brand_id_unchanged, bundle_id_unchanged, campaigns_preserved), `full_unlocks`, `captured_at`, `notes`.
+- Append to `experiments/sinch/experiments-log.md` Experiment 3c section: Findings + Implications-for-Phase-2-Session-B + Implications-for-Phase-5 subsections (these get filled in at execution time, like 1/2a/3a; pre-execution draft is just placeholder per the existing pattern).
+- Update `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` with: any new fields FULL collects, any new `brandEntityType` values exposed, any state-machine clarifications (especially the `UPGRADE` API enum's dashboard label).
+
+### Success criteria
+
+- Cost disclosure captured at all four layers (pre-form, form, dialog, balance debit). Any inconsistency surfaces as a fifth cumulative API/dashboard inconsistency.
+- Brand ID continuity confirmed (yes / no — new brand minted).
+- Bundle ID continuity confirmed (yes / no — new bundle minted).
+- 3b campaign preservation confirmed (still `APPROVED` and unaffected, or some other state).
+- Approval timing measured to second-level precision.
+- Field deltas between Simplified and Full documented exhaustively.
+- `UPGRADE` API state's dashboard mapping confirmed.
+- Sole Proprietor `brandEntityType` answer confirmed (does FULL expose it as an option, or is the absence universal across both tiers).
+
+Pass condition for the experiment as a whole: enough evidence to design Phase 5's "upgrade your registration to Full" customer-facing wizard step end-to-end, including pricing display, field collection, timing claims, and continuity guarantees.
+
+### Status: BLOCKED on Experiment 3b approval (registration ID `01kq5ahkf08v64ymqnxsnme5bg`). Run only after 3b reaches `APPROVED` state and TCR Campaign ID is assigned.
+
+---
+
 ## Experiment 5 — STOP / START / HELP reply handling
 
 **Status:** BLOCKED — requires a delivery-capable sender (approved campaign + associated number). Same gating as Experiment 2b. Should run in the same sitting as 2b, immediately after, since the receiver is already tailing and the deliverable sender is already proven by 2b's step 5.
