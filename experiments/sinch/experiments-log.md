@@ -206,14 +206,37 @@ _Captured 2026-04-23._
 
 ## Experiment 2b — Inbound MO message shape
 
-**Status:** BLOCKED — requires a delivery-capable sender. Unregistered 10DLC traffic from Experiment 1 does not reach the recipient phone, so there is no message to reply to and no inbound MO to capture. Unblocks when Experiments 3 + 4 produce a registered brand + campaign.
+**Status:** BLOCKED — requires a delivery-capable sender (approved campaign + associated number). Unblocks the moment Experiment 3b campaign approves AND number `+12013619609` is associated to the approved campaign (per 3b finding, association is a separate post-approval step, not bundled into form submission).
 
-**Goal:** capture the payload Sinch POSTs to the Service Plan callback URL when a recipient replies (mobile-originated, MO) to a message. This is the Phase 4 inbound-handler contract.
+**Goal:** capture the payload Sinch POSTs to the Service Plan callback URL when a recipient replies (mobile-originated, MO) to a message sent from a registered, deliverable RelayKit campaign. This is the Phase 4 inbound-handler contract — the exact wire shape the production receiver must dispatch on.
 
 ### Procedure
-_To be drafted after Experiments 3 + 4 land and a registered sender exists. Reuses the webhook receiver from 2a; adds: send a real deliverable message to your phone → reply → capture the resulting MO callback. Likely also captures a success-side delivery-report callback, which complements 2a's failure-side capture._
+1. **Pre-flight.** Confirm campaign `01kq5ahkf08v64ymqnxsnme5bg` (or successor TCR Campaign ID) is in `APPROVED` state in the Sinch dashboard. Confirm number `+12013619609` appears in the campaign's "Numbers" section (i.e., association completed). If association has not happened automatically post-approval, perform it via the dashboard and capture the UI path + any visible request/response (this is currently un-documented — log whatever the dashboard exposes).
+2. **Confirm Service Plan callback URL.** Sinch dashboard → Service Plan → callback URL should still point at `https://sinch-webhook-receiver.joelnatkin.workers.dev` (per Session 49 scaffold). If not, restore.
+3. **Start the webhook receiver tail.** From a terminal: `wrangler tail --format pretty` against the deployed worker. Leave running.
+4. **Send a deliverable test message.** Issue an outbound SMS via the Sinch XMS API (same shape as Experiment 1's `exp-01-outbound.json` request body, swapping in the now-registered service plan/number). Send the literal body `Phase 1 Experiment 2b — please reply with any text`. Capture the API request + response (status, latency, body).
+5. **Confirm delivery on Joel's phone.** Wait up to 30 seconds. If the message does not arrive, the campaign is not actually delivery-capable yet — stop, document the failure mode, do not proceed.
+6. **Capture the success-path delivery-report callback.** The webhook receiver should fire with a `delivery_report_sms` payload for the outbound. Record the full payload (this complements Experiment 2a's failure-side capture with a success-side fixture for Phase 2 test coverage).
+7. **Reply from Joel's phone.** Send back a short plain-text reply: `MO test reply 2b — body capture`. (Avoid keywords STOP/START/HELP — those are Experiment 5's territory.)
+8. **Capture the MO callback.** The webhook receiver should fire again with what is presumed to be a `mobile_originated` payload (or whatever discriminator value Sinch actually uses — the type field's MO value is itself one of the things this experiment establishes). Record the full payload.
+9. **Repeat once with a longer body.** Send a second outbound, reply with a multi-segment-length body (e.g., 200+ characters with punctuation), capture the resulting MO payload. Establishes whether multi-segment MO arrives as one callback or N callbacks, and whether the body field is concatenated or split.
+10. **Capture timing.** Note elapsed seconds between Joel's tap-send on the reply and the callback hitting the worker (rough — `wrangler tail` timestamps suffice). Phase 4 latency budgets depend on this order of magnitude.
 
-### Status: BLOCKED on Experiments 3 + 4.
+### Expected artifacts
+- `experiments/sinch/fixtures/exp-02b-mo-inbound.json` — bidirectional fixture mirroring 2a's schema. Top-level keys: `outbound_send` (api_request + api_response from step 4), `delivery_report_callback` (from step 6 — success-side complement to 2a), `mo_callback` (from step 8), `mo_callback_long_body` (from step 9), `timing` (send→delivery-report and reply→MO deltas), `captured_at`, `notes`.
+- Append to this file's Experiment 2b section: full Findings + Implications subsections.
+- Existing webhook receiver code (`experiments/sinch/webhook-receiver/`) requires no changes — it already logs all POSTs uniformly.
+
+### Success criteria
+- MO callback received and captured for at least one short-body and one long-body reply.
+- Top-level type discriminator value documented (e.g., `mobile_originated`, `mo_text`, or whatever Sinch emits — confirms or invalidates the assumption in Experiment 2a's "reserve other values" finding).
+- Body field shape documented (key name, encoding, segment behavior on long bodies).
+- Sender/recipient field shapes documented (E.164 format? bare digits? prefixed?).
+- Outbound message correlation key identified — what field on the MO payload, if any, ties it back to the original outbound that was replied to (message_id, conversation_id, thread, or none — affects Phase 4 dispatch logic).
+- Signature/HMAC header present-or-absent confirmed (Experiment 2a found none on delivery reports — does the same hold for MO?).
+- Success-side delivery-report callback shape captured to complement 2a's failure-side capture.
+
+### Status: BLOCKED on 3b approval + number-to-campaign association completion (registration ID `01kq5ahkf08v64ymqnxsnme5bg`).
 
 ---
 
@@ -300,3 +323,57 @@ _Captured 2026-04-26 at submission time. Approval-time findings to be appended o
 3. **Number-to-campaign association is a post-approval step.** Wizard UX for the "your campaign is approved, now pick a number" moment needs to be designed — the customer can't pick a number until the campaign approves.
 
 ### Status: SUBMITTED — awaiting approval. Registration ID `01kq5ahkf08v64ymqnxsnme5bg`.
+
+---
+
+## Experiment 5 — STOP / START / HELP reply handling
+
+**Status:** BLOCKED — requires a delivery-capable sender (approved campaign + associated number). Same gating as Experiment 2b. Should run in the same sitting as 2b, immediately after, since the receiver is already tailing and the deliverable sender is already proven by 2b's step 5.
+
+**Goal:** determine whether Sinch auto-handles 10DLC carrier-required reply keywords (STOP, START, HELP) at the carrier or platform layer, or whether RelayKit must implement parsing, ledger management, and outbound suppression itself. Outcome decides the scope of Phase 4's inbound consent-handling logic — minimal (Sinch handles; we update our ledger from notifications) versus full (we parse keywords, manage opt-out state, block subsequent sends).
+
+### Procedure
+Run only after Experiment 2b has confirmed the deliverable sender works and the basic MO payload shape is captured. The receiver should already be tailing.
+
+**Part A — STOP behavior:**
+
+1. **Send a fresh outbound** with body `Phase 1 Experiment 5A — keyword test, reply STOP`. Capture send-path request/response.
+2. **Reply STOP** from Joel's phone (uppercase, no punctuation — the canonical form).
+3. **Observe receiver.** Capture: any MO callback fired (presumably with body `STOP`), any system-generated callback type (e.g., a distinct `opt_out` or `subscription_change` event type), any auto-reply outbound that Sinch issued without our involvement (visible as either an additional callback we don't recognize or simply by Joel's phone receiving a confirmation SMS — note both).
+4. **Joel notes any auto-reply text** received on his phone (verbatim — this is carrier-mandated copy and useful Phase 4 reference for what NOT to duplicate).
+5. **Wait 60 seconds, then attempt a follow-up outbound** to the same number with body `Phase 1 Experiment 5A — follow-up after STOP`. Capture: API response status (does Sinch reject it pre-send with an error? accept it but silently drop carrier-side? accept and deliver?), any error code/body, whether Joel's phone receives the message.
+
+**Part B — START behavior:**
+
+6. **Reply START** from Joel's phone.
+7. **Observe receiver** for any MO callback / opt-in event / auto-reply (capture verbatim if Sinch emits one).
+8. **Wait 60 seconds, then send a fresh outbound** with body `Phase 1 Experiment 5B — re-opt-in confirmed`. Capture: API response, delivery to Joel's phone, delivery-report callback type and body.
+
+**Part C — HELP behavior:**
+
+9. **Send a fresh outbound** with body `Phase 1 Experiment 5C — help keyword test`. Capture send-path response.
+10. **Reply HELP** from Joel's phone.
+11. **Observe receiver** for the MO callback (presumably body `HELP`) plus any system-generated event or auto-reply Sinch issues.
+12. **Joel notes any auto-reply text** received verbatim. HELP responses are carrier-mandated and typically include sender identification + opt-out instructions — this captures whether Sinch's default response satisfies that requirement or whether we'd need to author our own.
+
+**Part D — case and variant sensitivity (one round, time-permitting):**
+
+13. **Send another outbound.** Reply with `stop` (lowercase). Observe whether it triggers the same opt-out flow or is treated as a regular MO body. Same for `Stop`, ` STOP ` (with surrounding whitespace), `STOP NOW`. Capture per-variant behavior — is Sinch matching strict-uppercase-exact, case-insensitive-exact, contains, or token-match? This determines what RelayKit's parser (if needed at all) must handle.
+
+### Expected artifacts
+- `experiments/sinch/fixtures/exp-05-keyword-handling.json` — single fixture with sub-objects per part: `part_a_stop` (outbound send + MO callback + any opt-out event + follow-up outbound result), `part_b_start` (MO callback + post-START outbound result), `part_c_help` (outbound + MO callback + auto-reply text), `part_d_variants` (array of `{variant, mo_payload, blocked_status}`), `auto_replies_received_on_phone` (array of any system-issued auto-reply texts captured by Joel), `captured_at`, `notes`.
+- Append to this file's Experiment 5 section: Findings + Implications subsections.
+- No webhook receiver changes.
+
+### Success criteria
+For each of STOP, START, HELP, the experiment must produce a clear answer to:
+
+- **Does Sinch surface the keyword to us via webhook?** (yes / no / yes-but-as-distinct-event-type)
+- **Does Sinch auto-block subsequent outbound sends to that recipient post-STOP?** (API rejects pre-send / accepts then silently drops / no blocking)
+- **Does Sinch issue a carrier-required auto-reply automatically?** (yes — capture verbatim text / no — RelayKit must)
+- **Does case sensitivity / surrounding text matter?** (strict / lenient / unclear)
+- **What's the canonical event-type discriminator (if any) for opt-out / opt-in events?** (lets Phase 4 dispatcher branch on event type, not parsed body)
+
+Pass condition for the experiment as a whole: enough evidence to make the Phase 4 design decision between "thin consent layer (ledger updates from Sinch notifications)" and "thick consent layer (full keyword parsing + state management + outbound suppression)" without further investigation.
+
+### Status: BLOCKED on 3b approval + number-to-campaign association completion (registration ID `01kq5ahkf08v64ymqnxsnme5bg`).
