@@ -1,0 +1,56 @@
+{
+  "submission": {
+    "method": "dashboard",
+    "submitted_at_local": "2026-04-26T12:39:00-04:00",
+    "submitted_at_utc": "2026-04-26T16:39:00Z",
+    "form_data": {
+      "brand_id": "BTTC6XS",
+      "use_case": "LOW_VOLUME",
+      "use_case_dashboard_label": "Low Volume Mixed",
+      "sub_use_cases": ["2FA", "Account Notification", "Customer Care", "Delivery Notification"],
+      "description": "{captured_in_dashboard}",
+      "samples": ["{captured_in_dashboard}"],
+      "opt_in_documentation_url": "{captured_in_dashboard}",
+      "help_message": "{captured_in_dashboard}",
+      "stop_message": "{captured_in_dashboard}",
+      "start_message": "{captured_in_dashboard}",
+      "call_to_action": "{captured_in_dashboard — review screen showed `PP:` prefix concatenated, artifact-or-merge TBD}",
+      "terms_and_conditions_link": "{captured_in_dashboard}",
+      "terms_and_conditions_body": "{captured_in_dashboard — populated alongside link, belt-and-suspenders}",
+      "privacy_policy_link": "{captured_in_dashboard}",
+      "privacy_policy_body": "{captured_in_dashboard — populated alongside link, belt-and-suspenders}",
+      "additional_comments": "{captured_in_dashboard}",
+      "embedded_link_toggle": "{captured_in_dashboard}",
+      "embedded_phone_toggle": "{captured_in_dashboard}",
+      "supporting_documentation_uploaded": false,
+      "supporting_documentation_skip_allowed": true,
+      "number_selected_in_form": "+12013619609",
+      "number_associated_at_submission": false
+    }
+  },
+  "response": {
+    "registration_id": "01kq5ahkf08v64ymqnxsnme5bg",
+    "tcr_campaign_id": null,
+    "status": "PENDING_REVIEW",
+    "created_at": "2026-04-26T16:39:00Z",
+    "account_id": "[redacted]",
+    "project_id": "[redacted]",
+    "monthly_fee_displayed": "$0",
+    "monthly_fee_disclosure_step3": "$1.50/mo with 3-month minimum",
+    "monthly_fee_submission_dialog": "$1.50 recurring",
+    "balance_at_submission": "$87.97",
+    "balance_unchanged_post_submit": true,
+    "throughput_disclosed": {
+      "att_msg_per_min": 75,
+      "tmobile_msg_per_day_brand_shared": 2000
+    }
+  },
+  "webhook_events": [],
+  "timing": {
+    "submitted_at": "2026-04-26T16:39:00Z",
+    "approved_at": null,
+    "elapsed_seconds": null
+  },
+  "captured_at": "2026-04-26T16:39:00Z",
+  "notes": "Experiment 3b campaign-registration leg, submission-time capture only. Approval-time data (TCR Campaign ID assignment, status transitions, monthly fee debit timing, number-to-campaign association mechanics, Operator Status population for T-Mo tier + AT&T msg class) to be appended on status change — no approval webhooks observed at submission time. Brand `BTTC6XS` reused from 3a (no second brand registration). Use case LOW_VOLUME chosen with four sub use cases — Sinch's ~22-use-case taxonomy does not map 1:1 to RelayKit's 8 verticals; Phase 5 mapping design is BACKLOG-tracked. Five UX findings recorded in experiments-log.md §Submission UX findings: (1) Supporting Documentation Upload step accepts skip without skip affordance; (2) Privacy/Terms link AND body fields populated together (belt-and-suspenders pattern); (3) `PP:` string appeared concatenated in CTA on review screen — display artifact vs server-side field merge unclear, flagged for post-approval verification; (4) Brand `BTTC6XS` displayed as both Brand Name and Brand ID in campaign detail (cosmetic only); (5) Sinch dashboard exposes ~22 use cases vs RelayKit's 8 verticals — mapping question surfaced. Monthly fee disclosure inconsistency adds a fourth Sinch API/dashboard inconsistency for Session B kickoff verification with BDR (joining brand state machine 5-vs-7, Simplified pricing $10-vs-$6, webhook policy poll-vs-fire from 3a). Submitter contact email redacted ([redacted] in account_id / project_id). Number `+12013619609` was selected in the campaign form but campaign detail post-submission shows 'No Numbers' — number-to-campaign association apparently happens post-approval as a separate step, not at form submission. Form-text fields (description, samples, T&C/Privacy link+body, opt-in doc URL, help/start/stop messages, CTA, additional comments, embedded toggles) marked `{captured_in_dashboard}` rather than transcribed verbatim — schema records the field shape; values live in the Sinch dashboard until approval-time review."
+}

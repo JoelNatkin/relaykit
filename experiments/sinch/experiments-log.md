@@ -260,10 +260,43 @@ _Captured 2026-04-25._
 
 ## Experiment 3b — Campaign registration submission + timing
 
-**Status:** BLOCKED on procedure drafting. Approved brand `BTTC6XS` (from 3a) is live and available for campaign submission.
+**Status:** SUBMITTED — awaiting approval (2026-04-26 12:39 ET).
 **Goal:** measure Sinch's campaign-registration submission shape, the IdentityStatus / bundle-level state machine for campaigns, approval timing, and any webhook events fired during the campaign lifecycle. Output is the Phase 5 campaign-submission fixture and confirmation that the fast-registration claim extends to campaign-level approval (registration is only customer-go-live-ready after campaign approval per MASTER_PLAN §9).
 
 ### Procedure
-_To be drafted by PM and executed by Joel in a future session. Reuses the brand from 3a; targets a transactional campaign for the Information Technology Services / TECHNOLOGY vertical._
+1. Sign in to dashboard.sinch.com → 10DLC → Campaigns → Register new campaign.
+2. Select brand `BTTC6XS` (RelayKit, approved via 3a).
+3. Choose use case `LOW_VOLUME` (Low Volume Mixed) and four sub use cases: `2FA`, `Account Notification`, `Customer Care`, `Delivery Notification`.
+4. Fill description, sample messages, opt-in flow documentation, embedded link/phone toggles, CTA, T&C link + body, Privacy link + body, additional comments. Skip the optional `Supporting Documentation Upload` step (skip affordance not displayed on the step but allowed at submit).
+5. Select a number to associate (`+12013619609`); note: number selected in form but campaign detail post-submission shows "No Numbers" — association is a separate post-approval step.
+6. Submit; observe registration ID assigned, status (`PENDING_REVIEW` or equivalent), and dashboard balance debit (or absence thereof).
+7. Watch the dashboard activity feed for any `CAMPAIGN_*` webhook events and TCR Campaign ID assignment.
+8. Record approval timestamp, status transitions, monthly-fee debit timing, throughput tier population.
 
-### Status: BLOCKED on procedure drafting.
+### Findings
+_Captured 2026-04-26 at submission time. Approval-time findings to be appended on status change._
+
+- **Submission timing:** 2026-04-26 12:39 ET (16:39 UTC). Registration ID `01kq5ahkf08v64ymqnxsnme5bg` assigned at submission. TCR Campaign ID **not yet assigned** at submission time (`-` in dashboard).
+- **Use case taxonomy:** `LOW_VOLUME` (Low Volume Mixed) — chose this over a single-use-case standard tier for the test campaign. Four sub use cases declared: `2FA`, `Account Notification`, `Customer Care`, `Delivery Notification`. Sinch's use-case taxonomy (~22 options at the dashboard level) does not map 1:1 to RelayKit's 8-vertical product taxonomy — see BACKLOG entry on RelayKit vertical-to-Sinch-use-case mapping.
+- **Brand reuse:** Brand `BTTC6XS` (from 3a) used; no second brand registration needed. Brand displayed as both Brand Name and Brand ID in the campaign detail view (cosmetic redundancy, not a data issue).
+- **Number selection vs association:** number `+12013619609` selected in the campaign form, but campaign detail post-submission shows "No Numbers" — number-to-campaign association is apparently a separate step that happens post-approval, not at form submission. To confirm on approval.
+- **Monthly fee disclosure inconsistency:** Step 3 disclosure stated `$1.50/mo with 3-month minimum`; submission confirmation dialog stated `$1.50 recurring`; campaign detail post-submission shows **Monthly Fee: $0**. Three different values across the same flow. Account balance unchanged at $87.97 immediately post-submission (no debit observed). Likely the monthly fee debit triggers at approval, not submission — to confirm. Adds a fourth API/dashboard inconsistency for Session B kickoff verification with Sinch BDR.
+- **Throughput tier disclosed:** AT&T `75 msg/min` (campaign-level); T-Mobile `2,000/day` (brand-level shared across all campaigns under the brand). Per-carrier throughput class is disclosed at submission time, not just at approval.
+- **Submission UX findings:**
+  - **Skip-allowed without skip affordance.** "Supporting Documentation Upload" step had no skip button or "skip optional step" affordance, but the form accepted submission with the section empty. Discoverable only by trying.
+  - **Belt-and-suspenders Privacy/Terms.** Both link AND body fields for Privacy and Terms&Conditions populated separately. Sinch may use the link as the canonical reference and body as on-file backup, or vice versa, or both — not documented.
+  - **`PP:` string in CTA display.** Review screen showed the Call-to-Action display field with `PP:` concatenated as a prefix. Unclear whether this is a display-layer artifact or an actual field merge happening server-side at submission. Flagged for verification post-approval.
+  - **Brand displayed twice in campaign detail.** `BTTC6XS` shown as both Brand Name and Brand ID — cosmetic-only, no data issue.
+  - **Sinch use cases (~22) vs RelayKit verticals (8) mismatch.** Translation table between Sinch's taxonomy and RelayKit's product taxonomy needs to be designed in Phase 5 (BACKLOG-tracked).
+
+### Implications for Phase 2 Session B kickoff:
+1. **Four Sinch API/dashboard inconsistencies now open** (was three after 3a; 3b adds the monthly-fee disclosure inconsistency). Each needs PM-side confirmation with Sinch BDR (Elizabeth Garner) before Session B kickoff.
+2. **Webhook signature verification design (still open from 2a).** No `CAMPAIGN_*` webhooks observed at submission; if exposed at approval, they need to be on the same verification layer as `delivery_report_sms` and `BRAND_IDENTITY_STATUS_UPDATE`.
+3. **Monthly-fee debit timing unknown.** $0 displayed monthly fee with $87.97 unchanged balance suggests fee triggers at approval, not submission — affects Phase 5 customer-billing event modeling.
+
+### Implications for Phase 5 (Registration Pipeline) wizard design:
+1. **RelayKit vertical → Sinch use case mapping is a real Phase 5 design task.** Sinch's ~22 use cases include some RelayKit doesn't currently expose (Charity, Higher Ed, K-12) and some likely out-of-scope for ICP (Political, Sweepstake, Polling, Fraud Alert). See BACKLOG entry.
+2. **Customer registration form is due for a design round.** Field-by-field reality from 3a + 3b reveals what Sinch actually wants vs what the current `/apps/[appId]/register` form captures. See BACKLOG entry.
+3. **Number-to-campaign association is a post-approval step.** Wizard UX for the "your campaign is approved, now pick a number" moment needs to be designed — the customer can't pick a number until the campaign approves.
+
+### Status: SUBMITTED — awaiting approval. Registration ID `01kq5ahkf08v64ymqnxsnme5bg`.
