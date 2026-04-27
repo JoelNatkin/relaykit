@@ -30,17 +30,19 @@ That is the whole thesis. Every phase of this plan serves it. If a phase stops s
 
 ---
 
-## 1. The State of Things (April 20, 2026)
+## 1. The State of Things (April 27, 2026)
 
-Here is a picture of where we actually stand, as of the Session 37 audit (archived Session 42).
+Here is a picture of where we actually stand, mid-Phase 1, against this plan at v1.2.
 
-There is more built than the documentation admits. The SDK — the npm package that developers will install — is essentially done. It's a complete TypeScript library with eight vertical namespaces (appointments, orders, verification, support, marketing, internal, community, waitlist), around thirty methods, dual-published, with tests, packed and ready to ship to npm. The message-authoring prototype — the UI developers will use to preview and customize their messages — is in good shape, with the appointments vertical working end-to-end. A new backend called `/api` has begun, built on clean modern foundations (Hono framework, strict TypeScript, 98 passing tests), and the first part of the message pipeline (Session A) is complete.
+There is more built than the documentation admits. The SDK — the npm package that developers will install — is essentially done. It's a complete TypeScript library with eight vertical namespaces (appointments, orders, verification, support, marketing, internal, community, waitlist), around thirty methods, dual-published, with tests, packed at v0.1.0 and ready to ship to npm. The message-authoring prototype — the UI developers will use to preview and customize their messages — is in good shape, with the appointments vertical working end-to-end. A new backend called `/api` has begun, built on clean modern foundations (Hono framework, strict TypeScript, passing tests), and the first part of the message pipeline (Session A) is complete. Session B (real Sinch outbound + delivery-report callbacks) has not started yet, but most of its gating Phase 1 findings have now landed.
 
-There are also real gaps. `/api` cannot actually send a text message yet — the "call Sinch" step is a placeholder that just writes to a log. `/api` isn't deployed anywhere. The SDK isn't published to npm yet, just packed as a file. Only the Appointments vertical works end-to-end in the prototype — every other vertical has its data defined but the wizard doesn't hand off correctly to the workspace. There's no AGENTS.md, no SDK README, no cursor rules committed. The compliance site at msgverified.com doesn't exist yet. Email delivery through Resend isn't wired up.
+Phase 1 — the Sinch proving ground — is the active phase, and it is producing real evidence. Experiments 1 (send one SMS), 1b (delivery report rejection), 2a (delivery-report callback shape), and 3a (brand registration submission + timing) are complete. Experiment 3b (campaign registration submission + timing) was submitted to Sinch on 2026-04-26 (registration ID `01kq5ahkf08v64ymqnxsnme5bg`) and is currently `PENDING_REVIEW`. Experiments 2b (inbound MO message shape), 3c (Simplified→Full brand upgrade), and 4 (STOP/START/HELP reply handling — renumbered from old Experiment 5 in the v1.2 amendment) have full procedures drafted but are BLOCKED on 3b approval. Concrete findings already in hand: unregistered 10DLC traffic silently drops at the carrier despite a 201 from Sinch (Exp 1), delivery reports arrive on a Sinch-hosted webhook in ~1.7 s and carry no signature header (Exp 2a), and the brand-registration field surface plus the 5-API-state vs 7-dashboard-state mismatch are now characterized for Phase 5 (Exp 3a).
 
-And there is a large piece of technical debt. The original RelayKit production app, built on Twilio, still exists in a directory called `/src`. It has real working code for things the new backend doesn't cover yet — carrier registration, inbound message handling, Stripe billing integration, the dashboard. We've decided to sunset `/src` rather than preserve or federate it, because keeping Twilio-era code alive would compromise the Sinch-driven fast-registration promise that is central to RelayKit's positioning. Rebuilding these capabilities on `/api` with Sinch is the path forward.
+There are still real gaps. `/api` cannot actually send a text message yet — the "call Sinch" step remains a placeholder until Phase 2 Session B kicks off; that kickoff is now unblocked on the experiments side, gated on a few open enum-semantics + signature-verification design decisions. `/api` isn't deployed anywhere. The SDK isn't published to npm yet. Only the Appointments vertical works end-to-end in the prototype — every other vertical has its data defined but the wizard doesn't hand off correctly to the workspace (Phase 6 work). There's no AGENTS.md, no SDK README, no cursor rules committed (Phase 8). The compliance site at msgverified.com doesn't exist yet. Email delivery through Resend isn't wired up.
 
-Nothing is on fire. The foundation is solid. The work ahead is well-defined but substantial, and the discipline of proving things work before building on top of them is what will make this successful.
+The technical-debt story is unchanged in shape but has hardened in form. The original RelayKit production app, built on Twilio, still exists in a directory called `/src`, and the decision to sunset rather than preserve or federate it is now formally recorded as D-358. The `/src` capability-to-phase rebuild map lives in SRC_SUNSET.md; `/src` itself has been frozen since Phase 0 closed and will stay frozen while Phases 2–5 rebuild its capabilities on `/api` with Sinch.
+
+Nothing is on fire. The foundation is solid. Phase 1 is producing the evidence Phase 2+ depends on, on the elapsed-time cadence the plan budgeted for, and the discipline of proving things work before building on top of them is what will make this successful.
 
 ---
 
@@ -128,7 +130,7 @@ Joel is PM's hands for this phase. PM writes each experiment's procedure, what t
 
 **The four experiments:**
 
-1. **Provision a phone number and send one SMS.** Simplest possible test. Proves the Sinch account works, proves the outbound API shape, produces a real response payload we can use as test fixture for Phase 2. Joel's phone receives the message; we keep the screenshot.
+1. **Provision a phone number and send one SMS.** Simplest possible test. Proves the Sinch account works, proves the outbound API shape, produces a real response payload we can use as test fixture for Phase 2. Findings (recorded): Sinch returned a 201 with a ULID `carrier_message_id` and ~240 ms ack latency, but Joel's phone never received the message — unregistered 10DLC traffic silently drops at the carrier despite the success response at the API layer. This is the load-bearing finding behind Phase 2's delivery-report callback requirement (a 201 cannot be trusted as evidence of delivery).
 
 2. **Configure webhook receiver, capture callback payloads.** Two parts: 2a captures the delivery-report callback shape (runnable now; Phase 2 depends on this to distinguish "submitted to Sinch" from "delivered" after Experiment 1's silent-drop finding). 2b captures the mobile-originated reply payload (Phase 4 contract; blocked on Experiment 3 since unregistered traffic can't be replied to).
 
@@ -233,7 +235,7 @@ Delivery-report callbacks — those ship in Phase 2. Building the webhook receiv
 
 ## 9. Phase 5 — Registration Pipeline on Sinch
 
-This is the phase that delivers the fast-registration promise. Today's `/src` has a Twilio registration pipeline — it submits a brand to Twilio's Trust Hub, submits a campaign to The Campaign Registry, polls for approval, transitions the customer's registration state, and surfaces the result in the UI. Phase 5 rebuilds this entirely on Sinch, using the real Sinch registration APIs (shape captured in Phase 1 Experiments 3 and 4).
+This is the phase that delivers the fast-registration promise. Today's `/src` has a Twilio registration pipeline — it submits a brand to Twilio's Trust Hub, submits a campaign to The Campaign Registry, polls for approval, transitions the customer's registration state, and surfaces the result in the UI. Phase 5 rebuilds this entirely on Sinch, using the real Sinch registration APIs (shape captured in Phase 1 Experiment 3, sub-experiments 3a/3b/3c).
 
 The UI for registration already exists in the prototype — it's a well-designed flow with onboarding, building, pending, extended-review, registered, and rejected states. Phase 5's job is to wire that UI to real Sinch submissions and real state transitions, not to redesign the UI.
 
@@ -465,4 +467,4 @@ Everything else waits its turn.
 
 ---
 
-*End of master plan v1.0*
+*End of master plan v1.2*
