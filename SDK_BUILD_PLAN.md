@@ -17,20 +17,20 @@
 | Package structure (`/sdk/src/namespaces/`, consent, types) | **Shipped** |
 | 8 namespaces × 30 methods | **Shipped** |
 | Top-level consent (`recordConsent`, `checkConsent`, `revokeConsent`) | **Shipped** |
-| Test suite | **Shipped** (235 lines, single file — see §3d) |
+| Test suite | **Shipped** (235 lines, single file — see §2d) |
 | Local validation (`npm pack` → `relaykit-0.1.0.tgz`) | **Shipped** |
 | npm publish | **Pending — Phase 8** |
-| README | **Pending — Phase 8** (spec in §5b) |
-| AGENTS.md template | **Pending — Phase 8** (spec in §5c) |
-| Integration prompt | **Drafted below** (§5d); finalize before first marketing use |
-| Module pattern (starter-kit wrapper) | **Specified** (§6); ships with Phase 9 starter-kit integration |
+| README | **Pending — Phase 8** (spec in §4b) |
+| AGENTS.md template | **Pending — Phase 8** (spec in §4c) |
+| Integration prompt | **Drafted below** (§4d); finalize before first marketing use |
+| Module pattern (starter-kit wrapper) | **Specified** (§5); ships with Phase 9 starter-kit integration |
 | `rk_sandbox_` → `rk_test_` sweep | **Complete** — Phase 0 Group E applied 2026-04-21; SDK side already used `rk_test_` |
 
 ---
 
 ## 1. Preamble
 
-This document was originally a forward-looking build plan written before the SDK existed. The SDK now exists — `relaykit@0.1.0`, packed to `relaykit-0.1.0.tgz`, tested, not yet published — so the document has been rewritten as retrospective-plus-forward. §2–§4 describe what shipped and the decisions that shape it; §5 scopes Phase 8 delivery; §6 describes the starter-kit pattern that lands in Phase 9.
+This document was originally a forward-looking build plan written before the SDK existed. The SDK now exists — `relaykit@0.1.0`, packed to `relaykit-0.1.0.tgz`, tested, not yet published — so the document has been rewritten as retrospective-plus-forward. §2–§3 describe what shipped and the decisions that shape it; §4 scopes Phase 8 delivery; §5 describes the starter-kit pattern that lands in Phase 9.
 
 Nothing in this rewrite changes shipped code. One new decision, **D-362 (2026-04-21)**, pins the `SendResult` shape that ships in v0.1.0 as canonical so documentation, README examples, and `/api` response contracts all resolve to one structure going forward.
 
