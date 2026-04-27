@@ -1276,17 +1276,20 @@ Mechanically: the user can place the cursor before or after a token, select it a
 Reason: visibility and protection are separate problems. Purple color alone solves visibility — the edit mode just needs to inherit the treatment already used in preview. Protection is the real risk: date and time are per-recipient variables, and the current textarea lets a user silently turn "Mar 15, 2026" into literal text that sends to every recipient regardless of their actual appointment. Atomic tokens prevent that class of error without introducing a heavier UI.
 
 Implementation requires a contentEditable editor (Tiptap, Lexical, or Slate). Library choice is a separate decision CC makes when this task becomes active.
+**Supersedes:** none
 
 **D-351 — Custom message delivery: generic SDK method with slug, plus manual Quick Send** (Date: 2026-04-17, revised 2026-04-18)
 Custom messages created in the workspace get a stable, immutable slug at creation time. Each namespace exposes one generic SDK method — `relaykit.appointments.sendCustom(slug, { to, data })` and equivalents per namespace — that the developer (or their AI tool) wires into their app the same way they wire built-in methods like `sendConfirmation`. The developer supplies recipient phone numbers from their own customer database; RelayKit's server uses the slug to look up the user-authored template and composes the message at send time.
 Manual Quick Send to verified Testers also works for custom messages, for previewing or one-off sends.
 Reason: custom messages need to reach real customers to be useful. A salon owner creating a "Holiday hours" announcement needs to send it to their actual customer list, not their 5 verified Testers. The generic-method-with-slug pattern delivers this without per-message SDK regeneration or code generation pipelines. Slug-to-template routing is server-side; the SDK stays statically declared (D-330 preserved).
+**Supersedes:** none
 
 **D-352 — Custom messages classified by content at authoring time, not user self-selection** (Date: 2026-04-17)
 
 When a user creates or edits a custom message, the system classifies it as transactional or marketing based on real-time content analysis at authoring time. The user does not self-classify. If marketing-class content is detected and the user does not have marketing messages enabled, Save is blocked with a clear explanation and a path to add marketing.
 
 Reason: matches the existing principle that compliance enforcement collapses to authoring time (no non-compliant message can reach production). Asking users to self-classify invites mistakes and bad classifications that carriers would later reject. The system is already doing real-time compliance checking — campaign-class classification is the same primitive.
+**Supersedes:** none
 
 **D-353 — Variable insertion affordance in all message edit states** (Date: 2026-04-17)
 
@@ -1295,6 +1298,7 @@ Every message edit state (built-in and custom) includes a variable insertion aff
 Variable scope is method-specific: each SDK method's `data` shape determines what's insertable for that message type. `sendConfirmation` exposes name/date/time/business; `sendReminder` adds time-until. For custom messages, the available variable set defaults to the intersection of variables shared across all methods in the parent namespace.
 
 Reason: D-350 prevents corruption of variables already in the editor, but a user still needs a way to ADD them — without an insert affordance, the only way to get a variable into a custom message is copy-paste. For built-in edits, the affordance also enables recovery: a user who deletes a variable then reconsiders can re-insert without abandoning their other edits via Restore. Method-specific scope matches the per-method data shape declared in the SDK and avoids the failure mode where a user inserts a variable the SDK call won't actually populate at send time.
+**Supersedes:** none
 
 **D-354 — Tiptap v3 chosen for message editor** (Date: 2026-04-18)
 
@@ -1303,6 +1307,7 @@ Tiptap v3 is the contentEditable library for the message editor (per D-350's req
 Dependencies added: `@tiptap/core`, `@tiptap/pm`, `@tiptap/react`, `@tiptap/extension-document`, `@tiptap/extension-paragraph`, `@tiptap/extension-text` (all v3.x). No `StarterKit` — SMS messages don't need headings, lists, or marks, so we wire only the three base nodes plus our custom `VariableNode`.
 
 Design doc: `docs/superpowers/specs/2026-04-17-message-editor-tiptap-design.md`.
+**Supersedes:** none
 
 **D-355 — Variable grammar: canonical base form + context-aware rendering** (Date: 2026-04-18)
 
@@ -1321,6 +1326,7 @@ Migration: Existing state.serviceType values normalize to canonical form. Templa
 Why not multiple stored forms per variable: Multiplies authoring surface and invites drift. Pushes grammatical choices onto every author instead of centralizing them in the renderer.
 
 Scope at launch: English only. :plural is the only qualifier. No automatic article handling.
+**Supersedes:** none
 
 **D-356 — Custom messages require a business-name variable (compliance)** (Date: 2026-04-19)
 
@@ -1329,6 +1335,7 @@ Compliance enforcement on custom messages runs two rules: opt-out language (STOP
 The business-name variable is category-specific — `{app_name}` for appointments/verification, `{business_name}` for orders/support/marketing/internal/waitlist/exploring, `{community_name}` for community. Resolved at call time via `getPrimaryBusinessVariable(categoryId)` in `lib/catalog-helpers.ts` so the chosen key always exists in the category's registered variables and renders as a chip rather than falling through to plain text.
 
 Reason: carrier compliance expects recipients to know the sender identity. Opt-out alone satisfies the exit path; business-name satisfies the identity disclosure. Requiring the variable TOKEN (not a literal name string) preserves deterministic template rendering (D-04) — the chip interpolates at send time against current session state, so renaming a business later re-interpolates without template rewrites. Fix prepends `{businessKey}: ` to the trimmed-start template.
+**Supersedes:** none
 
 Affects: `prototype/components/catalog/custom-message-card.tsx` (`checkCustomCompliance`, `handleFixBusinessName`), `prototype/context/session-context.tsx` (pre-populated template in `addCustomMessage`), `prototype/lib/catalog-helpers.ts` (new `getPrimaryBusinessVariable` helper).
 
@@ -1339,6 +1346,7 @@ While a never-saved custom message (empty slug) is in edit state, every affordan
 Reason: the first implementation of this protection auto-discarded the pending custom on navigation away (any `requestEdit` / `requestMonitor` / `openAskClaude` / `handleAddCustom` call while an unsaved custom was open). That silently dropped user work when the user didn't realize they'd triggered a transition (clicking another row's edit icon, a tone pill, a + Add). Silent discard violates the "never lose user work" principle. Disabling the triggers makes the state legible — grayed affordances + tooltip tell the user they need to commit or explicitly cancel before proceeding. The auto-discard helper was removed as dead code once the lock replaced it.
 
 Alternatives rejected: auto-discard-on-navigation (tried, silently lost work); auto-save-on-navigation (violates the "never save something you didn't mean to save" norm for compliance-gated content); modal confirmation on every transition (nag-heavy for a flow the user will use repeatedly).
+**Supersedes:** none
 
 Affects: `prototype/app/apps/[appId]/page.tsx` (`hasUnsavedCustomOpen` derivation, defensive guards in `request*` / `handleAddCustom` / `openAskClaude`, disabled + tooltip on `+ Add` and Ask Claude buttons), `prototype/components/catalog/catalog-card.tsx` (`locked` prop, tooltip swap via existing `showEditTooltip` / `showMonitorTooltip` infra), `prototype/components/catalog/custom-message-card.tsx` (`locked` prop, new tooltip infra mirroring CatalogCard).
 
@@ -1352,6 +1360,7 @@ Consequences:
 Registration, inbound, Stripe webhooks, dashboard get rebuilt on /api across Phases 2–5.
 Twilio column naming in migrations gets renamed to carrier-agnostic equivalents during Phase 3.
 
+**Supersedes:** none
 
 **D-359: MASTER_PLAN.md adopted as canonical launch plan**
 MASTER_PLAN.md v1.0 (dated 2026-04-20) is adopted as the canonical holistic plan guiding all work through launch. The ten-phase structure, North Star, ranked customer values, working principles, out-of-scope list (Section 16), and risk register (Section 17) are the reference for scope decisions, phase prioritization, and conflict resolution.
@@ -1363,6 +1372,7 @@ Active work references the active phase, not a parallel priority list.
 Scope additions require either fitting an existing phase, being added to BACKLOG.md, or triggering a MASTER_PLAN amendment.
 Section 16 (out-of-scope) is the scope-creep firewall.
 
+**Supersedes:** none
 
 **D-360: OTP / Verification available across all verticals as built-in auth primitive, AND as its own dedicated vertical**
 The Verification use case remains selectable as a dedicated vertical for developers whose entire SMS use is auth-related (login OTP, signup code, password reset, MFA challenge, new device alert — the full auth message family). Additionally, every other vertical automatically includes a basic verification-code capability in its SDK namespace (e.g., relaykit.salon.verifyCode()), so developers whose app needs OTP alongside their business vertical don't have to register a second campaign or pick between categories.
@@ -1374,6 +1384,7 @@ Every non-verification vertical gets a verifyCode() method added to its SDK name
 OTP counts against monthly message allowance (no special pricing).
 Default code length: 6 digits. Default TTL: 10 minutes. Rate limiting: to be set during implementation per Phase 2/Phase 6 work.
 
+**Supersedes:** none
 
 **D-361: Review request templates ship at launch as template additions within applicable verticals, using developer-supplied review URLs**
 Review request messages are a template type added to verticals where post-service review collection is a natural pattern: salon, dental, home services, auto services, fitness/wellness, tutoring. They are not their own vertical. The review URL is a developer-supplied variable — RelayKit does not own the review destination or integrate with specific review platforms. Developers can pass Google Business Profile links, Yelp links, Podium links, Birdeye links, or their own landing pages; RelayKit just delivers the SMS. Review requests ship as transactional messages at launch. Sentiment branching (routing high-rating customers to public reviews and low-rating customers to private feedback — Podium's controversial feature) is explicitly not shipped at launch.
@@ -1384,10 +1395,12 @@ Each applicable vertical's SDK namespace gets a reviewRequest(...) method with c
 Default canonical template: "Hi {customerName}, thanks for visiting {businessName} today! If you had a good experience, we'd really appreciate a quick Google review: {reviewUrl}" — editable on website with compliance checker.
 Developer controls when to fire (no scheduling infrastructure built into RelayKit at launch).
 Marketing docs and site copy position reviews as vertical-native capability, not a separate product.
+**Supersedes:** none
 
 **D-362 — SDK `SendResult` shape canonical** (Date: 2026-04-21)
 The shipped `SendResult` type in `/sdk/src/types.ts` is canonical: `{ id: string | null; status: 'sent' | 'queued' | 'blocked' | 'failed'; reason?: string }`. In graceful mode (default per D-277), failure is encoded as `id: null` with `status: 'failed'` or `'blocked'` and a populated `reason`. In strict mode (opt-in per D-277), failures throw `RelayKitError` instead. This pins the shape that shipped in `relaykit@0.1.0` so SDK documentation, README examples, and the `/api` response contract all resolve to one structure.
 Reasoning: SDK_BUILD_PLAN.md §8 previously described a different shape (`{ success: true, messageId, status }` for success; `{ success: false, error: { code, message } }` for failure) that never shipped. The shipped code has 30 namespace methods and a 235-line test suite built around the current shape, plus a packed `relaykit-0.1.0.tgz` artifact; rewriting the code to match the old spec would be a breaking change to a contract no external caller depends on yet, with no product benefit. D-277 already uses the shipped shape in its compliance-block example (`{ id: null, status: 'blocked', reason: 'recipient_opted_out' }`), so this decision is consonant with D-277 — it just makes the full shape explicit. No supersession of D-277 required; D-362 is purely additive.
+**Supersedes:** none
 _Affects: `/sdk` source (no change), SDK_BUILD_PLAN.md §6 decisions list, Phase 8 README / AGENTS.md spec, `/api` POST /v1/messages response contract._
 
 **D-363 — Opt-in disclosure uses generic language, not enumerated message types** (Date: 2026-04-24)
