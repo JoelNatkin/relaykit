@@ -37,7 +37,7 @@
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation — 38-line dev-doc pointing at canonical docs. Overwrote Untitled UI boilerplate Session 42. Pointers only, no facts restated. |
 | `REPO_INDEX.md` | 2026-04-21 | This file |
-| `MASTER_PLAN.md` | 2026-04-23 | Holistic 10-phase launch plan, North Star, customer values ranking, out-of-scope list, risks (v1.1). Session 46 scope amendment: Phase 2 gains delivery-report callback infrastructure (driven by Experiment 1 silent-drop finding); Phase 4 narrows to MO-specific inbound work; §5 Phase 1 item 2 rewritten for 2a/2b split. §4 "What gets done" past-tensed for Groups E (Session 40) + F (Session 41). |
+| `MASTER_PLAN.md` | 2026-04-26 | Holistic 10-phase launch plan, North Star, customer values ranking, out-of-scope list, risks (v1.2). Session 46 (v1.1) scope amendment: Phase 2 gains delivery-report callback infrastructure (driven by Experiment 1 silent-drop finding); Phase 4 narrows to MO-specific inbound work; §5 Phase 1 item 2 rewritten for 2a/2b split. §4 "What gets done" past-tensed for Groups E (Session 40) + F (Session 41). Session 54 (v1.2): §5 Phase 1 retires Experiment 4 as a separate experiment, merges old Experiments 3 + 4 into a single new Experiment 3 covering the registration arc (3a brand, 3b campaign, 3c upgrade), and renumbers old Experiment 5 (STOP/START/HELP) to new Experiment 4; §8 Phase 4 prose + §17 Risks reconciled to new numbering. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-04-21 | Canonical PM instructions (synced to Claude.ai UI) |
 | `CLAUDE.md` | 2026-04-21 | CC standing instructions (file-size discipline added Session 39 — keep under 200, target ~80). Session 42: removed retired `RELAYKIT_PRD_CONSOLIDATED.md` pointer from §Key docs (6 bullets → 5). |
 | `DECISIONS.md` | 2026-04-21 | Active decisions D-84+, index of D-01–D-83 |
@@ -149,7 +149,7 @@ Phase 1 Sinch proving-ground experiments. `experiments-log.md` with captured res
 
 **Active master plan phase:** Phase 1 (Sinch proving-ground experiments) — **ACTIVE**, Joel-driven (PM writes procedures, Joel runs experiments, CC on standby for scaffolds). Phase 0 closed at Session 41 with Group F completion. Session 42 (docs hygiene) and Session 43 (MASTER_PLAN cross-ref cleanup + `/experiments/sinch/` scaffold) run between Phase 0 close and the first experiment.
 
-**Phase 1 scope (per MASTER_PLAN §5):** five experiments characterizing Sinch before Phase 2 Session B builds production code against it.
+**Phase 1 scope (per MASTER_PLAN §5):** four experiments characterizing Sinch before Phase 2 Session B builds production code against it.
 
 1. **Experiment 1 — provision number + send one SMS.** Procedure seeded in `/experiments/sinch/experiments-log.md` Session 43. Status: not yet run. Produces the outbound request/response fixture Phase 2 Session B will consume.
 2. **Experiment 2a — delivery-report callback shape.** **COMPLETE (Session 50, 2026-04-24).** Captured in `fixtures/exp-02a-delivery-report.json`. Callback delay ~1.77s; canonical payload shape with `type:"delivery_report_sms"` discriminator + `batch_id` correlation + `statuses[]` array. Session 45 silent-drop hypothesis overturned. No signature header on callback — flagged for Phase 2 Session B kickoff discussion. **Experiment 2b — inbound MO message shape.** Still BLOCKED on Experiments 3 + 4 (unregistered 10DLC can't receive replies). Will produce the fixture Phase 4 consumes.

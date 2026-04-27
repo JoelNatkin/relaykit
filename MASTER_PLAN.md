@@ -204,13 +204,13 @@ This is also the phase where we address the audit's destructive migration concer
 
 ## 8. Phase 4 — Inbound Message Handling (MO Replies)
 
-RelayKit has promised inbound message forwarding as part of its sandbox and production offering (it's in PRICING_MODEL). Inbound is also required for two-way messaging, which we want at launch. The `/src` codebase has a working Twilio-era implementation we can learn from conceptually but won't port directly. `/api` needs inbound built from scratch against Sinch's MO webhook shape (captured in Phase 1 Experiment 2b, which is blocked on Experiments 3 + 4 landing a delivery-capable sender).
+RelayKit has promised inbound message forwarding as part of its sandbox and production offering (it's in PRICING_MODEL). Inbound is also required for two-way messaging, which we want at launch. The `/src` codebase has a working Twilio-era implementation we can learn from conceptually but won't port directly. `/api` needs inbound built from scratch against Sinch's MO webhook shape (captured in Phase 1 Experiment 2b, which is blocked on Experiment 3 landing a delivery-capable sender).
 
 The webhook receiver endpoint itself is already live in `/api` as of Phase 2 — it was built there to handle delivery-report callbacks, which Phase 2 scope requires for truthful delivery semantics. Phase 4 extends that same receiver to recognize MO payload types, route them into the inbound-handler logic, and perform all the inbound-specific work: registration lookup, consent updates, developer-webhook forwarding, storage. The receiver endpoint is not new work in Phase 4; the MO-specific logic is.
 
 Inbound means: when someone's customer replies to a message, Sinch's webhook fires to `/api`, `/api` figures out which developer's registration this reply belongs to, and either forwards it to the developer's own webhook endpoint or stores it for the developer to see on their dashboard (or both).
 
-STOP/START/HELP handling is its own concern within inbound. Depending on what Phase 1 Experiment 5 shows, we either trust Sinch to handle opt-outs at the carrier level (and just update our consent ledger from the notification), or we handle opt-outs ourselves (parse STOP, update ledger, suppress further sends). Phase 4's design follows the evidence.
+STOP/START/HELP handling is its own concern within inbound. Depending on what Phase 1 Experiment 4 shows, we either trust Sinch to handle opt-outs at the carrier level (and just update our consent ledger from the notification), or we handle opt-outs ourselves (parse STOP, update ledger, suppress further sends). Phase 4's design follows the evidence.
 
 **What gets done:**
 
@@ -423,7 +423,7 @@ This list matters because scope creep is the single biggest risk to this plan. W
 
 Being honest about where the plan could break:
 
-**Sinch fails the fast-registration promise.** If Phase 1 Experiment 3 or 4 shows Sinch approval taking 2+ weeks instead of 3 days, we have a positioning crisis. Mitigations: this is exactly why Phase 1 runs early; we learn this before committing engineering time; alternatives (Telnyx, SignalWire) exist and can be evaluated.
+**Sinch fails the fast-registration promise.** If Phase 1 Experiment 3 (specifically 3a or 3b) shows Sinch approval taking 2+ weeks instead of 3 days, we have a positioning crisis. Mitigations: this is exactly why Phase 1 runs early; we learn this before committing engineering time; alternatives (Telnyx, SignalWire) exist and can be evaluated.
 
 **`/src` sunset creates gaps we didn't anticipate.** Some capability in `/src` may turn out to be harder to rebuild cleanly than expected. Mitigation: discover this in a phase boundary, record it, adjust the affected phase rather than bulldoze through.
 
