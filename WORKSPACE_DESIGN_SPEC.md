@@ -1,6 +1,6 @@
 RelayKit Workspace Design Spec
 From wizard to workspace — the new developer experience
-Updated: April 7, 2026 (Session 25)
+Updated: April 27, 2026
 
 What This Document Is
 This is the design spec for reshaping the RelayKit prototype from a dashboard-first experience into a wizard-to-workspace flow. CC should read this alongside DECISIONS.md, PROTOTYPE_SPEC.md, and VOICE_AND_PRODUCT_PRINCIPLES_v2.md before building.
@@ -74,23 +74,26 @@ Onboarding (wizard):
 
 Building:
 
-/apps/[appId]/messages → The workspace. Single page with setup cards (dismissible) at top, message rows, registration CTA (lightweight banner or card), Settings via icon/link to child page. No tabs.
-/apps/[appId]/settings → Settings child page (Account info, API keys, Billing). Navigated to via icon/link from messages page, not a tab.
-/apps/[appId]/overview → redirects to /messages
-/apps/[appId]/ready → redirects to /messages
-/apps/[appId]/signup → redirects to /messages
+/apps/[appId] → The workspace (D-345). Single page with setup cards (dismissible) at top, message rows, registration CTA (lightweight banner or card), Settings via gear icon to child page. No tabs.
+/apps/[appId]/messages → backward-compat redirect to /apps/[appId] (D-345)
+/apps/[appId]/settings → Settings child page (Account info, API keys, Billing). Navigated to via gear icon from workspace, not a tab.
+/apps/[appId]/overview → redirects to workspace root
+/apps/[appId]/ready → redirects to workspace root
+/apps/[appId]/signup → redirects to workspace root
 
 Pending / Extended Review / Rejected:
 
-/apps/[appId]/messages → The workspace. Setup cards (if still needed), message rows, compact registration status indicator. Same page, evolved state.
+/apps/[appId] → The workspace. Setup cards (if still needed), message rows, compact registration status indicator. Same page, evolved state.
+/apps/[appId]/messages → backward-compat redirect to /apps/[appId]
 /apps/[appId]/settings → Settings child page
-/apps/[appId]/overview → redirects to /messages
+/apps/[appId]/overview → redirects to workspace root
 
 Registered:
 
-/apps/[appId]/messages → The workspace. Delivery metrics at top (replacing setup cards), message rows with real delivery data, marketing campaign CTA if eligible.
+/apps/[appId] → The workspace. Delivery metrics at top (replacing setup cards), message rows with real delivery data, marketing campaign CTA if eligible.
+/apps/[appId]/messages → backward-compat redirect to /apps/[appId]
 /apps/[appId]/settings → Settings child page
-/apps/[appId]/overview → redirects to /messages
+/apps/[appId]/overview → redirects to workspace root
 
 ProtoNavHelper: Floating bottom-left "Nav ↑" pill for non-linear design review. Expands to jump links for every page in every state. Prototype-only, strip on port.
 TopNav has four distinct modes (pathname regex + conditionals):
@@ -246,11 +249,12 @@ The Workspace (Post-Signup)
 
 After signup, the developer lands on one page: Messages. This is the workspace. It evolves with their lifecycle but never splits into tabs. There is no Overview page, no tab bar. Settings is a child page accessed via an icon or link in the top bar.
 
-Note: The current prototype still has the tabbed Overview/Messages/Settings structure from Session 25. The next major CC session will replace it with the single-page layout described here. The Overview page content (setup cards, registration card, metrics) migrates onto the Messages page. The Overview route redirects to Messages.
+Note: The single-page workspace shipped per D-332. The workspace lives at `/apps/[appId]` (D-345); `/apps/[appId]/messages` is retained as a backward-compat server redirect. The Overview route redirects to the workspace root. Setup cards, registration card, and metrics now render on the Messages page in their state-appropriate positions — see PROTOTYPE_SPEC §Messages Page for current layout.
 
 Navigation
-Top bar: RelayKit logo | App name + vertical badge | Settings (icon/link) | Sign out
-No tabs. The messages page IS the app. Settings is a separate child page navigated to and from — not a tab.
+Top bar (TopNav): RelayKit wordmark | Your Apps | avatar dropdown (Account settings, Sign out).
+App identity bar (DashboardLayout, immediately below TopNav on app routes): app name (h1) + vertical pill (left) → state switcher → status indicator ("Test mode" / "Live", D-344) → Settings gear icon (icon-only, no text label, D-332).
+No tabs. The messages page IS the app. Settings is a child page navigated to via the gear icon — not a tab.
 
 Messages Page — The Single Workspace
 The messages page is the center of gravity across all post-signup states. Content appears and evolves at the top and bottom of the page as the developer progresses. The message rows are always the core.
@@ -362,10 +366,25 @@ D-326: Building state Overview layout (Start building left column + registration
 D-327: Remove "Build your SMS feature" accordion from Overview.
 D-328: Messages page onboarding/dashboard divergence.
 D-329: Ready page copy — "SMS that just works."
-D-330 (pending): SDK stays static for launch — all namespaces exposed. Dynamic discovery is backlog.
-D-331 (pending): Generated prompt replaces SMS_GUIDELINES.md for get-started moment.
-D-332 (pending): Single-page workspace — no tabs, Messages is sole workspace page, Settings is child page.
-D-333 (pending): One transactional + one marketing per project max. No multiple transactional verticals.
+D-330: SDK stays static for launch — all namespaces exposed. Dynamic discovery is backlog.
+D-331: Generated prompt replaces SMS_GUIDELINES.md for get-started moment.
+D-332: Single-page workspace — no tabs, Messages is sole workspace page, Settings is child page.
+D-333: One transactional + one marketing per project max. No multiple transactional verticals.
+D-334: Marketing campaign bundled in $49 registration fee — no separate fee for second campaign.
+D-335: Registration CTA shows campaign selection radios when EIN on file.
+D-336: Marketing messages visible and editable in Pending state after registration submission.
+D-337: Inline EIN verification on Building state registration card (Card A ↔ Card B swap).
+D-338: Marketing upsell card available across Building, Pending, and Registered states.
+D-339: Registration status tracker is a per-message-type card.
+D-340: Marketing messages show in list immediately while marketing campaign is in review (extends D-336).
+D-342: Testers card in the right rail across all post-onboarding states.
+D-343: Ask Claude panel — replaces right rail and metrics when open.
+D-344: Header status indicator simplified to "Test mode" / "Live" binary.
+D-345: Messages page is the workspace root at /apps/[appId]; /messages is backward-compat redirect.
+D-347: Settings field split — account-level (email, payment) vs app-level (business name, registration, API keys).
+D-349: API key prefix rk_test_ (user-facing); environment='sandbox' (DB/code).
+D-351: Custom message delivery via generic SDK method with stable slug.
+D-353: Variable insertion affordance in all message edit states.
 
 
 What This Replaces in the Current Prototype
@@ -403,16 +422,15 @@ Phase 2.5: Error States Design Session (PM + Joel, no CC)
 Walk through every interaction that can fail before locking in copy. Key interactions: EIN verification, phone OTP, AI rewrite, compliance, network errors, signup OTP.
 Phase 3: Wizard Flow ✅ DONE
 Full wizard entry flow: vertical picker → business name + EIN → service context → website → context → phone verify → messages → ready → signup (email) → email verify (OTP) → get-started. Layout architecture, shared infrastructure, sessionStorage persistence, all verification states. Signup split into two focused pages (D-323). Get-started page built with three copyable setup steps.
-Phase 3.5: State Rename + Building State + Overview Redesign ✅ DONE (Session 25)
+Phase 3.5: State Rename + Building State + Overview Redesign ✅ DONE
 Renamed Default → Onboarding, Approved → Registered. Added Building state between Onboarding and Pending. Overview in Building state shows "Start building" content (left column) + "Ready to go live?" registration card (right column). Removed stale "Build your SMS feature" accordion from Pending/Extended Review/Rejected states. Fixed Onboarding state to not render dashboard.
-Phase 3.6: Messages Page Cleanup ✅ DONE (Session 25)
+Phase 3.6: Messages Page Cleanup ✅ DONE
 Updated messages page copy (Onboarding state): "Here's what your app will send" heading, new body text, Continue CTAs replacing "Start building", removed send icons from onboarding version, added EIN-aware "What about marketing messages?" tooltip. Updated ready page copy: "SMS that just works" heading. Fixed Back button alignment, Skip button placement, phone verify visual consistency.
-Phase 3.7: Single-Page Workspace Build (NEXT)
+Phase 3.7: Single-Page Workspace Build ✅ DONE (D-332, D-345)
 Replace the tabbed dashboard with the single Messages-centric workspace. Remove Overview and Messages/Settings tabs. Messages page becomes the sole workspace page. Migrate setup cards, registration CTA, and metrics onto the messages page in their respective lifecycle positions. Settings becomes a child page accessed via icon/link. Evolve message cards into self-contained workspace rows with test status, Send test, Ask Claude, and kebab menu. Overview route redirects to Messages.
 Phase 3.8: Claude AI Support Slideout
 Wide panel (500-600px) triggered by persistent button and per-message "Ask Claude". Pushes page content left. Pre-loaded with developer's business context, vertical, configured messages, and lifecycle state. Prototype stubs the chat interface. App Doctor round-trip diagnostic loop designed but not wired to real AI.
-Phase 3.9: Wire Wizard Data Into Messages
-Read sessionStorage business name and service type, interpolate into message card templates. Currently messages show hardcoded demo data.
+Phase 3.9: Vertical Hydration → see MASTER_PLAN §10 Phase 6. The wizard→workspace handoff (selectedCategory hydration from sessionStorage; refactor of the Messages page to be vertical-agnostic so all eight verticals work end-to-end) is owned by the canonical phase plan, not this doc.
 Phase 4: Demo Functionality
 Demo list management, per-session selection, recipient picker, invite link, test activity log. Per-message "Send test" with default number and dropdown for demo list.
 Phase 5: Go Live Flow
