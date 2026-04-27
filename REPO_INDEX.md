@@ -68,6 +68,46 @@
 
 ---
 
+## Canonical sources by topic
+
+This index maps each major topic to its single canonical doc. Per the One Source Rule (PM_PROJECT_INSTRUCTIONS.md "Docs Hygiene"), every fact lives in exactly one canonical doc; other docs reference it, never restate it. Use this index to decide where a new fact lives, or where to look when surfaces disagree.
+
+### Product
+- Pricing facts (numbers, refund policy, tier definitions) → `docs/PRICING_MODEL.md`
+- Phases / scope / out-of-scope / North Star / risks → `MASTER_PLAN.md`
+- Customer-experience narrative (PM-facing reference) → `docs/PRODUCT_SUMMARY.md`
+- Voice / copy principles / kill list → `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`
+- Parked ideas / Rejected table → `BACKLOG.md`
+
+### UI / Design
+- Screen-level UI specs (every prototype screen) → `PROTOTYPE_SPEC.md`
+- Post-signup workspace architecture (state machine, layout systems) → `WORKSPACE_DESIGN_SPEC.md`
+- Settings PRD (rejection-behavior model, notification triggers, account-vs-app split) → `docs/PRD_SETTINGS_v2_3.md`
+- Design system tokens + component APIs → `docs/UNTITLED_UI_REFERENCE.md`
+
+### Engineering
+- Message pipeline behavior (`/api`) → `MESSAGE_PIPELINE_SPEC.md`
+- SDK architecture / publication plan → `SDK_BUILD_PLAN.md`
+- `/src` sunset capability map → `SRC_SUNSET.md`
+- Carrier registration field knowledge (Sinch/TCR fields) → `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md`
+- AI-integration developer-tool research (Phase 8 rationale) → `docs/AI_INTEGRATION_RESEARCH.md` (RETIRES when Phase 8 closes)
+
+### Process / governance
+- Decision history (active D-84+) → `DECISIONS.md`
+- Decision history (archived D-01–D-83) → `DECISIONS_ARCHIVE.md`
+- PM standing instructions (synced to Claude.ai UI) → `PM_PROJECT_INSTRUCTIONS.md`
+- CC standing instructions (operational, on-disk) → `CLAUDE.md`
+- Repo doc inventory + active plan pointer → `REPO_INDEX.md` (this file)
+- Session-to-session handoff (ephemeral, overwritten each session) → `CC_HANDOFF.md`
+
+### Notes on the README exception
+The repo-root `README.md` may paraphrase one-sentence summaries from any of these (e.g., "$49 to register and $19/month thereafter") for orientation, but may not restate full rules. `CLAUDE.md` inherits the same exception for orientation summaries. When in doubt, paraphrase and point.
+
+### When this index drifts
+If PM or CC discovers two docs that both claim canonical ownership of the same topic, flag for PM judgment per the One Source Rule. Update this index and the canonical doc together; never silently override.
+
+---
+
 ## Subdirectories
 
 ### `/docs/archive` (superseded, not operational)
