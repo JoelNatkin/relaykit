@@ -1,6 +1,8 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.1 — April 23, 2026
+### Version 1.2 — April 26, 2026
+
+**v1.2 — 2026-04-26:** §5 Phase 1 amendment — retire Experiment 4 as a separate experiment; merge old Experiments 3 and 4 into a single new Experiment 3 covering the full registration arc (3a brand, 3b campaign, 3c upgrade); renumber old Experiment 5 to new Experiment 4; update §5 prose paragraphs accordingly. Reason: 3b's procedure already covers what Experiment 4 was originally defined as ("Submit a campaign registration and measure time"); the experiments log has organically grown 3a/3b/3c sub-experiments that better describe the registration work; an orphan Experiment 4 reference creates ledger drift.
 
 > **Purpose:** A single plan that holds the entire picture of where RelayKit is going and how we get there, written so Joel (non-technical UX designer and founder) can read it, catch smells, and make sure the vision stays on track. This document supersedes ad-hoc priority lists and session-to-session planning for big-picture decisions. Detailed specs still live in their own docs (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN, PROTOTYPE_SPEC, etc.).
 >
@@ -124,23 +126,21 @@ The experiments run against a real Sinch account. Code written here is throwaway
 
 Joel is PM's hands for this phase. PM writes each experiment's procedure, what to observe, what to record. Joel runs the experiment (or has CC run it) and reports results. PM interprets and updates the experiments log.
 
-**The five experiments:**
+**The four experiments:**
 
 1. **Provision a phone number and send one SMS.** Simplest possible test. Proves the Sinch account works, proves the outbound API shape, produces a real response payload we can use as test fixture for Phase 2. Joel's phone receives the message; we keep the screenshot.
 
-2. **Configure webhook receiver, capture callback payloads.** Two parts: 2a captures the delivery-report callback shape (runnable now; Phase 2 depends on this to distinguish "submitted to Sinch" from "delivered" after Experiment 1's silent-drop finding). 2b captures the mobile-originated reply payload (Phase 4 contract; blocked on Experiments 3 + 4 since unregistered traffic can't be replied to).
+2. **Configure webhook receiver, capture callback payloads.** Two parts: 2a captures the delivery-report callback shape (runnable now; Phase 2 depends on this to distinguish "submitted to Sinch" from "delivered" after Experiment 1's silent-drop finding). 2b captures the mobile-originated reply payload (Phase 4 contract; blocked on Experiment 3 since unregistered traffic can't be replied to).
 
-3. **Submit a brand registration and measure time.** Register the RelayKit business (or a test business) with Sinch. Record the submission response shape. Time how long approval actually takes. This is the ground truth for the fast-registration claim.
+3. **Submit brand and campaign registrations and measure timing across the full registration arc.** Tracked as sub-experiments 3a (brand registration submission and approval timing — the ground truth for the fast-registration claim), 3b (campaign registration submission and approval timing — what actually gates go-live for a customer), and 3c (Simplified→Full brand upgrade — answers Phase 5 design questions about field deltas, cost, timing, and continuity for the upgrade path). Each sub-experiment captures submission response shape, observes state transitions, and records elapsed wall-clock time.
 
-4. **Submit a campaign registration and measure time.** After brand is approved, submit a campaign for a test vertical. Record response shape. Time the approval. Campaign approval is what actually gates go-live for a customer.
-
-5. **Test STOP/START/HELP reply handling.** Send a message, reply STOP from Joel's phone. Observe: does Sinch auto-handle the opt-out at the carrier level? Do we receive notification? Do we need to block further messages ourselves? This determines how big our inbound logic needs to be.
+4. **Test STOP/START/HELP reply handling.** Send a message, reply STOP from Joel's phone. Observe: does Sinch auto-handle the opt-out at the carrier level? Do we receive notification? Do we need to block further messages ourselves? This determines how big our inbound logic needs to be.
 
 **Phase 1 demo moment:** An experiments log document that contains, for each experiment: what we did, what we observed, the real payload shapes captured, the timings measured, and screenshots. Joel and PM read it together and feel confident about what Sinch actually does.
 
 **Phase 1 output:** `/experiments/sinch/experiments-log.md`. Real fixtures captured. Confidence that the product promise is deliverable — or, if it isn't, early warning so we can adjust course.
 
-**Elapsed time estimate:** Experiments 1 and 2 can happen same-day. Experiments 3 and 4 take actual days of elapsed time waiting for Sinch to approve (which is the point — we're measuring this). Experiment 5 is quick. Expected phase duration: roughly one week of elapsed time, most of it waiting.
+**Elapsed time estimate:** Experiments 1 and 2a can happen same-day. Experiment 3's sub-experiments take actual days of elapsed time waiting for Sinch to approve (which is the point — we're measuring this). Experiments 2b and 4 are quick once Experiment 3 unblocks them. Expected phase duration: roughly one week of elapsed time, most of it waiting.
 
 ---
 
