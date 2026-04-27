@@ -449,7 +449,7 @@ Tool selector on the signed-up Messages page is kept but collapsed by default un
 _Affects: Messages page (post-download/logged-in state)._
 
 **D-161 — Registration intake live message preview** (Date: 2026-03-18)
-Registration intake form includes a live message preview (side by side with form fields) showing how the developer's business name, URL, and service type appear in actual messages. Preview updates as they type. Refines D-156 with specific layout direction.
+Registration intake form includes a live message preview (side by side with form fields) showing how the developer's business name, URL, and service type appear in actual messages. Preview updates as they type.
 _Affects: Registration intake wizard UI._
 
 **D-162 — Initial download happens on Messages page, not Overview** (Date: 2026-03-19)
