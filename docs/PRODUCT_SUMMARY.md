@@ -203,13 +203,7 @@ Pricing surfaces appear in five places, all stating the same facts.
 
 **Account Settings → Payment method.** Card on file + Manage billing link.
 
-Pricing facts (anchors: D-320, D-321, D-304, D-334, D-298):
-- Registration: **$49** one-time (full refund if rejected).
-- Service: **$19/mo** transactional only; **$29/mo** if marketing campaign added.
-- Marketing campaign is bundled in the registration fee (D-334) — no second registration charge.
-- Included volume: **500 messages/month**. Overage: **$8 per 500**.
-- Free tier: sends to verified phones only — no shared-number sending to real end-users (D-298).
-- Rate limit: 20k/day abuse ceiling per PRICING_MODEL.md (D-346).
+Pricing facts (numbers, refund policy, tier definitions) live in `docs/PRICING_MODEL.md` per REPO_INDEX "Canonical sources by topic" — this doc points, never restates. Decision anchors: D-298 (free-tier verified-only sends), D-304 (symmetrical pricing transactional/marketing), D-320 (single flat registration fee), D-321 (overage pricing policy), D-334 (marketing campaign bundled in registration fee), D-346 (rate-limit ceiling).
 
 Stripe is the payment processor (managed-only at launch — no BYO carrier billing per MASTER_PLAN §16).
 
