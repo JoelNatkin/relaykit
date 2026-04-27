@@ -1,3 +1,8 @@
+> **ARCHIVED 2026-04-27.** Strategic premise (first-party RelayKit-built starter kits) retired by MASTER_PLAN §13 + §16. RelayKit no longer builds its own starters; Phase 9 integrates RelayKit into existing third-party starters.
+> **See instead:** MASTER_PLAN.md §13 (Phase 9 — Starter Kit Integration Validation) and docs/AI_INTEGRATION_RESEARCH.md (Phase 8 rationale + AGENTS.md template work).
+
+---
+
 # STARTER_KIT_PROGRAM.md — RelayKit
 ## Open-Source App Starters as Developer Acquisition Channel
 ### Status: BACKLOG — Post-Launch Initiative

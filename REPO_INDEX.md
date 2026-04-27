@@ -61,7 +61,6 @@
 | `PRD_SETTINGS_v2_3.md` | 2026-04-15 | Settings page spec |
 | `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` | (stable) | Copy rules (Tier 1 in project knowledge) |
 | `UNTITLED_UI_REFERENCE.md` | (stable) | Design system reference (Tier 1 in project knowledge) |
-| `STARTER_KIT_PROGRAM.md` | 2026-04-17 | Starter kit strategy — superseded by MASTER_PLAN Phase 9 (third-party integration over building our own) |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-15 | AGENTS.md, Resend analog, tool prompts |
 | `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-04-25 | Sinch / TCR brand registration field reference. Captured during Experiment 3a (2026-04-25 Brand `BTTC6XS` registration). Bundle / Company / Financial / Contact field tables, `brandEntityType` enum (3 values, no Sole Prop — load-bearing for Phase 5), `brandVerticalType` enum mapping (22 values, 1 observed), Brand state machine (5 API states vs 7 dashboard states — to verify with Sinch BDR), field constraints learned, and a Phase-5-deferred wizard-mapping section. |
 | `PRODUCT_SUMMARY.md` | 2026-04-26 | Customer-experience-oriented summary of RelayKit's product surface — created in parallel terminal during Session 52 (Joel-reviewed before commit, ~380 lines). Upload at the start of any browser chat where conversation will touch customer experience (per CLAUDE.md maintenance instructions added in same parallel session). §4 covers vertical-to-carrier-use-case mapping internals; §7 covers registration submission flow; §14 covers intake interrogation. Referenced from BACKLOG entries on vertical-to-Sinch-use-case mapping and customer registration form design round (both added Session 52). |
@@ -74,7 +73,7 @@
 
 Historical PRDs, vision docs, old strategy. CC does not read these unless Joel directs to a specific one.
 
-Notable contents: `BUILD_SPEC_VALIDATION_LOG.md` (25 experiment rounds), Twilio-era PRDs (01–09), early vision docs, superseded design references.
+Notable contents: `BUILD_SPEC_VALIDATION_LOG.md` (25 experiment rounds), Twilio-era PRDs (01–09), early vision docs, superseded design references, `STARTER_KIT_PROGRAM.md` (archived Session A 2026-04-27 — first-party starter strategy retired by MASTER_PLAN §13/§16; deprecation header points at MASTER_PLAN §13 + AI_INTEGRATION_RESEARCH.md).
 
 Deprecation headers added Session 38: `PRD_04_TWILIO_SUBMISSION.md` (cites D-358), `PRICING_MODEL.md` (superseded by v6.0). `VISION_IMPLEMENTATION_MEMO.md` deleted Session 38 per its own "consume and discard" header — D-104's reference to it is now accompanied by a supersession note pointing to D-358.
 
