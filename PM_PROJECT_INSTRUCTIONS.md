@@ -1,6 +1,6 @@
 # RelayKit — Project Instructions
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: April 24, 2026
+### Updated: April 27, 2026
 
 ---
 
@@ -646,7 +646,8 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 ## Standing Reminders
 
 - Delete `.next` before building. Every CC prompt involving building should end with: "Stop the dev server, delete `.next`, restart before building." **Doc-only sessions skip this — no dev server touched.**
-— **Use PRODUCT_SUMMARY proactively.** When the conversation touches anything customer-facing — registration, onboarding, intake, workspace, pricing, billing, settings, compliance UX, customer journey — read PRODUCT_SUMMARY first instead of reasoning from priors or carrier-side facts. PRODUCT_SUMMARY is the canonical "what does the product actually do" reference. If a question can't be answered from it, that's a signal either (a) PRODUCT_SUMMARY needs updating to capture the answer, or (b) the question is in legitimately undefined territory and should be flagged as TBD rather than guessed at. Do not invent product behavior, do not extrapolate from carrier-side knowledge, do not pattern-match from past chats — read PRODUCT_SUMMARY.
+- **Use PRODUCT_SUMMARY proactively.** When the conversation touches anything customer-facing — registration, onboarding, intake, workspace, pricing, billing, settings, compliance UX, customer journey — read PRODUCT_SUMMARY first instead of reasoning from priors or carrier-side facts. PRODUCT_SUMMARY is the canonical "what does the product actually do" reference. If a question can't be answered from it, that's a signal either (a) PRODUCT_SUMMARY needs updating to capture the answer, or (b) the question is in legitimately undefined territory and should be flagged as TBD rather than guessed at. Do not invent product behavior, do not extrapolate from carrier-side knowledge, do not pattern-match from past chats — read PRODUCT_SUMMARY.
+- **Default to keeping CC sessions running.** PM cannot observe CC's exchange count, session length, or context size — only Joel sees CC directly. Suggest close-out only on hard signals visible in what Joel pastes (CC contradicting itself, hallucinating, misreading files), at phase boundaries, or when Joel signals the work session is ending. Task completion alone is not a close-out trigger; the default between tasks is "commit and pause, ping me when the next task surfaces."
 - Push after review, not before.
 - Push after every completed build task once PM approves it, and again at session close.
 - Separate large tasks into their own CC sessions.
