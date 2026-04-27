@@ -2,7 +2,7 @@
 ## RelayKit — Managed SMS Compliance Infrastructure with Free Sandbox
 ### Version 6.0 — April 8, 2026
 
-> **This document replaces pricing sections in PROJECT_OVERVIEW.md, PRD_01 Section 5, and PRD_07 Sections 2 & 4. Feed this to CC alongside the relevant PRD when building Stripe integration.**
+> **This document is the canonical source for RelayKit pricing facts (numbers, refund policy, tier definitions) per REPO_INDEX "Canonical sources by topic". Other docs point at it; they may not restate.**
 >
 > **CHANGE LOG (v6.0):** Registration simplified to $49 flat fee — no $150 go-live payment, no two-part payment structure (D-320). Overages changed to $8 per 500 messages (D-321). Marketing campaign bundled into $49 registration — no additional registration charge for second campaign (D-334). EIN is the gate for marketing, not payment. Beta pricing section removed — $49 is the price for everyone. Unit economics and LTV models recalculated.
 >
@@ -262,7 +262,7 @@ A scheduling platform with 100 tenant businesses (26–100 tier):
 
 ---
 
-## 4. STRIPE IMPLEMENTATION (Replaces PRD_01 Section 5)
+## 4. STRIPE IMPLEMENTATION
 
 ### Checkout Flow (Full-Stack) — Single Payment (D-320)
 
