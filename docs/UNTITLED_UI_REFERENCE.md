@@ -1,27 +1,29 @@
-# Untitled UI Component Library Reference
-# (Do not modify below — Untitled UI design system rules for AI agents)
+# Untitled UI Reference (RelayKit fit)
+### Last updated: April 27, 2026
+
+> **What this is:** A design-system reference for `/prototype` — the Tailwind v4.1 semantic token tables actually wired into `prototype/app/globals.css`, plus the Untitled UI conventions RelayKit follows (kebab-case filenames, no raw Tailwind colors, icon library, `Aria*` aliasing rule for any future `react-aria-components` imports). Component-level upstream Untitled UI documentation is preserved in this file but explicitly marked as **upstream-not-wired** — `/prototype` does not import any upstream `@untitledui/...` base components today and uses plain Tailwind + the semantic-token CSS variables instead. For RelayKit's actual screen-level component specs (top-nav, wizard-layout, catalog-card, custom-message-card, sign-in-modal, etc.), see `PROTOTYPE_SPEC.md`.
+
 ---
 
+## Project Overview (RelayKit `/prototype`)
 
-## Project Overview
+The prototype lives at `/prototype` in the repo and runs on:
 
-This is an **Untitled UI React** component library project built with:
+- **Next.js ^15** (App Router) — `next dev -p 3001` (port 3001, not Vite's 5173)
+- **React 19**
+- **TypeScript 5.7+**
+- **Tailwind CSS v4.1** — design tokens defined in `prototype/app/globals.css` via the `@theme` block (Tailwind v4 in-CSS theme syntax; no `tailwind.config.ts`)
+- **`@untitledui/icons`** — free 1,100+ icon set (no Pro, no file-icons)
+- **Tiptap v3** — message editor (`prototype/lib/editor/`)
+- **`react-aria-components`** — **not currently a dependency.** If/when added, all imports must be aliased with `Aria*` prefix per the convention below.
 
-- **React 19.1.1** with TypeScript
-- **Tailwind CSS v4.1** for styling
-- **React Aria Components** as the foundation for accessibility and behavior
+`/prototype` is the UI source of truth. Production code ports from `/prototype` to `/api` + future surfaces once screens stabilize. Per CLAUDE.md, prototype code is production-quality in everything except backend.
 
 ## Key Architecture Principles
 
-### Component Foundation
+### Import Naming Convention (forward-looking rule for `react-aria-components`)
 
-- All components are built on **React Aria Components** for consistent accessibility and behavior
-- Components follow the compound component pattern with sub-components (e.g., `Select.Item`, `Select.ComboBox`)
-- TypeScript is used throughout for type safety
-
-### Import Naming Convention
-
-**CRITICAL**: All imports from `react-aria-components` must be prefixed with `Aria*` for clarity and consistency:
+**CRITICAL**: If `react-aria-components` is ever imported, all imports must be prefixed with `Aria*` for clarity and consistency:
 
 ```typescript
 // ✅ Correct
@@ -32,9 +34,9 @@ import { Button, TextField } from "react-aria-components";
 
 This convention:
 
-- Prevents naming conflicts with custom components
+- Prevents naming conflicts with RelayKit's domain components
 - Makes it clear when using base React Aria components
-- Maintains consistency across the entire codebase
+- Maintains consistency across the codebase when `react-aria-components` lands
 
 ### File Naming Convention
 
@@ -54,72 +56,64 @@ This convention:
 - AuthContext.tsx
 ```
 
-This applies to all file types including:
+This applies to all file types: component files (`.tsx`), TypeScript files (`.ts`), style files (`.css`), test files (`.test.ts`).
 
-- Component files (.tsx, .jsx)
-- TypeScript/JavaScript files (.ts, .js)
-- Style files (.css, .scss)
-- Test files (.test.ts, .spec.tsx)
-- Configuration files (when creating new ones)
+### Icon gotcha — `ShieldCheck` does not exist
+
+`@untitledui/icons` does **not** export `ShieldCheck`. Use `ShieldTick` instead. (Recurring trap because `ShieldCheck` exists in many other icon libraries — but not this one.)
 
 ## Development Commands
 
 ```bash
-# Development
-npm run dev               # Start Vite development server (http://localhost:5173)
-npm run build            # Build for production (TypeScript compilation + Vite build)
+# From /prototype
+npm run dev              # Start Next.js dev server on http://localhost:3001 (NOT 5173)
+npm run build            # Build for production
 ```
 
-## Project Structure
-
-### Application Architecture
+## Project Structure (`/prototype`)
 
 ```
-src/
-├── components/
-│   ├── base/              # Core UI components (Button, Input, Select, etc.)
-│   ├── application/       # Complex application components
-│   ├── foundations/       # Design tokens and foundational elements
-│   ├── marketing/         # Marketing-specific components
-│   └── shared-assets/     # Reusable assets and illustrations
-├── hooks/                 # Custom React hooks
-├── pages/                 # Route components
-├── providers/             # React context providers
-├── styles/               # Global styles and theme
-├── types/                # TypeScript type definitions
-└── utils/                # Utility functions
+prototype/
+├── app/                  # Next.js App Router routes + globals.css
+│   ├── globals.css       # Tailwind v4 @theme block — semantic-token source of truth
+│   ├── layout.tsx        # Root layout
+│   ├── page.tsx          # Home (marketing)
+│   ├── apps/[appId]/     # Workspace (post-signup)
+│   ├── start/            # Wizard
+│   ├── sms/[category]/   # Marketing category landing
+│   └── ...
+├── components/           # Domain components (24 files; not upstream UI primitives)
+│   ├── catalog/          # catalog-card, custom-message-card, catalog-opt-in, ...
+│   ├── plan-builder/     # consent-preview, preview-as-input
+│   ├── registration/     # business-details-form, review-confirm
+│   ├── wizard-layout.tsx
+│   ├── dashboard-layout.tsx
+│   ├── top-nav.tsx
+│   ├── footer.tsx
+│   └── ... (sign-in-modal, ein-inline-verify, etc.)
+├── lib/                  # Utilities + Tiptap editor
+│   ├── editor/           # Tiptap message-editor, variable-node, template-serde (D-350/D-353)
+│   ├── intake/           # Intake helpers
+│   ├── slug.ts, variable-scope.ts, variable-token.ts, wizard-storage.ts, catalog-helpers.ts
+├── context/              # React context providers
+├── data/                 # Mock data (verticals, messages, etc.)
+├── hooks/
+├── images/, public/
+├── middleware.ts
+└── next.config.ts
 ```
 
-### Component Patterns
+**No `src/`-rooted layout.** No `components/base/`, `components/application/`, `components/foundations/`. Domain components are flat in `components/` with topical subfolders. Screen-level component specs (what each component does, how each screen uses them) live in `PROTOTYPE_SPEC.md`, not here.
 
-#### 1. Base Components
+### Styling Architecture (Tailwind v4)
 
-Located in `components/base/`, these are the building blocks:
+- All semantic colors (`text-primary`, `bg-secondary`, `border-brand`, `fg-error-primary`, etc.) come from `prototype/app/globals.css` `@theme` block — see the Colors tables at the bottom of this doc.
+- **Never use raw Tailwind color classes** (`text-gray-900`, `bg-blue-700`). Always use the semantic tokens. Per CLAUDE.md design-system rules.
+- Tailwind v4 is in-CSS theme via `@theme {...}` (no `tailwind.config.ts` file).
 
-- `Button` - All button variants with loading states
-- `Input` - Text inputs with validation and icons
-- `Select` - Dropdown selections with complex options
-- `Checkbox`, `Radio`, `Toggle` - Form controls
-- `Avatar`, `Badge`, `Tooltip` - Display components
+### Component Props Pattern (forward-looking)
 
-#### 2. Application Components
-
-Located in `components/application/`, these are complex UI patterns:
-
-- `DatePicker` - Calendar-based date selection
-- `Modal` - Overlay dialogs
-- `Pagination` - Data navigation
-- `Table` - Data display with sorting
-- `Tabs` - Content organization
-
-#### 3. Styling Architecture
-
-- Uses a `sortCx` utility for organized style objects
-- Follows size variants: `sm`, `md`, `lg`, `xl`
-- Color variants: `primary`, `secondary`, `tertiary`, `destructive`, etc.
-- Responsive and state-aware styling with Tailwind
-
-#### 4. Component Props Pattern
+When new generic components are added that need to mirror Untitled UI conventions, follow this pattern:
 
 ```typescript
 interface CommonProps {
@@ -140,35 +134,36 @@ interface ButtonProps extends CommonProps, HTMLButtonElement {
 
 ### Tailwind CSS v4.1
 
-- Uses the latest Tailwind CSS v4.1 features
-- Custom design tokens defined in theme configuration
-- Consistent spacing, colors, and typography scales
+- Tailwind v4.1 in-CSS theme — token definitions live in `prototype/app/globals.css` inside an `@theme {...}` block.
+- Consistent spacing, colors, and typography scales.
 
 ### Brand Color Customization
 
-To change the main brand color across the entire application:
+To change the main brand color across the application:
 
-1. **Update Brand Color Variables**: Edit `src/styles/theme.css` and modify the `--color-brand-*` variables
-2. **Maintain Color Scale**: Ensure you provide a complete color scale from 25 to 950 with proper contrast ratios
-3. **Example Brand Color Scale**:
+1. **Edit `prototype/app/globals.css`** (`@theme` block, `BRAND` section) and modify the `--color-brand-*` variables.
+2. **Maintain Color Scale**: Provide the complete scale from 25 to 950 with proper contrast ratios.
+3. **Current scale (verbatim from `globals.css`):**
     ```css
-    --color-brand-25: rgb(252 250 255); /* Lightest tint */
-    --color-brand-50: rgb(249 245 255);
+    --color-brand-25:  rgb(252 250 255); /* Lightest tint */
+    --color-brand-50:  rgb(249 245 255);
     --color-brand-100: rgb(244 235 255);
     --color-brand-200: rgb(233 215 254);
     --color-brand-300: rgb(214 187 251);
     --color-brand-400: rgb(182 146 246);
-    --color-brand-500: rgb(158 119 237); /* Base brand color */
-    --color-brand-600: rgb(127 86 217); /* Primary interactive color */
+    --color-brand-500: rgb(158 119 237); /* Base brand color (focus ring) */
+    --color-brand-600: rgb(127 86 217);  /* Primary interactive color */
     --color-brand-700: rgb(105 65 198);
     --color-brand-800: rgb(83 56 158);
     --color-brand-900: rgb(66 48 125);
-    --color-brand-950: rgb(44 28 95); /* Darkest shade */
+    --color-brand-950: rgb(44 28 95);    /* Darkest shade */
     ```
 
-The color scale automatically adapts to both light and dark modes through the CSS variable system.
+**Dark mode is not currently wired in `/prototype`.** Several semantic-token variants documented below (`_alt`, `_on-brand`) are designed to switch values in dark mode and are **not** yet present in `globals.css` — they're upstream-reference for if/when dark mode lands.
 
-### Style Organization
+### Style Organization (upstream pattern, for new components)
+
+If/when generic UI components are introduced that warrant a `sortCx`-style style object, follow this Untitled UI pattern:
 
 ```typescript
 export const styles = sortCx({
@@ -187,19 +182,24 @@ export const styles = sortCx({
 });
 ```
 
-### Utility Functions
+**Note:** the `sortCx` and `cx` utilities are upstream Untitled UI helpers — **not currently present in `/prototype`** (no `prototype/lib/cx.ts` or similar). The prototype uses string-concatenated `className` strings and template literals directly. If multi-variant component patterns become necessary, port `sortCx` then.
 
-- `cx()` - Class name utility (from `@/utils/cx`)
-- `sortCx()` - Organized style objects
-- `isReactComponent()` - Component type checking
+### Utility Functions (upstream — not currently wired)
+
+- `cx()` - Class name utility — **upstream, not in `/prototype`**
+- `sortCx()` - Organized style objects — **upstream, not in `/prototype`**
+- `isReactComponent()` - Component type checking — **upstream, not in `/prototype`**
 
 ## Icon Usage
 
-### Available Libraries
+### RelayKit-licensed library
 
-- `@untitledui/icons` - 1,100+ line-style icons (free)
-- `@untitledui/file-icons` - File type icons
-- `@untitledui-pro/icons` - 4,600+ icons in 4 styles (Requires PRO access)
+- `@untitledui/icons` (^0.0.21) — 1,100+ line-style icons, free. **The only icon library wired into `/prototype`.**
+
+### Upstream-only libraries (not currently licensed/used by RelayKit)
+
+- `@untitledui/file-icons` - File type icons. **Not in prototype dependencies.**
+- `@untitledui-pro/icons` - 4,600+ icons in 4 styles (line/duocolor/duotone/solid). **Requires PRO license; not in prototype dependencies.** Do not import — would fail to resolve.
 
 ### Import & Usage
 
@@ -207,13 +207,13 @@ export const styles = sortCx({
 // Recommended: Named imports (tree-shakeable)
 import { Home01, Settings01, ChevronDown } from "@untitledui/icons";
 
-// Component props - pass as reference
+// Component props — pass as reference
 <Button iconLeading={ChevronDown}>Options</Button>
 
-// Standalone usage
-<Home01 className="size-5 text-gray-600" />
+// Standalone usage (use a semantic token, not a raw color class)
+<Home01 className="size-5 text-tertiary" />
 
-// As JSX element - MUST include data-icon
+// As JSX element — MUST include data-icon when used as element
 <Button iconLeading={<ChevronDown data-icon className="size-4" />}>Options</Button>
 ```
 
@@ -223,8 +223,8 @@ import { Home01, Settings01, ChevronDown } from "@untitledui/icons";
 // Size: use size-4 (16px), size-5 (20px), size-6 (24px)
 <Home01 className="size-5" />
 
-// Color: use semantic text colors
-<Home01 className="size-5 text-brand-600" />
+// Color: use semantic foreground/text tokens (not raw Tailwind colors)
+<Home01 className="size-5 text-fg-brand-primary" />
 
 // Stroke width (line icons only)
 <Home01 className="size-5" strokeWidth={2} />
@@ -233,19 +233,15 @@ import { Home01, Settings01, ChevronDown } from "@untitledui/icons";
 <Home01 className="size-5" aria-hidden="true" />
 ```
 
-### PRO Icon Styles
+### Common gotcha
 
-```typescript
-import { Home01 } from "@untitledui-pro/icons";
-// Line
-import { Home01 } from "@untitledui-pro/icons/duocolor";
-import { Home01 } from "@untitledui-pro/icons/duotone";
-import { Home01 } from "@untitledui-pro/icons/solid";
-```
+**`ShieldCheck` does not exist in `@untitledui/icons`.** Use `ShieldTick` instead. (`ShieldCheck` exists in many other icon libraries — e.g., Lucide — but not this one. The TypeScript error is helpful but cryptic; remember the rename.)
 
 ## Form Handling
 
-### Form Components
+> **Upstream — not wired in `/prototype`.** The named components below (`Input`, `Select`, `Checkbox`, `Radio`, `Textarea`, `Form`) come from the upstream Untitled UI library. `/prototype` builds form controls from plain `<input>` / `<select>` / `<textarea>` plus semantic tokens. If RelayKit later adopts the Untitled UI form primitives, they'll come in via the `@untitledui-pro/*` packages (not currently licensed) or as locally implemented `react-aria-components` wrappers.
+
+### Form Components (upstream)
 
 - `Input` - Text inputs with validation
 - `Select` - Dropdown selections
@@ -255,13 +251,7 @@ import { Home01 } from "@untitledui-pro/icons/solid";
 
 ## Animation and Interactions
 
-### Animation Libraries
-
-- `motion` (Framer Motion) for complex animations
-- `tailwindcss-animate` for utility-based animations
-- CSS transitions for simple state changes
-
-### CSS Transitions
+### CSS Transitions (RelayKit convention)
 
 For default small transition actions (hover states, color changes, etc.), use:
 
@@ -269,17 +259,25 @@ For default small transition actions (hover states, color changes, etc.), use:
 className = "transition duration-100 ease-linear";
 ```
 
-This provides a snappy 100ms linear transition that feels responsive without being jarring.
+This provides a snappy 100ms linear transition that feels responsive without being jarring. Plain Tailwind utilities — works in `/prototype` today.
 
-### Loading States
+`/prototype` also defines named keyframe animations in `globals.css` for wizard-specific transitions: `wizardFadeIn`, `einCardFade`, `testSentFade`.
 
-- Components support `isLoading` prop
-- Built-in loading spinners
-- Proper disabled states during loading
+### Animation Libraries (upstream — not wired in `/prototype`)
 
-## Common Patterns
+- `motion` (Framer Motion) for complex animations — not a `/prototype` dependency.
+- `tailwindcss-animate` for utility-based animations — not a `/prototype` dependency.
+- For complex animations in RelayKit today, prefer keyframe animations declared in `globals.css` and applied via `animate-*` utilities.
 
-### Compound Components
+### Loading States (upstream pattern)
+
+- Upstream Untitled UI components support an `isLoading` prop with built-in spinners and disabled states. Not applicable in `/prototype` since those components aren't wired. Implement loading affordances manually with semantic tokens (`bg-disabled`, `text-disabled`) and the existing wizard fade animations.
+
+## Common Patterns (upstream — not wired in `/prototype`)
+
+> The compound-component and conditional-rendering snippets below reference upstream primitives (`SelectComponent`, `SelectItem`, `ComboBox`, `Label`, `HintText`) that don't exist in `/prototype`. Kept as forward-looking reference for if/when those primitives are adopted.
+
+### Compound Components (upstream)
 
 ```typescript
 const Select = SelectComponent as typeof SelectComponent & {
@@ -290,7 +288,7 @@ Select.Item = SelectItem;
 Select.ComboBox = ComboBox;
 ```
 
-### Conditional Rendering
+### Conditional Rendering (upstream)
 
 ```typescript
 {label && <Label isRequired={isRequired}>{label}</Label>}
@@ -301,40 +299,60 @@ Select.ComboBox = ComboBox;
 
 ### Component State
 
-- Use React Aria's built-in state management
-- Local state for component-specific data
-- Context for shared component state (theme, router)
+- Local React state (`useState`, `useReducer`) for component-specific data.
+- React context for shared state (sessionStorage-backed wizard state, top-level prototype context, etc.).
+- **Note:** "React Aria's built-in state management" referenced in upstream docs is not applicable to `/prototype` until `react-aria-components` is added.
 
-### Global State
+### Global State (RelayKit `/prototype`)
 
-- Theme context in `src/providers/theme.tsx`
-- Router context in `src/providers/router-provider.tsx`
+- Wizard state — `sessionStorage` key `relaykit_wizard` (read in `useEffect`, not `useState` initializer; SSR hydration). Storage helper at `prototype/lib/wizard-storage.ts`.
+- Other shared state — React contexts in `prototype/context/`.
+- No theme provider (single light-mode theme; dark mode not wired). No router provider (Next.js App Router handles routing natively).
 
-## Key Files and Utilities
-
-### Core Utilities
-
-- `src/utils/cx.ts` - Class name utilities
-- `src/utils/is-react-component.ts` - Component type checking
-- `src/hooks/` - Custom React hooks
+## Key Files and Utilities (`/prototype`)
 
 ### Style Configuration
 
-- `src/styles/globals.css` - Global styles
-- `src/styles/theme.css` - Theme definitions
-- `src/styles/typography.css` - Typography styles
+- `prototype/app/globals.css` — Tailwind v4 `@theme` block (semantic tokens) + wizard animations (`wizardFadeIn`, `einCardFade`, `testSentFade`).
+- No separate `theme.css` or `typography.css` — Tailwind v4's in-CSS theme + utility classes cover both.
+
+### Domain libraries
+
+- `prototype/lib/editor/` — Tiptap editor (D-350, D-353, D-354): `message-editor.tsx`, `variable-node.ts`, `variable-node-view.tsx`, `template-serde.ts`.
+- `prototype/lib/intake/` — Intake helpers + templates.
+- `prototype/lib/wizard-storage.ts` — `sessionStorage` wrapper for wizard state (key `relaykit_wizard`).
+- `prototype/lib/variable-token.ts` — shared color-only class for variable rendering across editor + previews.
+- `prototype/lib/variable-scope.ts` — per-message variable scope helper (D-353).
+- `prototype/lib/slug.ts` — kebab-case slug generator with collision handling.
+- `prototype/lib/catalog-helpers.ts` — catalog-specific helpers.
+
+### Upstream utilities — not currently in `/prototype`
+
+- `cx()` (class-name utility) — **upstream, not wired.** Prototype uses string-concatenated `className`s.
+- `is-react-component.ts` — **upstream, not wired.**
+- `sortCx()` — **upstream, not wired.** See Style Organization section above.
 
 ## Best Practices for AI Assistance
 
-### When Adding New Components
+### When Adding New Components in `/prototype`
 
-1. Follow the existing component structure
-2. Use React Aria Components as foundation
-3. Implement proper TypeScript types
-4. Add size and color variants where applicable
-5. Include accessibility features
-6. Follow the naming conventions
-7. Add components to appropriate folders (`base/`, `application/`, etc.)
+1. Follow the existing flat-with-topical-subfolder structure (`prototype/components/<topic>/<name>.tsx` or top-level `prototype/components/<name>.tsx`).
+2. Use semantic tokens for all colors. Never raw Tailwind color classes.
+3. Implement proper TypeScript types.
+4. Use kebab-case filenames.
+5. Use `@untitledui/icons` for icons (the only licensed library).
+6. Domain components live in `/prototype/components/`; spec them in `PROTOTYPE_SPEC.md`, not in this design-system reference.
+7. **Don't** assume `react-aria-components` is available — it isn't. If accessibility primitives are needed, they need to be added as a dependency first, with the `Aria*` aliasing convention applied at import time.
+
+### Domain components in `/prototype`
+
+The 24 domain component files in `prototype/components/` (top-nav, footer, dashboard-layout, wizard-layout, sign-in-modal, catalog-card, custom-message-card, ein-inline-verify, ask-claude-panel, plan-builder/, registration/, etc.) are RelayKit-specific and **specced in `PROTOTYPE_SPEC.md`**, not here. This reference is for design-system primitives (tokens + icon library + naming conventions), not for screen-level domain components.
+
+---
+
+# Upstream Untitled UI Reference (not currently wired into `/prototype`)
+
+> **The component sections below are preserved from the upstream Untitled UI design-system reference.** None of these components are currently imported in `/prototype` — there is no `@/components/base/...` directory tree, and the prototype uses plain Tailwind + the semantic-token CSS variables instead. This section is kept as forward-looking reference for if/when RelayKit adopts upstream Untitled UI primitives. The import paths shown (`@/components/base/buttons/button`, etc.) **will fail to resolve in `/prototype` today** — they describe the upstream library structure, not RelayKit's actual layout.
 
 ## Most Used Components Reference
 
@@ -687,6 +705,14 @@ When passing icons to components:
 <Button iconLeading={<ChevronDown data-icon className="size-4" />}>Options</Button>
 ```
 
+---
+
+# Token Reference (mostly applicable to `/prototype`)
+
+> **Scope.** The tables below come from the upstream Untitled UI documentation but the **token names themselves are universal** — most are wired in `/prototype`'s `globals.css` and are the canonical color system for RelayKit. Rows marked **⚠ Upstream-only** are documented in the upstream system but **not currently defined in `/prototype/app/globals.css`** — using them in RelayKit code today will fall back to whatever Tailwind does with an undefined custom variable. If you need one of those tokens, define it in `globals.css` first.
+>
+> **Wired-but-undocumented tokens** (defined in `/prototype` but not in the upstream tables below) are listed in the "RelayKit-only token additions" section at the end.
+
 ## COLORS
 
 MUST use color classes to style elements.
@@ -702,6 +728,17 @@ Good:
 - text-primary
 - text-secondary
 - bg-primary
+
+### Upstream-only tokens (not in `/prototype/app/globals.css`)
+
+The tables below contain a mix of wired and upstream-only tokens. These names appear in the tables but are **not** wired in `/prototype` — define them in `globals.css` before using:
+
+- **Text:** `text-primary_on-brand`, `text-secondary_on-brand`, `text-tertiary_on-brand`, `text-quaternary_on-brand`, `text-brand-secondary_hover`, `text-brand-tertiary_alt`
+- **Border:** `border-secondary_alt`, `border-disabled_subtle`, `border-brand_alt`, `border-error_subtle`
+- **Foreground:** `fg-secondary_hover`, `fg-tertiary_hover`, `fg-white`, `fg-disabled_subtle`, `fg-brand-primary_alt`, `fg-brand-secondary_alt`
+- **Background:** `bg-primary_alt`, `bg-secondary_alt`, `bg-secondary_subtle`, `bg-brand-primary_alt`, `bg-brand-section`, `bg-brand-section_subtle`, `bg-error-solid_hover`
+
+Everything else listed in the four tables that follow **is** wired in `/prototype`.
 
 ### Text Color
 
@@ -814,3 +851,18 @@ Use background color variables to manage all fill colors for elements in your de
 | bg-success-primary      | Primary success state background color for components.                                                                                                                                        |
 | bg-success-secondary    | Secondary success state background color for components such as featured icons.                                                                                                               |
 | bg-success-solid        | Default solid (dark) success state background color for components such as featured icons and metric items.                                                                                   |
+
+### RelayKit-only token additions (wired in `/prototype`, not in upstream tables)
+
+These tokens are defined in `prototype/app/globals.css` but don't appear in the upstream tables above. They are part of the canonical RelayKit token set.
+
+| Name                            | Wired value (light mode)             | Usage                                                                                                            |
+| :------------------------------ | :----------------------------------- | :--------------------------------------------------------------------------------------------------------------- |
+| focus-ring                      | `var(--color-brand-500)`             | Focus-ring color used via `ring-focus-ring` / `outline-focus-ring`. Brand-aware focus indicator.                 |
+| featured-icon-light-fg-brand    | `var(--color-brand-600)`             | Foreground color for brand-themed featured icons (light variant).                                                |
+| featured-icon-light-fg-gray     | `var(--color-gray-500)`              | Foreground color for neutral featured icons (light variant).                                                     |
+| featured-icon-light-fg-error    | `var(--color-error-600)`             | Foreground color for error featured icons (light variant).                                                       |
+| featured-icon-light-fg-warning  | `var(--color-warning-600)`           | Foreground color for warning featured icons (light variant).                                                     |
+| featured-icon-light-fg-success  | `var(--color-success-600)`           | Foreground color for success featured icons (light variant).                                                     |
+
+> **No dark-mode variants today.** `globals.css` declares the `light` token set only — no `@media (prefers-color-scheme: dark)` block, no `.dark` class. Dark mode is not wired in `/prototype`. Upstream tokens that switch behavior in dark mode (`*_alt`, `*_on-brand` variants) are not applicable until dark mode is added.
