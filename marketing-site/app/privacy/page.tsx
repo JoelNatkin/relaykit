@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="mt-2 text-sm text-text-tertiary">
-          Effective Date: March 6, 2026 · Last Updated: March 6, 2026
+          Effective Date: April 28, 2026 · Last Updated: April 28, 2026
         </p>
       </div>
 
@@ -637,10 +637,10 @@ export default function PrivacyPage() {
               You may request a copy of the personal information we hold about
               you by contacting{" "}
               <a
-                href="mailto:privacy@relaykit.ai"
+                href="mailto:support@relaykit.ai"
                 className="text-text-brand-secondary underline hover:text-text-brand-primary"
               >
-                privacy@relaykit.ai
+                support@relaykit.ai
               </a>
               . We will provide the information in a structured, commonly used
               format within 30 days.
@@ -673,10 +673,10 @@ export default function PrivacyPage() {
               You may request deletion of your account and associated data by
               contacting{" "}
               <a
-                href="mailto:privacy@relaykit.ai"
+                href="mailto:support@relaykit.ai"
                 className="text-text-brand-secondary underline hover:text-text-brand-primary"
               >
-                privacy@relaykit.ai
+                support@relaykit.ai
               </a>
               . Upon receiving a verified deletion request:
             </p>
@@ -725,10 +725,10 @@ export default function PrivacyPage() {
               the right to non-discrimination for exercising your privacy
               rights. To exercise these rights, contact{" "}
               <a
-                href="mailto:privacy@relaykit.ai"
+                href="mailto:support@relaykit.ai"
                 className="text-text-brand-secondary underline hover:text-text-brand-primary"
               >
-                privacy@relaykit.ai
+                support@relaykit.ai
               </a>
               .
             </p>
@@ -889,10 +889,10 @@ export default function PrivacyPage() {
           <p>
             Email:{" "}
             <a
-              href="mailto:privacy@relaykit.ai"
+              href="mailto:support@relaykit.ai"
               className="text-text-brand-secondary underline hover:text-text-brand-primary"
             >
-              privacy@relaykit.ai
+              support@relaykit.ai
             </a>
           </p>
           <p>Website: relaykit.ai</p>
@@ -900,7 +900,7 @@ export default function PrivacyPage() {
       </section>
 
       <p className="mt-12 text-sm text-text-quaternary">
-        This Privacy Policy was last updated on March 6, 2026.
+        This Privacy Policy was last updated on April 28, 2026.
       </p>
     </div>
   );

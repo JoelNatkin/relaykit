@@ -15,7 +15,7 @@ export default function TermsPage() {
           Terms of Service
         </h1>
         <p className="mt-2 text-sm text-text-tertiary">
-          Effective Date: March 6, 2026 · Last Updated: March 6, 2026
+          Effective Date: April 28, 2026 · Last Updated: April 28, 2026
         </p>
       </div>
 
@@ -1257,10 +1257,10 @@ export default function TermsPage() {
               Before initiating any formal dispute resolution, you agree to
               contact RelayKit at{" "}
               <a
-                href="mailto:legal@relaykit.ai"
+                href="mailto:support@relaykit.ai"
                 className="text-text-brand-secondary underline hover:text-text-brand-primary"
               >
-                legal@relaykit.ai
+                support@relaykit.ai
               </a>{" "}
               and attempt to resolve the dispute informally for at least thirty
               (30) days.
@@ -1360,10 +1360,10 @@ export default function TermsPage() {
             Notices to you will be sent to the email address associated with
             your Account. Notices to RelayKit should be sent to{" "}
             <a
-              href="mailto:legal@relaykit.ai"
+              href="mailto:support@relaykit.ai"
               className="text-text-brand-secondary underline hover:text-text-brand-primary"
             >
-              legal@relaykit.ai
+              support@relaykit.ai
             </a>
             .
           </p>
@@ -1392,10 +1392,10 @@ export default function TermsPage() {
           <p>
             Email:{" "}
             <a
-              href="mailto:legal@relaykit.ai"
+              href="mailto:support@relaykit.ai"
               className="text-text-brand-secondary underline hover:text-text-brand-primary"
             >
-              legal@relaykit.ai
+              support@relaykit.ai
             </a>
           </p>
           <p>Website: relaykit.ai</p>
@@ -1403,7 +1403,7 @@ export default function TermsPage() {
       </section>
 
       <p className="mt-12 text-sm text-text-quaternary">
-        These Terms of Service were last updated on March 6, 2026.
+        These Terms of Service were last updated on April 28, 2026.
       </p>
     </div>
   );

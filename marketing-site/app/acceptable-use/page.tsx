@@ -15,7 +15,7 @@ export default function AcceptableUsePolicyPage() {
           Acceptable Use Policy
         </h1>
         <p className="mt-2 text-sm text-text-tertiary">
-          Effective Date: March 6, 2026 · Last Updated: March 6, 2026
+          Effective Date: April 28, 2026 · Last Updated: April 28, 2026
         </p>
       </div>
 
@@ -754,10 +754,10 @@ export default function AcceptableUsePolicyPage() {
           this AUP, or if an End User reports receiving unwanted messages from a
           RelayKit-powered application, please contact us at{" "}
           <a
-            href="mailto:abuse@relaykit.ai"
+            href="mailto:support@relaykit.ai"
             className="text-text-brand-secondary underline hover:text-text-brand-primary"
           >
-            abuse@relaykit.ai
+            support@relaykit.ai
           </a>
           .
         </p>
@@ -814,7 +814,7 @@ export default function AcceptableUsePolicyPage() {
       </section>
 
       <p className="mt-12 text-sm text-text-quaternary">
-        This Acceptable Use Policy was last updated on March 6, 2026.
+        This Acceptable Use Policy was last updated on April 28, 2026.
       </p>
     </div>
   );

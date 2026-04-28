@@ -278,16 +278,7 @@ export default function MarketingHome() {
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <button
-            onClick={() => scrollTo("categories")}
-            className="w-full rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover sm:w-[calc(50%-12px)]"
-          >
-            Start building free &rarr;
-          </button>
-        </div>
-
-        <p className="mt-4 text-center text-xs text-text-tertiary">
+        <p className="mt-8 text-center text-xs text-text-tertiary">
           Volume pricing available above 5,000 messages
         </p>
       </div>
