@@ -262,7 +262,7 @@ export default function MarketingHome() {
             <p className="mt-3 text-base text-text-tertiary">Full refund if not approved.</p>
             <ul className="mt-5 flex flex-col gap-3">
               {[
-                "Carrier registration handled for you — approved in days",
+                "Carrier registration handled for you",
                 "No credit card to start building",
                 "500 messages included per month",
                 "Dedicated phone number",
@@ -303,7 +303,7 @@ export default function MarketingHome() {
               {
                 icon: MessageCheckCircle,
                 title: "Every message checked before sending",
-                desc: "We scan outbound messages against carrier rules automatically. If something would cause a problem, we catch it before it reaches your users — not after.",
+                desc: "We scan outbound messages against carrier rules. If something looks risky, we flag it before it reaches your users.",
               },
               {
                 icon: StopCircle,
@@ -313,7 +313,7 @@ export default function MarketingHome() {
               {
                 icon: Target01,
                 title: "We notice when things drift",
-                desc: "As your app evolves, the messages it sends can gradually shift from what was originally approved. We use AI to spot this early and tell you what to fix — before carriers flag your number.",
+                desc: "As your app evolves, the messages it sends can gradually shift from what was originally approved. We watch for this and tell you what to fix.",
               },
               {
                 icon: BellRinging01,
@@ -369,13 +369,6 @@ export default function MarketingHome() {
               relaykit: "Handled, or your money back.",
             },
             {
-              topic: "Compliance website",
-              desc: "Carriers require a public page with your privacy policy and opt-in terms. No page, no approval.",
-              diy: "Build one from scratch.",
-              others: "Still your problem.",
-              relaykit: "Auto-generated and hosted for you.",
-            },
-            {
               topic: "Message content",
               desc: "Carriers review exactly what you plan to send. Write the wrong thing and your submission is denied.",
               diy: "Write messages. Hope carriers approve them.",
@@ -388,13 +381,6 @@ export default function MarketingHome() {
               diy: "Build STOP/HELP yourself. Get TCPA wrong, you’re liable.",
               others: "Some offer it. Most don’t.",
               relaykit: "Handled automatically. No code needed.",
-            },
-            {
-              topic: "Ongoing compliance",
-              desc: "Messages must stay within the use case you registered for. Drift too far and carriers can suspend your number.",
-              diy: "Hope nothing drifts.",
-              others: "Hope nothing drifts.",
-              relaykit: "Drift detection included for everyone.",
             },
           ].map((row) => (
             <div key={row.topic} className="rounded-xl border border-border-secondary p-5">
