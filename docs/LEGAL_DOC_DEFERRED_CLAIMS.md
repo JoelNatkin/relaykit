@@ -87,6 +87,12 @@
 
 ---
 
+20. **Terms §1 Service definition + §3.1 What RelayKit Provides — feature-claim leaks cut.** Service definition narrowed to currently-shipping components ("compliance site generator," "build spec generator," "deliverable documents" enumeration removed). Same words appeared as Service-component bullets in §3.1: "build spec generator" sub-feature reference dropped from Dashboard bullet, full "Deliverable documents" bullet removed (its enumerated items — build specs, messaging setup guides, SMS compliance guidelines — collapse to "documentation"). Restoration trigger: as compliance site generator (Phase 5 msgverified), build-spec generator (broader concept beyond current SDK), and deliverable-documents production (formal authored deliverables vs current ad-hoc docs) ship, restore matching enumerations to Service definition AND §3.1 bullets in parallel.
+
+**Removed in commit:** `2a653b8`
+
+---
+
 **Architectural-terminology note (2026-04-28, same session):** "Compliance Proxy" terminology retired across all three legal docs. The term was tied to an old architectural model (runtime in-path gatekeeper) that's substantially shifted to authoring-time enforcement (D-279, website-as-authoring-surface). Replaced throughout with outcome-describing language ("RelayKit enforces opt-outs," "messages are blocked when..."). Going forward, legal docs should describe outcomes and obligations, not internal architecture or named components. PM rule: name what users need to know (their messages get sent or blocked, with reasons), not the mechanism. Implementation detail (runtime vs. authoring-time, named components, pipeline stages) is internal and can change without legal-doc impact.
 
 **Sweep applied in commit:** `0604552`

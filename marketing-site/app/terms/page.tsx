@@ -123,11 +123,12 @@ export default function TermsPage() {
             building and testing SMS integrations prior to registration and
             payment.
           </p>
+          {/* CAPABILITY CLAIMS: "compliance site generator" and "build spec generator" cut from Service definition — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 20 */}
           <p>
             <strong className="font-semibold text-text-secondary">"Service"</strong>{" "}
             means the RelayKit platform, including the dashboard, API,
-            sandbox, compliance site generator, build spec generator,
-            deliverable documents, and all related tools and infrastructure.
+            sandbox, message processing infrastructure, and all related
+            tools and documentation.
           </p>
         </div>
       </section>
@@ -222,8 +223,7 @@ export default function TermsPage() {
                 <strong className="font-semibold text-text-secondary">
                   Dashboard
                 </strong>{" "}
-                with use case selection, message plan builder, and build spec
-                generator
+                with use case selection and message plan builder
               </li>
               <li>
                 <strong className="font-semibold text-text-secondary">
@@ -237,13 +237,7 @@ export default function TermsPage() {
                 </strong>{" "}
                 with carrier-rule compliance checks
               </li>
-              <li>
-                <strong className="font-semibold text-text-secondary">
-                  Deliverable documents
-                </strong>{" "}
-                including build specifications, messaging setup guides, and SMS
-                compliance guidelines
-              </li>
+              {/* RESTORE WHEN BUILT: Deliverable documents bullet — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 20 */}
             </ul>
           </div>
 
