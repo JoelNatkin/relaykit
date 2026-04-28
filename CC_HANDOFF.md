@@ -1,132 +1,84 @@
-# CC_HANDOFF — Session 55
+# CC_HANDOFF — Session 56
 
 **Date:** 2026-04-27
-**Session character:** Doc-only (Phase 1 doc work + comprehensive docs audit + Session A targeted fixes + Session B1 UNTITLED_UI_REFERENCE reconciliation)
-**Branch:** main (clean except `M PM_PROJECT_INSTRUCTIONS.md` Joel's pre-existing draft, untouched this session; `?? api/node_modules/` expected)
+**Session character:** Doc-only (Session B2 WORKSPACE_DESIGN_SPEC reconcile + Session C audit-driven cleanup pass: 4 self-audit follow-ups + 5-commit autopilot batch + PRD_SETTINGS scope-clarify with REPO_INDEX entry sharpening)
+**Branch:** main (clean at close; `?? api/node_modules/` expected)
 **Code touched:** None
 **Quality gates:** N/A — skip tsc/eslint/vitest (doc-only)
-**Decisions added:** Zero. Session 53's math-discrepancy investigation was resolved by removing the dangling D-156 reference from D-161 body — that was a body cleanup, not a new decision.
+**Decisions added:** Zero. All edits implemented existing decisions or fixed audit-flagged drift.
 
 ---
 
-## Commits this session (13, in order)
+## Commits this session (in order)
 
-1. `c10183b` — `docs(experiments): draft procedure for Experiment 3c (brand SIMPLIFIED → FULL upgrade)`
-2. `6fc6a9d` — `docs(decisions): remove dangling D-156 reference from D-161 body`
-3. `f95d86e` — `docs(master-plan): v1.2 — retire Experiment 4 from §5; merge into Experiment 3 sub-experiments; renumber STOP/START/HELP to Experiment 4`
-4. `4fb958c` — `docs(master-plan): reconcile drift from v1.2 amendment (§8 Phase 4 prose, §17 Risks, REPO_INDEX MASTER_PLAN row + Phase 1 scope line)`
-5. `7a5b893` — `docs(repo-index): reconcile Active plan pointer to v1.2 numbering (4 items, not 5)`
-6. `ac32394` — `docs: session 54 close-out`
-7. `e86e648` — `audit: docs audit 2026-04-27 (findings only, no cleanup)`
-8. `0689f66` — A1: archive STARTER_KIT_PROGRAM.md (strategic premise retired by MASTER_PLAN §13/§16)
-9. `4d0c3e5` — A2: PROTOTYPE_SPEC remove stale $150 go-live fee reference + refresh header date
-10. `25a42b3` — A3: MASTER_PLAN §1 refresh + L131/L236/L468 stale-reference fixes
-11. `2298e30` — A4: REPO_INDEX self-audit fix — refresh Last touched dates, reconcile L140 numbering, trim Meta bloat
-12. `832a96c` — A5: REPO_INDEX add Canonical sources by topic index (One Source Rule reference)
-13. `8f0ef82` — B1: UNTITLED_UI_REFERENCE reconcile to /prototype reality (Next.js structure, actual tokens, wired components)
+| # | Hash | Description |
+|---|------|-------------|
+| 1 | `ae0eebf` | docs(workspace-design-spec): Session B2 reconcile to /prototype reality (audit verdict #3) |
+| 2 | `c3cd897` | docs(repo-index): Session A self-audit follow-up — Active plan pointer item 1 + Decision count verification cleanup (originally `378ce4d`, amended off Co-Authored-By trailer per durable PM rule) |
+| 3 | `2e923b3` | docs(repo-index): change-log archive split — pre-Session-50 entries → REPO_INDEX_CHANGE_LOG_ARCHIVE.md |
+| 4 | `8876abc` | docs(repo-index): Tier 2 sync — add docs/PRODUCT_SUMMARY.md |
+| 5 | `cf6160d` | docs(product-summary): §13 pricing-restate cleanup — pointer to PRICING_MODEL (audit verdict #10) |
+| 6 | `0de8823` | docs(pricing-model): remove stale "replaces PRD_01 / PRD_07 / PROJECT_OVERVIEW" framing (audit verdict #13) |
+| 7 | `8d6aeac` | docs(sdk-build-plan): fix §1 cross-references — pre-Session-39 numbering leftover (audit verdict #15) |
+| 8 | `50a2dc4` | docs(pm-project-instructions): header date refresh + L649/L650 bullet prefix normalization (audit verdict #14) |
+| 9 | `9cb28da` | docs(decisions): backfill Supersedes field on D-350–D-362 (audit verdict #11) |
+| 10 | `ea2ecc2` | docs(prd-settings): scope-clarify per audit verdict #2 — One Source Rule alignment + REPO_INDEX entry sharpening |
+| 11 | (this commit) | docs: session 56 close-out |
 
-(This handoff commit will land as a 14th commit; pushed at session end.)
-
----
-
-## What was completed (high-level)
-
-### Phase 1 doc updates (commits 1–6)
-- **Experiment 3c procedure draft** — brand SIMPLIFIED → FULL upgrade procedure added to `experiments/sinch/experiments-log.md`. BLOCKED status preserved (depends on 3b PENDING_REVIEW outcome).
-- **D-156 dangling reference cleanup in D-161** — Session 53 math-discrepancy resolved by removing the dangling pointer; D-155+D-156 are clean numbering skips, recorded once at top of DECISIONS.md.
-- **MASTER_PLAN v1.1 → v1.2 amendment** — retired old Experiment 4, merged old Experiments 3+4 into new Experiment 3 (3a brand / 3b campaign / 3c upgrade), renumbered old Experiment 5 → new Experiment 4 (STOP/START/HELP).
-- **Three reconciliation passes** — propagated v1.2 numbering across §8 Phase 4 prose, §17 Risks, REPO_INDEX MASTER_PLAN row + Phase 1 scope line, and REPO_INDEX Active plan pointer (5 items → 4).
-- **Session 54 close-out** — REPO_INDEX + CC_HANDOFF bumps.
-
-### Comprehensive docs audit (commit 7)
-- Dispatched **21 parallel general-purpose subagents**, one per canonical doc (13 root + 8 in `/docs/`), against a six-section rubric (file path/lines, last substantive update, canonical content, cross-doc overlap per One Source Rule, drift, verdict).
-- Synthesized into **`audits/DOCS_AUDIT_2026-04-27.md` (927 lines):** header + verdict-ordered summary table + 21 per-doc full findings + 19-row cross-doc overlap matrix + proposed canonical-source index for REPO_INDEX + proposed drift-detection cadence for CLAUDE.md + closing PM-triage note.
-- Read-only — no doc edits, no canonical-source index added, no CLAUDE.md edit.
-
-### Session A — five high-value targeted fixes (commits 8–12)
-- **A1** STARTER_KIT_PROGRAM archived (strategic premise retired by MASTER_PLAN §13/§16); REPO_INDEX row removed, archive notable-contents updated.
-- **A2** PROTOTYPE_SPEC L74 stale "$150 go-live fee" removed + verified against actual prototype code at `prototype/app/page.tsx:287-299`; pointer to PRICING_MODEL added; header date refreshed.
-- **A3** MASTER_PLAN §1 refresh — 5-paragraph state-of-things dated 2026-04-27 (Phase 1 progress + concrete findings); L131 Exp 1 prose corrected; L236 "Experiments 3 and 4" → "Experiment 3 (3a/3b/3c)"; L468 footer v1.0 → v1.2.
-- **A4** REPO_INDEX self-audit — Meta block collapsed; 9 stale "Last touched" dates refreshed; L139 build-spec status row rewritten with v1.2 numbering + audit pointer; new row added for `audits/DOCS_AUDIT_2026-04-27.md`.
-- **A5** REPO_INDEX gained "Canonical sources by topic" section (One Source Rule index, verbatim from audit synthesis).
-
-### Session B1 — UNTITLED_UI_REFERENCE reconciliation (commit 13)
-- 816 → 868 lines (+195 / −143). Three-region banner structure: RelayKit-grounded sections (L1–340) → Upstream Untitled UI Reference banner (L353) → Token Reference (L710).
-- Project Overview rewritten with full `/prototype` reality; 24 domain components mapped under `catalog/`, `plan-builder/`, `registration/` + top-level; verbatim brand color scale from `globals.css`; Form/Animation/Common Patterns annotated upstream-not-wired (CSS Transitions tip preserved as RelayKit convention); **23 upstream-only tokens** explicitly listed above COLORS tables; new **"RelayKit-only token additions"** table with 6 wired-but-undocumented tokens (`focus-ring` + 5 `featured-icon-light-fg-*`); dark-mode-not-wired note added.
+All commits pushed to `origin/main` mid-session as approved. Final HEAD per `git log` once close-out commit lands.
 
 ---
 
-## Current Phase 1 status (unchanged from Session 54)
+## Branch-name quirk (resolved, no action needed)
 
-- **Experiment 1** — COMPLETE (deliverability-from-unregistered-test) — silent-drop confirmed.
-- **Experiment 1b** — COMPLETE (callback latency baseline) — 1.7s mean.
-- **Experiment 2a** — COMPLETE (webhook receiver scaffold + first MO captured).
-- **Experiment 2b** — BLOCKED + drafted (MO inbound real-traffic exercise).
-- **Experiment 3a** — COMPLETE (brand SIMPLIFIED registration submitted + APPROVED).
-- **Experiment 3b** — **SUBMITTED — PENDING_REVIEW** (campaign registration, registration ID `01kq5ahkf08v64ymqnxsnme5bg`). Awaiting carrier review.
-- **Experiment 3c** — BLOCKED + drafted (brand SIMPLIFIED → FULL upgrade; depends on 3b outcome).
-- **Experiment 4** — BLOCKED + drafted (STOP/START/HELP keyword handling; was Experiment 5 pre-v1.2).
+VS Code / terminal status bar showed stale `reconcile-workspace-design-spec` branch name throughout the session. `git branch --show-current` confirmed `main` and pushes ran clean to `origin/main` regardless. Cosmetic display drift, not a functional issue.
 
 ---
 
-## Outstanding follow-up work (audit-driven backlog)
+## In progress / deferred
 
-**Substantive reconciliation sessions (audit's KEEP + UPDATE high-priority targets):**
-- **Session B2 — WORKSPACE_DESIGN_SPEC reconciliation (substantive).** Doc has not been touched in weeks; significant drift suspected against current `/prototype` post-signup workspace shape. Treat similarly to Session B1 — read-then-reconcile, single commit.
-- **Session B3 — MESSAGE_PIPELINE_SPEC update.** **Deferred to Phase 2 Session B kickoff** — the doc's "GATED on Phase 1 findings" prose is currently overtaken by reality, but the right time to refresh is when Phase 2 actually begins, not now.
+Session C is **paused mid-stream** — pivoting to Sinch 3b rejection response. The two remaining Session C items are deferred until 3b is resolved:
 
-**Session C — cleanup sweep (consolidates audit follow-ups + lower-priority KEEP+UPDATE items + drift-detection cadence landing).** Addresses, in approximate order:
-- The 4 Session A follow-up flags (REPO_INDEX Active plan pointer L153–157, "Decision count verification" §, "Change log" archive trigger at 30+ entries, Tier 2 mismatch with PM_PROJECT_INSTRUCTIONS).
-- BACKLOG aging review (have parked items aged into in-scope work or out of relevance per current MASTER_PLAN phases?).
-- PRD_SETTINGS scope-clarify pass (the audit recommended SCOPE-CLARIFY, not full retire).
-- DECISIONS Supersedes backfill for D-350–D-362 (audit found Supersedes-field gaps in this range).
-- PRODUCT_SUMMARY pricing-restate cleanup (delete restated pricing facts; point to PRICING_MODEL.md).
-- PRICING_MODEL stale "replaces PRD_01" framing.
-- PM_PROJECT_INSTRUCTIONS header date refresh + Tier 2 sync against REPO_INDEX.
-- SDK_BUILD_PLAN §1 cross-references refresh.
-- **Land the drift-detection cadence in CLAUDE.md** — audit's proposed wording slots between current Session close-out steps 8 and 9 as a phase-boundary-only step. Land at end of Session C, after substantive cleanup is done.
+1. **BACKLOG aging review** — separate plan-mode task, not started this session.
+2. **Drift-detection cadence into CLAUDE.md** — the audit-flagged proposal at `audits/DOCS_AUDIT_2026-04-27.md` lines 883–911 still hasn't landed in CLAUDE.md. This is also where the no-Co-Authored-By memory rule's long-term home lives (per durable PM rule saved this session as `feedback_commit_trailers.md`).
 
-**Passive (no current action required):**
-- AI_INTEGRATION_RESEARCH — RETIRES WHEN Phase 8 closes. No action this session or next.
+---
+
+## Gotchas / context for next session
+
+1. **3b campaign was rejected by carriers.** PM tomorrow handles edits + resubmission. The Phase 1 docket may need updating once the resubmission outcome is known. Active plan pointer in REPO_INDEX still reflects 3b SUBMITTED — awaiting approval; Phase 1 progress narrative across MASTER_PLAN §1 + REPO_INDEX has not been refreshed for the rejection yet (intentional — wait for PM to land the resubmission first, then capture the rejection→resubmission cycle as a single cohesive update).
+
+2. **Session C is not a clean close.** Audit verdicts addressed this session: #2, #3, #10, #11, #13, #14, #15 (7 of 21). Audit verdicts deferred or scoped elsewhere: #1 (STARTER_KIT_PROGRAM ARCHIVE — done in Session 55), #4 (MESSAGE_PIPELINE_SPEC — gated on Phase 1 closure), #5 (UNTITLED_UI_REFERENCE — done Session 55 B1), #6 (PROTOTYPE_SPEC — Session A), #7 (REPO_INDEX self-audit — closed Sessions A + 56), #8 (MASTER_PLAN — Session A), #9 (BACKLOG — deferred), #12 (DECISIONS_ARCHIVE — deferred residual annotations), #16–#21 (KEEP-AS-IS verdicts). Drift-detection cadence (separate audit closing-note item) still open.
+
+3. **Memory rule for commit trailers** is at `~/.claude/projects/-Users-macbookpro-relaykit/memory/feedback_commit_trailers.md` and indexed in `MEMORY.md`. Long-term home is CLAUDE.md as part of the deferred drift-detection cadence commit. Until then, the memory file persists across sessions.
+
+4. **Working tree at session start had `M PM_PROJECT_INSTRUCTIONS.md`** as expected pre-existing drift (Joel's "Default to keeping CC sessions running" bullet draft from prior session). Resolved during item 4 of autopilot batch via commit `50a2dc4`. Joel paste-to-Claude.ai UI confirmed sync.
+
+5. **No-Co-Authored-By trailer rule** is now durable across sessions (saved as memory feedback). Commit `378ce4d` was amended to `c3cd897` to remove the trailer when this rule was first established. Going forward: do not include `Co-Authored-By` trailers on commits unless Joel or PM explicitly requests them.
+
+6. **Branch hygiene at close:** working tree clean (only untracked `api/node_modules/`); `git rev-list --left-right --count HEAD...origin/main` returns `0 0` after close-out push.
+
+---
+
+## Files modified this session
+
+- `WORKSPACE_DESIGN_SPEC.md` (B2 reconcile)
+- `REPO_INDEX.md` (multiple sub-sessions: self-audit pair, change-log archive split, Tier 2 sync, PRD_SETTINGS canonical-source entry sharpening, Session 56 close-out)
+- `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` (new file — pre-Session-50 change-log entries)
+- `docs/PRODUCT_SUMMARY.md` (audit #10 cleanup)
+- `docs/PRICING_MODEL.md` (audit #13 cleanup)
+- `SDK_BUILD_PLAN.md` (audit #15 cleanup)
+- `PM_PROJECT_INSTRUCTIONS.md` (audit #14 cleanup + L649/L650 prefix hygiene)
+- `DECISIONS.md` (audit #11 Supersedes backfill on D-350–D-362)
+- `docs/PRD_SETTINGS_v2_3.md` (audit #2 SCOPE-CLARIFY, 591 → 366 lines)
+- `CC_HANDOFF.md` (this file, overwritten)
 
 ---
 
 ## Suggested next tasks
 
-1. **Session B2 — WORKSPACE_DESIGN_SPEC reconciliation** (substantive, similar shape to Session B1; ~30–60 min).
-2. **Session C — cleanup sweep** (consolidates outstanding audit follow-ups + lands drift-detection cadence in CLAUDE.md; ~45–90 min depending on slice).
+1. **Sinch 3b rejection response** — PM tomorrow handles edits + resubmission. The priority. Once resubmitted (or if approval lands), Phase 1 docket update lands as one cohesive narrative update across MASTER_PLAN §1 + REPO_INDEX Active plan pointer + experiments-log.md.
 
-Either order is fine. Session B3 is deferred (Phase 2 Session B kickoff). Drift-detection cadence lands at end of Session C.
+2. **Session C resumption (post-3b):** BACKLOG aging review (plan-mode item) + drift-detection cadence into CLAUDE.md (last commit of Session C). The latter incorporates the durable no-Co-Authored-By rule into CLAUDE.md and removes the standalone memory file at that point.
 
----
-
-## Gotchas for next session
-
-- **`audits/DOCS_AUDIT_2026-04-27.md` is the master reference for outstanding cleanup work.** Every Session B/C item above traces to a numbered verdict in that audit. Don't re-derive the priorities — read the audit summary table and pick a slice.
-- **REPO_INDEX now contains a "Canonical sources by topic" section (added Task A5)** — this is the One Source Rule index. Use it when judging where a fact belongs. Don't restate canonical facts; point to the canonical doc.
-- **UNTITLED_UI_REFERENCE.md grew to 868 lines with a three-region banner structure** (RelayKit-grounded → Upstream → Tokens). When reading or editing this file, banners distinguish wired-in-`/prototype` vs forward-looking-upstream content. Don't move content across banners without intentional reclassification.
-- **CLAUDE.md has not yet received the drift-detection cadence** — the audit's proposed wording is in `audits/DOCS_AUDIT_2026-04-27.md` but is not yet in CLAUDE.md. Pending Session C.
-- **Working-tree drift across sessions:** `M PM_PROJECT_INSTRUCTIONS.md` has been modified for several sessions and has not been committed; `?? api/node_modules/` is generated by API local-dev installs. Both are expected; don't touch in close-out.
-- **MASTER_PLAN is at v1.2** (2026-04-26 amendment + 2026-04-27 reconcile-pass without version bump). Phase 1 numbering is now 4 items (1, 1b, 2a/2b, 3a/3b/3c, 4 STOP/START/HELP). Old "Experiment 4" / "Experiment 5" references are stale — the audit flagged any remaining instances; Session A fixed L131/L236/L468 in MASTER_PLAN itself.
-
----
-
-## Files modified this session (across all 13 commits)
-
-- `experiments/sinch/experiments-log.md` (commit 1)
-- `DECISIONS.md` (commit 2)
-- `MASTER_PLAN.md` (commits 3, 4, 10)
-- `REPO_INDEX.md` (commits 4, 5, 11, 12, this close-out)
-- `CC_HANDOFF.md` (commit 6, this close-out)
-- `audits/DOCS_AUDIT_2026-04-27.md` (commit 7 — new file)
-- `docs/STARTER_KIT_PROGRAM.md` → `docs/archive/STARTER_KIT_PROGRAM.md` (commit 8 — `git mv` + prepended deprecation blockquote)
-- `PROTOTYPE_SPEC.md` (commit 9)
-- `docs/UNTITLED_UI_REFERENCE.md` (commit 13)
-
-**Not modified:** all code (`/prototype`, `/api`, `/experiments` Worker code), `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md` (the existing working-tree drift is unrelated to this session).
-
----
-
-## Retirement sweep
-
-N/A — Session 55 did not cross a phase boundary. Phase 1 is still active (3b PENDING_REVIEW; 3c/2b/4 BLOCKED). Sweep deferred until Phase 1 → Phase 2 transition.
+3. **Audit verdict #12 residual archive annotations** (DECISIONS_ARCHIVE.md reciprocal supersession marks for D-27, D-60, D-61, D-82, D-83) — separate scoped session if PM wants to close out all audit verdicts before Phase 2.
