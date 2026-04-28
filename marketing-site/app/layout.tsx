@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Footer } from "@/components/footer";
 import { TopNav } from "@/components/top-nav";
 import "./globals.css";
 
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <TopNav />
         <main className="pt-14">{children}</main>
+        <Footer />
       </body>
     </html>
   );
