@@ -96,14 +96,7 @@ export default function TermsPage() {
             means the message templates finalized during your registration that
             form the baseline for your approved use case with US carriers.
           </p>
-          <p>
-            <strong className="font-semibold text-text-secondary">
-              "Compliance Proxy"
-            </strong>{" "}
-            means RelayKit's message processing infrastructure through which all
-            outbound and inbound SMS messages are routed, and which enforces
-            compliance rules before messages are delivered to carriers.
-          </p>
+          {/* TERMINOLOGY: "Compliance Proxy" definition removed — old architectural model retired, replaced with outcome-describing language elsewhere in doc */}
           {/* RESTORE WHEN BUILT: "Compliance Site" definition — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 1, depends on Phase 5 msgverified opt-in form */}
           <p>
             <strong className="font-semibold text-text-secondary">"End User"</strong>{" "}
@@ -133,9 +126,8 @@ export default function TermsPage() {
           <p>
             <strong className="font-semibold text-text-secondary">"Service"</strong>{" "}
             means the RelayKit platform, including the dashboard, API,
-            Compliance Proxy, sandbox, compliance site generator, build spec
-            generator, deliverable documents, and all related tools and
-            infrastructure.
+            sandbox, compliance site generator, build spec generator,
+            deliverable documents, and all related tools and infrastructure.
           </p>
         </div>
       </section>
@@ -659,10 +651,9 @@ export default function TermsPage() {
             </h3>
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               End Users must be able to opt out of receiving messages at any
-              time by replying STOP (or equivalent keywords). RelayKit's
-              Compliance Proxy enforces opt-out handling at the infrastructure
-              level — messages to opted-out recipients are automatically
-              blocked. However, you must:
+              time by replying STOP (or equivalent keywords). RelayKit enforces
+              opt-out handling — messages to opted-out recipients are
+              automatically blocked. However, you must:
             </p>
             <ul className="mt-3 list-disc space-y-1.5 pl-5 text-base text-text-tertiary">
               <li>
@@ -783,8 +774,8 @@ export default function TermsPage() {
               9.2 Message Blocking
             </h3>
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              RelayKit's Compliance Proxy may block individual messages before
-              they reach carriers if they violate compliance rules.{" "}
+              RelayKit may block individual messages before they reach
+              carriers if they violate compliance rules.{" "}
               <strong className="font-semibold text-text-secondary">
                 You acknowledge that RelayKit has no liability for blocked
                 messages
@@ -1081,7 +1072,7 @@ export default function TermsPage() {
               <li>
                 Carrier rejection, delay, or failure of your 10DLC registration
               </li>
-              <li>Messages blocked by the Compliance Proxy</li>
+              <li>Messages blocked by RelayKit for compliance reasons</li>
               <li>
                 Temporary or permanent suspension of messaging services due to
                 carrier action

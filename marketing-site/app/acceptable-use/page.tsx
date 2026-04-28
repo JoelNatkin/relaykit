@@ -366,14 +366,13 @@ export default function AcceptableUsePolicyPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               3.3 Quiet Hours
             </h3>
-            {/* RESTORE WHEN BUILT: quiet hours infrastructure-level auto-enforcement — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 15 */}
+            {/* TERMINOLOGY: quiet-hours framing restored to enforcement claim per PM call — quiet hours IS a feature we enforce, just not via a named "Compliance Proxy" component. Entry 15 in LEGAL_DOC_DEFERRED_CLAIMS.md marked resolved. */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              You should not send messages between 9:00 PM and 9:00 AM in the
-              recipient's local time zone. Several US states (including
-              Florida, Oklahoma, and Washington) impose statutory quiet hours
-              restrictions with penalties for violations. Failure to honor
-              quiet hours may result in carrier complaints, regulatory
-              penalties, and AUP enforcement action.
+              Messages sent between 9:00 PM and 9:00 AM in the recipient's
+              local time zone are blocked by RelayKit. Several US states
+              (including Florida, Oklahoma, and Washington) impose statutory
+              quiet hours restrictions with penalties for violations. You may
+              not attempt to circumvent quiet hours enforcement.
             </p>
           </div>
 

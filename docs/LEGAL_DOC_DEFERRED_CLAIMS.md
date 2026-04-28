@@ -73,7 +73,7 @@
 
 14. **§3.1 Consent — Mixed-tier marketing-consent enforcement sentence.** Removed: "If you are registered under the Mixed tier, RelayKit's Compliance Proxy enforces recipient-level marketing consent — marketing messages sent to recipients who have not opted in to marketing content will be blocked with a marketing_consent_required error." Restoration trigger: recipient-level marketing consent enforcement ships at the proxy (per MESSAGE_PIPELINE_SPEC future work). When restored, do NOT use "Mixed tier" — replace with current pricing-tier language ("$29/month plan with marketing campaigns") per D-245, D-251.
 
-15. **§3.3 Quiet Hours — "blocked by the Compliance Proxy / enforced at the infrastructure level" claims.** Softened. The recommendation/best-practice framing stays, the auto-enforcement claim cuts. Restoration trigger: quiet hours enforcement ships at the proxy. When restored, restore the original "blocked by the Compliance Proxy" framing.
+15. **§3.3 Quiet Hours — "blocked by the Compliance Proxy / enforced at the infrastructure level" claims.** ~~Softened.~~ **RESOLVED 2026-04-28 same session:** Reframed to enforcement-claim language without naming a specific component. Quiet hours IS an enforced feature; the issue was naming the mechanism, not the claim itself. New framing: "Messages sent between 9:00 PM and 9:00 AM in the recipient's local time zone are blocked by RelayKit." No restoration needed — current framing is correct.
 
 16. **§3.4 Message Frequency — "monitored by the async compliance pipeline" claim.** Softened to remove the async pipeline reference. Excessive-frequency prohibition stays; specific monitoring mechanism cuts. Restoration trigger: async monitoring pipeline ships per MESSAGE_PIPELINE_SPEC.
 
@@ -84,6 +84,12 @@
 19. **§5.1 Inline Enforcement table — four of six rows cut** (SHAFT-C content_prohibited, quiet_hours_violation, blocked URL content_prohibited, marketing_consent_required). Two rows remain (recipient_opted_out, empty message content_prohibited). §5.2 Async Enforcement section — entirely cut (all four bullets describe features not shipped: business-name-missing async detection, opt-out-language-missing async detection, frequency monitoring, drift detection). §5.3 Manual Enforcement renumbered to §5.2. Restoration trigger: as each individual capability ships, restore matching table row or async bullet. Treat as multiple sub-restorations.
 
 **Removed in commit:** `e19029f`
+
+---
+
+**Architectural-terminology note (2026-04-28, same session):** "Compliance Proxy" terminology retired across all three legal docs. The term was tied to an old architectural model (runtime in-path gatekeeper) that's substantially shifted to authoring-time enforcement (D-279, website-as-authoring-surface). Replaced throughout with outcome-describing language ("RelayKit enforces opt-outs," "messages are blocked when..."). Going forward, legal docs should describe outcomes and obligations, not internal architecture or named components. PM rule: name what users need to know (their messages get sent or blocked, with reasons), not the mechanism. Implementation detail (runtime vs. authoring-time, named components, pipeline stages) is internal and can change without legal-doc impact.
+
+**Sweep applied in commit:** `0604552`
 
 ---
 
