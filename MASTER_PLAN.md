@@ -1,6 +1,8 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.2 — April 26, 2026
+### Version 1.3 — April 28, 2026
+
+**v1.3 — 2026-04-28:** §9 Phase 5 amendment — lock in msgverified-hosted opt-in form as required launch-scope work, no longer conditional. Adds per-customer signup URL (`msgverified.com/{slug}/signup`), brand-name display, D-365 consent language, SMS verification, consent-ledger integration, slug provisioning during onboarding, and registration of the URL as the carrier-submission CTA. Reason: post-3b rejection (2026-04-27) surfaced that customers come to RelayKit *to get* SMS — they don't already have a signup form, so without RelayKit hosting one, every customer registration would fail CR4015 (functional opt-in/CTA URL). The "if carriers require it" framing in v1.2 is wrong; carriers always require a functional CTA URL, and the customer reality means RelayKit must host. Out-of-scope-for-launch items added (custom theming beyond brand name, multi-opt-in per slug, customer-domain hosting, multi-language). Open design questions noted (slug format/collision handling, brand customization scope, onboarding-flow surfacing) — to be resolved at Phase 5 design start. Title line bumped to 1.3.
 
 **v1.2 — 2026-04-26:** §5 Phase 1 amendment — retire Experiment 4 as a separate experiment; merge old Experiments 3 and 4 into a single new Experiment 3 covering the full registration arc (3a brand, 3b campaign, 3c upgrade); renumber old Experiment 5 to new Experiment 4; update §5 prose paragraphs accordingly. Reason: 3b's procedure already covers what Experiment 4 was originally defined as ("Submit a campaign registration and measure time"); the experiments log has organically grown 3a/3b/3c sub-experiments that better describe the registration work; an orphan Experiment 4 reference creates ledger drift.
 
@@ -239,7 +241,11 @@ This is the phase that delivers the fast-registration promise. Today's `/src` ha
 
 The UI for registration already exists in the prototype — it's a well-designed flow with onboarding, building, pending, extended-review, registered, and rejected states. Phase 5's job is to wire that UI to real Sinch submissions and real state transitions, not to redesign the UI.
 
-This phase includes the compliance site (msgverified.com) if carriers require it for brand verification — Phase 1 Experiment 3 will tell us whether Sinch's flow expects us to host this.
+This phase also delivers the msgverified.com opt-in form — the customer-facing signup surface that RelayKit hosts on each customer's behalf. v1.2 framed this as conditional ("if carriers require it"), which was wrong: every customer-side carrier registration requires a functional opt-in / CTA URL (carrier rejection code CR4015), and RelayKit's customers do not arrive with a signup form already on their site — that's why they're using RelayKit. Without RelayKit hosting the opt-in form, no customer registration can pass. Discovered post-3b rejection (2026-04-27).
+
+**msgverified opt-in form:** Per-customer URL at `msgverified.com/{customer-slug}/signup`, displays the customer's brand name, carrier-defensible consent language per D-365, phone number entry → SMS verification code → opt-in confirmed and tracked in the existing consent ledger (same backend as the wired-up SDK flow). The URL is registered as the CTA on the customer's carrier submission. Slug is provisioned during onboarding (after business info, before registration).
+
+Open design questions to resolve at Phase 5 design start: slug format and collision handling (likely a new D-number), URL displayed-brand customization scope, how the slug surfaces in the customer's onboarding flow.
 
 **What gets done:**
 
@@ -248,14 +254,14 @@ This phase includes the compliance site (msgverified.com) if carriers require it
 - Polling / webhook for status updates
 - State transition logic (Building → Pending → Registered, etc.)
 - UI wiring from prototype to production
-- Compliance site (msgverified.com) if required
+- msgverified.com opt-in form per customer (slug provisioning during onboarding, brand display, D-365 consent language, SMS verification, consent-ledger integration, registration as carrier-submission CTA)
 - Tests
 
 **What does not get done in Phase 5:**
 
-Marketing campaign expansion (that's a customer action post-registration, not part of the initial submission flow). Multi-project support. BYO Twilio.
+Marketing campaign expansion (that's a customer action post-registration, not part of the initial submission flow). Multi-project support. BYO Twilio. msgverified opt-in form scope is bounded at launch: no custom theming beyond brand name display, no multiple opt-ins per slug (one per project, matches D-333), no customer-domain hosting (the upgrade path, post-launch), no multi-language.
 
-**Phase 5 demo moment:** Joel, simulating a new customer, clicks "register" in the prototype, pays $49, submits, and within a few days sees the registration move to approved and live. A real message from his app reaches a real phone number that isn't on his verified list.
+**Phase 5 demo moment:** Joel, simulating a new customer, clicks "register" in the prototype, pays $49, submits, and within a few days sees the registration move to approved and live. A real message from his app reaches a real phone number that isn't on his verified list. `msgverified.com/{slug}/signup` renders with his brand name, accepts a phone number, sends a verification code, and the opt-in lands in the consent ledger.
 
 **Phase 5 output:** The fast-registration promise is real and demonstrable. The product can take a new customer from signup to go-live within days, not weeks.
 
@@ -372,7 +378,7 @@ The final phase. Everything built before this works in isolation. Phase 10 is th
 
 - Two-way dashboard view — a basic inbox UI so developers and business users can see inbound messages (not a full inbox product; a functional viewer)
 - Email integration (Resend) — registration confirmations, approval notices, billing receipts
-- Compliance site finalization (msgverified.com) — privacy policy, terms, opt-in/out language, contact
+- Compliance site finalization (msgverified.com) — privacy policy, terms, opt-in/out language, contact pages layered on top of Phase 5's per-customer opt-in form
 - Raw-color-violation cleanup in prototype (per audit)
 - Stale-pricing sweep across marketing pages
 - Marketing site final copy pass against Voice Principles v2.0
@@ -467,4 +473,4 @@ Everything else waits its turn.
 
 ---
 
-*End of master plan v1.2*
+*End of master plan v1.3*
