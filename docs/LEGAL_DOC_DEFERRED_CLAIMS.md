@@ -61,6 +61,32 @@
 
 ---
 
+### 2026-04-28 — AUP editorial pass before carrier resubmission (same session)
+
+**Source:** `/marketing-site/app/acceptable-use/page.tsx`
+
+**Cuts:**
+
+12. **§1.1 SHAFT-C — "blocked automatically by RelayKit's Compliance Proxy" claim.** Softened (not deleted entirely — the prohibition itself stays, just the auto-blocking claim narrows). New language frames SHAFT-C as a material breach without claiming inline auto-blocking. Restoration trigger: inline SHAFT-C content scanning ships per MESSAGE_PIPELINE_SPEC. When restored, the original "blocked automatically" framing returns.
+
+13. **§1.5 Content Allowlists — entire subsection.** Removed. Described per-customer allowlists generated during registration to handle restricted-term false positives (e.g., restaurant menu items referencing alcohol). Restoration trigger: per-customer content allowlist feature ships (currently no specific phase assignment — likely post-launch). When restored, ensure language matches actual feature shape.
+
+14. **§3.1 Consent — Mixed-tier marketing-consent enforcement sentence.** Removed: "If you are registered under the Mixed tier, RelayKit's Compliance Proxy enforces recipient-level marketing consent — marketing messages sent to recipients who have not opted in to marketing content will be blocked with a marketing_consent_required error." Restoration trigger: recipient-level marketing consent enforcement ships at the proxy (per MESSAGE_PIPELINE_SPEC future work). When restored, do NOT use "Mixed tier" — replace with current pricing-tier language ("$29/month plan with marketing campaigns") per D-245, D-251.
+
+15. **§3.3 Quiet Hours — "blocked by the Compliance Proxy / enforced at the infrastructure level" claims.** Softened. The recommendation/best-practice framing stays, the auto-enforcement claim cuts. Restoration trigger: quiet hours enforcement ships at the proxy. When restored, restore the original "blocked by the Compliance Proxy" framing.
+
+16. **§3.4 Message Frequency — "monitored by the async compliance pipeline" claim.** Softened to remove the async pipeline reference. Excessive-frequency prohibition stays; specific monitoring mechanism cuts. Restoration trigger: async monitoring pipeline ships per MESSAGE_PIPELINE_SPEC.
+
+17. **§3.6 Use Case Compliance — drift detection enforcement schedule.** Removed the specific escalation schedule (3-detections-in-7-days warning, 10-in-30-days rate reduction, persistent drift pause). The "stay within your registered use case" requirement stays, the auto-enforcement schedule cuts. Restoration trigger: drift detection ships AND specific enforcement thresholds are settled product decisions.
+
+18. **§3.7 Rate Limits — "20,000 messages per day abuse safeguard" claim.** Removed. Restoration trigger: abuse safeguard implementation ships at the proxy or infrastructure level.
+
+19. **§5.1 Inline Enforcement table — four of six rows cut** (SHAFT-C content_prohibited, quiet_hours_violation, blocked URL content_prohibited, marketing_consent_required). Two rows remain (recipient_opted_out, empty message content_prohibited). §5.2 Async Enforcement section — entirely cut (all four bullets describe features not shipped: business-name-missing async detection, opt-out-language-missing async detection, frequency monitoring, drift detection). §5.3 Manual Enforcement renumbered to §5.2. Restoration trigger: as each individual capability ships, restore matching table row or async bullet. Treat as multiple sub-restorations.
+
+**Removed in commit:** `e19029f`
+
+---
+
 ## Restored claims
 
 (Entries moved here once features ship and claims restore. Empty for now.)

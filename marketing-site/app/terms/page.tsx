@@ -23,9 +23,9 @@ export default function TermsPage() {
       <div className="space-y-4">
         <p className="text-base leading-relaxed text-text-tertiary">
           These Terms of Service ("Terms") constitute a legally binding
-          agreement between you ("Developer," "you," or "your") and Vaulted
-          Press LLC, a South Carolina limited liability company doing business
-          as RelayKit ("RelayKit," "we," "us," or "our"). By creating an
+          agreement between you ("Developer," "you," or "your") and RelayKit
+          LLC, a South Carolina limited liability company (formerly Vaulted
+          Press LLC) ("RelayKit," "we," "us," or "our"). By creating an
           account, accessing the RelayKit platform, or using any RelayKit
           services, you agree to be bound by these Terms, the{" "}
           <Link
@@ -839,7 +839,7 @@ export default function TermsPage() {
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               The Service, including all software, APIs, documentation,
               templates, compliance artifacts, build specifications, and
-              infrastructure, is the property of Vaulted Press LLC and is
+              infrastructure, is the property of RelayKit LLC and is
               protected by applicable intellectual property laws. These Terms
               grant you a limited, non-exclusive, non-transferable, revocable
               license to use the Service in accordance with these Terms.
@@ -1116,7 +1116,7 @@ export default function TermsPage() {
           13. Indemnification
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-tertiary">
-          You agree to indemnify, defend, and hold harmless Vaulted Press LLC,
+          You agree to indemnify, defend, and hold harmless RelayKit LLC,
           its officers, directors, employees, and agents from and against any
           and all claims, damages, losses, liabilities, costs, and expenses
           (including reasonable attorneys' fees) arising out of or related to:
@@ -1334,7 +1334,7 @@ export default function TermsPage() {
         </h2>
         <div className="mt-4 space-y-1 text-base text-text-tertiary">
           <p className="font-semibold text-text-secondary">
-            Vaulted Press LLC (d/b/a RelayKit)
+            RelayKit LLC (formerly Vaulted Press LLC)
           </p>
           <p>5196 Celtic Dr, North Charleston, SC 29405</p>
           <p>

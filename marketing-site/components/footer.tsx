@@ -8,7 +8,7 @@ export function Footer() {
           <div>
             <p className="text-sm font-semibold text-text-primary">RelayKit</p>
             <div className="mt-3 flex flex-col gap-1 text-sm text-text-tertiary">
-              <p>Vaulted Press LLC (d/b/a RelayKit)</p>
+              <p>RelayKit LLC (formerly Vaulted Press LLC)</p>
               <p>5196 Celtic Dr</p>
               <p>North Charleston, SC 29405</p>
               <p className="mt-2">

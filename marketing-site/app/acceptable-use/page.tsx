@@ -83,8 +83,6 @@ export default function AcceptableUsePolicyPage() {
                   Alcohol:
                 </strong>{" "}
                 Promotion, sale, or advertising of alcoholic beverages
-                (exceptions may apply for businesses whose primary registration
-                involves food and beverage — see Section 1.5)
               </li>
               <li>
                 <strong className="font-semibold text-text-secondary">
@@ -109,11 +107,10 @@ export default function AcceptableUsePolicyPage() {
                 your jurisdiction
               </li>
             </ul>
+            {/* RESTORE WHEN BUILT: SHAFT-C inline auto-blocking claim — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 12 */}
             <p className="mt-3 text-base leading-relaxed text-text-tertiary">
-              SHAFT-C content is blocked automatically by RelayKit's Compliance
-              Proxy before reaching carriers. Repeated attempts to send SHAFT-C
-              content constitute a material breach of the Terms and may result
-              in immediate Account termination.
+              Sending SHAFT-C content constitutes a material breach of the
+              Terms and may result in immediate Account termination.
             </p>
           </div>
 
@@ -183,29 +180,7 @@ export default function AcceptableUsePolicyPage() {
             </p>
           </div>
 
-          <div>
-            <h3 className="text-base font-semibold text-text-secondary">
-              1.5 Content Allowlists
-            </h3>
-            <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              Certain businesses operate in industries where restricted terms
-              appear in normal business communications (e.g., a restaurant
-              mentioning "wine pairings" or a bar announcing "cocktail
-              specials"). During the registration process, RelayKit generates
-              per-customer content allowlists based on your business type and
-              registered use case. These allowlists prevent false positives in
-              the Compliance Proxy for terms that are legitimate in your
-              industry context.
-            </p>
-            <p className="mt-3 text-base leading-relaxed text-text-tertiary">
-              Content allowlists do not override the SHAFT-C prohibition — they
-              apply narrowly to terms that are incidental to your registered
-              business activity, not to promotional content for restricted
-              products themselves. For example, a restaurant may reference
-              alcoholic beverages available at their establishment, but may not
-              run a promotional campaign for alcohol sales or delivery.
-            </p>
-          </div>
+          {/* RESTORE WHEN BUILT: §1.5 Content Allowlists subsection — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 13 */}
         </div>
       </section>
 
@@ -260,8 +235,8 @@ export default function AcceptableUsePolicyPage() {
                 <strong className="font-semibold text-text-secondary">
                   Healthcare (HIPAA-covered entities):
                 </strong>{" "}
-                RelayKit's Compliance Proxy processes message content, which
-                creates Business Associate obligations under HIPAA. We do not
+                RelayKit processes message content, which creates Business
+                Associate obligations under HIPAA. We do not
                 currently have the BAA infrastructure, encryption-at-rest audit
                 trails, or 6-year record retention required to safely serve
                 HIPAA-covered entities. Healthcare businesses requiring HIPAA
@@ -309,10 +284,8 @@ export default function AcceptableUsePolicyPage() {
                 <strong className="font-semibold text-text-secondary">
                   Restaurants / Food service:
                 </strong>{" "}
-                Permitted with standard compliance. Alcohol references in the
-                context of menu items or dining experience are handled through
-                content allowlists. Dedicated alcohol promotion campaigns
-                require a marketing expansion registration.
+                Permitted with standard compliance. Dedicated alcohol promotion
+                campaigns require a marketing expansion registration.
               </li>
             </ul>
           </div>
@@ -355,16 +328,7 @@ export default function AcceptableUsePolicyPage() {
                 type and frequency of messages, as mandated by the TCPA.
               </li>
             </ul>
-            <p className="mt-3 text-base leading-relaxed text-text-tertiary">
-              If you are registered under the Mixed tier, RelayKit's Compliance
-              Proxy enforces recipient-level marketing consent — marketing
-              messages sent to recipients who have not opted in to marketing
-              content will be blocked with a{" "}
-              <code className="rounded bg-bg-secondary px-1 py-0.5 font-mono text-sm text-text-secondary">
-                marketing_consent_required
-              </code>{" "}
-              error.
-            </p>
+            {/* RESTORE WHEN BUILT: Mixed-tier marketing consent enforcement paragraph — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 14, do not use "Mixed tier" terminology when restored */}
           </div>
 
           <div>
@@ -402,13 +366,14 @@ export default function AcceptableUsePolicyPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               3.3 Quiet Hours
             </h3>
+            {/* RESTORE WHEN BUILT: quiet hours infrastructure-level auto-enforcement — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 15 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              Messages sent between 9:00 PM and 9:00 AM in the recipient's
-              local time zone are blocked by the Compliance Proxy. This is
-              enforced at the infrastructure level. Several US states (including
+              You should not send messages between 9:00 PM and 9:00 AM in the
+              recipient's local time zone. Several US states (including
               Florida, Oklahoma, and Washington) impose statutory quiet hours
-              restrictions with penalties for violations. You may not attempt
-              to circumvent quiet hours enforcement.
+              restrictions with penalties for violations. Failure to honor
+              quiet hours may result in carrier complaints, regulatory
+              penalties, and AUP enforcement action.
             </p>
           </div>
 
@@ -416,12 +381,12 @@ export default function AcceptableUsePolicyPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               3.4 Message Frequency
             </h3>
+            {/* RESTORE WHEN BUILT: async compliance pipeline monitoring claim — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 16 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               You must not send messages at a frequency that exceeds what you
               declared during registration or what a reasonable recipient would
-              expect. Excessive messaging to individual recipients is monitored
-              by the async compliance pipeline and may trigger warnings or
-              enforcement action.
+              expect. Excessive messaging to individual recipients may trigger
+              AUP enforcement action.
             </p>
           </div>
 
@@ -448,29 +413,12 @@ export default function AcceptableUsePolicyPage() {
               registration rather than gradually drifting outside your approved
               scope.
             </p>
+            {/* RESTORE WHEN BUILT: drift detection enforcement schedule — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 17 */}
             <p className="mt-3 text-base leading-relaxed text-text-tertiary">
-              RelayKit's drift detection system monitors your production
-              messages and compares them against your registered messages and
-              registered use case. If drift is detected:
+              Drifting outside your registered use case may result in AUP
+              enforcement action and, if severe enough to attract carrier
+              attention, suspension of your messaging by carriers.
             </p>
-            <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-base text-text-tertiary">
-              <li>
-                You will receive an alert with a suggested compliant
-                alternative.
-              </li>
-              <li>
-                Repeated drift (3 or more detections in 7 days) generates a
-                dashboard warning and email notification.
-              </li>
-              <li>
-                Persistent drift (10 or more detections in 30 days) may result
-                in a sending rate reduction.
-              </li>
-              <li>
-                Continued drift after rate reduction may result in messaging
-                being paused until you acknowledge and resolve the issue.
-              </li>
-            </ol>
           </div>
 
           <div>
@@ -489,9 +437,8 @@ export default function AcceptableUsePolicyPage() {
                 Retry-After
               </code>{" "}
               header. You must respect rate limit responses and implement
-              appropriate retry logic. An abuse safeguard ceiling of 20,000
-              messages per day is enforced across all Accounts — usage
-              exceeding this threshold triggers automatic review.
+              appropriate retry logic.
+              {/* RESTORE WHEN BUILT: 20K/day abuse safeguard ceiling — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 18 */}
             </p>
           </div>
         </div>
@@ -513,9 +460,8 @@ export default function AcceptableUsePolicyPage() {
               Circumvent enforcement:
             </strong>{" "}
             Attempt to bypass, disable, or interfere with any compliance
-            enforcement mechanism, including the Compliance Proxy, opt-out
-            handling, quiet hours enforcement, SHAFT-C scanning, or drift
-            detection
+            enforcement mechanism, including opt-out handling, content
+            scanning, or other safeguards
           </li>
           <li>
             <strong className="font-semibold text-text-secondary">
@@ -579,11 +525,12 @@ export default function AcceptableUsePolicyPage() {
               5.1 Inline Enforcement (Automatic)
             </h3>
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              The Compliance Proxy automatically blocks messages that violate
-              the following rules. Blocked messages return an error response to
-              your application with an actionable error code. The message is
-              never delivered to the carrier.
+              RelayKit blocks messages that violate the following rules.
+              Blocked messages return an error response to your application
+              with an actionable error code. The message is never delivered to
+              the carrier.
             </p>
+            {/* RESTORE WHEN BUILT: inline enforcement rows for SHAFT-C, quiet hours, blocked URL, marketing consent — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 19 */}
             <div className="mt-4 overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -615,32 +562,6 @@ export default function AcceptableUsePolicyPage() {
                   </tr>
                   <tr>
                     <td className="py-3 pr-4 text-text-tertiary align-top">
-                      SHAFT-C content detected
-                    </td>
-                    <td className="py-3 pr-4 align-top">
-                      <code className="rounded bg-bg-secondary px-1 py-0.5 font-mono text-xs text-text-secondary">
-                        content_prohibited
-                      </code>
-                    </td>
-                    <td className="py-3 text-text-tertiary align-top">
-                      Message contains prohibited content
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 pr-4 text-text-tertiary align-top">
-                      Quiet hours violation
-                    </td>
-                    <td className="py-3 pr-4 align-top">
-                      <code className="rounded bg-bg-secondary px-1 py-0.5 font-mono text-xs text-text-secondary">
-                        quiet_hours_violation
-                      </code>
-                    </td>
-                    <td className="py-3 text-text-tertiary align-top">
-                      Message sent outside 9 AM – 9 PM recipient local time
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 pr-4 text-text-tertiary align-top">
                       Empty message
                     </td>
                     <td className="py-3 pr-4 align-top">
@@ -650,32 +571,6 @@ export default function AcceptableUsePolicyPage() {
                     </td>
                     <td className="py-3 text-text-tertiary align-top">
                       Message body is empty or whitespace only
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 pr-4 text-text-tertiary align-top">
-                      Blocked URL
-                    </td>
-                    <td className="py-3 pr-4 align-top">
-                      <code className="rounded bg-bg-secondary px-1 py-0.5 font-mono text-xs text-text-secondary">
-                        content_prohibited
-                      </code>
-                    </td>
-                    <td className="py-3 text-text-tertiary align-top">
-                      Message contains a URL on the carrier blocklist
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 pr-4 text-text-tertiary align-top">
-                      Marketing consent required
-                    </td>
-                    <td className="py-3 pr-4 align-top">
-                      <code className="rounded bg-bg-secondary px-1 py-0.5 font-mono text-xs text-text-secondary">
-                        marketing_consent_required
-                      </code>
-                    </td>
-                    <td className="py-3 text-text-tertiary align-top">
-                      Mixed tier: recipient has not opted in to marketing
                     </td>
                   </tr>
                 </tbody>
@@ -691,46 +586,11 @@ export default function AcceptableUsePolicyPage() {
             </p>
           </div>
 
-          <div>
-            <h3 className="text-base font-semibold text-text-secondary">
-              5.2 Async Enforcement (Warnings and Escalation)
-            </h3>
-            <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              Compliance checks that run after message delivery generate
-              warnings and may escalate to enforcement actions:
-            </p>
-            <ul className="mt-3 list-disc space-y-1.5 pl-5 text-base text-text-tertiary">
-              <li>
-                <strong className="font-semibold text-text-secondary">
-                  Business name missing:
-                </strong>{" "}
-                Warning notification
-              </li>
-              <li>
-                <strong className="font-semibold text-text-secondary">
-                  Opt-out language missing from first message:
-                </strong>{" "}
-                Warning notification
-              </li>
-              <li>
-                <strong className="font-semibold text-text-secondary">
-                  Excessive messaging frequency:
-                </strong>{" "}
-                Warning, then rate reduction if persistent
-              </li>
-              <li>
-                <strong className="font-semibold text-text-secondary">
-                  Semantic drift from registered use case:
-                </strong>{" "}
-                Alert with suggested rewrite, escalating to rate reduction and
-                pause as described in Section 3.6
-              </li>
-            </ul>
-          </div>
+          {/* RESTORE WHEN BUILT: §5.2 Async Enforcement section — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 19 */}
 
           <div>
             <h3 className="text-base font-semibold text-text-secondary">
-              5.3 Manual Enforcement
+              5.2 Manual Enforcement
             </h3>
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               RelayKit reserves the right to review any Account and take
