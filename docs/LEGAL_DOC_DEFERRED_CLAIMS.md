@@ -39,6 +39,28 @@
 
 ---
 
+### 2026-04-28 — Privacy editorial pass before carrier resubmission (same session)
+
+**Source:** `/marketing-site/app/privacy/page.tsx`
+
+**Cuts:**
+
+7. **§3.3 "Compliance Site" subsection — entire subsection.** Cut because there's no per-customer compliance site yet. Original described the publicly-visible signup surface at `{slug}.msgverified.com` displaying business name, contact info, privacy policy, terms of service, and SMS opt-in page, framed as a 10DLC requirement. Restoration trigger: msgverified opt-in form ships per MASTER_PLAN v1.3 Phase 5. Following subsections renumbered (3.4→3.3, 3.5→3.4, 3.6→3.5) at deletion; revert numbering when restoring.
+
+8. **§6.3 "Deletion" — bullet "Your compliance site will be taken offline."** Cut because there's no per-customer compliance site yet. Restoration trigger: msgverified opt-in form ships (Phase 5) — at that point the per-customer site IS live and the deletion-flow bullet should be reinstated.
+
+9. **§2 "How We Use Your Information" — bullet "Enforce compliance — scan outbound messages for prohibited content, enforce opt-out handling, quiet hours, rate limits, and drift detection."** Cut the specific capability enumeration; replaced with generic "process outbound messages and metadata to enforce the compliance rules described in our Terms of Service and Acceptable Use Policy." Reason: most enumerated capabilities (SHAFT-C scanning, quiet hours, rate limits, drift detection) are aspirational or partial today. Restoration trigger: as individual capabilities ship per MESSAGE_PIPELINE_SPEC and any future drift-detection spec, restore matching language. Treat as multiple sub-restorations. Mirrors Terms cut #2 and #6.
+
+10. **§7.2 "Our Use of End User Data" — two bullets.** (a) "Enforce compliance rules (opt-out handling, quiet hours, SHAFT-C scanning, consent verification)" — cut the parenthetical enumeration; replaced with "Enforce the compliance rules described in our Terms of Service and Acceptable Use Policy." (b) "Detect semantic drift from your registered use case" — removed entirely. Reason: drift detection isn't shipped; specific compliance capabilities are aspirational or partial. Restoration trigger: as individual capabilities ship, restore matching language. Treat as multiple sub-restorations. Mirrors Terms cut #6 and Privacy cut #9.
+
+11. **§1.4 "Usage Data" — Message metadata bullet parenthetical "(hashed for analytics)."** Cut because phone-number hashing is not implemented in the current `/api` surface. Verified via grep on `/api/src` — `auth.ts` only sha256-hashes API keys; no phone-number hashing exists. Also cut "Compliance Proxy" terminology in same §1.4 bullets (Message metadata + Message content) — replaced with "RelayKit" because "Compliance Proxy" has zero active occurrences across `/prototype`, `/api`, MESSAGE_PIPELINE_SPEC, or PROTOTYPE_SPEC. Restoration trigger for the parenthetical: phone-number hashing actually shipped as a privacy mitigation. The "Compliance Proxy" term replacement is permanent (not a restoration entry — terminology has been retired across the active surface).
+
+**Infrastructure-change note (not a restoration entry):** §5 Data Security infrastructure-security bullet had named Cloudflare alongside Supabase. §3.1 Service Providers table also had a Cloudflare row. Both removed in same commit. Marketing site moved to Vercel for hosting; Cloudflare retained only for DNS which doesn't process customer data. If hosting infrastructure changes again, update §5 and §3.1 to reflect current providers.
+
+**Removed in commit:** `78d4ada`
+
+---
+
 ## Restored claims
 
 (Entries moved here once features ship and claims restore. Empty for now.)

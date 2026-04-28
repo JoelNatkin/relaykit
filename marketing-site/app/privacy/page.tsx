@@ -22,8 +22,8 @@ export default function PrivacyPage() {
       {/* Intro */}
       <div className="space-y-4">
         <p className="text-base leading-relaxed text-text-tertiary">
-          Vaulted Press LLC, a South Carolina limited liability company doing
-          business as RelayKit ("RelayKit," "we," "us," or "our"), is committed
+          RelayKit LLC, a South Carolina limited liability company (formerly
+          Vaulted Press LLC) ("RelayKit," "we," "us," or "our"), is committed
           to protecting the privacy of developers who use our platform. This
           Privacy Policy describes how we collect, use, store, and protect your
           information when you use the RelayKit platform and services (the
@@ -164,20 +164,20 @@ export default function PrivacyPage() {
                 — pages visited, features used, and session duration (collected
                 via standard web analytics)
               </li>
+              {/* RESTORE WHEN BUILT: "(hashed for analytics)" parenthetical was named here as a privacy mitigation for the recipient-phone-numbers field. Phone-number hashing is not implemented in the current /api surface (auth.ts only sha256-hashes API keys). Restore the parenthetical when phone hashing is actually shipped. */}
               <li>
                 <strong className="font-semibold text-text-secondary">
                   Message metadata
                 </strong>{" "}
-                — timestamps, recipient phone numbers (hashed for analytics),
-                delivery status, and compliance check results for messages sent
-                through the Compliance Proxy
+                — timestamps, recipient phone numbers, delivery status, and
+                compliance check results for messages sent through RelayKit
               </li>
               <li>
                 <strong className="font-semibold text-text-secondary">
                   Message content
                 </strong>{" "}
-                — the text content of outbound SMS messages routed through the
-                Compliance Proxy (see Section 4 for retention details)
+                — the text content of outbound SMS messages routed through
+                RelayKit (see Section 4 for retention details)
               </li>
             </ul>
           </div>
@@ -221,13 +221,13 @@ export default function PrivacyPage() {
             — charge setup fees, monthly subscriptions, and message overage
             through Stripe
           </li>
+          {/* RESTORE WHEN BUILT: original bullet enumerated specific compliance capabilities (scan outbound messages for prohibited content, enforce opt-out handling, quiet hours, rate limits, drift detection). Most are aspirational or partial today. As individual capabilities ship per MESSAGE_PIPELINE_SPEC and any future drift-detection spec, restore matching language. Treat as multiple sub-restorations. */}
           <li>
             <strong className="font-semibold text-text-secondary">
               Enforce compliance
             </strong>{" "}
-            — scan outbound messages for prohibited content, enforce opt-out
-            handling, quiet hours, rate limits, and drift detection as described
-            in our{" "}
+            — process outbound messages and metadata to enforce the compliance
+            rules described in our{" "}
             <Link
               href="/terms"
               className="text-text-brand-secondary underline hover:text-text-brand-primary"
@@ -312,7 +312,7 @@ export default function PrivacyPage() {
                 <tbody className="divide-y divide-secondary">
                   <tr>
                     <td className="py-3 pr-4 font-semibold text-text-secondary align-top">
-                      Twilio
+                      Sinch
                     </td>
                     <td className="py-3 pr-4 text-text-tertiary align-top">
                       Business name, EIN, address, phone number, use case
@@ -346,18 +346,8 @@ export default function PrivacyPage() {
                       Database hosting and authentication
                     </td>
                   </tr>
-                  <tr>
-                    <td className="py-3 pr-4 font-semibold text-text-secondary align-top">
-                      Cloudflare
-                    </td>
-                    <td className="py-3 pr-4 text-text-tertiary align-top">
-                      Compliance site content, business information displayed
-                      on compliance pages
-                    </td>
-                    <td className="py-3 text-text-tertiary align-top">
-                      Compliance site hosting and CDN
-                    </td>
-                  </tr>
+                  {/* INFRA CHANGE: Cloudflare row removed — marketing site moved to Vercel hosting; Cloudflare retained only for DNS which doesn't process customer data. See LEGAL_DOC_DEFERRED_CLAIMS.md note. */}
+                  {/* RESTORE WHEN BUILT: A row describing the per-customer compliance site host belongs here once the msgverified opt-in form ships per MASTER_PLAN v1.3 Phase 5. */}
                   <tr>
                     <td className="py-3 pr-4 font-semibold text-text-secondary align-top">
                       Resend
@@ -396,26 +386,11 @@ export default function PrivacyPage() {
             </p>
           </div>
 
-          <div>
-            <h3 className="text-base font-semibold text-text-secondary">
-              3.3 Compliance Site
-            </h3>
-            <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              The compliance site generated for you at{" "}
-              <code className="rounded bg-bg-secondary px-1 py-0.5 font-mono text-sm text-text-secondary">
-                {"{slug}.msgverified.com"}
-              </code>{" "}
-              displays your business name, contact information (email, phone,
-              address), privacy policy, terms of service, and SMS opt-in page.
-              This information is publicly accessible by design — carrier
-              reviewers, your End Users, and the general public can view it.
-              This is a requirement of 10DLC registration.
-            </p>
-          </div>
+          {/* RESTORE WHEN BUILT: §3.3 "Compliance Site" subsection described the per-customer signup surface at msgverified.com/{slug}/signup — what fields are publicly visible, what 10DLC framing applies. Restore when the msgverified opt-in form ships per MASTER_PLAN v1.3 Phase 5. Following subsections renumbered (3.4→3.3, 3.5→3.4, 3.6→3.5) at deletion; revert numbering when restoring. */}
 
           <div>
             <h3 className="text-base font-semibold text-text-secondary">
-              3.4 Legal Requirements
+              3.3 Legal Requirements
             </h3>
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               We may disclose your information if required by law, legal
@@ -427,11 +402,11 @@ export default function PrivacyPage() {
 
           <div>
             <h3 className="text-base font-semibold text-text-secondary">
-              3.5 Business Transfer
+              3.4 Business Transfer
             </h3>
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              If Vaulted Press LLC is involved in a merger, acquisition, or sale
-              of assets, your information may be transferred as part of that
+              If RelayKit LLC is involved in a merger, acquisition, or sale of
+              assets, your information may be transferred as part of that
               transaction. We will notify you via email before your information
               becomes subject to a different privacy policy.
             </p>
@@ -439,7 +414,7 @@ export default function PrivacyPage() {
 
           <div>
             <h3 className="text-base font-semibold text-text-secondary">
-              3.6 No Sale of Personal Information
+              3.5 No Sale of Personal Information
             </h3>
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               We do not sell, rent, lease, or trade your personal information to
@@ -583,7 +558,7 @@ export default function PrivacyPage() {
             <strong className="font-semibold text-text-secondary">
               Encryption at rest
             </strong>{" "}
-            — sensitive credentials (Twilio subaccount credentials) are
+            — sensitive credentials (Sinch subaccount credentials) are
             encrypted using AES-256-GCM before storage
           </li>
           <li>
@@ -606,12 +581,12 @@ export default function PrivacyPage() {
             </strong>{" "}
             — no passwords are stored or transmitted
           </li>
+          {/* INFRA CHANGE: Cloudflare reference removed — marketing site moved to Vercel hosting; Cloudflare retained only for DNS which doesn't process customer data. See LEGAL_DOC_DEFERRED_CLAIMS.md note below. */}
           <li>
             <strong className="font-semibold text-text-secondary">
               Infrastructure security
             </strong>{" "}
-            — hosted on Supabase (SOC 2 Type II compliant) and Cloudflare (SOC
-            2 Type II, ISO 27001 certified)
+            — hosted on Supabase (SOC 2 Type II compliant)
           </li>
         </ul>
         <p className="mt-3 text-base leading-relaxed text-text-tertiary">
@@ -694,7 +669,7 @@ export default function PrivacyPage() {
                 Message content and metadata will be deleted according to the
                 retention schedule in Section 4
               </li>
-              <li>Your compliance site will be taken offline</li>
+              {/* RESTORE WHEN BUILT: "Your compliance site will be taken offline" bullet belongs here once the per-customer compliance site at msgverified.com/{slug}/signup ships per MASTER_PLAN v1.3 Phase 5. */}
             </ul>
           </div>
 
@@ -764,13 +739,13 @@ export default function PrivacyPage() {
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               We use End User data only to:
             </p>
+            {/* RESTORE WHEN BUILT: original §7.2 bullets enumerated specific End-User-data uses (compliance rules: opt-out handling, quiet hours, SHAFT-C scanning, consent verification; semantic drift detection). Most are aspirational or partial today. As individual capabilities ship per MESSAGE_PIPELINE_SPEC and any future drift-detection spec, restore matching language. Treat as multiple sub-restorations. */}
             <ul className="mt-3 list-disc space-y-1.5 pl-5 text-base text-text-tertiary">
               <li>Route messages through carrier infrastructure</li>
               <li>
-                Enforce compliance rules (opt-out handling, quiet hours, SHAFT-C
-                scanning, consent verification)
+                Enforce the compliance rules described in our Terms of Service
+                and Acceptable Use Policy
               </li>
-              <li>Detect semantic drift from your registered use case</li>
               <li>
                 Generate aggregate, anonymized analytics (message volumes,
                 delivery rates)
@@ -883,7 +858,7 @@ export default function PrivacyPage() {
         </p>
         <div className="mt-4 space-y-1 text-base text-text-tertiary">
           <p className="font-semibold text-text-secondary">
-            Vaulted Press LLC (d/b/a RelayKit)
+            RelayKit LLC (formerly Vaulted Press LLC)
           </p>
           <p>5196 Celtic Dr, North Charleston, SC 29405</p>
           <p>
