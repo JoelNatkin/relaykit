@@ -84,7 +84,7 @@ This index maps each major topic to its single canonical doc. Per the One Source
 ### UI / Design
 - Screen-level UI specs (every prototype screen) → `PROTOTYPE_SPEC.md`
 - Post-signup workspace architecture (state machine, layout systems) → `WORKSPACE_DESIGN_SPEC.md`
-- Settings PRD (rejection-behavior model, notification triggers, account-vs-app split) → `docs/PRD_SETTINGS_v2_3.md`
+- Settings business logic (rejection-behavior model, refund policy, error-code mapping, notification triggers, account-vs-app field split) → `docs/PRD_SETTINGS_v2_3.md`
 - Design system tokens + component APIs → `docs/UNTITLED_UI_REFERENCE.md`
 
 ### Engineering

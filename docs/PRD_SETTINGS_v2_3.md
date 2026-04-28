@@ -2,7 +2,7 @@
 ## RelayKit — Per-App Settings + Account Settings
 ### Version 2.3 — April 15, 2026
 
-> **Status:** Updated. Added Account Settings page spec (resolves open question #5). Corrected phone model — RelayKit uses email-only auth (magic link, D-03/D-59), no auth phone. Aligned with current prototype, DECISIONS.md (through D-348), PRICING_MODEL.md, VOICE_AND_PRODUCT_PRINCIPLES_v2.md, and WORKSPACE_DESIGN_SPEC.md.
+> **Status:** Updated. Added Account Settings page spec (resolves open question #5). Corrected phone model — RelayKit uses email-only auth (magic link, D-03/D-59), no auth phone. Aligned with current prototype, DECISIONS.md, PRICING_MODEL.md, VOICE_AND_PRODUCT_PRINCIPLES_v2.md, and WORKSPACE_DESIGN_SPEC.md.
 >
 > **Source of truth:** Prototype at `prototype/app/apps/[appId]/settings/page.tsx` and `prototype/app/account/page.tsx` (port 3001). This PRD describes the production version. The prototype is the visual spec.
 >
@@ -24,20 +24,7 @@ Settings is a utility panel: everything findable, nothing hidden, no surprises. 
 
 ## 2. LAYOUT
 
-- Route: `/apps/[appId]/settings` (child page of the workspace — D-332, D-345)
-- Page heading: "Settings" h1 below the back link
-- Navigation: "← Back to [app name]" link at top (e.g., "← Back to GlowStudio"). Links to `/apps/[appId]`.
-- 600px max-width, centered
-- Sections stack vertically as distinct cards (rounded border, padding, `space-y-6`)
-- Sections appear and disappear based on lifecycle state — the page never shows irrelevant empty sections
-- All body text: 14px (`text-sm`). Section headers: 18px (`text-lg font-semibold`). Action links: right-aligned.
-- Ask Claude button available on this page (same entry point pattern as workspace header). Opens panel pre-loaded with the developer's app context and current state. Deflects support questions ("why was my registration rejected?", "how do I update my payment method?") before they become emails.
-
-### Account Access
-
-The top nav includes an account avatar button (right side) with a dropdown menu containing: "Account settings" link and "Sign out." This is consistent across all authenticated pages, not specific to Settings. Account-level fields do not appear on the per-app Settings page — they live on the account settings page (`/account`) accessed via this dropdown. See Section 8 for the full account settings page spec.
-
-The freestanding "Sign out" text link is removed from the top nav. Sign out lives exclusively in the avatar dropdown. The "Sign in" link on unauthenticated marketing pages is unaffected — it remains a freestanding text link.
+> See PROTOTYPE_SPEC §Settings page (L589–L603) for canonical UI layout (route, H1, back link, max-width, card spacing, typography, Ask Claude entry point). PROTOTYPE_SPEC L21 owns the avatar-dropdown / Sign-out placement. This PRD owns the business logic that the layout supports — see §3 Lifecycle States, §4.5 Notification Triggers, §5 Rejection Behavior, §7 Account-vs-App Split below.
 
 ---
 
@@ -67,80 +54,25 @@ Five sections. Each section's visibility is state-dependent. The page only rende
 
 ### 4.1 Business Info
 
+> See PROTOTYPE_SPEC §Settings page (L605–L616) for canonical UI layout (Building editable / post-registration locked field tables, EIN row pattern shared via `EinRow` component). This PRD owns the architectural rationale below.
+
 **Visible:** All states except Onboarding.
-
-This section shows the app-scoped business identity collected during the wizard and (post-registration) submitted to carriers.
-
-#### Building (pre-registration)
-
-Fields are editable — the developer can review and change what they set up during onboarding before paying $49 to register.
-
-| Field | Display | Editable | Notes |
-|-------|---------|----------|-------|
-| Business name | [from wizard] | Yes — inline edit | |
-| Category | [e.g., "Appointment reminders"] | Read-only | Changing use case = new app. |
-| EIN | Masked (e.g., "••••••4567") | Yes — "Edit" link triggers EIN verification flow | Only visible if EIN was provided during onboarding. |
-| EIN (not on file) | "Not on file" | "Add" link | Opens EIN verification flow. Adding EIN unlocks marketing messages. |
-
-**Production edit pattern:** Editable fields open the corresponding wizard step component in a modal (e.g., clicking Edit on business name opens the `/start/business` name input as a modal, clicking Edit on EIN opens the EIN verification flow as a modal). The wizard components accept a `mode` prop — `"wizard"` for onboarding, `"modal"` for Settings edits — that controls navigation behavior. For the prototype, inline editing is sufficient.
-
-#### Post-registration (Pending, Extended Review, Registered, Rejected)
-
-All fields are read-only — they were locked at registration submission.
-
-| Field | Display | Notes |
-|-------|---------|-------|
-| Business name | [as submitted] | Read-only. No sub-text. |
-| Category | [e.g., "Appointment reminders"] | Set at project creation. |
-| EIN (on file) | Masked (e.g., "••••••4567") | Read-only. Locked at submission. |
-| EIN (not on file) | "Not on file" + "Add" link | Available in all post-registration states. Adding EIN unlocks marketing. |
-
-Business name cannot change without canceling and restarting registration — it was submitted to carriers. Category is set at use case selection — changing use case means a new app. EIN is locked at submission.
 
 **Why email and phone aren't here (D-347):** Email is an account-level field shared across all apps. It lives on the account settings page, accessed via the avatar dropdown in the top nav. The per-app test phone is managed on the workspace via the Testers card (D-342). Settings only shows app-scoped fields.
 
-**Interim note:** The account settings page now exists at `/account`. Production Settings should only show app-scoped fields. Email and payment method live on the account page.
+**Why fields lock post-registration:** Business name cannot change without canceling and restarting registration — it was submitted to carriers. Category is set at use case selection — changing use case means a new app. EIN is locked at submission.
 
 ---
 
 ### 4.2 Registration
 
+> See PROTOTYPE_SPEC §Settings page (L618–L642) for canonical UI layout (status indicators, sub-copy, table rows per state, compliance-site link). This PRD owns the rejection behavior model — see §5.
+
 **Visible:** Pending, Extended Review, Registered, Rejected. **Not visible in Building.**
 
 This section states facts about the registration. It does not explain carrier mechanics, registration pipelines, or approval processes. See Section 5 for the full rejection behavior model.
 
-#### Pending / Extended Review
-
-Both states show the same status label. The only difference is the sub-copy.
-
-| Row | Value |
-|-----|-------|
-| Status | Amber dot + "In review" |
-| Submitted | [date] |
-
-**Pending:** No sub-copy.
-
-**Extended Review:** "This is taking longer than usual. We'll email you at [developer's email] when there's an update."
-
-#### Registered
-
-| Row | Value |
-|-----|-------|
-| Status | Green dot + "Active" |
-| Your SMS number | [dedicated number, e.g., +1 (555) 867-5309] |
-| Approved | [date] |
-
-Link: "View compliance site →" — opens `{slug}.msgverified.com` in new tab.
-
-#### Rejected
-
-| Row | Value |
-|-----|-------|
-| Status | Red dot + "Not approved" |
-| Submitted | [date] |
-| Reviewed | [date] |
-
-**Rejection reason:** One or two lines explaining what happened, mapped from the carrier error code. The tone here is factual, not warm — the developer reached this state because they misrepresented their business or violated the acceptable use policy (see Section 5). Example:
+**Rejection reason copy (Rejected state only):** One or two lines explaining what happened, mapped from the carrier error code. The tone here is factual, not warm — the developer reached this state because they misrepresented their business or violated the acceptable use policy (see Section 5). Example:
 
 > Your registration wasn't approved. The business information provided didn't match public records.
 
@@ -154,118 +86,31 @@ No "What was submitted" detail block on the workspace card. On the Settings page
 
 ### 4.3 API Keys
 
-**Visible:** All states.
+> See PROTOTYPE_SPEC §Settings page (L644–L658) for canonical UI layout (TEST/LIVE labels, masked field pattern, copy button, regenerate confirmation modal copy, divider, sub-copy). This PRD owns the data model — see §9.
 
-**Heading:** "API keys"
-
-No sub-copy. The heading plus TEST/LIVE labels plus copy button are self-explanatory.
-
-#### Test Key (all states)
-
-- Label: "TEST" + green "Active" badge
-- Monospace field: full key (e.g., `rk_test_rL7x9Kp2mWqYvBn4`) + copy button
-- No Regenerate — test keys are low-security (delivers to verified phones only, daily cap)
-
-**Data:**
-- Format: `rk_test_{random_32_chars}`
-- Stored as plaintext in `auth.users.raw_user_meta_data.test_api_key`
-- Generated at project creation. Re-displayable (not hashed).
-
-#### Live Key (Registered only)
-
-- Divider between test and live sections
-- Label: "LIVE" + green "Active" badge
-- Masked field: `rk_live_••••••••••••••••••••` + copy button (visually disabled when masked: `opacity-30 cursor-not-allowed`, no click action)
-- "Regenerate" link below field (right-aligned)
-
-**Regenerate confirmation dialog:**
-> This will immediately invalidate your current live key and generate a new one. The new key will be shown once — copy it before closing. Any code using the old key will stop working.
->
-> Buttons: "Cancel" / "Regenerate" (destructive red)
-
-**After regeneration:** New key displayed unmasked, copy button active. On next page load, key is masked again.
-
-**Sub-copy below key fields:** "Live key is shown once when generated. Use Regenerate if you need a new one."
-
-**Data:**
-- Format: `rk_live_{random_32_chars}`
-- Stored as SHA-256 hash in `api_keys` table
-- Shown once at generation (on approval, or after regeneration on Settings)
-- Not retrievable after page navigation — hash cannot be reversed
+**Visible:** All states. Test key always; Live key in Registered only.
 
 ---
 
 ### 4.4 Billing
 
+> See PROTOTYPE_SPEC §Settings page (L660–L667) for canonical UI layout (state-by-state row tables, "Manage billing" / "View account billing" link affordances, cancel-modal copy). Pricing facts (numbers, refund policy, dual-campaign tier) live in `docs/PRICING_MODEL.md` per One Source Rule. This PRD owns the cancellation UX policy and the Rejected-state refund display below.
+
 **Visible:** All states. Content varies.
 
-#### Building
+**Cancellation policy (D-153):** No guilt copy, no survey. Cancel modal requires typing "CANCEL" — the typing requirement prevents accidental destructive action.
 
-| Row | Value |
-|-----|-------|
-| Plan | Test mode — Free |
+**Marketing pricing display (D-294, D-304):** Dual-campaign tier pricing is communicated during the marketing upsell flow, not re-explained on Settings. The $10/month delta surfaces only in the upsell context.
 
-Sub-copy: "No credit card required."
-
-#### Pending / Extended Review
-
-| Row | Value |
-|-----|-------|
-| Registration fee | $49 paid · [date] |
-
-Link: "View account billing →" (right-aligned, navigates to account-level billing page)
-
-#### Registered
-
-| Row | Value |
-|-----|-------|
-| Plan | $19/mo |
-| Includes | 500 messages, then $8 per additional 500 |
-| Next billing | [date] |
-
-Link: "Manage billing →" (right-aligned, opens Stripe Customer Portal)
-
-Separator line.
-
-"Cancel plan" — text link, tertiary styling (`text-text-tertiary`, `hover:text-text-error-primary`).
-
-**Cancel modal:**
-> **Cancel your plan**
->
-> Your plan will stay active through [billing period end date]. After that, live messaging stops but your test environment stays available — your code, your API key, and your test setup aren't going anywhere.
->
-> Type CANCEL to confirm.
->
-> [text input field]
->
-> Buttons: "Keep plan" (grey) / "Cancel plan" (red, disabled until input matches "CANCEL")
-
-No guilt copy, no survey (D-153). The typing requirement prevents accidental destructive action.
-
-**Marketing pricing note (D-294, D-304):** When a developer has both transactional and marketing campaigns active, the plan displays as "$29/mo" instead of "$19/mo." The Includes row stays the same (500 messages are a combined pool). The $10/month increase is communicated during the marketing upsell flow, not re-explained on Settings.
-
-#### Rejected
-
-| Row | Value |
-|-----|-------|
-| Registration fee | See Section 5 for refund policy |
-| Plan | Test mode — Free |
-
-The registration fee line reflects the refund outcome: "$49 refunded · [date]" for process-failure rejections where RelayKit refunded at its discretion, or no refund line for AUP violations. See Section 5 for the full policy.
+**Rejected refund display:** The registration fee line on the Rejected Billing card reflects the refund outcome from §5 — refund date for process-failure rejections, no refund line for AUP violations.
 
 ---
 
 ### 4.5 Notifications
 
-**Visible:** All states.
+> See PROTOTYPE_SPEC §Settings page (L686–L688) for canonical UI layout (heading, sub-copy, toggle, on/off phone-destination display, "Change" link). This PRD owns the trigger matrix and notification-phone model below.
 
-**Heading:** "Notifications"
-**Sub-copy:** "Get a text when something needs your attention."
-
-Toggle switch, **off by default** (D-201).
-
-When on: "Texts go to [verified phone number]" with "Change" link.
-When off: phone destination line hidden.
+**Visible:** All states. Toggle off by default (D-201).
 
 **Note on notification phone:** RelayKit uses email-only authentication (magic link, D-03/D-59). There is no "auth phone." The notification phone is the developer's verified phone from the onboarding flow (`/start/verify`, D-46) — the same number used for test message delivery. If the developer wants to change their notification destination, the "Change" link opens an inline phone verification flow (same component as onboarding).
 
@@ -394,21 +239,9 @@ Route: `/account`
 
 The account settings page manages fields shared across all apps. It is accessed via the avatar dropdown in the top nav ("Account settings" link). It is not a child of any app — it's a top-level page.
 
-### Layout
-
-- Same top nav as all authenticated pages (with avatar dropdown)
-- Back link: "← Back to [app name]" — links to the most recently viewed app (`/apps/[appId]`). If no app context, links to `/apps`.
-- Page heading: "Account settings" h1 below the back link
-- Same max-width, card pattern, typography, and spacing as per-app Settings
-- No state-dependent rendering — all sections always visible
+> See PROTOTYPE_SPEC §Account Settings page (L671–L684) for canonical UI layout (back link, headings, Login / Payment method / Delete account card sections, modal patterns matching the Cancel plan modal). This PRD owns the email-change flow, billing-portal integration, and deletion policy below.
 
 ### 8.1 Login
-
-**Card heading:** "Login"
-
-| Row | Display | Action |
-|-----|---------|--------|
-| Email | jen@glowstudio.com | "Change" link (right-aligned) |
 
 The email address is the developer's login identity (magic link target), Stripe Customer email, and destination for all email notifications. One email, one developer.
 
@@ -422,30 +255,9 @@ This prevents account hijacking via session-based email swaps. The Stripe Custom
 
 ### 8.2 Payment Method
 
-**Card heading:** "Payment method"
-
-| Row | Display | Action |
-|-----|---------|--------|
-| Card on file | "Visa ending in 4242" / "No payment method" | "Manage billing →" link (right-aligned) |
-
 "Manage billing →" opens the Stripe Customer Portal (server-side `stripe.billingPortal.sessions.create()`). All app subscriptions are under one Stripe Customer record — one card, one portal. The developer manages all billing from here, not per-app.
 
 ### 8.3 Delete Account
-
-**Card heading:** "Delete account" — `text-red-600`
-**Card border:** `border-red-200` (instead of normal `border-gray-200`)
-
-**Body text:** "This will permanently delete your account, all apps, and all data. Active subscriptions will be canceled and carrier registrations wound down. This cannot be undone."
-
-**Action:** "Delete account" button, destructive styling (red outline/text, not filled).
-
-**Confirmation modal:** Same pattern as the Cancel plan modal on per-app Settings:
-- Semi-transparent backdrop (`bg-black/50`)
-- White modal, centered
-- Text: "Type DELETE to confirm"
-- Text input field
-- "Delete account" button disabled until input strictly equals "DELETE"
-- "Cancel" button to close
 
 **What deletion does (production):**
 - Cancels all active Stripe subscriptions immediately (not at period end)
@@ -514,46 +326,9 @@ Note: email edits are account-level writes, handled on the account settings page
 
 ## 11. SECTION ORDER BY STATE
 
-| Section | Building | Pending | Extended Review | Registered | Rejected |
-|---------|----------|---------|-----------------|------------|----------|
-| Business info | ✓ (editable) | ✓ (locked) | ✓ (locked) | ✓ (locked) | ✓ (locked) |
-| Registration | — | ✓ | ✓ | ✓ | ✓ |
-| API keys | ✓ (test) | ✓ (test) | ✓ (test) | ✓ (test + live) | ✓ (test) |
-| Billing | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Notifications | ✓ | ✓ | ✓ | ✓ | ✓ |
+**Render order:** Business info → Registration → API keys → Billing → Notifications.
 
-**Section render order on page:** Business info → Registration → API keys → Billing → Notifications.
-
-**Building state:** Four sections visible (Business info, API keys, Billing, Notifications). Business info is editable. No registration section.
-
----
-
-## 12. IMPLEMENTATION NOTES
-
-### Route
-`/apps/[appId]/settings` (D-345)
-
-### Component structure (recommended)
-```
-settings/
-  page.tsx                    # Main page, reads registrationState from context
-  sections/
-    business-info.tsx         # Read-only registration fields
-    registration.tsx          # State-conditional (pending/extended/registered/rejected)
-    api-keys.tsx              # Test + live key display
-    billing.tsx               # State-conditional
-    notifications.tsx         # Toggle + notification destination
-  components/
-    key-field.tsx             # Monospace field + copy button
-    cancel-modal.tsx          # Cancellation confirmation with CANCEL input
-    regenerate-modal.tsx      # Live key regeneration confirmation
-```
-
-### Supabase RLS
-Settings reads scoped to authenticated user's projects. RLS policies ensure users only read/write their own projects.
-
-### Stripe integration
-Billing data fetched server-side via Stripe Node SDK. Cancel calls Stripe API to cancel at period end. "Manage billing" links to Stripe Customer Portal (server-side `stripe.billingPortal.sessions.create()`).
+> See PROTOTYPE_SPEC §Settings page for state-by-state visibility (which sections render in which states, edit-vs-locked treatment of Business info, test-vs-live API key gating). The Registration section is the only fully state-conditional one — it does not render in Building.
 
 ---
 
@@ -565,12 +340,12 @@ Billing data fetched server-side via Stripe Node SDK. Cancel calls Stripe API to
 | 2 | Error code mapping completeness | Carrier selection + error code documentation | Build mapping table per carrier during production. |
 | 3 | Live key initial reveal UX | Approval celebration design | The first reveal happens at the approval moment, not on Settings. Settings always shows masked unless just regenerated. |
 | 4 | Dual-campaign billing display ($29/mo) | Marketing upsell flow completion | Show $19/mo for now. When marketing activates, Billing section reflects $29/mo automatically. |
-| 6 | Ask Claude panel design on Settings | Claude panel design session | Same entry point as workspace. Pre-loaded with app context and current state. Stub for now. |
 
 ### Resolved since V1.0
 
 | Old # | Question | Resolution |
 |-------|----------|------------|
+| 6 (v2) | Ask Claude panel design on Settings | Resolved — Ask Claude pattern standardized in PROTOTYPE_SPEC L34 (same entry point pattern as workspace header, app-context pre-loaded). |
 | 5 (v2) | Account settings page design | Resolved in V2.3. Section 8 specifies the full page: Login (email), Payment method (Stripe portal), Delete account (with DELETE confirmation). No auth phone — RelayKit uses email-only auth (D-03/D-59). |
 | 1 (v1) | Review timeline value | "A few days." Configurable in production. |
 | 2 (v1) | Account-level edit flow | Account settings page via avatar dropdown (D-347). Per-app Settings shows only app-scoped fields. |
