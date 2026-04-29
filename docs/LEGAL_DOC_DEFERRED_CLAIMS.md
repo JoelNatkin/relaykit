@@ -102,6 +102,10 @@
 
     §6.1 Setup Fee description also dropped "and all associated compliance artifacts" (parallel to §10.1, §10.2 cuts — same word, different context).
 
+    Privacy-side parallel cuts (commit follows Terms residuals sweep): §4 Data Retention table — drift detection retention reason removed (parallel to Terms §9.4); Compliance site content retention row removed entirely (parallel to Terms §11.3 termination bullet + §6.6 hosting reference); §7.3 Your Obligations sentence — "RelayKit's compliance site generator creates a privacy policy and opt-in page" preface dropped (parallel to Terms §8.1 cut). Same restoration triggers as Terms cuts: drift detection retention restored when drift detection ships; compliance-site retention row + §7.3 generator preface restored when msgverified Phase 5 ships.
+
+    Privacy §2 Provide the Service bullet also dropped "and deliver your compliance artifacts" (parallel to Terms §6.1, §10.1, §10.2 cuts — same word, this one missed initial sweep due to phrase splitting across two lines in JSX).
+
 **Removed in commit:** `f3652b6`
 
 ---

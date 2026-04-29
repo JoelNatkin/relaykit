@@ -206,13 +206,13 @@ export default function PrivacyPage() {
           We use the information we collect to:
         </p>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-base text-text-tertiary">
+          {/* RESTORE WHEN BUILT: "and deliver your compliance artifacts" — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
           <li>
             <strong className="font-semibold text-text-secondary">
               Provide the Service
             </strong>{" "}
             — create and manage your account, process your 10DLC registration,
-            provision messaging infrastructure, and deliver your compliance
-            artifacts
+            and provision messaging infrastructure
           </li>
           <li>
             <strong className="font-semibold text-text-secondary">
@@ -470,6 +470,7 @@ export default function PrivacyPage() {
                   Carrier compliance records
                 </td>
               </tr>
+              {/* RESTORE WHEN BUILT: drift detection retention reason — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
               <tr>
                 <td className="py-3 pr-4 text-text-tertiary align-top">
                   Message content
@@ -478,7 +479,7 @@ export default function PrivacyPage() {
                   30 days from send date
                 </td>
                 <td className="py-3 text-text-tertiary align-top">
-                  Drift detection and dispute resolution
+                  Dispute resolution
                 </td>
               </tr>
               <tr>
@@ -515,17 +516,7 @@ export default function PrivacyPage() {
                   Debugging, rate limit enforcement, abuse detection
                 </td>
               </tr>
-              <tr>
-                <td className="py-3 pr-4 text-text-tertiary align-top">
-                  Compliance site content
-                </td>
-                <td className="py-3 pr-4 text-text-tertiary align-top">
-                  Duration of account + 30 days after cancellation
-                </td>
-                <td className="py-3 text-text-tertiary align-top">
-                  Carrier audit requirements
-                </td>
-              </tr>
+              {/* RESTORE WHEN BUILT: Compliance site content retention row — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             </tbody>
           </table>
         </div>
@@ -763,15 +754,15 @@ export default function PrivacyPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               7.3 Your Obligations
             </h3>
+            {/* RESTORE WHEN BUILT: "RelayKit's compliance site generator creates..." preface — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               You are responsible for providing appropriate privacy disclosures
               to your End Users, obtaining valid consent before sending
               messages, honoring opt-out requests, and complying with all
-              applicable privacy laws regarding your End Users' data.
-              RelayKit's compliance site generator creates a privacy policy and
-              opt-in page that satisfy carrier requirements, but you are
-              responsible for ensuring they meet the requirements of applicable
-              law for your specific use case and jurisdiction.
+              applicable privacy laws regarding your End Users' data. You are
+              responsible for ensuring your privacy policy and opt-in flow
+              meet the requirements of applicable law for your specific use
+              case and jurisdiction.
             </p>
           </div>
         </div>
