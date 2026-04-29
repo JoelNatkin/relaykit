@@ -120,6 +120,14 @@ Do not load DECISIONS_ARCHIVE.md unless Joel points to a specific D-number OR yo
 8. Overwrite CC_HANDOFF.md with: commits, completed work, in-progress work, quality checks passed, retirement sweep findings (if applicable), gotchas, files modified, suggested next tasks
 9. Do NOT push — PM review first
 
+### Branching for production-facing work
+
+When work touches a production-facing surface (`/marketing-site` today, future `/app` and `/dashboard`), create a feature branch before starting. Naming: `feat/short-name`, `fix/short-name`, `docs/short-name`, `chore/short-name`. Commit on the branch, push to remote, do not merge to main. PM and Joel review the resulting Vercel preview before approving merge.
+
+Trivial changes (typos, comment-only edits, doc reorgs not touching user-facing copy) may go directly to main. When in doubt, branch.
+
+Branch hygiene: at session close-out, surface any unmerged feature branches in CC_HANDOFF so they don't get lost. Do not delete branches until merged.
+
 ## Copy rule
 Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts, modals), read `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` in full and apply the vocabulary table, framing-shift table, emotional-states map, and one-sentence principle. No exceptions for "minor" strings.
 

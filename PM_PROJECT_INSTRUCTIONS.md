@@ -196,6 +196,23 @@ Per MASTER_PLAN working principles, when a phase depends on external systems (Si
 
 ---
 
+## Branch and Preview Workflow
+
+Substantive work on production-facing surfaces (currently `/marketing-site`, eventually the app and dashboard) flows through a feature branch with a preview deployment before merge:
+
+1. CC creates a branch (`feat/short-name`, `fix/short-name`, `docs/short-name`, `chore/short-name`)
+2. CC builds and commits on the branch
+3. CC pushes the branch to remote
+4. Vercel auto-deploys a preview URL for that branch
+5. PM reviews code (in chat) and Joel verifies on the preview URL
+6. After PM approval, merge to `main` → production
+
+Trivial changes (typos, comment-only edits, doc reorgs not touching user-facing copy) may push directly to main per CC's judgment. When in doubt, branch.
+
+`/prototype` is local-dev only — no production deployment, no preview URL needed. `/sdk` previews are tested via local install (`npm pack` + install in a test project). `/api` deployment target is TBD per Phase 5; this workflow generalizes to it when chosen.
+
+---
+
 ## The Codebase
 
 ### Active directories
