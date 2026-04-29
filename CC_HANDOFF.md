@@ -1,11 +1,11 @@
-# CC_HANDOFF — Session 56
+# CC_HANDOFF — Session 57
 
-**Date:** 2026-04-27
-**Session character:** Doc-only (Session B2 WORKSPACE_DESIGN_SPEC reconcile + Session C audit-driven cleanup pass: 4 self-audit follow-ups + 5-commit autopilot batch + PRD_SETTINGS scope-clarify with REPO_INDEX entry sharpening)
-**Branch:** main (clean at close; `?? api/node_modules/` expected)
-**Code touched:** None
-**Quality gates:** N/A — skip tsc/eslint/vitest (doc-only)
-**Decisions added:** Zero. All edits implemented existing decisions or fixed audit-flagged drift.
+**Date:** 2026-04-28
+**Session character:** Marketing-site build + deploy + legal-doc editorial work. Fresh `/marketing-site` Next.js project, home + legal pages ported, deployed to Vercel at `relaykit.ai`, three legal docs (Terms, Privacy, AUP) tightened against current product reality across multiple commits, "Compliance Proxy" terminology retired in favor of outcome-describing language, RelayKit LLC entity-naming framing aligned across all surfaces, MASTER_PLAN v1.3 amendment, two BACKLOG entries, `docs/LEGAL_DOC_DEFERRED_CLAIMS.md` tracking doc created.
+**Branch:** main (clean at close; `?? api/node_modules/` expected; `?? .claude/scheduled_tasks.lock` expected)
+**Code touched:** `/marketing-site` (new project, ~17 files); legal-doc edits across `marketing-site/app/{terms,privacy,acceptable-use}/page.tsx`; shared `Footer` component
+**Quality gates:** tsc `--noEmit` clean, eslint clean, `npm run build` clean (7 static pages, legal pages 167 B each); multiline-safe leak scan returns zero active-text matches across all three legal docs (only HTML comment markers remain — `RESTORE WHEN BUILT` / `TERMINOLOGY` / `CAPABILITY CLAIMS` / `INFRA CHANGE`)
+**Decisions added:** D-366 (Vercel hosting), D-367 (outcome-describing legal-doc principle). D-195 received an Implementation note (entity-naming framing) — no new D-number per Path B.
 
 ---
 
@@ -13,72 +13,101 @@
 
 | # | Hash | Description |
 |---|------|-------------|
-| 1 | `ae0eebf` | docs(workspace-design-spec): Session B2 reconcile to /prototype reality (audit verdict #3) |
-| 2 | `c3cd897` | docs(repo-index): Session A self-audit follow-up — Active plan pointer item 1 + Decision count verification cleanup (originally `378ce4d`, amended off Co-Authored-By trailer per durable PM rule) |
-| 3 | `2e923b3` | docs(repo-index): change-log archive split — pre-Session-50 entries → REPO_INDEX_CHANGE_LOG_ARCHIVE.md |
-| 4 | `8876abc` | docs(repo-index): Tier 2 sync — add docs/PRODUCT_SUMMARY.md |
-| 5 | `cf6160d` | docs(product-summary): §13 pricing-restate cleanup — pointer to PRICING_MODEL (audit verdict #10) |
-| 6 | `0de8823` | docs(pricing-model): remove stale "replaces PRD_01 / PRD_07 / PROJECT_OVERVIEW" framing (audit verdict #13) |
-| 7 | `8d6aeac` | docs(sdk-build-plan): fix §1 cross-references — pre-Session-39 numbering leftover (audit verdict #15) |
-| 8 | `50a2dc4` | docs(pm-project-instructions): header date refresh + L649/L650 bullet prefix normalization (audit verdict #14) |
-| 9 | `9cb28da` | docs(decisions): backfill Supersedes field on D-350–D-362 (audit verdict #11) |
-| 10 | `ea2ecc2` | docs(prd-settings): scope-clarify per audit verdict #2 — One Source Rule alignment + REPO_INDEX entry sharpening |
-| 11 | (this commit) | docs: session 56 close-out |
+| 1 | `8299dbf` | docs(backlog): AI URL scan for customer registration — content extraction + gotcha detection |
+| 2 | `99e4a9b` | docs(master-plan): v1.3 — lock msgverified opt-in form into Phase 5 launch scope |
+| 3 | `607bfd4` | feat(marketing-site): init fresh Next.js project at `/marketing-site` |
+| 4 | `af76a6f` | feat(marketing-site): port marketing home from `/prototype` with content cuts |
+| 5 | `3f371c3` | feat(marketing-site): port legal pages — terms, privacy, acceptable-use |
+| 6 | `bdb38bc` | feat(marketing-site): shared Footer with address, email, working legal links |
+| 7 | `94adb92` | feat(marketing-site): collapse emails to `support@`, refresh dates, remove pricing CTA |
+| 8 | `77222f3` | docs(marketing-site): tighten claims before carrier resubmission |
+| 9 | `e084c8d` | docs(backlog): process for keeping legal docs synced with product reality |
+| 10 | `2bf2353` | docs(marketing-site): tighten Terms — align with current product reality |
+| 11 | `024f1c9` | docs(marketing-site): tighten Privacy — align with current product reality |
+| 12 | `62871cc` | docs(marketing-site): tighten AUP + align Terms entity naming |
+| 13 | `8351b32` | docs(marketing-site): retire "Compliance Proxy" terminology across legal docs |
+| 14 | `aa0e11a` | docs(marketing-site): narrow Terms Service definition — cut feature-claim leaks |
+| 15 | `520ee81` | docs(marketing-site): final Terms residuals sweep before redeploy |
+| 16 | `e40af56` | docs(marketing-site): Privacy residuals sweep — three Phase 5 / drift-detection cuts (amended to fold in §2 "Provide the Service" residual caught by multiline-safe grep) |
+| 17 | (this commit) | docs: session 57 close-out |
 
-All commits pushed to `origin/main` mid-session as approved. Final HEAD per `git log` once close-out commit lands.
-
----
-
-## Branch-name quirk (resolved, no action needed)
-
-VS Code / terminal status bar showed stale `reconcile-workspace-design-spec` branch name throughout the session. `git branch --show-current` confirmed `main` and pushes ran clean to `origin/main` regardless. Cosmetic display drift, not a functional issue.
-
----
-
-## In progress / deferred
-
-Session C is **paused mid-stream** — pivoting to Sinch 3b rejection response. The two remaining Session C items are deferred until 3b is resolved:
-
-1. **BACKLOG aging review** — separate plan-mode task, not started this session.
-2. **Drift-detection cadence into CLAUDE.md** — the audit-flagged proposal at `audits/DOCS_AUDIT_2026-04-27.md` lines 883–911 still hasn't landed in CLAUDE.md. This is also where the no-Co-Authored-By memory rule's long-term home lives (per durable PM rule saved this session as `feedback_commit_trailers.md`).
+All commits local-only at session close — Joel pushes after PM final review of close-out.
 
 ---
 
-## Gotchas / context for next session
+## What was completed
 
-1. **3b campaign was rejected by carriers.** PM tomorrow handles edits + resubmission. The Phase 1 docket may need updating once the resubmission outcome is known. Active plan pointer in REPO_INDEX still reflects 3b SUBMITTED — awaiting approval; Phase 1 progress narrative across MASTER_PLAN §1 + REPO_INDEX has not been refreshed for the rejection yet (intentional — wait for PM to land the resubmission first, then capture the rejection→resubmission cycle as a single cohesive update).
+1. **Marketing site live on Vercel.** Fresh Next.js 15 + React 19 + Tailwind v4.1 project at `/marketing-site` deployed to `relaykit.ai`. Routes: `/`, `/terms`, `/privacy`, `/acceptable-use`. Home ported from `/prototype` with content cuts; legal pages ported from `/src` (sunset per D-358 but legal content predates the sunset and was the canonical port source). Build is fully static (7 pages, legal pages 167 B each — pure static HTML, no client JS). Vercel project provisioned by Joel via Vercel CLI in interactive shell.
 
-2. **Session C is not a clean close.** Audit verdicts addressed this session: #2, #3, #10, #11, #13, #14, #15 (7 of 21). Audit verdicts deferred or scoped elsewhere: #1 (STARTER_KIT_PROGRAM ARCHIVE — done in Session 55), #4 (MESSAGE_PIPELINE_SPEC — gated on Phase 1 closure), #5 (UNTITLED_UI_REFERENCE — done Session 55 B1), #6 (PROTOTYPE_SPEC — Session A), #7 (REPO_INDEX self-audit — closed Sessions A + 56), #8 (MASTER_PLAN — Session A), #9 (BACKLOG — deferred), #12 (DECISIONS_ARCHIVE — deferred residual annotations), #16–#21 (KEEP-AS-IS verdicts). Drift-detection cadence (separate audit closing-note item) still open.
+2. **Three legal docs aligned to current product reality.** Terms, Privacy, and AUP all swept across multiple commits. Twilio → Sinch (carrier infrastructure correction), $199 → $49 (PRICING_MODEL.md / D-320), `rk_sandbox_` → `rk_test_` (D-349 user-facing prefix), "Mixed tier" terminology retired (D-245, D-251), domain `relaykit.com` → `relaykit.ai` (12 occurrences), specialty emails collapsed to `support@`, dates refreshed to 2026-04-28, "Compliance Proxy" terminology retired (D-367), entity naming aligned to "RelayKit LLC (formerly Vaulted Press LLC)" framing (D-195 implementation note), Cloudflare references cut from infrastructure mentions (Vercel hosting + DNS-only Cloudflare per D-366).
 
-3. **Memory rule for commit trailers** is at `~/.claude/projects/-Users-macbookpro-relaykit/memory/feedback_commit_trailers.md` and indexed in `MEMORY.md`. Long-term home is CLAUDE.md as part of the deferred drift-detection cadence commit. Until then, the memory file persists across sessions.
+3. **MASTER_PLAN v1.2 → v1.3 amendment** (commit `99e4a9b`). Locked msgverified-hosted opt-in form into Phase 5 launch scope as required (no longer conditional). Discovered post-3b rejection (2026-04-27) — every customer-side carrier registration requires a functional opt-in/CTA URL (CR4015), and RelayKit's customers don't arrive with a signup form already on their site, so RelayKit must host. Amendment added a sub-block to §9 Phase 5 with what-the-opt-in-form-does + open design questions; new bullet in `What gets done`; out-of-scope-for-launch items added to `What does not get done`; demo moment extended; §14 Phase 10 line clarified as polish-on-top-of-Phase-5; §3 Ten Phases summary kept terse (judgment call); no §17 risk added (deliverable not strategic risk); changelog entry added; title + footer bumped.
 
-4. **Working tree at session start had `M PM_PROJECT_INSTRUCTIONS.md`** as expected pre-existing drift (Joel's "Default to keeping CC sessions running" bullet draft from prior session). Resolved during item 4 of autopilot batch via commit `50a2dc4`. Joel paste-to-Claude.ai UI confirmed sync.
+4. **Two BACKLOG entries appended.**
+   - `8299dbf` — AI URL scan for customer registration content + gotcha detection (post-launch productized version of the customer-form problem)
+   - `e084c8d` — Process for keeping legal docs synced with product reality (write-side companion to `LEGAL_DOC_DEFERRED_CLAIMS.md`)
 
-5. **No-Co-Authored-By trailer rule** is now durable across sessions (saved as memory feedback). Commit `378ce4d` was amended to `c3cd897` to remove the trailer when this rule was first established. Going forward: do not include `Co-Authored-By` trailers on commits unless Joel or PM explicitly requests them.
+5. **`docs/LEGAL_DOC_DEFERRED_CLAIMS.md` tracking doc created.** 21 numbered entries (1–6 Terms pass; 7–11 Privacy pass; 12–19 AUP pass; 20 Service definition + §3.1; 21 final residuals + Privacy parallel cuts) plus architectural-terminology note ("Compliance Proxy" retirement principle) and infrastructure-change note (Cloudflare → Vercel hosting). Each entry has restoration trigger tied to a specific phase/feature ship (Phase 5 msgverified, post-launch drift detection, build-spec generator). HTML comment markers in legal-doc source files cross-reference entries by number — discoverable via `grep "RESTORE WHEN BUILT"`. Consult at every MASTER_PLAN phase boundary.
 
-6. **Branch hygiene at close:** working tree clean (only untracked `api/node_modules/`); `git rev-list --left-right --count HEAD...origin/main` returns `0 0` after close-out push.
+---
+
+## Quality checks passed
+
+- `tsc --noEmit` clean on `/marketing-site` (all final commits)
+- `eslint .` clean on `/marketing-site` (all final commits)
+- `npm run build` clean — 7 static pages, all 200 OK on dev server
+- Live alias verified clean across all four routes (Joel)
+- Multiline-safe leak scan: zero active-text matches for `compliance site|build spec|drift detection|compliance artifact|deliverable document|opt-in language` across `terms`, `privacy`, `acceptable-use`. Only HTML-comment marker matches remain.
+- Rendered HTML on `/privacy` confirms zero leak-category matches in the served document.
+
+---
+
+## Pending items going into next session
+
+1. **Sinch 3b resubmission** — PM tomorrow handles edits + resubmission. Add SC business filing URL as note on campaign description per memory rule (`project_sinch_sc_url.md`). Once resubmitted (or if approval lands), Phase 1 docket lands as one cohesive narrative update across MASTER_PLAN §1 + REPO_INDEX Active plan pointer + `experiments/sinch/experiments-log.md` (rejection → resubmission cycle captured in single update).
+
+2. **DNS cutover decision.** `relaykit.ai` is still pointed at the Cloudflare Worker "Coming Soon" page; needs to be cut to Vercel before resubmission so the reviewer lands on the real site rather than the placeholder. PM to schedule the cutover (likely same window as the resubmission).
+
+3. **PM observation: Terms §12.3 third-party infrastructure list incomplete.** Currently names Cloudflare for DNS but does not name Vercel for hosting. Non-blocking for resubmission; address in next legal-doc touch (could be folded into the same commit that handles any other §12.3 follow-ups, or paired with the freshtop-to-bottom-rewrite suggestion below).
+
+4. **Phase 1 docket update next session.** Same surface as item 1 but called out separately because it spans three docs (MASTER_PLAN §1, REPO_INDEX Active plan pointer, `experiments-log.md`). Active plan pointer in REPO_INDEX still reflects 3b SUBMITTED — awaiting approval; deliberately not refreshed to "rejected" yet — wait for the resubmission outcome and capture the cycle as a single coherent update.
+
+5. **Drift-detection cadence rule + multiline-safe grep methodology to land in CLAUDE.md.** Carrying forward from Session 56's deferred Session C item. Multiline-safe grep methodology now captured in `~/.claude/projects/-Users-macbookpro-relaykit/memory/feedback_grep_methodology.md` memory sidecar (added this session after a missed §2 leak in the Privacy residuals sweep — single-line `grep -E "compliance artifact"` missed a phrase that wrapped across two JSX lines; multiline scan via `tr '\n' ' ' | tr -s ' '` caught it on first attempt). Long-term home for both this and the no-Co-Authored-By rule is CLAUDE.md.
+
+6. **LEGAL_DOC_DEFERRED_CLAIMS.md tracking 21 numbered entries + 2 unnumbered notes**, covering ~25 individual cuts across all three legal docs. Restoration triggers tied to feature ships: Phase 5 msgverified opt-in form (entries 1, 4, 5, 7, 8, 17, 21 partial), post-launch drift detection (entries 3, 9, 10, 17, 21 partial), build-spec generator (entries 20, 21 partial), inline compliance enforcement (entries 2, 6, 9, 12, 13, 15, 18, 19, 21 partial). Consult at every MASTER_PLAN phase boundary.
+
+7. **Backlog suggestion (low priority): fresh top-to-bottom rewrite of legal docs in clean session if energy reappears.** Option A from earlier in this session — current legal docs are now audit-tight via incremental cuts but accumulate a notable density of HTML comment markers. A fresh rewrite in a single sitting (with restoration-trigger logic preserved via tracking doc) would produce cleaner source. Not urgent — the marketing-site is launch-ready as-is.
 
 ---
 
 ## Files modified this session
 
-- `WORKSPACE_DESIGN_SPEC.md` (B2 reconcile)
-- `REPO_INDEX.md` (multiple sub-sessions: self-audit pair, change-log archive split, Tier 2 sync, PRD_SETTINGS canonical-source entry sharpening, Session 56 close-out)
-- `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` (new file — pre-Session-50 change-log entries)
-- `docs/PRODUCT_SUMMARY.md` (audit #10 cleanup)
-- `docs/PRICING_MODEL.md` (audit #13 cleanup)
-- `SDK_BUILD_PLAN.md` (audit #15 cleanup)
-- `PM_PROJECT_INSTRUCTIONS.md` (audit #14 cleanup + L649/L650 prefix hygiene)
-- `DECISIONS.md` (audit #11 Supersedes backfill on D-350–D-362)
-- `docs/PRD_SETTINGS_v2_3.md` (audit #2 SCOPE-CLARIFY, 591 → 366 lines)
+- `MASTER_PLAN.md` (v1.3 amendment — `99e4a9b`)
+- `BACKLOG.md` (two new entries — `8299dbf`, `e084c8d`)
+- `marketing-site/` — new directory, full Next.js project (init + ports + Footer + edits across 11 commits)
+  - `marketing-site/app/page.tsx` (home)
+  - `marketing-site/app/terms/page.tsx`
+  - `marketing-site/app/privacy/page.tsx`
+  - `marketing-site/app/acceptable-use/page.tsx`
+  - `marketing-site/components/footer.tsx`
+  - `marketing-site/app/layout.tsx`, `globals.css`, `package.json`, `tsconfig.json`, `next.config.ts`, `eslint.config.mjs`, `postcss.config.mjs`, `.gitignore`, etc.
+- `docs/LEGAL_DOC_DEFERRED_CLAIMS.md` (new file — created `eb8d160` / amended hash references in body, evolved across 4 commits — Terms, Privacy, AUP, residuals + Privacy residuals)
+- `DECISIONS.md` (D-366 + D-367 added; D-195 implementation note appended — this commit)
+- `REPO_INDEX.md` (Last updated, Decision count, Master plan last updated, MASTER_PLAN row, DECISIONS row, CC_HANDOFF row, `LEGAL_DOC_DEFERRED_CLAIMS` index entry, `/marketing-site` subdirectory entry — this commit)
 - `CC_HANDOFF.md` (this file, overwritten)
+
+`/prototype`, `/api`, `/sdk`, `/src`, `PROTOTYPE_SPEC.md`, `MESSAGE_PIPELINE_SPEC.md`, `PRD_SETTINGS_v2_3.md`, etc. — all untouched this session.
 
 ---
 
 ## Suggested next tasks
 
-1. **Sinch 3b rejection response** — PM tomorrow handles edits + resubmission. The priority. Once resubmitted (or if approval lands), Phase 1 docket update lands as one cohesive narrative update across MASTER_PLAN §1 + REPO_INDEX Active plan pointer + experiments-log.md.
+1. **Sinch 3b resubmission** (the priority). Dashboard edits per PM's punchlist + `project_sinch_sc_url.md` memory note. DNS cutover (`relaykit.ai` → Vercel) needs to land alongside or before the resubmission so the carrier reviewer lands on the real site.
 
-2. **Session C resumption (post-3b):** BACKLOG aging review (plan-mode item) + drift-detection cadence into CLAUDE.md (last commit of Session C). The latter incorporates the durable no-Co-Authored-By rule into CLAUDE.md and removes the standalone memory file at that point.
+2. **Phase 1 docket update across MASTER_PLAN §1 + REPO_INDEX Active plan pointer + `experiments/sinch/experiments-log.md`**, capturing the rejection → resubmission cycle as one cohesive narrative update. Held until the resubmission outcome lands so the update can describe the full cycle in one go rather than two partial refreshes.
 
-3. **Audit verdict #12 residual archive annotations** (DECISIONS_ARCHIVE.md reciprocal supersession marks for D-27, D-60, D-61, D-82, D-83) — separate scoped session if PM wants to close out all audit verdicts before Phase 2.
+3. **Session C resumption (post-3b):** drift-detection cadence + multiline-safe grep methodology + no-Co-Authored-By rule into CLAUDE.md. The memory sidecars (`feedback_grep_methodology.md`, `feedback_commit_trailers.md`) become redundant at that point and can be removed.
+
+4. **Audit verdict #12 residual archive annotations** (DECISIONS_ARCHIVE.md reciprocal supersession marks for D-27, D-60, D-61, D-82, D-83) — separate scoped session if PM wants to close out all audit verdicts before Phase 2.
+
+5. **Optional: legal-doc fresh rewrite** (item 7 in pending list above). Not urgent. Best candidate timing is post-launch-soft-cycle when there's energy for clean-source work without pressure.
