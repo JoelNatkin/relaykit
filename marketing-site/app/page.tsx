@@ -16,6 +16,7 @@ import {
   Target01,
   Users01,
 } from "@untitledui/icons";
+import Link from "next/link";
 import type { FC } from "react";
 
 const TOOLS = [
@@ -413,8 +414,19 @@ export default function MarketingHome() {
         </div>
       </div>
 
+      {/* Early-access CTA */}
+      <p className="mt-16 text-center text-base text-text-secondary">
+        Want a heads-up when we go live?{" "}
+        <Link
+          href="/start/verify"
+          className="font-semibold text-text-brand-secondary hover:text-text-brand-primary"
+        >
+          Drop your number &rarr;
+        </Link>
+      </p>
+
       {/* Reassurance line */}
-      <p className="mt-16 pb-16 text-center text-sm text-text-tertiary">
+      <p className="mt-6 pb-16 text-center text-sm text-text-tertiary">
         No contracts. Cancel anytime. Your code stays yours.
       </p>
     </div>
