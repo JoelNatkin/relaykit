@@ -1,33 +1,22 @@
 "use client";
 
-import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import { submitPhoneSignup, type VerifyFormState } from "./actions";
 
 const INITIAL: VerifyFormState = { status: "idle" };
 
 export function VerifyForm() {
   const [state, formAction, pending] = useActionState(submitPhoneSignup, INITIAL);
+  const formRef = useRef<HTMLFormElement>(null);
 
-  if (state.status === "ok") {
-    return (
-      <div>
-        <h2 className="text-xl font-bold text-text-primary">You&apos;re on the list.</h2>
-        <p className="mt-2 text-base text-text-tertiary">
-          We&apos;ll text you when we go live.
-        </p>
-        <Link
-          href="/start/get-started"
-          className="mt-6 inline-flex items-center text-sm font-semibold text-text-brand-secondary hover:text-text-brand-primary"
-        >
-          Get early access &rarr;
-        </Link>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (state.status === "ok" && !pending) {
+      formRef.current?.reset();
+    }
+  }, [state, pending]);
 
   return (
-    <form action={formAction} className="flex flex-col gap-5">
+    <form ref={formRef} action={formAction} className="flex flex-col gap-5">
       <div>
         <label htmlFor="phone" className="block text-sm font-medium text-text-secondary">
           Mobile number
@@ -44,9 +33,9 @@ export function VerifyForm() {
       </div>
 
       <p className="text-xs leading-relaxed text-text-tertiary">
-        By submitting your number, you agree to receive a text from RelayKit once
-        we&apos;re cleared to send. Standard message and data rates apply. Reply
-        STOP to remove yourself from the list, HELP for help.
+        We&apos;ll text you a verification code. By verifying, you agree to
+        receive test messages at this number when you trigger them. Standard
+        rates apply. Reply STOP anytime, HELP for help.
       </p>
 
       <button
@@ -54,8 +43,12 @@ export function VerifyForm() {
         disabled={pending}
         className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:opacity-60"
       >
-        {pending ? "Submitting…" : "Get on the list"}
+        {pending ? "Submitting…" : "Send verification code"}
       </button>
+
+      <p className="text-sm text-text-error-primary">
+        Pending carrier approval. Verification SMS will be sent once approved.
+      </p>
     </form>
   );
 }
