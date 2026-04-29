@@ -294,11 +294,12 @@ export default function TermsPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               4.1 Sandbox Access
             </h3>
+            {/* RESTORE WHEN BUILT: "and build spec generation" sandbox capability — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               The sandbox is available at no cost immediately upon Account
               creation. No credit card or payment is required. The sandbox
-              provides full outbound and inbound SMS testing, opt-out handling,
-              message plan building, and build spec generation.
+              provides outbound and inbound SMS testing, opt-out handling, and
+              message plan building.
             </p>
           </div>
 
@@ -376,11 +377,12 @@ export default function TermsPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               5.2 Registration Accuracy
             </h3>
+            {/* RESTORE WHEN BUILT: "and compliance site content" registration artifact — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              The registration artifacts — including campaign descriptions,
-              sample messages, and compliance site content — are generated based
-              on information you provide. You are responsible for reviewing
-              these artifacts before submission. Campaign descriptions and
+              The registration artifacts — including campaign descriptions
+              and sample messages — are generated based on information you
+              provide. You are responsible for reviewing these artifacts
+              before submission. Campaign descriptions and
               sample messages are presented as read-only in the review screen
               because they are optimized for carrier approval. If the
               information you provided is inaccurate, contact us before
@@ -428,12 +430,13 @@ export default function TermsPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               6.1 Setup Fee
             </h3>
+            {/* RESTORE WHEN BUILT: "and all associated compliance artifacts" — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               A one-time setup fee of{" "}
               <strong className="font-semibold text-text-secondary">$49</strong> is
               charged at checkout. This fee covers 10DLC registration, Sinch
-              subaccount provisioning, carrier submission, rejection handling,
-              and all associated compliance artifacts.
+              subaccount provisioning, carrier submission, and rejection
+              handling.
             </p>
           </div>
 
@@ -524,12 +527,13 @@ export default function TermsPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               6.6 Payment Failure
             </h3>
+            {/* RESTORE WHEN BUILT: "Compliance site hosting and" prefix in payment-failure cleanup sentence — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               If a subscription renewal payment fails, you will be notified and
               given a 7-day grace period to update your payment method. If
               payment is not received within the grace period, messaging
-              services will be suspended. Compliance site hosting and Account
-              data retention follow the same policies as voluntary cancellation.
+              services will be suspended. Account data retention follows the
+              same policies as voluntary cancellation.
             </p>
           </div>
 
@@ -628,11 +632,10 @@ export default function TermsPage() {
                 of consent sufficient to demonstrate compliance if challenged.
               </li>
             </ul>
+            {/* RESTORE WHEN BUILT: "RelayKit generates opt-in language and a compliance site as part of your registration, but" preface — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-3 text-base leading-relaxed text-text-tertiary">
-              RelayKit generates opt-in language and a compliance site as part
-              of your registration, but{" "}
               <strong className="font-semibold text-text-secondary">
-                you are responsible for implementing the opt-in mechanism in
+                You are responsible for implementing the opt-in mechanism in
                 your application
               </strong>{" "}
               and ensuring it meets the requirements of applicable law.
@@ -797,12 +800,12 @@ export default function TermsPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               9.4 Data Retention
             </h3>
+            {/* RESTORE WHEN BUILT: "drift detection and" reason in 30-day content retention — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               Message metadata (timestamps, recipient phone numbers, delivery
               status, compliance check results) is retained for 90 days for
               compliance audit purposes. Full message content is retained for
-              30 days for drift detection and dispute resolution, then
-              permanently deleted.
+              30 days for dispute resolution, then permanently deleted.
             </p>
           </div>
         </div>
@@ -821,13 +824,14 @@ export default function TermsPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               10.1 RelayKit IP
             </h3>
+            {/* RESTORE WHEN BUILT: "compliance artifacts, build specifications" Service-component enumeration — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               The Service, including all software, APIs, documentation,
-              templates, compliance artifacts, build specifications, and
-              infrastructure, is the property of RelayKit LLC and is
-              protected by applicable intellectual property laws. These Terms
-              grant you a limited, non-exclusive, non-transferable, revocable
-              license to use the Service in accordance with these Terms.
+              templates, and infrastructure, is the property of RelayKit LLC
+              and is protected by applicable intellectual property laws. These
+              Terms grant you a limited, non-exclusive, non-transferable,
+              revocable license to use the Service in accordance with these
+              Terms.
             </p>
           </div>
 
@@ -835,14 +839,12 @@ export default function TermsPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               10.2 Generated Artifacts
             </h3>
+            {/* RESTORE WHEN BUILT: §10.2 artifact list — compliance site pages, build specifications, SMS guidelines, and the "use in your own applications" sentence — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              Compliance artifacts generated on your behalf (compliance site
-              pages, campaign descriptions, sample messages, build
-              specifications, SMS guidelines) are provided for your use in
-              connection with the Service. You may use the compliance site
-              content and build specifications in your own applications. You
-              may not resell, redistribute, or use these artifacts to provide a
-              competing service.
+              Artifacts generated on your behalf (campaign descriptions,
+              sample messages) are provided for your use in connection with
+              the Service. You may not resell, redistribute, or use these
+              artifacts to provide a competing service.
             </p>
           </div>
 
@@ -850,12 +852,13 @@ export default function TermsPage() {
             <h3 className="text-base font-semibold text-text-secondary">
               10.3 Your Content
             </h3>
+            {/* RESTORE WHEN BUILT: "drift detection" in §10.3 license-purpose list — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
               You retain ownership of all content you create, including message
               text, business information, and application code. By using the
               Service, you grant RelayKit a limited license to process your
               content as necessary to provide the Service, including compliance
-              scanning, drift detection, and registration submission.
+              enforcement and registration submission.
             </p>
           </div>
 
@@ -977,9 +980,7 @@ export default function TermsPage() {
                 No refund is issued for the setup fee or any remaining
                 subscription period
               </li>
-              <li>
-                Your compliance site is taken offline within 24 hours
-              </li>
+              {/* RESTORE WHEN BUILT: "Your compliance site is taken offline within 24 hours" termination-effect bullet — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 21 */}
               <li>API Keys are revoked immediately</li>
               <li>
                 Account data is retained for 90 days for audit purposes, then

@@ -91,6 +91,19 @@
 
 **Removed in commit:** `2a653b8`
 
+21. **Terms residual feature-claim cleanup (final pre-redeploy sweep) — eight surviving feature-claim leaks across §4.1, §5.2, §6.6, §8.1, §9.4, §10.2, §10.3, §11.3.** Same root as entries 1-6 and 20: capability claims for features not yet built (compliance site generation, build spec generation, drift detection) survived in sections not touched by prior commits. Cut consistently. Restoration triggers map to corresponding feature ships:
+    - "build spec generation" (§4.1, §10.2) → restore when build-spec generator concept beyond current SDK ships (same trigger as entry 20)
+    - "compliance site content / pages / hosting" (§5.2, §6.6, §8.1, §10.2, §11.3) → restore when msgverified opt-in form + per-customer compliance site ships (Phase 5, same trigger as entries 1, 4, 5, 7)
+    - "drift detection" (§9.4, §10.3) → restore when drift detection ships (post-launch backlog, same trigger as entry 3)
+    - "opt-in language generation" (§8.1) → restore when per-customer opt-in artifact generation ships (Phase 5)
+    - "SMS guidelines" (§10.2 enumeration) → restore when SMS guidelines become a formal generated artifact
+
+    §10.1 RelayKit IP Service-component enumeration also dropped "compliance artifacts" and "build specifications" (parallel to §10.2 and Service definition cuts).
+
+    §6.1 Setup Fee description also dropped "and all associated compliance artifacts" (parallel to §10.1, §10.2 cuts — same word, different context).
+
+**Removed in commit:** `f3652b6`
+
 ---
 
 **Architectural-terminology note (2026-04-28, same session):** "Compliance Proxy" terminology retired across all three legal docs. The term was tied to an old architectural model (runtime in-path gatekeeper) that's substantially shifted to authoring-time enforcement (D-279, website-as-authoring-surface). Replaced throughout with outcome-describing language ("RelayKit enforces opt-outs," "messages are blocked when..."). Going forward, legal docs should describe outcomes and obligations, not internal architecture or named components. PM rule: name what users need to know (their messages get sent or blocked, with reasons), not the mechanism. Implementation detail (runtime vs. authoring-time, named components, pipeline stages) is internal and can change without legal-doc impact.
