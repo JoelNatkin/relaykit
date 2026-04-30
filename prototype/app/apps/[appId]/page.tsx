@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ChevronDown, ChevronRight, InfoCircle, Plus, Stars02 } from "@untitledui/icons";
 import { MESSAGES, CATEGORY_VARIANTS, type Message } from "@/data/messages";
 import { useSession, type CustomMessage } from "@/context/session-context";
@@ -15,6 +15,7 @@ import { SetupInstructions, SetupToggle } from "@/components/setup-instructions"
 import { useSetupToggleState } from "@/context/setup-toggle-context";
 import { AskClaudePanel } from "@/components/ask-claude-panel";
 import { loadWizardData, saveWizardData, VERTICAL_LABELS } from "@/lib/wizard-storage";
+import { WizardContinueContext } from "@/components/wizard-layout";
 import { EinInlineVerify } from "@/components/ein-inline-verify";
 import type { BusinessIdentity } from "@/components/ein-inline-verify";
 
@@ -168,6 +169,9 @@ export default function AppMessagesPage() {
     restoreCustomMessage,
     deleteCustomMessage,
   } = useSession();
+  const { appId } = useParams<{ appId: string }>();
+  const router = useRouter();
+  const setContinueOverride = useContext(WizardContinueContext);
 
   const isWizard = state.registrationState === "onboarding";
   const isBuilding = state.registrationState === "building";
@@ -292,6 +296,24 @@ export default function AppMessagesPage() {
     )?.id ?? null;
   const hasUnsavedCustomOpen = unsavedCustomId !== null;
   const LOCK_TOOLTIP = "Save or cancel the current message first.";
+
+  // Wizard-only: Continue silently discards an in-progress unsaved custom.
+  // Mirrors the hydration zombie-cleanup in session-context so the in-memory
+  // and storage paths agree on what survives navigation.
+  useEffect(() => {
+    if (!isWizard || !hasUnsavedCustomOpen) {
+      setContinueOverride(null);
+      return;
+    }
+    setContinueOverride({
+      onClick: () => {
+        if (unsavedCustomId) deleteCustomMessage(unsavedCustomId);
+        router.push(`/apps/${appId}/ready`);
+      },
+      disabled: false,
+    });
+    return () => setContinueOverride(null);
+  }, [isWizard, hasUnsavedCustomOpen, unsavedCustomId, appId, router, deleteCustomMessage, setContinueOverride]);
 
   function requestEdit(id: string | null) {
     // Defensive: buttons are disabled when the lock is active, but a
@@ -429,7 +451,6 @@ export default function AppMessagesPage() {
     );
   }
 
-  const { appId } = useParams<{ appId: string }>();
   const registrationState = state.registrationState;
   const isPending = registrationState === "pending";
   const isChangesRequested = registrationState === "changes_requested";
@@ -487,7 +508,8 @@ export default function AppMessagesPage() {
 
   /* ── Custom messages (D-351 revised). Customs appear above built-ins and
          marketing messages — a new custom inserted by "+ Add" lands at the
-         top of the stack. Wizard state doesn't expose the feature. ── */
+         top of the stack. Exposed in onboarding too — customs persist via
+         shared session state into the post-signup workspace. ── */
   const activeCustoms = state.customMessages.filter(
     (m) => m.categoryId === categoryId && !m.archived
   );
@@ -504,29 +526,27 @@ export default function AppMessagesPage() {
   const messageList = (
     <div>
       <div className="space-y-5">
-        {!isWizard && (
-          <div className="relative group w-full min-[860px]:max-w-[540px]">
-            <button
-              type="button"
-              onClick={(e) => { if (hasUnsavedCustomOpen) { e.preventDefault(); return; } handleAddCustom(); }}
-              aria-disabled={hasUnsavedCustomOpen}
-              className={`w-full rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium transition duration-100 ease-linear inline-flex items-center justify-center gap-1.5 ${
-                hasUnsavedCustomOpen
-                  ? "cursor-not-allowed opacity-60 text-text-brand-secondary"
-                  : "cursor-pointer text-text-brand-secondary hover:text-text-brand-secondary_hover hover:border-border-brand"
-              }`}
-            >
-              <Plus className="size-4" />
-              Add message
-            </button>
-            {hasUnsavedCustomOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-[100] hidden group-hover:block rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
-                {LOCK_TOOLTIP}
-              </div>
-            )}
-          </div>
-        )}
-        {!isWizard && activeCustoms.map((message) => (
+        <div className="relative group w-full min-[860px]:max-w-[540px]">
+          <button
+            type="button"
+            onClick={(e) => { if (hasUnsavedCustomOpen) { e.preventDefault(); return; } handleAddCustom(); }}
+            aria-disabled={hasUnsavedCustomOpen}
+            className={`w-full rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium transition duration-100 ease-linear inline-flex items-center justify-center gap-1.5 ${
+              hasUnsavedCustomOpen
+                ? "cursor-not-allowed opacity-60 text-text-brand-secondary"
+                : "cursor-pointer text-text-brand-secondary hover:text-text-brand-secondary_hover hover:border-border-brand"
+            }`}
+          >
+            <Plus className="size-4" />
+            Add message
+          </button>
+          {hasUnsavedCustomOpen && (
+            <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-[100] hidden group-hover:block rounded-lg bg-bg-primary-solid px-3 py-2 text-xs text-text-white shadow-lg whitespace-nowrap leading-relaxed pointer-events-none">
+              {LOCK_TOOLTIP}
+            </div>
+          )}
+        </div>
+        {activeCustoms.map((message) => (
           <CustomMessageCard
             key={message.id}
             message={message}
@@ -595,7 +615,7 @@ export default function AppMessagesPage() {
           bottom of the message stack, collapsed by default. Archived
           messages are read-only; Restore flips archived=false and Delete
           opens the destructive confirmation modal. */}
-      {!isWizard && archivedCustoms.length > 0 && (
+      {archivedCustoms.length > 0 && (
         <div className="mt-6">
           <button
             type="button"

@@ -79,8 +79,19 @@ export function WizardLayout({ children }: { children: React.ReactNode }) {
     </Link>
   ) : null;
 
-  // Full-width bottom Continue — matches the /start wizard step button style
-  const bottomContinueButton = continueHref ? (
+  // Full-width bottom Continue — matches the /start wizard step button style.
+  // Honors the same override as the top-right button so dualContinue pages
+  // get consistent click semantics from both CTAs.
+  const bottomContinueButton = continueOverride ? (
+    <button
+      type="button"
+      onClick={continueOverride.onClick}
+      disabled={continueOverride.disabled}
+      className="block w-full rounded-lg bg-bg-brand-solid px-5 py-2.5 text-center text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:bg-bg-disabled disabled:text-text-disabled cursor-pointer"
+    >
+      {continueText}
+    </button>
+  ) : continueHref ? (
     <Link
       href={continueHref}
       className="block w-full rounded-lg bg-bg-brand-solid px-5 py-2.5 text-center text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
