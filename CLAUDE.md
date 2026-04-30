@@ -112,13 +112,14 @@ Do not load DECISIONS_ARCHIVE.md unless Joel points to a specific D-number OR yo
 ## Session close-out
 1. `tsc --noEmit` and `eslint` clean on all modified directories (skip for doc-only sessions)
 2. Commit working code (atomic commits, descriptive messages)
-3. Append any unrecorded decisions to DECISIONS.md using canonical format with filled-in Supersedes field. Apply all six gate tests per PM_PROJECT_INSTRUCTIONS.md. Supersession notes on older decisions land in the same commit.
+3. Append any unrecorded decisions to DECISIONS.md using canonical format with filled-in Supersedes field. Apply all seven gate tests per PM_PROJECT_INSTRUCTIONS.md. Supersession notes on older decisions land in the same commit.
 4. Update PROTOTYPE_SPEC.md for any screens that changed
 5. Update MASTER_PLAN.md if PM flagged a plan change (bump version if substantive)
 6. Run retirement sweep if close-out crosses a phase boundary (findings only — no edits)
 7. Update REPO_INDEX.md (last_updated, decision_count, new/removed files, active plan pointer)
-8. Overwrite CC_HANDOFF.md with: commits, completed work, in-progress work, quality checks passed, retirement sweep findings (if applicable), gotchas, files modified, suggested next tasks
-9. Do NOT push — PM review first
+8. Overwrite CC_HANDOFF.md. Include near the top a quantitative session metrics line: `Commits: N | Files modified: N | Decisions added: N | External actions: N`. Body: commits, completed work, in-progress work, quality checks passed, retirement sweep findings (if applicable), drift-watch findings (if applicable), gotchas, files modified, suggested next tasks.
+9. **Drift watch (phase-boundary close-outs only).** For each canonical doc listed in REPO_INDEX's 'Canonical sources by topic' index, emit a one-line verdict in CC_HANDOFF's 'Drift watch' section: `fresh` (doc's last commit ≥ subject-area commit), `stale: subject moved YYYY-MM-DD, doc last touched YYYY-MM-DD` (flag for PM), or `n/a — no subject movement this phase`. Subject-area reference points: MASTER_PLAN.md, CC_HANDOFF.md, current-phase artifacts, any doc this phase modified. Also verify the canonical-sources index covers every doc listed in REPO_INDEX's docs tables and every topic touched this phase has an entry — flag missing entries. Findings only — no edits. Mid-phase close-outs skip. Pairs with retirement sweep at step 6.
+10. Do NOT push — PM review first
 
 ### Branching for production-facing work
 
@@ -130,6 +131,16 @@ Branch hygiene: at session close-out, surface any unmerged feature branches in C
 
 ## Copy rule
 Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts, modals), read `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` in full and apply the vocabulary table, framing-shift table, emotional-states map, and one-sentence principle. No exceptions for "minor" strings.
+
+## Prose-sweep verification
+
+When verifying leak terms have been removed from prose docs (legal copy, marketing copy, voice-driven cleanups), use multiline-safe grep:
+
+```bash
+tr '\n' ' ' < file | tr -s ' ' | grep -oE "(pattern1|pattern2|...).{0,80}"
+```
+
+JSX prose wraps long sentences across lines with leading indent; single-line grep misses split phrases. Multiline-safe grep collapses newlines first, so the grep sees the phrase as a single string. Default for end-of-prose-sweep verification. Concrete miss this catches: "compliance artifacts" leak in `marketing-site/app/privacy/page.tsx` survived three single-line greps in Session 56.
 
 ## Hard platform constraints
 - Never claim guaranteed compliance outcomes. Prohibited: "ensures compliance," "guarantees approval," "fully compliant," "stay compliant automatically"
