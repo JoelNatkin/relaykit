@@ -114,3 +114,25 @@ Sinch API exposes 5 values; the dashboard exposes 7. Mapping:
 RelayKit's onboarding wizard collects these fields incrementally. Mapping not yet
 designed; this reference exists to ensure all fields are accounted for before
 wizard design begins. **Phase 5 (Registration Pipeline on Sinch, MASTER_PLAN §9)** is the home for this design work.
+
+## Resubmission process
+
+Captured from the Experiment 3b cycle (rejection 2026-04-27 → resubmission 2026-04-30; full narrative in `experiments/sinch/experiments-log.md`).
+
+Sinch's resubmission mechanic is **clone, edit, resubmit** — not amend in place. The DoNotReply email from `10dlc-campaigns.sinch.com` directs the operator to clone the rejected campaign via the dashboard's clone icon. The clone is a new campaign with a new Registration ID; the rejected campaign retains its `Rejected` status indefinitely as a record. Submission and clone-resubmission are both dashboard-only as of the 3b cycle; an API equivalent has not been confirmed.
+
+Field pre-population on the clone form: every field from the rejected campaign is copied; every field is editable. The remediation narrative belongs in the `Additional comments` field on the clone form at submission time, not as a note added afterward to the rejected campaign — Sinch's `Notes` section is per-campaign, and reviewer notes attached to the rejected campaign do not propagate to the resubmission.
+
+The recurring monthly fee disclosure ($1.50) reappears on the clone with the same fee structure as the original submission; this is not a duplicate charge — the rejected campaign's monthly-fee state is moot once the campaign is in `Rejected` terminal state. Whether the fee triggers at submission or at approval remains the unresolved fourth Sinch API/dashboard inconsistency surfaced in 3a/3b (Step 3 disclosure `$1.50/mo with 3-month minimum` vs. submission dialog `$1.50 recurring` vs. campaign detail `$0`); cross-reference this section back to the inconsistency list when Phase 2 Session B kickoff verifies with Sinch BDR.
+
+### Implications for Phase 5 RelayKit-side flow
+
+RelayKit's customer-side state machine must distinguish three states that a single Sinch campaign-registration attempt can occupy:
+
+- **Rejected, terminal on this Registration ID.** No further action will move the original campaign forward. The Registration ID persists as a historical record only.
+- **Resubmitted, new Registration ID.** A fresh entity in `PENDING_REVIEW`. Linked back to the rejected predecessor via a forward-pointing field (e.g., `previous_registration_id`) on the customer's project record, not by re-using the rejected ID.
+- **Reviewer notes attached to the rejected campaign, not the resubmission.** RelayKit's customer never sees the raw Sinch dashboard. The customer-visible failure UX must surface the rejection reasons (parsed from `CR2020` etc., not from the prose) and the remediation narrative without exposing Sinch internals.
+
+Pre-flight identity validation (state SOS public-record lookup, or an analogous source-of-truth for the customer's home state) before sending to Sinch catches the most common rejection cause — cross-source identity mismatch between submitted identity and public-record identity. The 3b cycle's four rejection codes were all identity- or surface-level mismatches (`CR2020` entity name, `CR2002` address, `CR2005` website, `CR4015` CTA URL); each is detectable pre-flight if the wizard knows what to check.
+
+Customer-facing voice: when RelayKit's customer is rejected, the experience should be `your registration was rejected, here's why, here's what we'll fix, we'll resubmit when ready` — not `click here to fix.` RelayKit absorbs the clone-edit-resubmit mechanics on the customer's behalf and presents a single state transition rather than exposing the Sinch dashboard's two-Registration-ID model.
