@@ -345,7 +345,8 @@ The workspace lives at the `/apps/[appId]` root (D-345). `/apps/[appId]/messages
 - Body: "Each message is tailored to your business. Edit messages any time. Your app always sends the latest version." (`text-sm text-text-tertiary`).
 - **"What about marketing messages?"** link below body text (`text-sm text-text-brand-secondary`, no underline, matching EIN link style on `/start/business`). Click toggles tooltip (dark bg, white text, `rounded-lg bg-[#333333]`). EIN-aware: reads wizard sessionStorage — if EIN provided: "You're all set to add marketing messages after you create your account. We'll walk you through it."; if no EIN: "Marketing messages require a business tax ID (EIN). You can add one anytime in settings."
 - Message cards fill the wizard container. **No send icons** — `hideSend={true}` on CatalogCard (D-328).
-- Bottom "Continue": full-width purple button spanning the 540px content column, rendered by WizardLayout (D-318 — dual Continue).
+- **Custom messages are exposed in onboarding.** The `+ Add message` row at the top of the stack, the active custom cards, and the `Archived (N)` disclosure all render in wizard mode using the same `CustomMessageCard` and session-state machinery as the post-signup workspace. Customs persist across the state-switcher boundary because both modes share the same `state.customMessages` array. **Continue with an in-progress unsaved custom silently discards it** — the page registers a `WizardContinueContext` override that calls `deleteCustomMessage(unsavedCustomId)` then routes to `/apps/[appId]/ready`, mirroring the hydration zombie-cleanup in `session-context.tsx`. No new copy.
+- Bottom "Continue": full-width purple button spanning the 540px content column, rendered by WizardLayout (D-318 — dual Continue). Honors the same `WizardContinueContext` override as the top-right Continue so the click semantics are consistent across both CTAs.
 
 **Dashboard mode (Building/Pending/Registered/Extended Review/Rejected — rendered inside DashboardLayout):**
 
@@ -456,7 +457,7 @@ Message card content, editing, and monitoring behavior is identical across all p
 
 #### Custom messages on the workspace Messages page (D-351 revised, D-353)
 
-**Files:** `prototype/components/catalog/custom-message-card.tsx`, `prototype/components/catalog/message-action-modal.tsx`, `prototype/lib/slug.ts`; wired into `prototype/app/apps/[appId]/page.tsx` for all post-onboarding states. Not rendered in wizard (onboarding) state.
+**Files:** `prototype/components/catalog/custom-message-card.tsx`, `prototype/components/catalog/message-action-modal.tsx`, `prototype/lib/slug.ts`; wired into `prototype/app/apps/[appId]/page.tsx` for **both** wizard (onboarding) and post-onboarding states. Customs created during onboarding survive the state-switcher into the workspace via the shared `relaykit_prototype` sessionStorage; an in-progress unsaved custom is silently discarded if the user clicks Continue (see "Onboarding mode" above).
 
 - **`+ Add message` button** at the top of the message stack (above any marketing cards and built-ins). Full-width `rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3`, purple tertiary text (`text-text-brand-secondary`) with a `Plus` icon. Click inserts a blank `CustomMessage` at index 0 of `state.customMessages` via `addCustomMessage(categoryId)` and puts the new row directly into edit state (authoring surface IS the row — no dialog, no modal). The row is tagged as "freshly added" via page-level `freshlyAddedCustomId` state so its editable name input auto-focuses on first open.
 - **Custom edit state** (`CustomMessageCard` — sibling of `CatalogCard`, NOT a variant via prop flag):

@@ -149,6 +149,8 @@
 
 - **Pre-Phase-2 DECISIONS.md audit** — Review D-84 through D-362 for internal consistency, identify superseded/conflicting decisions, propose consolidation. Estimated 3–4 hours CC + 1–2 hours PM↔Joel resolution. Run before Phase 2 Session B kickoff. (Origin: Session 44, 2026-04-23 — flagged during Phase 1 Experiment 1 capture when Implications-for-Phase-2 surfaced that the MESSAGE_PIPELINE_SPEC drafted contract may need updates against real-world Sinch behavior)
 
+- **Configure eslint in /prototype** — Production workspaces (/api, /sdk, /marketing-site) all enforce eslint per CLAUDE.md quality gates. /prototype has no eslint config and CC has no automated linting available there. Prototype is the UI source of truth and ports to production verbatim — letting it drift on style or unused-imports/no-explicit-any/etc. costs more than fixing later. Match the eslint config of one of the production workspaces (probably /marketing-site since it's the most recent and uses the same Next 15 + React 19 + TS strict stack). One-session task. (Origin: Session 60, surfaced during custom-message-wizard exposure work, 2026-04-30)
+
 ### Marketing & Growth
 
 - **Lovable/Bolt/Replit connector exploration** — Investigate Lovable's connector program. Build a dead-simple landing page aimed at no-code builders. Measure signup interest. API endpoint already exists — connector is a distribution play. Post-launch, after SDK path has paying customers. (Origin: April 2 strategy session, D-296/D-297)
