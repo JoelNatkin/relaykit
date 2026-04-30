@@ -6,11 +6,11 @@
 
 ## Meta
 
-- **Last updated:** 2026-04-28 (Session 57 — `/marketing-site` build + deploy + legal-doc editorial work: fresh Next.js project initialized, home + legal pages ported from `/prototype` and `/src` respectively, deployed to Vercel at `relaykit.ai`, three legal docs (Terms, Privacy, AUP) tightened against current product reality across multiple commits, "Compliance Proxy" terminology retired in favor of outcome-describing language, RelayKit LLC entity-naming framing aligned across all surfaces, MASTER_PLAN v1.3 amendment locking msgverified opt-in form into Phase 5, two BACKLOG entries appended, `docs/LEGAL_DOC_DEFERRED_CLAIMS.md` tracking doc created; 17 commits, marketing-site code + doc-only).
-- **Decision count:** D-367 (next available: D-368). 282 active entries D-84+; D-155 + D-156 are clean numbering skips (resolved Session 54 — see DECISIONS.md L9–10 for the residual record). Session 57 added D-366 (Vercel hosting) + D-367 (outcome-describing legal-doc principle) + D-195 implementation note (entity-naming framing, no new D-number).
+- **Last updated:** 2026-04-29 (Session 58 — D-368 branch-and-preview workflow decision recorded with propagation to PM_PROJECT_INSTRUCTIONS.md + CLAUDE.md; first production-facing feature branch `feat/start-verify-and-get-started` built per the new workflow with `/start/verify` + `/start/get-started` routes, Supabase migration 006 (`phone_signups` + `beta_signups` tables — committed but pending manual application), appbar `Get early access` CTA on the home page; branch reviewed via Vercel preview, merged to main with `--no-ff`, production deploy verified live at relaykit.ai. Late-session: SC SOS Notice of Change of Registered Agent filed for RelayKit LLC (operational compliance, no D-number — closes the CR2002 gap from the Sinch 3b rejection).
+- **Decision count:** D-368 (next available: D-369). 283 active entries D-84+; D-155 + D-156 are clean numbering skips (resolved Session 54 — see DECISIONS.md L9–10 for the residual record). Session 58 added D-368 (branch-and-preview workflow for production-facing surfaces).
 - **Master plan last updated:** 2026-04-28 (v1.3 — Session 57 amendment locked msgverified opt-in form into Phase 5 launch scope, no longer conditional). Prior reconcile-pass to §1 / L131 / L236 / L468 landed 2026-04-27 without version bump.
 - **Active CC session branch:** main
-- **Unpushed local commits:** 0 at session close (Session 56 close-out commit will be pushed at end).
+- **Unpushed local commits:** 1 at session close (Session 58 close-out commit; will be pushed after PM review).
 
 ---
 

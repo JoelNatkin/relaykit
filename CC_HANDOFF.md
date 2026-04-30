@@ -1,11 +1,9 @@
-# CC_HANDOFF — Session 57
+# CC_HANDOFF — Session 58
 
-**Date:** 2026-04-28
-**Session character:** Marketing-site build + deploy + legal-doc editorial work. Fresh `/marketing-site` Next.js project, home + legal pages ported, deployed to Vercel at `relaykit.ai`, three legal docs (Terms, Privacy, AUP) tightened against current product reality across multiple commits, "Compliance Proxy" terminology retired in favor of outcome-describing language, RelayKit LLC entity-naming framing aligned across all surfaces, MASTER_PLAN v1.3 amendment, two BACKLOG entries, `docs/LEGAL_DOC_DEFERRED_CLAIMS.md` tracking doc created.
-**Branch:** main (clean at close; `?? api/node_modules/` expected; `?? .claude/scheduled_tasks.lock` expected)
-**Code touched:** `/marketing-site` (new project, ~17 files); legal-doc edits across `marketing-site/app/{terms,privacy,acceptable-use}/page.tsx`; shared `Footer` component
-**Quality gates:** tsc `--noEmit` clean, eslint clean, `npm run build` clean (7 static pages, legal pages 167 B each); multiline-safe leak scan returns zero active-text matches across all three legal docs (only HTML comment markers remain — `RESTORE WHEN BUILT` / `TERMINOLOGY` / `CAPABILITY CLAIMS` / `INFRA CHANGE`)
-**Decisions added:** D-366 (Vercel hosting), D-367 (outcome-describing legal-doc principle). D-195 received an Implementation note (entity-naming framing) — no new D-number per Path B.
+**Date:** 2026-04-29
+**Session character:** D-368 branch-and-preview workflow decision recorded + propagated; first production-facing feature branch (`feat/start-verify-and-get-started`) built under the new workflow with `/start/verify` + `/start/get-started` routes + Supabase migration 006 + home-page appbar CTA, reviewed via Vercel preview, merged to main, production deploy verified live at relaykit.ai. Late-session work was external — SC SOS Notice of Change of Registered Agent filing for RelayKit LLC. The close-out itself is doc-only.
+**Branch:** main (clean except carried-over `PM_PROJECT_INSTRUCTIONS.md` whitespace reformat from Joel's earlier intentional edit; `?? api/node_modules/` and `?? .claude/scheduled_tasks.lock` expected)
+**Decisions added:** D-368 (branch-and-preview workflow for production-facing surfaces). No decisions added by the close-out itself.
 
 ---
 
@@ -13,101 +11,122 @@
 
 | # | Hash | Description |
 |---|------|-------------|
-| 1 | `8299dbf` | docs(backlog): AI URL scan for customer registration — content extraction + gotcha detection |
-| 2 | `99e4a9b` | docs(master-plan): v1.3 — lock msgverified opt-in form into Phase 5 launch scope |
-| 3 | `607bfd4` | feat(marketing-site): init fresh Next.js project at `/marketing-site` |
-| 4 | `af76a6f` | feat(marketing-site): port marketing home from `/prototype` with content cuts |
-| 5 | `3f371c3` | feat(marketing-site): port legal pages — terms, privacy, acceptable-use |
-| 6 | `bdb38bc` | feat(marketing-site): shared Footer with address, email, working legal links |
-| 7 | `94adb92` | feat(marketing-site): collapse emails to `support@`, refresh dates, remove pricing CTA |
-| 8 | `77222f3` | docs(marketing-site): tighten claims before carrier resubmission |
-| 9 | `e084c8d` | docs(backlog): process for keeping legal docs synced with product reality |
-| 10 | `2bf2353` | docs(marketing-site): tighten Terms — align with current product reality |
-| 11 | `024f1c9` | docs(marketing-site): tighten Privacy — align with current product reality |
-| 12 | `62871cc` | docs(marketing-site): tighten AUP + align Terms entity naming |
-| 13 | `8351b32` | docs(marketing-site): retire "Compliance Proxy" terminology across legal docs |
-| 14 | `aa0e11a` | docs(marketing-site): narrow Terms Service definition — cut feature-claim leaks |
-| 15 | `520ee81` | docs(marketing-site): final Terms residuals sweep before redeploy |
-| 16 | `e40af56` | docs(marketing-site): Privacy residuals sweep — three Phase 5 / drift-detection cuts (amended to fold in §2 "Provide the Service" residual caught by multiline-safe grep) |
-| 17 | (this commit) | docs: session 57 close-out |
+| 1 | `af48973` | docs: D-368 branch-and-preview workflow + propagate to PM_PROJECT_INSTRUCTIONS and CLAUDE.md |
+| 2 | `79b7942` | feat(api): migration 006 — phone_signups + beta_signups tables |
+| 3 | `a498c6c` | feat(marketing-site): add /start/verify route + thanks state |
+| 4 | `3eaa4e9` | feat(marketing-site): add /start/get-started route + thanks state |
+| 5 | `9ab1cbf` | feat(marketing-site): home-page early-access CTA linking to /start/verify |
+| 6 | `2f08197` | chore: trigger redeploy with new env vars |
+| 7 | `cf2e7b8` | chore: trigger build after github connection |
+| 8 | `e3f6565` | fix(marketing-site): appbar early-access CTA replaces inline CTA at bottom |
+| 9 | `006ecb7` | fix(marketing-site): align /start/verify copy with registered campaign description |
+| 10 | `7291b5b` | Merge feat/start-verify-and-get-started: /start/verify aligned with registered campaign description |
+| 11 | (this commit) | chore: session close — SC SOS Notice of Change filed (Transaction 2207850) |
 
-All commits local-only at session close — Joel pushes after PM final review of close-out.
+Commit 1 landed directly on main (the change introduces the policy rather than being subject to it). Commits 2–9 landed on `feat/start-verify-and-get-started` (commits 6–7 were Joel's direct pushes during env-var setup). Commit 10 is the merge to main. Commit 11 (this close-out) is local-only at session close — Joel pushes after PM final review.
 
 ---
 
-## What was completed
+## Session summary
 
-1. **Marketing site live on Vercel.** Fresh Next.js 15 + React 19 + Tailwind v4.1 project at `/marketing-site` deployed to `relaykit.ai`. Routes: `/`, `/terms`, `/privacy`, `/acceptable-use`. Home ported from `/prototype` with content cuts; legal pages ported from `/src` (sunset per D-358 but legal content predates the sunset and was the canonical port source). Build is fully static (7 pages, legal pages 167 B each — pure static HTML, no client JS). Vercel project provisioned by Joel via Vercel CLI in interactive shell.
+### Part A — repo work (early–mid session)
 
-2. **Three legal docs aligned to current product reality.** Terms, Privacy, and AUP all swept across multiple commits. Twilio → Sinch (carrier infrastructure correction), $199 → $49 (PRICING_MODEL.md / D-320), `rk_sandbox_` → `rk_test_` (D-349 user-facing prefix), "Mixed tier" terminology retired (D-245, D-251), domain `relaykit.com` → `relaykit.ai` (12 occurrences), specialty emails collapsed to `support@`, dates refreshed to 2026-04-28, "Compliance Proxy" terminology retired (D-367), entity naming aligned to "RelayKit LLC (formerly Vaulted Press LLC)" framing (D-195 implementation note), Cloudflare references cut from infrastructure mentions (Vercel hosting + DNS-only Cloudflare per D-366).
+**D-368 recorded + propagated.** Branch-and-preview workflow for production-facing surfaces. Substantive changes go through a feature branch with the host platform's preview deployment serving as the staging gate. Trivial changes (typos, comment-only edits, doc reorgs not touching user-facing copy) may push directly to main. Branch naming follows commit prefix convention (`feat/short-name`, `fix/short-name`, `docs/short-name`, `chore/short-name`). Vercel auto-deploys every non-main branch to a unique URL, so the staging surface is free. Single commit `af48973` covering DECISIONS.md (D-368 entry), PM_PROJECT_INSTRUCTIONS.md (new "Branch and Preview Workflow" section after "Quality-First Build Discipline"), and CLAUDE.md (new "Branching for production-facing work" subsection inside "Session close-out"). Pushed directly to main per the change-introduces-the-policy carve-out.
 
-3. **MASTER_PLAN v1.2 → v1.3 amendment** (commit `99e4a9b`). Locked msgverified-hosted opt-in form into Phase 5 launch scope as required (no longer conditional). Discovered post-3b rejection (2026-04-27) — every customer-side carrier registration requires a functional opt-in/CTA URL (CR4015), and RelayKit's customers don't arrive with a signup form already on their site, so RelayKit must host. Amendment added a sub-block to §9 Phase 5 with what-the-opt-in-form-does + open design questions; new bullet in `What gets done`; out-of-scope-for-launch items added to `What does not get done`; demo moment extended; §14 Phase 10 line clarified as polish-on-top-of-Phase-5; §3 Ten Phases summary kept terse (judgment call); no §17 risk added (deliverable not strategic risk); changelog entry added; title + footer bumped.
+**`/start/verify` + `/start/get-started` routes built per D-368.** Feature branch `feat/start-verify-and-get-started` carried four staged commits (migration 006 → verify route → get-started route → home-page CTA), reviewed in chat + Joel-verified on the Vercel preview deployment. Two follow-up `fix:` commits per PM redirects: appbar CTA replacing the inline bottom CTA (`e3f6565` — solid brand-purple button in the fixed top nav, visible on page load), and `/start/verify` copy aligned with the carrier-registered campaign description (`006ecb7` — header `Verify your phone number`, subhead `Enter your number to get a one-time code.`, registered consent string verbatim, submit button `Send verification code`, red-text advisory `Pending carrier approval. Verification SMS will be sent once approved.`, thanks state removed entirely with form reset on successful submit).
 
-4. **Two BACKLOG entries appended.**
-   - `8299dbf` — AI URL scan for customer registration content + gotcha detection (post-launch productized version of the customer-form problem)
-   - `e084c8d` — Process for keeping legal docs synced with product reality (write-side companion to `LEGAL_DOC_DEFERRED_CLAIMS.md`)
+**Server actions persist to Supabase.** `phone_signups` and `beta_signups` tables. Both server actions catch unique-constraint violations and return the same thanks-state on repeat submissions (silent dedup). `/start/get-started` reads the `relaykit_phone_signup_id` cookie set by `/start/verify` and denormalizes the linked phone into `beta_signups.phone` so the early-access list and beta list join cleanly without a foreign key. Server actions log errors server-side and degrade gracefully — the user always sees the success path regardless of backend state.
 
-5. **`docs/LEGAL_DOC_DEFERRED_CLAIMS.md` tracking doc created.** 21 numbered entries (1–6 Terms pass; 7–11 Privacy pass; 12–19 AUP pass; 20 Service definition + §3.1; 21 final residuals + Privacy parallel cuts) plus architectural-terminology note ("Compliance Proxy" retirement principle) and infrastructure-change note (Cloudflare → Vercel hosting). Each entry has restoration trigger tied to a specific phase/feature ship (Phase 5 msgverified, post-launch drift detection, build-spec generator). HTML comment markers in legal-doc source files cross-reference entries by number — discoverable via `grep "RESTORE WHEN BUILT"`. Consult at every MASTER_PLAN phase boundary.
+**Branch merged to main.** `--no-ff` merge `7291b5b` preserved the full branch history. Vercel auto-deployed production at relaykit.ai within ~50s of the push. Live-URL copy verification confirmed all new strings present (`Verify your phone number`, `Send verification code`, `Pending carrier approval`, registered consent string substrings, appbar `Get early access`) and all old strings absent (`Get on the list`, `Get a text when we go live`, `Drop your number`, `Want a heads-up when we go live`).
+
+**Branch retention.** `feat/start-verify-and-get-started` retained on local + remote per D-368 branch hygiene rule. Not deleted until clearly settled.
+
+### Part B — operational compliance work (late session, external to repo)
+
+**SC SOS Notice of Change of Registered Agent filed for RelayKit LLC.**
+- Filed: 2026-04-29 at 3:31 PM ET
+- Transaction ID: 2207850
+- Cost: $15
+- New agent: Joel M Natkin at 5196 Celtic Dr, North Charleston SC 29405
+- Designated office: unchanged
+- Status: in SC SOS queue; expected processing Friday 2026-05-01 or Monday 2026-05-04
+
+**Why:** Closes the CR2002 gap from the Sinch 3b rejection. Public SOS profile previously showed Republic at 215 East Bay St; campaign was registered with 5196 Celtic Dr. That mismatch is what carriers flagged. Once the filing processes, public SOS profile will show single-source verification of name + address against the campaign submission.
+
+**Scope decision — no D-number.** Operational compliance, not a product decision. Fails the six-month test (no future contributor needs this recorded to understand why the code looks the way it does) and the scope test (doesn't change what or in what order we launch).
 
 ---
 
 ## Quality checks passed
 
-- `tsc --noEmit` clean on `/marketing-site` (all final commits)
-- `eslint .` clean on `/marketing-site` (all final commits)
-- `npm run build` clean — 7 static pages, all 200 OK on dev server
-- Live alias verified clean across all four routes (Joel)
-- Multiline-safe leak scan: zero active-text matches for `compliance site|build spec|drift detection|compliance artifact|deliverable document|opt-in language` across `terms`, `privacy`, `acceptable-use`. Only HTML-comment marker matches remain.
-- Rendered HTML on `/privacy` confirms zero leak-category matches in the served document.
+- TS clean, ESLint clean, `npm run build` clean on `/marketing-site` at every commit boundary on the feature branch
+- Production deploy verified live at https://relaykit.ai/start/verify (HTTP 200 within ~50s of merge push) — full copy-presence + old-copy-absence verification clean
+- Home page appbar CTA verified live; old inline CTA absent
+- This close-out is doc-only — no quality gates needed
 
 ---
 
 ## Pending items going into next session
 
-1. **Sinch 3b resubmission** — PM tomorrow handles edits + resubmission. Add SC business filing URL as note on campaign description per memory rule (`project_sinch_sc_url.md`). Once resubmitted (or if approval lands), Phase 1 docket lands as one cohesive narrative update across MASTER_PLAN §1 + REPO_INDEX Active plan pointer + `experiments/sinch/experiments-log.md` (rejection → resubmission cycle captured in single update).
-
-2. **DNS cutover decision.** `relaykit.ai` is still pointed at the Cloudflare Worker "Coming Soon" page; needs to be cut to Vercel before resubmission so the reviewer lands on the real site rather than the placeholder. PM to schedule the cutover (likely same window as the resubmission).
-
-3. **PM observation: Terms §12.3 third-party infrastructure list incomplete.** Currently names Cloudflare for DNS but does not name Vercel for hosting. Non-blocking for resubmission; address in next legal-doc touch (could be folded into the same commit that handles any other §12.3 follow-ups, or paired with the freshtop-to-bottom-rewrite suggestion below).
-
-4. **Phase 1 docket update next session.** Same surface as item 1 but called out separately because it spans three docs (MASTER_PLAN §1, REPO_INDEX Active plan pointer, `experiments-log.md`). Active plan pointer in REPO_INDEX still reflects 3b SUBMITTED — awaiting approval; deliberately not refreshed to "rejected" yet — wait for the resubmission outcome and capture the cycle as a single coherent update.
-
-5. **Drift-detection cadence rule + multiline-safe grep methodology to land in CLAUDE.md.** Carrying forward from Session 56's deferred Session C item. Multiline-safe grep methodology now captured in `~/.claude/projects/-Users-macbookpro-relaykit/memory/feedback_grep_methodology.md` memory sidecar (added this session after a missed §2 leak in the Privacy residuals sweep — single-line `grep -E "compliance artifact"` missed a phrase that wrapped across two JSX lines; multiline scan via `tr '\n' ' ' | tr -s ' '` caught it on first attempt). Long-term home for both this and the no-Co-Authored-By rule is CLAUDE.md.
-
-6. **LEGAL_DOC_DEFERRED_CLAIMS.md tracking 21 numbered entries + 2 unnumbered notes**, covering ~25 individual cuts across all three legal docs. Restoration triggers tied to feature ships: Phase 5 msgverified opt-in form (entries 1, 4, 5, 7, 8, 17, 21 partial), post-launch drift detection (entries 3, 9, 10, 17, 21 partial), build-spec generator (entries 20, 21 partial), inline compliance enforcement (entries 2, 6, 9, 12, 13, 15, 18, 19, 21 partial). Consult at every MASTER_PLAN phase boundary.
-
-7. **Backlog suggestion (low priority): fresh top-to-bottom rewrite of legal docs in clean session if energy reappears.** Option A from earlier in this session — current legal docs are now audit-tight via incremental cuts but accumulate a notable density of HTML comment markers. A fresh rewrite in a single sitting (with restoration-trigger logic preserved via tracking doc) would produce cleaner source. Not urgent — the marketing-site is launch-ready as-is.
+1. **Sinch 3b resubmission (gated on Priyanka's response).** Held per session record. When Priyanka responds, the path advances:
+   - Pre-flight check on SC SOS public profile (verify the Notice of Change filing has processed and the public profile shows 5196 Celtic Dr + Joel M Natkin)
+   - Send paste-ready note to Priyanka at Sinch
+   - Full handoff package preserved in PM chat for Joel to carry forward across chat rotation
+2. **Migration 006 manual application.** SQL committed at `api/supabase/migrations/006_signups.sql` but not yet applied to the live shared Supabase project — the Supabase MCP returned permission-denied during the session. Joel needs to apply via Supabase dashboard SQL editor or `supabase db push` before the live `/start/verify` and `/start/get-started` server actions can persist data. Server actions log errors server-side and return graceful thanks-state regardless, so the live UI works in the no-table-yet state.
+3. **Vercel production env vars on `/marketing-site` project.** Two vars needed: `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`. Joel set these mid-session and added two `chore:` commits (`2f08197`, `cf2e7b8`) to trigger redeploys; confirm they're still set after the merge deploy. Documented in `marketing-site/.env.example`.
+4. **Phase 1 docket update.** Across MASTER_PLAN §1 + REPO_INDEX Active plan pointer + `experiments/sinch/experiments-log.md`. Held until the resubmission outcome lands so the update can describe the full rejection-to-resubmission cycle in one cohesive narrative pass. Surfaces post-Priyanka outcome.
+5. **Session C carryovers** (separate from Sinch resubmission, surface post-Priyanka outcome):
+   - Drift-detection cadence rule for CLAUDE.md
+   - Multiline-safe grep methodology for CLAUDE.md (memory sidecar `feedback_grep_methodology.md` becomes redundant once landed)
+   - BACKLOG aging review
+6. **`feat/start-verify-and-get-started` branch retention.** On local + remote per D-368 branch hygiene rule. Do not delete until clearly settled.
+7. **`PM_PROJECT_INSTRUCTIONS.md` whitespace reformat** still uncommitted in working tree across this session — Joel's earlier intentional edit (whitespace/indentation cleanup of the Session close-out checklist on lines 413–432). Surfaced here for visibility; Joel can commit, revert, or leave indefinitely. Not part of Session 58's commits.
 
 ---
 
 ## Files modified this session
 
-- `MASTER_PLAN.md` (v1.3 amendment — `99e4a9b`)
-- `BACKLOG.md` (two new entries — `8299dbf`, `e084c8d`)
-- `marketing-site/` — new directory, full Next.js project (init + ports + Footer + edits across 11 commits)
-  - `marketing-site/app/page.tsx` (home)
-  - `marketing-site/app/terms/page.tsx`
-  - `marketing-site/app/privacy/page.tsx`
-  - `marketing-site/app/acceptable-use/page.tsx`
-  - `marketing-site/components/footer.tsx`
-  - `marketing-site/app/layout.tsx`, `globals.css`, `package.json`, `tsconfig.json`, `next.config.ts`, `eslint.config.mjs`, `postcss.config.mjs`, `.gitignore`, etc.
-- `docs/LEGAL_DOC_DEFERRED_CLAIMS.md` (new file — created `eb8d160` / amended hash references in body, evolved across 4 commits — Terms, Privacy, AUP, residuals + Privacy residuals)
-- `DECISIONS.md` (D-366 + D-367 added; D-195 implementation note appended — this commit)
-- `REPO_INDEX.md` (Last updated, Decision count, Master plan last updated, MASTER_PLAN row, DECISIONS row, CC_HANDOFF row, `LEGAL_DOC_DEFERRED_CLAIMS` index entry, `/marketing-site` subdirectory entry — this commit)
-- `CC_HANDOFF.md` (this file, overwritten)
+**On main directly via commit `af48973`:**
+- `DECISIONS.md` — D-368 appended
+- `PM_PROJECT_INSTRUCTIONS.md` — "Branch and Preview Workflow" section added
+- `CLAUDE.md` — "Branching for production-facing work" subsection added inside Session close-out
 
-`/prototype`, `/api`, `/sdk`, `/src`, `PROTOTYPE_SPEC.md`, `MESSAGE_PIPELINE_SPEC.md`, `PRD_SETTINGS_v2_3.md`, etc. — all untouched this session.
+**On feature branch (commits `79b7942` through `006ecb7`, merged via `7291b5b`):**
+- `api/supabase/migrations/006_signups.sql` (new)
+- `marketing-site/.env.example` (new)
+- `marketing-site/lib/supabase-server.ts` (new)
+- `marketing-site/package.json` + `marketing-site/package-lock.json` (modified — `@supabase/supabase-js` added)
+- `marketing-site/components/top-nav.tsx` (modified — appbar `Get early access` CTA)
+- `marketing-site/app/page.tsx` (modified — inline CTA added then removed in fix commit)
+- `marketing-site/app/start/verify/{page.tsx,verify-form.tsx,actions.ts}` (new)
+- `marketing-site/app/start/get-started/{page.tsx,get-started-form.tsx,actions.ts}` (new)
+
+**This commit (Session 58 close-out):**
+- `REPO_INDEX.md` (last_updated, decision_count, unpushed-line phrasing)
+- `CC_HANDOFF.md` (overwritten)
+
+`/prototype`, `/api/src`, `/sdk`, `/src`, `PROTOTYPE_SPEC.md`, `MASTER_PLAN.md` — all untouched this session.
 
 ---
 
-## Suggested next tasks
+## Suggested next task on chat resume
 
-1. **Sinch 3b resubmission** (the priority). Dashboard edits per PM's punchlist + `project_sinch_sc_url.md` memory note. DNS cutover (`relaykit.ai` → Vercel) needs to land alongside or before the resubmission so the carrier reviewer lands on the real site.
+**SC SOS profile verification → Priyanka note submission.** When Joel returns with confirmation that the SC SOS filing has processed (expected Friday 2026-05-01 or Monday 2026-05-04):
 
-2. **Phase 1 docket update across MASTER_PLAN §1 + REPO_INDEX Active plan pointer + `experiments/sinch/experiments-log.md`**, capturing the rejection → resubmission cycle as one cohesive narrative update. Held until the resubmission outcome lands so the update can describe the full cycle in one go rather than two partial refreshes.
+1. Pull the public SOS profile at the SC SOS business filing URL, confirm name + address now match the campaign registration (5196 Celtic Dr, North Charleston SC 29405; Joel M Natkin)
+2. Send the paste-ready note to Priyanka at Sinch (handoff package preserved in PM chat across chat rotation)
+3. Once Priyanka responds and the resubmission lands (or is denied), document the full cycle (rejection → SOS filing → resubmission → outcome) in a single cohesive update across MASTER_PLAN §1 + REPO_INDEX Active plan pointer + `experiments/sinch/experiments-log.md`
 
-3. **Session C resumption (post-3b):** drift-detection cadence + multiline-safe grep methodology + no-Co-Authored-By rule into CLAUDE.md. The memory sidecars (`feedback_grep_methodology.md`, `feedback_commit_trailers.md`) become redundant at that point and can be removed.
+If the SOS filing returns rejected for any reason, surface immediately and replan.
 
-4. **Audit verdict #12 residual archive annotations** (DECISIONS_ARCHIVE.md reciprocal supersession marks for D-27, D-60, D-61, D-82, D-83) — separate scoped session if PM wants to close out all audit verdicts before Phase 2.
+---
 
-5. **Optional: legal-doc fresh rewrite** (item 7 in pending list above). Not urgent. Best candidate timing is post-launch-soft-cycle when there's energy for clean-source work without pressure.
+## Other carry-forward (post-Priyanka outcome)
+
+These were surfaced in Session 57 close-out as Session C carryovers; they remain held until after Phase 1 unblocks:
+
+- Drift-detection cadence rule landed in CLAUDE.md
+- Multiline-safe grep methodology landed in CLAUDE.md (memory sidecar exists at `~/.claude/projects/-Users-macbookpro-relaykit/memory/feedback_grep_methodology.md`)
+- BACKLOG aging review
+
+No gotchas; no quality checks needed for this close-out (doc-only).
