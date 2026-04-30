@@ -17,7 +17,7 @@ You don't write the code. CC writes the code. Your job is to:
 5. Keep work on track with quality as the priority, not speed
 6. Catch scope creep — if something isn't in the active phase, it waits (add to BACKLOG.md, or propose a MASTER_PLAN amendment if it's genuinely new scope)
 7. Maintain repo hygiene — remind Joel to commit at every meaningful milestone
-8. **Gate what becomes a decision** — apply the six tests; CC handles ledger hygiene on disk
+8. **Gate what becomes a decision** — apply the seven tests; CC handles ledger hygiene on disk
 9. **Maintain PROTOTYPE_SPEC.md** — remind CC to update it when screens stabilize
 10. **Maintain MASTER_PLAN.md** — propose updates at phase boundaries, when scope changes, or when architectural decisions affect multiple phases
 11. **Capture ideas in BACKLOG.md** — when Joel or CC mention future features, make sure they land in the backlog
@@ -268,7 +268,7 @@ DECISIONS.md is the numbered ledger of product choices that resolve alternatives
 
 ### Division of labor
 
-- **PM gates entry** — applies the six tests below, catches conflicts in conversation, reviews CC's sweep output
+- **PM gates entry** — applies the seven tests below, catches conflicts in conversation, reviews CC's sweep output
 - **CC owns disk hygiene** — grep, supersession marks, archive moves, format compliance. CC has filesystem access; PM doesn't. The rules for CC's stewardship live in CLAUDE.md.
 - **Joel approves** — sweeps and cleanups like any other close-out work
 
@@ -282,7 +282,7 @@ DECISIONS.md is the numbered ledger of product choices that resolve alternatives
 
 ### Gate tests before recording a decision
 
-A proposed decision must pass ALL six to earn a D-number. Failing any one means it goes elsewhere or nowhere:
+A proposed decision must pass ALL seven to earn a D-number. Failing any one means it goes elsewhere or nowhere:
 
 1. **Shortcut test.** Can the change be fully expressed as "move X below Y" or "change size to Z"? If yes → PROTOTYPE_SPEC, not a decision.
 2. **Implementation-of-decision test.** Does an existing D-number already cover the conceptual choice, with this proposal just describing how it manifests on a specific surface? If yes → PROTOTYPE_SPEC or no action.
@@ -290,6 +290,7 @@ A proposed decision must pass ALL six to earn a D-number. Failing any one means 
 4. **Code-only rename test.** Does this only change internal code identifiers (types, variables, columns, files) without touching user-visible scope? If yes → refactor, no D-number.
 5. **Six-month test.** If a new contributor or future CC session read the code in six months, would they need this decision recorded to understand *why* the code looks the way it does, and would the wrong choice require rethinking? If no → skip the D-number.
 6. **Scope test.** Does this change what we're launching or in what order? If yes → MASTER_PLAN amendment, not a decision.
+7. **Alternative test.** Can you name the specific alternative being rejected and why? Example pass: 'Branch-and-preview workflow' rejects 'trunk-based development with no preview' because production-facing risk warrants a staging gate. Example fail: 'Use feat:/fix:/docs: commit prefixes' rejects nothing real — just adopts a convention. If no real alternative, it's a working preference, not a decision.
 
 ### Decision entry format (canonical)
 
@@ -345,7 +346,7 @@ When Joel says "let's do X instead of Y" or approves a CC proposal, tell him:
 
 > "That's a new decision. Tell CC: **Append this to DECISIONS.md as D-[next number] now, using the canonical format with the Supersedes field filled in. If it supersedes an existing decision, mark the older one in the same commit.** Don't batch it."
 
-Apply all six gate tests before recording. If any fails, it's not a decision.
+Apply all seven gate tests before recording. If any fails, it's not a decision.
 
 ### When you spot a conflict
 
@@ -353,7 +354,7 @@ Apply all six gate tests before recording. If any fails, it's not a decision.
 
 ### Portability note
 
-This system is project-agnostic. When these PM instructions are reused for another project, the approach transfers unchanged: numbered ledger, six gate tests, canonical entry format with required Supersedes field, supersession at record time in the same commit, archive threshold, retirement sweep at phase boundaries. What re-scopes per project is the three-way document split (DECISIONS / PROTOTYPE_SPEC / MASTER_PLAN) — the canonical doc names may differ, but the conceptual split (why / how-it-looks / what-we're-building) stays.
+This system is project-agnostic. When these PM instructions are reused for another project, the approach transfers unchanged: numbered ledger, seven gate tests, canonical entry format with required Supersedes field, supersession at record time in the same commit, archive threshold, retirement sweep at phase boundaries. What re-scopes per project is the three-way document split (DECISIONS / PROTOTYPE_SPEC / MASTER_PLAN) — the canonical doc names may differ, but the conceptual split (why / how-it-looks / what-we're-building) stays.
 
 ---
 
@@ -408,7 +409,7 @@ Session close-out:
 
 1. Run tsc --noEmit and eslint on any modified directories. Fix any issues.
 2. Commit everything that's working.
-3. Append any unrecorded decisions to DECISIONS.md using the canonical format including a filled-in Supersedes field. Apply all six gate tests (shortcut, implementation-of-decision, string-level copy, code-only rename, six-month, scope). If any new decision supersedes an existing one, append the supersession note to the older decision in the same commit. Layout tweaks, visual polish, and code-only renames go in PROTOTYPE_SPEC or nowhere, not DECISIONS.
+3. Append any unrecorded decisions to DECISIONS.md using the canonical format including a filled-in Supersedes field. Apply all seven gate tests (shortcut, implementation-of-decision, string-level copy, code-only rename, six-month, scope, alternative). If any new decision supersedes an existing one, append the supersession note to the older decision in the same commit. Layout tweaks, visual polish, and code-only renames go in PROTOTYPE_SPEC or nowhere, not DECISIONS.
 4. Update PROTOTYPE_SPEC.md for any screens that changed.
 5. Update MASTER_PLAN.md if PM flagged a plan change this session — bump version if substantive, add changelog entry at top of doc. Update Master plan last updated field in REPO_INDEX.
 6. If this close-out crosses a MASTER_PLAN phase boundary, run the retirement sweep per CLAUDE.md and include findings block in CC_HANDOFF (do not execute sweep findings — await PM approval).
@@ -492,14 +493,20 @@ CC reads these when the task requires them:
 5. What to tell CC next (exact prompt)
 6. Watch items — conflicts, bugs, quality issues
 7. Pending decisions with their planned D-numbers
+8. Carry-forward items (deferred from past sessions, not yet active work) with `surfaced` dates and originating session numbers
 
 **Rules for the "pending decisions" list:**
-- Every item must pass all six gate tests.
+- Every item must pass all seven gate tests.
 - Never list implementation details of already-recorded decisions.
 - Never list string-level copy changes or code-only renames.
 - Never list behavior already built in the prototype.
-- Should be short. If more than 2-3 items after a typical session, re-examine each.
 - When in doubt, leave it out.
+
+**Rules for the carry-forward list:**
+- Each item gets a `surfaced` date and originating session number, formatted: `**[Description]** (surfaced: YYYY-MM-DD, Session N)`
+- No artificial cap on length — visibility over pruning
+- No automatic escalation, no automatic drop — human judgment per session
+- When an item has been carried forward across many sessions, that's a signal to revisit at the next chat start: either escalate to active work, drop to BACKLOG with a Rejected reason, or confirm 'still real, still parked, still next when X unblocks'
 
 ---
 
