@@ -211,7 +211,7 @@ _Captured 2026-04-23._
 **Goal:** capture the payload Sinch POSTs to the Service Plan callback URL when a recipient replies (mobile-originated, MO) to a message sent from a registered, deliverable RelayKit campaign. This is the Phase 4 inbound-handler contract — the exact wire shape the production receiver must dispatch on.
 
 ### Procedure
-1. **Pre-flight.** Confirm campaign `01kq5ahkf08v64ymqnxsnme5bg` (or successor TCR Campaign ID) is in `APPROVED` state in the Sinch dashboard. Confirm number `+12013619609` appears in the campaign's "Numbers" section (i.e., association completed). If association has not happened automatically post-approval, perform it via the dashboard and capture the UI path + any visible request/response (this is currently un-documented — log whatever the dashboard exposes).
+1. **Pre-flight.** Confirm the active campaign (currently the resubmission `01kqfnhy0q1rjv242c163a1wyv` — original `01kq5ahkf08v64ymqnxsnme5bg` was REJECTED 2026-04-27 — or its successor TCR Campaign ID) is in `APPROVED` state in the Sinch dashboard. Confirm number `+12013619609` appears in the campaign's "Numbers" section (i.e., association completed). If association has not happened automatically post-approval, perform it via the dashboard and capture the UI path + any visible request/response (this is currently un-documented — log whatever the dashboard exposes).
 2. **Confirm Service Plan callback URL.** Sinch dashboard → Service Plan → callback URL should still point at `https://sinch-webhook-receiver.joelnatkin.workers.dev` (per Session 49 scaffold). If not, restore.
 3. **Start the webhook receiver tail.** From a terminal: `wrangler tail --format pretty` against the deployed worker. Leave running.
 4. **Send a deliverable test message.** Issue an outbound SMS via the Sinch XMS API (same shape as Experiment 1's `exp-01-outbound.json` request body, swapping in the now-registered service plan/number). Send the literal body `Phase 1 Experiment 2b — please reply with any text`. Capture the API request + response (status, latency, body).
@@ -236,7 +236,7 @@ _Captured 2026-04-23._
 - Signature/HMAC header present-or-absent confirmed (Experiment 2a found none on delivery reports — does the same hold for MO?).
 - Success-side delivery-report callback shape captured to complement 2a's failure-side capture.
 
-### Status: BLOCKED on 3b approval + number-to-campaign association completion (registration ID `01kq5ahkf08v64ymqnxsnme5bg`).
+### Status: BLOCKED on 3b approval + number-to-campaign association completion (resubmission registration ID `01kqfnhy0q1rjv242c163a1wyv`; original `01kq5ahkf08v64ymqnxsnme5bg` REJECTED 2026-04-27 — see Experiment 3b cycle entry).
 
 ---
 
@@ -322,7 +322,7 @@ _Captured 2026-04-26 at submission time. Approval-time findings to be appended o
 2. **Customer registration form is due for a design round.** Field-by-field reality from 3a + 3b reveals what Sinch actually wants vs what the current `/apps/[appId]/register` form captures. See BACKLOG entry.
 3. **Number-to-campaign association is a post-approval step.** Wizard UX for the "your campaign is approved, now pick a number" moment needs to be designed — the customer can't pick a number until the campaign approves.
 
-### Status: SUBMITTED — awaiting approval. Registration ID `01kq5ahkf08v64ymqnxsnme5bg`.
+### Status: REJECTED 2026-04-27 (original Registration ID `01kq5ahkf08v64ymqnxsnme5bg`). RESUBMITTED 2026-04-30 as new Registration ID `01kqfnhy0q1rjv242c163a1wyv` — see Experiment 3b cycle entry below for the full rejection-to-resubmission narrative and findings.
 
 ---
 
@@ -375,7 +375,7 @@ Run on the live RelayKit brand `BTTC6XS`. Eventual RelayKit goal is FULL anyway 
 
 Pass condition for the experiment as a whole: enough evidence to design Phase 5's "upgrade your registration to Full" customer-facing wizard step end-to-end, including pricing display, field collection, timing claims, and continuity guarantees.
 
-### Status: BLOCKED on Experiment 3b approval (registration ID `01kq5ahkf08v64ymqnxsnme5bg`). Run only after 3b reaches `APPROVED` state and TCR Campaign ID is assigned.
+### Status: BLOCKED on Experiment 3b approval (resubmission registration ID `01kqfnhy0q1rjv242c163a1wyv`; original `01kq5ahkf08v64ymqnxsnme5bg` REJECTED 2026-04-27 — see Experiment 3b cycle entry). Run only after 3b reaches `APPROVED` state and TCR Campaign ID is assigned.
 
 ---
 
@@ -429,4 +429,44 @@ For each of STOP, START, HELP, the experiment must produce a clear answer to:
 
 Pass condition for the experiment as a whole: enough evidence to make the Phase 4 design decision between "thin consent layer (ledger updates from Sinch notifications)" and "thick consent layer (full keyword parsing + state management + outbound suppression)" without further investigation.
 
-### Status: BLOCKED on 3b approval + number-to-campaign association completion (registration ID `01kq5ahkf08v64ymqnxsnme5bg`).
+### Status: BLOCKED on 3b approval + number-to-campaign association completion (resubmission registration ID `01kqfnhy0q1rjv242c163a1wyv` — see Experiment 3b cycle entry below; original `01kq5ahkf08v64ymqnxsnme5bg` REJECTED 2026-04-27).
+
+---
+
+## Experiment 3b — Campaign registration cycle (rejection → remediation → resubmission)
+
+**Status:** RESUBMITTED 2026-04-30 — awaiting approval. Original Registration ID `01kq5ahkf08v64ymqnxsnme5bg` (REJECTED 2026-04-27). Resubmission Registration ID `01kqfnhy0q1rjv242c163a1wyv`.
+**Goal:** capture the full first-cycle rejection → remediation → resubmission for 3b. Output is the canonical lessons-learned record for Phase 5 customer-side state-machine design and pre-flight identity-validation logic. Supplements (does not supersede) the original 3b submission entry above — that entry remains the canonical record of submission-shape findings; this entry is the canonical record of the rejection-and-resubmission mechanic.
+
+### Submission timeline
+- **2026-04-26 12:39 ET:** Original submission. Registration ID `01kq5ahkf08v64ymqnxsnme5bg`; status `PENDING_REVIEW`.
+- **2026-04-27 22:11Z:** Rejected by reviewer priyanka.lagatageri@sinch.com with four codes (CR2020, CR2002, CR2005, CR4015).
+- **2026-04-29 15:31 ET:** SC SOS Notice of Change of Registered Agent filed (Transaction 2207850, $15).
+- **2026-04-30 ~10:41 AM ET:** SC SOS filing approved (Filing ID 260430-1041307); processing observed at <24 hours, faster than the 2-business-day SC SOS estimate.
+- **2026-04-30 ~12:54 ET:** Resubmission via clone. Registration ID `01kqfnhy0q1rjv242c163a1wyv`; status `PENDING_REVIEW`.
+- **Reviewer turnaround on the original:** ~1.3 business days (submission 04-26 12:39 ET → rejection 04-27 22:11Z ≈ 1.3 business days, business hours bracketed).
+
+### Rejection codes received and remediations
+- **CR2020 (entity name mismatch).** Sinch unable to verify relationship between `RelayKit` (campaign-registered name) and `VAULTED PRESS LLC` (DBA name in their lookup). Remediated by SC SOS Amended Articles of Organization (filed 2026-03-22, certified 2026-04-09, on file as Official Document changing legal name from `Vaulted Press LLC` to `RelayKit LLC`). Marketing site footer also updated to `RelayKit LLC (formerly Vaulted Press LLC)` per D-195 implementation note for human reviewer recognition during the resubmission window.
+- **CR2002 (address invalid).** Campaign registered to 5196 Celtic Dr but SC SOS public profile showed `Republic Registered Agent` at 215 East Bay St (legacy registered agent from formation, expiring/terminating). Remediated by SC SOS Notice of Change of Registered Agent — agent now Joel M Natkin at 5196 Celtic Dr, single source of truth for both name and address.
+- **CR2005 (website inaccessible).** `relaykit.ai` was serving a "Coming Soon" placeholder. Remediated by Session 57 marketing-site initialization (real home page + Terms + Privacy + Acceptable Use routes deployed via Vercel; commits `607bfd4` through `e40af56` and the close-out at `13e471f`).
+- **CR4015 (CTA missing/inaccessible).** Opt-in CTA URL in the original submission pointed nowhere functional. Remediated by Session 58 `/start/verify` route — phone capture form with consent disclosure language matching what's registered in the campaign description verbatim, linked from home-page appbar `Get early access` CTA.
+
+### Findings
+1. **Sinch's resubmission mechanic is "clone, edit, resubmit" — not "amend in place."** The DoNotReply email from `10dlc-campaigns.sinch.com` explicitly directs to clone the rejected campaign via the clone icon. The clone is a new campaign with a new Registration ID; the rejected campaign retains its `Rejected` status indefinitely as a record. **Implication for Phase 5 RelayKit-side:** the submission state machine must support `Rejected (terminal) → resubmitted as new campaign with new ID`, not `Rejected → Pending again on the same ID`.
+2. **The clone form pre-populates every field from the rejected campaign.** All fields are editable. `Additional comments` is a free-text field on the clone form — natural home for the resubmission narrative explaining what was changed in response to each rejection code.
+3. **Reviewer notes are written on the rejected campaign, not the resubmission.** Sinch dashboard `Notes` section is per-campaign. Resubmission narrative travels in `Additional comments` at submission time, not as a note added afterward.
+4. **Rejection notes from Sinch reviewers may contain typos and lack proofreading.** Priyanka's rejection text included `becaus ethe` (sic). **Implication:** machine parsing of rejection reasons cannot rely on perfect formatting; pattern-match the rejection code (`CR2020` etc.), not the prose.
+5. **Cross-source identity verification is the gating concern.** Sinch reviewers verify campaign-submitted identity against external public records (SC SOS public profile in this case). Mismatches between submitted identity and public-record identity drive multiple rejection codes simultaneously. **Implication for Phase 5 RelayKit-side:** pre-flight validation before submission should query and verify SC SOS profile state (or analogous source-of-truth for the customer's home state) against the submitted identity.
+6. **SC SOS processing time observed faster than estimated.** Notice of Change processed in <24 hours vs. SC SOS's stated 2-business-day window. Sample of one — do not generalize, but informs Phase 5 customer-facing time-to-registration estimates.
+
+### Implications for Phase 2 / Phase 5
+- **State machine.** Rejection is a terminal state on the original campaign; resubmission creates a new entity with a new Registration ID. The RelayKit-side data model must accommodate (campaign rows linked one-to-many through a `previous_registration_id` or equivalent forward-linking field rather than re-using the rejected ID).
+- **API parity.** Confirm with Sinch BDR (Elizabeth Garner) whether the clone-edit-resubmit flow has an API equivalent — current 3b cycle was dashboard-only. If clone is dashboard-only and resubmission via API requires a fresh `POST /campaigns` rather than a clone-from endpoint, that affects pipeline design (Phase 2 Session B must be told the clone path doesn't exist via API).
+- **Customer-facing UX.** When RelayKit's customer is rejected, the experience should be `your registration was rejected, here's why, here's what to fix, and we'll resubmit when ready` — not `click here to fix.` RelayKit absorbs the clone-edit-resubmit mechanics on the customer's behalf.
+- **Pre-flight identity verification.** Phase 5 wizard should validate customer's submitted identity against state SOS public records before sending to Sinch. Catches the most common rejection cause (cross-source mismatch) before incurring Sinch's review cycle.
+
+### Fixture
+None this cycle — submission and clone-resubmission are both via dashboard, no API request/response shape captured. If/when Phase 2 Session B finds an API equivalent for resubmission, capture as `exp-03b-resubmission.json`.
+
+### Status: RESUBMITTED 2026-04-30 — awaiting approval. Original Registration ID `01kq5ahkf08v64ymqnxsnme5bg` (REJECTED). Resubmission Registration ID `01kqfnhy0q1rjv242c163a1wyv`.
