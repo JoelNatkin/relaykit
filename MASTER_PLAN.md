@@ -1,6 +1,8 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.3 — April 28, 2026
+### Version 1.4 — April 30, 2026
+
+**v1.4 — 2026-04-30:** Phase 6 (Vertical Hydration) scope expanded to include OTP-as-feature work. Server-side validation endpoint, universal sendCode+checkCode SDK pair (D-370), dashboard Verification panel, onboarding round-trip OTP test, and API/prototype template registry reconciliation now ship at launch as part of Phase 6 rather than deferred to post-launch. Drives D-369 (validation in launch scope), D-370 (SDK naming), D-371 (customizability). Marketing pillar "Verification included" depends on this Phase 6 expansion.
 
 **v1.3 — 2026-04-28:** §9 Phase 5 amendment — lock in msgverified-hosted opt-in form as required launch-scope work, no longer conditional. Adds per-customer signup URL (`msgverified.com/{slug}/signup`), brand-name display, D-365 consent language, SMS verification, consent-ledger integration, slug provisioning during onboarding, and registration of the URL as the carrier-submission CTA. Reason: post-3b rejection (2026-04-27) surfaced that customers come to RelayKit *to get* SMS — they don't already have a signup form, so without RelayKit hosting one, every customer registration would fail CR4015 (functional opt-in/CTA URL). The "if carriers require it" framing in v1.2 is wrong; carriers always require a functional CTA URL, and the customer reality means RelayKit must host. Out-of-scope-for-launch items added (custom theming beyond brand name, multi-opt-in per slug, customer-domain hosting, multi-language). Open design questions noted (slug format/collision handling, brand customization scope, onboarding-flow surfacing) — to be resolved at Phase 5 design start. Title line bumped to 1.3.
 
@@ -34,7 +36,7 @@ That is the whole thesis. Every phase of this plan serves it. If a phase stops s
 
 ## 1. The State of Things (April 30, 2026)
 
-Here is a picture of where we actually stand, mid-Phase 1, against this plan at v1.3.
+Here is a picture of where we actually stand, mid-Phase 1, against this plan at v1.4.
 
 There is more built than the documentation admits. The SDK — the npm package that developers will install — is essentially done. It's a complete TypeScript library with eight vertical namespaces (appointments, orders, verification, support, marketing, internal, community, waitlist), around thirty methods, dual-published, with tests, packed at v0.1.0 and ready to ship to npm. The message-authoring prototype — the UI developers will use to preview and customize their messages — is in good shape, with the appointments vertical working end-to-end. A new backend called `/api` has begun, built on clean modern foundations (Hono framework, strict TypeScript, passing tests), and the first part of the message pipeline (Session A) is complete. Session B (real Sinch outbound + delivery-report callbacks) has not started yet, but most of its gating Phase 1 findings have now landed. The marketing site at `relaykit.ai` went live during Session 57 (Next.js 15 on Vercel — real home page plus Terms, Privacy, and Acceptable Use), and the early-access capture surface (`/start/verify` plus `/start/get-started`) shipped in Session 58 as the first work to flow through the new branch-and-preview workflow recorded in D-368.
 
@@ -82,7 +84,7 @@ A high-level summary of the whole path:
 4. **Phase 3: Database reconciliation** — Clean up the two-database situation. Single clean schema on `/api/supabase` going forward.
 5. **Phase 4: Inbound message handling** — Build Sinch webhook receiver in `/api`, handle STOP/START/HELP, forward to developer's webhook endpoint.
 6. **Phase 5: Registration pipeline on Sinch** — Rebuild brand and campaign submission against Sinch's APIs, verify fast registration end-to-end.
-7. **Phase 6: Vertical hydration** — Fix the wizard-to-workspace handoff so every vertical works end-to-end, not just appointments. Refactor the messages page to be data-driven.
+7. **Phase 6: Vertical hydration + verification-as-feature** — Fix the wizard-to-workspace handoff so every vertical works end-to-end, not just appointments. Ship verification as a universal SDK primitive (sendCode+checkCode on every namespace) backed by server-side validation infrastructure, plus a dashboard Verification panel and an onboarding round-trip OTP test. Specifics in VERIFICATION_SPEC.md.
 8. **Phase 7: `/api` deployment** — Stand up `api.relaykit.ai`. Staging first, then production.
 9. **Phase 8: SDK publication and AI-integration artifacts** — Publish RelayKit to npm. Ship AGENTS.md, cursor rules, README, per-builder guides.
 10. **Phase 9: Starter kit integration validation** — Download popular starters (KolbySisk, Vercel/Supabase), integrate RelayKit, prove the integration workflow works for real developers, approach starter maintainers.
@@ -267,32 +269,17 @@ Marketing campaign expansion (that's a customer action post-registration, not pa
 
 ---
 
-## 10. Phase 6 — Vertical Hydration
+## 10. Phase 6 — Vertical Hydration + Verification-as-Feature
 
-Right now, the prototype only works end-to-end for the Appointments vertical. Every other vertical — Verification, Orders, Support, Marketing, Internal, Community, Waitlist — has message data defined, SDK methods built, and helper functions in place, but the wizard-to-workspace handoff is broken, so selecting any of them dumps the user into Appointments content.
+Phase 6 fixes the broken wizard-to-workspace handoff for non-appointments verticals (verification, orders, customer support, marketing, internal, community, waitlist) and ships verification as a fully-realized feature available across every vertical's SDK namespace.
 
-The fix has two parts. The small part: hydrate `state.selectedCategory` from the wizard's `relaykit_wizard.vertical` on workspace entry. The big part: refactor the Messages page (currently 1,609 lines hardcoded to Appointments) to be data-driven so it renders correctly for any vertical.
+Vertical hydration: every vertical's wizard selection produces a working post-onboarding workspace with the right templates, the right registration scope, and the right SDK namespace methods. Demo moment per vertical: install SDK, call the namespace's primary method, receive a message.
 
-This phase is also where OTP / Verification becomes fully real. The SDK has three verification methods already built (sendCode, sendPasswordReset, sendNewDevice). The verification vertical has eight messages defined in data. What's missing is the wiring — and once that's fixed, OTP works out of the box for any customer who picks Verification.
+Verification-as-feature: the universal primitive named in D-360 (OTP included with every vertical) ships as the symmetric sendCode+checkCode pair on every namespace per D-370. Server-side validation infrastructure (hashed code storage, TTL, attempt tracking, rate limits) ships per D-369. Dashboard Verification panel exposes the template (editable per D-371), test-send round-trip, and Recent Activity rows. Onboarding integrates a round-trip OTP test as the activation event. API and prototype template registries reconciled (current 3-vs-8 divergence resolved).
 
-Review request templates also land in this phase. They're content additions to the relevant verticals (salon, dental, home services, auto, fitness, tutoring) with corresponding SDK methods (e.g., `relaykit.salon.reviewRequest()`). Small additions; mostly content work.
+Marketing pillar "Verification included" becomes truthful at the close of Phase 6.
 
-**What gets done:**
-
-- Workspace hydrates `selectedCategory` from wizard on entry
-- Messages page refactored to be vertical-agnostic (data-driven)
-- Each vertical's landing page (`/sms/[category]`) rendered correctly
-- OTP/Verification works end-to-end as a selectable vertical
-- Review request templates added to service verticals
-- SDK method additions as needed
-
-**What does not get done in Phase 6:**
-
-Full two-way dashboard inbox (Phase 10). New verticals beyond the eight we already have (post-launch).
-
-**Phase 6 demo moment:** Joel picks any vertical in the wizard, completes signup, and sees the correct messages for that vertical in the workspace. For the Verification vertical specifically, he can install the SDK and trigger `relaykit.verification.sendCode()` and receive a login code on his phone.
-
-**Phase 6 output:** All eight verticals work. The product's breadth matches its promises.
+Specifics in VERIFICATION_SPEC.md.
 
 ---
 
@@ -473,4 +460,4 @@ Everything else waits its turn.
 
 ---
 
-*End of master plan v1.3*
+*End of master plan v1.4*
