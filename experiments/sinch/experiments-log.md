@@ -435,7 +435,7 @@ Pass condition for the experiment as a whole: enough evidence to make the Phase 
 
 ## Experiment 3b — Campaign registration cycle (rejection → remediation → resubmission)
 
-**Status:** RESUBMITTED 2026-04-30 — awaiting approval. Original Registration ID `01kq5ahkf08v64ymqnxsnme5bg` (REJECTED 2026-04-27). Resubmission Registration ID `01kqfnhy0q1rjv242c163a1wyv`.
+**Status:** APPROVED 2026-05-01 (resubmission Registration ID `01kqfnhy0q1rjv242c163a1wyv`; TCR Campaign ID `CU4IUD0`). Original Registration ID `01kq5ahkf08v64ymqnxsnme5bg` (REJECTED 2026-04-27).
 **Goal:** capture the full first-cycle rejection → remediation → resubmission for 3b. Output is the canonical lessons-learned record for Phase 5 customer-side state-machine design and pre-flight identity-validation logic. Supplements (does not supersede) the original 3b submission entry above — that entry remains the canonical record of submission-shape findings; this entry is the canonical record of the rejection-and-resubmission mechanic.
 
 ### Submission timeline
@@ -469,4 +469,41 @@ Pass condition for the experiment as a whole: enough evidence to make the Phase 
 ### Fixture
 None this cycle — submission and clone-resubmission are both via dashboard, no API request/response shape captured. If/when Phase 2 Session B finds an API equivalent for resubmission, capture as `exp-03b-resubmission.json`.
 
-### Status: RESUBMITTED 2026-04-30 — awaiting approval. Original Registration ID `01kq5ahkf08v64ymqnxsnme5bg` (REJECTED). Resubmission Registration ID `01kqfnhy0q1rjv242c163a1wyv`.
+### Approval-time addendum (captured 2026-05-01)
+
+**Approval observed 2026-05-01 ~10:24 ET (US Eastern), ~3.5 business days after resubmission lodged 2026-04-30 ~12:54 ET.** Approval timestamp inferred from reviewer Priyanka Lagatageri's resubmission acknowledgment note dated 2026-04-30T17:04:03Z; campaign visible as `Active` on the dashboard 2026-05-01. Tighter than the ~1.3 business-day reviewer turnaround on the original 3b — possibly because the resubmission addressed identified rejection codes directly with verifiable external evidence (SC SOS public profile updated to single-source of name + address), reducing reviewer-side work.
+
+**Final state captured:**
+- **Resubmission Registration ID:** `01kqfnhy0q1rjv242c163a1wyv`, status `Active`.
+- **TCR Campaign ID assigned:** `CU4IUD0`.
+- **Brand:** `BTTC6XS`.
+- **Project ID:** `6bf3a837-d11d-486c-81db-fa907adc4dd4`.
+- **Carrier registration states:** all four major US carriers `REGISTERED` — T-Mobile, AT&T, Verizon, US Cellular.
+- **T-Mobile Brand Tier:** `LOW` (2,000 daily message cap brand-shared).
+- **AT&T Message Class:** `T` (75 messages/minute campaign-level).
+- **Verizon and US Cellular:** `REGISTERED` with no per-operator throttling visible on the dashboard.
+- **Phone:** `+12013619609`, status `Active`, associated with the approved campaign post-approval per the 3b finding that number-to-campaign association is a separate post-approval step.
+
+**Findings update.**
+
+7. **The rejection-to-approval cycle confirms the resubmission playbook works end-to-end.** Four rejection codes resolved in one resubmission cycle.
+8. **CR2002 was the load-bearing fix.** SC SOS Notice of Change updating the registered agent to Joel M Natkin at 5196 Celtic Dr resolved the cross-source identity verification gap that had triggered four rejection codes simultaneously. The other three remediations — CR2020 entity name (SC SOS Amended Articles certified 2026-04-09), CR2005 website inaccessible (Session 57 marketing-site initialization), CR4015 CTA missing (Session 58 `/start/verify` route) — had all been in place at the original submission window but were filtered by the address mismatch. Single root cause masking as multiple issues. **Implication for Phase 5:** carrier rejection codes can compound when an upstream identity-verification source is wrong; a pre-flight identity check that catches CR2002-class issues likely prevents a substantial fraction of the apparent CR2020/CR2005/CR4015 surface area too.
+9. **Sinch dashboard surfaces a "Reseller status" prompt to accounts that have at least one approved campaign.** The prompt asks whether the account is acting as a reseller (Sinch → Reseller → Customer billing flow). Account confirmed as `No` (non-reseller) — RelayKit operates as a standard Sinch customer for now, registering its own brand and campaigns. Reseller designation is a Phase 5 architecture decision; do **not** change without coordination with Sinch BDR (Elizabeth Garner). See BACKLOG entry "Sinch reseller designation — Phase 5 architecture decision" for the full design surface.
+
+**Implications for Phase 5 (Registration Pipeline) wizard design.**
+
+The resubmission playbook — clone, edit, resubmit; remediation narrative in `Additional comments`; cross-source identity verification before submission — is now validated end-to-end. RelayKit can confidently absorb this on customers' behalf:
+
+- Pre-flight identity validation (state SOS lookup or analogous source-of-truth) catches CR2002-class issues before Sinch ever sees the submission, and per finding 8, cascades to prevent the apparent surface area of CR2020/CR2005/CR4015 too.
+- Customer-facing voice on rejection: `your registration was rejected, here's why, here's what we'll fix, we'll resubmit when ready` — the customer never sees the clone-edit-resubmit mechanics.
+- The `previous_registration_id` forward-link pattern in the customer-side data model is now confirmed necessary (rejection terminal on original ID, new ID for resubmission).
+- The reseller designation question (finding 9) becomes operative as soon as the wizard targets customer-on-behalf-of campaigns. Account state should not change until that switch is coordinated.
+
+**Downstream Phase 1 unblocks.**
+- Experiment 2b (inbound MO message shape) — number `+12013619609` is now associated with the approved campaign; 2b can run.
+- Experiment 3c (brand SIMPLIFIED → FULL upgrade) — 3b's approval was the precondition for running 3c without contaminating 3b's measurement.
+- Experiment 4 (STOP/START/HELP reply handling, formerly Experiment 5 in v1.1) — same precondition met.
+
+**Fixture status.** No fixture this cycle either — campaign lifecycle visibility is dashboard-only at the approval-time observation point. The state-and-throughput facts captured above are the canonical record. If a future API endpoint surfaces the same state (Phase 2 Session B may discover one), capture as `exp-03b-approval.json`.
+
+### Status: APPROVED 2026-05-01 (resubmission Registration ID `01kqfnhy0q1rjv242c163a1wyv`; TCR Campaign ID `CU4IUD0`). Original Registration ID `01kq5ahkf08v64ymqnxsnme5bg` (REJECTED 2026-04-27).
