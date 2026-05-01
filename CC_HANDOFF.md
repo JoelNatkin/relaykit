@@ -84,13 +84,14 @@ CC_HANDOFF.md overwritten with this Session 65 handoff per CLAUDE.md step 8 form
     - Resubmission API parity question (Session 60).
     - Approval-state observability question (Session 63).
 12. **Carry-forward (post-Phase-1 unblock):** BACKLOG aging review (Session C carryover, surfaced: 2026-04-27 Session 56).
-13. **`feat/start-verify-and-get-started` branch retention** (surfaced: 2026-04-29 Session 58). On local + remote per D-368 branch hygiene rule.
 
 ---
 
 ## Resolved this session
 
-None directly resolved as items, but Session 65's PM_PROJECT_INSTRUCTIONS.md edits address an implicit gap from Session 64: PM-side instructions for working with the new MARKETING_STRATEGY.md doc were absent, so a future session loading MARKETING_STRATEGY.md without explicit PM guidance could risk treating the doc as a constraint rather than a starting-point-and-record. Session 65 closes that gap.
+- **`feat/start-verify-and-get-started` branch retention** (closed out via post-close-out branch-hygiene check, in this same close-out commit). PM-directed verification confirmed `git log main..feat/start-verify-and-get-started` returned empty (fully merged) and all 9 branch commits (`006ecb7` `e3f6565` `cf2e7b8` `2f08197` `9ab1cbf` `3eaa4e9` `a498c6c` `79b7942` `af48973`) are present on main. Branch deleted locally (`git branch -d`) and remotely (`git push origin --delete`). The retention item carried since Session 58 is now closed; no further action needed.
+
+Session 65's PM_PROJECT_INSTRUCTIONS.md edits also addressed an implicit gap from Session 64: PM-side instructions for working with the new MARKETING_STRATEGY.md doc were absent, so a future session loading MARKETING_STRATEGY.md without explicit PM guidance could risk treating the doc as a constraint rather than a starting-point-and-record. Session 65 closes that gap.
 
 ---
 
