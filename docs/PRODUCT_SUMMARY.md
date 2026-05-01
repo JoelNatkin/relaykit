@@ -3,7 +3,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-04-26
+> **Last reviewed:** 2026-05-01
 
 ---
 
@@ -83,13 +83,15 @@ The wizard ends in three short steps that establish the customer's account and t
 
 **Get Started (`/apps/[appId]/get-started`).** Standalone page (no layout wrapper). "Start building" with three numbered cards (npm install / API key / AI prompt), tool logo row, "View on dashboard" CTA. Clicking the CTA fires `setRegistrationState("building")` and routes to the workspace root. The pre-populated AI prompt is built from wizard data per D-331 (replaces the prior SMS_GUIDELINES.md concept). Anchors: D-322, D-325, D-331.
 
+**Round-trip OTP test (activation moment).** As part of the get-started flow, the customer receives a verification SMS at their RelayKit-account verified phone, enters the code, and sees a green-check confirmation ("Verification works. You're ready to integrate."). This is the proves-it-works loop before any other integration work — the activation milestone in the onboarding funnel. Beta-restricted to RelayKit-account-holder verified phones. Full path in VERIFICATION_SPEC §9. Anchors: D-369, D-370.
+
 ---
 
 ## 6. Workspace — pre-registration (Building state)
 
 Workspace root is `/apps/[appId]` and renders the Messages page (D-345, D-332). No tab bar — Settings is a child page reached via a gear icon in the header. The status indicator dot is hidden in Building (no "live" semantics yet).
 
-What the customer sees on the Messages page: the six built-in message cards for their vertical (read-only by default; pencil affordance enters inline edit), an Instructions panel (toggleable, off by default in non-onboarding states), an Ask Claude button (panel collapses inline; overlay on mobile), and a right rail. Right rail in Building: a registration CTA card ("Start registration →") and a Preview list card (up to 5 test phones with Edit/Delete; Invite form collapses on success; disabled when full).
+What the customer sees on the Messages page: the Verification panel above the message stack (see §9), the six built-in message cards for their vertical (read-only by default; pencil affordance enters inline edit), an Instructions panel (toggleable, off by default in non-onboarding states), an Ask Claude button (panel collapses inline; overlay on mobile), and a right rail. Right rail in Building: a registration CTA card ("Start registration →") and a Preview list card (up to 5 test phones with Edit/Delete; Invite form collapses on success; disabled when full).
 
 What the customer does: edits messages (Tiptap editor, tone pills Standard/Friendly/Brief/Custom, "+ Variable" popover, compliance hints, `Fix` button); adds custom messages via "+ Add message" (slug auto-generated kebab-case from name with collision suffix); test-sends to preview-list recipients (Activity icon opens Test & debug panel — D-341); asks Claude for help. Anchors: D-326 (Building two-column overview), D-341, D-342, D-343, D-350 / D-353 / D-354 (variable tokens), D-351 (custom messages), D-356 (custom compliance rules), D-357 (lock-while-authoring).
 
@@ -126,6 +128,8 @@ Across all three states: customer keeps editing messages, can still use Ask Clau
 Status: green dot + "Your app is live." This is the operational dashboard.
 
 **KPI row (only in Registered).** Three cards across the top of the Messages page: Delivery % (with breakdown drill-down modal), Recipients count, Compliance % (or "All clear" / "Has alerts" — see §10).
+
+**Verification panel.** Above the Messages list. Distinct visual treatment from message cards — this is a panel for the included Verification feature, not a message in the per-vertical catalog. Present across Building, Pending, Extended Review, Rejected, and Registered states (no panel during the Onboarding wizard). Editable verification template with `{code}` required-and-immutable plus the existing canon-template compliance gates. Test-send affordance with round-trip code entry, beta-restricted to RelayKit-account-holder verified phones. Recent Activity rows capped at 5 (matches other message cards). The panel is the dashboard expression of "verification included with every vertical." Full panel scope, customizability rules, and out-of-launch-scope items in VERIFICATION_SPEC §7 + §8. Anchors: D-360, D-369, D-370, D-371.
 
 **Messages.** Same six built-in cards as Building, plus any custom messages the customer has authored. Each card has two states: Monitor (read-only — current copy + recent test-send activity list + Test send / Ask Claude footer) and Edit (Tiptap editor, tone pills, variable popover, compliance hints, `Fix` button, Save/Cancel). Activity icon opens the Test & debug panel; clicking the body text doesn't enter Edit mode (deliberate — keeps the read state stable).
 
