@@ -32,6 +32,14 @@ Full stewardship rules — pre-flight scan, inline supersession enforcement, ret
 
 ---
 
+## Marketing decisions
+
+Marketing-domain decisions live in `docs/MARKETING_STRATEGY.md` under "Marketing Decisions on Record" (MD-numbers, separate sequence). Same gate-test rigor; different file. This keeps marketing prose readable as a coherent strategy document rather than fragmenting it across two ledgers. When a decision sits at the product/marketing seam (e.g., beta MVP scope), the rule is: lives in MASTER_PLAN/DECISIONS if mostly product, lives in MARKETING_STRATEGY if mostly marketing, with a cross-reference in the other file.
+
+(The MD-numbered entries themselves do not appear in DECISIONS.md.)
+
+---
+
 ## Archived Decision Index (D-01–D-83)
 
 Full text in DECISIONS_ARCHIVE.md. One-line summaries for quick reference:
