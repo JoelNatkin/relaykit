@@ -500,6 +500,25 @@ Message card content, editing, and monitoring behavior is identical across all p
 
 ---
 
+### Verification panel (Messages page)
+
+Placement: above the Messages list on the workspace page. Distinct visual treatment from message cards — this is a panel for the Verification feature included with every vertical (D-360, D-369), not a message in the per-vertical catalog.
+
+Contents at launch:
+- Editable verification template (compliance gates per D-371; canonical message body and rules in VERIFICATION_SPEC §7)
+- Test-send affordance — round-trip with code entry, restricted to RelayKit-account-holder verified phones during beta
+- Recent Activity rows, capped at 5 (matches other message cards)
+
+Out of scope at launch (parked in BACKLOG):
+- "View all" clickthrough to full message log
+- TTL / code-length config UI (locked at 6 digits / 10 min per D-360)
+- Rate-limit config UI (support-escalated at launch per VERIFICATION_SPEC §6)
+- Verification-specific debug mode toggle (existing message-type debug mode applies)
+
+Onboarding wizard: no Verification panel. Verification renders identically to other verticals' message lists in wizard view. The activation moment is the onboarding round-trip OTP test (VERIFICATION_SPEC §9), not a settings panel.
+
+Compliance gates extend existing message-editor logic (`/prototype/lib/editor/`) with one new required-and-immutable placeholder: `{code}` for verification templates. All other gates (opt-out, character cap) inherit unchanged.
+
 ### Opt-in Form Preview — `/apps/[appId]/opt-in`
 **File:** `prototype/app/apps/[appId]/opt-in/page.tsx`
 **Status:** REMOVED from wizard flow (D-317 tabled). All access redirects to `/messages` via AppLayout. The page file is retained — the component returns `null` and the original implementation is preserved inside a reference comment for future redesign. The `CatalogOptIn` component (`prototype/components/catalog/catalog-opt-in.tsx`) is still used by the public marketing pages.
