@@ -1,12 +1,12 @@
-# CC_HANDOFF — Session 65
+# CC_HANDOFF — Session 66
 
 **Date:** 2026-05-01
-**Session character:** PM_PROJECT_INSTRUCTIONS.md gains MARKETING_STRATEGY.md orchestration paragraph in the Tier 3 file-list and a new "Marketing operating posture" section establishing the nimble-strategic-mindset framing for PM-side marketing work. Doc-only, single content commit + close-out, no push at end (PM review first). No D-numbers added; no MD-numbers added (the new section restates the existing MD-numbering convention for PM-side reference, doesn't introduce new marketing decisions). No external actions.
+**Session character:** PM_PROJECT_INSTRUCTIONS.md gains a new "Voice register" paragraph in the existing "Response brevity" section under Standing Reminders, inserted after the existing six bullets and before the "Exceptions:" sub-paragraph. Captures the grounded-by-default vs. org-speak-on-demand voice split. Doc-only, single content commit + close-out, no push at end (PM review first). No D-numbers added; no MD-numbers added.
 **Branch:** main (clean except expected untracked `api/node_modules/`)
 
 `Commits: 2 (including this close-out) | Files modified: 3 | Decisions added: 0 D-numbers, 0 MD-numbers | External actions: 0`
 
-(2 atomic commits this session including this close-out per CLAUDE.md step 8 counting convention added in Session 64 Amendment C `2d162c3`. 3 files modified: PM_PROJECT_INSTRUCTIONS.md, REPO_INDEX.md, CC_HANDOFF.md.)
+(2 atomic commits this session including this close-out per CLAUDE.md step 8 counting convention. 3 files modified: PM_PROJECT_INSTRUCTIONS.md, REPO_INDEX.md, CC_HANDOFF.md.)
 
 ---
 
@@ -14,34 +14,33 @@
 
 | # | Hash | Description |
 |---|------|-------------|
-| 1 | `87c9642` | docs(pm): MARKETING_STRATEGY orchestration + operating posture |
-| 2 | (this commit) | docs(handoff): Session 65 close — PM marketing operating posture |
+| 1 | `af71245` | docs(pm): voice register rule — grounded by default, org-speak on demand |
+| 2 | (this commit) | docs(handoff): Session 66 close — PM voice register rule |
 
-Both commits unpushed at Session 65 close — pending PM approval before push.
+Both commits unpushed at Session 66 close — pending PM approval before push.
 
 ---
 
 ## Session summary
 
-### Commit 1 — PM_PROJECT_INSTRUCTIONS.md (`87c9642`, +12)
+### Commit 1 — PM_PROJECT_INSTRUCTIONS.md (`af71245`, +2)
 
-Two edits to PM_PROJECT_INSTRUCTIONS.md.
+Single edit: new paragraph appended to the "**Response brevity.**" block inside `## Standing Reminders`. Placement: after the six existing bullets (lead with recommendation, skip restating, skip what-I'd-NOT-do, skip nuances, no confirmation sections, don't preempt) and before the "**Exceptions:**" sub-paragraph (CC prompts must still be complete and precise — brevity applies to PM ↔ Joel conversation).
 
-**Edit A — Tier 3 file-list paragraph.** New paragraph inserted in the `### Tier 3 — Upload on demand (everything else)` subsection (after the existing 1-line description, before `### PM instructions sync`). Tells PM to request `docs/MARKETING_STRATEGY.md` and `docs/MARKETING_STRATEGY_ARCHIVE.md` when conversations touch marketing, positioning, audience, channels, content, partnerships, beta recruitment, pricing-as-positioning, or competitive framing. Explicit not-loaded-at-session-start framing per the canonical Tier 3 norm.
+Paragraph content covers four moves:
 
-**Edit B — `## Marketing operating posture` section.** New top-level section inserted between the existing `## File Requests: Ask, Don't Assume` section and `## Doc-only vs. Code-touching Sessions` section (placement chosen to read naturally without disrupting the existing flow — adjacent to other PM-posture sections in the back-half of the doc). Three paragraphs, ~250 words:
+1. **Default voice.** Grounded, builder-friendly answers — the answer first, in plain language, without operational scaffolding.
+2. **Where org-speak belongs.** Phase grids, dependency chains, decision-ledger references, sequencing rationale are the right register for CC prompts, doc edits, decision entries, and explicit requests for the operational view.
+3. **Where org-speak is wrong.** Joel's day-to-day questions about product, design, or status. Lead with the answer a builder would want; if Joel needs the structured version he'll ask.
+4. **Recalibration trigger.** "Shorter" or "less PM" → recalibrate immediately. Reasoning shown briefly when needed, not as a substitute for the answer.
 
-1. **Nimble-strategic-mindset framing.** When MARKETING_STRATEGY.md is loaded, PM is not just executing what's written. The doc is a starting point and a record, not a constraint. PM brings strategic context, pushes back on contradictions, equally pushes to reopen settled things when ground reality contradicts the doc, stays alert to what's actually working vs. what was written down, generates options proactively, catches when energy is going where the doc doesn't predict (that's signal to update the doc, not redirect the energy).
-2. **MASTER_PLAN-style treatment.** MARKETING_STRATEGY gets the same load-bearing-but-amendable treatment as MASTER_PLAN, with version bumps when substantive things shift. Cycle: doc → conversation → CC commits the refinements. PM stays nimble across all three.
-3. **MD-numbering convention restated for PM-side reference.** Marketing decisions follow the seven gate tests like product decisions, but live as MD-numbered entries in MARKETING_STRATEGY.md (not D-numbered in DECISIONS.md). Product/marketing seam rule restated with the disambiguator: "marketing if the question is 'how do we win the market' and product if the question is 'what are we shipping.'"
-
-File size 781 → 794 lines (PM_PROJECT_INSTRUCTIONS.md has no formal size ceiling per existing structure; new section is ~13 lines net).
+File size 794 → 796 lines (PM_PROJECT_INSTRUCTIONS.md has no formal size ceiling per existing structure; net 2-line addition counting the paragraph + its trailing blank line as Edit's diff render).
 
 ### Commit 2 — close-out (this commit)
 
-REPO_INDEX Meta block bumps (Last updated → 2026-05-01 Session 65 summary; Decision count unchanged at D-371; MD-counter unchanged at MD-8; Master plan last updated unchanged; Unpushed local commits → 2 with both Session 65 commit references); Session 65 change-log entry appended chronologically after Session 64's bypass-mode amendments entry. **Note — backfill of Session 64 amendments entry:** I also added a Session 64 PM bypass-mode amendments change-log entry covering the B/A/C amendments that landed in the previous chat turn (corrected metrics, D-368 orphan repair, CLAUDE.md counting convention) plus the push to `2d162c3`. The original Session 64 entry was written before those amendments existed and ends with "Six commits unpushed... pending PM approval before push," which left a ledger gap between Session 64's initial close and Session 65's start state at `2d162c3`. The backfill entry closes that gap. Surfacing because the user's Session 65 close-out instructions only explicitly asked for the Session 65 entry — see "Surface for PM" item 1 below.
+REPO_INDEX Meta block bumps (Last updated → 2026-05-01 Session 66 summary; Decision count unchanged at D-371; MD-counter unchanged at MD-8; Master plan last updated unchanged; Unpushed local commits → 2 with both Session 66 commit references); Session 66 change-log entry appended chronologically after Session 65's entry.
 
-CC_HANDOFF.md overwritten with this Session 65 handoff per CLAUDE.md step 8 format. **No retirement sweep, no drift-watch** — single-content-commit doc-only session, mid-phase.
+CC_HANDOFF.md overwritten with this Session 66 handoff per CLAUDE.md step 8 format. **No retirement sweep, no drift-watch** — single-content-commit doc-only session, mid-phase.
 
 ---
 
@@ -49,9 +48,19 @@ CC_HANDOFF.md overwritten with this Session 65 handoff per CLAUDE.md step 8 form
 
 - Doc-only session — `tsc --noEmit` / `eslint` / `vitest` not required per CLAUDE.md close-out gates.
 - No D-numbers added — gate tests not applicable this session.
-- No MD-numbers added — Edit B restates the MD-numbering convention for PM-side reference but introduces no new marketing decisions.
-- Pre-flight DECISIONS ledger scan run at session start: Active count 286 (latest D-371), Archive D-01–D-83. **No new decisions since previous session.** **D-368 orphan repair from Session 64 Amendment A `f8341d2` confirmed clean** — DECISIONS.md tail now ends correctly at D-371's Affects line; D-368 has its Reasoning + Affects properly attached.
-- Pre-flight git state at session start: HEAD == `2d162c3` == `origin/main` (Session 64's 8 commits all pushed at end of previous chat turn). Working tree clean except untracked `api/node_modules/`.
+- No MD-numbers added.
+- Pre-flight DECISIONS ledger scan run at session start: Active count 286 (latest D-371), Archive D-01–D-83. **No new decisions since previous session** — no flags.
+- Pre-flight git state at session start: HEAD == `dd3c432` == `origin/main`. Session 65's two commits (`87c9642` + `4261ac1`) plus the post-Session-65 branch-retention close-out (`dd3c432`) all pushed before this session started. Working tree clean except untracked `api/node_modules/`.
+
+---
+
+## Surface for PM
+
+1. **L3 header-date pre-flight mismatch with Session 65 surface item 2.** PM prompt for Session 66 directed bumping the L3 header date to 2026-05-01. Pre-flight read showed the header already reads `### Updated: May 1, 2026` (long-form, matching the doc's existing date convention). The bump from `April 27, 2026` → `May 1, 2026` had landed in Session 65's Commit 1 `87c9642` (confirmed via `git log -p` showing the `-### Updated: April 27, 2026` / `+### Updated: May 1, 2026` diff inside `87c9642`), even though Session 65 CC_HANDOFF Surface item 2 stated *"This session's edit added 13 lines of content but did not bump the header date."* The Session 65 surface was incorrect — the date was bumped in Commit 1 of that session. CC took no action on the header in Session 66 (date target already met; format kept long-form to match the rest of the doc's headers). Surfacing because PM should know the Session 65 surface item 2 question is already settled — no follow-up edit needed unless PM wants to switch the header to ISO `2026-05-01` format.
+
+2. **Voice register paragraph placement.** PM prompt said "after the existing bullets, before 'Exceptions:'." The "**Response brevity.**" block has six bullets ending with "Don't preempt." followed by a blank line, then "**Exceptions:**" as the next paragraph. CC inserted the new "**Voice register.**" paragraph between the trailing blank line after the last bullet and the "**Exceptions:**" line, so the section now reads: heading paragraph → 6 bullets → Voice register → Exceptions → Instructions for Joel. Placement matches the prompt; surfacing in case PM wanted it elsewhere (e.g., between heading paragraph and bullets, or as its own top-level section under Standing Reminders).
+
+3. **No conflicts with the new paragraph's content.** The Voice register rule is consistent with the existing "**Try the simplest fix first.**" bullet at the end of the preceding section ("the shortest correct response is the best correct response") and with the existing six bullets in Response brevity. The "shorter / less PM" recalibration trigger is new and worth noting — no prior text in PM_PROJECT_INSTRUCTIONS.md names recalibration triggers explicitly.
 
 ---
 
@@ -87,31 +96,11 @@ CC_HANDOFF.md overwritten with this Session 65 handoff per CLAUDE.md step 8 form
 
 ---
 
-## Resolved this session
-
-- **`feat/start-verify-and-get-started` branch retention** (closed out via post-close-out branch-hygiene check, in this same close-out commit). PM-directed verification confirmed `git log main..feat/start-verify-and-get-started` returned empty (fully merged) and all 9 branch commits (`006ecb7` `e3f6565` `cf2e7b8` `2f08197` `9ab1cbf` `3eaa4e9` `a498c6c` `79b7942` `af48973`) are present on main. Branch deleted locally (`git branch -d`) and remotely (`git push origin --delete`). The retention item carried since Session 58 is now closed; no further action needed.
-
-Session 65's PM_PROJECT_INSTRUCTIONS.md edits also addressed an implicit gap from Session 64: PM-side instructions for working with the new MARKETING_STRATEGY.md doc were absent, so a future session loading MARKETING_STRATEGY.md without explicit PM guidance could risk treating the doc as a constraint rather than a starting-point-and-record. Session 65 closes that gap.
-
----
-
-## Surface for PM
-
-1. **Session 64 PM bypass-mode amendments backfilled in REPO_INDEX change-log this session.** The original Session 64 entry ended with "Six commits unpushed... pending PM approval before push" because it was written before PM directed the B/A/C amendments. Those amendments and the push to `2d162c3` had no change-log coverage. I added a separate change-log entry chronologically after Session 64's original entry covering the amendments and the push. This is beyond the user's explicit Session 65 close-out instructions ("add Session 65 change-log entry covering this single commit"). Surfacing because PM may prefer to (a) keep the backfill (closes the ledger gap, reads cleanly), (b) remove the backfill (strict prompt scope), or (c) merge the backfill into the original Session 64 entry as an addendum block. CC will execute whichever PM directs.
-
-2. **PM_PROJECT_INSTRUCTIONS.md "Updated" header date.** L3 currently reads `### Updated: April 27, 2026`. This session's edit added 13 lines of content but did not bump the header date. The doc has no explicit cadence for header-date updates (unlike MASTER_PLAN's version-bump rule). Flagging for PM judgment: bump to 2026-05-01 in a follow-up commit, leave as-is, or treat header date as substantive-changes-only and skip for orchestration/posture additions. CC defaults to leaving it alone unless PM directs.
-
-3. **Edit B placement decision.** PM prompt said "after the 'File Requests: Ask, Don't Assume' section and before 'Doc-only vs. Code-touching Sessions' (or wherever fits the existing flow — use judgment)." CC placed it exactly there (between L734's separator and L736's `## Doc-only vs. Code-touching Sessions`), which matches the prompt's first-suggestion location. PM_PROJECT_INSTRUCTIONS.md back-half flow now reads: File Requests → Marketing operating posture → Doc-only vs. Code-touching Sessions → CC Mode Signaling. The new section sits with other PM-posture sections (rather than near MASTER_PLAN Discipline at L79 or alongside the Tier 3 list at L47), which felt natural. Surfacing the placement choice in case PM wanted it elsewhere.
-
-4. **No conflicts surfaced with the new section's content.** Edit B's three paragraphs are consistent with existing MASTER_PLAN Discipline (L79–115), Docs Hygiene (L58–77), and the DECISIONS System (L263–360) structure. The MD-numbering restatement is identical to the canonical statement in `docs/MARKETING_STRATEGY.md` "Marketing Decisions on Record" section and the DECISIONS.md `## Marketing decisions` pointer.
-
----
-
 ## Files modified this session
 
 **Repo files (committed):**
-- `PM_PROJECT_INSTRUCTIONS.md` (Commit 1 — +12)
-- `REPO_INDEX.md` (Commit 2 — Meta bumps + Session 65 change-log entry + Session 64 amendments backfill entry)
+- `PM_PROJECT_INSTRUCTIONS.md` (Commit 1 — +2)
+- `REPO_INDEX.md` (Commit 2 — Meta bumps + Session 66 change-log entry)
 - `CC_HANDOFF.md` (Commit 2 — this commit, overwritten)
 
 **Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `/marketing-site`, `MASTER_PLAN.md`, `PROTOTYPE_SPEC.md`, `DECISIONS.md`, `BACKLOG.md`, `CLAUDE.md`, all docs under `/docs`, audits, experiments.
@@ -122,7 +111,7 @@ Session 65's PM_PROJECT_INSTRUCTIONS.md edits also addressed an implicit gap fro
 
 **Either** Phase 1 downstream work (Experiment 2b — live sample SMS over approved campaign — is the highest-leverage next experimental work, since it validates the API → carrier → handset send path that silent-drops in Experiments 1/1b/2a never confirmed) **or** marketing-side action items 4–5 (Joel's affiliate-program signups + tooling confirmation, both Joel-actionable and trivial). PM directs.
 
-If PM wants the Session 64 amendments backfill removed or restructured (Surface for PM item 1), that's a 2-minute REPO_INDEX edit + amend.
+If PM wants the L3 header switched from long-form (`May 1, 2026`) to ISO (`2026-05-01`) per the prompt's literal wording (Surface for PM item 1), that's a 1-line edit + amend.
 
 ---
 
