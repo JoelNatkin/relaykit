@@ -130,6 +130,16 @@ Mapping decisions to shipped behaviors — used by future SDK sessions to verify
 - **Server-side only** — documented hard constraint. The SDK is never safe in a browser because it holds the API key.
 - **Class-based init (`new RelayKit()`)** — the shipped pattern. README examples, AGENTS.md examples, and module-pattern docs all use this form. A singleton convenience pattern (e.g. a shared `import { relaykit }` default export) is a **Phase 8 decision**, not in scope for v0.1.0.
 
+### 3a. Verification surface (Phase 6)
+
+The v0.1.0 surface ships with `verification.sendCode`, `verification.sendPasswordReset`, and `verification.sendNewDevice`. Phase 6 extends the SDK per D-369, D-370, D-371. SDK_BUILD_PLAN points at `docs/VERIFICATION_SPEC.md` for the full contract; the changes summarized here so this doc stays in sync with the namespace inventory:
+
+- **D-370 — symmetric `sendCode` + `checkCode` pair on every namespace.** Every vertical namespace gains both methods. The verification namespace gains `checkCode` (existing `sendCode` retained); the seven other vertical namespaces (appointments, orders, support, marketing, internal, community, waitlist) gain both. Symmetric semantics across namespaces — `relaykit.appointments.sendCode/checkCode` works identically to `relaykit.orders.sendCode/checkCode`. Net additions: `+1` on verification, `+2` on each of the other seven = `+15` methods. Surface grows from 30 to 45 methods. Full method signatures + validation response shape in VERIFICATION_SPEC §2.
+- **D-369 — server-side validation in launch scope.** `checkCode` calls `POST /v1/verify/check` (sibling endpoint to `/v1/messages`); `/api` owns code generation, hashed storage with TTL, attempt tracking, and rate-limit enforcement. SDK is the thin client per D-296. Endpoint contract, storage schema, validation logic, and rate-limit thresholds in VERIFICATION_SPEC §3–§6.
+- **D-371 — verification message customizability.** Verification template body editable on the website per the existing canon-template compliance pattern (D-356), with one additional required-and-immutable placeholder: `{code}`. Locked: code length (6 digits), TTL (10 minutes). SDK is unchanged by D-371 (template authoring is a website concern, not an SDK concern); this entry captures the decision for cross-doc completeness.
+
+The §2b namespace inventory table reflects v0.1.0 reality and is not retroactively edited. Phase 6 implementation refreshes the §2-equivalent inventory at the next SDK version; until then, §3a above is the canonical "what's coming" reference.
+
 ---
 
 ## 4. Remaining work (Phase 8)
@@ -227,7 +237,7 @@ relaykit.appointments.sendConfirmation({
 });
 ```
 
-Per D-330, every namespace is present; nothing is hidden. OTP/verification exposure across verticals (D-360) is documented here — every namespace exposes a `verifyCode(...)` method in addition to its transactional templates.
+Per D-330, every namespace is present; nothing is hidden. OTP/verification exposure across verticals (D-360, refined by D-370) is documented here — every namespace exposes the symmetric pair `sendCode(phone, { code })` + `checkCode(phone, code)` in addition to its transactional templates. Full SDK contract, validation response shape, and the verification-namespace specifics (`sendPasswordReset`, `sendNewDevice`) live in VERIFICATION_SPEC §2.
 
 #### Section 7 — Consent management (D-274)
 
