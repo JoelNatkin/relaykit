@@ -1,12 +1,12 @@
-# CC_HANDOFF — Session 60
+# CC_HANDOFF — Session 62
 
 **Date:** 2026-04-30
-**Session character:** Phase 1 docket update capturing the Sinch 3b rejection-to-resubmission cycle. Three doc-only commits + one external action (Sinch resubmission via dashboard at ~12:54 ET 2026-04-30). No D-numbers — operational documentation, fails the six-month test (the cycle is captured in `experiments/sinch/experiments-log.md` as Phase 1 evidence, not as a product decision).
-**Branch:** main (clean except expected untracked items: `api/node_modules/`)
+**Session character:** OTP-as-feature product-thinking session capturing decisions from a parallel PM strategy chat. Doc-only, six content commits + close-out, no external actions, no quality-gate requirements. Three new D-numbers (D-369 OTP validation in launch scope, D-370 universal sendCode+checkCode SDK pair, D-371 verification message customizability), MASTER_PLAN v1.3 → v1.4 amendment expanding Phase 6 (Vertical Hydration) scope to include verification-as-feature work, new canonical spec at `docs/VERIFICATION_SPEC.md`, PROTOTYPE_SPEC Verification panel section, five BACKLOG entries.
+**Branch:** main (clean except expected untracked `api/node_modules/`)
 
-`Commits: 4 | Files modified: 5 | Decisions added: 0 | External actions: 1`
+`Commits: 7 including close-out | Files modified: 5 | Decisions added: 3 | External actions: 0`
 
-(3 content git commits this session plus this close-out commit; 5 files modified across the repo; 0 D-numbers added; 1 external action — Sinch resubmission via dashboard, registration ID `01kqfnhy0q1rjv242c163a1wyv`.)
+(6 content commits this session plus this close-out commit; 5 files modified across the repo: DECISIONS.md, MASTER_PLAN.md, PROTOTYPE_SPEC.md, BACKLOG.md, REPO_INDEX.md (plus new file `docs/VERIFICATION_SPEC.md`); 3 D-numbers added; 0 external actions.)
 
 ---
 
@@ -14,153 +14,171 @@
 
 | # | Hash | Description |
 |---|------|-------------|
-| 1 | `02d93b4` | docs(experiments): capture 3b rejection-to-resubmission cycle findings |
-| 2 | `99a0802` | docs(plan): Phase 1 docket update — 3b rejection-to-resubmission cycle |
-| 3 | `87d5186` | docs(reference): add resubmission process to brand-registration field doc + Sole Prop BACKLOG update |
-| 4 | (this commit) | docs(repo-index): Session 60 close-out (CC_HANDOFF + drift-watch findings) |
+| 1 | `83b3166` | docs(decisions): D-369 OTP validation, D-370 sendCode+checkCode pair, D-371 verification customizability |
+| 2 | `cef143b` | docs(plan): MASTER_PLAN v1.3 → v1.4 — Phase 6 expanded for verification-as-feature |
+| 3 | `856ed18` | docs(spec): create VERIFICATION_SPEC.md as canonical OTP feature spec |
+| 4 | `dcd4ed8` | docs(spec): PROTOTYPE_SPEC verification panel section (D-369, D-371) |
+| 5 | `b9604b9` | docs(backlog): verification work + 5 new entries (full log, row cap, rate-limit self-serve, beta MVP, marketing pillar) |
+| 6 | `b380c6a` | docs(index): Session 62 — verification-as-feature artifacts landed |
+| 7 | (this commit) | docs(handoff): Session 62 close-out (CC_HANDOFF + drift-watch findings) |
 
-All commits unpushed at Session 60 close — pending PM approval before push.
+All commits unpushed at Session 62 close — pending PM approval before push.
 
 ---
 
 ## Session summary
 
-### Commit 1 — experiments/sinch/experiments-log.md (`02d93b4`, +45/-5)
+### Commit 1 — DECISIONS.md (`83b3166`, +25)
 
-Appended a new H2 section `Experiment 3b — Campaign registration cycle (rejection → remediation → resubmission)` after Experiment 5. The new entry is the canonical lessons-learned record for the first 3b cycle; the original 3b H2 section above remains the canonical record of submission-shape findings. The new entry covers:
+Three new decisions appended to the active log:
 
-- **Submission timeline** (six dated milestones from original submission 2026-04-26 through resubmission 2026-04-30, including SC SOS Notice of Change filing and processing — the latter observed in <24 hours vs. SC SOS's 2-business-day estimate).
-- **Rejection codes received and remediations** — `CR2020` (entity name mismatch, fixed by SC SOS Amended Articles), `CR2002` (address invalid, fixed by Notice of Change of Registered Agent), `CR2005` (website inaccessible, fixed by Session 57 marketing site initialization), `CR4015` (CTA missing, fixed by Session 58 `/start/verify` route).
-- **Six canonical findings** (clone-edit-resubmit mechanic; clone form pre-population; reviewer notes per-campaign not per-resubmission; rejection prose may contain typos so machine-parse the code; cross-source identity verification is the gating concern; SC SOS processing observed faster than estimated).
-- **Implications block** for Phase 2 / Phase 5 (state machine, API parity question for Sinch BDR, customer-facing UX, pre-flight identity verification).
-- **Fixture status** — none this cycle (dashboard-only); placeholder name `exp-03b-resubmission.json` reserved for if/when an API equivalent is found.
+- **D-369 — OTP validation in launch scope** (Date: 2026-04-30). Server-side validation infrastructure (endpoint POST /v1/verify/check, hashed code storage with TTL, attempt tracking, layered rate limits) ships at launch as first-class capability. SDK exposes `checkCode(phone, code)` returning a structured result (`{ valid: true } | { valid: false, reason: 'expired' | 'incorrect' | 'too_many_attempts' | 'no_pending_code' }`). Rejects send-only-defer-validation alternative. Extends D-360. Supersedes: none.
 
-Same commit also contextualized four stale Status footer references throughout the log (original 3b Status: `SUBMITTED → REJECTED ... RESUBMITTED ...`; 2b Status; 3c Status; Experiment 5 Status; plus 2b Procedure step 1 pre-flight reference) — original Registration ID `01kq5ahkf08v64ymqnxsnme5bg` preserved as REJECTED predecessor where it appears, never removed.
+- **D-370 — Universal sendCode+checkCode SDK pair on every namespace** (Date: 2026-04-30). Every vertical namespace exposes `sendCode(phone, { code })` + `checkCode(phone, code)`. Verification namespace adds `sendPasswordReset` + `sendNewDevice`. Symmetric across namespaces — `relaykit.appointments.sendCode/checkCode` works identically to `relaykit.orders.sendCode/checkCode`. Rejects asymmetric exposure + D-360's verifyCode() send-only-name-implies-validation alternatives. **Supersedes: D-360 partially** — names and shape updated; D-360 architectural intent (OTP included with every vertical) preserved.
 
-### Commit 2 — MASTER_PLAN.md + REPO_INDEX.md docket update (`99a0802`, 2 files +13/-11)
+- **D-371 — Verification message customizability matches canon-template pattern** (Date: 2026-04-30). Verification message body editable with compliance gates per D-356, plus required-and-immutable `{code}` placeholder. Locked: code length (6 digits), TTL (10 minutes). Rejects fully-locked + fully-editable-no-{code} alternatives. Supersedes: none.
 
-**MASTER_PLAN.md §1** reconcile-pass to current Phase 1 reality. Date `(April 27, 2026)` → `(April 30, 2026)`; version `at v1.2` → `at v1.3`. Phase 1 status paragraph rewritten to capture the 3b rejection-to-resubmission cycle inline (original `01kq5ahkf08v64ymqnxsnme5bg` rejected with four codes → remediated across Sessions 57–60 → resubmission `01kqfnhy0q1rjv242c163a1wyv` under carrier review). The "more built than the documentation admits" paragraph extended with the marketing site live + early-access capture surface live notes (Sessions 57–58). **No version bump** — §1 reconcile-pass per the Session 55 reconcile-pass precedent.
+D-360's body annotated inline with `⚠ Superseded in part by D-370: Universal primitive renamed from verifyCode() to the sendCode+checkCode pair on every namespace. D-360's architectural intent (OTP included with every vertical) preserved.` — supersession mark landed in the same commit per CLAUDE.md inline-supersession-enforcement rule. Seven gate tests applied to each new D-number.
 
-**REPO_INDEX.md updates:**
-- Active plan pointer item 3 (Experiment 3b): `SUBMITTED` → `RESUBMITTED 2026-04-30`, original ID contextualized as REJECTED predecessor, four rejection codes enumerated, remediation summarized, Phase 5 implication of clone-edit-resubmit mechanic added.
-- Subdirectories `/experiments/sinch/` entry: 3b SUBMITTED line refreshed to RESUBMITTED with full cycle inline; 2b BLOCKED-on reference updated to point at resubmission ID.
-- Build spec status `MESSAGE_PIPELINE_SPEC Session B` row: refreshed with resubmission ID and rejection-cycle reference.
-- Meta block: Last updated → Session 60 summary; Master plan last updated → 2026-04-30 (v1.3, §1 reconcile-pass — no version bump per Session 55 precedent); Unpushed local commits → 4.
-- Change log: new Session 60 entry appended chronologically after Session 59.
+### Commit 2 — MASTER_PLAN.md v1.3 → v1.4 (`cef143b`, +12/-25)
 
-**Multiline-safe verification sweep** per CLAUDE.md `Prose-sweep verification` against `01kq5ahkf08v64ymqnxsnme5bg` across `REPO_INDEX.md`, `MASTER_PLAN.md`, `PROTOTYPE_SPEC.md`, `DECISIONS.md`, `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md`, `docs/PRODUCT_SUMMARY.md`, `BACKLOG.md`, `CC_HANDOFF.md`. Hits in REPO_INDEX active state descriptions all contextualized as REJECTED predecessor; hits in change-log entries (lines 230 onward) preserved verbatim as historical snapshots; MASTER_PLAN §1 hit refreshed; experiments-log hits all updated in Commit 1; the other six docs returned no hits — sweep clean.
+Header version bumped (L3 `Version 1.4 — April 30, 2026`; L37 `against this plan at v1.4`; L476 footer `*End of master plan v1.4*`). v1.4 changelog entry inserted at top describing Phase 6 scope expansion. §10 Phase 6 prose replaced — phase renamed `Phase 6 — Vertical Hydration + Verification-as-Feature`; expanded scope to cover OTP-as-feature work (server validation infrastructure + universal sendCode+checkCode pair + dashboard Verification panel + onboarding round-trip OTP test + API/prototype template registry reconciliation); pointer to `docs/VERIFICATION_SPEC.md` for specifics. §3 ten-phase summary line for Phase 6 updated to match new title and scope.
 
-### Commit 3 — docs/CARRIER_BRAND_REGISTRATION_FIELDS.md + BACKLOG.md (`87d5186`, 2 files +23/-1)
+PM said to update L468 footer — actual footer at L476 (L468 is the §19 first-move list); CC flagged the line-number drift before editing and updated L476.
 
-**CARRIER_BRAND_REGISTRATION_FIELDS.md** gains a new `## Resubmission process` section after `## Field-to-wizard-step mapping`, capturing Sinch's clone-edit-resubmit mechanic, field pre-population behavior on the clone form, where remediation narrative belongs (Additional comments on the clone, not a Note on the rejected campaign), and the unresolved monthly-fee disclosure inconsistency carried forward. Plus a `### Implications for Phase 5 RelayKit-side flow` subsection covering the customer-side state machine, pre-flight identity validation pattern, and customer-facing voice.
+### Commit 3 — docs/VERIFICATION_SPEC.md (`856ed18`, +171, file created)
 
-**BACKLOG.md** Sole Proprietor entry (line 100) appended with an `Apr 30, 2026 update` paragraph noting the 3b cycle's confirmation that Sinch's review process is operationally manual (named human reviewer, ~1.3 business day turnaround). The data point tightens the case against option (b) `secondary carrier for Sole Prop only` without changing the overall recommendation (defer to Phase 5 design).
+New canonical spec — 12 sections covering server endpoint contract, SDK shape, Postgres `verification_codes` table schema, validation logic, layered rate limits, customizability rules per D-371, dashboard panel scope at launch, onboarding round-trip OTP test as activation event, template registry reconciliation (3 API templates vs 8 prototype templates — Phase 6 work item to extend API to match), beta MVP relationship (per BACKLOG entry from Commit 5), marketing surface ("Verification included" pillar wording confirmed plus expanded copy template + starter integration guide language).
 
-### Commit 4 — close-out (this commit)
+### Commit 4 — PROTOTYPE_SPEC verification panel section (`dcd4ed8`, +19)
 
-CC_HANDOFF.md overwritten with this Session 60 handoff including the quantitative session-metrics line per CLAUDE.md step 8 format and the drift-watch findings block per CLAUDE.md step 9 (Phase 1 docket update qualifies as phase-significant per the user's instructions for this session, even though Phase 1 hasn't ended).
+New `Verification panel (Messages page)` subsection inserted after Messages page section, before Opt-in Form Preview. Placement, contents at launch (editable template, test-send, Recent Activity 5 rows), out-of-scope items (TTL/code-length config UI, rate-limit config UI, debug mode toggle), wizard treatment (no panel — verification renders as a vertical's message list in wizard view; activation moment is the round-trip OTP test, not a settings panel), compliance-gate extension note (`{code}` placeholder requirement extends existing message-editor gate set). Pointers to D-360/D-369/D-371 + VERIFICATION_SPEC sections rather than restated facts.
+
+### Commit 5 — BACKLOG.md (`b9604b9`, +10)
+
+Five new entries under Infrastructure & Operations:
+
+1. **Recent Activity → full message log with clickthrough** — cross-cutting, not OTP-specific.
+2. **Cap Recent Activity rows at 5 per message card** — small fix, separate from full-log work.
+3. **Account-tier rate-limit self-serve in dashboard** — post-launch enhancement per VERIFICATION_SPEC §6.
+4. **OTP-led beta MVP, vertical-diverse registration** — beta launches at Phase 6 close; D-369/D-370/D-371 + MASTER_PLAN v1.4 + VERIFICATION_SPEC.md as the unblock chain.
+5. **"Verification included" marketing pillar rollout** — pillar wording confirmed; expanded copy template; starter integration guide language; VERIFICATION_SPEC §12 as canonical rollout surface inventory.
+
+PM had originally framed entries 4 and 5 as updates to existing BACKLOG entries; CC surfaced before any commit that neither entry existed in BACKLOG, and PM redirected to new-entry treatment. CC also surfaced the L468 / L476 footer line-number drift in MASTER_PLAN and updated L476.
+
+### Commit 6 — REPO_INDEX.md (`b380c6a`, +8/-4)
+
+Meta block bumps: Last updated → Session 62 summary, Decision count → D-371 (next D-372), Master plan last updated → 2026-04-30 (v1.4), Unpushed local commits → 7 with all six content commit SHAs + close-out enumerated. New row for `docs/VERIFICATION_SPEC.md` in the `## Canonical docs (`/docs`)` table. New bullet under Engineering bucket of `## Canonical sources by topic` index pointing OTP/verification feature surface at `docs/VERIFICATION_SPEC.md`. Session 62 change-log entry placed chronologically after Session 60 in the active change log.
+
+### Commit 7 — close-out (this commit)
+
+CC_HANDOFF.md overwritten with this Session 62 handoff including the quantitative session-metrics line per CLAUDE.md step 8 format and the drift-watch findings block per CLAUDE.md step 9. No retirement sweep — Phase 1 hasn't crossed a boundary.
 
 ---
 
-## Drift watch — Phase 1 mid-phase docket update (2026-04-30)
+## Drift watch — Phase 1 mid-phase, MASTER_PLAN v1.3 → v1.4 amendment session (2026-04-30)
 
-Subject-area reference points this session: `experiments/sinch/experiments-log.md` (3b cycle), `MASTER_PLAN.md §1` (reconcile-pass), `REPO_INDEX.md` (Active plan pointer + Build spec status + Subdirectories + Meta + change log), `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` (Resubmission process section), `BACKLOG.md` (Sole Prop update). Phase-broader reference points: D-368 (Session 58, branch-and-preview workflow), marketing site live (Sessions 57–58).
+Subject-area reference points this session: `DECISIONS.md` (D-369/D-370/D-371 + D-360 mark), `MASTER_PLAN.md` (v1.4 amendment + Phase 6 prose replaced), `docs/VERIFICATION_SPEC.md` (new canonical), `PROTOTYPE_SPEC.md` (Verification panel section), `BACKLOG.md` (5 new entries), `REPO_INDEX.md` (Meta + canonical-docs table + canonical-sources index + change log).
 
 For each canonical doc listed in REPO_INDEX's "Canonical sources by topic" index:
 
 **Product**
 - `docs/PRICING_MODEL.md` (last 2026-04-27) — `n/a — no pricing movement this phase`
-- `MASTER_PLAN.md` (2026-04-30) — `fresh` (§1 reconcile-pass landed this session)
-- `docs/PRODUCT_SUMMARY.md` (2026-04-27) — `n/a — no customer-experience movement this phase` (3b cycle is internal mechanics; doesn't change what a customer sees)
+- `MASTER_PLAN.md` (2026-04-30) — `fresh` (v1.3 → v1.4 amendment landed this session)
+- `docs/PRODUCT_SUMMARY.md` (2026-04-27) — `stale: subject moved 2026-04-30, doc last touched 2026-04-27`. The verification-as-feature work commits two customer-experience-visible changes — the Verification panel above the Messages list in the workspace (D-369/D-371 + PROTOTYPE_SPEC) and the round-trip OTP test as an onboarding activation event (VERIFICATION_SPEC §9). Both qualify as "new architectural commitments that affect what the customer sees or does" per CLAUDE.md's PRODUCT_SUMMARY maintenance rule. Flag for PM.
 - `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` (2026-04-03) — `n/a — no voice movement this phase`
-- `BACKLOG.md` (2026-04-30) — `fresh` (Sole Prop entry updated this session)
+- `BACKLOG.md` (2026-04-30) — `fresh` (5 new entries this session)
 
 **UI / Design**
-- `PROTOTYPE_SPEC.md` (2026-04-27) — `n/a — no UI movement this phase`
-- `WORKSPACE_DESIGN_SPEC.md` (2026-04-27) — `n/a — no workspace-architecture movement this phase`
-- `docs/PRD_SETTINGS_v2_3.md` (2026-04-27) — `n/a — no settings-business-logic movement this phase` (note: rejection-behavior model lives here; the 3b cycle finding about clone-edit-resubmit is a future Phase-5 PRD-update implication, not current drift, since Phase 5 hasn't started and the cycle finding is captured in CARRIER_BRAND_REGISTRATION_FIELDS.md instead)
-- `docs/UNTITLED_UI_REFERENCE.md` (2026-04-27) — `n/a — no design-system movement this phase`
+- `PROTOTYPE_SPEC.md` (2026-04-30) — `fresh` (Verification panel section landed this session)
+- `WORKSPACE_DESIGN_SPEC.md` (2026-04-27) — `n/a — no workspace-architecture movement this phase`. The Verification panel is a single workspace surface, not a change to the workspace state machine or layout system. VERIFICATION_SPEC §8 owns the panel-level treatment; PROTOTYPE_SPEC owns the screen-level details. WORKSPACE_DESIGN_SPEC stays at architecture scope and does not need updating for one new panel.
+- `docs/PRD_SETTINGS_v2_3.md` (2026-04-27) — `n/a — no settings business-logic movement this phase`
+- `docs/UNTITLED_UI_REFERENCE.md` (stable) — `n/a — no design-system movement this phase`
 
 **Engineering**
-- `MESSAGE_PIPELINE_SPEC.md` (2026-04-21) — `n/a — no Session-B-relevant subject movement this phase` (3b cycle is Phase 5 territory, not Session B; spec catch-up at Session B kickoff already in the docket per existing Build spec status notes)
-- `SDK_BUILD_PLAN.md` (2026-04-27) — `n/a — no SDK movement this phase`
+- `MESSAGE_PIPELINE_SPEC.md` (2026-04-21) — `n/a — no /v1/messages pipeline movement this phase`. VERIFICATION_SPEC §3 introduces a sibling endpoint POST /v1/verify/check at a different surface (verification pipeline, not the message pipeline). Keeping the two specs scope-separated per the One Source Rule — MESSAGE_PIPELINE_SPEC continues to own /v1/messages; VERIFICATION_SPEC owns /v1/verify/check.
+- `SDK_BUILD_PLAN.md` (2026-04-27) — `stale: subject moved 2026-04-30, doc last touched 2026-04-27`. D-370 commits a new SDK shape — sendCode+checkCode on every namespace (32 new methods total: 16 sendCode + 16 checkCode across 8 verticals' namespaces, give-or-take depending on which namespaces exist today and how the existing verification-namespace methods are reconciled). SDK_BUILD_PLAN.md is the canonical for SDK architecture and publication plan; the namespace inventory and §6 decisions list need updating to reflect D-370. The D-370 entry itself names SDK_BUILD_PLAN.md in its Affects line. Flag for PM.
 - `SRC_SUNSET.md` (2026-04-21) — `n/a — no /src-sunset movement this phase`
-- `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` (2026-04-30) — `fresh` (Resubmission process section + Phase 5 implications subsection landed this session)
+- `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` (2026-04-30) — `n/a — no carrier-registration-fields movement this phase`
+- `experiments/sinch/experiments-log.md` (2026-04-30) — `n/a — no Sinch experiment movement this phase`
+- `docs/VERIFICATION_SPEC.md` (2026-04-30) — `fresh` (created this session — fresh by definition)
 - `docs/AI_INTEGRATION_RESEARCH.md` (2026-04-17) — `n/a — no Phase-8 movement this phase`
 
 **Process / governance**
-- `DECISIONS.md` (2026-04-29) — `n/a — no D-numbers added this session` (D-368 last; no Session-60 decisions)
-- `DECISIONS_ARCHIVE.md` (2026-04-25) — `n/a — no archive movement this phase`
-- `PM_PROJECT_INSTRUCTIONS.md` (2026-04-30) — `n/a — no PM-instructions movement this session` (last touched Session 59 for the seventh-gate-test additions)
-- `CLAUDE.md` (2026-04-30) — `n/a — no CC-instructions movement this session` (last touched Session 59 for drift-watch + prose-sweep additions)
-- `REPO_INDEX.md` (2026-04-30) — `fresh` (Active plan pointer + Build spec status + Subdirectories + Meta + change-log entry all updated this session)
+- `DECISIONS.md` (2026-04-30) — `fresh` (D-369/370/371 + D-360 mark landed this session)
+- `DECISIONS_ARCHIVE.md` (stable) — `n/a — no archive movement this phase`
+- `PM_PROJECT_INSTRUCTIONS.md` (2026-04-30) — `n/a — no PM-instructions movement this session`
+- `CLAUDE.md` (2026-04-30) — `n/a — no CC-instructions movement this session`
+- `REPO_INDEX.md` (2026-04-30) — `fresh` (Meta + canonical-docs table + canonical-sources index + change log all updated this session)
 - `CC_HANDOFF.md` (2026-04-30) — `fresh` (overwritten this session — by definition, fresh on every close-out)
 
-**Canonical-sources index coverage check.** The canonical-sources index covers all canonical docs in REPO_INDEX's docs tables that I checked. **Flag for PM:** `experiments/sinch/experiments-log.md` is the de facto canonical record for Sinch experiment findings (subject area moved heavily this phase) but is **not listed in the canonical-sources index**. The index treats subdirectory contents (`/experiments/`, `/audits/`) as out-of-scope structurally — they live in the Subdirectories section instead — so this may be intentional. If PM wants `experiments/sinch/experiments-log.md` to be a named canonical source for "Sinch experiment findings" topic, the index needs a new entry under Engineering. No edit made — surfacing for PM judgment per the drift-watch findings-only rule.
+**Other docs in REPO_INDEX docs tables (not in canonical-sources index but worth checking):**
+- `docs/LEGAL_DOC_DEFERRED_CLAIMS.md` (2026-04-28) — borderline. With OTP validation now in launch scope (D-369), the legal docs' `RESTORE WHEN BUILT` markers tied to OTP capability claims may need a Phase-6-trigger update once Phase 6 ships. Not current drift — the feature hasn't shipped — but worth surfacing as advance-warning for the Phase 6 close-out. Flag for PM (forward-looking, not corrective).
 
-**Net drift verdict:** No stale docs requiring corrective action. Phase 1 docket updates this session landed in the docs that own the relevant topics (MASTER_PLAN §1, REPO_INDEX, experiments-log, CARRIER_BRAND_REGISTRATION_FIELDS, BACKLOG). The two surfaceable items above (PRD_SETTINGS forward-looking implication for Phase 5; experiments-log absence from canonical-sources index) are flagged for PM judgment, not actual drift.
+**Canonical-sources index coverage check.** This session added `docs/VERIFICATION_SPEC.md` to the canonical-sources index Engineering bucket in Commit 6. All session-touched topics covered. No new gaps.
+
+**Net drift verdict:** Two stale docs surfaced for PM (PRODUCT_SUMMARY.md, SDK_BUILD_PLAN.md) plus one forward-looking flag (LEGAL_DOC_DEFERRED_CLAIMS.md). All three reflect the verification-as-feature commitment landing in spec-but-not-yet-in-implementation form; the stale verdicts indicate canonical docs that should pick up the new commitments via separate update commits, not corrective work this session. Findings only — no edits per drift-watch rule.
 
 ---
 
 ## Quality checks passed
 
 - Doc-only session — `tsc --noEmit` / `eslint` / `vitest` not required per CLAUDE.md close-out gates.
-- Multiline-safe verification sweep against `01kq5ahkf08v64ymqnxsnme5bg` clean: all active state references contextualized as REJECTED predecessor; change-log entries preserved verbatim as historical snapshots.
-- All four Session 60 commits compiled cleanly (no merge conflicts, no rejection from pre-commit hooks).
-- File-size discipline: CLAUDE.md unchanged at 177 lines (Session 59 state); CC_HANDOFF.md size acceptable for handoff content.
+- Seven gate tests applied to each of D-369, D-370, D-371 before recording.
+- Inline supersession enforcement: D-360 marked `⚠ Superseded in part by D-370: ...` in the same commit as D-370's record per CLAUDE.md rule.
+- Pre-flight DECISIONS ledger scan run at session start: Active count D-368 (latest), Archive D-01–D-83, no flags. End-of-session count: D-371 (three appended).
+- File-size discipline: `docs/VERIFICATION_SPEC.md` at 171 lines (well under any ceiling — new file). CLAUDE.md unchanged at 177 lines.
 
 ---
 
 ## Pending items going into next session
 
-1. **Sinch 3b approval watch.** Resubmission `01kqfnhy0q1rjv242c163a1wyv` submitted 2026-04-30 ~12:54 ET, status `PENDING_REVIEW`. If review turnaround mirrors the original (~1.3 business days), expect approval-or-rejection signal by Friday 2026-05-01 to Monday 2026-05-04. On approval: capture TCR Campaign ID + state transitions in `fixtures/exp-03b-campaign-registration.json` (approval-time addendum) and unblock 2b / 3c / 4. On rejection: another remediation cycle with whatever new codes surface.
+1. **Sinch 3b approval watch.** Resubmission `01kqfnhy0q1rjv242c163a1wyv` still `PENDING_REVIEW` at session close. If review turnaround mirrors the original (~1.3 business days), expect approval-or-rejection signal by Monday 2026-05-04 to Tuesday 2026-05-05. On approval: capture TCR Campaign ID + state transitions in `fixtures/exp-03b-campaign-registration.json` (approval-time addendum) and unblock 2b / 3c / 4. On rejection: another remediation cycle with whatever new codes surface.
 2. **Migration 006 manual application.** SQL committed at `api/supabase/migrations/006_signups.sql` since Session 58 but not yet applied to live shared Supabase. Joel needs to apply via Supabase dashboard SQL editor or `supabase db push` before `/start/verify` and `/start/get-started` server actions can persist data. UI continues to work in the no-table-yet state (server actions log errors and return graceful thanks-state regardless).
 3. **Phase 1 docket follow-up post-3b approval.** When 3b approves, run the approval-time fixture capture + experiments-log §3b approval-time addendum; on the same close-out, refresh MASTER_PLAN §1 + REPO_INDEX Active plan pointer + Build spec status to reflect 3b APPROVED + downstream experiments unblocking.
-4. **Session B kickoff prerequisites still pending** (carry-forward from prior sessions, surfaced: 2026-04-25 Session 51, originating Sessions 50–52):
+4. **PRODUCT_SUMMARY.md update for verification-as-feature.** Drift-watch flagged stale this session. The Verification panel and the onboarding round-trip OTP test are customer-experience-visible changes that warrant a PRODUCT_SUMMARY update per CLAUDE.md maintenance rule. Probably a 1-section addition + a §4 bullet update + a §7 onboarding-flow update. Bump "Last reviewed" date.
+5. **SDK_BUILD_PLAN.md update for D-370.** Drift-watch flagged stale this session. Namespace inventory needs sendCode+checkCode on every vertical namespace; §6 decisions list should reference D-370. Modest edit.
+6. **LEGAL_DOC_DEFERRED_CLAIMS.md forward-looking note.** Phase 6 ship will likely trigger restoration of OTP-related capability language in legal docs. Not current work; surface at the Phase 6 close-out so the legal-doc update lands in the same close-out commit chain.
+7. **Session B kickoff prerequisites still pending** (carry-forward from prior sessions, surfaced: 2026-04-25 Session 51, originating Sessions 50–52):
    - **Spec catch-up at MESSAGE_PIPELINE_SPEC.md** for status-enum intermediate state (per Exp 2a), callback-receiver scope (per MASTER_PLAN §6 L151), webhook signature-verification design without HMAC, XMS vs OAuth2 token disambiguation, ULID `carrier_message_id` format.
    - **Four Sinch API/dashboard inconsistencies** open for Sinch BDR (Elizabeth Garner) verification at kickoff: 5-vs-7 brand state machine; $10-vs-$6 Simplified pricing; poll-only docs vs. internal-webhook fire; $1.50/mo Step 3 vs. recurring submission vs. $0 detail monthly-fee disclosure.
-   - **Resubmission API parity question** added this session: confirm whether Sinch's clone-edit-resubmit flow has an API equivalent or whether resubmission requires a fresh `POST /campaigns` rather than a clone-from endpoint. Affects pipeline design.
-5. **Session C carryovers** (surfaced: 2026-04-27 Session 56):
-   - ~~Drift-detection cadence rule for CLAUDE.md~~ ✅ landed Session 59 as "Drift watch" step
-   - ~~Multiline-safe grep methodology for CLAUDE.md~~ ✅ landed Session 59 as "Prose-sweep verification" section
-   - **BACKLOG aging review** (still open)
-6. **`feat/start-verify-and-get-started` branch retention** (surfaced: 2026-04-29 Session 58). On local + remote per D-368 branch hygiene rule. Do not delete until clearly settled.
+   - **Resubmission API parity question** added Session 60: confirm whether Sinch's clone-edit-resubmit flow has an API equivalent or whether resubmission requires a fresh `POST /campaigns` rather than a clone-from endpoint. Affects pipeline design.
+8. **Carry-forward (post-Phase-1 unblock):**
+   - BACKLOG aging review (Session C carryover, still open, surfaced: 2026-04-27 Session 56)
+9. **`feat/start-verify-and-get-started` branch retention** (surfaced: 2026-04-29 Session 58). On local + remote per D-368 branch hygiene rule. Do not delete until clearly settled.
 
 ---
 
 ## Surface for PM
 
-1. **`experiments/sinch/experiments-log.md` not in canonical-sources index.** Surfaced in the drift-watch findings above. Subject area moved heavily this phase; if PM wants this doc named as a canonical source for "Sinch experiment findings" topic, the index under Engineering needs a new entry. May be intentional (subdirectory contents handled separately in Subdirectories section), but flagging.
-2. **PRD_SETTINGS_v2_3.md forward-looking implication.** The 3b cycle finding about clone-edit-resubmit mechanic is a future Phase-5 implication for the rejection-behavior model in PRD_SETTINGS (the canonical for customer-facing rejection UX). Not current drift since Phase 5 hasn't started, but a tracking note to surface when Phase 5 PRD work begins. Current finding-capture lives in CARRIER_BRAND_REGISTRATION_FIELDS.md (engineering reference doc), which is appropriate for now.
-3. **Resubmission API parity question for Sinch BDR.** Added to the Session B kickoff prerequisite list this session. Whether Sinch's clone-edit-resubmit has an API equivalent affects Phase 2 pipeline design. Worth raising with Elizabeth Garner alongside the existing four API/dashboard inconsistencies at kickoff.
-4. **`/api/supabase/migrations/006_signups.sql` still not applied to live Supabase.** Carry-forward from Session 58. Server actions on `/start/verify` + `/start/get-started` continue to gracefully degrade in the no-table-yet state, but the silent dedup + cookie-linkage between phone signup and beta signup don't actually persist until migration 006 runs.
+1. **Two stale canonical docs flagged this session.** PRODUCT_SUMMARY.md and SDK_BUILD_PLAN.md both have subject-area movement this session (verification panel + onboarding OTP test for the former; D-370 SDK shape for the latter) without corresponding doc updates. Recommend separate update commits, not a corrective Session 62 amendment, since the implementation changes themselves are still spec-stage.
+2. **LEGAL_DOC_DEFERRED_CLAIMS forward-looking flag.** Phase 6 ship will likely trigger OTP-related capability-language restoration in legal docs. Not current work — flagging for the Phase 6 close-out checklist.
+3. **L468 / L476 footer line-number drift in MASTER_PLAN.** PM directed L468 update; actual footer at L476. CC updated L476 (the literal `*End of master plan v1.3*` → `v1.4` line) and confirms L468 (the §19 first-move list) was correctly left alone.
+4. **BACKLOG entries 4 + 5 created as new, not updates.** PM had framed both as `UPDATE — Existing entry`; CC surfaced before any commit that neither existed in BACKLOG and PM redirected to new-entry treatment in bypass-mode follow-up. Both entries reference D-369/D-370/D-371 + MASTER_PLAN v1.4 + VERIFICATION_SPEC.md as the unblock chain.
+5. **Session 61 not change-log-backfilled this session.** Per PM's bypass-mode direction during the custom-message wizard exposure work, that session shipped without a REPO_INDEX update or change-log entry. CC did not retroactively backfill it during Session 62. If PM wants ledger continuity for Session 61, surface separately and CC can backfill in a future session.
 
 ---
 
 ## Files modified this session
 
 **Repo files (committed):**
-- `experiments/sinch/experiments-log.md` (Commit 1)
+- `DECISIONS.md` (Commit 1)
 - `MASTER_PLAN.md` (Commit 2)
-- `REPO_INDEX.md` (Commit 2)
-- `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` (Commit 3)
-- `BACKLOG.md` (Commit 3)
-- `CC_HANDOFF.md` (Commit 4 — this commit, overwritten)
+- `docs/VERIFICATION_SPEC.md` (Commit 3 — new file)
+- `PROTOTYPE_SPEC.md` (Commit 4)
+- `BACKLOG.md` (Commit 5)
+- `REPO_INDEX.md` (Commit 6)
+- `CC_HANDOFF.md` (Commit 7 — this commit, overwritten)
 
-**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `/marketing-site`, DECISIONS.md, PROTOTYPE_SPEC.md, all other docs under `/docs`, audits.
+**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `/marketing-site`, all other docs under `/docs` except VERIFICATION_SPEC, audits, experiments.
 
 ---
 
 ## Suggested next task on chat resume
 
-**3b resubmission status check.** When Joel returns and Sinch reviewer disposition is known:
+**Either** Phase 1 status check (3b resubmission disposition — `01kqfnhy0q1rjv242c163a1wyv`, expected signal Monday 2026-05-04 to Tuesday 2026-05-05) **or** the two stale-doc updates surfaced by drift-watch (PRODUCT_SUMMARY.md verification-as-feature update + SDK_BUILD_PLAN.md D-370 namespace inventory update). The drift-watch updates are independent of 3b resolution and could land any time; PM directs.
 
-- **If APPROVED:** capture TCR Campaign ID + state transitions in `fixtures/exp-03b-campaign-registration.json` as an approval-time addendum, append a "Findings (approval-time)" subsection to the original 3b H2 entry in `experiments-log.md`, then unblock 2b execution + 3c execution + 4 execution. Phase 1 docket bumps in MASTER_PLAN §1 + REPO_INDEX Active plan pointer + REPO_INDEX Build spec status.
-- **If REJECTED:** another rejection-to-resubmission cycle. Append to the existing Experiment 3b cycle entry (this session's contribution) rather than starting a new entry — that entry was structured to accommodate multi-cycle history if needed.
-
-Either way, the close-out crosses neither a phase boundary nor a drift-watch threshold, so no retirement sweep + no drift-watch unless PM directs.
-
-If the resubmission stays in PENDING_REVIEW past Monday 2026-05-04 with no signal, that itself is a Phase 1 finding worth recording (Sinch reviewer turnaround variability under load).
+If the 3b resubmission stays in `PENDING_REVIEW` past Tuesday 2026-05-05 with no signal, that itself is a Phase 1 finding worth recording (Sinch reviewer turnaround variability under load).
 
 ---
 
