@@ -1,12 +1,12 @@
-# CC_HANDOFF — Session 67
+# CC_HANDOFF — Session 68
 
 **Date:** 2026-05-01
-**Session character:** Doc-only session capturing draft architectural direction for testing-guide-as-shipped-document. New `docs/TESTING_GUIDE_DRAFT.md` v0.2 + 3 BACKLOG entries. RelayKit does NOT ship its own embedded test dashboard; the developer's AI coding tool (Claude Code, Cursor, Windsurf, Copilot, Cline) builds the test/debug surface inside the developer's app from a RelayKit-shipped prompt-shaped guide. Architectural parallel to AGENTS.md. No D-numbers, no MD-numbers, no MASTER_PLAN edit, no PROTOTYPE_SPEC edit, no MARKETING_STRATEGY edit, no DECISIONS edit. No push at end (PM review first).
+**Session character:** Doc-only session capturing the vertical-taxonomy thinking surfaced by Experiments 3a/3b. New `docs/VERTICAL_TAXONOMY_DRAFT.md` v0.1 (117 lines), 2 new BACKLOG entries, 1 BACKLOG entry rewrite. Parallels Session 67's TESTING_GUIDE_DRAFT precedent. No D-numbers, no MD-numbers, no MASTER_PLAN edit, no PROTOTYPE_SPEC edit, no MARKETING_STRATEGY edit, no DECISIONS edit, no CLAUDE.md or PM_PROJECT_INSTRUCTIONS edit. No push at end (PM review first).
 **Branch:** main (clean except expected untracked `api/node_modules/`)
 
 `Commits: 3 (including this close-out) | Files modified: 4 | Decisions added: 0 D-numbers, 0 MD-numbers | External actions: 0`
 
-(3 atomic commits this session including this close-out per CLAUDE.md step 8 counting convention. 4 files modified: `docs/TESTING_GUIDE_DRAFT.md` (created), `BACKLOG.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`.)
+(3 atomic commits this session including this close-out per CLAUDE.md step 8 counting convention. 4 files modified: `docs/VERTICAL_TAXONOMY_DRAFT.md` (created), `BACKLOG.md` (rewrite + 2 new entries), `REPO_INDEX.md`, `CC_HANDOFF.md`.)
 
 ---
 
@@ -14,67 +14,64 @@
 
 | # | Hash | Description |
 |---|------|-------------|
-| 1 | `51919f9` | docs(testing): capture TESTING_GUIDE_DRAFT v0.2 |
-| 2 | `7f9c4ad` | docs(backlog): three new entries — testing guide validation, posture, positioning |
-| 3 | (this commit) | docs(handoff): Session 67 close — testing guide draft + 3 BACKLOG entries |
+| 1 | `410f445` | docs(taxonomy): capture VERTICAL_TAXONOMY_DRAFT v0.1 |
+| 2 | `73bfefa` | docs(backlog): TCR taxonomy — 2 new entries + rewrite vertical-to-Sinch entry |
+| 3 | (this commit) | docs(handoff): Session 68 close — vertical taxonomy draft + 2 BACKLOG entries + 1 rewrite |
 
-All three Session 67 commits unpushed at Session 67 close. Session 66's two commits (`af71245` voice register + `8d331ed` Session 66 close-out) also still local at Session 67 start (confirmed via `git rev-list --left-right --count HEAD...origin/main` returning `2 0`) and remain unpushed at Session 67 close — total 5 unpushed commits awaiting PM approval before push.
+All three Session 68 commits unpushed at Session 68 close — pending PM approval before push.
 
 ---
 
 ## Session summary
 
-### Commit 1 — `docs/TESTING_GUIDE_DRAFT.md` create (`51919f9`, +97 lines)
+### Commit 1 — `docs/VERTICAL_TAXONOMY_DRAFT.md` create (`410f445`, +117 lines)
 
-New canonical-track draft document. Captures the architectural direction that the developer's AI coding tool builds the SMS test/debug surface inside the developer's app from a RelayKit-shipped prompt-shaped guide rather than RelayKit shipping its own embedded test dashboard. Architectural parallel to AGENTS.md.
+New canonical-track draft document. Captures the vertical-taxonomy thinking surfaced by Experiments 3a/3b (Sinch's TCR use-case dashboard). Parallels Session 67's TESTING_GUIDE_DRAFT.md precedent — uppercase + `_DRAFT` suffix, status block at top with explicit Phase 5 prerequisite gate framing, REPO_INDEX Purpose-field DRAFT marker (lands in Commit 3), graduation path documented (rename to `VERTICAL_TAXONOMY.md` + topic-index entry when Phase 5 design resolves the directional pieces).
 
-Structure:
-- DRAFT v0.2 status block at top with explicit "awaiting prototype validation" framing
-- Eight integration-anxiety signals enumerated (1: did my code fire the send / 2: did RelayKit accept / 3: did the carrier accept / 4: did the handset get it / 5: rendered text / 6: consent state / 7: reply handling / 8: did the flow advance) — signals 1, 5, 6, 7 are observable in the developer's app; 2, 3, 4 are RelayKit-side and exposed via SDK return values + webhooks; 8 is dev-flow-specific
-- Four-section surface spec (Trigger / Recent activity / Consent state / Flow state)
-- Access control rules (NODE_ENV gate by default; existing admin auth gate for prod debugging; explicit "do not invent new auth"; 404 for unauthenticated/production)
-- Vertical recipe for Appointments (concrete example with booking row + confirmation SMS + consent-state + Send-reminder-now button + Simulate-STOP action)
-- Generalization to the other 7 verticals (Orders, Support, Verification, Waitlist, Internal, Community, Marketing)
-- Confidence checklist mapping back to the 8 signals (8 checkboxes — "you're ready to register and go live" message links to RelayKit registration when all checked)
-- "What to leave alone" guardrail block (no auth/UM, no production analytics, no arbitrary recipients, no consent bypass; do not modify business logic, do not modify production tables, do not modify SDK config)
+Six sections:
+- **Status block** — DRAFT v0.1, awaiting Phase 5 design resolution; Phase 5 prerequisite gate framing for any work touching customer registration form design, intake question design, vertical surface in onboarding, message template authorship for new/changed verticals, registration backend logic.
+- **§1 TCR taxonomy primer** — categories are TCR-standard, not Sinch-specific. Standard 10 categories (auto-approved): 2FA, Account Notification, Customer Care, Delivery Notification, Marketing, Higher Education, Public Service Announcement, Security Alert, Mixed, Low Volume Mixed. Special 12 categories (vetting required): Charity, K-12, Political Campaign, Sweepstakes, Polling and Voting, Emergency, Machine to Machine, Proxy, Direct Lending, Agents and Franchises, Social, Fraud Alert. Carrier Exemptions noted as orthogonal concept.
+- **§2 mapping table** — 8 RelayKit verticals + Higher Ed → TCR category, with class / fit cleanliness / notes columns. Internal flagged for reframe-as-LVM (TCR has no employee-comms category). Community flagged disposition-pending (currently maps to Special-class Social). Waitlist best-fit-pending (AN or CC). Higher Education marked new.
+- **§3 settled calls** — (1) Special TCR categories out of scope at launch — vetting incompatible with automation posture; decline copy TBD per Voice Principles when intake flow design activates in Phase 5; (2) Add Higher Education vertical — TCR Standard, clean 1:1 fit, real ICP; (3) Internal as RelayKit-curated LVM — RelayKit authors templates; (4) LVM as deliberate product surface — not catch-all; throughput cap (3.75 MPS / ~2K segments/day on T-Mobile) noted as fine for the long tail.
+- **§4 directional thinking (NOT YET DECIDED)** — three-doors-vs-two-doors at launch (Single/Multi/Custom); AI-assisted LVM scope (conservative/aggressive/deferred); Community redefine-vs-drop disposition.
+- **§5 implementation impact** — surface inventory for Phase 5 work: PRODUCT_SUMMARY revisions (§4 + §14 + Higher Ed throughout); existing 8 verticals' template review for TCR-mapping accuracy; Higher Education full template set; customer registration form routing logic; intake question design; onboarding wizard vertical surface; registration backend logic; marketing positioning (potential MD-number after taxonomy decisions resolve).
+- **§6 Phase 5 prerequisite gates** — 5 work items in resolution order, with §4 directional pieces flagged as the unblocking critical path.
 
-**SDK method-name resolution.** PM-provided draft used `relaykit.consent.lookup({ phone })`. Pre-write verification per execute-time plan step 2:
-- Read `/sdk/src/consent.ts` — exports `recordConsent`, `checkConsent`, `revokeConsent` as standalone functions taking `(options, phone)` or `(options, params)`
-- Read `/sdk/src/index.ts` — re-exports as top-level methods on the `RelayKit` class instance: `relaykit.recordConsent(params)`, `relaykit.checkConsent(phone)`, `relaykit.revokeConsent(phone)`. No `consent` namespace exists; methods are top-level, takes phone as string not object.
-- Substitution applied: `relaykit.consent.lookup({ phone })` → `relaykit.checkConsent(phone)`. Single-substitution; semantics unchanged.
-- No "real gap" surface needed — method is shipped. Resolution captured in Commit 1 message body for audit trail.
+**Decline-copy verbatim sketch omitted from §3 per PM directive at plan approval.** §3 carries only the placeholder "Decline copy TBD per Voice & Product Principles when intake flow design activates in Phase 5." Voice work happens at its proper moment, not pre-loaded into the thinking doc.
 
-**Multiline-safe leak grep run pre-commit:** `tr '\n' ' ' < docs/TESTING_GUIDE_DRAFT.md | tr -s ' ' | grep -oE "(ensures compliance|guarantees approval|fully compliant|stay compliant automatically).{0,80}"` returned no hits. File complies with CLAUDE.md hard platform constraints.
+**Pre-commit verification:**
+- Multiline-safe leak grep for prohibited compliance-guarantee language ("ensures compliance" / "guarantees approval" / "fully compliant" / "stay compliant automatically"): no hits.
+- Day-count grep for specific carrier-review timing: no hits. Note: "multi-week timelines" appears in §1 describing Special-category vetting at carriers — that's an internal observation about the taxonomy, not a RelayKit-side carrier-review claim. D-215 governs RelayKit-submitted registration timing language (always "a few days") and is not implicated.
 
-**Voice gate:** copy is operational/instructional (for AI tools, not customers). Two user-facing strings appear in the doc — "Configure your app to persist send records to enable activity tracking." (a directive shown to the developer in their own dashboard) and "you're ready to register and go live" (a builder-grounded affirmation). Both align with VOICE_AND_PRODUCT_PRINCIPLES_v2 Tier 1 (show, don't tell). No voice rework needed.
+### Commit 2 — `BACKLOG.md` 3 edits (`73bfefa`, +5/-1)
 
-### Commit 2 — `BACKLOG.md` +3 entries (`7f9c4ad`, +6 lines)
+Three edits in one commit, scoped together because the rewrite makes sense only in light of the draft + new entries existing:
 
-Three companion entries to `docs/TESTING_GUIDE_DRAFT.md` capturing what needs to happen for the draft and its architectural posture to graduate.
+**Edit A — line-106 entry rewritten as pointer.** "RelayKit vertical-to-Sinch-use-case mapping for customer campaign registration" entry: original ~22-use-case enumeration body replaced with a one-paragraph pointer to `docs/VERTICAL_TAXONOMY_DRAFT.md` summarizing what the draft captures (TCR primer + 8-verticals-plus-Higher-Ed mapping table + four settled calls + three directional pieces + implementation impact + Phase 5 prerequisite gates). Original origin parenthetical preserved verbatim and extended with "expanded into draft doc at PM Session 68, 2026-05-01."
 
-**Entry (a) — Likely → Product Features** (BACKLOG.md:120). `TESTING_GUIDE_DRAFT.md prototype validation`. Run the draft through Claude Code, Cursor, and Windsurf against a sample Next.js + Supabase app with a registered RelayKit account. For each tool: feed the guide as integration context, ask it to build the test/debug surface for the Appointments vertical (the recipe section), evaluate whether the generated surface meaningfully addresses the eight signals. Success criterion: at least one tool produces a surface a developer would actually find useful without modification. Failure mode: if all three tools produce surfaces that miss critical signals or require heavy hand-correction, the architectural posture in (b) is wrong and the embedded-dashboard alternative needs reconsideration. Gates (b) and (c).
+**Edit B — new entry at L126.** "Special TCR categories — out of scope at launch" — 12 categories enumerated, vetting-incompatible-with-automation rationale, decline-pattern-from-D-18, decline-copy-TBD-per-Voice-Principles placeholder (not the verbatim sketch — omitted per PM directive), post-launch revisit gated on observed customer pull. Cross-references `docs/VERTICAL_TAXONOMY_DRAFT.md` §3.
 
-**Entry (b) — Likely → Product Features** (BACKLOG.md:122). Architectural posture parking. Test surface lives in developer's app, built by their AI coding tool from RelayKit-shipped guide. RelayKit does NOT ship an embedded test dashboard. Rationale captured: only the developer's tool can see both halves of the loop (RelayKit-side via SDK return values + webhooks; developer-side via their database, business logic, and UI); RelayKit shipping a hosted dashboard would only see its own half and would misalign with the AI-tool-as-integrator thesis. Retires the embedded-dashboard direction explored in earlier chat threads — no canonical-doc references to retire (idea never landed in DECISIONS or any spec; verified via grep on "test dashboard" / "test surface" / "embedded test" / "debug dashboard" in Phase 1 exploration). Promote to D-number when implementation activates in Phase 8 (SDK publication + AI integration artifacts), as a sub-deliverable alongside AGENTS.md and the published SDK. Gated on (a) succeeding.
+**Edit C — new entry at L128.** "Add Higher Education vertical" — TCR Standard category, clean 1:1 fit, no vetting friction. Real ICP segment (universities, online learning, postsecondary). Phase 5 implementation work — additive, no architecture change: full template set, intake entry, dashboard surface, onboarding-wizard vertical option. Cross-references `docs/VERTICAL_TAXONOMY_DRAFT.md` §3.
 
-**Entry (c) — Likely → Marketing & Growth** (BACKLOG.md:174). Marketing positioning angle. "Your AI tool builds your test surface, with our help" as a differentiator framing. Distinguishes from Twilio / MessageBird / Plivo / Sinch direct, all of whom either ship a hosted console or expect the developer to roll their own. Promote to MD-number in `docs/MARKETING_STRATEGY.md` after (a) prototype validation passes — if AI tools produce bad surfaces from the guide, the positioning evaporates and this entry retires unused.
-
-Verification: `grep -nE "^- \*\*TESTING_GUIDE_DRAFT|^- \*\*Test surface lives|^- \*\*\"Your AI tool builds" BACKLOG.md` returned exactly 3 hits at expected sections (Product Features × 2, Marketing & Growth × 1).
+**Verification:**
+- `grep -nE "^- \*\*Special TCR categories|^- \*\*Add Higher Education vertical" BACKLOG.md` returned exactly 2 hits at L126 + L128.
+- Section integrity preserved: `### Infrastructure & Operations` at L130, `### Marketing & Growth` at L176, `### Content & Marketing` at L182 — no shifts.
 
 ### Commit 3 — close-out (this commit, REPO_INDEX.md + CC_HANDOFF.md)
 
 REPO_INDEX Meta block bumps:
-- Last updated → 2026-05-01 (Session 67 summary)
-- Decision count unchanged at D-371 with explicit "No new D-numbers Session 67" + "MD-counter unchanged Session 67" notes
-- Master plan last updated unchanged with explicit "No MASTER_PLAN edits Session 67" note
-- Unpushed local commits → 5, reflecting Session 66 carry-forward `af71245` + `8d331ed` plus Session 67's `51919f9` + `7f9c4ad` + this close-out commit. The `2 0` rev-list result captured inline.
+- Last updated → 2026-05-01 (Session 68 summary).
+- Decision count unchanged at D-371 with explicit "No new D-numbers Session 68" + "MD-counter unchanged Session 68" notes.
+- Master plan last updated unchanged with explicit "No MASTER_PLAN edits Session 68" note.
+- Unpushed local commits → 3, with all three Session 68 commit references inline. Pre-flight git state captured: `0 0` rev-list at start, HEAD == `e86807e`.
 
-New Canonical docs (`/docs`) table row appended after the `MARKETING_STRATEGY_ARCHIVE.md` row, with explicit `DRAFT v0.2` + `awaiting prototype validation` framing in the Last touched and Purpose fields. Purpose field includes graduation pathway (rename to `TESTING_GUIDE.md` + topic-index entry land as follow-up commit when validation gate clears).
+New Canonical docs (`/docs`) table row appended after `TESTING_GUIDE_DRAFT.md` row (matches by-add-date convention of recent additions), with explicit DRAFT v0.1 + awaiting Phase 5 design resolution framing in the Last touched and Purpose fields. Purpose field includes graduation pathway (rename to `VERTICAL_TAXONOMY.md` + topic-index entry land as follow-up commit when Phase 5 design resolves the directional pieces).
 
-**Canonical sources by topic index NOT updated this session** — TESTING_GUIDE_DRAFT.md is not yet canonical; topic-index entry waits for graduation past the validation gate. Surfacing for PM in case different pattern preferred.
+**Canonical sources by topic index NOT updated this session** — VERTICAL_TAXONOMY_DRAFT.md is not yet canonical; topic-index entry waits for graduation past the Phase 5 design resolution gate (parallel to Session 67's TESTING_GUIDE_DRAFT pattern).
 
-This Session 67 change-log entry appended chronologically after Session 66.
+This Session 68 change-log entry appended chronologically after Session 67 at L268.
 
-CC_HANDOFF.md overwritten with this Session 67 handoff per CLAUDE.md step 8 format.
+CC_HANDOFF.md overwritten with this Session 68 handoff per CLAUDE.md step 8 format.
 
 **No retirement sweep, no drift-watch** — mid-phase doc-only session, no MASTER_PLAN phase boundary crossed.
 
@@ -86,24 +83,26 @@ CC_HANDOFF.md overwritten with this Session 67 handoff per CLAUDE.md step 8 form
 - No D-numbers added — gate tests not applicable this session.
 - No MD-numbers added.
 - Pre-flight DECISIONS ledger scan run at session start: Active count 286 (latest D-371), Archive D-01–D-83. No new decisions since previous session — no flags.
-- Pre-flight git state at session start: HEAD == `8d331ed`, `git rev-list --left-right --count HEAD...origin/main` returned `2 0` confirming Session 66's two commits still local. Working tree clean except untracked `api/node_modules/`.
-- SDK method-name verification ran before Commit 1 write: `/sdk/src/consent.ts` + `/sdk/src/index.ts` read; resolution `relaykit.checkConsent(phone)` substituted into draft before commit.
-- Leak grep on `docs/TESTING_GUIDE_DRAFT.md` post-write, pre-commit: zero hits for prohibited compliance-guarantee language ("ensures compliance" / "guarantees approval" / "fully compliant" / "stay compliant automatically") per CLAUDE.md hard platform constraints.
-- Post-commit verifications: 3 BACKLOG entries present at expected lines; REPO_INDEX section header integrity preserved (`### Product` L82, `### Marketing` L104, `## Change log` L234 — no shifts).
+- Pre-flight git state at session start: HEAD == `e86807e`, `git rev-list --left-right --count HEAD...origin/main` returned `0 0` confirming Session 67's commits + post-Session-67 BACKLOG addition all pushed. Working tree clean except untracked `api/node_modules/`.
+- Leak grep on `docs/VERTICAL_TAXONOMY_DRAFT.md` post-write, pre-commit: zero hits for prohibited compliance-guarantee language per CLAUDE.md hard platform constraints.
+- Day-count grep on draft: zero hits per D-215. "Multi-week timelines" reference in §1 is an internal observation about Special-category vetting at carriers, not a RelayKit-side carrier-review timing claim.
+- Post-commit verifications: BACKLOG L106 rewrite + L126 + L128 new entries confirmed via grep; section integrity preserved (no header shifts).
 
 ---
 
 ## Surface for PM
 
-1. **Draft-doc precedent established this session.** No prior precedent in CLAUDE.md or PM_PROJECT_INSTRUCTIONS.md for "draft awaiting validation" docs. The convention used here: filename `_DRAFT` suffix (uppercase + underscore matching `/docs/` convention), `Status: DRAFT — v0.2` block at top of doc, REPO_INDEX Purpose-field DRAFT marker inline (not a separate column), validation gate tracked as a BACKLOG entry. PM may want to formalize in PM_PROJECT_INSTRUCTIONS.md as a Standing Reminder or in CLAUDE.md as an operational rule. Surfacing for explicit confirmation — silence is OK if PM is fine with the convention as-applied.
+1. **Draft-doc convention is now precedent in two places** (TESTING_GUIDE_DRAFT v0.2 from Session 67 + VERTICAL_TAXONOMY_DRAFT v0.1 from this session) without formal documentation in CLAUDE.md or PM_PROJECT_INSTRUCTIONS.md. Convention as applied in both: filename uppercase + `_DRAFT` suffix; status block at top with explicit "awaiting [validation type]" framing; REPO_INDEX `/docs` table Purpose-field DRAFT marker inline; graduation path documented (rename + topic-index addition); validation/resolution gate tracked as a BACKLOG entry. **Recommend formalizing as a Standing Reminder in PM_PROJECT_INSTRUCTIONS or as an operational rule in CLAUDE.md at next PM-instruction session** — two-precedent threshold suggests the convention is sticky enough to write down. (Same surface as Session 67 close-out item 1; flagging again for explicit decision.)
 
-2. **Topic-index deferral.** `docs/TESTING_GUIDE_DRAFT.md` not added to "Canonical sources by topic" index this session; will land as a follow-up commit when the doc graduates from draft to canonical. Confirming this is the intended pattern. Alternative considered and rejected: adding a "Drafts under validation" sub-section to the topic index right now (more permissive, but lets drafts get cited as canonical sources by other docs prematurely).
+2. **Topic-index deferral consistent with Session 67.** VERTICAL_TAXONOMY_DRAFT.md not added to "Canonical sources by topic" index; will land as follow-up commit when draft graduates from v0.1 to canonical. Confirms pattern.
 
-3. **BACKLOG-entry-as-D-number-deferral.** Entry (b) explicitly avoids becoming a D-number until Phase 8 implementation activates. Per the seven gate tests in PM_PROJECT_INSTRUCTIONS.md, an architectural posture without implementation work in flight or about to begin doesn't pass the six-month test (no future contributor needs to look this up to understand current code, because there is no current code) and parks correctly in BACKLOG. Confirming PM's gate-test reasoning aligns.
+3. **BACKLOG-entry-as-D-number-deferral pattern continues.** Two new entries (Special TCR categories out at launch + Add Higher Education) park as BACKLOG until Phase 5 implementation activates. Same reasoning as Session 67's entry (b) — settled architectural posture without implementation work in flight doesn't pass the six-month gate test, parks correctly in BACKLOG, not DECISIONS.
 
-4. **SDK-method substitution captured in Commit 1 message body.** PM-provided draft used `relaykit.consent.lookup({ phone })`; shipped SDK exposes `relaykit.checkConsent(phone)`. CC substituted before write rather than capturing as a draft-graduation gap, because the method is shipped and verifying-against-shipped-reality is the right move per execute-time plan step 2. Surfacing in case PM wants the original prose preserved with a TODO comment instead — the file can be amended if needed (single-line edit + amend on top of `51919f9` while it's still the most recent commit on this stack, before any push).
+4. **Directional sections in §4 of the draft explicitly do not commit RelayKit to a position.** PM may want to walk through the three directional pieces in a future chat to converge on positions before Phase 5 design begins (three-doors-vs-two-doors UX; AI-assisted LVM scope; Community redefine-vs-drop), or leave them open until Phase 5 design naturally surfaces the resolution. Surfacing the option.
 
-5. **Five unpushed commits at session close.** Session 66's two commits (`af71245` + `8d331ed`) carry forward from Session 66's "no push at end" close. PM directive at Session 67 plan approval: "Three commits, no push at end. PM review after close-out before push." Total = 5 unpushed at close. PM may want to push all five together once Session 67 is reviewed, or push Session 66's two before reviewing Session 67's three — flagging the choice.
+5. **Decline-copy explicitly omitted from the draft per PM directive at plan approval.** §3 carries only "Decline copy TBD per Voice & Product Principles when intake flow design activates in Phase 5." The same placeholder lands in the BACKLOG entry "Special TCR categories — out of scope at launch" replacing the verbatim sketch from PM's prompt. Voice work happens at its proper moment, not pre-loaded into the thinking doc.
+
+6. **Carry-forward Surface items from Session 67** still applicable until PM acts on them: SDK-method substitution captured in Commit 1 message body of Session 67 (`relaykit.consent.lookup({ phone })` → `relaykit.checkConsent(phone)`); push-grouping choice for the (now-pushed) Session 67 commits — moot now.
 
 ---
 
@@ -115,48 +114,48 @@ CC_HANDOFF.md overwritten with this Session 67 handoff per CLAUDE.md step 8 form
 2. **Experiment 4 — STOP/START/HELP behavior.** Validates consent state machine on approved campaign.
 3. **Experiment 3c — Campaign upgrade flow.** Phase 5 input but not blocking other Phase 1 work.
 
-**Testing-guide track (new, this session):**
+**Testing-guide track (Session 67 carry-forward):**
 
-4. **TESTING_GUIDE_DRAFT.md prototype validation** — BACKLOG entry (a). Run the draft through Claude Code / Cursor / Windsurf against a sample Next.js + Supabase app. Could be picked up as a parallel workstream to Phase 1 downstream, depending on PM priority. If picked up: the canonical entry path for the architectural posture (entry b) opens once at least one tool produces a useful surface; the marketing positioning angle (entry c) opens for MD-promotion at the same time.
+4. **TESTING_GUIDE_DRAFT.md prototype validation** — BACKLOG entry. Run the draft through Claude Code / Cursor / Windsurf against a sample Next.js + Supabase app. Could be picked up as parallel workstream to Phase 1 downstream. If picked up: D-number opens for the architectural posture entry once at least one tool produces a useful surface; MD-promotion opens for the marketing positioning angle at the same time.
+
+**Vertical taxonomy track (new this session):**
+
+5. **VERTICAL_TAXONOMY_DRAFT.md directional pieces resolution.** Three pending decisions (three-doors-vs-two-doors UX; AI-assisted LVM scope; Community redefine-vs-drop). PM can converge in a future chat before Phase 5 design begins, or let Phase 5 design naturally surface resolutions. Either path works — the draft is structured to accept resolutions in either order.
 
 **Marketing-side action items (Joel's hands):**
 
-5. **Joel: sign up for affiliate programs.** ShipFast (50% on first purchase), Supastarter, Saaspegasus, Makerkit. Capture affiliate IDs in MARKETING_STRATEGY.md "Channels" section under each starter (or "Tools and Force Multipliers / SaaS tooling"). Trivial pre-launch action, no dependencies. Per MD-5.
-6. **Joel: confirm tooling choices** — Plausible/Fathom for analytics, Resend for email, or push back if a different tool fits better. Per MARKETING_STRATEGY.md "Tools and Force Multipliers / SaaS tooling — one of each, no proliferation" section.
+6. **Joel: sign up for affiliate programs.** ShipFast (50% on first purchase), Supastarter, Saaspegasus, Makerkit. Capture affiliate IDs in MARKETING_STRATEGY.md "Channels" section under each starter. Trivial pre-launch action, no dependencies. Per MD-5.
+7. **Joel: confirm tooling choices** — Plausible/Fathom for analytics, Resend for email, or push back if a different tool fits better. Per MARKETING_STRATEGY.md "Tools and Force Multipliers / SaaS tooling — one of each, no proliferation" section.
 
 **PM-side scheduling items:**
 
-7. **PM: marketing-strategy review pass after Phase 1 downstream closes.** When 3c / 4 / 2b complete, schedule a review of the active sequence (Pre-launch / Launch / Growth / Scale) to see if experiments revealed something that should adjust play ordering or trigger conditions. Per Session 64 carry-forward.
-8. **PM: MD-8 (pricing transparency) deferred — resolve when triggered.** Either a competitor undercuts on price and we want to surface our cost structure as defense, OR Joel wants to make the case proactively as differentiation.
+8. **PM: marketing-strategy review pass after Phase 1 downstream closes.** When 3c / 4 / 2b complete, schedule a review of the active sequence (Pre-launch / Launch / Growth / Scale). Per Session 64 carry-forward.
+9. **PM: MD-8 (pricing transparency) deferred — resolve when triggered.** Either a competitor undercuts on price OR Joel wants to make the case proactively as differentiation.
+10. **PM: draft-doc convention formalization.** Surface item 1 above — write the convention down in PM_PROJECT_INSTRUCTIONS.md or CLAUDE.md.
 
 **Carry-forward from prior sessions (still applicable):**
 
-9. **Migration 006 manual application.** SQL committed at `api/supabase/migrations/006_signups.sql` since Session 58 but not yet applied to live shared Supabase.
-10. **Sinch reseller designation Phase 5 architecture decision.** BACKLOG entry filed Session 62 reseller round (`22276f3`). Surface during Phase 5 kickoff.
-11. **LEGAL_DOC_DEFERRED_CLAIMS.md forward-looking note.** Phase 6 ship will likely trigger restoration of OTP-related capability language in legal docs.
-12. **Session B kickoff prerequisites still pending** (carry-forward from Sessions 50–63):
+11. **Migration 006 manual application.** SQL committed at `api/supabase/migrations/006_signups.sql` since Session 58 but not yet applied to live shared Supabase.
+12. **Sinch reseller designation Phase 5 architecture decision.** BACKLOG entry filed Session 62 reseller round (`22276f3`). Surface during Phase 5 kickoff.
+13. **LEGAL_DOC_DEFERRED_CLAIMS.md forward-looking note.** Phase 6 ship will likely trigger restoration of OTP-related capability language in legal docs.
+14. **Session B kickoff prerequisites still pending** (carry-forward from Sessions 50–63):
     - Spec catch-up at MESSAGE_PIPELINE_SPEC.md for status-enum intermediate state, callback-receiver scope, webhook signature-verification design without HMAC, XMS vs OAuth2 token disambiguation, ULID `carrier_message_id` format.
     - Four Sinch API/dashboard inconsistencies open for Sinch BDR (Elizabeth Garner) verification at kickoff.
     - Resubmission API parity question (Session 60).
     - Approval-state observability question (Session 63).
-13. **Carry-forward (post-Phase-1 unblock):** BACKLOG aging review (Session C carryover, surfaced: 2026-04-27 Session 56).
-
-**Session 66 carry-forward Surface items still applicable:**
-
-14. **L3 header-date pre-flight mismatch with Session 65 surface item 2** (PM_PROJECT_INSTRUCTIONS.md). Settled — no follow-up edit needed unless PM wants ISO format for header.
-15. **Voice register paragraph placement** in PM_PROJECT_INSTRUCTIONS.md `## Standing Reminders` `**Response brevity.**` block — confirmed correct placement after six bullets, before `**Exceptions:**` sub-paragraph.
+15. **Carry-forward (post-Phase-1 unblock):** BACKLOG aging review (Session C carryover, surfaced: 2026-04-27 Session 56).
 
 ---
 
 ## Files modified this session
 
 **Repo files (committed):**
-- `docs/TESTING_GUIDE_DRAFT.md` (Commit 1 — created, +97 lines)
-- `BACKLOG.md` (Commit 2 — +6 lines, three new entries inserted at Likely → Product Features × 2 and Likely → Marketing & Growth × 1)
-- `REPO_INDEX.md` (Commit 3 — Meta block bumps + new `/docs` row + Session 67 change-log entry)
+- `docs/VERTICAL_TAXONOMY_DRAFT.md` (Commit 1 — created, +117 lines)
+- `BACKLOG.md` (Commit 2 — +5/-1: rewrite L106 + append 2 new entries at L126 + L128)
+- `REPO_INDEX.md` (Commit 3 — Meta block bumps + new `/docs` row + Session 68 change-log entry)
 - `CC_HANDOFF.md` (Commit 3 — this commit, overwritten)
 
-**Untouched this session:** `/prototype`, `/api`, `/sdk` (read-only inspection of `consent.ts` + `index.ts` for SDK method verification, no edits), `/src`, `/marketing-site`, `MASTER_PLAN.md`, `PROTOTYPE_SPEC.md`, `DECISIONS.md`, `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md`, `docs/MARKETING_STRATEGY.md`, all other `/docs/`, audits, experiments.
+**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `/marketing-site`, `MASTER_PLAN.md`, `PROTOTYPE_SPEC.md`, `DECISIONS.md`, `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md`, `docs/MARKETING_STRATEGY.md`, all other `/docs/`, audits, experiments.
 
 ---
 
@@ -166,11 +165,11 @@ Three reasonable directions, PM picks:
 
 1. **Phase 1 downstream momentum** — Experiment 2b (live sample SMS over approved campaign) is the highest-leverage next experimental work. Validates the API → carrier → handset send path.
 
-2. **Testing-guide track continuation** — Pick up BACKLOG entry (a) by setting up a sample Next.js + Supabase test app (could be a fresh repo or a stripped-down `/prototype` clone) and running `docs/TESTING_GUIDE_DRAFT.md` through Claude Code first as the pilot tool. Output of that run informs whether the draft needs iteration or if the architectural posture (b) can graduate to a D-number sooner.
+2. **Vertical taxonomy track continuation** — Walk the three directional pieces in §4 of `docs/VERTICAL_TAXONOMY_DRAFT.md` toward resolution: three-doors-vs-two-doors UX, AI-assisted LVM scope, Community redefine-vs-drop. Could be a single PM chat session that closes all three or staggered as each surfaces in product context.
 
-3. **Joel-actionable marketing items** — Action items 5–6 (affiliate program signups + tooling confirmation), both trivial and unblocking nothing else.
+3. **Joel-actionable marketing items** — Items 6–7 (affiliate program signups + tooling confirmation), both trivial and unblocking nothing else.
 
-If PM wants the SDK-method-substitution prose original preserved with a TODO comment instead of the substituted shipped form, that's a Surface item 4 amend on top of `51919f9` (single-line edit, no rebase needed, do before push).
+If PM wants to formalize the draft-doc convention before another draft lands (Surface item 1), that's a fourth direction — single PM_PROJECT_INSTRUCTIONS.md or CLAUDE.md edit session, ~15 minutes.
 
 ---
 
