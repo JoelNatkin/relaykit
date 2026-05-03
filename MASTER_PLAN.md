@@ -1,6 +1,8 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.4 — April 30, 2026
+### Version 1.5 — May 3, 2026
+
+**v1.5 — 2026-05-03:** Strategic repositioning amendment. Three-layer product model committed (TCR categories / SDK namespaces / audience-packs). Launch audience narrowed from "independent developers building applications that need SMS" to indie SaaS founders specifically, as audience-pack #1 of a future audience-pack platform. Launch package framed as OTP-led plus the transactional SMS an indie SaaS actually sends (account events, order/transactional notifications, critical alerts) — not OTP-only. Long-term AI-driven configuration platform recorded as post-launch endgame, possibly its own future phase. Four architectural design principles added to §2 (intake-structure-maps-to-constraints, templates-tagged-from-the-start, compliance-constraints-as-data, customer-config-as-queryable-data) so current build decisions stay compatible with the AI-configuration layer that comes later. New §18 "Open architectural questions" section added (renumbers §18→§19 and §19→§20), surfaced from the repositioning work. Phase 5 amended with campaign architecture mechanics (per-customer campaigns settled, LVM-Mixed default for low-volume coherent use cases, throughput as Brand Tier × Message Class, multi-campaign as open question). Companion records: D-372 (three-layer model) lands in DECISIONS; MD-9 through MD-12 (audience definition, slogan direction, audience-pack roadmap, OTP-led launch package) land in MARKETING_STRATEGY in the next steps of the integration sequence.
 
 **v1.4 — 2026-04-30:** Phase 6 (Vertical Hydration) scope expanded to include OTP-as-feature work. Server-side validation endpoint, universal sendCode+checkCode SDK pair (D-370), dashboard Verification panel, onboarding round-trip OTP test, and API/prototype template registry reconciliation now ship at launch as part of Phase 6 rather than deferred to post-launch. Drives D-369 (validation in launch scope), D-370 (SDK naming), D-371 (customizability). Marketing pillar "Verification included" depends on this Phase 6 expansion.
 
@@ -21,6 +23,8 @@
 RelayKit exists so that an independent developer building an application that needs to send SMS can add it cleanly, compliantly, and confidently, without becoming an expert in carrier regulation. The developer's AI coding tool should be able to read our documentation and produce a working integration step by step, checking in at each stage, without hallucinations or shortcuts. The developer should be able to test real text messages to their own phone before committing any money, should be able to register their business for live messaging for $49 and have it approved within days (not weeks), and should never have to read a paragraph about 10DLC or carrier rules in our product. When something goes wrong, the product should tell them plainly what happened and what to do. When something is working, the product should be quiet and get out of the way. Pricing should be stated as facts on every surface, with no dark patterns.
 
 That is the whole thesis. Every phase of this plan serves it. If a phase stops serving it, we stop that phase.
+
+**Launch focus and long-term shape.** The North Star above is RelayKit's eventual purpose — serving any independent developer who needs SMS, regardless of audience. The launch product is configured for indie SaaS founders specifically: the first audience-pack of a platform that will eventually ship SMS configured for who you are. Future packs (e.g., salons, real estate, fitness, e-commerce) will serve other audiences with the same compliance machinery and configurability, each with its own tailored intake, templates, and surface treatment. Pack #2 doesn't ship until pack #1 has stable economics and at least 50 paying customers. Same product underneath, focused launch, broader long-term shape.
 
 **The customer values, ranked:**
 
@@ -48,6 +52,8 @@ The technical-debt story is unchanged in shape but has hardened in form. The ori
 
 Nothing is on fire. The foundation is solid. Phase 1 is producing the evidence Phase 2+ depends on, on the elapsed-time cadence the plan budgeted for, and the discipline of proving things work before building on top of them is what will make this successful.
 
+**Strategic repositioning landed 2026-05-03.** The launch positioning that had been "for indie hackers and AI-tool builders broadly" sharpened to "for indie SaaS founders specifically." Working slogan direction: *SMS configured for your SaaS*. The eight SDK namespaces (D-273) stay unchanged as developer-facing building blocks; audience-packs are a new framing layer above them, composing across namespaces within the fixed TCR taxonomy. The repositioning surfaced architectural design principles (recorded in §2) and a set of open architectural questions about pack composition, campaign architecture at scale, and launch UX (recorded in new §18). No code or build changes triggered by the repositioning itself — the architectural shifts are about how future Phase 5/6 work is shaped, not retrofits.
+
 ---
 
 ## 2. Working Principles
@@ -69,6 +75,16 @@ These are the rules we operate by. If we violate one, we're probably making a mi
 **The voice principles are not negotiable.** User-facing copy, error messages, dashboard labels, marketing copy — all of it runs through Voice & Product Principles v2.0. Tier 1 (show, don't tell) is the default. Tier 3 (full explanation) is only for people who go looking.
 
 **Pricing is transparent.** Every surface that mentions money states the price plainly. $49 registration. $19/month. $8 per 500 overage messages. Full refund if rejected. No "see pricing" links, no fine print.
+
+**Intake structure maps to compliance constraints.** Even at launch, the customer's onboarding intake collects answers in shapes that map cleanly to TCR categories, brand entity types, throughput classes, and campaign sub-use-cases. No free-text intake an AI configuration layer would later have to reverse-engineer. The shape of what's collected is constrained from day one.
+
+**Templates tagged with structured metadata from the start.** Every template (canon and custom) carries machine-readable metadata: applicable use case, variables, compliance gates, audience-pack fit, throughput class implications. Templates are the building blocks the future AI configuration layer selects from; metadata is what makes that selection possible.
+
+**Compliance constraints encoded as data, not narrative.** TCR categories, Sinch entity types (`PRIVATE` / `PUBLIC` / `CHARITY_NON_PROFIT` per CARRIER_BRAND_REGISTRATION_FIELDS.md), throughput classes, gating rules, vetting requirements — encoded as structured data in the codebase, not just described in prose docs. The AI configuration layer queries this data at runtime; humans read it through the prose docs that describe it.
+
+**Customer configuration is queryable data.** Each customer's setup (campaigns, templates, settings, intake answers, telemetry) lives in shapes that can be queried and reasoned over. The future AI advisor — whether built into the dashboard or used by support — operates on structured customer state, not strings in JSON blobs.
+
+*These four principles constrain current Phase 5/6 build decisions so that the post-launch AI-driven configuration layer (named in §16 out-of-scope and recorded in §18 open questions) has a clean substrate to operate on. The cost of getting this right at build time is small. The cost of retrofitting later is large.*
 
 ---
 
@@ -249,6 +265,8 @@ This phase also delivers the msgverified.com opt-in form — the customer-facing
 
 Open design questions to resolve at Phase 5 design start: slug format and collision handling (likely a new D-number), URL displayed-brand customization scope, how the slug surfaces in the customer's onboarding flow.
 
+**Campaign architecture at scale.** Phase 5 builds the registration pipeline that submits each customer's brand and campaign to Sinch on their behalf (RelayKit-as-ISV per BACKLOG L118 reseller designation work). The default campaign architecture for launch is LVM Mixed for customers with multiple sub-use-cases at low projected volume — VERTICAL_TAXONOMY_DRAFT §3 settled call. Throughput at launch is shaped by Brand Tier (T-Mobile LOW/MEDIUM/TOP per CARRIER_BRAND_REGISTRATION_FIELDS) and Message Class (AT&T T/A/etc.), not by Standard-vs-LVM alone. Experiment 3b's approval data anchors the launch baseline: LOW Brand Tier yields 2,000/day brand-shared on T-Mobile; T-class campaign yields 75/min on AT&T. Multi-campaign architecture (splitting high-volume coherent traffic to dedicated Standard campaigns while keeping LVM for the long tail) is the scale escape hatch, but the launch UX (auto-graduate vs customer-initiated, pricing model, Sinch ISV economics) is unresolved and tracked in §18 open questions. The intake-structure-maps-to-constraints principle (§2) shapes the registration intake design — answers must drive deterministic mapping to TCR categories, entity types, and throughput classes. Pre-flight identity validation (state SOS lookup or analogous source-of-truth check) catches the rejection patterns observed in Exp 3b's CR2020/CR2002/CR2005/CR4015 cycle before submission to Sinch — see BACKLOG L110 (AI URL scan productized form).
+
 **What gets done:**
 
 - Sinch brand submission API integration
@@ -280,6 +298,8 @@ Verification-as-feature: the universal primitive named in D-360 (OTP included wi
 Marketing pillar "Verification included" becomes truthful at the close of Phase 6.
 
 Specifics in VERIFICATION_SPEC.md.
+
+Verification ships at Phase 6 close as the cornerstone of the launch package per the indie SaaS positioning (§0). Transactional SMS — account events, order/transactional notifications, critical alerts — and OTP together make the launch surface complete; the indie SaaS pack's specific namespace composition for those account events is tracked in §18 open questions.
 
 ---
 
@@ -409,6 +429,7 @@ There are real features and capabilities that RelayKit will want eventually. The
 - **Compliance audit log export for enterprise customers** — post-launch, when we move upmarket.
 - **Review request sentiment branching** — post-launch, and only if we decide we want to ship Podium-style review-gating at all (ethically contested).
 - **Starter kits we build ourselves** — superseded by third-party starter integration strategy.
+- **AI-driven configuration layer** — the platform endgame where any business describes what they do in their own language and RelayKit configures itself within compliance constraints (TCR categories, campaign architecture, template selections, opt-in copy, projected throughput, brand registration content). Probably 6–12 months post-launch. Likely its own MASTER_PLAN phase when the time comes. Launch ships structured form-shaped intake that maps deterministically to configurations; AI used at launch for content generation only (template copy tuning, registration description authoring per BACKLOG L110), not architectural decisions.
 
 This list matters because scope creep is the single biggest risk to this plan. When Joel or CC or PM wants to add something, the question is: "is this in the master plan, or is it a distraction?" If it's a distraction, it goes to BACKLOG.md and we keep moving.
 
@@ -432,11 +453,41 @@ Being honest about where the plan could break:
 
 **Joel burns out.** Long plan, high discipline, one person on the non-technical side. Mitigation: explicit brevity in communication, clear step-by-step instructions, no forced pace. Phases can breathe.
 
+**Multi-campaign upgrade mechanics unresolved at launch.** The campaign architecture story depends on a clean answer to how customers move from LVM-Mixed to multi-campaign as their volume grows. Auto-graduate vs customer-initiated, pricing model, Sinch ISV economics — all unresolved (see §18). Mitigation: launch ships LVM-Mixed default with an explicit roadmap to multi-campaign rather than pretending the question is settled. First ~20 customers' observed traffic shapes inform the resolution.
+
+**Indie SaaS pack namespace gap.** The launch audience's main use cases — signup welcomes, payment-failed alerts, subscription changes, founder-facing app monitoring alerts — don't map cleanly to the existing eight SDK namespaces. `verification` covers OTP. `support` is shaped wrong; `internal` is employee-facing. Either an existing namespace stretches or a new one (`accounts`? `saas`?) surfaces. Mitigation: tracked in §18; resolved at indie SaaS pack composition design before Phase 6 wraps.
+
+**Slogan unfinalized.** "SMS configured for your SaaS" is a working direction, not a finalized slogan. Resonance and customer-language testing pending. Mitigation: build-in-public posts test variations, watching which lands. Slogan finalization is not a launch blocker — the audience-pack framing and product surface stand without a finalized slogan.
+
 ---
 
-## 18. How This Plan Gets Used
+## 18. Open Architectural Questions
 
-When PM and Joel start a chat, this is one of the documents PM reads first (along with REPO_INDEX and handoffs). The question "what are we working on right now?" has a clear answer: "we're in Phase N."
+Things we will decide when specific conditions trigger. Distinct from §16 (things we're not doing) and §17 (things that might go wrong) — these are decisions deliberately deferred to a moment with better information. PM scans this list at every session start so questions don't drift silently.
+
+Each question's substance lives in a single canonical home (BACKLOG entry, draft doc, or referenced source); the entries below are short pointers, not restated content.
+
+| Question | Unblocks at | Substance |
+|---|---|---|
+| Indie SaaS pack namespace composition (existing namespace stretches vs new namespace surfaces for SaaS account events) | Indie SaaS audience-pack composition design (Phase 5 / Phase 6) | NEW BACKLOG entry |
+| Multi-campaign upgrade UX — auto-graduating (telemetry-driven) vs customer-initiated (dashboard prompt) | Phase 5 design + first ~20 customers' observed traffic shapes | NEW BACKLOG entry |
+| Launch LVM-Mixed-for-everyone vs auto-route high-projection customers into Standard campaigns from intake | Phase 5 design (conservative-vs-aggressive launch choice) | NEW BACKLOG entry |
+| Pricing implications of multi-campaign (per-campaign add-on vs all-included tier pricing) | Phase 5 design + Sinch ISV economics confirmation | NEW BACKLOG entry |
+| Sinch ISV economics on multi-campaign per customer | Sinch BDR conversation (Elizabeth Garner) at Phase 5 kickoff | EXTEND existing BACKLOG L118 (reseller designation) |
+| Three-doors-vs-two-doors at launch (Single / Multi / Custom-LVM vs Single / Multi only) | Phase 5 design | VERTICAL_TAXONOMY_DRAFT §4 |
+| AI-assisted LVM scope at launch (conservative / aggressive / deferred) | Phase 5 design | VERTICAL_TAXONOMY_DRAFT §4 |
+| Community vertical disposition (redefine to Customer Care semantics vs drop) | Phase 5 design | VERTICAL_TAXONOMY_DRAFT §4 |
+| Slogan finalization (`SMS configured for your SaaS` or alternative) | Build-in-public posts test variations + customer-language data | MARKETING_STRATEGY MD-10 |
+
+When a question resolves, the resolution becomes a D-number (or MD-number for marketing-shaped resolutions), the substance entry archives, and the row above retires. Same-commit discipline applies: capture and retirement happen together, never async.
+
+When a future PM conversation surfaces a new open architectural question, it lands here as a new row with a BACKLOG entry (or pointer to existing draft doc), in the same commit. If this list grows past ~15 entries, graduate to a dedicated `docs/OPEN_QUESTIONS.md` file.
+
+---
+
+## 19. How This Plan Gets Used
+
+When PM and Joel start a chat, this is one of the documents PM reads first (along with REPO_INDEX and handoffs). The question "what are we working on right now?" has a clear answer: "we're in Phase N." PM scans §17 (Risks) and §18 (Open architectural questions) at every session start so neither drifts silently.
 
 When a new idea surfaces in a conversation, the question is: "is this in Phase X, a new phase, or out of scope?" If it's out of scope, it goes to BACKLOG.md. If it fits an existing phase, we note it. If it demands a new phase, we amend this document.
 
@@ -448,7 +499,7 @@ This plan is a living document. It's not a contract; it's a compass. It should c
 
 ---
 
-## 19. The First Move
+## 20. The First Move
 
 Phase 0 starts now. Specifically:
 
@@ -460,4 +511,4 @@ Everything else waits its turn.
 
 ---
 
-*End of master plan v1.4*
+*End of master plan v1.5*
