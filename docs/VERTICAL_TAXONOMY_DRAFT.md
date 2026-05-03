@@ -1,8 +1,26 @@
 # RelayKit vertical taxonomy
 
-> **Status: DRAFT — v0.1.** This document captures the vertical taxonomy thinking surfaced by Experiments 3a/3b (Sinch's TCR use-case dashboard). It is a working draft awaiting Phase 5 design resolution on the three directional pieces flagged in §4. The settled calls in §3 are firm; the directional pieces in §4 are explicitly unresolved. Iterate based on Phase 5 design resolutions before treating as canonical.
+> **Status: DRAFT — v0.2.** This document captures the vertical taxonomy thinking surfaced by Experiments 3a/3b (Sinch's TCR use-case dashboard) and the three-layer product model that frames it (§0, added v0.2). It is a working draft awaiting Phase 5 design resolution on the three directional pieces flagged in §4. The settled calls in §3 are firm; the directional pieces in §4 are explicitly unresolved. Iterate based on Phase 5 design resolutions before treating as canonical.
 >
 > **Phase 5 prerequisite gate.** Any Phase 5 work item touching customer registration form design, intake question design, vertical surface in onboarding, message template authorship for new/changed verticals, or registration backend logic — read this draft first as a prerequisite, not as a reference. The doors UX and the per-vertical TCR mapping decisions live here until promoted to a D-number or to PROTOTYPE_SPEC.
+
+---
+
+## §0 — Three-layer relationship (read this first)
+
+This document operates at the boundary between two of RelayKit's three product layers. The canonical model is recorded in MASTER_PLAN v1.5 §1 and D-372.
+
+1. **TCR categories** — carrier-side, immutable, defined by The Campaign Registry. §1 below is the primer.
+2. **SDK namespaces** — RelayKit's developer-facing API. Eight per D-273 (`appointments`, `orders`, `verification`, `support`, `marketing`, `internal`, `community`, `waitlist`) plus `relaykit.send()` escape hatch (D-275) and top-level consent (D-274). §2 maps these to TCR categories.
+3. **Audience-packs** — curated configurations (templates, intake flow, marketing voice, landing page surface) for specific business types, composing across multiple SDK namespaces within the fixed TCR taxonomy. Indie SaaS is audience-pack #1 (MASTER_PLAN v1.5 §0, MARKETING_STRATEGY MD-11).
+
+**The eight verticals enumerated in §2 are SDK namespaces, not audience-packs.** A single pack composes across multiple namespaces (e.g., indie SaaS draws from `verification` plus account-event handling); a single namespace can serve multiple future packs (e.g., `appointments` could serve both a salons pack and a real estate pack candidate). Audience-packs sit above SDK namespaces; TCR taxonomy sits below; namespaces sit between.
+
+**LVM is load-bearing for audience-pack composition.** When a pack's use-case mix doesn't map cleanly to a canonical Standard category (2FA / Account Notification / Customer Care / Delivery Notification / Marketing / Higher Education), Low Volume Mixed is where the campaign registers. §3 frames LVM as a deliberate product surface, not a fallback; future audience-packs serving niche or composite use cases will lean on LVM heavily.
+
+Two layer-naming coincidences worth flagging: (a) "Marketing" exists at both TCR-category and SDK-namespace layers — coincidence of naming, not layer collapse. (b) "Verification" at the SDK-namespace layer maps to TCR 2FA at carrier submission time — different layer, different name, expected.
+
+§3 settled calls and §4 directional pieces below remain at the namespace-and-TCR-category level. Audience-pack composition design (which namespaces, templates, and intake flow shape each pack) is a Phase 5/6 design surface called out in §5 implementation impact.
 
 ---
 
@@ -101,6 +119,7 @@ Docs and surfaces that need revision/authorship when this work activates:
 - **Onboarding wizard** — vertical surface; drop or redefine Community accordingly; add Higher Education option.
 - **Registration backend logic** — TCR category selection per door taken; Mixed sub-use-case enumeration when Multi is chosen; LVM use-case description capture when Custom is chosen.
 - **Marketing positioning** — the "we know which TCR category fits you" angle becomes a real claim. Ties to MARKETING_STRATEGY (potential MD-number after taxonomy decisions resolve, not now).
+- **Audience-pack composition** — the design surface that defines which SDK namespaces, templates, intake flow, marketing voice, and landing page surface compose each audience-pack. Indie SaaS pack composition is the immediate Phase 5/6 work; future packs (salons, real estate, fitness, e-commerce candidates per MARKETING_STRATEGY MD-11) follow the same composition pattern. Cross-cutting input to the registration form / intake question / template authorship / onboarding wizard work above. Cross-reference: MASTER_PLAN v1.5 §18 Open Architectural Questions (indie SaaS pack namespace composition row).
 
 ---
 
