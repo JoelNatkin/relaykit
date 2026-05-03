@@ -1,6 +1,8 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.5 — May 3, 2026
+### Version 1.6 — May 3, 2026
+
+**v1.6 — 2026-05-03:** Pumping defense architectural commitment + canonical security doc. New working principle in §2 (two-layer defense). Phase 5 scope expansion (pipeline-side Layers 1–4 + manual monitoring bridge). Phase 8 scope expansion (Layer A integration guidance). Four new §17 risks (Layer A skipping, sophisticated attackers, manual monitoring scaling, adjacent threats). Five new §18 open questions. §16 addition for deferred automated anomaly detection. New canonical doc: `docs/SECURITY_DRAFT.md`.
 
 **v1.5 — 2026-05-03:** Strategic repositioning amendment. Three-layer product model committed (TCR categories / SDK namespaces / audience-packs). Launch audience narrowed from "independent developers building applications that need SMS" to indie SaaS founders specifically, as audience-pack #1 of a future audience-pack platform. Launch package framed as OTP-led plus the transactional SMS an indie SaaS actually sends (account events, order/transactional notifications, critical alerts) — not OTP-only. Long-term AI-driven configuration platform recorded as post-launch endgame, possibly its own future phase. Four architectural design principles added to §2 (intake-structure-maps-to-constraints, templates-tagged-from-the-start, compliance-constraints-as-data, customer-config-as-queryable-data) so current build decisions stay compatible with the AI-configuration layer that comes later. New §18 "Open architectural questions" section added (renumbers §18→§19 and §19→§20), surfaced from the repositioning work. Phase 5 amended with campaign architecture mechanics (per-customer campaigns settled, LVM-Mixed default for low-volume coherent use cases, throughput as Brand Tier × Message Class, multi-campaign as open question). Companion records: D-372 (three-layer model) lands in DECISIONS; MD-9 through MD-12 (audience definition, slogan direction, audience-pack roadmap, OTP-led launch package) land in MARKETING_STRATEGY in the next steps of the integration sequence.
 
@@ -84,7 +86,9 @@ These are the rules we operate by. If we violate one, we're probably making a mi
 
 **Customer configuration is queryable data.** Each customer's setup (campaigns, templates, settings, intake answers, telemetry) lives in shapes that can be queried and reasoned over. The future AI advisor — whether built into the dashboard or used by support — operates on structured customer state, not strings in JSON blobs.
 
-*These four principles constrain current Phase 5/6 build decisions so that the post-launch AI-driven configuration layer (named in §16 out-of-scope and recorded in §18 open questions) has a clean substrate to operate on. The cost of getting this right at build time is small. The cost of retrofitting later is large.*
+**Pumping defense by default — two-layer.** Customer's app defends what reaches RelayKit's API (Layer A, via integration-time guidance prescribed in AGENTS.md, integration prompt, per-builder guides). RelayKit's pipeline defends what reaches Sinch (Layer B, namespace-agnostic: country allow-list, per-destination rate limit, per-customer rate limit, premium-prefix block). The two-layer structure is load-bearing for the security promise — neither layer alone is sufficient. Structurally only an integration-driven SDK like RelayKit's can prescribe Layer A in a way usage-based incumbents can't match. Canonical detail: `docs/SECURITY_DRAFT.md` §3.
+
+*These four AI-config-substrate principles constrain current Phase 5/6 build decisions so that the post-launch AI-driven configuration layer (named in §16 out-of-scope and recorded in §18 open questions) has a clean substrate to operate on. The cost of getting this right at build time is small. The cost of retrofitting later is large.*
 
 ---
 
@@ -285,6 +289,10 @@ Marketing campaign expansion (that's a customer action post-registration, not pa
 
 **Phase 5 output:** The fast-registration promise is real and demonstrable. The product can take a new customer from signup to go-live within days, not weeks.
 
+**Pipeline-side pumping defense (Layers 1–4).** Country allow-list (US-only default, customer-managed expansion); per-destination-number rate limit (default 3/hour/number/customer, customer-lowerable, not raisable); per-customer rate limit (generalizes VERIFICATION_SPEC §6 OTP-scoped baseline to all sends, namespace-agnostic); premium-prefix block list (static, RelayKit-maintained, customer-overridable with explicit opt-in). All four steps run in the message pipeline before Sinch dispatch; no namespace specialization. Implementation reference deferred to MESSAGE_PIPELINE_SPEC extension at Phase 5 design (Wave 2 of pumping defense integration). Canonical reference: `docs/SECURITY_DRAFT.md` §3.
+
+**Manual-monitoring bridge for first 50 customers.** RelayKit-side traffic pattern monitoring (billing dashboard signals, per-customer destination distribution, velocity vs onboarding-stated projections) substitutes for automated anomaly detection during the first-50-customers window. Manual intervention on detected attacks; absorbed-cost commitment per MARKETING_STRATEGY MD-15 if attack confirmed. Graduation criteria for transitioning to automated anomaly detection captured in §18 + BACKLOG.
+
 ---
 
 ## 10. Phase 6 — Vertical Hydration + Verification-as-Feature
@@ -351,6 +359,8 @@ MCP server, llms.txt, agent skills via `npx skills add`. These are Resend-level 
 **Phase 8 demo moment:** Joel runs `npm install relaykit` from a fresh directory, pastes the AGENTS.md into a test app, asks Claude Code to add appointment reminder SMS, and watches it work correctly.
 
 **Phase 8 output:** RelayKit is a real, installable npm package with enough supporting material for AI coding tools to integrate it reliably.
+
+**App-side pumping defense guidance (Layer A).** AGENTS.md defense-practices section covering seven app-side patterns: bot detection (Cloudflare Turnstile / hCaptcha), per-IP edge rate-limiting, per-account-state rate-limiting, honeypot fields, phone validation pre-send, server-side gating, namespace-specific surface guidance. Integration prompt template (D-331) extends to include defensive-practices guidance as core content. Per-builder guides reflect framework-specific implementations. Content drafting deferred to SDK_BUILD_PLAN extension at Phase 8 design (Wave 2). Canonical reference: `docs/SECURITY_DRAFT.md` §3.
 
 ---
 
@@ -430,6 +440,7 @@ There are real features and capabilities that RelayKit will want eventually. The
 - **Review request sentiment branching** — post-launch, and only if we decide we want to ship Podium-style review-gating at all (ethically contested).
 - **Starter kits we build ourselves** — superseded by third-party starter integration strategy.
 - **AI-driven configuration layer** — the platform endgame where any business describes what they do in their own language and RelayKit configures itself within compliance constraints (TCR categories, campaign architecture, template selections, opt-in copy, projected throughput, brand registration content). Probably 6–12 months post-launch. Likely its own MASTER_PLAN phase when the time comes. Launch ships structured form-shaped intake that maps deterministically to configurations; AI used at launch for content generation only (template copy tuning, registration description authoring per BACKLOG L110), not architectural decisions.
+- **Automated anomaly detection.** Deferred to post-launch BACKLOG with manual-monitoring bridge for first 50 customers. Graduation triggers: customer count exceeding manual capacity, sufficient real-traffic data to characterize false-positive thresholds, customer-tier-mix maturing enough to need per-tier baselines. See D-374 + BACKLOG anomaly detection graduation entry.
 
 This list matters because scope creep is the single biggest risk to this plan. When Joel or CC or PM wants to add something, the question is: "is this in the master plan, or is it a distraction?" If it's a distraction, it goes to BACKLOG.md and we keep moving.
 
@@ -459,6 +470,14 @@ Being honest about where the plan could break:
 
 **Slogan unfinalized.** "SMS configured for your SaaS" is a working direction, not a finalized slogan. Resonance and customer-language testing pending. Mitigation: build-in-public posts test variations, watching which lands. Slogan finalization is not a launch blocker — the audience-pack framing and product surface stand without a finalized slogan.
 
+**Layer A skipping.** AGENTS.md prescribes app-side defenses but RelayKit can't enforce that the customer's AI tool actually wired them in. A customer who skips Layer A relies entirely on Layer B as their first line. If many customers skip, attack volume against Layer B rises beyond what manual monitoring can handle. Mitigation: integration prompt makes defenses load-bearing in AI-generated code, not optional appendix; TESTING_GUIDE 9th signal validates defenses fired during developer testing; possible Layer A enforcement check (open question in §18).
+
+**Sophisticated attacker post-launch.** Opportunistic scanners are well-handled by Layers 1–4 + Layer A per industry data. Sophisticated attackers using residential proxies, CAPTCHA-solving services, and rotating destinations across +1 area codes are a smaller share but harder to catch. Manual monitoring may miss slow-burn attacks. Mitigation: graduation to automated anomaly detection prioritized when first sophisticated attack is observed; absorbed-cost commitment caps customer impact in the meantime.
+
+**Manual monitoring scaling limit.** Manual RelayKit-side monitoring works for first 50 customers, breaks at some threshold above that. Graduation to automated anomaly detection is not optional — it's a scaling requirement. Risk is letting customer count outpace monitoring tooling.
+
+**Adjacent threat surfaces beyond pumping.** Pumping is the most prominent attack vector but not the only one. Adjacent threats include API-key-level account takeover, TCR campaign suspension cascades from bad customers ("one bad customer poisons the well"), opt-out integrity attacks (STOP flooding), content drift in production, carrier-specific policy whiplash, number reputation damage. Tracked in a separate threat-modeling workstream (BACKLOG entry — RelayKit launch threat model). Failure mode: concluding "pumping defense is done, security is handled." Surface inventory: `docs/SECURITY_DRAFT.md` §2.
+
 ---
 
 ## 18. Open Architectural Questions
@@ -478,6 +497,11 @@ Each question's substance lives in a single canonical home (BACKLOG entry, draft
 | AI-assisted LVM scope at launch (conservative / aggressive / deferred) | Phase 5 design | VERTICAL_TAXONOMY_DRAFT §4 |
 | Community vertical disposition (redefine to Customer Care semantics vs drop) | Phase 5 design | VERTICAL_TAXONOMY_DRAFT §4 |
 | Slogan finalization (`SMS configured for your SaaS` or alternative) | Build-in-public posts test variations + customer-language data | MARKETING_STRATEGY MD-10 |
+| Per-destination rate limit defaults — what's the right number? OTP retry flows can legitimately request multiple codes. | Phase 5 design + observed retry patterns | NEW BACKLOG entry |
+| Customer-tunable vs RelayKit-controlled — which limits can customers raise/lower? | Phase 5 design | NEW BACKLOG entry |
+| Anomaly detection graduation triggers — when does manual monitoring transition to automated alerts? Then to auto-actions? | Post-launch + first 50 customers' observed patterns | NEW BACKLOG entry |
+| Layer A enforcement vs guidance — does RelayKit's pipeline check the customer's app implements prescribed defenses? | Post-launch + observed Layer A skipping patterns | NEW BACKLOG entry |
+| Per-namespace vs destination-pool baselines for future anomaly detection — per-namespace is simpler launch shape, destination-pool may preserve signal differently. | When automated anomaly detection design activates | NEW BACKLOG entry |
 
 When a question resolves, the resolution becomes a D-number (or MD-number for marketing-shaped resolutions), the substance entry archives, and the row above retires. Same-commit discipline applies: capture and retirement happen together, never async.
 
@@ -511,4 +535,4 @@ Everything else waits its turn.
 
 ---
 
-*End of master plan v1.5*
+*End of master plan v1.6*
