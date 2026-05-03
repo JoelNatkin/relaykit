@@ -1,12 +1,12 @@
-# CC_HANDOFF — Session 68
+# CC_HANDOFF — Session 69
 
-**Date:** 2026-05-01
-**Session character:** Doc-only session capturing the vertical-taxonomy thinking surfaced by Experiments 3a/3b. New `docs/VERTICAL_TAXONOMY_DRAFT.md` v0.1 (117 lines), 2 new BACKLOG entries, 1 BACKLOG entry rewrite. Parallels Session 67's TESTING_GUIDE_DRAFT precedent. No D-numbers, no MD-numbers, no MASTER_PLAN edit, no PROTOTYPE_SPEC edit, no MARKETING_STRATEGY edit, no DECISIONS edit, no CLAUDE.md or PM_PROJECT_INSTRUCTIONS edit. No push at end (PM review first).
-**Branch:** main (clean except expected untracked `api/node_modules/`)
+**Date:** 2026-05-03
+**Session character:** Strategic Repositioning Integration Wave — five content commits landing the strategic-repositioning artifacts across MASTER_PLAN, MARKETING_STRATEGY, DECISIONS, VERTICAL_TAXONOMY_DRAFT, and BACKLOG, plus this close-out commit. Doc-only session. Five content commits pushed mid-session per PM review-then-push cadence; close-out commit unpushed pending PM review.
+**Branch:** main (clean except expected untracked `api/node_modules/` and ad-hoc `.pm-review.md` used for PM review of each content commit)
 
-`Commits: 3 (including this close-out) | Files modified: 4 | Decisions added: 0 D-numbers, 0 MD-numbers | External actions: 0`
+`Commits: 6 (including this close-out) | Files modified: 7 | Decisions added: 1 D-number, 4 MD-numbers | External actions: 0`
 
-(3 atomic commits this session including this close-out per CLAUDE.md step 8 counting convention. 4 files modified: `docs/VERTICAL_TAXONOMY_DRAFT.md` (created), `BACKLOG.md` (rewrite + 2 new entries), `REPO_INDEX.md`, `CC_HANDOFF.md`.)
+7 files modified across these six commits: `MASTER_PLAN.md`, `docs/MARKETING_STRATEGY.md`, `DECISIONS.md`, `docs/VERTICAL_TAXONOMY_DRAFT.md`, `REPO_INDEX.md` (touched in Commit 4 and again in this close-out), `BACKLOG.md`, `CC_HANDOFF.md` (this close-out).
 
 ---
 
@@ -14,167 +14,121 @@
 
 | # | Hash | Description |
 |---|------|-------------|
-| 1 | `410f445` | docs(taxonomy): capture VERTICAL_TAXONOMY_DRAFT v0.1 |
-| 2 | `73bfefa` | docs(backlog): TCR taxonomy — 2 new entries + rewrite vertical-to-Sinch entry |
-| 3 | (this commit) | docs(handoff): Session 68 close — vertical taxonomy draft + 2 BACKLOG entries + 1 rewrite |
+| 1 | `010f624` | docs(master-plan): v1.4 → v1.5 strategic repositioning amendment |
+| 2 | `28567d8` | docs(marketing-strategy): MD-9..MD-12 strategic repositioning amendment |
+| 3 | `561a8bb` | docs(decisions): D-372 three-layer product model commitment |
+| 4 | `e57c76e` | docs(taxonomy): VERTICAL_TAXONOMY_DRAFT v0.1 → v0.2 — three-layer §0 |
+| 5 | `f1427ff` | docs(backlog): strategic repositioning integration step 7+8 |
+| 6 | (this commit) | docs(handoff): Session 69 close — Strategic Repositioning Integration Wave |
 
-All three Session 68 commits unpushed at Session 68 close — pending PM approval before push.
+Five content commits pushed mid-session (`010f624`, `28567d8`, `561a8bb`, `e57c76e`, `f1427ff` are on `origin/main` — verified via `git rev-list --left-right --count HEAD...origin/main` returning `1 0` after the Commit 5 push, where the `1` is this close-out). Close-out commit pending PM approval before push.
 
 ---
 
-## Session summary
+## What was completed
 
-### Commit 1 — `docs/VERTICAL_TAXONOMY_DRAFT.md` create (`410f445`, +117 lines)
+**Strategic Repositioning Integration Wave** — landed all five planned artifacts in their committed homes per the integration sequence:
 
-New canonical-track draft document. Captures the vertical-taxonomy thinking surfaced by Experiments 3a/3b (Sinch's TCR use-case dashboard). Parallels Session 67's TESTING_GUIDE_DRAFT.md precedent — uppercase + `_DRAFT` suffix, status block at top with explicit Phase 5 prerequisite gate framing, REPO_INDEX Purpose-field DRAFT marker (lands in Commit 3), graduation path documented (rename to `VERTICAL_TAXONOMY.md` + topic-index entry when Phase 5 design resolves the directional pieces).
+1. **MASTER_PLAN.md v1.4 → v1.5** (`010f624`). 13 anchor-text str_replace edits. Three-layer product model committed (TCR categories carrier-side immutable / SDK namespaces RelayKit's developer-facing API / audience-packs curated configurations for specific business types). Audience narrowed to indie SaaS founders specifically as audience-pack #1. Launch package framed OTP-led + transactional + critical alerts (not OTP-only). Long-term AI-driven configuration platform recorded as post-launch endgame in §16. Four architectural design principles added to §2 so current Phase 5/6 build decisions stay compatible with the post-launch AI-configuration layer. New §18 Open Architectural Questions section added (renumbers §18→§19 and §19→§20). Phase 5 amended with campaign architecture mechanics. Three risk paragraph-bullets appended to §17.
 
-Six sections:
-- **Status block** — DRAFT v0.1, awaiting Phase 5 design resolution; Phase 5 prerequisite gate framing for any work touching customer registration form design, intake question design, vertical surface in onboarding, message template authorship for new/changed verticals, registration backend logic.
-- **§1 TCR taxonomy primer** — categories are TCR-standard, not Sinch-specific. Standard 10 categories (auto-approved): 2FA, Account Notification, Customer Care, Delivery Notification, Marketing, Higher Education, Public Service Announcement, Security Alert, Mixed, Low Volume Mixed. Special 12 categories (vetting required): Charity, K-12, Political Campaign, Sweepstakes, Polling and Voting, Emergency, Machine to Machine, Proxy, Direct Lending, Agents and Franchises, Social, Fraud Alert. Carrier Exemptions noted as orthogonal concept.
-- **§2 mapping table** — 8 RelayKit verticals + Higher Ed → TCR category, with class / fit cleanliness / notes columns. Internal flagged for reframe-as-LVM (TCR has no employee-comms category). Community flagged disposition-pending (currently maps to Special-class Social). Waitlist best-fit-pending (AN or CC). Higher Education marked new.
-- **§3 settled calls** — (1) Special TCR categories out of scope at launch — vetting incompatible with automation posture; decline copy TBD per Voice Principles when intake flow design activates in Phase 5; (2) Add Higher Education vertical — TCR Standard, clean 1:1 fit, real ICP; (3) Internal as RelayKit-curated LVM — RelayKit authors templates; (4) LVM as deliberate product surface — not catch-all; throughput cap (3.75 MPS / ~2K segments/day on T-Mobile) noted as fine for the long tail.
-- **§4 directional thinking (NOT YET DECIDED)** — three-doors-vs-two-doors at launch (Single/Multi/Custom); AI-assisted LVM scope (conservative/aggressive/deferred); Community redefine-vs-drop disposition.
-- **§5 implementation impact** — surface inventory for Phase 5 work: PRODUCT_SUMMARY revisions (§4 + §14 + Higher Ed throughout); existing 8 verticals' template review for TCR-mapping accuracy; Higher Education full template set; customer registration form routing logic; intake question design; onboarding wizard vertical surface; registration backend logic; marketing positioning (potential MD-number after taxonomy decisions resolve).
-- **§6 Phase 5 prerequisite gates** — 5 work items in resolution order, with §4 directional pieces flagged as the unblocking critical path.
+2. **MARKETING_STRATEGY.md MD-9..MD-12 + 3 prose updates + MD-1 supersession marker** (`28567d8`). North Star paragraph, primary audience section header, and primary audience prose first sentence aligned to indie SaaS founders language. Channel/community/SEO references to indie hackers left alone — narrowing applies to audience definition, not cultural framing. MD-9 audience narrowed (supersedes MD-1 audience definition; positioning shape preserved). MD-10 working slogan direction "SMS configured for your SaaS." MD-11 audience-packs as long-term shape, indie SaaS pack #1, pack #2 gated on stable economics + 50+ paying customers. MD-12 launch package OTP-led + transactional + critical alerts (complementary to MD-7 verification pillar wording). MD-1 receives same-commit supersession marker per ledger discipline.
 
-**Decline-copy verbatim sketch omitted from §3 per PM directive at plan approval.** §3 carries only the placeholder "Decline copy TBD per Voice & Product Principles when intake flow design activates in Phase 5." Voice work happens at its proper moment, not pre-loaded into the thinking doc.
+3. **DECISIONS.md D-372** (`561a8bb`). Three-layer product model architectural commitment. Pre-flight inline supersession enforcement run; supersedes-none correct (D-273/D-274/D-275 sit at the SDK-namespace layer that D-372 names but are not superseded). Affects field references the upstream and downstream commits in this session.
 
-**Pre-commit verification:**
-- Multiline-safe leak grep for prohibited compliance-guarantee language ("ensures compliance" / "guarantees approval" / "fully compliant" / "stay compliant automatically"): no hits.
-- Day-count grep for specific carrier-review timing: no hits. Note: "multi-week timelines" appears in §1 describing Special-category vetting at carriers — that's an internal observation about the taxonomy, not a RelayKit-side carrier-review claim. D-215 governs RelayKit-submitted registration timing language (always "a few days") and is not implicated.
+4. **VERTICAL_TAXONOMY_DRAFT.md v0.1 → v0.2** (`e57c76e`). New §0 Three-layer relationship inserted between status block and §1 TCR taxonomy primer. Establishes that the eight verticals in §2 are SDK namespaces, not audience-packs. Flags LVM's load-bearing role for audience-pack composition. §5 implementation impact list extended with audience-pack composition as Phase 5/6 design surface. REPO_INDEX `/docs` row updated to v0.2 in the same commit. §3 settled calls and §4 directional pieces unchanged. Doc remains DRAFT.
 
-### Commit 2 — `BACKLOG.md` 3 edits (`73bfefa`, +5/-1)
+5. **BACKLOG.md five new entries + L118 extension** (`f1427ff`). Five new entries inserted as contiguous block at L130–L138 between L128 (Add Higher Education) and L140 (`### Infrastructure & Operations`): Indie SaaS pack namespace composition; Multi-campaign upgrade UX (with pure auto-graduate explicitly foreclosed because per-campaign cost flows to billing and auto-billing-changes without prior consent are a customer-trust failure mode); Launch campaign-architecture choice; Multi-campaign pricing; SMS_GUIDELINES.md authoring hook. Existing L118 (Sinch reseller designation) extended with multi-campaign Sinch ISV economics question for BDR conversation. Each new entry is the substance pointer for one row in MASTER_PLAN v1.5 §18 Open Architectural Questions table.
 
-Three edits in one commit, scoped together because the rewrite makes sense only in light of the draft + new entries existing:
+---
 
-**Edit A — line-106 entry rewritten as pointer.** "RelayKit vertical-to-Sinch-use-case mapping for customer campaign registration" entry: original ~22-use-case enumeration body replaced with a one-paragraph pointer to `docs/VERTICAL_TAXONOMY_DRAFT.md` summarizing what the draft captures (TCR primer + 8-verticals-plus-Higher-Ed mapping table + four settled calls + three directional pieces + implementation impact + Phase 5 prerequisite gates). Original origin parenthetical preserved verbatim and extended with "expanded into draft doc at PM Session 68, 2026-05-01."
+## What's in progress
 
-**Edit B — new entry at L126.** "Special TCR categories — out of scope at launch" — 12 categories enumerated, vetting-incompatible-with-automation rationale, decline-pattern-from-D-18, decline-copy-TBD-per-Voice-Principles placeholder (not the verbatim sketch — omitted per PM directive), post-launch revisit gated on observed customer pull. Cross-references `docs/VERTICAL_TAXONOMY_DRAFT.md` §3.
+**Pumping Defense Integration Wave 1** — scoped by PM in a separate browser-chat artifact, **NOT executed in this session**. Picks up next session.
 
-**Edit C — new entry at L128.** "Add Higher Education vertical" — TCR Standard category, clean 1:1 fit, no vetting friction. Real ICP segment (universities, online learning, postsecondary). Phase 5 implementation work — additive, no architecture change: full template set, intake entry, dashboard surface, onboarding-wizard vertical option. Cross-references `docs/VERTICAL_TAXONOMY_DRAFT.md` §3.
+Wave 1 scope per PM browser-chat:
+- MASTER_PLAN.md v1.5 → v1.6 amendment
+- `docs/SECURITY.md` DRAFT v0.1 (new canonical-track draft)
+- MARKETING_STRATEGY.md MD-13 / MD-14 / MD-15
+- DECISIONS.md D-373 / D-374
+- BACKLOG.md six new entries
+- Total: 5 commits planned
 
-**Verification:**
-- `grep -nE "^- \*\*Special TCR categories|^- \*\*Add Higher Education vertical" BACKLOG.md` returned exactly 2 hits at L126 + L128.
-- Section integrity preserved: `### Infrastructure & Operations` at L130, `### Marketing & Growth` at L176, `### Content & Marketing` at L182 — no shifts.
+Wave 2 deferred to Phase 5/8 design activation.
 
-### Commit 3 — close-out (this commit, REPO_INDEX.md + CC_HANDOFF.md)
-
-REPO_INDEX Meta block bumps:
-- Last updated → 2026-05-01 (Session 68 summary).
-- Decision count unchanged at D-371 with explicit "No new D-numbers Session 68" + "MD-counter unchanged Session 68" notes.
-- Master plan last updated unchanged with explicit "No MASTER_PLAN edits Session 68" note.
-- Unpushed local commits → 3, with all three Session 68 commit references inline. Pre-flight git state captured: `0 0` rev-list at start, HEAD == `e86807e`.
-
-New Canonical docs (`/docs`) table row appended after `TESTING_GUIDE_DRAFT.md` row (matches by-add-date convention of recent additions), with explicit DRAFT v0.1 + awaiting Phase 5 design resolution framing in the Last touched and Purpose fields. Purpose field includes graduation pathway (rename to `VERTICAL_TAXONOMY.md` + topic-index entry land as follow-up commit when Phase 5 design resolves the directional pieces).
-
-**Canonical sources by topic index NOT updated this session** — VERTICAL_TAXONOMY_DRAFT.md is not yet canonical; topic-index entry waits for graduation past the Phase 5 design resolution gate (parallel to Session 67's TESTING_GUIDE_DRAFT pattern).
-
-This Session 68 change-log entry appended chronologically after Session 67 at L268.
-
-CC_HANDOFF.md overwritten with this Session 68 handoff per CLAUDE.md step 8 format.
-
-**No retirement sweep, no drift-watch** — mid-phase doc-only session, no MASTER_PLAN phase boundary crossed.
+The "Pumping Defense Integration v2 plan" PM artifact exists in PM's browser chat. The next session opens with PM pasting the plan as the session opener.
 
 ---
 
 ## Quality checks passed
 
 - Doc-only session — `tsc --noEmit` / `eslint` / `vitest` not required per CLAUDE.md close-out gates.
-- No D-numbers added — gate tests not applicable this session.
-- No MD-numbers added.
 - Pre-flight DECISIONS ledger scan run at session start: Active count 286 (latest D-371), Archive D-01–D-83. No new decisions since previous session — no flags.
-- Pre-flight git state at session start: HEAD == `e86807e`, `git rev-list --left-right --count HEAD...origin/main` returned `0 0` confirming Session 67's commits + post-Session-67 BACKLOG addition all pushed. Working tree clean except untracked `api/node_modules/`.
-- Leak grep on `docs/VERTICAL_TAXONOMY_DRAFT.md` post-write, pre-commit: zero hits for prohibited compliance-guarantee language per CLAUDE.md hard platform constraints.
-- Day-count grep on draft: zero hits per D-215. "Multi-week timelines" reference in §1 is an internal observation about Special-category vetting at carriers, not a RelayKit-side carrier-review timing claim.
-- Post-commit verifications: BACKLOG L106 rewrite + L126 + L128 new entries confirmed via grep; section integrity preserved (no header shifts).
+- Pre-flight git state at session start: HEAD == `dc29ca7`, `git rev-list --left-right --count HEAD...origin/main` returned `0 0` confirming Session 68's three commits all pushed before Session 69 opened. Working tree clean except untracked `api/node_modules/`.
+- Each content commit verified before staging — grep verification per the spec checklist for each commit. Every spec check substantively passes; minor spec-pattern miscalibrations surfaced and flagged inline before commit (commit 1 check 5 case-mismatch; commit 2 check 2 expected-line-count miscount; commit 4 check 5 D-372 substring-count miscount). No file content deviates from spec demanded text.
+- Inline supersession enforcement run for D-372 per CLAUDE.md ledger stewardship: greped DECISIONS.md + DECISIONS_ARCHIVE.md against TCR / namespace / audience / pack / three-layer / vertical / SDK terms; one-sentence conflict test applied to candidates; **Supersedes: none** confirmed correct.
+- Inline supersession marker landed in MARKETING_STRATEGY.md MD-1 in the same commit as MD-9 per ledger discipline (`⚠ Superseded by MD-9:` annotation appended to MD-1 body).
+- All five content commits pushed mid-session via `git push origin main` after PM reviewed each via `.pm-review.md` artifact (untracked file, used as PM-review surface, never staged).
 
 ---
 
-## Surface for PM
+## Retirement sweep findings
 
-1. **Draft-doc convention is now precedent in two places** (TESTING_GUIDE_DRAFT v0.2 from Session 67 + VERTICAL_TAXONOMY_DRAFT v0.1 from this session) without formal documentation in CLAUDE.md or PM_PROJECT_INSTRUCTIONS.md. Convention as applied in both: filename uppercase + `_DRAFT` suffix; status block at top with explicit "awaiting [validation type]" framing; REPO_INDEX `/docs` table Purpose-field DRAFT marker inline; graduation path documented (rename + topic-index addition); validation/resolution gate tracked as a BACKLOG entry. **Recommend formalizing as a Standing Reminder in PM_PROJECT_INSTRUCTIONS or as an operational rule in CLAUDE.md at next PM-instruction session** — two-precedent threshold suggests the convention is sticky enough to write down. (Same surface as Session 67 close-out item 1; flagging again for explicit decision.)
-
-2. **Topic-index deferral consistent with Session 67.** VERTICAL_TAXONOMY_DRAFT.md not added to "Canonical sources by topic" index; will land as follow-up commit when draft graduates from v0.1 to canonical. Confirms pattern.
-
-3. **BACKLOG-entry-as-D-number-deferral pattern continues.** Two new entries (Special TCR categories out at launch + Add Higher Education) park as BACKLOG until Phase 5 implementation activates. Same reasoning as Session 67's entry (b) — settled architectural posture without implementation work in flight doesn't pass the six-month gate test, parks correctly in BACKLOG, not DECISIONS.
-
-4. **Directional sections in §4 of the draft explicitly do not commit RelayKit to a position.** PM may want to walk through the three directional pieces in a future chat to converge on positions before Phase 5 design begins (three-doors-vs-two-doors UX; AI-assisted LVM scope; Community redefine-vs-drop), or leave them open until Phase 5 design naturally surfaces the resolution. Surfacing the option.
-
-5. **Decline-copy explicitly omitted from the draft per PM directive at plan approval.** §3 carries only "Decline copy TBD per Voice & Product Principles when intake flow design activates in Phase 5." The same placeholder lands in the BACKLOG entry "Special TCR categories — out of scope at launch" replacing the verbatim sketch from PM's prompt. Voice work happens at its proper moment, not pre-loaded into the thinking doc.
-
-6. **Carry-forward Surface items from Session 67** still applicable until PM acts on them: SDK-method substitution captured in Commit 1 message body of Session 67 (`relaykit.consent.lookup({ phone })` → `relaykit.checkConsent(phone)`); push-grouping choice for the (now-pushed) Session 67 commits — moot now.
+None — mid-phase doc-only session, no MASTER_PLAN phase boundary crossed.
 
 ---
 
-## Pending items going into next session
+## Drift-watch findings
 
-**Phase 1 downstream queue (UNBLOCKED 2026-05-01, awaiting first-pickup):**
+None — mid-phase close-out, drift-watch skipped per CLAUDE.md step 9.
 
-1. **Experiment 2b — Live sample SMS over approved campaign.** Validates API → carrier → handset send path. Highest-leverage next experimental work since silent-drops in Experiments 1/1b/2a never confirmed end-to-end delivery.
-2. **Experiment 4 — STOP/START/HELP behavior.** Validates consent state machine on approved campaign.
-3. **Experiment 3c — Campaign upgrade flow.** Phase 5 input but not blocking other Phase 1 work.
+---
 
-**Testing-guide track (Session 67 carry-forward):**
+## Gotchas for next session
 
-4. **TESTING_GUIDE_DRAFT.md prototype validation** — BACKLOG entry. Run the draft through Claude Code / Cursor / Windsurf against a sample Next.js + Supabase app. Could be picked up as parallel workstream to Phase 1 downstream. If picked up: D-number opens for the architectural posture entry once at least one tool produces a useful surface; MD-promotion opens for the marketing positioning angle at the same time.
-
-**Vertical taxonomy track (new this session):**
-
-5. **VERTICAL_TAXONOMY_DRAFT.md directional pieces resolution.** Three pending decisions (three-doors-vs-two-doors UX; AI-assisted LVM scope; Community redefine-vs-drop). PM can converge in a future chat before Phase 5 design begins, or let Phase 5 design naturally surface resolutions. Either path works — the draft is structured to accept resolutions in either order.
-
-**Marketing-side action items (Joel's hands):**
-
-6. **Joel: sign up for affiliate programs.** ShipFast (50% on first purchase), Supastarter, Saaspegasus, Makerkit. Capture affiliate IDs in MARKETING_STRATEGY.md "Channels" section under each starter. Trivial pre-launch action, no dependencies. Per MD-5.
-7. **Joel: confirm tooling choices** — Plausible/Fathom for analytics, Resend for email, or push back if a different tool fits better. Per MARKETING_STRATEGY.md "Tools and Force Multipliers / SaaS tooling — one of each, no proliferation" section.
-
-**PM-side scheduling items:**
-
-8. **PM: marketing-strategy review pass after Phase 1 downstream closes.** When 3c / 4 / 2b complete, schedule a review of the active sequence (Pre-launch / Launch / Growth / Scale). Per Session 64 carry-forward.
-9. **PM: MD-8 (pricing transparency) deferred — resolve when triggered.** Either a competitor undercuts on price OR Joel wants to make the case proactively as differentiation.
-10. **PM: draft-doc convention formalization.** Surface item 1 above — write the convention down in PM_PROJECT_INSTRUCTIONS.md or CLAUDE.md.
-
-**Carry-forward from prior sessions (still applicable):**
-
-11. **Migration 006 manual application.** SQL committed at `api/supabase/migrations/006_signups.sql` since Session 58 but not yet applied to live shared Supabase.
-12. **Sinch reseller designation Phase 5 architecture decision.** BACKLOG entry filed Session 62 reseller round (`22276f3`). Surface during Phase 5 kickoff.
-13. **LEGAL_DOC_DEFERRED_CLAIMS.md forward-looking note.** Phase 6 ship will likely trigger restoration of OTP-related capability language in legal docs.
-14. **Session B kickoff prerequisites still pending** (carry-forward from Sessions 50–63):
-    - Spec catch-up at MESSAGE_PIPELINE_SPEC.md for status-enum intermediate state, callback-receiver scope, webhook signature-verification design without HMAC, XMS vs OAuth2 token disambiguation, ULID `carrier_message_id` format.
-    - Four Sinch API/dashboard inconsistencies open for Sinch BDR (Elizabeth Garner) verification at kickoff.
-    - Resubmission API parity question (Session 60).
-    - Approval-state observability question (Session 63).
-15. **Carry-forward (post-Phase-1 unblock):** BACKLOG aging review (Session C carryover, surfaced: 2026-04-27 Session 56).
+1. **Pumping Defense Integration v2 plan exists in PM browser-chat artifact.** New browser chat will paste it as session opener. Five commits planned (MASTER_PLAN v1.6 + `docs/SECURITY.md` DRAFT v0.1 + MARKETING_STRATEGY MD-13/14/15 + DECISIONS D-373/D-374 + BACKLOG six entries). Wave 2 deferred to Phase 5/8 design activation.
+2. **Session 69 carry-forward DECISIONS state:** Active count 287 (latest D-372), Archive D-01–D-83. Next available D-373.
+3. **Session 69 carry-forward MD-counter:** MD-12 latest, next available MD-13. MD-1 superseded by MD-9 (audience definition only; positioning shape preserved).
+4. **MASTER_PLAN.md state:** v1.5 with renumbered §18 (Open Architectural Questions, new), §19 (How This Plan Gets Used, was §18), §20 (The First Move, was §19). Wave 1 will bump v1.5 → v1.6.
+5. **Spec-pattern miscalibration pattern observed across this wave:** Three of the integration-plan commits (1, 2, 4) had spec verification checks expecting counts that didn't quite match the demanded text content. Each was a cosmetic miscount, not a content gap. Pattern noted: when spec verification checks include exact integer counts on substring greps, double-check the spec text for actual occurrences before treating mismatches as failures. Substantive content was correct in every case.
+6. **`.pm-review.md` used as ad-hoc PM-review surface throughout this session** — git show output written there for each content commit, PM reviewed, then `git push origin main` issued. File is untracked, never staged. Pattern works well for review-then-push cadence; documenting here in case future PM wants to formalize as a workflow convention or add to .gitignore (currently neither).
 
 ---
 
 ## Files modified this session
 
-**Repo files (committed):**
-- `docs/VERTICAL_TAXONOMY_DRAFT.md` (Commit 1 — created, +117 lines)
-- `BACKLOG.md` (Commit 2 — +5/-1: rewrite L106 + append 2 new entries at L126 + L128)
-- `REPO_INDEX.md` (Commit 3 — Meta block bumps + new `/docs` row + Session 68 change-log entry)
-- `CC_HANDOFF.md` (Commit 3 — this commit, overwritten)
+**Repo files (committed across the six commits):**
+- `MASTER_PLAN.md` (Commit 1, +56/-5)
+- `docs/MARKETING_STRATEGY.md` (Commit 2, +12/-4)
+- `DECISIONS.md` (Commit 3, +11/-1)
+- `docs/VERTICAL_TAXONOMY_DRAFT.md` (Commit 4, included in +21/-2)
+- `REPO_INDEX.md` (Commit 4 row update + Commit 6 Meta block + change-log)
+- `BACKLOG.md` (Commit 5, +11/-1)
+- `CC_HANDOFF.md` (Commit 6, this commit, overwritten)
 
-**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `/marketing-site`, `MASTER_PLAN.md`, `PROTOTYPE_SPEC.md`, `DECISIONS.md`, `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md`, `docs/MARKETING_STRATEGY.md`, all other `/docs/`, audits, experiments.
-
----
-
-## Suggested next task on chat resume
-
-Three reasonable directions, PM picks:
-
-1. **Phase 1 downstream momentum** — Experiment 2b (live sample SMS over approved campaign) is the highest-leverage next experimental work. Validates the API → carrier → handset send path.
-
-2. **Vertical taxonomy track continuation** — Walk the three directional pieces in §4 of `docs/VERTICAL_TAXONOMY_DRAFT.md` toward resolution: three-doors-vs-two-doors UX, AI-assisted LVM scope, Community redefine-vs-drop. Could be a single PM chat session that closes all three or staggered as each surfaces in product context.
-
-3. **Joel-actionable marketing items** — Items 6–7 (affiliate program signups + tooling confirmation), both trivial and unblocking nothing else.
-
-If PM wants to formalize the draft-doc convention before another draft lands (Surface item 1), that's a fourth direction — single PM_PROJECT_INSTRUCTIONS.md or CLAUDE.md edit session, ~15 minutes.
+**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `/marketing-site`, `PROTOTYPE_SPEC.md`, `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md`, audits, experiments, all other `/docs/`.
 
 ---
 
-## Other carry-forward (post-Phase-1 unblock)
+## Suggested next tasks
 
-- BACKLOG aging review (Session C carryover, still open, surfaced: 2026-04-27 Session 56)
+1. **Pumping Defense Integration Wave 1 (5 commits):** MASTER_PLAN v1.6, `docs/SECURITY.md` DRAFT v0.1, MARKETING_STRATEGY MD-13/14/15, DECISIONS D-373/D-374, BACKLOG six entries. PM browser-chat artifact "Pumping Defense Integration v2 plan" will arrive as next-session opener.
 
-No gotchas. No quality checks needed for this close-out (doc-only).
+2. **Phase 1 downstream queue (still UNBLOCKED 2026-05-01, awaiting first-pickup, carry-forward from Session 68):** Experiment 2b (live sample SMS over approved campaign — highest-leverage), Experiment 4 (STOP/START/HELP), Experiment 3c (campaign upgrade flow). All three have full procedures drafted.
+
+3. **Joel-actionable marketing items (carry-forward from Session 68):** Sign up for affiliate programs (ShipFast 50%, Supastarter, Saaspegasus, Makerkit) and capture affiliate IDs in MARKETING_STRATEGY.md. Confirm tooling choices (Plausible/Fathom for analytics, Resend for email).
+
+4. **Vertical taxonomy track (carry-forward from Session 68):** Three §4 directional pieces in `docs/VERTICAL_TAXONOMY_DRAFT.md` (three-doors-vs-two-doors UX, AI-assisted LVM scope, Community redefine-vs-drop disposition). Will resolve naturally when Phase 5 design activates, or PM can converge in a future chat.
+
+5. **Migration 006 manual application** (carry-forward from prior sessions): SQL committed at `api/supabase/migrations/006_signups.sql` since Session 58 but not yet applied to live shared Supabase.
+
+6. **Session B kickoff prerequisites still pending** (carry-forward from Sessions 50–68): MESSAGE_PIPELINE_SPEC.md spec catch-up; four Sinch API/dashboard inconsistencies open for Sinch BDR (Elizabeth Garner) verification at kickoff (now five if you include the multi-campaign Sinch ISV economics question added to L118 this session); resubmission API parity question (Session 60); approval-state observability question (Session 63).
+
+---
+
+## Carry-forward (post-Phase-1 unblock)
+
+- BACKLOG aging review (Session C carryover, still open, surfaced 2026-04-27 Session 56)
+- Draft-doc convention formalization (Session 67 + Session 68 surface item — two precedents now, recommend formalizing in PM_PROJECT_INSTRUCTIONS or CLAUDE.md)
+- LEGAL_DOC_DEFERRED_CLAIMS.md forward-looking note (Phase 6 ship will likely trigger restoration of OTP-related capability language in legal docs)
+
+No code touched this session. Quality gates N/A. PM review pending on this close-out before push.
