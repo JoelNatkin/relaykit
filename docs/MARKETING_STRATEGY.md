@@ -149,6 +149,26 @@ Pumping defense generates strong build-in-public content because the engineering
 
 **Supersedes:** none.
 
+**MD-16 — Stage-gated channel strategy: Indie Hackers only through beta, expand at public launch** (Date: 2026-05-04)
+
+Active posting is stage-gated by product readiness. Stage 1 — pre-launch through early beta — uses Indie Hackers as the only active posting channel. Stage 2 — public launch with working product and first customers — opens Reddit (sub-by-sub: r/SaaS, r/nextjs, r/webdev), X technical ecosystem, Show HN, and AI-tool Discords. Stage 3 — established, growing — layers in SEO, newsletter placements (TLDR, Bytes, Console.dev), partnerships, and a fuller channel-and-community map. The marketing site is designed for Stage 1 IH-traffic conversion specifically; Stage 2 and 3 inherit learnings rather than being designed for speculatively.
+
+**Reasoning:** Vaporware-stage signal doesn't fit transactional channels. Indie Hackers culture rewards retrospective build-in-public posts and is the warmest audience for pre-launch signal. Reddit, X, and HN punish announcements without a working product — wrong stage, wrong room. Narrowing the channel narrows the site requirements (no need to convert cold skeptics, perform on HN, or withstand Reddit scrutiny at Stage 1), which makes the work executable for a solo founder. The discipline also forces sequential learning: Stage 2 channels open after Stage 1 has produced real signal about what resonates, rather than being designed for in advance.
+
+**Supersedes:** none. Layers stage-gating on top of MD-3 (build-in-public posture stays — only channels and timing become explicit) and MD-6 (free-channels-only stays — sequencing of activation is new, not the channel set).
+
+**Affects:** `MARKETING_STRATEGY.md` Play 3 (split: IH active Stage 1, HN active Stage 2), Play 7 (X presence repositioned to Stage 2 active, Stage 1 dormant), Plays in Active Sequence pre-launch + launch wave sections (clarify stage-gating), Channels section (annotate stage per channel); marketing site facelift scope (designed for Stage 1 IH-traffic conversion).
+
+**MD-17 — Preferred stack positioning: Next.js + Supabase + Vercel + Stripe leads, other stacks supported via docs** (Date: 2026-05-04)
+
+RelayKit leads with the preferred stack — Next.js + Supabase + Vercel + Stripe — in headline copy, primary integration walkthroughs, code samples, and starter-kit partnership content. Other modern stacks (Remix, Astro, SvelteKit, Nuxt, Postgres-via-other-providers, Firebase, Auth.js variants) are supported via docs and integration guides at `/guides` but do not lead the surface. The dominant-stack signal is explicit, not implicit: a developer on the preferred stack should see "this works for me" within seconds; a developer on an alternative stack should find their path in the guides without feeling scoped out.
+
+**Reasoning:** Audience-pack #1 (MD-9 + MD-11 + D-372) skews heavily toward Next.js + Supabase. Leading with the dominant stack tightens immediate-fit signal for the majority case without scoping out the minority. Fully stack-agnostic neutrality dilutes the signal and reduces conversion for the larger segment. Next-only refusal scopes out real customers and contradicts the SDK's stack-agnostic design. The middle path — preferred lead, alternatives via docs — matches how Resend, Stripe, and Vercel themselves position.
+
+**Supersedes:** none. Coexists with MD-9 (audience definition), MD-11 (audience-pack model), and D-372 (three-layer model with indie SaaS as pack #1) — none address tech-stack signaling on customer-facing surfaces.
+
+**Affects:** marketing site headline copy + above-fold posture (preferred stack visible in code samples and integration walkthroughs); `/guides` content prioritization (Next.js + Supabase guides ship before stack-alternative guides); SDK `README.md` and `AGENTS.md` tone (assumes preferred stack as default, calls out alternatives as supported); future BACKLOG entries for stack-specific integration guides ranked accordingly.
+
 ## Tools and Force Multipliers
 
 ### AI roles
