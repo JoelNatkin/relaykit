@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/footer";
+import { PostHogProvider } from "@/components/posthog-provider";
+import { SuspendedPostHogPageView } from "@/components/posthog-pageview";
 import { TopNav } from "@/components/top-nav";
 import "./globals.css";
 
@@ -16,9 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <TopNav />
-        <main className="pt-14">{children}</main>
-        <Footer />
+        <PostHogProvider>
+          <SuspendedPostHogPageView />
+          <TopNav />
+          <main className="pt-14">{children}</main>
+          <Footer />
+        </PostHogProvider>
       </body>
     </html>
   );
