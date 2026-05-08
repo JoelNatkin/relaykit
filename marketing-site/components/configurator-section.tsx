@@ -682,10 +682,10 @@ export function ConfiguratorSection() {
         </div>
 
         {/* Side-by-side panels */}
-        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[3fr_7fr]">
+        <div className="mt-8 grid grid-cols-1 items-start gap-8 md:grid-cols-[3fr_7fr]">
           {/* Categories panel */}
           <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
-            <div className="px-4 pt-5 pb-8">
+            <div className="px-4 pt-5 pb-6">
               <h3 className="text-base font-semibold text-text-primary">Categories</h3>
               <div className="mt-4">
                 <label
@@ -812,7 +812,7 @@ export function ConfiguratorSection() {
                 />
               ) : null}
             </div>
-            <div className="mt-8 space-y-8">
+            <div className="mt-8 space-y-7">
               {selectedInOrder.map((id) => {
                 const vertical = VERTICAL_BY_ID[id];
                 const customs = customMessages[id];
