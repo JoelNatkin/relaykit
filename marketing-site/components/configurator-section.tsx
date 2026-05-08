@@ -1,19 +1,8 @@
 "use client";
 
-import {
-  Announcement02,
-  Calendar,
-  ClipboardCheck,
-  Copy01,
-  Edit01,
-  Globe01,
-  MessageChatCircle,
-  Package,
-  ShieldTick,
-  Users01,
-} from "@untitledui/icons";
+import { Copy01, Edit01, Plus, Stars02 } from "@untitledui/icons";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type FC } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type VerticalId =
   | "verification"
@@ -29,12 +18,23 @@ type PackId = "saas" | "personal" | "real-estate" | "fitness" | "ecommerce" | "c
 
 type ToneId = "standard" | "friendly" | "brief";
 
+interface StubMessage {
+  name: string;
+  slug: string;
+  body: string;
+}
+
+interface CustomMessage {
+  id: string;
+  name: string;
+  body: string;
+}
+
 interface Vertical {
   id: VerticalId;
   title: string;
   description: string;
-  icon: FC<{ className?: string }>;
-  messages: string[];
+  messages: StubMessage[];
   alwaysOn?: boolean;
   note?: string;
 }
@@ -43,85 +43,154 @@ const VERTICALS: Vertical[] = [
   {
     id: "verification",
     title: "Verification",
-    description: "Login codes, password resets, MFA.",
-    icon: ShieldTick,
+    description:
+      "Login OTPs, signup codes, password resets, MFA, new device alerts",
     alwaysOn: true,
     messages: [
-      "{businessName} verification code: 482910. Expires in 10 minutes.",
-      "Your {businessName} login code is 731062. If you didn't request this, ignore this message.",
+      {
+        name: "Verification code",
+        slug: "verification-code",
+        body: "{businessName} verification code: 482910. Expires in 10 minutes.",
+      },
+      {
+        name: "Login code",
+        slug: "login-code",
+        body: "Your {businessName} login code is 731062. If you didn't request this, ignore this message.",
+      },
     ],
   },
   {
     id: "appointments",
     title: "Appointments",
-    description: "Confirmations, reminders, reschedules.",
-    icon: Calendar,
+    description:
+      "Confirmations, reminders, reschedules, cancellations, no-show follow-ups",
     messages: [
-      "{businessName}: Your appointment is confirmed for Friday at 2:00 PM. Reply STOP to opt out.",
-      "{businessName}: Reminder — your appointment is tomorrow at 10:30 AM. Reply STOP to opt out.",
-      "{businessName}: Need to reschedule? Visit {website}. Reply STOP to opt out.",
+      {
+        name: "Confirmation",
+        slug: "confirmation",
+        body: "{businessName}: Your appointment is confirmed for Friday at 2:00 PM. Reply STOP to opt out.",
+      },
+      {
+        name: "Reminder",
+        slug: "reminder",
+        body: "{businessName}: Reminder — your appointment is tomorrow at 10:30 AM. Reply STOP to opt out.",
+      },
+      {
+        name: "Reschedule",
+        slug: "reschedule",
+        body: "{businessName}: Need to reschedule? Visit {website}. Reply STOP to opt out.",
+      },
     ],
   },
   {
     id: "orders",
     title: "Order updates",
-    description: "Shipping, tracking, delivery.",
-    icon: Package,
+    description:
+      "Shipping confirmations, delivery alerts, return status, refund notices",
     messages: [
-      "{businessName}: Order #4827 confirmed. Track at {website}/orders/4827. Reply STOP to opt out.",
-      "{businessName}: Your order has shipped. Tracking: 1Z999AA10000123456. Reply STOP to opt out.",
-      "{businessName}: Out for delivery today. We'll text again when it arrives. Reply STOP to opt out.",
+      {
+        name: "Order confirmed",
+        slug: "order-confirmed",
+        body: "{businessName}: Order #4827 confirmed. Track at {website}/orders/4827. Reply STOP to opt out.",
+      },
+      {
+        name: "Shipped",
+        slug: "shipped",
+        body: "{businessName}: Your order has shipped. Tracking: 1Z999AA10000123456. Reply STOP to opt out.",
+      },
+      {
+        name: "Out for delivery",
+        slug: "out-for-delivery",
+        body: "{businessName}: Out for delivery today. We'll text again when it arrives. Reply STOP to opt out.",
+      },
     ],
   },
   {
     id: "support",
     title: "Customer support",
-    description: "Ticket updates and resolutions.",
-    icon: MessageChatCircle,
+    description: "Ticket updates, resolution notices, satisfaction follow-ups",
     messages: [
-      "{businessName}: Ticket #1893 — we've replied. View at {website}/help. Reply STOP to opt out.",
-      "{businessName}: Your support ticket is resolved. Let us know if anything else comes up. Reply STOP to opt out.",
+      {
+        name: "Reply received",
+        slug: "reply-received",
+        body: "{businessName}: Ticket #1893 — we've replied. View at {website}/help. Reply STOP to opt out.",
+      },
+      {
+        name: "Resolved",
+        slug: "resolved",
+        body: "{businessName}: Your support ticket is resolved. Let us know if anything else comes up. Reply STOP to opt out.",
+      },
     ],
   },
   {
     id: "marketing",
     title: "Marketing",
-    description: "Promos, launches, re-engagement.",
-    icon: Announcement02,
+    description: "Promos, re-engagement, product launches, seasonal campaigns",
     note: "Requires EIN. Adds a few days to registration.",
     messages: [
-      "{businessName}: 20% off this week. Shop at {website}. Reply STOP to opt out.",
-      "{businessName}: New drop today. Take a look: {website}. Reply STOP to opt out.",
+      {
+        name: "Weekly promo",
+        slug: "weekly-promo",
+        body: "{businessName}: 20% off this week. Shop at {website}. Reply STOP to opt out.",
+      },
+      {
+        name: "New drop",
+        slug: "new-drop",
+        body: "{businessName}: New drop today. Take a look: {website}. Reply STOP to opt out.",
+      },
     ],
   },
   {
     id: "team",
     title: "Team alerts",
-    description: "Shift reminders, system pings, on-call.",
-    icon: Users01,
+    description:
+      "Shift reminders, system alerts, escalation pings, on-call notifications",
     messages: [
-      "{businessName}: Sarah is out sick. Mark, can you cover the 3 PM shift? Reply STOP to opt out.",
-      "{businessName}: Production deploy succeeded. All checks green. Reply STOP to opt out.",
+      {
+        name: "Shift cover",
+        slug: "shift-cover",
+        body: "{businessName}: Sarah is out sick. Mark, can you cover the 3 PM shift? Reply STOP to opt out.",
+      },
+      {
+        name: "Deploy succeeded",
+        slug: "deploy-succeeded",
+        body: "{businessName}: Production deploy succeeded. All checks green. Reply STOP to opt out.",
+      },
     ],
   },
   {
     id: "community",
     title: "Community",
-    description: "Event reminders, group updates.",
-    icon: Globe01,
+    description:
+      "Event reminders, group updates, membership alerts, RSVP confirmations",
     messages: [
-      "{businessName}: Tomorrow's meetup is on. 7 PM at the usual spot. Reply STOP to opt out.",
-      "{businessName}: New thread in the founders channel. Read it at {website}. Reply STOP to opt out.",
+      {
+        name: "Meetup tonight",
+        slug: "meetup-tonight",
+        body: "{businessName}: Tomorrow's meetup is on. 7 PM at the usual spot. Reply STOP to opt out.",
+      },
+      {
+        name: "New thread",
+        slug: "new-thread",
+        body: "{businessName}: New thread in the founders channel. Read it at {website}. Reply STOP to opt out.",
+      },
     ],
   },
   {
     id: "waitlist",
     title: "Waitlist",
-    description: "Spot available, queue position.",
-    icon: ClipboardCheck,
+    description: "Spot available, queue position, reservation holds, invite codes",
     messages: [
-      "{businessName}: Your table's ready. Come on in. Reply STOP to opt out.",
-      "{businessName}: You're next on the waitlist. About 5 minutes. Reply STOP to opt out.",
+      {
+        name: "Table ready",
+        slug: "table-ready",
+        body: "{businessName}: Your table's ready. Come on in. Reply STOP to opt out.",
+      },
+      {
+        name: "Up next",
+        slug: "up-next",
+        body: "{businessName}: You're next on the waitlist. About 5 minutes. Reply STOP to opt out.",
+      },
     ],
   },
 ];
@@ -171,6 +240,203 @@ function substitute(template: string, name: string, site: string): string {
   return template.replaceAll("{businessName}", name).replaceAll("{website}", site);
 }
 
+function makeId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+const EMPTY_CUSTOM: Record<VerticalId, CustomMessage[]> = {
+  verification: [],
+  appointments: [],
+  orders: [],
+  support: [],
+  marketing: [],
+  team: [],
+  community: [],
+  waitlist: [],
+};
+
+function buildPrefill(verticalId: VerticalId): string {
+  if (verticalId === "verification") {
+    return "{businessName}: [your message here]";
+  }
+  return "{businessName}: [your message here] Reply STOP to opt out.";
+}
+
+interface MessageCardProps {
+  name: string;
+  slug?: string;
+  body: string;
+  onEdit: () => void;
+}
+
+function MessageCard({ name, slug, body, onEdit }: MessageCardProps) {
+  return (
+    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+      <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          <span className="truncate text-sm font-semibold text-text-primary">
+            {name}
+          </span>
+          {slug ? (
+            <span className="ml-2 flex-shrink-0 font-mono text-xs text-text-quaternary">
+              {slug}
+            </span>
+          ) : null}
+        </div>
+        <button
+          type="button"
+          onClick={onEdit}
+          aria-label="Edit message"
+          className="cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
+        >
+          <Edit01 className="size-[17px]" />
+        </button>
+      </div>
+      <div className="mt-2">
+        <p className="text-sm leading-relaxed text-text-secondary">{body}</p>
+      </div>
+    </div>
+  );
+}
+
+interface SimpleBodyEditorProps {
+  initialBody: string;
+  onSave: (body: string) => void;
+  onCancel: () => void;
+}
+
+function SimpleBodyEditor({ initialBody, onSave, onCancel }: SimpleBodyEditorProps) {
+  const [draft, setDraft] = useState(initialBody);
+  return (
+    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+      <div className="rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs transition duration-100 ease-linear focus-within:border-border-brand">
+        <textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          rows={3}
+          className="block min-h-[4.5rem] w-full resize-none bg-transparent text-sm leading-relaxed text-text-secondary outline-none"
+        />
+      </div>
+      <div className="mt-3 flex items-center justify-end gap-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="cursor-pointer px-3 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={() => onSave(draft)}
+          disabled={draft.trim() === ""}
+          className="cursor-pointer rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
+interface AddMessageEditorProps {
+  verticalId: VerticalId;
+  onSave: (name: string, body: string) => void;
+  onCancel: () => void;
+}
+
+function AddMessageEditor({ verticalId, onSave, onCancel }: AddMessageEditorProps) {
+  const [name, setName] = useState("");
+  const [body, setBody] = useState(buildPrefill(verticalId));
+  const [aiInput, setAiInput] = useState("");
+  const inputId = `add-${verticalId}`;
+  const nameEmpty = name.trim() === "";
+  const bodyEmpty = body.trim() === "";
+
+  return (
+    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+      <div>
+        <label
+          htmlFor={`${inputId}-name`}
+          className="mb-1.5 block text-sm font-medium text-text-secondary"
+        >
+          Name
+        </label>
+        <input
+          id={`${inputId}-name`}
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="e.g. Holiday hours"
+          className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary shadow-xs transition duration-100 ease-linear placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+        />
+      </div>
+
+      <div className="mt-4">
+        <label
+          htmlFor={`${inputId}-body`}
+          className="mb-1.5 block text-sm font-medium text-text-secondary"
+        >
+          Message
+        </label>
+        <div className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs transition duration-100 ease-linear focus-within:border-border-brand">
+          <textarea
+            id={`${inputId}-body`}
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            rows={3}
+            className="block min-h-[4.5rem] w-full resize-none bg-transparent text-sm leading-relaxed text-text-secondary outline-none"
+          />
+        </div>
+        <div className="mt-2 flex items-start">
+          <button
+            type="button"
+            onClick={() => undefined}
+            className="ml-auto inline-flex cursor-pointer items-center gap-1 py-1.5 text-xs font-semibold whitespace-nowrap text-text-brand-secondary transition-colors duration-100 hover:text-text-brand-secondary_hover"
+          >
+            <Plus className="size-3.5" />
+            Variable
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-3">
+        <div className="relative">
+          <Stars02 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-fg-brand-primary" />
+          <input
+            type="text"
+            value={aiInput}
+            onChange={(e) => setAiInput(e.target.value)}
+            placeholder={
+              body.trim() === buildPrefill(verticalId).trim() || body.trim() === ""
+                ? "Ask AI: write me a message"
+                : "Ask AI: polish my edit"
+            }
+            className="w-full rounded-lg border border-border-primary bg-bg-primary py-2 pr-3 pl-9 text-sm text-text-primary shadow-xs transition duration-100 ease-linear placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center justify-end gap-2">
+        <button
+          type="button"
+          onClick={onCancel}
+          className="cursor-pointer px-3 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+        >
+          Cancel
+        </button>
+        <button
+          type="button"
+          onClick={() => onSave(name.trim(), body.trim())}
+          disabled={nameEmpty || bodyEmpty}
+          className="cursor-pointer rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function ConfiguratorSection() {
   const [pack, setPack] = useState<PackId>("saas");
   const [selected, setSelected] = useState<Set<VerticalId>>(
@@ -179,17 +445,25 @@ export function ConfiguratorSection() {
   const [tone, setTone] = useState<ToneId>("standard");
   const [businessName, setBusinessName] = useState("");
   const [website, setWebsite] = useState("");
-  const [editedBodies, setEditedBodies] = useState<Record<string, string>>({});
+  const [editedStubs, setEditedStubs] = useState<Record<string, string>>({});
+  const [customMessages, setCustomMessages] =
+    useState<Record<VerticalId, CustomMessage[]>>(EMPTY_CUSTOM);
   const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [editingDraft, setEditingDraft] = useState("");
+  const [addingTo, setAddingTo] = useState<VerticalId | null>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
 
   const renderName = businessName.trim() || "Acme";
   const renderWebsite = website.trim() || "acme.com";
 
-  function bodyFor(verticalId: VerticalId, index: number): string {
-    const key = `${verticalId}:${index}`;
-    return editedBodies[key] ?? VERTICAL_BY_ID[verticalId].messages[index];
+  function stubBody(verticalId: VerticalId, index: number): string {
+    const key = `${verticalId}:stub:${index}`;
+    return editedStubs[key] ?? VERTICAL_BY_ID[verticalId].messages[index].body;
+  }
+
+  function customBody(verticalId: VerticalId, id: string): string {
+    return (
+      customMessages[verticalId].find((m) => m.id === id)?.body ?? ""
+    );
   }
 
   function handlePackClick(nextPack: PackId) {
@@ -211,20 +485,29 @@ export function ConfiguratorSection() {
     setPack("custom");
   }
 
-  function handleEditStart(key: string, currentBody: string) {
-    setEditingKey(key);
-    setEditingDraft(currentBody);
+  function handleStubSave(verticalId: VerticalId, index: number, body: string) {
+    const key = `${verticalId}:stub:${index}`;
+    setEditedStubs((prev) => ({ ...prev, [key]: body }));
+    setEditingKey(null);
   }
 
-  function handleEditSave(key: string) {
-    setEditedBodies((prev) => ({ ...prev, [key]: editingDraft }));
+  function handleCustomSave(verticalId: VerticalId, id: string, body: string) {
+    setCustomMessages((prev) => ({
+      ...prev,
+      [verticalId]: prev[verticalId].map((m) =>
+        m.id === id ? { ...m, body } : m,
+      ),
+    }));
     setEditingKey(null);
-    setEditingDraft("");
   }
 
-  function handleEditCancel() {
-    setEditingKey(null);
-    setEditingDraft("");
+  function handleAddSave(verticalId: VerticalId, name: string, body: string) {
+    const id = makeId();
+    setCustomMessages((prev) => ({
+      ...prev,
+      [verticalId]: [{ id, name, body }, ...prev[verticalId]],
+    }));
+    setAddingTo(null);
   }
 
   const selectedInOrder = useMemo<VerticalId[]>(
@@ -232,14 +515,29 @@ export function ConfiguratorSection() {
     [selected],
   );
 
+  const websiteShown = useMemo(() => {
+    for (const id of selectedInOrder) {
+      const vertical = VERTICAL_BY_ID[id];
+      for (let i = 0; i < vertical.messages.length; i++) {
+        if (stubBody(id, i).includes("{website}")) return true;
+      }
+      for (const m of customMessages[id]) {
+        if (m.body.includes("{website}")) return true;
+      }
+    }
+    return false;
+  }, [selectedInOrder, editedStubs, customMessages]);
+
   async function handleCopy() {
     const lines: string[] = [];
     for (const id of selectedInOrder) {
       const vertical = VERTICAL_BY_ID[id];
       lines.push(vertical.title);
+      for (const m of customMessages[id]) {
+        lines.push(`${renderName}: ${substitute(m.body, renderName, renderWebsite)}`);
+      }
       vertical.messages.forEach((_, i) => {
-        const body = bodyFor(id, i);
-        lines.push(`${renderName}: ${substitute(body, renderName, renderWebsite)}`);
+        lines.push(`${renderName}: ${substitute(stubBody(id, i), renderName, renderWebsite)}`);
       });
       lines.push("");
     }
@@ -259,7 +557,7 @@ export function ConfiguratorSection() {
   }, [copyToastVisible]);
 
   // Tone is selectable but only "standard" varies content for now. Other tones
-  // render the same Standard text — flagged in plan as a known YOLO stub.
+  // render the same Standard text — known YOLO stub.
   void tone;
 
   return (
@@ -327,7 +625,9 @@ export function ConfiguratorSection() {
         </div>
 
         {/* Personalize inputs */}
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div
+          className={`mt-6 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
+        >
           <input
             type="text"
             value={businessName}
@@ -335,13 +635,15 @@ export function ConfiguratorSection() {
             placeholder="Your business name"
             className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
           />
-          <input
-            type="text"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
-            placeholder="yourwebsite.com"
-            className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-          />
+          {websiteShown ? (
+            <input
+              type="text"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder="yourwebsite.com"
+              className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+            />
+          ) : null}
         </div>
 
         {/* Table */}
@@ -349,19 +651,18 @@ export function ConfiguratorSection() {
           {/* Left: verticals list */}
           <div className="border-b border-border-secondary md:border-b-0 md:border-r">
             {VERTICALS.map((v) => {
-              const Icon = v.icon;
               const isSelected = selected.has(v.id);
               const isAlwaysOn = v.alwaysOn === true;
               return (
                 <div
                   key={v.id}
-                  className="border-b border-border-secondary px-4 py-3 last:border-b-0"
+                  className="border-b border-border-secondary px-4 py-5 last:border-b-0"
                 >
                   <button
                     type="button"
                     onClick={() => handleVerticalToggle(v.id)}
                     disabled={isAlwaysOn}
-                    className="flex w-full items-center gap-3 text-left disabled:cursor-default"
+                    className="flex w-full items-start gap-3 text-left disabled:cursor-default"
                   >
                     <input
                       type="checkbox"
@@ -369,102 +670,110 @@ export function ConfiguratorSection() {
                       readOnly
                       disabled={isAlwaysOn}
                       tabIndex={-1}
-                      className="size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
+                      className="mt-0.5 size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
                     />
-                    <Icon className="size-4 shrink-0 text-text-quaternary" />
-                    <span className="flex-1 text-sm font-medium text-text-primary">
-                      {v.title}
-                    </span>
-                    {isAlwaysOn ? (
-                      <span className="shrink-0 rounded-full bg-bg-brand-secondary px-2 py-0.5 text-xs font-medium text-text-brand-secondary">
-                        Always included
-                      </span>
-                    ) : null}
-                  </button>
-                  {isSelected ? (
-                    <div className="mt-2 pl-7 text-xs text-text-tertiary">
-                      {v.description}
-                      {v.note ? (
-                        <p className="mt-1 text-text-secondary">{v.note}</p>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-text-primary">
+                          {v.title}
+                        </span>
+                        {isAlwaysOn ? (
+                          <span className="shrink-0 rounded-full bg-bg-brand-secondary px-2 py-0.5 text-xs font-medium text-text-brand-secondary">
+                            Always included
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="mt-1 text-xs text-text-tertiary">
+                        {v.description}
+                      </p>
+                      {isSelected && v.note ? (
+                        <p className="mt-1 text-xs text-text-secondary">{v.note}</p>
                       ) : null}
                     </div>
-                  ) : null}
+                  </button>
                 </div>
               );
             })}
           </div>
 
           {/* Right: messages */}
-          <div>
-            {selectedInOrder.map((id) => {
-              const vertical = VERTICAL_BY_ID[id];
-              return (
-                <div key={id} className="border-b border-border-secondary last:border-b-0">
-                  <div className="border-b border-border-secondary px-4 py-2">
-                    <h3 className="text-sm font-semibold text-text-primary">
+          <div className="bg-bg-secondary p-4">
+            <div className="space-y-8">
+              {selectedInOrder.map((id) => {
+                const vertical = VERTICAL_BY_ID[id];
+                const customs = customMessages[id];
+                const isAdding = addingTo === id;
+                return (
+                  <div key={id}>
+                    <h3 className="mb-3 text-sm font-semibold text-text-primary">
                       {vertical.title}
                     </h3>
-                  </div>
-                  <div>
-                    {vertical.messages.map((_, i) => {
-                      const key = `${id}:${i}`;
-                      const body = bodyFor(id, i);
-                      const isEditing = editingKey === key;
-                      return (
-                        <div
-                          key={key}
-                          className="border-b border-border-secondary px-4 py-3 last:border-b-0"
+                    <div className="space-y-3">
+                      {isAdding ? (
+                        <AddMessageEditor
+                          verticalId={id}
+                          onSave={(name, body) => handleAddSave(id, name, body)}
+                          onCancel={() => setAddingTo(null)}
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setAddingTo(id)}
+                          disabled={addingTo !== null && addingTo !== id}
+                          className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          {isEditing ? (
-                            <div>
-                              <textarea
-                                value={editingDraft}
-                                onChange={(e) => setEditingDraft(e.target.value)}
-                                rows={3}
-                                className="block w-full rounded-md border border-border-primary bg-bg-primary px-3 py-2 text-sm text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-                              />
-                              <div className="mt-2 flex items-center justify-end gap-2">
-                                <button
-                                  type="button"
-                                  onClick={handleEditCancel}
-                                  className="rounded-md border border-border-secondary bg-bg-primary px-3 py-1 text-xs font-medium text-text-secondary hover:bg-bg-primary_hover"
-                                >
-                                  Cancel
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleEditSave(key)}
-                                  className="rounded-md bg-bg-brand-solid px-3 py-1 text-xs font-semibold text-white hover:bg-bg-brand-solid_hover"
-                                >
-                                  Save
-                                </button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-start gap-2">
-                              <p className="flex-1 text-sm text-text-secondary">
-                                <span className="font-semibold text-text-primary">
-                                  {renderName}:
-                                </span>{" "}
-                                {substitute(body, renderName, renderWebsite)}
-                              </p>
-                              <button
-                                type="button"
-                                onClick={() => handleEditStart(key, body)}
-                                className="shrink-0 rounded-md p-1 text-text-quaternary hover:bg-bg-primary_hover hover:text-text-secondary"
-                                aria-label="Edit message"
-                              >
-                                <Edit01 className="size-4" />
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                          <Plus className="size-4" />
+                          Add message
+                        </button>
+                      )}
+
+                      {customs.map((m) => {
+                        const key = `${id}:custom:${m.id}`;
+                        const body = customBody(id, m.id);
+                        const rendered = `${renderName}: ${substitute(body, renderName, renderWebsite)}`;
+                        return editingKey === key ? (
+                          <SimpleBodyEditor
+                            key={key}
+                            initialBody={body}
+                            onSave={(next) => handleCustomSave(id, m.id, next)}
+                            onCancel={() => setEditingKey(null)}
+                          />
+                        ) : (
+                          <MessageCard
+                            key={key}
+                            name={m.name}
+                            body={rendered}
+                            onEdit={() => setEditingKey(key)}
+                          />
+                        );
+                      })}
+
+                      {vertical.messages.map((stub, i) => {
+                        const key = `${id}:stub:${i}`;
+                        const body = stubBody(id, i);
+                        const rendered = `${renderName}: ${substitute(body, renderName, renderWebsite)}`;
+                        return editingKey === key ? (
+                          <SimpleBodyEditor
+                            key={key}
+                            initialBody={body}
+                            onSave={(next) => handleStubSave(id, i, next)}
+                            onCancel={() => setEditingKey(null)}
+                          />
+                        ) : (
+                          <MessageCard
+                            key={key}
+                            name={stub.name}
+                            slug={stub.slug}
+                            body={rendered}
+                            onEdit={() => setEditingKey(key)}
+                          />
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
