@@ -122,7 +122,7 @@ export default function MarketingHome() {
   return (
     <div>
       {/* Hero */}
-      <div className="py-16">
+      <div className="pt-16">
         <div className="mx-auto max-w-5xl px-6">
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
             SMS for builders

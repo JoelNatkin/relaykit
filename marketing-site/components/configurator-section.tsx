@@ -668,11 +668,11 @@ export function ConfiguratorSection() {
   void tone;
 
   return (
-    <section className="bg-bg-primary py-16 sm:py-20">
+    <section className="bg-bg-primary pt-15 pb-16 sm:pb-20">
       <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-text-primary">
             Configure your messages
           </h2>
           <p className="mt-3 text-base text-text-tertiary">
@@ -682,9 +682,9 @@ export function ConfiguratorSection() {
         </div>
 
         {/* Side-by-side panels */}
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-[3fr_7fr]">
+        <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[3fr_7fr]">
           {/* Categories panel */}
-          <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary">
+          <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
             <div className="px-4 pt-5 pb-10">
               <h3 className="text-base font-semibold text-text-primary">Categories</h3>
               <div className="mt-4">
@@ -761,7 +761,7 @@ export function ConfiguratorSection() {
           </div>
 
           {/* Messages column — borderless, flows in the section directly */}
-          <div>
+          <div className="md:max-w-[540px]">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap gap-2">
                 {TONES.map((t) => (
@@ -812,7 +812,7 @@ export function ConfiguratorSection() {
                 />
               ) : null}
             </div>
-            <div className="mt-10 space-y-8">
+            <div className="mt-8 space-y-8">
               {selectedInOrder.map((id) => {
                 const vertical = VERTICAL_BY_ID[id];
                 const customs = customMessages[id];
