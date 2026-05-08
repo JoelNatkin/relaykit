@@ -228,9 +228,18 @@ const TONES: Array<{ id: ToneId; label: string }> = [
   { id: "brief", label: "Brief" },
 ];
 
-function pillClasses(active: boolean): string {
+function tonePillClasses(active: boolean): string {
   const base =
     "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
+  if (active) {
+    return `${base} bg-bg-brand-secondary text-text-brand-secondary border border-bg-brand-secondary`;
+  }
+  return `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
+}
+
+function packButtonClasses(active: boolean): string {
+  const base =
+    "rounded-lg px-3 py-2 text-sm font-medium text-center transition duration-100 ease-linear";
   if (active) {
     return `${base} bg-bg-brand-secondary text-text-brand-secondary border border-bg-brand-secondary`;
   }
@@ -480,9 +489,9 @@ function AddMessageEditor({ verticalId, onSave, onCancel }: AddMessageEditorProp
 }
 
 export function ConfiguratorSection() {
-  const [pack, setPack] = useState<PackId>("saas");
+  const [pack, setPack] = useState<PackId | null>(null);
   const [selected, setSelected] = useState<Set<VerticalId>>(
-    () => new Set(PACK_DEFAULTS.saas),
+    () => new Set<VerticalId>(["verification"]),
   );
   const [tone, setTone] = useState<ToneId>("standard");
   const [businessName, setBusinessName] = useState("");
@@ -612,19 +621,11 @@ export function ConfiguratorSection() {
             OTP is included. Add what else you need. You can change any of this
             later in your workspace.
           </p>
-          <div className="mt-6">
-            <Link
-              href="/signup"
-              className="inline-flex rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-            >
-              Get started
-            </Link>
-          </div>
         </div>
 
         {/* Personalize inputs */}
         <div
-          className={`mt-10 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
+          className={`mt-8 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
         >
           <input
             type="text"
@@ -644,57 +645,35 @@ export function ConfiguratorSection() {
           ) : null}
         </div>
 
-        {/* Pill row */}
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <div className="flex flex-wrap gap-2">
-            {PACKS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                onClick={() => handlePackClick(p.id)}
-                className={pillClasses(pack === p.id)}
-              >
-                {p.label}
-              </button>
-            ))}
-          </div>
-          <div
-            aria-hidden
-            className="mx-2 hidden h-6 self-center border-l border-border-secondary sm:block"
-          />
-          <div className="flex flex-wrap gap-2">
-            {TONES.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => setTone(t.id)}
-                className={pillClasses(tone === t.id)}
-              >
-                {t.label}
-              </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-border-secondary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
-          >
-            <Copy01 className="size-4" />
-            {copyToastVisible ? "Copied" : "Copy"}
-          </button>
-        </div>
-
         {/* Side-by-side panels */}
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-[3fr_7fr]">
-          {/* Left panel: categories */}
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-[3fr_7fr]">
+          {/* Categories panel */}
           <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary">
+            <div className="border-b border-border-secondary px-4 pt-5 pb-4">
+              <h3 className="text-base font-semibold text-text-primary">Categories</h3>
+              <div className="mt-4 grid grid-cols-2 gap-2">
+                {PACKS.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handlePackClick(p.id)}
+                    className={packButtonClasses(pack === p.id)}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             {VERTICALS.map((v) => {
               const isSelected = selected.has(v.id);
               const isAlwaysOn = v.alwaysOn === true;
+              const borderClass = isAlwaysOn
+                ? "border-b-2 border-border-primary"
+                : "border-b border-border-secondary";
               return (
                 <div
                   key={v.id}
-                  className="border-b border-border-secondary px-4 py-5 last:border-b-0"
+                  className={`px-4 py-5 last:border-b-0 ${borderClass}`}
                 >
                   <button
                     type="button"
@@ -734,18 +713,51 @@ export function ConfiguratorSection() {
             })}
           </div>
 
-          {/* Right panel: messages */}
-          <div className="rounded-xl border border-border-secondary bg-bg-primary p-4">
-            <div className="space-y-8">
+          {/* Messages panel */}
+          <div className="rounded-xl border border-border-secondary bg-bg-primary">
+            <div className="border-b border-border-secondary px-4 pt-5 pb-4">
+              <h3 className="text-base font-semibold text-text-primary">Messages</h3>
+              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap gap-2">
+                  {TONES.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setTone(t.id)}
+                      className={tonePillClasses(tone === t.id)}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-border-secondary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+                  >
+                    <Copy01 className="size-4" />
+                    {copyToastVisible ? "Copied" : "Copy"}
+                  </button>
+                  <Link
+                    href="/signup"
+                    className="inline-flex rounded-lg bg-bg-brand-solid px-4 py-1.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                  >
+                    Get started
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-8 p-4">
               {selectedInOrder.map((id) => {
                 const vertical = VERTICAL_BY_ID[id];
                 const customs = customMessages[id];
                 const isAdding = addingTo === id;
                 return (
                   <div key={id}>
-                    <h3 className="mb-3 text-sm font-semibold text-text-primary">
+                    <h4 className="mb-3 text-sm font-semibold text-text-primary">
                       {vertical.title}
-                    </h3>
+                    </h4>
                     <div className="space-y-3">
                       {vertical.messages.map((stub, i) => {
                         const key = `${id}:stub:${i}`;
