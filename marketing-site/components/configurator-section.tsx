@@ -20,7 +20,7 @@ type ToneId = "standard" | "friendly" | "brief";
 
 interface StubMessage {
   name: string;
-  slug: string;
+  tooltip: string;
   body: string;
 }
 
@@ -49,12 +49,12 @@ const VERTICALS: Vertical[] = [
     messages: [
       {
         name: "Verification code",
-        slug: "verification-code",
+        tooltip: "Sent when a user requests a verification code.",
         body: "{businessName} verification code: 482910. Expires in 10 minutes.",
       },
       {
         name: "Login code",
-        slug: "login-code",
+        tooltip: "Sent when a user requests a login code.",
         body: "Your {businessName} login code is 731062. If you didn't request this, ignore this message.",
       },
     ],
@@ -67,17 +67,17 @@ const VERTICALS: Vertical[] = [
     messages: [
       {
         name: "Confirmation",
-        slug: "confirmation",
+        tooltip: "Sent when a customer books an appointment.",
         body: "{businessName}: Your appointment is confirmed for Friday at 2:00 PM. Reply STOP to opt out.",
       },
       {
         name: "Reminder",
-        slug: "reminder",
+        tooltip: "Sent the day before the appointment.",
         body: "{businessName}: Reminder — your appointment is tomorrow at 10:30 AM. Reply STOP to opt out.",
       },
       {
         name: "Reschedule",
-        slug: "reschedule",
+        tooltip: "Sent when an appointment is rescheduled.",
         body: "{businessName}: Need to reschedule? Visit {website}. Reply STOP to opt out.",
       },
     ],
@@ -90,17 +90,17 @@ const VERTICALS: Vertical[] = [
     messages: [
       {
         name: "Order confirmed",
-        slug: "order-confirmed",
+        tooltip: "Sent when an order is placed.",
         body: "{businessName}: Order #4827 confirmed. Track at {website}/orders/4827. Reply STOP to opt out.",
       },
       {
         name: "Shipped",
-        slug: "shipped",
+        tooltip: "Sent when the order ships.",
         body: "{businessName}: Your order has shipped. Tracking: 1Z999AA10000123456. Reply STOP to opt out.",
       },
       {
         name: "Out for delivery",
-        slug: "out-for-delivery",
+        tooltip: "Sent when the order is out for delivery.",
         body: "{businessName}: Out for delivery today. We'll text again when it arrives. Reply STOP to opt out.",
       },
     ],
@@ -112,12 +112,12 @@ const VERTICALS: Vertical[] = [
     messages: [
       {
         name: "Reply received",
-        slug: "reply-received",
+        tooltip: "Sent when an agent replies to the ticket.",
         body: "{businessName}: Ticket #1893 — we've replied. View at {website}/help. Reply STOP to opt out.",
       },
       {
         name: "Resolved",
-        slug: "resolved",
+        tooltip: "Sent when the ticket is resolved.",
         body: "{businessName}: Your support ticket is resolved. Let us know if anything else comes up. Reply STOP to opt out.",
       },
     ],
@@ -130,12 +130,13 @@ const VERTICALS: Vertical[] = [
     messages: [
       {
         name: "Weekly promo",
-        slug: "weekly-promo",
+        tooltip: "Sent to opted-in subscribers for weekly offers.",
         body: "{businessName}: 20% off this week. Shop at {website}. Reply STOP to opt out.",
       },
       {
         name: "New drop",
-        slug: "new-drop",
+        tooltip:
+          "Sent to opted-in subscribers when new inventory is announced.",
         body: "{businessName}: New drop today. Take a look: {website}. Reply STOP to opt out.",
       },
     ],
@@ -148,12 +149,12 @@ const VERTICALS: Vertical[] = [
     messages: [
       {
         name: "Shift cover",
-        slug: "shift-cover",
+        tooltip: "Sent when a shift needs coverage.",
         body: "{businessName}: Sarah is out sick. Mark, can you cover the 3 PM shift? Reply STOP to opt out.",
       },
       {
         name: "Deploy succeeded",
-        slug: "deploy-succeeded",
+        tooltip: "Sent when a production deploy completes.",
         body: "{businessName}: Production deploy succeeded. All checks green. Reply STOP to opt out.",
       },
     ],
@@ -166,12 +167,12 @@ const VERTICALS: Vertical[] = [
     messages: [
       {
         name: "Meetup tonight",
-        slug: "meetup-tonight",
+        tooltip: "Sent the day of a community meetup.",
         body: "{businessName}: Tomorrow's meetup is on. 7 PM at the usual spot. Reply STOP to opt out.",
       },
       {
         name: "New thread",
-        slug: "new-thread",
+        tooltip: "Sent when a new thread starts in a followed channel.",
         body: "{businessName}: New thread in the founders channel. Read it at {website}. Reply STOP to opt out.",
       },
     ],
@@ -183,12 +184,12 @@ const VERTICALS: Vertical[] = [
     messages: [
       {
         name: "Table ready",
-        slug: "table-ready",
+        tooltip: "Sent when a table opens.",
         body: "{businessName}: Your table's ready. Come on in. Reply STOP to opt out.",
       },
       {
         name: "Up next",
-        slug: "up-next",
+        tooltip: "Sent when the customer is next in line.",
         body: "{businessName}: You're next on the waitlist. About 5 minutes. Reply STOP to opt out.",
       },
     ],
@@ -262,14 +263,59 @@ function buildPrefill(verticalId: VerticalId): string {
   return "{businessName}: [your message here] Reply STOP to opt out.";
 }
 
+function InfoIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 16 16"
+      fill="none"
+      aria-hidden
+    >
+      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
+      <path d="M8 7V11" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+      <circle cx="8" cy="5.25" r="0.75" fill="currentColor" />
+    </svg>
+  );
+}
+
+interface InfoTooltipProps {
+  text: string;
+}
+
+function InfoTooltip({ text }: InfoTooltipProps) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative flex-shrink-0">
+      <button
+        type="button"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onFocus={() => setShow(true)}
+        onBlur={() => setShow(false)}
+        className="cursor-default text-fg-quaternary transition duration-100 ease-linear hover:text-fg-tertiary"
+        aria-label={text}
+      >
+        <InfoIcon />
+      </button>
+      {show ? (
+        <div className="pointer-events-none absolute bottom-full left-0 z-[100] mb-1 max-w-[280px] min-w-[220px] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs leading-relaxed whitespace-normal text-text-white shadow-lg">
+          {text}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 interface MessageCardProps {
   name: string;
-  slug?: string;
+  tooltip?: string;
   body: string;
   onEdit: () => void;
 }
 
-function MessageCard({ name, slug, body, onEdit }: MessageCardProps) {
+function MessageCard({ name, tooltip, body, onEdit }: MessageCardProps) {
   return (
     <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
       <div className="flex items-center gap-3">
@@ -277,11 +323,7 @@ function MessageCard({ name, slug, body, onEdit }: MessageCardProps) {
           <span className="truncate text-sm font-semibold text-text-primary">
             {name}
           </span>
-          {slug ? (
-            <span className="ml-2 flex-shrink-0 font-mono text-xs text-text-quaternary">
-              {slug}
-            </span>
-          ) : null}
+          {tooltip ? <InfoTooltip text={tooltip} /> : null}
         </div>
         <button
           type="button"
@@ -292,7 +334,7 @@ function MessageCard({ name, slug, body, onEdit }: MessageCardProps) {
           <Edit01 className="size-[17px]" />
         </button>
       </div>
-      <div className="mt-2">
+      <div className="mt-1">
         <p className="text-sm leading-relaxed text-text-secondary">{body}</p>
       </div>
     </div>
@@ -461,9 +503,7 @@ export function ConfiguratorSection() {
   }
 
   function customBody(verticalId: VerticalId, id: string): string {
-    return (
-      customMessages[verticalId].find((m) => m.id === id)?.body ?? ""
-    );
+    return customMessages[verticalId].find((m) => m.id === id)?.body ?? "";
   }
 
   function handlePackClick(nextPack: PackId) {
@@ -505,7 +545,7 @@ export function ConfiguratorSection() {
     const id = makeId();
     setCustomMessages((prev) => ({
       ...prev,
-      [verticalId]: [{ id, name, body }, ...prev[verticalId]],
+      [verticalId]: [...prev[verticalId], { id, name, body }],
     }));
     setAddingTo(null);
   }
@@ -533,12 +573,12 @@ export function ConfiguratorSection() {
     for (const id of selectedInOrder) {
       const vertical = VERTICAL_BY_ID[id];
       lines.push(vertical.title);
-      for (const m of customMessages[id]) {
-        lines.push(`${renderName}: ${substitute(m.body, renderName, renderWebsite)}`);
-      }
       vertical.messages.forEach((_, i) => {
         lines.push(`${renderName}: ${substitute(stubBody(id, i), renderName, renderWebsite)}`);
       });
+      for (const m of customMessages[id]) {
+        lines.push(`${renderName}: ${substitute(m.body, renderName, renderWebsite)}`);
+      }
       lines.push("");
     }
     const text = lines.join("\n").trim();
@@ -561,7 +601,7 @@ export function ConfiguratorSection() {
   void tone;
 
   return (
-    <section className="bg-bg-secondary py-16 sm:py-20">
+    <section className="bg-bg-primary py-16 sm:py-20">
       <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
         <div>
@@ -569,23 +609,43 @@ export function ConfiguratorSection() {
             Configure your SMS
           </h2>
           <p className="mt-3 text-base text-text-tertiary">
-            OTP is included. Add what else you need.
+            OTP is included. Add what else you need. You can change any of this
+            later in your workspace.
           </p>
-          <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
+          <div className="mt-6">
             <Link
               href="/signup"
-              className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+              className="inline-flex rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
             >
               Get started
             </Link>
-            <p className="text-sm text-text-tertiary">
-              You can change any of this later in your workspace.
-            </p>
           </div>
         </div>
 
+        {/* Personalize inputs */}
+        <div
+          className={`mt-10 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
+        >
+          <input
+            type="text"
+            value={businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
+            placeholder="Your business name"
+            className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+          />
+          {websiteShown ? (
+            <input
+              type="text"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+              placeholder="yourwebsite.com"
+              className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+            />
+          ) : null}
+        </div>
+
         {/* Pill row */}
-        <div className="mt-10 flex flex-wrap items-center gap-2">
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           <div className="flex flex-wrap gap-2">
             {PACKS.map((p) => (
               <button
@@ -624,32 +684,10 @@ export function ConfiguratorSection() {
           </button>
         </div>
 
-        {/* Personalize inputs */}
-        <div
-          className={`mt-6 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
-        >
-          <input
-            type="text"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-            placeholder="Your business name"
-            className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-          />
-          {websiteShown ? (
-            <input
-              type="text"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              placeholder="yourwebsite.com"
-              className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-            />
-          ) : null}
-        </div>
-
-        {/* Table */}
-        <div className="mt-8 grid grid-cols-1 overflow-hidden rounded-lg border border-border-secondary bg-bg-primary md:grid-cols-[30%_70%]">
-          {/* Left: verticals list */}
-          <div className="border-b border-border-secondary md:border-b-0 md:border-r">
+        {/* Side-by-side panels */}
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-[3fr_7fr]">
+          {/* Left panel: categories */}
+          <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary">
             {VERTICALS.map((v) => {
               const isSelected = selected.has(v.id);
               const isAlwaysOn = v.alwaysOn === true;
@@ -696,8 +734,8 @@ export function ConfiguratorSection() {
             })}
           </div>
 
-          {/* Right: messages */}
-          <div className="bg-bg-secondary p-4">
+          {/* Right panel: messages */}
+          <div className="rounded-xl border border-border-secondary bg-bg-primary p-4">
             <div className="space-y-8">
               {selectedInOrder.map((id) => {
                 const vertical = VERTICAL_BY_ID[id];
@@ -709,23 +747,27 @@ export function ConfiguratorSection() {
                       {vertical.title}
                     </h3>
                     <div className="space-y-3">
-                      {isAdding ? (
-                        <AddMessageEditor
-                          verticalId={id}
-                          onSave={(name, body) => handleAddSave(id, name, body)}
-                          onCancel={() => setAddingTo(null)}
-                        />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setAddingTo(id)}
-                          disabled={addingTo !== null && addingTo !== id}
-                          className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          <Plus className="size-4" />
-                          Add message
-                        </button>
-                      )}
+                      {vertical.messages.map((stub, i) => {
+                        const key = `${id}:stub:${i}`;
+                        const body = stubBody(id, i);
+                        const rendered = `${renderName}: ${substitute(body, renderName, renderWebsite)}`;
+                        return editingKey === key ? (
+                          <SimpleBodyEditor
+                            key={key}
+                            initialBody={body}
+                            onSave={(next) => handleStubSave(id, i, next)}
+                            onCancel={() => setEditingKey(null)}
+                          />
+                        ) : (
+                          <MessageCard
+                            key={key}
+                            name={stub.name}
+                            tooltip={stub.tooltip}
+                            body={rendered}
+                            onEdit={() => setEditingKey(key)}
+                          />
+                        );
+                      })}
 
                       {customs.map((m) => {
                         const key = `${id}:custom:${m.id}`;
@@ -748,27 +790,23 @@ export function ConfiguratorSection() {
                         );
                       })}
 
-                      {vertical.messages.map((stub, i) => {
-                        const key = `${id}:stub:${i}`;
-                        const body = stubBody(id, i);
-                        const rendered = `${renderName}: ${substitute(body, renderName, renderWebsite)}`;
-                        return editingKey === key ? (
-                          <SimpleBodyEditor
-                            key={key}
-                            initialBody={body}
-                            onSave={(next) => handleStubSave(id, i, next)}
-                            onCancel={() => setEditingKey(null)}
-                          />
-                        ) : (
-                          <MessageCard
-                            key={key}
-                            name={stub.name}
-                            slug={stub.slug}
-                            body={rendered}
-                            onEdit={() => setEditingKey(key)}
-                          />
-                        );
-                      })}
+                      {isAdding ? (
+                        <AddMessageEditor
+                          verticalId={id}
+                          onSave={(name, body) => handleAddSave(id, name, body)}
+                          onCancel={() => setAddingTo(null)}
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setAddingTo(id)}
+                          disabled={addingTo !== null && addingTo !== id}
+                          className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <Plus className="size-4" />
+                          Add message
+                        </button>
+                      )}
                     </div>
                   </div>
                 );
