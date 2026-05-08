@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy01, Edit01, Plus, Stars02 } from "@untitledui/icons";
+import { ChevronDown, Copy01, Edit01, Plus, Stars02 } from "@untitledui/icons";
 import Link from "next/link";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
@@ -681,30 +681,8 @@ export function ConfiguratorSection() {
           </p>
         </div>
 
-        {/* Personalize inputs */}
-        <div
-          className={`mt-8 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
-        >
-          <input
-            type="text"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-            placeholder="Your business name"
-            className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-          />
-          {websiteShown ? (
-            <input
-              type="text"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              placeholder="yourwebsite.com"
-              className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-            />
-          ) : null}
-        </div>
-
         {/* Side-by-side panels */}
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-[3fr_7fr]">
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-[3fr_7fr]">
           {/* Categories panel */}
           <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary">
             <div className="border-b border-border-secondary px-4 pt-5 pb-4">
@@ -716,18 +694,24 @@ export function ConfiguratorSection() {
                 >
                   Recommended combinations
                 </label>
-                <select
-                  id="recommended-combinations"
-                  value={pack}
-                  onChange={(e) => handlePackChange(e.target.value as PackId)}
-                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary transition duration-100 ease-linear focus:border-border-brand focus:outline-none"
-                >
-                  {PACKS.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.label}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    id="recommended-combinations"
+                    value={pack}
+                    onChange={(e) => handlePackChange(e.target.value as PackId)}
+                    className="block w-full appearance-none rounded-lg border border-border-primary bg-bg-primary py-2.5 pr-9 pl-3 text-base text-text-primary transition duration-100 ease-linear focus:border-border-brand focus:outline-none"
+                  >
+                    {PACKS.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.label}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    aria-hidden
+                    className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-fg-quaternary"
+                  />
+                </div>
               </div>
             </div>
             {VERTICALS.map((v) => {
@@ -809,6 +793,28 @@ export function ConfiguratorSection() {
                     Get started
                   </Link>
                 </div>
+              </div>
+            </div>
+            <div className="px-4 pb-4">
+              <div
+                className={`grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
+              >
+                <input
+                  type="text"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="Your business name"
+                  className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                />
+                {websiteShown ? (
+                  <input
+                    type="text"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="yourwebsite.com"
+                    className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                  />
+                ) : null}
               </div>
             </div>
             <div className="space-y-8 px-4 pb-4">
