@@ -17,6 +17,7 @@ import {
   Users01,
 } from "@untitledui/icons";
 import type { FC } from "react";
+import { ConfiguratorSection } from "@/components/configurator-section";
 
 const TOOLS = [
   { id: "claude-code", label: "Claude Code" },
@@ -160,6 +161,8 @@ export default function MarketingHome() {
           </div>
         </div>
       </div>
+
+      <ConfiguratorSection />
 
       {/* How it works */}
       <div id="how-it-works" className="mx-auto mt-18 max-w-5xl scroll-mt-8 px-6">
