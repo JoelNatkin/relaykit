@@ -673,7 +673,7 @@ export function ConfiguratorSection() {
         {/* Header */}
         <div>
           <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-            Configure your SMS
+            Configure your messages
           </h2>
           <p className="mt-3 text-base text-text-tertiary">
             OTP is included. Add what else you need. You can change any of this
@@ -685,7 +685,7 @@ export function ConfiguratorSection() {
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-[3fr_7fr]">
           {/* Categories panel */}
           <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary">
-            <div className="border-b border-border-secondary px-4 pt-5 pb-4">
+            <div className="px-4 pt-5 pb-10">
               <h3 className="text-base font-semibold text-text-primary">Categories</h3>
               <div className="mt-4">
                 <label
@@ -760,64 +760,59 @@ export function ConfiguratorSection() {
             })}
           </div>
 
-          {/* Messages panel */}
-          <div className="rounded-xl border border-border-secondary bg-bg-primary">
-            <div className="px-4 pt-5 pb-4">
-              <h3 className="text-base font-semibold text-text-primary">Messages</h3>
-              <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
-                  {TONES.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setTone(t.id)}
-                      className={tonePillClasses(tone === t.id)}
-                    >
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
+          {/* Messages column — borderless, flows in the section directly */}
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-2">
+                {TONES.map((t) => (
                   <button
+                    key={t.id}
                     type="button"
-                    onClick={handleCopy}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-border-secondary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+                    onClick={() => setTone(t.id)}
+                    className={tonePillClasses(tone === t.id)}
                   >
-                    <Copy01 className="size-4" />
-                    {copyToastVisible ? "Copied" : "Copy"}
+                    {t.label}
                   </button>
-                  <Link
-                    href="/signup"
-                    className="inline-flex rounded-lg bg-bg-brand-solid px-4 py-1.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-                  >
-                    Get started
-                  </Link>
-                </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border-secondary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+                >
+                  <Copy01 className="size-4" />
+                  {copyToastVisible ? "Copied" : "Copy"}
+                </button>
+                <Link
+                  href="/signup"
+                  className="inline-flex rounded-lg bg-bg-brand-solid px-4 py-1.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                >
+                  Get started
+                </Link>
               </div>
             </div>
-            <div className="px-4 pb-4">
-              <div
-                className={`grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
-              >
+            <div
+              className={`mt-4 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
+            >
+              <input
+                type="text"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                placeholder="Your business name"
+                className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+              />
+              {websiteShown ? (
                 <input
                   type="text"
-                  value={businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="Your business name"
+                  value={website}
+                  onChange={(e) => setWebsite(e.target.value)}
+                  placeholder="yourwebsite.com"
                   className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
                 />
-                {websiteShown ? (
-                  <input
-                    type="text"
-                    value={website}
-                    onChange={(e) => setWebsite(e.target.value)}
-                    placeholder="yourwebsite.com"
-                    className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-                  />
-                ) : null}
-              </div>
+              ) : null}
             </div>
-            <div className="space-y-8 px-4 pb-4">
+            <div className="mt-10 space-y-8">
               {selectedInOrder.map((id) => {
                 const vertical = VERTICAL_BY_ID[id];
                 const customs = customMessages[id];

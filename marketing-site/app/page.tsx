@@ -118,27 +118,21 @@ const STEPS = [
   },
 ];
 
-function scrollTo(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-}
-
 export default function MarketingHome() {
   return (
     <div>
       {/* Hero */}
-      <div className="bg-bg-tertiary py-16">
-        <div className="mx-auto max-w-5xl px-6 text-center">
+      <div className="py-16">
+        <div className="mx-auto max-w-5xl px-6">
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-            Add SMS to your app in
-            <br />
-            minutes, not months.
+            SMS for builders
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-tertiary">
+          <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
             Two files. Your AI coding tool. A working SMS feature.
           </p>
 
           {/* Logo row */}
-          <div className="mt-8 flex items-center justify-center gap-5">
+          <div className="mt-8 flex items-center gap-5">
             {TOOLS.map((tool) => (
               <div key={tool.id} className="flex min-w-[56px] flex-col items-center gap-1.5">
                 <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#999999] bg-white">
@@ -149,15 +143,6 @@ export default function MarketingHome() {
                 </span>
               </div>
             ))}
-          </div>
-
-          <div className="mt-8 flex items-center justify-center">
-            <button
-              onClick={() => scrollTo("compliance")}
-              className="rounded-lg border border-border-primary bg-white px-5 py-2.5 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
-            >
-              Why RelayKit?
-            </button>
           </div>
         </div>
       </div>
