@@ -2,7 +2,7 @@
 
 import { Copy01, Edit01, Plus, Stars02 } from "@untitledui/icons";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 type VerticalId =
   | "verification"
@@ -50,12 +50,12 @@ const VERTICALS: Vertical[] = [
       {
         name: "Verification code",
         tooltip: "Sent when a user requests a verification code.",
-        body: "{businessName} verification code: 482910. Expires in 10 minutes.",
+        body: "Verification code: [[482910]]. Expires in 10 minutes.",
       },
       {
         name: "Login code",
         tooltip: "Sent when a user requests a login code.",
-        body: "Your {businessName} login code is 731062. If you didn't request this, ignore this message.",
+        body: "Your login code is [[731062]]. If you didn't request this, ignore this message.",
       },
     ],
   },
@@ -68,17 +68,17 @@ const VERTICALS: Vertical[] = [
       {
         name: "Confirmation",
         tooltip: "Sent when a customer books an appointment.",
-        body: "{businessName}: Your appointment is confirmed for Friday at 2:00 PM. Reply STOP to opt out.",
+        body: "Your appointment is confirmed for [[Friday]] at [[2:00 PM]]. Reply STOP to opt out.",
       },
       {
         name: "Reminder",
         tooltip: "Sent the day before the appointment.",
-        body: "{businessName}: Reminder — your appointment is tomorrow at 10:30 AM. Reply STOP to opt out.",
+        body: "Reminder — your appointment is [[tomorrow]] at [[10:30 AM]]. Reply STOP to opt out.",
       },
       {
         name: "Reschedule",
         tooltip: "Sent when an appointment is rescheduled.",
-        body: "{businessName}: Need to reschedule? Visit {website}. Reply STOP to opt out.",
+        body: "Need to reschedule? Visit {website}. Reply STOP to opt out.",
       },
     ],
   },
@@ -91,17 +91,17 @@ const VERTICALS: Vertical[] = [
       {
         name: "Order confirmed",
         tooltip: "Sent when an order is placed.",
-        body: "{businessName}: Order #4827 confirmed. Track at {website}/orders/4827. Reply STOP to opt out.",
+        body: "Order #[[4827]] confirmed. Track at {website}/orders/[[4827]]. Reply STOP to opt out.",
       },
       {
         name: "Shipped",
         tooltip: "Sent when the order ships.",
-        body: "{businessName}: Your order has shipped. Tracking: 1Z999AA10000123456. Reply STOP to opt out.",
+        body: "Your order has shipped. Tracking: [[1Z999AA10000123456]]. Reply STOP to opt out.",
       },
       {
         name: "Out for delivery",
         tooltip: "Sent when the order is out for delivery.",
-        body: "{businessName}: Out for delivery today. We'll text again when it arrives. Reply STOP to opt out.",
+        body: "Out for delivery [[today]]. We'll text again when it arrives. Reply STOP to opt out.",
       },
     ],
   },
@@ -113,12 +113,12 @@ const VERTICALS: Vertical[] = [
       {
         name: "Reply received",
         tooltip: "Sent when an agent replies to the ticket.",
-        body: "{businessName}: Ticket #1893 — we've replied. View at {website}/help. Reply STOP to opt out.",
+        body: "Ticket #[[1893]] — we've replied. View at {website}/help. Reply STOP to opt out.",
       },
       {
         name: "Resolved",
         tooltip: "Sent when the ticket is resolved.",
-        body: "{businessName}: Your support ticket is resolved. Let us know if anything else comes up. Reply STOP to opt out.",
+        body: "Your support ticket is resolved. Let us know if anything else comes up. Reply STOP to opt out.",
       },
     ],
   },
@@ -131,13 +131,13 @@ const VERTICALS: Vertical[] = [
       {
         name: "Weekly promo",
         tooltip: "Sent to opted-in subscribers for weekly offers.",
-        body: "{businessName}: 20% off this week. Shop at {website}. Reply STOP to opt out.",
+        body: "[[20%]] off this week. Shop at {website}. Reply STOP to opt out.",
       },
       {
         name: "New drop",
         tooltip:
           "Sent to opted-in subscribers when new inventory is announced.",
-        body: "{businessName}: New drop today. Take a look: {website}. Reply STOP to opt out.",
+        body: "New drop [[today]]. Take a look: {website}. Reply STOP to opt out.",
       },
     ],
   },
@@ -150,12 +150,12 @@ const VERTICALS: Vertical[] = [
       {
         name: "Shift cover",
         tooltip: "Sent when a shift needs coverage.",
-        body: "{businessName}: Sarah is out sick. Mark, can you cover the 3 PM shift? Reply STOP to opt out.",
+        body: "Sarah is out sick. Mark, can you cover the [[3 PM]] shift? Reply STOP to opt out.",
       },
       {
         name: "Deploy succeeded",
         tooltip: "Sent when a production deploy completes.",
-        body: "{businessName}: Production deploy succeeded. All checks green. Reply STOP to opt out.",
+        body: "Production deploy succeeded. All checks green. Reply STOP to opt out.",
       },
     ],
   },
@@ -168,12 +168,12 @@ const VERTICALS: Vertical[] = [
       {
         name: "Meetup tonight",
         tooltip: "Sent the day of a community meetup.",
-        body: "{businessName}: Tomorrow's meetup is on. 7 PM at the usual spot. Reply STOP to opt out.",
+        body: "Tomorrow's meetup is on. [[7 PM]] at the usual spot. Reply STOP to opt out.",
       },
       {
         name: "New thread",
         tooltip: "Sent when a new thread starts in a followed channel.",
-        body: "{businessName}: New thread in the founders channel. Read it at {website}. Reply STOP to opt out.",
+        body: "New thread in the founders channel. Read it at {website}. Reply STOP to opt out.",
       },
     ],
   },
@@ -185,12 +185,12 @@ const VERTICALS: Vertical[] = [
       {
         name: "Table ready",
         tooltip: "Sent when a table opens.",
-        body: "{businessName}: Your table's ready. Come on in. Reply STOP to opt out.",
+        body: "Your table's ready. Come on in. Reply STOP to opt out.",
       },
       {
         name: "Up next",
         tooltip: "Sent when the customer is next in line.",
-        body: "{businessName}: You're next on the waitlist. About 5 minutes. Reply STOP to opt out.",
+        body: "You're next on the waitlist. About [[5 minutes]]. Reply STOP to opt out.",
       },
     ],
   },
@@ -228,6 +228,8 @@ const TONES: Array<{ id: ToneId; label: string }> = [
   { id: "brief", label: "Brief" },
 ];
 
+const VARIABLE_TOKEN_CLASSES = "text-text-brand-secondary";
+
 function tonePillClasses(active: boolean): string {
   const base =
     "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
@@ -237,17 +239,56 @@ function tonePillClasses(active: boolean): string {
   return `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
 }
 
-function packButtonClasses(active: boolean): string {
-  const base =
-    "rounded-lg px-3 py-2 text-sm font-medium text-center transition duration-100 ease-linear";
-  if (active) {
-    return `${base} bg-bg-brand-secondary text-text-brand-secondary border border-bg-brand-secondary`;
-  }
-  return `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
+interface BodySegment {
+  text: string;
+  variable: boolean;
 }
 
-function substitute(template: string, name: string, site: string): string {
-  return template.replaceAll("{businessName}", name).replaceAll("{website}", site);
+function parseBody(template: string, name: string, site: string): BodySegment[] {
+  const segments: BodySegment[] = [];
+  const re = /(\{businessName\}|\{website\}|\[\[[^\]]+\]\])/g;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(template)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({
+        text: template.slice(lastIndex, match.index),
+        variable: false,
+      });
+    }
+    const tok = match[0];
+    if (tok === "{businessName}") {
+      segments.push({ text: name, variable: true });
+    } else if (tok === "{website}") {
+      segments.push({ text: site, variable: true });
+    } else {
+      segments.push({ text: tok.slice(2, -2), variable: true });
+    }
+    lastIndex = match.index + tok.length;
+  }
+  if (lastIndex < template.length) {
+    segments.push({ text: template.slice(lastIndex), variable: false });
+  }
+  return segments;
+}
+
+function flattenTemplate(template: string, name: string, site: string): string {
+  return template
+    .replaceAll("{businessName}", name)
+    .replaceAll("{website}", site)
+    .replace(/\[\[([^\]]+)\]\]/g, "$1");
+}
+
+function renderBodySegments(segments: BodySegment[]): ReactNode[] {
+  return segments.map((seg, i) =>
+    seg.variable ? (
+      <span key={i} className={VARIABLE_TOKEN_CLASSES}>
+        {seg.text}
+      </span>
+    ) : (
+      <span key={i}>{seg.text}</span>
+    ),
+  );
 }
 
 function makeId(): string {
@@ -267,9 +308,9 @@ const EMPTY_CUSTOM: Record<VerticalId, CustomMessage[]> = {
 
 function buildPrefill(verticalId: VerticalId): string {
   if (verticalId === "verification") {
-    return "{businessName}: [your message here]";
+    return "[your message here]";
   }
-  return "{businessName}: [your message here] Reply STOP to opt out.";
+  return "[your message here] Reply STOP to opt out.";
 }
 
 function InfoIcon({ className }: { className?: string }) {
@@ -320,11 +361,21 @@ function InfoTooltip({ text }: InfoTooltipProps) {
 interface MessageCardProps {
   name: string;
   tooltip?: string;
-  body: string;
+  template: string;
+  businessName: string;
+  website: string;
   onEdit: () => void;
 }
 
-function MessageCard({ name, tooltip, body, onEdit }: MessageCardProps) {
+function MessageCard({
+  name,
+  tooltip,
+  template,
+  businessName,
+  website,
+  onEdit,
+}: MessageCardProps) {
+  const segments = parseBody(template, businessName, website);
   return (
     <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
       <div className="flex items-center gap-3">
@@ -344,7 +395,10 @@ function MessageCard({ name, tooltip, body, onEdit }: MessageCardProps) {
         </button>
       </div>
       <div className="mt-1">
-        <p className="text-sm leading-relaxed text-text-secondary">{body}</p>
+        <p className="text-sm leading-relaxed text-text-secondary">
+          <span className={VARIABLE_TOKEN_CLASSES}>{businessName}</span>:{" "}
+          {renderBodySegments(segments)}
+        </p>
       </div>
     </div>
   );
@@ -489,9 +543,9 @@ function AddMessageEditor({ verticalId, onSave, onCancel }: AddMessageEditorProp
 }
 
 export function ConfiguratorSection() {
-  const [pack, setPack] = useState<PackId | null>(null);
+  const [pack, setPack] = useState<PackId>("saas");
   const [selected, setSelected] = useState<Set<VerticalId>>(
-    () => new Set<VerticalId>(["verification"]),
+    () => new Set<VerticalId>(PACK_DEFAULTS.saas),
   );
   const [tone, setTone] = useState<ToneId>("standard");
   const [businessName, setBusinessName] = useState("");
@@ -515,7 +569,7 @@ export function ConfiguratorSection() {
     return customMessages[verticalId].find((m) => m.id === id)?.body ?? "";
   }
 
-  function handlePackClick(nextPack: PackId) {
+  function handlePackChange(nextPack: PackId) {
     setPack(nextPack);
     setSelected(new Set(PACK_DEFAULTS[nextPack]));
   }
@@ -583,10 +637,14 @@ export function ConfiguratorSection() {
       const vertical = VERTICAL_BY_ID[id];
       lines.push(vertical.title);
       vertical.messages.forEach((_, i) => {
-        lines.push(`${renderName}: ${substitute(stubBody(id, i), renderName, renderWebsite)}`);
+        lines.push(
+          `${renderName}: ${flattenTemplate(stubBody(id, i), renderName, renderWebsite)}`,
+        );
       });
       for (const m of customMessages[id]) {
-        lines.push(`${renderName}: ${substitute(m.body, renderName, renderWebsite)}`);
+        lines.push(
+          `${renderName}: ${flattenTemplate(m.body, renderName, renderWebsite)}`,
+        );
       }
       lines.push("");
     }
@@ -651,29 +709,34 @@ export function ConfiguratorSection() {
           <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary">
             <div className="border-b border-border-secondary px-4 pt-5 pb-4">
               <h3 className="text-base font-semibold text-text-primary">Categories</h3>
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                {PACKS.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => handlePackClick(p.id)}
-                    className={packButtonClasses(pack === p.id)}
-                  >
-                    {p.label}
-                  </button>
-                ))}
+              <div className="mt-4">
+                <label
+                  htmlFor="recommended-combinations"
+                  className="mb-1.5 block text-sm font-medium text-text-secondary"
+                >
+                  Recommended combinations
+                </label>
+                <select
+                  id="recommended-combinations"
+                  value={pack}
+                  onChange={(e) => handlePackChange(e.target.value as PackId)}
+                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary transition duration-100 ease-linear focus:border-border-brand focus:outline-none"
+                >
+                  {PACKS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             {VERTICALS.map((v) => {
               const isSelected = selected.has(v.id);
               const isAlwaysOn = v.alwaysOn === true;
-              const borderClass = isAlwaysOn
-                ? "border-b-2 border-border-primary"
-                : "border-b border-border-secondary";
               return (
                 <div
                   key={v.id}
-                  className={`px-4 py-5 last:border-b-0 ${borderClass}`}
+                  className="border-b border-border-secondary px-4 py-5 last:border-b-0"
                 >
                   <button
                     type="button"
@@ -715,7 +778,7 @@ export function ConfiguratorSection() {
 
           {/* Messages panel */}
           <div className="rounded-xl border border-border-secondary bg-bg-primary">
-            <div className="border-b border-border-secondary px-4 pt-5 pb-4">
+            <div className="px-4 pt-5 pb-4">
               <h3 className="text-base font-semibold text-text-primary">Messages</h3>
               <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
@@ -748,7 +811,7 @@ export function ConfiguratorSection() {
                 </div>
               </div>
             </div>
-            <div className="space-y-8 p-4">
+            <div className="space-y-8 px-4 pb-4">
               {selectedInOrder.map((id) => {
                 const vertical = VERTICAL_BY_ID[id];
                 const customs = customMessages[id];
@@ -762,7 +825,6 @@ export function ConfiguratorSection() {
                       {vertical.messages.map((stub, i) => {
                         const key = `${id}:stub:${i}`;
                         const body = stubBody(id, i);
-                        const rendered = `${renderName}: ${substitute(body, renderName, renderWebsite)}`;
                         return editingKey === key ? (
                           <SimpleBodyEditor
                             key={key}
@@ -775,7 +837,9 @@ export function ConfiguratorSection() {
                             key={key}
                             name={stub.name}
                             tooltip={stub.tooltip}
-                            body={rendered}
+                            template={body}
+                            businessName={renderName}
+                            website={renderWebsite}
                             onEdit={() => setEditingKey(key)}
                           />
                         );
@@ -784,7 +848,6 @@ export function ConfiguratorSection() {
                       {customs.map((m) => {
                         const key = `${id}:custom:${m.id}`;
                         const body = customBody(id, m.id);
-                        const rendered = `${renderName}: ${substitute(body, renderName, renderWebsite)}`;
                         return editingKey === key ? (
                           <SimpleBodyEditor
                             key={key}
@@ -796,7 +859,9 @@ export function ConfiguratorSection() {
                           <MessageCard
                             key={key}
                             name={m.name}
-                            body={rendered}
+                            template={body}
+                            businessName={renderName}
+                            website={renderWebsite}
                             onEdit={() => setEditingKey(key)}
                           />
                         );
