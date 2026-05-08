@@ -672,7 +672,7 @@ export function ConfiguratorSection() {
       <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-text-primary">
+          <h2 className="text-2xl font-bold tracking-tight text-text-primary">
             Configure your messages
           </h2>
           <p className="mt-3 text-base text-text-tertiary">
@@ -685,7 +685,7 @@ export function ConfiguratorSection() {
         <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[3fr_7fr]">
           {/* Categories panel */}
           <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
-            <div className="px-4 pt-5 pb-10">
+            <div className="px-4 pt-5 pb-8">
               <h3 className="text-base font-semibold text-text-primary">Categories</h3>
               <div className="mt-4">
                 <label
@@ -743,7 +743,7 @@ export function ConfiguratorSection() {
                         </span>
                         {isAlwaysOn ? (
                           <span className="shrink-0 rounded-full bg-bg-brand-secondary px-2 py-0.5 text-xs font-medium text-text-brand-secondary">
-                            Always included
+                            Included
                           </span>
                         ) : null}
                       </div>
@@ -779,7 +779,7 @@ export function ConfiguratorSection() {
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-border-secondary bg-bg-primary px-3 py-1.5 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+                  className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
                 >
                   <Copy01 className="size-4" />
                   {copyToastVisible ? "Copied" : "Copy"}
@@ -819,7 +819,7 @@ export function ConfiguratorSection() {
                 const isAdding = addingTo === id;
                 return (
                   <div key={id}>
-                    <h4 className="mb-3 text-sm font-semibold text-text-primary">
+                    <h4 className="mb-3 text-base font-semibold text-text-primary">
                       {vertical.title}
                     </h4>
                     <div className="space-y-3">
@@ -879,7 +879,7 @@ export function ConfiguratorSection() {
                           type="button"
                           onClick={() => setAddingTo(id)}
                           disabled={addingTo !== null && addingTo !== id}
-                          className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-dashed border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover disabled:cursor-not-allowed disabled:opacity-60"
+                          className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           <Plus className="size-4" />
                           Add message
