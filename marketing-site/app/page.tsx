@@ -19,14 +19,37 @@ const AI_TOOLS = [
   { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", alt: "Cline", heightClass: "h-[18px]" },
 ] as const;
 
-const STARTER_KITS = ["ShipFast", "Supastarter", "MakerKit", "Vercel + Supabase"] as const;
-
-const CODE_BLOCK = `import { relaykit } from 'relaykit';
-
-await relaykit.appointments.sendConfirmation({
-  to: customer.phone,
-  appointment: { time: '2:00 PM Friday' }
-});`;
+// Hand-tokenized code sample with semantic-token-based syntax highlighting.
+// Untitled UI tokens used for the categories that map cleanly onto code:
+//   keywords  -> text-fg-brand-secondary (brand purple)
+//   strings   -> text-fg-success-secondary (success green)
+//   names     -> text-fg-warning-secondary (warning amber, used for both
+//                identifiers and object keys)
+// Default text on the dark bg uses text-text-white.
+function CodeSample() {
+  return (
+    <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-primary-solid px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
+      <span className="text-fg-brand-secondary">import</span>
+      {" { relaykit } "}
+      <span className="text-fg-brand-secondary">from</span>
+      {" "}
+      <span className="text-fg-success-secondary">{"'relaykit'"}</span>
+      {";\n\n"}
+      <span className="text-fg-brand-secondary">await</span>
+      {" relaykit.appointments."}
+      <span className="text-fg-warning-secondary">sendConfirmation</span>
+      {"({\n  "}
+      <span className="text-fg-warning-secondary">to</span>
+      {": customer.phone,\n  "}
+      <span className="text-fg-warning-secondary">appointment</span>
+      {": { "}
+      <span className="text-fg-warning-secondary">time</span>
+      {": "}
+      <span className="text-fg-success-secondary">{"'2:00 PM Friday'"}</span>
+      {" }\n});"}
+    </pre>
+  );
+}
 
 export default function MarketingHome() {
   return (
@@ -63,58 +86,25 @@ export default function MarketingHome() {
 
       {/* Section 3 — Build it */}
       <section className="mx-auto mt-24 max-w-5xl px-6">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary">Two files. Your AI tool.</h2>
-          <p className="mt-4 max-w-2xl leading-relaxed text-text-tertiary">
-            Most of the integration is already done. The rest takes minutes.
-          </p>
-        </div>
+        <h2 className="text-2xl font-bold text-text-primary">Two files. Your AI tool.</h2>
 
-        <div className="mt-12 grid grid-cols-1 items-start gap-10 md:grid-cols-[11fr_9fr]">
-          {/* Left col: Starting fresh + Already built stacked */}
-          <div className="flex flex-col gap-8">
-            <div>
-              <h3 className="text-base font-bold text-text-primary">Starting fresh</h3>
-              <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
-                RelayKit slots cleanly into the starter kits builders use. The SDK fits where
-                you&apos;d expect; patterns match common stacks.
-              </p>
-              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-                {STARTER_KITS.map((kit) => (
-                  <span key={kit} className="text-sm font-medium text-text-tertiary">
-                    {kit}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-base font-bold text-text-primary">Already built</h3>
-              <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
-                Hand the build spec to your AI tool, point it at where you handle auth, and it
-                does the wiring. Takes a little longer than starting fresh — well-trodden, docs
-                cover the edges.
-              </p>
-            </div>
+        <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
+          <div className="flex flex-col gap-5">
+            <p className="text-base leading-relaxed text-text-secondary">
+              Starting fresh. RelayKit slots into the starter kits you use — ShipFast,
+              Supastarter, MakerKit, Vercel + Supabase.
+            </p>
+            <p className="text-base leading-relaxed text-text-secondary">
+              Already built. Hand the build spec to your AI tool, point it at where you handle
+              auth, and let it wire up the rest.
+            </p>
           </div>
 
-          {/* Right col: code block + caption */}
           <div>
-            <pre className="overflow-x-auto whitespace-pre rounded-lg bg-bg-secondary px-4 py-4 text-xs font-mono leading-relaxed text-text-secondary">
-              {CODE_BLOCK}
-            </pre>
+            <CodeSample />
             <p className="mt-2 text-xs text-text-tertiary">That&apos;s the send.</p>
           </div>
         </div>
-
-        <p className="mt-10 max-w-2xl text-sm leading-relaxed text-text-tertiary">
-          Your AI tool learns RelayKit through the build spec. Ask it where to wire opt-outs, or
-          whether a message body will pass review — it&apos;ll know.
-        </p>
-
-        <p className="mt-6 text-sm text-text-tertiary">
-          Tests are included. The build spec wires them in.
-        </p>
       </section>
 
       {/* Section 4 — Test it for real */}
