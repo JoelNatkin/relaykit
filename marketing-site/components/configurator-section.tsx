@@ -774,22 +774,14 @@ export function ConfiguratorSection() {
                   </button>
                 ))}
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-                >
-                  <Copy01 className="size-4" />
-                  {copyToastVisible ? "Copied" : "Copy"}
-                </button>
-                <Link
-                  href="/signup"
-                  className="inline-flex rounded-lg bg-bg-brand-solid px-4 py-1.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-                >
-                  Get started
-                </Link>
-              </div>
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+              >
+                <Copy01 className="size-4" />
+                {copyToastVisible ? "Copied" : "Copy"}
+              </button>
             </div>
             <div
               className={`mt-4 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
@@ -888,6 +880,18 @@ export function ConfiguratorSection() {
                   </div>
                 );
               })}
+            </div>
+            <div className="mt-8">
+              <p className="text-sm text-text-secondary">
+                Next: a few quick questions, then you build with your AI tool
+                while we register you. Three days to your first real text.
+              </p>
+              <Link
+                href="/signup"
+                className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+              >
+                Save to my workspace →
+              </Link>
             </div>
           </div>
         </div>
