@@ -659,7 +659,7 @@ export function ConfiguratorSection() {
             </p>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 items-start gap-8 md:grid-cols-[3fr_7fr]">
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[3fr_7fr]">
             {/* Categories panel */}
             <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
               <div className="px-4 pt-5 pb-3">
@@ -728,7 +728,7 @@ export function ConfiguratorSection() {
             </div>
 
             {/* Messages column */}
-            <div className="md:max-w-[540px]">
+            <div className="flex flex-col md:max-w-[540px]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
                   {TONE_OPTIONS.map((t) => (
@@ -891,7 +891,7 @@ export function ConfiguratorSection() {
                 })}
               </div>
 
-              <div className="mt-8">
+              <div className="mt-auto pt-8">
                 <p className="text-sm text-text-secondary">
                   Next: a few quick questions, then you build with your AI tool while we
                   register you. Three days to your first real text.
@@ -900,7 +900,7 @@ export function ConfiguratorSection() {
                   href="/signup"
                   className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
                 >
-                  Save to my workspace →
+                  Start building with SMS →
                 </Link>
               </div>
             </div>
