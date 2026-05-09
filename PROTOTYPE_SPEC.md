@@ -147,13 +147,29 @@ Public-facing compliance information page. Not yet fully designed.
 
 The production marketing site is a separate Next.js app at `marketing-site/` (deployed to Vercel per D-366; branch-and-preview workflow per D-368). It is not the prototype. Sections below cover surfaces that have stabilized on the production marketing surface; layout/visual specs live here, architectural commitments live in DECISIONS.
 
+### Home page (`/`) — seven-section structure
+
+The home page composes seven sections plus a closing CTA strip, in this order:
+
+1. **Hero** — H1 "SMS for builders", subhead "Two files. Your AI tool. A working SMS feature.", eyebrow "$49 + $19/mo. Three days to live." (small, weight 500, primary text color), AI-tool word-marks row (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline — SVGs in `marketing-site/public/logos/`, `h-5 w-auto opacity-70`), and a static OTP visual (`marketing-site/components/hero-otp-visual.tsx`). Two-column on desktop (text left ~60% / OTP visual right ~40% via `md:grid-cols-[3fr_2fr]`), stacked on mobile.
+2. **Configurator** — see Configurator Section below.
+3. **Build it** — H2 "Two files. Your AI tool.", subhead "Most of the integration is already done. The rest takes minutes." Two columns on desktop ("Starting fresh" left with starter-kit text-label row [ShipFast, Supastarter, MakerKit, Vercel + Supabase]; "Already built" right, text-only). Below the columns, a small build-spec paragraph: "Your AI tool learns RelayKit through the build spec…". Below that, a JS code block (`<pre>` with `bg-bg-secondary`, no syntax highlighting per the marketing-site convention) showing `relaykit.appointments.sendConfirmation(...)`, captioned "That's the send." Section closes with one-liner "Tests are included. The build spec wires them in."
+4. **Test it for real** — H2 "Test it for real.", subhead "Real SMS, real phones, before customers see anything." Two-column desktop (`md:grid-cols-[3fr_2fr]`): left two paragraphs + italic closer ("When you go live, it's the same code path. No surprises."), right `marketing-site/components/preview-list-mock.tsx` (static replica of `prototype/components/test-phones-card.tsx` — three rows: Joel verified / Sarah verified / Mike invited, plus a non-functional "+ Invite someone" link in `text-text-brand-secondary`).
+5. **We handle the paperwork** — H2 "We handle the paperwork.", body period-list of nouns ("Registration paperwork. The approval back-and-forth. The opt-in form your users see. STOP handling. Opt-out tracking. Delivery monitoring."), italic kicker "We read it so you don't have to." Centered, max-w-3xl.
+6. **Pricing** — eyebrow "Simple pricing", H2 "Free to build. $49 + $19/mo to go live." Single staged card (`max-w-[540px]`, `rounded-xl border border-border-primary p-8`): Stage 1 "Build for free" body / horizontal divider / Stage 2 "Go live for $49 + $19/mo" body. Below: fine-print row ("Marketing categories add $10/mo. Volume pricing above 5,000 messages."), then scope paragraph ("US and Canada at launch. We don't handle HIPAA, healthcare-regulated workflows, or enterprise procurement."). Replaces the prior two-card Free/Go-live layout.
+7. **Closing CTA strip** — H2 "Ready when you are.", subhead "Configure today. Live in three days. Refund if not approved.", "Get early access" CTA matching top-nav styling (border + `bg-bg-primary` + `text-text-secondary`) and destination (`/start/verify`).
+
+D-376 records the "three days" / "about three days" copy convention for carrier approval, superseding D-215. The hero eyebrow and closing CTA subhead use "three days"; pricing card body uses "Approval takes about three days." Subhead drops the prior "AI coding tool" phrasing — the AI-tool word-marks row directly below establishes context, so the qualifier is redundant.
+
+Sections retired in this restructure (Session 75): the prior "How it works" 3-step block, a small pricing context line, an 8-card "Explore use cases" grid, a 4-card "Why RelayKit?" compliance grid, and the "You shouldn't need a telecom degree…" comparison table. The configurator demonstrates use cases interactively (D-375); Sections 3/5 cover the work the retired blocks did, in tighter on-voice form.
+
 ### Configurator Section — `/` (home, second section after hero)
 **File:** `marketing-site/components/configurator-section.tsx`
-**Status:** Stable on `feat/configurator-section` (awaiting merge approval)
+**Status:** Stable (merged to main Session 75; further home-page sections built around it on `feat/home-page-restructure`)
 
 Pre-signup mockup that lets a visitor scope which messages they would ship and personalize them with their own business name and website. Section structure top-to-bottom:
 
-1. **Header** — H2 "Configure your messages" (`text-2xl`), subhead "OTP is included. You can change any of this later in your workspace." 60px gap from the bottom of the hero subhead.
+1. **Header** — H2 "Configure your messages" (`text-2xl`), subhead "Verification codes included. You can change these later in your workspace." 60px gap from the bottom of the hero subhead.
 2. **Two-panel grid** — `md:grid-cols-[3fr_7fr]`, `items-start`, `gap-8`. Left = Categories card (rounded-xl border, `md:min-w-60`); right = Messages column (borderless, `md:max-w-[540px]`).
 
 **Left panel — Categories card:**
