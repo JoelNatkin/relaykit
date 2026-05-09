@@ -14,7 +14,14 @@ type VerticalId =
   | "community"
   | "waitlist";
 
-type PackId = "saas" | "personal" | "real-estate" | "fitness" | "ecommerce" | "custom";
+type PackId =
+  | "saas"
+  | "personal"
+  | "real-estate"
+  | "fitness"
+  | "ecommerce"
+  | "custom"
+  | "none";
 
 type ToneId = "standard" | "friendly" | "brief";
 
@@ -220,6 +227,7 @@ const PACK_DEFAULTS: Record<PackId, VerticalId[]> = {
   fitness: ["verification", "appointments", "marketing", "community"],
   ecommerce: ["verification", "orders", "support", "marketing"],
   custom: ["verification"],
+  none: ["verification"],
 };
 
 const TONES: Array<{ id: ToneId; label: string }> = [
@@ -705,6 +713,8 @@ export function ConfiguratorSection() {
                         {p.label}
                       </option>
                     ))}
+                    <option disabled>──────────</option>
+                    <option value="none">None</option>
                   </select>
                   <ChevronDown
                     aria-hidden
