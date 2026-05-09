@@ -1521,3 +1521,13 @@ Marketing copy describing carrier approval time uses "three days" (or "about thr
 **Reasoning:** D-215 hedged on timing because Sinch's SLA was unconfirmed when recorded. With Sinch's ~3-day approval validated through Phase 1 prep work and Sinch BDR conversations, the specific claim is supportable and lands harder than the hedge. If Sinch's SLA shifts materially in the future, copy gets re-evaluated and a follow-up decision recorded.
 
 **Affects:** Marketing site hero, closing CTA, pricing card body, any future marketing copy referring to carrier approval timing.
+
+**D-377 — Verification is a toggleable category with "Verification only" preset** (Date: 2026-05-09)
+
+The configurator's Verification category is toggleable like other categories, not locked on. A "Verification only" preset in the Recommended combinations dropdown is the page-load default. When no categories are selected, the message-preview pane shows an empty state.
+
+**Supersedes:** none
+
+**Reasoning:** Locking Verification on conveyed that it was required, which felt paternalistic and oversold the wedge. The dropdown's preset mechanism does the wedge work — recommending Verification — without removing the user's agency. Some apps genuinely don't need Verification (pure marketing or pure transactional flows) and the UI should reflect that.
+
+**Affects:** marketing-site configurator (this commit); prototype configurator (follow-up; same behavior expected for consistency).

@@ -29,7 +29,6 @@ const VERTICALS: Vertical[] = [
     title: "Verification",
     description:
       "Login OTPs, signup codes, password resets, MFA, new device alerts",
-    alwaysOn: true,
     messages: [
       {
         name: "Verification code",
@@ -296,6 +295,7 @@ const VERTICAL_BY_ID: Record<VerticalId, Vertical> = VERTICALS.reduce(
 );
 
 const PACKS: Array<{ id: PackId; label: string }> = [
+  { id: "verification-only", label: "Verification only" },
   { id: "saas", label: "SaaS" },
   { id: "personal", label: "Personal services" },
   { id: "real-estate", label: "Real estate" },
@@ -305,14 +305,31 @@ const PACKS: Array<{ id: PackId; label: string }> = [
 ];
 
 const PACK_DEFAULTS: Record<PackId, VerticalId[]> = {
+  "verification-only": ["verification"],
   saas: ["verification", "orders", "support", "team"],
   personal: ["verification", "appointments", "support"],
   "real-estate": ["verification", "appointments", "support"],
   fitness: ["verification", "appointments", "marketing", "community"],
   ecommerce: ["verification", "orders", "support", "marketing"],
-  custom: ["verification"],
-  none: ["verification"],
+  custom: [],
+  none: [],
 };
+
+// Manual toggling re-derives the dropdown state. Empty selection becomes
+// "none"; any selection that exactly matches a preset's defaults adopts
+// that preset's id; anything else becomes "custom". The "custom" id is a
+// state marker, not a user-pickable pattern.
+function resolvePackId(sel: Set<VerticalId>): PackId {
+  if (sel.size === 0) return "none";
+  for (const pack of PACKS) {
+    if (pack.id === "custom") continue;
+    const defaults = PACK_DEFAULTS[pack.id];
+    if (defaults.length === sel.size && defaults.every((id) => sel.has(id))) {
+      return pack.id;
+    }
+  }
+  return "custom";
+}
 
 const TONE_OPTIONS: Array<{ id: ToneId; label: string }> = [
   { id: "standard", label: "Standard" },
@@ -457,9 +474,9 @@ interface CustomEditorState {
 }
 
 export function ConfiguratorSection() {
-  const [pack, setPack] = useState<PackId>("saas");
+  const [pack, setPack] = useState<PackId>("verification-only");
   const [selected, setSelected] = useState<Set<VerticalId>>(
-    () => new Set<VerticalId>(PACK_DEFAULTS.saas),
+    () => new Set<VerticalId>(PACK_DEFAULTS["verification-only"]),
   );
   const [globalTone, setGlobalTone] = useState<ToneId>("standard");
   const [businessName, setBusinessName] = useState("");
@@ -517,14 +534,13 @@ export function ConfiguratorSection() {
   }
 
   function handleVerticalToggle(id: VerticalId) {
-    if (VERTICAL_BY_ID[id].alwaysOn) return;
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      setPack(resolvePackId(next));
       return next;
     });
-    setPack("custom");
   }
 
   function handleStubSave(
@@ -679,7 +695,6 @@ export function ConfiguratorSection() {
               </div>
               {VERTICALS.map((v) => {
                 const isSelected = selected.has(v.id);
-                const isAlwaysOn = v.alwaysOn === true;
                 return (
                   <div
                     key={v.id}
@@ -688,14 +703,12 @@ export function ConfiguratorSection() {
                     <button
                       type="button"
                       onClick={() => handleVerticalToggle(v.id)}
-                      disabled={isAlwaysOn}
-                      className="flex w-full items-start gap-3 text-left disabled:cursor-default"
+                      className="flex w-full items-start gap-3 text-left"
                     >
                       <input
                         type="checkbox"
                         checked={isSelected}
                         readOnly
-                        disabled={isAlwaysOn}
                         tabIndex={-1}
                         className="mt-0.5 size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
                       />
@@ -761,6 +774,13 @@ export function ConfiguratorSection() {
               </div>
 
               <div className="mt-8 space-y-7">
+                {selectedInOrder.length === 0 ? (
+                  <div className="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-border-secondary px-6 py-10 text-center">
+                    <p className="text-sm text-text-tertiary">
+                      Pick a category to see message previews.
+                    </p>
+                  </div>
+                ) : null}
                 {selectedInOrder.map((id) => {
                   const vertical = VERTICAL_BY_ID[id];
                   const customs = customMessages[id];

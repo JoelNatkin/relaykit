@@ -9,6 +9,7 @@ export type VerticalId =
   | "waitlist";
 
 export type PackId =
+  | "verification-only"
   | "saas"
   | "personal"
   | "real-estate"
