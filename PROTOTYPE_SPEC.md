@@ -1,6 +1,6 @@
 # PROTOTYPE_SPEC.md — RelayKit
 ## Screen-Level Prototype Specifications
-### Last updated: April 27, 2026
+### Last updated: May 9, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -140,6 +140,73 @@ Below-hero message preview section with three style pills (Brand-first / Action-
 **Status:** Placeholder
 
 Public-facing compliance information page. Not yet fully designed.
+
+---
+
+## Production Marketing Site — `relaykit.ai`
+
+The production marketing site is a separate Next.js app at `marketing-site/` (deployed to Vercel per D-366; branch-and-preview workflow per D-368). It is not the prototype. Sections below cover surfaces that have stabilized on the production marketing surface; layout/visual specs live here, architectural commitments live in DECISIONS.
+
+### Configurator Section — `/` (home, second section after hero)
+**File:** `marketing-site/components/configurator-section.tsx`
+**Status:** Stable on `feat/configurator-section` (awaiting merge approval)
+
+Pre-signup mockup that lets a visitor scope which messages they would ship and personalize them with their own business name and website. Section structure top-to-bottom:
+
+1. **Header** — H2 "Configure your messages" (`text-2xl`), subhead "OTP is included. You can change any of this later in your workspace." 60px gap from the bottom of the hero subhead.
+2. **Two-panel grid** — `md:grid-cols-[3fr_7fr]`, `items-start`, `gap-8`. Left = Categories card (rounded-xl border, `md:min-w-60`); right = Messages column (borderless, `md:max-w-[540px]`).
+
+**Left panel — Categories card:**
+- "Categories" h3 at top.
+- "Recommended combinations" labeled `<select>` (native, `appearance-none` + ChevronDown overlay). Options: SaaS / Personal services / Real estate / Fitness / E-commerce / Custom, then a disabled `──────────` separator option, then "None". Default: SaaS. Picking a pack pre-checks that pack's defaults; manual category toggle shifts dropdown to "Custom"; "None" deselects everything except Verification.
+- 24px space below the dropdown (`pb-6` on the header section).
+- Categories list, one row per vertical (Verification / Appointments / Order updates / Customer support / Marketing / Team alerts / Community / Waitlist). Each row: checkbox + title + description (always visible, drawn verbatim from the prototype's onboarding `categories.ts`). Verification's row has the "Included" pill (always-on, checkbox checked + disabled). Marketing's row, when selected, shows a "Requires EIN. Adds a few days to registration." note. Rows use `border-b border-border-secondary py-5`; the always-on Verification row uses the same border weight as every other row.
+
+**Right panel — Messages column (borderless, content flows in the section directly):**
+- **Top row**: tone pills (Standard / Friendly / Brief — left, `rounded-full`) + Copy button (right, tertiary — text + Copy01 icon, no border, no bg). Justify-between, wraps on mobile.
+- **Personalize inputs** below the top row, 16px gap. Two side-by-side text inputs (`sm:grid-cols-2` when both shown, single column otherwise): "Your business name" placeholder, "yourwebsite.com" placeholder. The website input only renders when at least one currently-rendered body in the selected verticals contains the `{website}` token.
+- 32px gap below the inputs (`mt-8`) before the first vertical group title.
+- **Vertical groups**: 28px between groups (`space-y-7`). Each group has a title (`text-base font-semibold` — matches "Categories" h3 in the left panel) above the message stack.
+- **Message read-cards**: rounded-xl border, shadow-xs. Title row at top with name + InfoIcon tooltip (hover/focus shows trigger description in a dark tooltip overlay) + edit pencil at right. 4px below the title row (`mt-1`) the body renders via `interpolateTemplate` — variable tokens render as brand-purple inline spans (D-356 / D-350 styling, no editor chips in read state). No separate hardcoded "Acme:" prefix; the colon is part of the template's leading clause `{business_name}: …`.
+- **"+ Add message"** appears at the bottom of each group's stack as a full-width button with a solid `border-border-secondary` border, `Plus` icon + "Add message" label, brand-secondary text. Click expands an inline editor in place of the button. While one add-editor is open, every other group's "+ Add message" button is disabled with `cursor-not-allowed disabled:opacity-60`.
+- **Bottom CTA block** (below the last vertical's "+ Add message" button, `mt-8`): one-sentence supporting text "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." (`text-sm text-text-secondary`), then a full-width 60px (`h-15`) brand-purple primary button "Save to my workspace →" (arrow part of the label). Routes to `/signup`. The arrow at the top of the section's "Get started" button has been removed in this iteration; this bottom CTA is the section's only call-to-action.
+
+### Configurator edit-card — Tiptap-based message editor
+**File:** `marketing-site/components/configurator/message-edit-card.tsx`
+**Status:** Stable on `feat/configurator-section`
+
+Click pencil on a message read-card → it swaps to the edit card. Card replicates the dashboard's edit-mode (`prototype/components/catalog/catalog-card.tsx` lines 591–884) minus AI input, monitor mode, and badges. Per D-375, the editor is replicated, not extracted.
+
+Top-to-bottom:
+- **Header row**: name + InfoIcon tooltip (same as read-card) at left; "Edit" label + pencil icon at far right (replaces the action icons of the read-card).
+- **Editor body** (Tiptap, ported `MessageEditor` consumes the `{key}` template format): variable tokens render as atomic, indivisibly-selectable purple chips per D-350. Cursor cannot land inside a chip; backspace deletes the whole chip. Enter is suppressed (single-line SMS).
+- **Compliance + Fix row** (right-aligned, only shown after the compliance check has been failing for ≥2s): one `text-text-error-primary` line per missing piece ("Needs Business name", "Needs opt-out language"), and a "Fix" button (border-primary, hover bg-secondary). Click Fix → 1500ms simulated loading state ("Fixing…" + spinner), then template restores to the last canned tone-pill's variant (D-356-style restoration), Save re-enables.
+- **Tone-pill row + + Variable popover** (single flex-wrap row):
+  - Tone pills (Standard / Friendly / Brief, left): rounded-full, brand-secondary fill when active, border-secondary outline when not. Click a canned pill → the body resets to that variant's template; if the user was on Custom, the prior text is buffered.
+  - "Custom" pill auto-appears (with dashed border) once the body diverges from any canned variant. Click → restores the buffered custom text.
+  - "+ Variable" button (right of pills, `ml-auto`): tertiary brand-secondary text + Plus icon. Click toggles a popover anchored to the button. Popover lists the message's `variables` array; each row shows label (left) + preview value (right, brand-purple). Click a row → inserts the variable as an atomic chip at the editor's caret. Outside-click and Escape close the popover.
+- **Save / Cancel** at far right. Save is `bg-bg-brand-solid`, disabled while compliance fails OR Fix is loading. Cancel is text-only, discards the local edit state and returns to the read card.
+
+**Per-message tone override model:**
+- The Messages-column top row's tone pills set the **global** default for every message that does not have a per-message override.
+- When the user opens an edit card and clicks a different tone pill, that becomes the **per-message** override. It persists for that message only, across global tone changes.
+- Custom-pill state means the user edited the body text away from any canned variant. On Save with the Custom pill active, the edited body is stored as a per-message custom; the per-message tone override is left untouched.
+- On Cancel, no parent state changes.
+- Custom (user-added via "+ Add message") messages have no canned variants and therefore no tone-pill row — the edit card shows the editor + "+ Variable" + Save/Cancel only.
+
+### Configurator data conventions
+
+**Stub message templates** (each of the 18 stubs in `configurator-section.tsx` carries three variants — Standard / Friendly / Brief):
+- **Standard variant** always begins with `{business_name}: ` (literal colon + space after the variable). The colon is part of the template, not a hardcoded JSX prefix. This applies across all 18 Standard variants regardless of vertical. Read-state renders "{business_name}" as a brand-purple chip.
+- **Friendly / Brief** variants keep `{business_name}` somewhere in the body (compliance still requires it) but the surrounding sentence shape is free to differ — Friendly tends warmer with exclamations, Brief trims to essentials.
+- **Variables** are declared per stub message in a `variables: string[]` array. Compliance + the "+ Variable" popover both read from this list. Variable preview values come from `marketing-site/lib/configurator/example-values.ts`, keyed by `verticalId`. The `business_name` and `website` values resolve from the user's input (with "Acme" / "acme.com" fallbacks); other keys (code, day, time, order_id, etc.) are static stub values.
+- **`requiresStop`** is `true` for every vertical except Verification. Verification messages explicitly omit "Reply STOP to opt out" — STOP would cancel the codes the user actively wants.
+
+**"+ Add message" prefill** (Tiptap pre-fills the editor with this template, with `{business_name}` rendered as a chip and the rest as plain text):
+- Non-Verification verticals: `{business_name}: [your message here] Reply STOP to opt out.`
+- Verification: `{business_name}: [your message here]` (no STOP).
+
+The placeholder `[your message here]` is plain text the user replaces. Starting state is compliant — the variable is present and (where required) STOP language is present — so Save is enabled the moment real content replaces the placeholder.
 
 ---
 

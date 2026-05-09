@@ -1,6 +1,6 @@
 # BACKLOG.md — RelayKit
 ## Ideas, Deferred Work, and Future Features
-### Last updated: April 7, 2026
+### Last updated: May 9, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -202,6 +202,8 @@
 - **Lovable/Bolt/Replit connector exploration** — Investigate Lovable's connector program. Build a dead-simple landing page aimed at no-code builders. Measure signup interest. API endpoint already exists — connector is a distribution play. Post-launch, after SDK path has paying customers. (Origin: April 2 strategy session, D-296/D-297)
 
 - **"Your AI tool builds your test surface, with our help" as differentiator angle** — Marketing positioning that follows from the architectural posture entry under Likely → Product Features (test surface lives in developer's app, RelayKit ships the prompt-shaped guide). Frames RelayKit's testing story as native to the developer's app, in their style, against their data — not a hosted dashboard living elsewhere. Distinguishes from Twilio / MessageBird / Plivo / Sinch direct, all of whom either ship a hosted console or expect the developer to roll their own. The "with our help" half is the AGENTS.md-style guide doing the heavy lifting. Promote to MD-number in `docs/MARKETING_STRATEGY.md` after the TESTING_GUIDE_DRAFT.md prototype validation entry passes — if AI tools produce bad surfaces from the guide, the positioning evaporates and this entry retires unused. (Origin: PM Session 67, 2026-05-01)
+
+- **Marketing-site message catalog depth parity** — Marketing-site configurator currently has ~2–3 stubs per vertical; prototype/dashboard has ~6 per vertical (Appointments depth: Booking confirmation, Appointment reminder, Pre-visit instructions, Reschedule notice, No-show follow-up, Cancellation notice). Decision: expand marketing-site stubs to match prototype depth so the configurator demonstrates real depth out of the gate and users commit to a path. Two open sub-questions: (a) port the prototype's MESSAGES data wholesale, or author marketing-side stubs that align with prototype titles; (b) when promoted from BACKLOG, do this work alongside Friendly/Brief variant content polish (currently YOLO stubs per Session 74 plan), since both touch the same template files. Defer behind page-architecture work and dark mode unless the home-page configurator feels too thin in early user testing or beta feedback. (Origin: Session 74 close, 2026-05-09)
 
 ### Content & Marketing
 

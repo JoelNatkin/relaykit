@@ -12,7 +12,7 @@ export function TopNav() {
         </Link>
         <Link
           href="/start/verify"
-          className="rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+          className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
         >
           Get early access
         </Link>
