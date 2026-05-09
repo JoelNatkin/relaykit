@@ -668,7 +668,7 @@ export function ConfiguratorSection() {
   void tone;
 
   return (
-    <section className="bg-bg-primary pt-20 pb-16 sm:pb-20">
+    <section className="bg-bg-primary pt-15 pb-16 sm:pb-20">
       <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
         <div>
