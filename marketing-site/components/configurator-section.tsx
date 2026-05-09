@@ -639,14 +639,14 @@ export function ConfiguratorSection() {
               Configure your messages
             </h2>
             <p className="mt-3 text-base text-text-tertiary">
-              Verification codes included. You can change these later in your workspace.
+              All messages included. You can change these later in your workspace.
             </p>
           </div>
 
           <div className="mt-8 grid grid-cols-1 items-start gap-8 md:grid-cols-[3fr_7fr]">
             {/* Categories panel */}
             <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
-              <div className="px-4 pt-5 pb-6">
+              <div className="px-4 pt-5 pb-3">
                 <h3 className="text-base font-semibold text-text-primary">Categories</h3>
                 <div className="mt-4">
                   <label

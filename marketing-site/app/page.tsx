@@ -3,12 +3,16 @@ import Link from "next/link";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { PreviewListMock } from "@/components/preview-list-mock";
 
+// Per-logo heights tune visual weight, not pixel height. Cursor and others
+// that combine icon + wordmark render larger at a given pixel height than
+// pure-wordmark logos because the icon takes vertical room. First-pass
+// values; tune by eye if any logo reads dominant or recessive.
 const AI_TOOLS = [
-  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", alt: "Claude Code" },
-  { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", alt: "Cursor" },
-  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", alt: "Windsurf" },
-  { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", alt: "GitHub Copilot" },
-  { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", alt: "Cline" },
+  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", alt: "Claude Code", heightClass: "h-[18px]" },
+  { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", alt: "Cursor", heightClass: "h-[22px]" },
+  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", alt: "Windsurf", heightClass: "h-[20px]" },
+  { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", alt: "GitHub Copilot", heightClass: "h-[20px]" },
+  { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", alt: "Cline", heightClass: "h-[18px]" },
 ] as const;
 
 const STARTER_KITS = ["ShipFast", "Supastarter", "MakerKit", "Vercel + Supabase"] as const;
@@ -25,17 +29,17 @@ export default function MarketingHome() {
     <div>
       {/* Section 1 — Hero */}
       <div className="pt-16">
-        <div className="mx-auto max-w-5xl px-6 text-center">
+        <div className="mx-auto max-w-5xl px-6">
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
             SMS for builders
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-tertiary">
+          <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
             Two files. Your AI tool. A working SMS feature.
           </p>
           <p className="mt-4 text-sm font-medium text-text-primary">
             $49 + $19/mo. Three days to live.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+          <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-3">
             {AI_TOOLS.map((tool) => (
               <Image
                 key={tool.alt}
@@ -43,7 +47,7 @@ export default function MarketingHome() {
                 alt={tool.alt}
                 width={140}
                 height={24}
-                className="h-6 w-auto opacity-70"
+                className={`${tool.heightClass} w-auto brightness-0`}
               />
             ))}
           </div>
@@ -56,55 +60,55 @@ export default function MarketingHome() {
       {/* Section 3 — Build it */}
       <section className="mx-auto mt-24 max-w-5xl px-6">
         <div>
-          <h2 className="text-center text-2xl font-bold text-text-primary">
-            Two files. Your AI tool.
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center leading-relaxed text-text-tertiary">
+          <h2 className="text-2xl font-bold text-text-primary">Two files. Your AI tool.</h2>
+          <p className="mt-4 max-w-2xl leading-relaxed text-text-tertiary">
             Most of the integration is already done. The rest takes minutes.
           </p>
         </div>
 
-        <div className="mt-12 grid grid-cols-1 gap-10 md:grid-cols-2">
-          <div>
-            <h3 className="text-base font-bold text-text-primary">Starting fresh</h3>
-            <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
-              RelayKit slots cleanly into the starter kits builders use. The SDK fits where
-              you&apos;d expect; patterns match common stacks.
-            </p>
-            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-              {STARTER_KITS.map((kit) => (
-                <span key={kit} className="text-sm font-medium text-text-tertiary">
-                  {kit}
-                </span>
-              ))}
+        <div className="mt-12 grid grid-cols-1 items-start gap-10 md:grid-cols-[11fr_9fr]">
+          {/* Left col: Starting fresh + Already built stacked */}
+          <div className="flex flex-col gap-8">
+            <div>
+              <h3 className="text-base font-bold text-text-primary">Starting fresh</h3>
+              <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
+                RelayKit slots cleanly into the starter kits builders use. The SDK fits where
+                you&apos;d expect; patterns match common stacks.
+              </p>
+              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+                {STARTER_KITS.map((kit) => (
+                  <span key={kit} className="text-sm font-medium text-text-tertiary">
+                    {kit}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-base font-bold text-text-primary">Already built</h3>
+              <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
+                Hand the build spec to your AI tool, point it at where you handle auth, and it
+                does the wiring. Takes a little longer than starting fresh — well-trodden, docs
+                cover the edges.
+              </p>
             </div>
           </div>
 
+          {/* Right col: code block + caption */}
           <div>
-            <h3 className="text-base font-bold text-text-primary">Already built</h3>
-            <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
-              Hand the build spec to your AI tool, point it at where you handle auth, and it does
-              the wiring. Takes a little longer than starting fresh — well-trodden, docs cover the
-              edges.
-            </p>
+            <pre className="overflow-x-auto whitespace-pre rounded-lg bg-bg-secondary px-4 py-4 text-xs font-mono leading-relaxed text-text-secondary">
+              {CODE_BLOCK}
+            </pre>
+            <p className="mt-2 text-xs text-text-tertiary">That&apos;s the send.</p>
           </div>
         </div>
 
-        <p className="mx-auto mt-10 max-w-2xl text-center text-sm leading-relaxed text-text-tertiary">
+        <p className="mt-10 max-w-2xl text-sm leading-relaxed text-text-tertiary">
           Your AI tool learns RelayKit through the build spec. Ask it where to wire opt-outs, or
           whether a message body will pass review — it&apos;ll know.
         </p>
 
-        <div className="mt-8">
-          <pre className="mx-auto max-w-2xl overflow-x-auto whitespace-pre rounded-lg bg-bg-secondary px-4 py-4 text-xs font-mono leading-relaxed text-text-secondary">
-            {CODE_BLOCK}
-          </pre>
-          <p className="mx-auto mt-2 max-w-2xl text-center text-xs text-text-tertiary">
-            That&apos;s the send.
-          </p>
-        </div>
-
-        <p className="mt-10 text-center text-sm text-text-tertiary">
+        <p className="mt-6 text-sm text-text-tertiary">
           Tests are included. The build spec wires them in.
         </p>
       </section>
@@ -112,8 +116,8 @@ export default function MarketingHome() {
       {/* Section 4 — Test it for real */}
       <section className="mx-auto mt-24 max-w-5xl px-6">
         <div>
-          <h2 className="text-center text-2xl font-bold text-text-primary">Test it for real.</h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center leading-relaxed text-text-tertiary">
+          <h2 className="text-2xl font-bold text-text-primary">Test it for real.</h2>
+          <p className="mt-4 max-w-2xl leading-relaxed text-text-tertiary">
             Real SMS, real phones, before customers see anything.
           </p>
         </div>
@@ -138,66 +142,68 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      {/* Section 5 — We handle the paperwork */}
-      <section className="mx-auto mt-24 max-w-3xl px-6 text-center">
-        <h2 className="text-2xl font-bold text-text-primary">We handle the paperwork.</h2>
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-text-secondary">
-          Registration paperwork. The approval back-and-forth. The opt-in form your users see. STOP
-          handling. Opt-out tracking. Delivery monitoring.
-        </p>
-        <p className="mt-6 text-sm italic text-text-tertiary">
-          We read it so you don&apos;t have to.
-        </p>
-      </section>
-
-      {/* Section 6 — Pricing */}
+      {/* Section 5 — Paperwork + Pricing (two-col merge) */}
       <section className="mx-auto mt-24 max-w-5xl px-6">
-        <p className="text-center text-sm font-semibold text-text-brand-secondary">
-          Simple pricing
-        </p>
-        <h2 className="mt-1 text-center text-2xl font-bold text-text-primary">
-          Free to build. $49 + $19/mo to go live.
-        </h2>
-
-        <div className="mx-auto mt-10 max-w-[540px] rounded-xl border border-border-primary p-8">
+        <div className="grid grid-cols-1 items-start gap-12 md:grid-cols-2">
+          {/* Left col: paperwork */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-              Stage 1
+            <h2 className="text-2xl font-bold text-text-primary">We handle the paperwork.</h2>
+            <p className="mt-6 text-base leading-relaxed text-text-secondary">
+              Registration paperwork. The approval back-and-forth. The opt-in form your users see.
+              STOP handling. Opt-out tracking. Delivery monitoring.
             </p>
-            <h3 className="mt-2 text-lg font-bold text-text-primary">Build for free</h3>
-            <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
-              Set up your messages. Wire up the SDK. Test with real phones. No credit card.
+            <p className="mt-6 text-sm italic text-text-tertiary">
+              We read it so you don&apos;t have to.
             </p>
           </div>
 
-          <hr className="my-6 border-border-secondary" />
-
+          {/* Right col: pricing */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-              Stage 2
+            <h2 className="text-2xl font-bold text-text-primary">Simple pricing.</h2>
+
+            <div className="mt-6 rounded-xl border border-border-primary p-8">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+                  Stage 1
+                </p>
+                <h3 className="mt-2 text-lg font-bold text-text-primary">Build for free</h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
+                  Set up your messages. Wire up the SDK. Test with real phones. No credit card.
+                </p>
+              </div>
+
+              <hr className="my-6 border-border-secondary" />
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+                  Stage 2
+                </p>
+                <h3 className="mt-2 text-lg font-bold text-text-primary">
+                  Go live for $49 + $19/mo
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
+                  We file your registration with carriers. Approval takes about three days. 500
+                  messages included per month. $8 per 500 over. Refund if you&apos;re not approved.
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-4 text-xs text-text-tertiary">
+              Marketing categories add $10/mo. Volume pricing above 5,000 messages.
             </p>
-            <h3 className="mt-2 text-lg font-bold text-text-primary">Go live for $49 + $19/mo</h3>
-            <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
-              We file your registration with carriers. Approval takes about three days. 500
-              messages included per month. $8 per 500 over. Refund if you&apos;re not approved.
+
+            <p className="mt-3 text-sm text-text-tertiary">
+              US and Canada at launch. We don&apos;t handle HIPAA, healthcare-regulated workflows,
+              or enterprise procurement.
             </p>
           </div>
         </div>
-
-        <p className="mx-auto mt-6 max-w-[540px] text-center text-xs text-text-tertiary">
-          Marketing categories add $10/mo. Volume pricing above 5,000 messages.
-        </p>
-
-        <p className="mx-auto mt-4 max-w-[540px] text-center text-sm text-text-tertiary">
-          US and Canada at launch. We don&apos;t handle HIPAA, healthcare-regulated workflows, or
-          enterprise procurement.
-        </p>
       </section>
 
-      {/* Section 7 — Closing CTA */}
-      <section className="mx-auto mt-24 mb-24 max-w-3xl px-6 text-center">
+      {/* Section 6 — Closing CTA */}
+      <section className="mx-auto mt-24 mb-24 max-w-5xl px-6">
         <h2 className="text-2xl font-bold text-text-primary">Ready when you are.</h2>
-        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-text-tertiary">
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-text-tertiary">
           Configure today. Live in three days. Refund if not approved.
         </p>
         <Link
