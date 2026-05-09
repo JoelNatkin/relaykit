@@ -79,7 +79,9 @@ Meta block bumped: Last updated → 2026-05-09 with Session 75 summary; Decision
 
 ## Pending / carry-forward
 
-1. **Joel preview verification + PM merge approval** for `feat/home-page-restructure`. Branch will not be merged until both clear. If Joel finds issues on the preview, additional iteration commits land on the same branch before merge.
+0. **Prototype configurator parity follow-up (post-D-377).** D-377 made Verification a toggleable category in the marketing-site configurator, added a "Verification only" preset as the page-load default, and added an empty-state placeholder for zero selection. The prototype's `prototype/components/configurator-section.tsx` still has Verification locked on. A separate, dedicated session/commit should mirror the same behavior in the prototype for product consistency. Out of scope for the marketing-site iteration cycle. Affects: PROTOTYPE_SPEC's prototype-side configurator section once the change lands.
+
+1. **Joel preview verification + PM merge approval** for `feat/home-page-restructure`. Branch will not be merged until both clear. If Joel finds issues on the preview, additional iteration commits land on the same branch before merge. Iteration commits this session post-original-close-out: `f655ce9` next/image + semantic div fix, `ca46678` wordmark logos + drop hero OTP + drop Included pill, `38538e1` left-align home + balance logos + merge paperwork+pricing, `1ae01f0` windsurf logo height fix for SVG padding, `ff2b0ac` Verification toggleable + D-377, plus this REPO_INDEX/CC_HANDOFF bump.
 
 2. **Earlier carry-forward items still applicable:**
    - Stage 2 (`docs/BRAND_DIRECTION.md`) — consumes the BRAND_AUDIT.md synthesis to produce the design system with point of view. Not yet started; large-scope session.
