@@ -1,50 +1,27 @@
 "use client";
 
-import { ChevronDown, Copy01, Edit01, Plus, Stars02 } from "@untitledui/icons";
+import { ChevronDown, Copy01, Edit01, Plus } from "@untitledui/icons";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-
-type VerticalId =
-  | "verification"
-  | "appointments"
-  | "orders"
-  | "support"
-  | "marketing"
-  | "team"
-  | "community"
-  | "waitlist";
-
-type PackId =
-  | "saas"
-  | "personal"
-  | "real-estate"
-  | "fitness"
-  | "ecommerce"
-  | "custom"
-  | "none";
-
-type ToneId = "standard" | "friendly" | "brief";
-
-interface StubMessage {
-  name: string;
-  tooltip: string;
-  body: string;
-}
-
-interface CustomMessage {
-  id: string;
-  name: string;
-  body: string;
-}
-
-interface Vertical {
-  id: VerticalId;
-  title: string;
-  description: string;
-  messages: StubMessage[];
-  alwaysOn?: boolean;
-  note?: string;
-}
+import { useEffect, useMemo, useState } from "react";
+import { MessageEditCard } from "@/components/configurator/message-edit-card";
+import {
+  getExampleValues,
+  interpolateTemplate,
+} from "@/lib/configurator/example-values";
+import {
+  SessionProvider,
+  type SessionState,
+} from "@/lib/configurator/session-context";
+import type {
+  CustomMessage,
+  PackId,
+  PillId,
+  StubMessage,
+  ToneId,
+  Vertical,
+  VerticalId,
+} from "@/lib/configurator/types";
+import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
 
 const VERTICALS: Vertical[] = [
   {
@@ -57,12 +34,24 @@ const VERTICALS: Vertical[] = [
       {
         name: "Verification code",
         tooltip: "Sent when a user requests a verification code.",
-        body: "Verification code: [[482910]]. Expires in 10 minutes.",
+        variables: ["business_name", "code"],
+        requiresStop: false,
+        variants: {
+          standard: "{business_name}: Verification code: {code}. Expires in 10 minutes.",
+          friendly: "Hi! Your {business_name} verification code is {code}. Expires in 10 minutes.",
+          brief: "{business_name} code: {code}.",
+        },
       },
       {
         name: "Login code",
         tooltip: "Sent when a user requests a login code.",
-        body: "Your login code is [[731062]]. If you didn't request this, ignore this message.",
+        variables: ["business_name", "code"],
+        requiresStop: false,
+        variants: {
+          standard: "{business_name}: Your login code is {code}. If you didn't request this, ignore this message.",
+          friendly: "{business_name}: Hey! Your login code is {code}. Didn't request this? Ignore this message.",
+          brief: "{business_name} login code: {code}.",
+        },
       },
     ],
   },
@@ -75,17 +64,35 @@ const VERTICALS: Vertical[] = [
       {
         name: "Confirmation",
         tooltip: "Sent when a customer books an appointment.",
-        body: "Your appointment is confirmed for [[Friday]] at [[2:00 PM]]. Reply STOP to opt out.",
+        variables: ["business_name", "day", "time"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Your appointment is confirmed for {day} at {time}. Reply STOP to opt out.",
+          friendly: "{business_name}: You're booked! See you {day} at {time}. Reply STOP to opt out.",
+          brief: "{business_name}: Confirmed {day} {time}. Reply STOP to opt out.",
+        },
       },
       {
         name: "Reminder",
         tooltip: "Sent the day before the appointment.",
-        body: "Reminder — your appointment is [[tomorrow]] at [[10:30 AM]]. Reply STOP to opt out.",
+        variables: ["business_name", "when", "time"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Reminder — your appointment is {when} at {time}. Reply STOP to opt out.",
+          friendly: "{business_name}: Just a heads-up — see you {when} at {time}! Reply STOP to opt out.",
+          brief: "{business_name}: {when} at {time}. Reply STOP to opt out.",
+        },
       },
       {
         name: "Reschedule",
         tooltip: "Sent when an appointment is rescheduled.",
-        body: "Need to reschedule? Visit {website}. Reply STOP to opt out.",
+        variables: ["business_name", "website"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Need to reschedule? Visit {website}. Reply STOP to opt out.",
+          friendly: "{business_name}: Need a different time? Hop over to {website}. Reply STOP to opt out.",
+          brief: "{business_name}: Reschedule at {website}. Reply STOP to opt out.",
+        },
       },
     ],
   },
@@ -98,17 +105,35 @@ const VERTICALS: Vertical[] = [
       {
         name: "Order confirmed",
         tooltip: "Sent when an order is placed.",
-        body: "Order #[[4827]] confirmed. Track at {website}/orders/[[4827]]. Reply STOP to opt out.",
+        variables: ["business_name", "order_id", "website"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Order #{order_id} confirmed. Track at {website}. Reply STOP to opt out.",
+          friendly: "{business_name}: Got your order! #{order_id} is confirmed — track at {website}. Reply STOP to opt out.",
+          brief: "{business_name}: Order #{order_id} confirmed. {website}. Reply STOP to opt out.",
+        },
       },
       {
         name: "Shipped",
         tooltip: "Sent when the order ships.",
-        body: "Your order has shipped. Tracking: [[1Z999AA10000123456]]. Reply STOP to opt out.",
+        variables: ["business_name", "tracking_number"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Your order has shipped. Tracking: {tracking_number}. Reply STOP to opt out.",
+          friendly: "{business_name}: It's on the way! Tracking: {tracking_number}. Reply STOP to opt out.",
+          brief: "{business_name}: Shipped. Tracking: {tracking_number}. Reply STOP to opt out.",
+        },
       },
       {
         name: "Out for delivery",
         tooltip: "Sent when the order is out for delivery.",
-        body: "Out for delivery [[today]]. We'll text again when it arrives. Reply STOP to opt out.",
+        variables: ["business_name", "when"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Out for delivery {when}. We'll text again when it arrives. Reply STOP to opt out.",
+          friendly: "{business_name}: Almost there! Out for delivery {when}. We'll text when it arrives. Reply STOP to opt out.",
+          brief: "{business_name}: Out for delivery {when}. Reply STOP to opt out.",
+        },
       },
     ],
   },
@@ -120,12 +145,24 @@ const VERTICALS: Vertical[] = [
       {
         name: "Reply received",
         tooltip: "Sent when an agent replies to the ticket.",
-        body: "Ticket #[[1893]] — we've replied. View at {website}/help. Reply STOP to opt out.",
+        variables: ["business_name", "ticket_id", "website"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Ticket #{ticket_id} — we've replied. View at {website}. Reply STOP to opt out.",
+          friendly: "{business_name}: We just replied to ticket #{ticket_id} — take a look at {website}. Reply STOP to opt out.",
+          brief: "{business_name}: #{ticket_id} replied. {website}. Reply STOP to opt out.",
+        },
       },
       {
         name: "Resolved",
         tooltip: "Sent when the ticket is resolved.",
-        body: "Your support ticket is resolved. Let us know if anything else comes up. Reply STOP to opt out.",
+        variables: ["business_name"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Your support ticket is resolved. Let us know if anything else comes up. Reply STOP to opt out.",
+          friendly: "{business_name}: All sorted! Your ticket is resolved — let us know if anything else comes up. Reply STOP to opt out.",
+          brief: "{business_name}: Ticket resolved. Reply STOP to opt out.",
+        },
       },
     ],
   },
@@ -138,13 +175,24 @@ const VERTICALS: Vertical[] = [
       {
         name: "Weekly promo",
         tooltip: "Sent to opted-in subscribers for weekly offers.",
-        body: "[[20%]] off this week. Shop at {website}. Reply STOP to opt out.",
+        variables: ["business_name", "discount", "website"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: {discount} off this week. Shop at {website}. Reply STOP to opt out.",
+          friendly: "{business_name}: Treat yourself — {discount} off this week at {website}. Reply STOP to opt out.",
+          brief: "{business_name}: {discount} off. {website}. Reply STOP to opt out.",
+        },
       },
       {
         name: "New drop",
-        tooltip:
-          "Sent to opted-in subscribers when new inventory is announced.",
-        body: "New drop [[today]]. Take a look: {website}. Reply STOP to opt out.",
+        tooltip: "Sent to opted-in subscribers when new inventory is announced.",
+        variables: ["business_name", "when", "website"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: New drop {when}. Take a look: {website}. Reply STOP to opt out.",
+          friendly: "{business_name}: Fresh stuff just dropped {when} — peek at {website}. Reply STOP to opt out.",
+          brief: "{business_name}: New drop. {website}. Reply STOP to opt out.",
+        },
       },
     ],
   },
@@ -157,12 +205,24 @@ const VERTICALS: Vertical[] = [
       {
         name: "Shift cover",
         tooltip: "Sent when a shift needs coverage.",
-        body: "Sarah is out sick. Mark, can you cover the [[3 PM]] shift? Reply STOP to opt out.",
+        variables: ["business_name", "shift_time"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Sarah is out sick. Mark, can you cover the {shift_time} shift? Reply STOP to opt out.",
+          friendly: "{business_name}: Hey Mark — Sarah's out sick. Got the {shift_time} shift? Reply STOP to opt out.",
+          brief: "{business_name}: Mark, cover {shift_time}? Sarah's out. Reply STOP to opt out.",
+        },
       },
       {
         name: "Deploy succeeded",
         tooltip: "Sent when a production deploy completes.",
-        body: "Production deploy succeeded. All checks green. Reply STOP to opt out.",
+        variables: ["business_name"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Production deploy succeeded. All checks green. Reply STOP to opt out.",
+          friendly: "{business_name}: Deploy's live and all checks are green. Reply STOP to opt out.",
+          brief: "{business_name}: Deploy green. Reply STOP to opt out.",
+        },
       },
     ],
   },
@@ -175,12 +235,24 @@ const VERTICALS: Vertical[] = [
       {
         name: "Meetup tonight",
         tooltip: "Sent the day of a community meetup.",
-        body: "Tomorrow's meetup is on. [[7 PM]] at the usual spot. Reply STOP to opt out.",
+        variables: ["business_name", "time"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Tomorrow's meetup is on. {time} at the usual spot. Reply STOP to opt out.",
+          friendly: "{business_name}: See you at the meetup tomorrow — {time} at the usual spot! Reply STOP to opt out.",
+          brief: "{business_name}: Meetup tomorrow {time}. Reply STOP to opt out.",
+        },
       },
       {
         name: "New thread",
         tooltip: "Sent when a new thread starts in a followed channel.",
-        body: "New thread in the founders channel. Read it at {website}. Reply STOP to opt out.",
+        variables: ["business_name", "website"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: New thread in the founders channel. Read it at {website}. Reply STOP to opt out.",
+          friendly: "{business_name}: Fresh thread in the founders channel — give it a read at {website}. Reply STOP to opt out.",
+          brief: "{business_name}: New thread. {website}. Reply STOP to opt out.",
+        },
       },
     ],
   },
@@ -192,12 +264,24 @@ const VERTICALS: Vertical[] = [
       {
         name: "Table ready",
         tooltip: "Sent when a table opens.",
-        body: "Your table's ready. Come on in. Reply STOP to opt out.",
+        variables: ["business_name"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: Your table's ready. Come on in. Reply STOP to opt out.",
+          friendly: "{business_name}: Your table's ready — come on in! Reply STOP to opt out.",
+          brief: "{business_name}: Table ready. Reply STOP to opt out.",
+        },
       },
       {
         name: "Up next",
         tooltip: "Sent when the customer is next in line.",
-        body: "You're next on the waitlist. About [[5 minutes]]. Reply STOP to opt out.",
+        variables: ["business_name", "wait_time"],
+        requiresStop: true,
+        variants: {
+          standard: "{business_name}: You're next on the waitlist. About {wait_time}. Reply STOP to opt out.",
+          friendly: "{business_name}: You're up next — about {wait_time} to go. Reply STOP to opt out.",
+          brief: "{business_name}: Up next. About {wait_time}. Reply STOP to opt out.",
+        },
       },
     ],
   },
@@ -230,13 +314,11 @@ const PACK_DEFAULTS: Record<PackId, VerticalId[]> = {
   none: ["verification"],
 };
 
-const TONES: Array<{ id: ToneId; label: string }> = [
+const TONE_OPTIONS: Array<{ id: ToneId; label: string }> = [
   { id: "standard", label: "Standard" },
   { id: "friendly", label: "Friendly" },
   { id: "brief", label: "Brief" },
 ];
-
-const VARIABLE_TOKEN_CLASSES = "text-text-brand-secondary";
 
 function tonePillClasses(active: boolean): string {
   const base =
@@ -247,60 +329,15 @@ function tonePillClasses(active: boolean): string {
   return `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
 }
 
-interface BodySegment {
-  text: string;
-  variable: boolean;
-}
-
-function parseBody(template: string, name: string, site: string): BodySegment[] {
-  const segments: BodySegment[] = [];
-  const re = /(\{businessName\}|\{website\}|\[\[[^\]]+\]\])/g;
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(template)) !== null) {
-    if (match.index > lastIndex) {
-      segments.push({
-        text: template.slice(lastIndex, match.index),
-        variable: false,
-      });
-    }
-    const tok = match[0];
-    if (tok === "{businessName}") {
-      segments.push({ text: name, variable: true });
-    } else if (tok === "{website}") {
-      segments.push({ text: site, variable: true });
-    } else {
-      segments.push({ text: tok.slice(2, -2), variable: true });
-    }
-    lastIndex = match.index + tok.length;
-  }
-  if (lastIndex < template.length) {
-    segments.push({ text: template.slice(lastIndex), variable: false });
-  }
-  return segments;
-}
-
-function flattenTemplate(template: string, name: string, site: string): string {
-  return template
-    .replaceAll("{businessName}", name)
-    .replaceAll("{website}", site)
-    .replace(/\[\[([^\]]+)\]\]/g, "$1");
-}
-
-function renderBodySegments(segments: BodySegment[]): ReactNode[] {
-  return segments.map((seg, i) =>
-    seg.variable ? (
-      <span key={i} className={VARIABLE_TOKEN_CLASSES}>
-        {seg.text}
-      </span>
-    ) : (
-      <span key={i}>{seg.text}</span>
-    ),
-  );
-}
-
 function makeId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+function buildCustomPrefill(verticalId: VerticalId): string {
+  if (verticalId === "verification") {
+    return "{business_name}: [your message here]";
+  }
+  return "{business_name}: [your message here] Reply STOP to opt out.";
 }
 
 const EMPTY_CUSTOM: Record<VerticalId, CustomMessage[]> = {
@@ -314,84 +351,86 @@ const EMPTY_CUSTOM: Record<VerticalId, CustomMessage[]> = {
   waitlist: [],
 };
 
-function buildPrefill(verticalId: VerticalId): string {
-  if (verticalId === "verification") {
-    return "[your message here]";
-  }
-  return "[your message here] Reply STOP to opt out.";
+function flattenTemplateForCopy(
+  template: string,
+  verticalId: VerticalId,
+  state: SessionState,
+): string {
+  return interpolateTemplate(template, verticalId, state)
+    .map((s) => s.text)
+    .join("");
 }
 
-function InfoIcon({ className }: { className?: string }) {
+interface RenderedBodyProps {
+  template: string;
+  verticalId: VerticalId;
+  state: SessionState;
+}
+
+function RenderedBody({ template, verticalId, state }: RenderedBodyProps) {
+  const segments = interpolateTemplate(template, verticalId, state);
   return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 16 16"
-      fill="none"
-      aria-hidden
-    >
-      <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
-      <path d="M8 7V11" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
-      <circle cx="8" cy="5.25" r="0.75" fill="currentColor" />
-    </svg>
+    <p className="text-sm leading-relaxed text-text-secondary">
+      {segments.map((seg, i) =>
+        seg.isVariable ? (
+          <span key={i} className={VARIABLE_TOKEN_CLASSES}>
+            {seg.text}
+          </span>
+        ) : (
+          <span key={i}>{seg.text}</span>
+        ),
+      )}
+    </p>
   );
 }
 
-interface InfoTooltipProps {
-  text: string;
-}
-
-function InfoTooltip({ text }: InfoTooltipProps) {
-  const [show, setShow] = useState(false);
-  return (
-    <div className="relative flex-shrink-0">
-      <button
-        type="button"
-        onMouseEnter={() => setShow(true)}
-        onMouseLeave={() => setShow(false)}
-        onFocus={() => setShow(true)}
-        onBlur={() => setShow(false)}
-        className="cursor-default text-fg-quaternary transition duration-100 ease-linear hover:text-fg-tertiary"
-        aria-label={text}
-      >
-        <InfoIcon />
-      </button>
-      {show ? (
-        <div className="pointer-events-none absolute bottom-full left-0 z-[100] mb-1 max-w-[280px] min-w-[220px] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs leading-relaxed whitespace-normal text-text-white shadow-lg">
-          {text}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-interface MessageCardProps {
+interface MessageReadCardProps {
   name: string;
   tooltip?: string;
   template: string;
-  businessName: string;
-  website: string;
+  verticalId: VerticalId;
+  state: SessionState;
   onEdit: () => void;
 }
 
-function MessageCard({
+function MessageReadCard({
   name,
   tooltip,
   template,
-  businessName,
-  website,
+  verticalId,
+  state,
   onEdit,
-}: MessageCardProps) {
-  const segments = parseBody(template, businessName, website);
+}: MessageReadCardProps) {
+  const [showTooltip, setShowTooltip] = useState(false);
   return (
     <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          <span className="truncate text-sm font-semibold text-text-primary">
-            {name}
-          </span>
-          {tooltip ? <InfoTooltip text={tooltip} /> : null}
+          <span className="truncate text-sm font-semibold text-text-primary">{name}</span>
+          {tooltip ? (
+            <div className="relative flex-shrink-0">
+              <button
+                type="button"
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
+                onFocus={() => setShowTooltip(true)}
+                onBlur={() => setShowTooltip(false)}
+                className="cursor-default text-fg-quaternary transition duration-100 ease-linear hover:text-fg-tertiary"
+                aria-label={tooltip}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden>
+                  <circle cx="8" cy="8" r="6.5" stroke="currentColor" strokeWidth="1.25" />
+                  <path d="M8 7V11" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+                  <circle cx="8" cy="5.25" r="0.75" fill="currentColor" />
+                </svg>
+              </button>
+              {showTooltip ? (
+                <div className="pointer-events-none absolute bottom-full left-0 z-[100] mb-1 max-w-[280px] min-w-[220px] rounded-lg bg-bg-primary-solid px-3 py-2 text-xs leading-relaxed whitespace-normal text-text-white shadow-lg">
+                  {tooltip}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         <button
           type="button"
@@ -403,151 +442,18 @@ function MessageCard({
         </button>
       </div>
       <div className="mt-1">
-        <p className="text-sm leading-relaxed text-text-secondary">
-          <span className={VARIABLE_TOKEN_CLASSES}>{businessName}</span>:{" "}
-          {renderBodySegments(segments)}
-        </p>
+        <RenderedBody template={template} verticalId={verticalId} state={state} />
       </div>
     </div>
   );
 }
 
-interface SimpleBodyEditorProps {
-  initialBody: string;
-  onSave: (body: string) => void;
-  onCancel: () => void;
-}
+type MessageKey = string;
 
-function SimpleBodyEditor({ initialBody, onSave, onCancel }: SimpleBodyEditorProps) {
-  const [draft, setDraft] = useState(initialBody);
-  return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
-      <div className="rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs transition duration-100 ease-linear focus-within:border-border-brand">
-        <textarea
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          rows={3}
-          className="block min-h-[4.5rem] w-full resize-none bg-transparent text-sm leading-relaxed text-text-secondary outline-none"
-        />
-      </div>
-      <div className="mt-3 flex items-center justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="cursor-pointer px-3 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={() => onSave(draft)}
-          disabled={draft.trim() === ""}
-          className="cursor-pointer rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  );
-}
-
-interface AddMessageEditorProps {
+interface CustomEditorState {
   verticalId: VerticalId;
-  onSave: (name: string, body: string) => void;
-  onCancel: () => void;
-}
-
-function AddMessageEditor({ verticalId, onSave, onCancel }: AddMessageEditorProps) {
-  const [name, setName] = useState("");
-  const [body, setBody] = useState(buildPrefill(verticalId));
-  const [aiInput, setAiInput] = useState("");
-  const inputId = `add-${verticalId}`;
-  const nameEmpty = name.trim() === "";
-  const bodyEmpty = body.trim() === "";
-
-  return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
-      <div>
-        <label
-          htmlFor={`${inputId}-name`}
-          className="mb-1.5 block text-sm font-medium text-text-secondary"
-        >
-          Name
-        </label>
-        <input
-          id={`${inputId}-name`}
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="e.g. Holiday hours"
-          className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary shadow-xs transition duration-100 ease-linear placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-        />
-      </div>
-
-      <div className="mt-4">
-        <label
-          htmlFor={`${inputId}-body`}
-          className="mb-1.5 block text-sm font-medium text-text-secondary"
-        >
-          Message
-        </label>
-        <div className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs transition duration-100 ease-linear focus-within:border-border-brand">
-          <textarea
-            id={`${inputId}-body`}
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            rows={3}
-            className="block min-h-[4.5rem] w-full resize-none bg-transparent text-sm leading-relaxed text-text-secondary outline-none"
-          />
-        </div>
-        <div className="mt-2 flex items-start">
-          <button
-            type="button"
-            onClick={() => undefined}
-            className="ml-auto inline-flex cursor-pointer items-center gap-1 py-1.5 text-xs font-semibold whitespace-nowrap text-text-brand-secondary transition-colors duration-100 hover:text-text-brand-secondary_hover"
-          >
-            <Plus className="size-3.5" />
-            Variable
-          </button>
-        </div>
-      </div>
-
-      <div className="mt-3">
-        <div className="relative">
-          <Stars02 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-fg-brand-primary" />
-          <input
-            type="text"
-            value={aiInput}
-            onChange={(e) => setAiInput(e.target.value)}
-            placeholder={
-              body.trim() === buildPrefill(verticalId).trim() || body.trim() === ""
-                ? "Ask AI: write me a message"
-                : "Ask AI: polish my edit"
-            }
-            className="w-full rounded-lg border border-border-primary bg-bg-primary py-2 pr-3 pl-9 text-sm text-text-primary shadow-xs transition duration-100 ease-linear placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-          />
-        </div>
-      </div>
-
-      <div className="mt-4 flex items-center justify-end gap-2">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="cursor-pointer px-3 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-        >
-          Cancel
-        </button>
-        <button
-          type="button"
-          onClick={() => onSave(name.trim(), body.trim())}
-          disabled={nameEmpty || bodyEmpty}
-          className="cursor-pointer rounded-lg bg-bg-brand-solid px-4 py-2 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          Save
-        </button>
-      </div>
-    </div>
-  );
+  draft: CustomMessage;
+  isNew: boolean;
 }
 
 export function ConfiguratorSection() {
@@ -555,26 +461,54 @@ export function ConfiguratorSection() {
   const [selected, setSelected] = useState<Set<VerticalId>>(
     () => new Set<VerticalId>(PACK_DEFAULTS.saas),
   );
-  const [tone, setTone] = useState<ToneId>("standard");
+  const [globalTone, setGlobalTone] = useState<ToneId>("standard");
   const [businessName, setBusinessName] = useState("");
   const [website, setWebsite] = useState("");
-  const [editedStubs, setEditedStubs] = useState<Record<string, string>>({});
+
+  // Per-message tone override (only set when user explicitly chose in edit card)
+  const [perMessageTone, setPerMessageTone] = useState<Record<MessageKey, ToneId>>({});
+  // Custom-edited bodies (set when activePillId === "custom" on save)
+  const [editedStubs, setEditedStubs] = useState<Record<MessageKey, string>>({});
+
   const [customMessages, setCustomMessages] =
     useState<Record<VerticalId, CustomMessage[]>>(EMPTY_CUSTOM);
+
   const [editingKey, setEditingKey] = useState<string | null>(null);
-  const [addingTo, setAddingTo] = useState<VerticalId | null>(null);
+  const [customEditor, setCustomEditor] = useState<CustomEditorState | null>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
 
-  const renderName = businessName.trim() || "Acme";
-  const renderWebsite = website.trim() || "acme.com";
+  const sessionState = useMemo<SessionState>(
+    () => ({
+      businessName: businessName.trim() || "Acme",
+      website: website.trim() || "acme.com",
+    }),
+    [businessName, website],
+  );
 
-  function stubBody(verticalId: VerticalId, index: number): string {
-    const key = `${verticalId}:stub:${index}`;
-    return editedStubs[key] ?? VERTICAL_BY_ID[verticalId].messages[index].body;
+  const selectedInOrder = useMemo<VerticalId[]>(
+    () => VERTICALS.filter((v) => selected.has(v.id)).map((v) => v.id),
+    [selected],
+  );
+
+  function stubKey(verticalId: VerticalId, index: number): MessageKey {
+    return `${verticalId}:stub:${index}`;
   }
 
-  function customBody(verticalId: VerticalId, id: string): string {
-    return customMessages[verticalId].find((m) => m.id === id)?.body ?? "";
+  function customKey(verticalId: VerticalId, id: string): MessageKey {
+    return `${verticalId}:custom:${id}`;
+  }
+
+  function effectiveStubTemplate(verticalId: VerticalId, index: number): {
+    template: string;
+    pillId: PillId;
+  } {
+    const key = stubKey(verticalId, index);
+    if (editedStubs[key] !== undefined) {
+      return { template: editedStubs[key], pillId: "custom" };
+    }
+    const tone = perMessageTone[key] ?? globalTone;
+    const stub = VERTICAL_BY_ID[verticalId].messages[index];
+    return { template: stub.variants[tone] ?? stub.variants.standard, pillId: tone };
   }
 
   function handlePackChange(nextPack: PackId) {
@@ -586,58 +520,70 @@ export function ConfiguratorSection() {
     if (VERTICAL_BY_ID[id].alwaysOn) return;
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
       return next;
     });
     setPack("custom");
   }
 
-  function handleStubSave(verticalId: VerticalId, index: number, body: string) {
-    const key = `${verticalId}:stub:${index}`;
-    setEditedStubs((prev) => ({ ...prev, [key]: body }));
+  function handleStubSave(
+    verticalId: VerticalId,
+    index: number,
+    result: { template: string; pillId: PillId },
+  ) {
+    const key = stubKey(verticalId, index);
+    if (result.pillId === "custom") {
+      setEditedStubs((prev) => ({ ...prev, [key]: result.template }));
+    } else {
+      const tone: ToneId = result.pillId;
+      setEditedStubs((prev) => {
+        if (!(key in prev)) return prev;
+        const { [key]: _omit, ...rest } = prev;
+        void _omit;
+        return rest;
+      });
+      setPerMessageTone((prev) => ({ ...prev, [key]: tone }));
+    }
     setEditingKey(null);
   }
 
   function handleCustomSave(verticalId: VerticalId, id: string, body: string) {
     setCustomMessages((prev) => ({
       ...prev,
-      [verticalId]: prev[verticalId].map((m) =>
-        m.id === id ? { ...m, body } : m,
-      ),
+      [verticalId]: prev[verticalId].map((m) => (m.id === id ? { ...m, body } : m)),
     }));
     setEditingKey(null);
+    setCustomEditor(null);
   }
 
-  function handleAddSave(verticalId: VerticalId, name: string, body: string) {
-    const id = makeId();
+  function handleAddSave(verticalId: VerticalId, body: string) {
+    const newMessage: CustomMessage = {
+      id: makeId(),
+      name: "Custom message",
+      body,
+      requiresStop: verticalId !== "verification",
+    };
     setCustomMessages((prev) => ({
       ...prev,
-      [verticalId]: [...prev[verticalId], { id, name, body }],
+      [verticalId]: [...prev[verticalId], newMessage],
     }));
-    setAddingTo(null);
+    setCustomEditor(null);
   }
 
-  const selectedInOrder = useMemo<VerticalId[]>(
-    () => VERTICALS.filter((v) => selected.has(v.id)).map((v) => v.id),
-    [selected],
-  );
-
-  const websiteShown = useMemo(() => {
-    for (const id of selectedInOrder) {
-      const vertical = VERTICAL_BY_ID[id];
-      for (let i = 0; i < vertical.messages.length; i++) {
-        if (stubBody(id, i).includes("{website}")) return true;
-      }
-      for (const m of customMessages[id]) {
-        if (m.body.includes("{website}")) return true;
-      }
-    }
-    return false;
-  }, [selectedInOrder, editedStubs, customMessages]);
+  function openAddEditor(verticalId: VerticalId) {
+    setEditingKey(null);
+    setCustomEditor({
+      verticalId,
+      draft: {
+        id: makeId(),
+        name: "Custom message",
+        body: buildCustomPrefill(verticalId),
+        requiresStop: verticalId !== "verification",
+      },
+      isNew: true,
+    });
+  }
 
   async function handleCopy() {
     const lines: string[] = [];
@@ -645,14 +591,11 @@ export function ConfiguratorSection() {
       const vertical = VERTICAL_BY_ID[id];
       lines.push(vertical.title);
       vertical.messages.forEach((_, i) => {
-        lines.push(
-          `${renderName}: ${flattenTemplate(stubBody(id, i), renderName, renderWebsite)}`,
-        );
+        const { template } = effectiveStubTemplate(id, i);
+        lines.push(flattenTemplateForCopy(template, id, sessionState));
       });
       for (const m of customMessages[id]) {
-        lines.push(
-          `${renderName}: ${flattenTemplate(m.body, renderName, renderWebsite)}`,
-        );
+        lines.push(flattenTemplateForCopy(m.body, id, sessionState));
       }
       lines.push("");
     }
@@ -671,241 +614,286 @@ export function ConfiguratorSection() {
     return () => clearTimeout(timer);
   }, [copyToastVisible]);
 
-  // Tone is selectable but only "standard" varies content for now. Other tones
-  // render the same Standard text — known YOLO stub.
-  void tone;
+  const websiteShown = useMemo(() => {
+    for (const id of selectedInOrder) {
+      const vertical = VERTICAL_BY_ID[id];
+      const valueMap = getExampleValues(id);
+      if (!valueMap.has("website")) continue;
+      for (let i = 0; i < vertical.messages.length; i++) {
+        const { template } = effectiveStubTemplate(id, i);
+        if (template.includes("{website}")) return true;
+      }
+      for (const m of customMessages[id]) {
+        if (m.body.includes("{website}")) return true;
+      }
+    }
+    return false;
+  }, [selectedInOrder, editedStubs, customMessages, perMessageTone, globalTone]);
 
   return (
-    <section className="bg-bg-primary pt-15 pb-16 sm:pb-20">
-      <div className="mx-auto max-w-5xl px-6">
-        {/* Header */}
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-text-primary">
-            Configure your messages
-          </h2>
-          <p className="mt-3 text-base text-text-tertiary">
-            OTP is included. You can change any of this later in your workspace.
-          </p>
-        </div>
-
-        {/* Side-by-side panels */}
-        <div className="mt-8 grid grid-cols-1 items-start gap-8 md:grid-cols-[3fr_7fr]">
-          {/* Categories panel */}
-          <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
-            <div className="px-4 pt-5 pb-6">
-              <h3 className="text-base font-semibold text-text-primary">Categories</h3>
-              <div className="mt-4">
-                <label
-                  htmlFor="recommended-combinations"
-                  className="mb-1.5 block text-sm font-medium text-text-secondary"
-                >
-                  Recommended combinations
-                </label>
-                <div className="relative">
-                  <select
-                    id="recommended-combinations"
-                    value={pack}
-                    onChange={(e) => handlePackChange(e.target.value as PackId)}
-                    className="block w-full appearance-none rounded-lg border border-border-primary bg-bg-primary py-2.5 pr-9 pl-3 text-base text-text-primary transition duration-100 ease-linear focus:border-border-brand focus:outline-none"
-                  >
-                    {PACKS.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.label}
-                      </option>
-                    ))}
-                    <option disabled>──────────</option>
-                    <option value="none">None</option>
-                  </select>
-                  <ChevronDown
-                    aria-hidden
-                    className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-fg-quaternary"
-                  />
-                </div>
-              </div>
-            </div>
-            {VERTICALS.map((v) => {
-              const isSelected = selected.has(v.id);
-              const isAlwaysOn = v.alwaysOn === true;
-              return (
-                <div
-                  key={v.id}
-                  className="border-b border-border-secondary px-4 py-5 last:border-b-0"
-                >
-                  <button
-                    type="button"
-                    onClick={() => handleVerticalToggle(v.id)}
-                    disabled={isAlwaysOn}
-                    className="flex w-full items-start gap-3 text-left disabled:cursor-default"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isSelected}
-                      readOnly
-                      disabled={isAlwaysOn}
-                      tabIndex={-1}
-                      className="mt-0.5 size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
-                    />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-text-primary">
-                          {v.title}
-                        </span>
-                        {isAlwaysOn ? (
-                          <span className="shrink-0 rounded-full bg-bg-brand-secondary px-2 py-0.5 text-xs font-medium text-text-brand-secondary">
-                            Included
-                          </span>
-                        ) : null}
-                      </div>
-                      <p className="mt-1 text-xs text-text-tertiary">
-                        {v.description}
-                      </p>
-                      {isSelected && v.note ? (
-                        <p className="mt-1 text-xs text-text-secondary">{v.note}</p>
-                      ) : null}
-                    </div>
-                  </button>
-                </div>
-              );
-            })}
+    <SessionProvider state={sessionState}>
+      <section className="bg-bg-primary pt-15 pb-16 sm:pb-20">
+        <div className="mx-auto max-w-5xl px-6">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-text-primary">
+              Configure your messages
+            </h2>
+            <p className="mt-3 text-base text-text-tertiary">
+              OTP is included. You can change any of this later in your workspace.
+            </p>
           </div>
 
-          {/* Messages column — borderless, flows in the section directly */}
-          <div className="md:max-w-[540px]">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex flex-wrap gap-2">
-                {TONES.map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setTone(t.id)}
-                    className={tonePillClasses(tone === t.id)}
+          <div className="mt-8 grid grid-cols-1 items-start gap-8 md:grid-cols-[3fr_7fr]">
+            {/* Categories panel */}
+            <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
+              <div className="px-4 pt-5 pb-6">
+                <h3 className="text-base font-semibold text-text-primary">Categories</h3>
+                <div className="mt-4">
+                  <label
+                    htmlFor="recommended-combinations"
+                    className="mb-1.5 block text-sm font-medium text-text-secondary"
                   >
-                    {t.label}
-                  </button>
-                ))}
+                    Recommended combinations
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="recommended-combinations"
+                      value={pack}
+                      onChange={(e) => handlePackChange(e.target.value as PackId)}
+                      className="block w-full appearance-none rounded-lg border border-border-primary bg-bg-primary py-2.5 pr-9 pl-3 text-base text-text-primary transition duration-100 ease-linear focus:border-border-brand focus:outline-none"
+                    >
+                      {PACKS.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.label}
+                        </option>
+                      ))}
+                      <option disabled>──────────</option>
+                      <option value="none">None</option>
+                    </select>
+                    <ChevronDown
+                      aria-hidden
+                      className="pointer-events-none absolute top-1/2 right-3 size-4 -translate-y-1/2 text-fg-quaternary"
+                    />
+                  </div>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={handleCopy}
-                className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-              >
-                <Copy01 className="size-4" />
-                {copyToastVisible ? "Copied" : "Copy"}
-              </button>
-            </div>
-            <div
-              className={`mt-4 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
-            >
-              <input
-                type="text"
-                value={businessName}
-                onChange={(e) => setBusinessName(e.target.value)}
-                placeholder="Your business name"
-                className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-              />
-              {websiteShown ? (
-                <input
-                  type="text"
-                  value={website}
-                  onChange={(e) => setWebsite(e.target.value)}
-                  placeholder="yourwebsite.com"
-                  className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-                />
-              ) : null}
-            </div>
-            <div className="mt-8 space-y-7">
-              {selectedInOrder.map((id) => {
-                const vertical = VERTICAL_BY_ID[id];
-                const customs = customMessages[id];
-                const isAdding = addingTo === id;
+              {VERTICALS.map((v) => {
+                const isSelected = selected.has(v.id);
+                const isAlwaysOn = v.alwaysOn === true;
                 return (
-                  <div key={id}>
-                    <h4 className="mb-3 text-base font-semibold text-text-primary">
-                      {vertical.title}
-                    </h4>
-                    <div className="space-y-3">
-                      {vertical.messages.map((stub, i) => {
-                        const key = `${id}:stub:${i}`;
-                        const body = stubBody(id, i);
-                        return editingKey === key ? (
-                          <SimpleBodyEditor
-                            key={key}
-                            initialBody={body}
-                            onSave={(next) => handleStubSave(id, i, next)}
-                            onCancel={() => setEditingKey(null)}
-                          />
-                        ) : (
-                          <MessageCard
-                            key={key}
-                            name={stub.name}
-                            tooltip={stub.tooltip}
-                            template={body}
-                            businessName={renderName}
-                            website={renderWebsite}
-                            onEdit={() => setEditingKey(key)}
-                          />
-                        );
-                      })}
-
-                      {customs.map((m) => {
-                        const key = `${id}:custom:${m.id}`;
-                        const body = customBody(id, m.id);
-                        return editingKey === key ? (
-                          <SimpleBodyEditor
-                            key={key}
-                            initialBody={body}
-                            onSave={(next) => handleCustomSave(id, m.id, next)}
-                            onCancel={() => setEditingKey(null)}
-                          />
-                        ) : (
-                          <MessageCard
-                            key={key}
-                            name={m.name}
-                            template={body}
-                            businessName={renderName}
-                            website={renderWebsite}
-                            onEdit={() => setEditingKey(key)}
-                          />
-                        );
-                      })}
-
-                      {isAdding ? (
-                        <AddMessageEditor
-                          verticalId={id}
-                          onSave={(name, body) => handleAddSave(id, name, body)}
-                          onCancel={() => setAddingTo(null)}
-                        />
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => setAddingTo(id)}
-                          disabled={addingTo !== null && addingTo !== id}
-                          className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover disabled:cursor-not-allowed disabled:opacity-60"
-                        >
-                          <Plus className="size-4" />
-                          Add message
-                        </button>
-                      )}
-                    </div>
+                  <div
+                    key={v.id}
+                    className="border-b border-border-secondary px-4 py-5 last:border-b-0"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleVerticalToggle(v.id)}
+                      disabled={isAlwaysOn}
+                      className="flex w-full items-start gap-3 text-left disabled:cursor-default"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        readOnly
+                        disabled={isAlwaysOn}
+                        tabIndex={-1}
+                        className="mt-0.5 size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-text-primary">
+                            {v.title}
+                          </span>
+                          {isAlwaysOn ? (
+                            <span className="shrink-0 rounded-full bg-bg-brand-secondary px-2 py-0.5 text-xs font-medium text-text-brand-secondary">
+                              Included
+                            </span>
+                          ) : null}
+                        </div>
+                        <p className="mt-1 text-xs text-text-tertiary">{v.description}</p>
+                        {isSelected && v.note ? (
+                          <p className="mt-1 text-xs text-text-secondary">{v.note}</p>
+                        ) : null}
+                      </div>
+                    </button>
                   </div>
                 );
               })}
             </div>
-            <div className="mt-8">
-              <p className="text-sm text-text-secondary">
-                Next: a few quick questions, then you build with your AI tool
-                while we register you. Three days to your first real text.
-              </p>
-              <Link
-                href="/signup"
-                className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+
+            {/* Messages column */}
+            <div className="md:max-w-[540px]">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap gap-2">
+                  {TONE_OPTIONS.map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setGlobalTone(t.id)}
+                      className={tonePillClasses(globalTone === t.id)}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                >
+                  <Copy01 className="size-4" />
+                  {copyToastVisible ? "Copied" : "Copy"}
+                </button>
+              </div>
+
+              <div
+                className={`mt-4 grid grid-cols-1 gap-3 ${websiteShown ? "sm:grid-cols-2" : ""}`}
               >
-                Save to my workspace →
-              </Link>
+                <input
+                  type="text"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="Your business name"
+                  className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                />
+                {websiteShown ? (
+                  <input
+                    type="text"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="yourwebsite.com"
+                    className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                  />
+                ) : null}
+              </div>
+
+              <div className="mt-8 space-y-7">
+                {selectedInOrder.map((id) => {
+                  const vertical = VERTICAL_BY_ID[id];
+                  const customs = customMessages[id];
+                  const isAdding = customEditor?.verticalId === id && customEditor.isNew;
+                  return (
+                    <div key={id}>
+                      <h4 className="mb-3 text-base font-semibold text-text-primary">
+                        {vertical.title}
+                      </h4>
+                      <div className="space-y-3">
+                        {vertical.messages.map((stub: StubMessage, i) => {
+                          const key = stubKey(id, i);
+                          const { template, pillId } = effectiveStubTemplate(id, i);
+                          if (editingKey === key) {
+                            return (
+                              <MessageEditCard
+                                key={key}
+                                name={stub.name}
+                                tooltip={stub.tooltip}
+                                verticalId={id}
+                                variables={stub.variables}
+                                requiresStop={stub.requiresStop}
+                                variants={stub.variants}
+                                initialTemplate={template}
+                                initialPillId={pillId}
+                                onSave={(result) => handleStubSave(id, i, result)}
+                                onCancel={() => setEditingKey(null)}
+                              />
+                            );
+                          }
+                          return (
+                            <MessageReadCard
+                              key={key}
+                              name={stub.name}
+                              tooltip={stub.tooltip}
+                              template={template}
+                              verticalId={id}
+                              state={sessionState}
+                              onEdit={() => {
+                                setCustomEditor(null);
+                                setEditingKey(key);
+                              }}
+                            />
+                          );
+                        })}
+
+                        {customs.map((m) => {
+                          const key = customKey(id, m.id);
+                          if (editingKey === key) {
+                            return (
+                              <MessageEditCard
+                                key={key}
+                                name={m.name}
+                                verticalId={id}
+                                variables={["business_name"]}
+                                requiresStop={m.requiresStop}
+                                initialTemplate={m.body}
+                                initialPillId="custom"
+                                onSave={(result) =>
+                                  handleCustomSave(id, m.id, result.template)
+                                }
+                                onCancel={() => setEditingKey(null)}
+                              />
+                            );
+                          }
+                          return (
+                            <MessageReadCard
+                              key={key}
+                              name={m.name}
+                              template={m.body}
+                              verticalId={id}
+                              state={sessionState}
+                              onEdit={() => {
+                                setCustomEditor(null);
+                                setEditingKey(key);
+                              }}
+                            />
+                          );
+                        })}
+
+                        {isAdding && customEditor ? (
+                          <MessageEditCard
+                            name={customEditor.draft.name}
+                            verticalId={id}
+                            variables={["business_name"]}
+                            requiresStop={customEditor.draft.requiresStop}
+                            initialTemplate={customEditor.draft.body}
+                            initialPillId="custom"
+                            onSave={(result) => handleAddSave(id, result.template)}
+                            onCancel={() => setCustomEditor(null)}
+                          />
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => openAddEditor(id)}
+                            disabled={
+                              customEditor !== null && customEditor.verticalId !== id
+                            }
+                            className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            <Plus className="size-4" />
+                            Add message
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-8">
+                <p className="text-sm text-text-secondary">
+                  Next: a few quick questions, then you build with your AI tool while we
+                  register you. Three days to your first real text.
+                </p>
+                <Link
+                  href="/signup"
+                  className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                >
+                  Save to my workspace →
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </SessionProvider>
   );
 }
