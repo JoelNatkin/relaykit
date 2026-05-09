@@ -6,7 +6,6 @@ import {
   Calendar,
   CheckCircle,
   ClipboardCheck,
-  Code02,
   Globe01,
   MessageChatCircle,
   MessageCheckCircle,
@@ -18,32 +17,6 @@ import {
 } from "@untitledui/icons";
 import type { FC } from "react";
 import { ConfiguratorSection } from "@/components/configurator-section";
-
-const TOOLS = [
-  { id: "claude-code", label: "Claude Code" },
-  { id: "cursor", label: "Cursor" },
-  { id: "windsurf", label: "Windsurf" },
-  { id: "copilot", label: "GitHub Copilot" },
-  { id: "cline", label: "Cline" },
-  { id: "other", label: "Other" },
-];
-
-const TOOL_LOGO_MAP: Record<string, string> = {
-  "claude-code": "/logos/claude-logo.svg",
-  cursor: "/logos/cursor-logo.svg",
-  windsurf: "/logos/windsurf-logo.svg",
-  copilot: "/logos/github-copilot-logo.svg",
-  cline: "/logos/cline-logo.svg",
-};
-
-function ToolLogo({ id }: { id: string }) {
-  const logoSrc = TOOL_LOGO_MAP[id];
-  if (!logoSrc) return <Code02 className="h-6 w-6 text-text-quaternary" />;
-  const sizeClass = id === "windsurf" ? "w-[34px] h-[34px]" : "w-7 h-7";
-  return (
-    <img src={logoSrc} alt={id} className={`${sizeClass} object-contain`} draggable={false} />
-  );
-}
 
 interface Category {
   id: string;
@@ -130,20 +103,6 @@ export default function MarketingHome() {
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
             Two files. Your AI coding tool. A working SMS feature.
           </p>
-
-          {/* Logo row */}
-          <div className="mt-8 flex items-center gap-5">
-            {TOOLS.map((tool) => (
-              <div key={tool.id} className="flex min-w-[56px] flex-col items-center gap-1.5">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full border border-[#999999] bg-white">
-                  <ToolLogo id={tool.id} />
-                </div>
-                <span className="whitespace-nowrap text-[10px] font-medium text-text-tertiary">
-                  {tool.label}
-                </span>
-              </div>
-            ))}
-          </div>
         </div>
       </div>
 

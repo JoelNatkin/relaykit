@@ -668,7 +668,7 @@ export function ConfiguratorSection() {
   void tone;
 
   return (
-    <section className="bg-bg-primary pt-15 pb-16 sm:pb-20">
+    <section className="bg-bg-primary pt-20 pb-16 sm:pb-20">
       <div className="mx-auto max-w-5xl px-6">
         {/* Header */}
         <div>
@@ -676,8 +676,7 @@ export function ConfiguratorSection() {
             Configure your messages
           </h2>
           <p className="mt-3 text-base text-text-tertiary">
-            OTP is included. Add what else you need. You can change any of this
-            later in your workspace.
+            OTP is included. You can change any of this later in your workspace.
           </p>
         </div>
 
