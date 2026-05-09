@@ -109,28 +109,26 @@ export default function MarketingHome() {
 
       {/* Section 4 — Test it for real */}
       <section className="mx-auto mt-24 max-w-5xl px-6">
-        <div>
-          <h2 className="text-2xl font-bold text-text-primary">Test it for real.</h2>
-          <p className="mt-4 max-w-2xl leading-relaxed text-text-tertiary">
-            Real SMS, real phones, before customers see anything.
-          </p>
-        </div>
+        <h2 className="text-2xl font-bold text-text-primary">
+          Real SMS, before customers see anything.
+        </h2>
 
-        <div className="mt-12 grid grid-cols-1 items-start gap-10 md:grid-cols-[3fr_2fr]">
-          <div className="flex flex-col gap-4">
-            <p className="text-base leading-relaxed text-text-secondary">
-              You don&apos;t have to wait for production to know if it works. Add yourself, your
-              team, your beta testers — each person verifies once. After that, your app&apos;s SMS
-              features work for them exactly the way they&apos;ll work for customers. Verification
-              codes, reminders, the whole flow.
-            </p>
-            <p className="text-base leading-relaxed text-text-secondary">
-              Your AI tool also sets up testing utilities in your app: trigger an OTP, fire a
-              reminder, queue a message — end-to-end, from your editor.
-            </p>
-            <p className="mt-2 text-sm italic leading-relaxed text-text-tertiary">
-              When you go live, it&apos;s the same code path. No surprises.
-            </p>
+        <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
+          <div className="flex flex-col gap-6">
+            <div>
+              <h3 className="text-base font-bold text-text-primary">Preview list</h3>
+              <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                Add yourself, your team, your beta testers. Each person verifies once. After that,
+                your app&apos;s SMS features work for them the way they will for customers.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-text-primary">Testing utilities</h3>
+              <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                Your AI tool also sets up testing tools in your app. Trigger an OTP, fire a
+                reminder, queue a message — from your editor.
+              </p>
+            </div>
           </div>
           <PreviewListMock />
         </div>
