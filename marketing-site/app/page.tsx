@@ -1,15 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ConfiguratorSection } from "@/components/configurator-section";
-import { HeroOtpVisual } from "@/components/hero-otp-visual";
 import { PreviewListMock } from "@/components/preview-list-mock";
 
 const AI_TOOLS = [
-  { src: "/logos/claude-logo.svg", alt: "Claude Code" },
-  { src: "/logos/cursor-logo.svg", alt: "Cursor" },
-  { src: "/logos/windsurf-logo.svg", alt: "Windsurf" },
-  { src: "/logos/github-copilot-logo.svg", alt: "GitHub Copilot" },
-  { src: "/logos/cline-logo.svg", alt: "Cline" },
+  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", alt: "Claude Code" },
+  { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", alt: "Cursor" },
+  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", alt: "Windsurf" },
+  { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", alt: "GitHub Copilot" },
+  { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", alt: "Cline" },
 ] as const;
 
 const STARTER_KITS = ["ShipFast", "Supastarter", "MakerKit", "Vercel + Supabase"] as const;
@@ -26,34 +25,27 @@ export default function MarketingHome() {
     <div>
       {/* Section 1 — Hero */}
       <div className="pt-16">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-[3fr_2fr]">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-                SMS for builders
-              </h1>
-              <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-                Two files. Your AI tool. A working SMS feature.
-              </p>
-              <p className="mt-4 text-sm font-medium text-text-primary">
-                $49 + $19/mo. Three days to live.
-              </p>
-              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
-                {AI_TOOLS.map((tool) => (
-                  <Image
-                    key={tool.alt}
-                    src={tool.src}
-                    alt={tool.alt}
-                    width={120}
-                    height={20}
-                    className="h-5 w-auto opacity-70"
-                  />
-                ))}
-              </div>
-            </div>
-            <div className="flex justify-center md:justify-end">
-              <HeroOtpVisual />
-            </div>
+        <div className="mx-auto max-w-5xl px-6 text-center">
+          <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
+            SMS for builders
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-text-tertiary">
+            Two files. Your AI tool. A working SMS feature.
+          </p>
+          <p className="mt-4 text-sm font-medium text-text-primary">
+            $49 + $19/mo. Three days to live.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            {AI_TOOLS.map((tool) => (
+              <Image
+                key={tool.alt}
+                src={tool.src}
+                alt={tool.alt}
+                width={140}
+                height={24}
+                className="h-6 w-auto opacity-70"
+              />
+            ))}
           </div>
         </div>
       </div>

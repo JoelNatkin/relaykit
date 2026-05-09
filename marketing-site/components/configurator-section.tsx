@@ -700,16 +700,9 @@ export function ConfiguratorSection() {
                         className="mt-0.5 size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
                       />
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-text-primary">
-                            {v.title}
-                          </span>
-                          {isAlwaysOn ? (
-                            <span className="shrink-0 rounded-full bg-bg-brand-secondary px-2 py-0.5 text-xs font-medium text-text-brand-secondary">
-                              Included
-                            </span>
-                          ) : null}
-                        </div>
+                        <span className="text-sm font-medium text-text-primary">
+                          {v.title}
+                        </span>
                         <p className="mt-1 text-xs text-text-tertiary">{v.description}</p>
                         {isSelected && v.note ? (
                           <p className="mt-1 text-xs text-text-secondary">{v.note}</p>
