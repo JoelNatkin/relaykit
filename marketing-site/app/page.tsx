@@ -3,14 +3,18 @@ import Link from "next/link";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { PreviewListMock } from "@/components/preview-list-mock";
 
-// Per-logo heights tune visual weight, not pixel height. Cursor and others
-// that combine icon + wordmark render larger at a given pixel height than
-// pure-wordmark logos because the icon takes vertical room. First-pass
-// values; tune by eye if any logo reads dominant or recessive.
+// Per-logo heights tune visual weight, not pixel height. Heights compensate
+// for two things: (1) icon-plus-wordmark logos (Cursor, Copilot) render
+// taller at a given pixel height than pure wordmarks because the icon
+// glyph takes vertical room; (2) some SVGs have transparent padding baked
+// into the viewBox — windsurf in particular uses only ~33% of its canvas
+// height, so it needs roughly 2x the height of peers to render at matching
+// visible size. The flex row uses items-center, so the taller windsurf
+// cell centers cleanly with shorter siblings.
 const AI_TOOLS = [
   { src: "/logos/tool_logos_wordmarks/claude_pos.svg", alt: "Claude Code", heightClass: "h-[18px]" },
   { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", alt: "Cursor", heightClass: "h-[22px]" },
-  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", alt: "Windsurf", heightClass: "h-[20px]" },
+  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", alt: "Windsurf", heightClass: "h-[44px]" },
   { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", alt: "GitHub Copilot", heightClass: "h-[20px]" },
   { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", alt: "Cline", heightClass: "h-[18px]" },
 ] as const;
