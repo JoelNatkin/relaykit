@@ -639,7 +639,7 @@ export function ConfiguratorSection() {
               Configure your messages
             </h2>
             <p className="mt-3 text-base text-text-tertiary">
-              OTP is included. You can change any of this later in your workspace.
+              Verification codes included. You can change these later in your workspace.
             </p>
           </div>
 
