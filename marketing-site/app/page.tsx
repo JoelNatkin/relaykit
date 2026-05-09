@@ -134,22 +134,10 @@ export default function MarketingHome() {
         </div>
       </section>
 
-      {/* Section 5 — Paperwork + Pricing (two-col merge) */}
+      {/* Section 5 — Pricing + Paperwork (two-col merge) */}
       <section className="mx-auto mt-24 max-w-5xl px-6">
         <div className="grid grid-cols-1 items-start gap-12 md:grid-cols-2">
-          {/* Left col: paperwork */}
-          <div>
-            <h2 className="text-2xl font-bold text-text-primary">We handle the paperwork.</h2>
-            <p className="mt-6 text-base leading-relaxed text-text-secondary">
-              Registration paperwork. The approval back-and-forth. The opt-in form your users see.
-              STOP handling. Opt-out tracking. Delivery monitoring.
-            </p>
-            <p className="mt-6 text-sm italic text-text-tertiary">
-              We read it so you don&apos;t have to.
-            </p>
-          </div>
-
-          {/* Right col: pricing */}
+          {/* Left col: pricing */}
           <div>
             <h2 className="text-2xl font-bold text-text-primary">Simple pricing.</h2>
 
@@ -187,6 +175,18 @@ export default function MarketingHome() {
             <p className="mt-3 text-sm text-text-tertiary">
               US and Canada at launch. We don&apos;t handle HIPAA, healthcare-regulated workflows,
               or enterprise procurement.
+            </p>
+          </div>
+
+          {/* Right col: paperwork */}
+          <div>
+            <h2 className="text-2xl font-bold text-text-primary">We handle the paperwork.</h2>
+            <p className="mt-6 text-base leading-relaxed text-text-secondary">
+              Registration paperwork. The approval back-and-forth. The opt-in form your users see.
+              STOP handling. Opt-out tracking. Delivery monitoring.
+            </p>
+            <p className="mt-6 text-sm italic text-text-tertiary">
+              We read it so you don&apos;t have to.
             </p>
           </div>
         </div>
