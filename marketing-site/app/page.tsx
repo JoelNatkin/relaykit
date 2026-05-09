@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { HeroOtpVisual } from "@/components/hero-otp-visual";
@@ -39,10 +40,12 @@ export default function MarketingHome() {
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
                 {AI_TOOLS.map((tool) => (
-                  <img
+                  <Image
                     key={tool.alt}
                     src={tool.src}
                     alt={tool.alt}
+                    width={120}
+                    height={20}
                     className="h-5 w-auto opacity-70"
                   />
                 ))}

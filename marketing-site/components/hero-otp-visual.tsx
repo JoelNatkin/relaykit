@@ -1,7 +1,8 @@
 // Static OTP visual for the home-page hero. Non-interactive — six boxes
-// displaying "5", "6", "6", "8", focused-with-caret, empty, plus a disabled
-// "Continue" button. Box styling mirrors prototype/components/sign-in-modal.tsx
-// lines 210–224 (the live OTP input in the sign-in modal).
+// displaying "5", "6", "6", "8", focused-with-caret, empty, plus a styled
+// "Continue" element rendered as an inert div (no handler, no interactivity).
+// Box styling mirrors prototype/components/sign-in-modal.tsx lines 210–224
+// (the live OTP input in the sign-in modal).
 
 const FILLED = ["5", "6", "6", "8"] as const;
 
@@ -23,15 +24,9 @@ export function HeroOtpVisual() {
         </div>
         <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-border-primary bg-bg-primary text-lg font-semibold text-text-primary" />
       </div>
-      <button
-        type="button"
-        disabled
-        aria-disabled
-        tabIndex={-1}
-        className="w-full cursor-not-allowed rounded-lg bg-bg-brand-solid/40 px-4 py-2.5 text-sm font-semibold text-text-white"
-      >
+      <div className="w-full rounded-lg bg-bg-brand-solid/40 px-4 py-2.5 text-center text-sm font-semibold text-text-white">
         Continue
-      </button>
+      </div>
     </div>
   );
 }
