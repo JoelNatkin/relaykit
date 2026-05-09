@@ -648,7 +648,7 @@ export function ConfiguratorSection() {
 
   return (
     <SessionProvider state={sessionState}>
-      <section className="bg-bg-primary pt-15 pb-16 sm:pb-20">
+      <section className="bg-bg-primary pt-[100px] pb-16 sm:pb-20">
         <div className="mx-auto max-w-5xl px-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-text-primary">

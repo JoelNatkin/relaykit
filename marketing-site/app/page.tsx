@@ -85,7 +85,7 @@ export default function MarketingHome() {
       <ConfiguratorSection />
 
       {/* Section 3 — Build it */}
-      <section className="mx-auto mt-24 max-w-5xl px-6">
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
         <h2 className="text-2xl font-bold text-text-primary">Two files. Your AI tool.</h2>
 
         <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
@@ -108,7 +108,7 @@ export default function MarketingHome() {
       </section>
 
       {/* Section 4 — Test it for real */}
-      <section className="mx-auto mt-24 max-w-5xl px-6">
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
         <h2 className="text-2xl font-bold text-text-primary">
           Real SMS, before customers see anything.
         </h2>
@@ -135,7 +135,7 @@ export default function MarketingHome() {
       </section>
 
       {/* Section 5 — Pricing + Paperwork (two-col merge) */}
-      <section className="mx-auto mt-24 max-w-5xl px-6">
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
         <div className="grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           {/* Left col: pricing */}
           <div>
@@ -193,7 +193,7 @@ export default function MarketingHome() {
       </section>
 
       {/* Section 6 — Closing CTA */}
-      <section className="mx-auto mt-24 mb-24 max-w-5xl px-6">
+      <section className="mx-auto mt-[100px] mb-[100px] max-w-5xl px-6">
         <h2 className="text-2xl font-bold text-text-primary">Ready when you are.</h2>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-text-tertiary">
           Configure today. Live in three days. Refund if not approved.
