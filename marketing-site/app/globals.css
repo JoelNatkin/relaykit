@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* BASE COLORS */
   --color-white: rgb(255 255 255);
@@ -124,6 +126,11 @@
   --color-bg-success-secondary: var(--color-success-100);
   --color-bg-success-solid: var(--color-success-600);
 
+  /* Code-block surface — distinct from bg-primary-solid so the home-page
+     CodeSample stays inverted (dark surface, light text) in both themes,
+     while bg-primary-solid is free to flip with theme tokens. */
+  --color-bg-code-surface: var(--color-gray-950);
+
   /* FEATURED ICON COLORS */
   --color-featured-icon-light-fg-brand: var(--color-brand-600);
   --color-featured-icon-light-fg-gray: var(--color-gray-500);
@@ -133,6 +140,99 @@
 
   /* FOCUS RING */
   --color-focus-ring: var(--color-brand-500);
+}
+
+/* ── Dark mode token overrides ──
+   Re-points semantic tokens to dark-appropriate values from the same
+   gray/brand palette. Base palette (--color-gray-*, --color-brand-*) is
+   not redeclared — only the semantic mappings flip. Tailwind v4 emits
+   --color-* custom properties at :root via @theme; this .dark block has
+   matching specificity and wins by source order. */
+.dark {
+  /* TEXT */
+  --color-text-primary: var(--color-gray-50);
+  --color-text-secondary: var(--color-gray-200);
+  --color-text-secondary_hover: var(--color-gray-100);
+  --color-text-tertiary: var(--color-gray-300);
+  --color-text-tertiary_hover: var(--color-gray-200);
+  --color-text-quaternary: var(--color-gray-400);
+  --color-text-disabled: var(--color-gray-500);
+  --color-text-placeholder: var(--color-gray-400);
+  --color-text-placeholder_subtle: var(--color-gray-700);
+  --color-text-brand-primary: var(--color-brand-200);
+  --color-text-brand-secondary: var(--color-brand-300);
+  --color-text-brand-tertiary: var(--color-brand-400);
+  --color-text-error-primary: var(--color-error-300);
+  --color-text-warning-primary: var(--color-warning-500);
+  --color-text-success-primary: var(--color-success-500);
+
+  /* BORDER */
+  --color-border-primary: var(--color-gray-700);
+  --color-border-secondary: var(--color-gray-800);
+  --color-border-tertiary: var(--color-gray-900);
+  --color-border-brand: var(--color-brand-400);
+  --color-border-error: var(--color-error-500);
+  --color-border-disabled: var(--color-gray-700);
+
+  /* FOREGROUND */
+  --color-fg-primary: var(--color-gray-50);
+  --color-fg-secondary: var(--color-gray-300);
+  --color-fg-tertiary: var(--color-gray-400);
+  --color-fg-quaternary: var(--color-gray-500);
+  --color-fg-quaternary_hover: var(--color-gray-400);
+  --color-fg-disabled: var(--color-gray-600);
+  --color-fg-brand-primary: var(--color-brand-400);
+  --color-fg-brand-secondary: var(--color-brand-400);
+  --color-fg-error-primary: var(--color-error-500);
+  --color-fg-error-secondary: var(--color-error-500);
+  --color-fg-warning-primary: var(--color-warning-500);
+  --color-fg-warning-secondary: var(--color-warning-500);
+  --color-fg-success-primary: var(--color-success-500);
+  --color-fg-success-secondary: var(--color-success-500);
+
+  /* BACKGROUND */
+  --color-bg-primary: var(--color-gray-950);
+  --color-bg-primary_hover: var(--color-gray-900);
+  --color-bg-secondary: var(--color-gray-900);
+  --color-bg-secondary_hover: var(--color-gray-800);
+  --color-bg-tertiary: var(--color-gray-800);
+  --color-bg-quaternary: var(--color-gray-700);
+  --color-bg-disabled: var(--color-gray-800);
+  --color-bg-disabled_subtle: var(--color-gray-900);
+  --color-bg-active: var(--color-gray-900);
+  --color-bg-overlay: var(--color-gray-50);
+  --color-bg-primary-solid: var(--color-gray-900);
+  --color-bg-secondary-solid: var(--color-gray-300);
+  --color-bg-brand-primary: var(--color-brand-950);
+  --color-bg-brand-secondary: var(--color-brand-900);
+  --color-bg-brand-solid: var(--color-brand-500);
+  --color-bg-brand-solid_hover: var(--color-brand-400);
+  --color-bg-error-primary: var(--color-error-700);
+  --color-bg-error-secondary: var(--color-error-700);
+  --color-bg-error-solid: var(--color-error-500);
+  --color-bg-warning-primary: var(--color-warning-700);
+  --color-bg-warning-secondary: var(--color-warning-700);
+  --color-bg-warning-solid: var(--color-warning-500);
+  --color-bg-success-primary: var(--color-success-700);
+  --color-bg-success-secondary: var(--color-success-700);
+  --color-bg-success-solid: var(--color-success-500);
+
+  /* Code-block surface stays gray-950 in dark mode too — intentional
+     theme-invariant value (see light-mode block for rationale). */
+  --color-bg-code-surface: var(--color-gray-950);
+
+  /* FEATURED ICON */
+  --color-featured-icon-light-fg-brand: var(--color-brand-400);
+  --color-featured-icon-light-fg-gray: var(--color-gray-400);
+  --color-featured-icon-light-fg-error: var(--color-error-500);
+  --color-featured-icon-light-fg-warning: var(--color-warning-500);
+  --color-featured-icon-light-fg-success: var(--color-success-500);
+
+  /* FOCUS RING */
+  --color-focus-ring: var(--color-brand-400);
+
+  /* Browser-native form controls / scrollbars match the active theme */
+  color-scheme: dark;
 }
 
 /* ── Wizard shared animations ── */

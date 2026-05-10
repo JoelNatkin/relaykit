@@ -11,12 +11,18 @@ import { PreviewListMock } from "@/components/preview-list-mock";
 // height, so it needs roughly 2x the height of peers to render at matching
 // visible size. The flex row uses items-center, so the taller windsurf
 // cell centers cleanly with shorter siblings.
+//
+// negSrc points to the dark-mode wordmark asset. When present, render
+// dual Image elements with a block dark:hidden / hidden dark:block swap.
+// When null, fall back to a CSS filter-invert workaround on the _pos asset.
+// TODO(Joel): source claude_neg.svg and Copilot_neg.svg so all five logos
+// can use the dual-Image swap and drop the filter workaround.
 const AI_TOOLS = [
-  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", alt: "Claude Code", heightClass: "h-[18px]" },
-  { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", alt: "Cursor", heightClass: "h-[22px]" },
-  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", alt: "Windsurf", heightClass: "h-[44px]" },
-  { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", alt: "GitHub Copilot", heightClass: "h-[20px]" },
-  { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", alt: "Cline", heightClass: "h-[18px]" },
+  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", negSrc: null, alt: "Claude Code", heightClass: "h-[18px]" },
+  { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", negSrc: "/logos/tool_logos_wordmarks/Cursor_neg.svg", alt: "Cursor", heightClass: "h-[22px]" },
+  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", negSrc: "/logos/tool_logos_wordmarks/windsurf_neg.svg", alt: "Windsurf", heightClass: "h-[44px]" },
+  { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", negSrc: null, alt: "GitHub Copilot", heightClass: "h-[20px]" },
+  { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", negSrc: "/logos/tool_logos_wordmarks/Cline_neg.svg", alt: "Cline", heightClass: "h-[18px]" },
 ] as const;
 
 // Hand-tokenized code sample with semantic-token-based syntax highlighting.
@@ -28,7 +34,7 @@ const AI_TOOLS = [
 // Default text on the dark bg uses text-text-white.
 function CodeSample() {
   return (
-    <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-primary-solid px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
+    <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-code-surface px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
       <span className="text-fg-brand-secondary">import</span>
       {" { relaykit } "}
       <span className="text-fg-brand-secondary">from</span>
@@ -67,16 +73,36 @@ export default function MarketingHome() {
             $49 + $19/mo. Three days to live.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-3">
-            {AI_TOOLS.map((tool) => (
-              <Image
-                key={tool.alt}
-                src={tool.src}
-                alt={tool.alt}
-                width={140}
-                height={24}
-                className={`${tool.heightClass} w-auto brightness-0`}
-              />
-            ))}
+            {AI_TOOLS.map((tool) =>
+              tool.negSrc ? (
+                <span key={tool.alt} className="contents">
+                  <Image
+                    src={tool.src}
+                    alt={tool.alt}
+                    width={140}
+                    height={24}
+                    className={`${tool.heightClass} w-auto brightness-0 dark:hidden`}
+                  />
+                  <Image
+                    src={tool.negSrc}
+                    alt=""
+                    aria-hidden
+                    width={140}
+                    height={24}
+                    className={`${tool.heightClass} hidden w-auto dark:inline-block`}
+                  />
+                </span>
+              ) : (
+                <Image
+                  key={tool.alt}
+                  src={tool.src}
+                  alt={tool.alt}
+                  width={140}
+                  height={24}
+                  className={`${tool.heightClass} w-auto brightness-0 dark:invert`}
+                />
+              )
+            )}
           </div>
         </div>
       </div>

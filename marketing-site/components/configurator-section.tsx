@@ -898,7 +898,7 @@ export function ConfiguratorSection() {
                 </p>
                 <Link
                   href="/signup"
-                  className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                  className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
                 >
                   Start building with SMS →
                 </Link>
