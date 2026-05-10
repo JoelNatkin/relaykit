@@ -76,6 +76,10 @@ This rule exists because duplication causes drift. RELAYKIT_PRD_CONSOLIDATED.md 
 
 **When PM spots drift (same fact in multiple docs):** flag it and propose consolidation. Either delete the duplicate, or replace it with a pointer.
 
+**Methodology cross-reference discipline.** When amending either methodology file (CLAUDE.md or PM_PROJECT_INSTRUCTIONS.md), check whether the concept also appears in the other or in DECISIONS.md's header primer; update the cross-reference in the same commit. Examples: changing retirement sweep cadence in PM_INSTRUCTIONS requires checking CLAUDE.md's stewardship section; introducing a new close-out step in CLAUDE.md requires checking PM_INSTRUCTIONS' close-out prompt. Failure mode prevented: methodology drift like the seven-gate-test addition (PM_INSTRUCTIONS canonical updated in commit f19503b but DECISIONS.md primer not), surfaced by the Session 77 audit.
+
+**Promotion-from-practice rule.** When a new methodology pattern works in two or more sessions — atomic commits with a single shape, a verification convention, a new artifact like `.pm-review.md`, a sequencing pattern — promote it to canonical (CLAUDE.md or PM_PROJECT_INSTRUCTIONS.md as appropriate) or capture it in BACKLOG as "we do this; haven't codified yet." Don't let proven practice live only in change-log narratives, where the next contributor (human or AI) won't find it. The Session 77 audit surfaced four such patterns (wave-based integration, `.pm-review.md`, "at least N" verification, integration-plan-as-PM-artifact) that had been used since Session 69 but never lifted; they were lifted as part of that audit's resolution.
+
 ---
 
 ## Wave-Based Integration Discipline
