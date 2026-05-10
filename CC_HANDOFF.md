@@ -1,10 +1,10 @@
-# CC_HANDOFF — Session 75 (home-page restructure to seven-section structure + Session-74 branch merge)
+# CC_HANDOFF — Session 75 (home-page restructure + iteration cycle on `feat/home-page-restructure`)
 
 **Date:** 2026-05-09
-**Session character:** Code session on production-facing surface (`/marketing-site`). Two pieces of work: (1) Joel-directed merge of `feat/configurator-section` to main (D-368 `--no-ff`, branch deleted local + remote post-merge, configurator visible on relaykit.ai post-deploy), (2) home-page restructure on a new branch `feat/home-page-restructure` from the prior nine-section layout to seven sections plus a closing CTA strip. One new D-number captures the architectural copy-claim shift from "a few days" (D-215 hedge) to "three days" / "about three days" (D-376) for carrier approval timing, reflecting Sinch's confirmed ~3-day SLA.
-**Branch:** `feat/home-page-restructure` — pushed to origin, **DO NOT MERGE**. Awaiting Joel preview verification on the Vercel preview URL Vercel will post once the close-out commit pushes; PM merge approval after.
+**Session character:** Code session on production-facing surface (`/marketing-site`). Two phases of work in one session-day: (1) original home-page restructure to seven sections + closing CTA + Session-74 branch merge, captured in close-out commit `6ec22e4`; (2) substantial design-pass iteration cycle on the same branch, twelve atomic commits adding logos / removing OTP / left-aligning / merging paperwork+pricing / fixing windsurf logo height / making Verification toggleable / restructuring Sections 3 and 4 / swapping columns / bottom-aligning CTA / uniforming 100px inter-section spacing / adding lifecycle eyebrows. Two new D-numbers across the session: D-376 (three-days carrier approval claim, supersedes D-215) and D-377 (Verification toggleable, supersedes none).
+**Branch:** `feat/home-page-restructure` — pushed to origin through `5e9e6b8`, **DO NOT MERGE**. Awaiting Joel preview verification at the Vercel preview URL Vercel posts on the latest push, and PM merge approval. **DO NOT PUSH this close-out commit** — PM review happens first per session-end direction.
 
-`Commits: 3 (--no-ff merge of feat/configurator-section + Session 75 feat + this close-out) | Files modified: 5 (branch feat) + 4 (close-out: PROTOTYPE_SPEC.md, REPO_INDEX.md, CC_HANDOFF.md, DECISIONS.md only if any further edit needed) | Decisions added: 1 (D-376) | External actions: 3 (push main, delete remote feat/configurator-section, push feat/home-page-restructure)`
+`Commits: 16 across the session (1 original feat + 1 original close-out + 11 iteration feats/fixes + 1 inline doc commit + 1 column-swap feat + 1 final close-out — pending) | Files modified: 11 across the session | Decisions added: 2 (D-376, D-377) | External actions: 14 pushes to remote (1 main push + 12 iteration pushes + 1 final close-out — held)`
 
 ---
 
@@ -12,89 +12,110 @@
 
 | # | Hash | Description |
 |---|------|-------------|
-| 1 | `dbfc58e` | Merge branch 'feat/configurator-section' (no-ff, into main; pushed to origin) |
+| 1 | `dbfc58e` | Merge branch 'feat/configurator-section' (no-ff into main, completes Session 74's branch) |
 | 2 | `8abb103` | feat(marketing): home-page restructure to 7 sections; D-376 supersedes D-215 |
-| 3 | _(this close-out)_ | docs: Session 75 close — home-page restructure + Session-74 branch merge |
+| 3 | `6ec22e4` | docs: Session 75 close — home-page restructure + Session-74 branch merge |
+| 4 | `f655ce9` | fix(marketing): next/image for hero logos; semantic div for inert Continue |
+| 5 | `ca46678` | feat(marketing): wordmark logos, drop hero OTP, drop Included pill |
+| 6 | `38538e1` | feat(marketing): left-align home, balance logos, merge paperwork + pricing |
+| 7 | `1ae01f0` | fix(marketing): bump windsurf logo height to compensate for SVG padding |
+| 8 | `ff2b0ac` | feat(marketing): Verification is toggleable; D-377 supersedes locked-on behavior |
+| 9 | `e709760` | docs: bump decision_count to D-377; flag prototype configurator follow-up |
+| 10 | `ceb8abf` | feat(marketing): Section 3 cut to single H2, two-paragraph body, code only on right |
+| 11 | `5204b54` | feat(marketing): Section 4 absorbs subhead into H2, two-paragraph body with subheads |
+| 12 | `4d5272e` | feat(marketing): swap pricing and paperwork columns |
+| 13 | `af3e0e3` | feat(marketing): CTA copy + bottom-align CTA block with categories |
+| 14 | `a00da51` | feat(marketing): uniform 100px inter-section spacing |
+| 15 | `5e9e6b8` | feat(marketing): add lifecycle eyebrows to home page sections |
+| 16 | _(this final close-out)_ | docs: Session 75 final close — iteration cycle wrap-up |
 
-Commits 1–2 already pushed to remote (commit 1 to `origin/main`; commit 2 to `origin/feat/home-page-restructure`). The close-out commit will push at the end of this session. **`feat/home-page-restructure` will not be merged to main** — Joel verifies on the Vercel preview, PM approves merge in a later turn.
+Commits 1–15 already pushed to remote (main push for `dbfc58e`; 14 pushes to `origin/feat/home-page-restructure` for the others). The final close-out commit will **not push at session end** — PM review happens before push per session-end direction.
 
 ---
 
 ## What was completed
 
-### 1. Merge of `feat/configurator-section` to main
+### 1. Merge of `feat/configurator-section` to main (commit `dbfc58e`)
 
-Joel directed the merge of Session 74's branch in this turn. Pre-merge state: branch 17 commits ahead of main, 0 behind; main and branch in sync against origin. Merge executed with `--no-ff` per D-368 (preserves the feature-branch shape on main): merge commit `dbfc58e`. Main pushed to origin. Vercel deploy of main verified by polling relaykit.ai with cache-busted curl until "Configure your messages" appeared (~70s after push). Branch deleted local (`git branch -d feat/configurator-section`) and remote (`git push origin --delete feat/configurator-section`).
+Session-start work. PM-directed merge of Session 74's configurator branch via `--no-ff` per D-368. Pushed to origin; verified configurator visible on relaykit.ai post-Vercel-deploy via cache-busted curl; deleted branch local + remote.
 
-### 2. Home-page restructure on `feat/home-page-restructure` (1 feat commit)
+### 2. Original home-page restructure (commit `8abb103`, plus close-out `6ec22e4`)
 
-Single feat commit `8abb103` (5 files +276/-327) replaces the prior nine-section home-page layout with seven sections + closing CTA strip:
+Replaced the prior nine-section home page (hero, configurator, how-it-works 3-step, pricing context line, use-cases 8-card grid, pricing two-card, why-relaykit 4-card grid, comparison table, reassurance line) with seven sections + closing CTA strip: Hero → Configurator → Build it → Test it for real → We handle the paperwork → Pricing → Closing CTA. Two new components (`hero-otp-visual.tsx`, `preview-list-mock.tsx`); `app/page.tsx` rewritten; configurator subhead "OTP is included…" → "Verification codes included…". D-376 recorded in same commit, with the supersession mark on D-215.
 
-- **Section 1 — Hero** (revised existing inline block in `marketing-site/app/page.tsx`): adds eyebrow "$49 + $19/mo. Three days to live." (small, weight 500, primary text color), AI-tool word-marks row using existing SVGs in `marketing-site/public/logos/` (Claude Code, Cursor, Windsurf, GitHub Copilot, Cline — `h-5 w-auto opacity-70`), and a static OTP visual (`marketing-site/components/hero-otp-visual.tsx`, six boxes 5/6/6/8 with focused-with-caret + empty boxes, disabled "Continue" button — mirrors `prototype/components/sign-in-modal.tsx` lines 210–224 styling). Layout shifts from centered single-column to two-column on desktop (`md:grid-cols-[3fr_2fr]`), stacked on mobile. Subhead drops "coding": "Two files. Your AI coding tool…" → "Two files. Your AI tool…" — the word-marks row directly below establishes context, so the qualifier is redundant.
-- **Section 2 — Configurator** (subhead change only in `marketing-site/components/configurator-section.tsx` line 642): "OTP is included. You can change any of this later in your workspace." → "Verification codes included. You can change these later in your workspace."
-- **Section 3 — Build it** (NEW, inline): H2 "Two files. Your AI tool.", subhead "Most of the integration is already done. The rest takes minutes." Two columns on desktop ("Starting fresh" left with starter-kit text labels [ShipFast, Supastarter, MakerKit, Vercel + Supabase] — text labels not SVGs since no logo assets exist for these brands; "Already built" right, text-only). Below the columns, small build-spec paragraph: "Your AI tool learns RelayKit through the build spec. Ask it where to wire opt-outs, or whether a message body will pass review — it'll know." Below that, a JS code block (plain `<pre>` with `bg-bg-secondary px-4 py-4 text-xs font-mono leading-relaxed text-text-secondary overflow-x-auto whitespace-pre`, no syntax-highlighting library — pattern from `prototype/components/catalog/message-action-modal.tsx` lines 83–85), captioned "That's the send." Bottom one-liner: "Tests are included. The build spec wires them in."
-- **Section 4 — Test it for real** (NEW, inline): H2 "Test it for real.", subhead "Real SMS, real phones, before customers see anything." Two-column layout (`md:grid-cols-[3fr_2fr]`): left two paragraphs + italic closer ("When you go live, it's the same code path. No surprises."), right `marketing-site/components/preview-list-mock.tsx` (static replica of `prototype/components/test-phones-card.tsx` — three rows Joel verified / Sarah verified / Mike invited, non-functional "+ Invite someone" link in `text-text-brand-secondary`).
-- **Section 5 — We handle the paperwork** (NEW, inline): H2 "We handle the paperwork.", body period-list of nouns ("Registration paperwork. The approval back-and-forth. The opt-in form your users see. STOP handling. Opt-out tracking. Delivery monitoring."), italic kicker "We read it so you don't have to." Centered, max-w-3xl.
-- **Section 6 — Pricing** (rebuilt): collapses the two-card Free/Go-live layout to a single staged card (`max-w-[540px]`, `rounded-xl border border-border-primary p-8`): Stage 1 "Build for free" body / horizontal divider / Stage 2 "Go live for $49 + $19/mo" body. H2 changes from "Free to build. Pay when you go live." to "Free to build. $49 + $19/mo to go live." Below: fine-print row ("Marketing categories add $10/mo. Volume pricing above 5,000 messages.") and scope paragraph ("US and Canada at launch. We don't handle HIPAA, healthcare-regulated workflows, or enterprise procurement.").
-- **Section 7 — Closing CTA strip** (NEW): H2 "Ready when you are.", subhead "Configure today. Live in three days. Refund if not approved.", "Get early access" button matching top-nav styling (border + `bg-bg-primary` + `text-text-secondary`) and destination (`/start/verify`).
+### 3. Iteration cycle (commits `f655ce9` through `5e9e6b8`)
 
-Removed: "How it works" 3-step block (was lines 111–131); pricing context line (was lines 133–136); "Explore use cases" 8-card grid (was lines 138–162, id `categories`); "Why RelayKit?" 4-card grid (was lines 233–288, id `compliance`); comparison table "You shouldn't need a telecom degree…" (was lines 290–366); trailing "No contracts. Cancel anytime…" reassurance line (was lines 364–366). The configurator (D-375) demonstrates use cases interactively, making the static use-cases grid redundant; new Sections 3/5 cover what how-it-works / why-relaykit / comparison-table did, in tighter on-voice form.
+Twelve atomic commits across the same day:
 
-### 3. D-376 recorded — three days for carrier approval claim
+- **`f655ce9` next/image + semantic Continue.** Hero logos move from `<img>` to `<Image>` (width=120 height=20 layout hints, `h-5 w-auto` className). Continue element changes from disabled `<button>` to inert `<div>` with `text-center` for visual parity. Stale `@next/next/no-img-element` disable comment removed.
+- **`ca46678` wordmark logos + drop hero OTP + drop Included pill.** Joel placed wordmark SVGs at `marketing-site/public/logos/tool_logos_wordmarks/` (eight files: five `_pos` for light + three `_neg` for future dark mode). Hero adopts the `_pos` variants. Hero OTP visual element deleted (`hero-otp-visual.tsx` removed); hero collapses to single column. Configurator's "Included" pill on the Verification row removed.
+- **`38538e1` left-align + balance logos + merge paperwork+pricing.** Hero / Section 3 / Section 4 / Section 7 H2s drop `text-center` (left-aligned). Per-logo `heightClass` introduced (Cursor h-[22px], windsurf h-[20px], Copilot h-[20px], claude/Cline h-[18px]); `brightness-0` for uniform black; `opacity-70` dropped. Sections 5 (paperwork) + 6 (pricing) merge into one two-col section.
+- **`1ae01f0` windsurf logo height fix.** Root cause: SVG has uniform ~78-unit transparent padding inside a 236-unit-tall viewBox (mark spans y=78 to y=156, ~33% of canvas). Fix: `h-[20px]` → `h-[44px]` to compensate; the flex row's `items-center` keeps visible marks aligned despite windsurf's taller layout box.
+- **`ff2b0ac` Verification toggleable + D-377.** Drops `alwaysOn: true` from the Verification entry, the `disabled` props on the checkbox/button, and the early-return in `handleVerticalToggle`. Adds "Verification only" preset as the page-load default. New `resolvePackId(sel)` helper re-derives the dropdown on manual toggle. New empty-state placeholder ("Pick a category to see message previews.") when no categories selected. D-377 appended to DECISIONS.md in the same commit (Supersedes: none).
+- **`e709760` D-377 mid-cycle close-out.** REPO_INDEX decision_count D-376 → D-377; CC_HANDOFF carry-forward gains the prototype-parity follow-up flag.
+- **`ceb8abf` Section 3 cut.** Single H2 spans the section; left col is two prose paragraphs with path discrimination embedded inline ("Starting fresh." / "Already built."); right col holds a styled `<pre>` code block on dark `bg-bg-primary-solid` with hand-tokenized syntax highlighting using Untitled UI semantic tokens. Drops the prior subhead, h3 sub-headings, build-spec paragraph, tests one-liner, STARTER_KITS const, CODE_BLOCK string.
+- **`5204b54` Section 4 cut.** Single H2 absorbs the prior subhead. Left col gets two body-copy h3+paragraph pairs ("Preview list" / "Testing utilities") with the left-col "Preview list" h3 deliberately rhyming with the mock card's internal "Preview list" h3.
+- **`4d5272e` swap pricing and paperwork columns.** Pricing moves to left col, paperwork to right col in the merged section.
+- **`af3e0e3` CTA copy + bottom-align.** Configurator button copy "Save to my workspace →" → "Start building with SMS →"; right column flex-col + outer grid drops `items-start` + CTA wrapper `mt-8` → `mt-auto pt-8` so the CTA bottom-aligns with the categories panel when categories list is taller. **Marketing-side divergence from the prototype, which keeps prior pattern.**
+- **`a00da51` uniform 100px inter-section spacing.** All `mt-24` → `mt-[100px]` on Sections 3, 4, 5+6, 7. Closing CTA `mb-24` → `mb-[100px]`. Configurator's section-top padding `pt-15` → `pt-[100px]`. Hero `pt-16` left as-is (page-top padding).
+- **`5e9e6b8` lifecycle eyebrows.** Three uniform eyebrows (`text-xs font-semibold uppercase tracking-wide text-text-primary`): "Configure > Build" on Section 3, "Build > Test" on Section 4, "Test > Go live" on Section 5+6 (single eyebrow spans full section width above the two-col grid).
 
-`D-376 — Three days for carrier approval claim` (Date: 2026-05-09). Marketing copy describing carrier approval time uses "three days" (or "about three days" in body register) rather than "a few days." Reflects Sinch's confirmed ~3-day SLA.
+### 4. Decisions recorded (D-376, D-377)
 
-**Supersedes:** D-215.
+- **D-376** — Three days for carrier approval claim. Marketing copy describing carrier approval time uses "three days" (or "about three days" in body register) rather than D-215's "a few days" hedge. Supersedes D-215; supersession mark on D-215 lands in the same commit as the copy change. Reflects Sinch's confirmed ~3-day SLA via Phase 1 evidence and BDR.
+- **D-377** — Verification is a toggleable category with "Verification only" preset. The configurator's Verification category is toggleable like other categories, not locked on. A "Verification only" preset in the Recommended combinations dropdown is the page-load default. When no categories are selected, the message-preview pane shows an empty state. Supersedes: none.
 
-D-215 hedged on timing because Sinch's SLA was unconfirmed when recorded. With Sinch's ~3-day approval validated through Phase 1 prep work and Sinch BDR conversations, the specific claim is supportable and lands harder than the hedge. If Sinch's SLA shifts materially in the future, copy gets re-evaluated and a follow-up decision recorded.
+### 5. PROTOTYPE_SPEC.md updated
 
-D-215 carries the supersession mark `⚠ Superseded by D-376: "a few days" replaced by "three days" once Sinch's ~3-day SLA was confirmed.` in the same commit as the copy change.
+- Home-page subsection rewritten for the six-section post-iteration structure (Sections 5+6 are now one merged section, eyebrows added, 100px spacing, hero left-aligned without OTP visual, etc.)
+- Configurator subsection spec sync to current behavior: subhead string "All messages included…"; dropdown options + page-load default + resolution behavior (`resolvePackId`); `pb-3` not `pb-6`; no "Included" pill; Verification toggleable; empty-state placeholder; CTA bottom-align via `mt-auto pt-8` inside `flex flex-col` right col + grid drops `items-start`; button copy "Start building with SMS →"; **two marketing-side divergences from the prototype** (CTA bottom-align + button copy) explicitly flagged.
 
-### 4. PROTOTYPE_SPEC.md updated
+### 6. BACKLOG.md updated
 
-A new `### Home page (`/`) — seven-section structure` subsection added at the top of `## Production Marketing Site — relaykit.ai` (between the section intro paragraph and the existing Configurator Section subsection). Captures the seven sections in order, with copy strings, layout details, and references to the prototype source files for the OTP visual + Preview list mock. Configurator Section subsection's subhead string updated. Configurator Section status flipped from "Stable on `feat/configurator-section` (awaiting merge approval)" to "Stable (merged to main Session 75; further home-page sections built around it on `feat/home-page-restructure`)".
+New entry under Likely → Product Features: "Apply D-377 (Verification toggleable + 'Verification only' preset + empty state) to the prototype configurator." Behavior to mirror enumerated; out of scope for the marketing-site iteration cycle; should be a separate dedicated session/commit; PROTOTYPE_SPEC update lands in that commit.
 
-### 5. REPO_INDEX.md updated
+### 7. REPO_INDEX.md updated
 
-Meta block bumped: Last updated → 2026-05-09 with Session 75 summary; Decision count D-375 → D-376 (291 active entries); Active branch flipped from `feat/configurator-section` (now merged + deleted) to `feat/home-page-restructure`; Unpushed-local-commits note refreshed for Session 75 close-out commit. `/marketing-site` subsection extended with a Session 75 changes block (new files + restructure summary); Session 74 additions reframed as "now on main" since the branch merged this session. New Session 75 entry appended to the change log.
+Meta block: Active branch + Unpushed commits refreshed for the iteration-cycle state. Decision count remains D-377 (set in commit `e709760` mid-cycle). New change-log entry appended for the iteration cycle, enumerating all 12 commits with one-line descriptions.
 
 ---
 
 ## What's in progress
 
-`feat/home-page-restructure` is **not** merged. Joel verifies the Vercel preview after this close-out commit pushes; PM gives the merge call. No mid-stream code work — the restructure is functionally complete on this branch.
+`feat/home-page-restructure` is **NOT MERGED**. Joel verifies the latest Vercel preview (rebuilt on each push, latest from commit `5e9e6b8`); PM gives the merge call. No mid-stream code work — the iteration cycle is functionally complete on this branch as of the eyebrows commit.
 
 ---
 
 ## Quality checks passed
 
-- `tsc --noEmit` clean.
-- `eslint` clean (one fix during the build: removed a stale `@next/next/no-img-element` disable comment because the rule wasn't loaded in eslint config — same fix pattern that surfaced in Session 74 with `react-hooks/exhaustive-deps`).
-- `next build` green — 8 static pages on this branch (`/_not-found`, `/`, `/acceptable-use`, `/privacy`, `/signup`, `/start/get-started`, `/start/verify`, `/terms`).
-- Local dev boot clean (port 3000), `GET / 200` with all seven section markers verified via curl grep ("SMS for builders" / "Configure your messages" / "Two files. Your AI tool" / "Test it for real" / "We handle the paperwork" / "Free to build. $49" / "Ready when you are").
-- Bundle: `/` route 109 kB → 103 kB (no new deps; restructure removed icon imports and the comparison-table block).
-- DECISIONS ledger pre-flight scan at session start: Active count 290 latest D-375, Archive D-01–D-83. No new D-numbers since Session 74 close-out (the only commit on main since was `d16be46 docs(backlog): add marketing-site message catalog depth parity entry`, BACKLOG-only). Post-D-376-append: D-376 carries `Supersedes: D-215` after greping DECISIONS.md + DECISIONS_ARCHIVE.md for "approval timeline", "few days", "carrier review" — D-215 was the genuine conflict; D-17, D-199 already superseded; no other matches. D-215 marked in same commit per inline-supersession-enforcement workflow.
+- `tsc --noEmit` clean throughout each iteration commit.
+- `eslint` clean throughout each iteration commit (project's `eslint .` script). One stale eslint-disable comment removed in `f655ce9` because the `@next/next/no-img-element` rule isn't loaded in eslint config — same fix-pattern that surfaced in Session 74 with `react-hooks/exhaustive-deps`.
+- `next build` green (8 static pages: `/`, `/_not-found`, `/acceptable-use`, `/privacy`, `/signup`, `/start/get-started`, `/start/verify`, `/terms`).
+- Local dev boot clean (port 3000), `GET / 200` with all expected section markers verified via curl after each commit.
+- Bundle: `/` route 109 kB → 103 kB at the original restructure (`8abb103`); next/image runtime added 5 kB in `f655ce9` (108 kB); rest of the iteration cycle neutral. Final `/` route bundle: **108 kB**.
+- DECISIONS ledger pre-flight scan: clean. D-376 supersedes D-215 (mark in same commit `8abb103`); D-377 supersedes none (committed in `ff2b0ac`). No orphan supersession references. No format-compliance flags.
 
 ---
 
 ## Pending / carry-forward
 
-0. **Prototype configurator parity follow-up (post-D-377).** D-377 made Verification a toggleable category in the marketing-site configurator, added a "Verification only" preset as the page-load default, and added an empty-state placeholder for zero selection. The prototype's `prototype/components/configurator-section.tsx` still has Verification locked on. A separate, dedicated session/commit should mirror the same behavior in the prototype for product consistency. Out of scope for the marketing-site iteration cycle. Affects: PROTOTYPE_SPEC's prototype-side configurator section once the change lands.
+1. **Joel preview verification + PM merge approval** for `feat/home-page-restructure`. Branch will not be merged until both clear. If feedback requires further iteration, additional commits land on the same branch before merge.
 
-1. **Joel preview verification + PM merge approval** for `feat/home-page-restructure`. Branch will not be merged until both clear. If Joel finds issues on the preview, additional iteration commits land on the same branch before merge. Iteration commits this session post-original-close-out: `f655ce9` next/image + semantic div fix, `ca46678` wordmark logos + drop hero OTP + drop Included pill, `38538e1` left-align home + balance logos + merge paperwork+pricing, `1ae01f0` windsurf logo height fix for SVG padding, `ff2b0ac` Verification toggleable + D-377, plus this REPO_INDEX/CC_HANDOFF bump.
+2. **Apply D-377 to the prototype configurator** (`prototype/components/configurator-section.tsx`). Marketing-side has Verification toggleable + "Verification only" preset + empty state; prototype still locks Verification on. Separate dedicated session/commit. PROTOTYPE_SPEC update lands in that commit. Now also captured in BACKLOG.md under Likely → Product Features.
 
-2. **Earlier carry-forward items still applicable:**
+3. **Phase 1 downstream experiments still UNBLOCKED.** Experiment 2b (live sample SMS over the approved campaign), Experiment 3c (Simplified→Full brand upgrade), Experiment 4 (STOP/START/HELP reply handling). All procedures drafted in `experiments/sinch/experiments-log.md`. Joel-driven; high-leverage on product readiness.
+
+4. **Earlier carry-forward items still applicable:**
    - Stage 2 (`docs/BRAND_DIRECTION.md`) — consumes the BRAND_AUDIT.md synthesis to produce the design system with point of view. Not yet started; large-scope session.
    - MD-number capture session — strategy-shaped session that walks the BRAND_AUDIT.md synthesis and decides which findings rise to MD-number status in MARKETING_STRATEGY.md.
-   - Phase 1 downstream experiments still UNBLOCKED: Experiment 2b (live sample SMS over approved campaign), Experiment 4 (STOP/START/HELP), Experiment 3c (Simplified→Full brand upgrade). Joel-driven; high-leverage on product readiness.
    - Pumping Defense Wave 2 work deferred to Phase 5/8 design activation.
-   - Broader threat-modeling workstream (BACKLOG Entry G) — launch-period deliverable, promotes `SECURITY_DRAFT.md` to canonical.
-   - Migration 006 manual application (carry-forward from Session 58) — SQL committed but not applied to live shared Supabase.
-   - Joel-actionable marketing items: affiliate signups (ShipFast 50%, Supastarter, Saaspegasus, Makerkit) + remaining tooling confirmation.
-   - Dark-mode session — surface-wide pass; not tied to any one section.
+   - Broader threat-modeling workstream (BACKLOG entry) — launch-period deliverable, promotes `SECURITY_DRAFT.md` to canonical.
+   - Migration 006 manual application — SQL committed but not applied to live shared Supabase.
+   - Joel-actionable marketing items: affiliate signups (ShipFast 50%, Supastarter, Saaspegasus, MakerKit) + remaining tooling confirmation.
+   - Dark-mode session — surface-wide pass; not tied to any one section. The wordmark `_neg` variants Joel placed (Cline, Cursor, windsurf) ship in `marketing-site/public/logos/tool_logos_wordmarks/` for this future session; not referenced today.
    - Per-vertical hybrid pages, starting with Verification — `/verification` page carrying its own configurator slice + vertical-specific copy + integration code samples.
-   - Real cropped screencaps for Section 4's Preview list panel (and possibly Section 3's interface affordances if revisited) — HTML/CSS mocks are v1 per the PM-approved plan; Joel may swap real screencaps later.
-   - Brand SVG assets for the Section 3 starter-kit row (ShipFast, Supastarter, MakerKit, Vercel + Supabase) — text labels are v1; logo acquisition follow-up if Joel wants the visual fidelity.
+   - Real cropped screencaps for Section 4's Preview list panel — HTML/CSS mock is v1; Joel may swap real screencaps later.
+   - Brand SVG assets for the Section 3 starter-kit row (ShipFast, Supastarter, MakerKit, Vercel + Supabase) — text labels are v1.
 
 ---
 
@@ -112,40 +133,42 @@ None — mid-phase close-out, drift-watch skipped per CLAUDE.md step 9.
 
 ## Gotchas for next session
 
-1. **`feat/configurator-section` deleted local + remote.** All Session 74 work is now on main as of merge commit `dbfc58e`. Future references to "the configurator branch" are historical only — main is the source of truth.
+1. **DO NOT push this close-out commit until PM approves.** Per session-end direction. Once PM reads CC_HANDOFF and approves, push to origin.
 
-2. **Two ESLint-rule "ghost" patterns now in repo history.** Sessions 74 and 75 both removed stale eslint-disable comments where the rule wasn't loaded (Session 74: `react-hooks/exhaustive-deps`; Session 75: `@next/next/no-img-element`). The marketing-site's `eslint.config.mjs` doesn't load Next.js's plugin, so disable comments referencing `@next/next/*` rules will fail. If a future iteration needs to suppress an `<img>`-related rule, either load the plugin first or skip the directive.
+2. **DO NOT merge `feat/home-page-restructure` until Joel reviews the latest preview and PM approves the merge.** The branch is feature-complete as of `5e9e6b8`; further iteration on the same branch is acceptable if preview review surfaces issues.
 
-3. **No syntax-highlighting library in the marketing-site.** Section 3's code block uses plain `<pre>` with `bg-bg-secondary` styling — no Shiki/Prism/Highlight.js. If Joel later wants colored tokens in the code block (likely a polish ask, not a launch blocker), the lift is to add `shiki` (static-render, lightweight) and rebuild the code block as a server component. Not blocking for now.
+3. **Two marketing-side divergences from the prototype, intentionally retained.** Per PROTOTYPE_SPEC's configurator subsection: (a) the configurator's CTA wrapper uses `mt-auto pt-8` inside a `flex flex-col` right column, with the outer grid dropping `items-start` to allow cell-stretch, so the CTA bottom-aligns with the categories panel; (b) the CTA button copy reads "Start building with SMS →" rather than "Save to my workspace →". Both apply only to `marketing-site/components/configurator-section.tsx`; the prototype's `prototype/components/configurator-section.tsx` keeps the prior `mt-8` spacing and "Save to my workspace →" copy. If a future iteration touches either configurator, decide deliberately whether to mirror or hold the divergence.
 
-4. **Static mocks for Preview list + (future) Ask Claude exist as separate components.** `marketing-site/components/preview-list-mock.tsx` carries a header comment naming `prototype/components/test-phones-card.tsx` as its parity source. The PM-approved plan also originally proposed a static Ask Claude callout mock, but PM amended the plan mid-loop to drop that and replace with an inline build-spec paragraph instead — no Ask Claude mock component exists. If a future iteration revives the panel, it would need a new `ask-claude-mock.tsx` mirroring `prototype/components/ask-claude-panel.tsx`.
+4. **D-377 prototype follow-up is parked** in BACKLOG.md (Likely → Product Features) and #2 of Pending/carry-forward above. The prototype configurator still locks Verification on; the marketing-side has been moved to the toggleable model. Mirror in a dedicated session.
 
-5. **Starter-kit row in Section 3 uses text labels, not logos.** ShipFast / Supastarter / MakerKit / Vercel + Supabase are rendered as `font-medium text-text-tertiary` text in a flex-wrap row. No SVG assets exist for these brands in `marketing-site/public/logos/`. Joel may source them as a follow-up; if so, the swap is a flex-row of `<img>` tags matching the hero AI-tool word-marks pattern.
+5. **Windsurf logo's `h-[44px]` value is empirical**, derived from the SVG's ~33% canvas-occupancy ratio. If Joel replaces the windsurf SVG asset with one that doesn't have transparent padding, the `h-[44px]` value should drop back to the per-logo h-[18-22px] range to match the other wordmarks.
 
-6. **D-376 "three days" claim is anchored to Sinch's confirmed SLA.** If Sinch's SLA shifts materially in the future, the copy needs re-evaluation and a follow-up decision recorded (see D-376 reasoning paragraph). Surfaces touched: hero eyebrow, closing CTA subhead, Section 6 stage-2 body. A future surface adding carrier-approval-timing copy should also use "three days" / "about three days" per D-376 — not "a few days" (the D-215 hedge).
+6. **Hand-rolled syntax highlighting in Section 3's `CodeSample` component.** The CodeSample function is inline in `marketing-site/app/page.tsx`. Tokens are hand-wrapped with three Untitled UI semantic-color classes (`text-fg-brand-secondary` for keywords, `text-fg-success-secondary` for strings, `text-fg-warning-secondary` for identifiers/keys). If the example call signature changes, hand-edit the JSX accordingly. If a real syntax-highlighting library (e.g., `shiki` for static render) is desired later, that's a follow-up; current cost is zero new deps.
 
-7. **`.pm-review.md`, `api/node_modules/`, and a working-tree `.gitignore` modification (adding `.pm-handoff.md` to ignore) remain untracked / unstaged** — standing local-only artifacts, not staged this session. The `.gitignore` mod predates Session 75 (carried over from Session 74's working tree).
+7. **`.pm-review.md`, `api/node_modules/`, and a working-tree `.gitignore` modification (adds `.pm-handoff.md` to ignore)** remain untracked / unstaged — standing local-only artifacts, not staged this session. The `.gitignore` mod predates Session 75 (Joel's working tree carryover from Session 74).
 
 ---
 
 ## Files modified this session
 
-**Branch total (5 files, 1 feat commit `8abb103`):**
+**Branch total (11 unique files, 14 commits since fork from main):**
 
-New (2):
-- `marketing-site/components/hero-otp-visual.tsx`
-- `marketing-site/components/preview-list-mock.tsx`
+New (3):
+- `marketing-site/components/preview-list-mock.tsx` (Session 75 original; replicates `prototype/components/test-phones-card.tsx`)
+- `marketing-site/components/hero-otp-visual.tsx` (Session 75 original — **deleted** later in `ca46678`)
+- `marketing-site/public/logos/tool_logos_wordmarks/` (Joel-placed wordmark SVGs, 8 files: 5 `_pos` referenced today, 3 `_neg` for future dark-mode pass)
 
-Modified (3):
-- `marketing-site/app/page.tsx` (rewritten — restructure to seven sections + closing CTA)
-- `marketing-site/components/configurator-section.tsx` (subhead string change at line 642)
-- `DECISIONS.md` (+D-376; supersession mark on D-215)
+Modified (4):
+- `marketing-site/app/page.tsx` (rewritten in Session 75 original; iterated heavily across the design-pass cycle)
+- `marketing-site/components/configurator-section.tsx` (subhead string change; "Included" pill drop; D-377 toggleable + preset + empty-state behavior; CTA copy + bottom-align via flex-col + `mt-auto pt-8`; section pt-[100px])
+- `marketing-site/components/top-nav.tsx` (Session 74 carryover, no Session 75 changes — already on main)
+- `marketing-site/lib/configurator/types.ts` (PackId adds "verification-only")
 
-**Close-out (this commit, 4 files):**
-- `PROTOTYPE_SPEC.md` (+ "### Home page (`/`) — seven-section structure" subsection; configurator subhead string updated; configurator section status flipped post-merge)
-- `REPO_INDEX.md` (Meta block + `/marketing-site` subsection + change-log entry)
+Doc updates this final close-out (4):
+- `PROTOTYPE_SPEC.md` (home-page subsection rewritten for six-section post-iteration; configurator subsection spec sync; configurator edit-card status updated post-merge)
+- `REPO_INDEX.md` (Meta block + change-log continuation entry)
+- `BACKLOG.md` (+1 entry for D-377 prototype follow-up)
 - `CC_HANDOFF.md` (this file — overwrite)
-- (DECISIONS.md not touched in close-out — D-376 already in feat commit `8abb103`.)
 
 **Untracked-but-untouched (not staged):**
 - `.pm-review.md` — local-only review artifact, not refreshed this session.
@@ -154,24 +177,26 @@ Modified (3):
 **Working-tree change carried over (not staged):**
 - `.gitignore` — Session 74 carryover adding `.pm-handoff.md` to ignore. Not authored this session, not staged.
 
-**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `MASTER_PLAN.md`, `BACKLOG.md`, `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md`, `MARKETING_STRATEGY.md`, all of `/docs/`, audits, experiments. (PROTOTYPE_SPEC's prototype-side sections are unchanged; only the new "Home page seven-section structure" subsection + configurator subhead/status updates landed.)
+**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `MASTER_PLAN.md`, `MARKETING_STRATEGY.md`, all of `/docs/`, audits, experiments. (PROTOTYPE_SPEC's prototype-side sections are unchanged; only the marketing-site Production section was edited.)
 
 ---
 
 ## Suggested next session
 
+Aligned with the active master plan phase (**Phase 1 — Sinch Proving Ground**, still active per MASTER_PLAN v1.6) and the unmerged branch state:
+
 1. **Wait for Joel preview verification + PM merge call** on `feat/home-page-restructure`. If feedback comes back with issues, iterate on the same branch before merge. If feedback is clean, PM directs merge to main.
 
-2. **Per-vertical hybrid pages, starting with Verification** — `/verification` page carrying its own configurator slice + vertical-specific copy + integration code samples. Phase 6 alignment.
+2. **Apply D-377 to the prototype configurator** — separate dedicated session per BACKLOG item. Mirrors Session 75's marketing-side D-377 work into `prototype/components/configurator-section.tsx`, syncs PROTOTYPE_SPEC's prototype-side configurator entry. Small-scope session.
 
-3. **Dark mode session** — surface-wide pass; lower-leverage but bounded scope.
+3. **Phase 1 downstream experiments** — Experiments 2b / 3c / 4 remain UNBLOCKED. All procedures drafted. Joel-driven; high-leverage on product-readiness side.
 
-4. **Stage 2 (`BRAND_DIRECTION.md`)** — when Joel routes back to the brand line. Consumes BRAND_AUDIT.md synthesis to produce the design system with point of view.
+4. **Per-vertical hybrid pages, starting with Verification** — `/verification` page carrying its own configurator slice + vertical-specific copy + integration code samples. Phase 6 alignment; not Phase 1 work, but a natural follow-on once the home-page restructure merges.
 
-5. **Phase 1 downstream experiments** — Experiments 2b / 4 / 3c remain UNBLOCKED, all procedures drafted. Joel-driven; high-leverage on product-readiness side.
+5. **Dark-mode session** — surface-wide pass. The wordmark `_neg` SVGs Joel placed today (Cline, Cursor, windsurf) ship for this session; not referenced yet.
 
-6. **Real screencaps + brand SVGs follow-up** — Section 4 Preview list real cropped screencap (currently HTML/CSS mock); Section 3 starter-kit logos (currently text labels). Both are deferred polish, low-risk swaps.
+6. **Stage 2 (`BRAND_DIRECTION.md`)** — when Joel routes back to the brand line. Consumes BRAND_AUDIT.md synthesis to produce the design system with point of view.
 
 ---
 
-Home-page restructure to seven-section structure wrapped on `feat/home-page-restructure`. Branch is pushed and ready for Joel preview verification once the Vercel preview URL posts on the close-out commit. **Do not merge until PM directs.** `feat/configurator-section` merged to main this session; configurator visible on relaykit.ai post-deploy.
+Home-page restructure + design-pass iteration cycle wrapped on `feat/home-page-restructure`. Branch is pushed through `5e9e6b8` and ready for Joel preview verification at the latest Vercel preview URL Vercel posted on the eyebrows commit. **Do not merge until PM directs.** **Do not push this close-out commit until PM reads + approves.** D-376 + D-377 recorded with proper supersession marks. Prototype configurator parity follow-up parked in BACKLOG.
