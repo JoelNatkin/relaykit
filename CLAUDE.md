@@ -43,6 +43,8 @@ SMS compliance + delivery service for indie developers. Prototype-first developm
 
 CC owns the integrity of DECISIONS.md and DECISIONS_ARCHIVE.md on disk. PM gates what becomes a decision; CC handles grep, supersession marks, archive moves, and format compliance. Full rules in PM_PROJECT_INSTRUCTIONS.md; the canonical entry format lives at the top of DECISIONS.md.
 
+Substance-ownership across docs follows the One Source Rule (PM_PROJECT_INSTRUCTIONS.md "Docs Hygiene"). Carry-forward visibility rules for PM_HANDOFF live in PM_PROJECT_INSTRUCTIONS.md Session Management.
+
 ### Pre-flight ledger scan (every session start)
 After reading DECISIONS.md as part of the opening prompt, scan decisions added since the previous session (use CC_HANDOFF's commit log to identify them) and flag:
 - Any new decisions missing the **Supersedes** field (required — "none" is valid, omission is not)

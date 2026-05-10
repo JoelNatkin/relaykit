@@ -322,7 +322,7 @@ If PM or CC records a new decision without identifying what it supersedes, CC gr
 
 ### Retirement sweep cadence
 
-A lightweight sweep runs at every phase boundary OR every 50 new decisions, whichever comes first. CC surfaces candidates automatically at phase-boundary close-outs (see CLAUDE.md). PM reviews, Joel approves, CC executes as a follow-up commit.
+A lightweight sweep runs at phase-boundary close-outs only. CC surfaces candidates automatically; mid-phase close-outs skip the sweep. PM reviews, Joel approves, CC executes as a follow-up commit.
 
 The sweep is maintenance, not audit. A full audit (contradictions, orphans, voice violations across the whole ledger) runs only when drift accumulates badly enough to warrant one — which the sweep cadence should prevent.
 
@@ -403,6 +403,8 @@ CC should respond with: active decision count, archived decision range noted, CC
 **Task-specific specs (MESSAGE_PIPELINE_SPEC.md, SDK_BUILD_PLAN.md, WORKSPACE_DESIGN_SPEC.md, SRC_SUNSET.md, VOICE_AND_PRODUCT_PRINCIPLES_v2.md) are loaded on demand as part of the specific task prompt — not at session start.**
 
 ### CC Session Close-Out Prompt
+
+CC's close-out also handles: drift-watch (CLAUDE.md L121, phase boundaries only), multiline-safe prose-sweep verification (CLAUDE.md L138), and session metrics line format (CLAUDE.md L120). PM doesn't author these; CC executes per CLAUDE.
 
 When Joel says **"close CC"** or **"closing CC"**:
 
