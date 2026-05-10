@@ -1,6 +1,6 @@
 # RelayKit — Project Instructions
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: May 1, 2026
+### Updated: May 10, 2026
 
 ---
 
