@@ -684,6 +684,7 @@ _Affects: Settings page Registration section (Rejected state)._
 **D-215 — Sinch confirmed as carrier — approval timeline drops to days** (Date: 2026-03-23)
 Sinch replaces Twilio as the carrier for 10DLC registration and SMS delivery. Standard use case campaigns are auto-approved for qualified brands in 3–5 days (vs. Twilio's 10–15 business day queue). All user-facing timeline references updated from "2–3 weeks" to "a few days" / "days, not weeks." **Supersedes D-17 and D-199.** Migration is contained to PRD_04's carrier API modules. Template engine, compliance site, dashboard, all UI unaffected.
 _Affects: All user-facing timeline copy, PRD_04 carrier integration, registration flow expectations._
+⚠ Superseded by D-376: "a few days" replaced by "three days" once Sinch's ~3-day SLA was confirmed.
 
 **D-216 — Registration fee display: $199 headline with $49/$150 split in details** (Date: 2026-03-23)
 Pricing cards and user-facing copy show `$199 to register + $19/mo` as the headline price. The $49/$150 split (D-193) is explained in a feature bullet: "$49 to register. $150 only after you're approved. Full refund if not." This keeps the headline scannable while the bullet handles the nuance. **Extends D-193 with display guidance.**
@@ -1510,3 +1511,23 @@ The Tiptap-based message editor (variable-node, variable-node-view, template-ser
 **Reasoning:** The marketing-site and prototype are independent Next.js apps in the same git repo with no monorepo / yarn-workspaces / pnpm-workspaces / Turbo setup. Extracting the editor into a shared package requires introducing that workspace tooling — a foundational change with its own ergonomic and CI implications, well beyond the scope of a marketing-surface iteration. Replicating the files is smaller and reversible: the marketing-site now matches the dashboard's edit fidelity without touching the prototype, and a future workspace migration can collapse the two copies in one pass. Two alternatives rejected: (a) extract into `packages/editor` with workspace setup — too invasive for the iteration that prompted the port; (b) build a simpler textarea-based editor without atomic variable chips — fails the visual-fidelity bar (variables rendering in brand purple inside the editor, matching the read-state).
 
 **Affects:** `marketing-site/lib/editor/` (variable-token.ts, variable-node.ts, variable-node-view.tsx, template-serde.ts, message-editor.tsx); `marketing-site/lib/configurator/` (types.ts, session-context.tsx, example-values.ts, compliance.ts); `marketing-site/components/configurator/message-edit-card.tsx`; `marketing-site/package.json` (six `@tiptap/*` deps at `^3.0.0`); `prototype/lib/editor/` (read-only parity source); `prototype/components/catalog/catalog-card.tsx` (read-only parity source for the edit-card structure + compliance gate).
+
+**D-376 — Three days for carrier approval claim** (Date: 2026-05-09)
+
+Marketing copy describing carrier approval time uses "three days" (or "about three days" in body register) rather than "a few days." Reflects Sinch's confirmed ~3-day SLA.
+
+**Supersedes:** D-215
+
+**Reasoning:** D-215 hedged on timing because Sinch's SLA was unconfirmed when recorded. With Sinch's ~3-day approval validated through Phase 1 prep work and Sinch BDR conversations, the specific claim is supportable and lands harder than the hedge. If Sinch's SLA shifts materially in the future, copy gets re-evaluated and a follow-up decision recorded.
+
+**Affects:** Marketing site hero, closing CTA, pricing card body, any future marketing copy referring to carrier approval timing.
+
+**D-377 — Verification is a toggleable category with "Verification only" preset** (Date: 2026-05-09)
+
+The configurator's Verification category is toggleable like other categories, not locked on. A "Verification only" preset in the Recommended combinations dropdown is the page-load default. When no categories are selected, the message-preview pane shows an empty state.
+
+**Supersedes:** none
+
+**Reasoning:** Locking Verification on conveyed that it was required, which felt paternalistic and oversold the wedge. The dropdown's preset mechanism does the wedge work — recommending Verification — without removing the user's agency. Some apps genuinely don't need Verification (pure marketing or pure transactional flows) and the UI should reflect that.
+
+**Affects:** marketing-site configurator (this commit); prototype configurator (follow-up; same behavior expected for consistency).

@@ -1,10 +1,10 @@
-# CC_HANDOFF — Session 74 (configurator section build + dashboard edit-mode port)
+# CC_HANDOFF — Session 75 (home-page restructure + iteration cycle on `feat/home-page-restructure`)
 
 **Date:** 2026-05-09
-**Session character:** Code session on production-facing surface (`/marketing-site`). Built and iterated the home-page configurator section through ~14 YOLO design rounds, culminating in a port of the dashboard's full Tiptap-based edit-message experience (atomic variable chips, per-message tone pills, +Variable popover, protected-variable compliance gate, Fix button) into the marketing site. One new D-number captures the architectural decision to replicate the editor from `prototype/lib/editor/` into `marketing-site/lib/editor/` rather than extract it into a shared workspace package.
-**Branch:** `feat/configurator-section` — pushed to origin, **DO NOT MERGE**. Awaiting Joel preview verification at https://relaykit-marketing-site-bijt8jc9h-joelnatkins-projects.vercel.app and PM merge approval.
+**Session character:** Code session on production-facing surface (`/marketing-site`). Two phases of work in one session-day: (1) original home-page restructure to seven sections + closing CTA + Session-74 branch merge, captured in close-out commit `6ec22e4`; (2) substantial design-pass iteration cycle on the same branch, twelve atomic commits adding logos / removing OTP / left-aligning / merging paperwork+pricing / fixing windsurf logo height / making Verification toggleable / restructuring Sections 3 and 4 / swapping columns / bottom-aligning CTA / uniforming 100px inter-section spacing / adding lifecycle eyebrows. Two new D-numbers across the session: D-376 (three-days carrier approval claim, supersedes D-215) and D-377 (Verification toggleable, supersedes none).
+**Branch:** `feat/home-page-restructure` — pushed to origin through `5e9e6b8`, **DO NOT MERGE**. Awaiting Joel preview verification at the Vercel preview URL Vercel posts on the latest push, and PM merge approval. **DO NOT PUSH this close-out commit** — PM review happens first per session-end direction.
 
-`Commits: 16 (15 prior feat commits + this close-out) | Files modified: 16 (branch total) + 4 (close-out) | Decisions added: 1 (D-375) | External actions: 1 (push)`
+`Commits: 16 across the session (1 original feat + 1 original close-out + 11 iteration feats/fixes + 1 inline doc commit + 1 column-swap feat + 1 final close-out — pending) | Files modified: 11 across the session | Decisions added: 2 (D-376, D-377) | External actions: 14 pushes to remote (1 main push + 12 iteration pushes + 1 final close-out — held)`
 
 ---
 
@@ -12,91 +12,110 @@
 
 | # | Hash | Description |
 |---|------|-------------|
-| 1 | `c1c4ea6` | feat(marketing): add configurator section to home page |
-| 2 | `c45861a` | feat(marketing): iterate configurator — dashboard message-card, +Add, conditional website |
-| 3 | `0711c4c` | feat(marketing): configurator iteration — split panels, info tooltips, layout reorder |
-| 4 | `ad17b2a` | feat(marketing): configurator iteration — pills into panels, secondary nav CTA |
-| 5 | `e01a592` | feat(marketing): configurator iteration — recommended-combos dropdown, brand-color variables |
-| 6 | `cc2018e` | feat(marketing): configurator iteration — relocate inputs into Messages card, restyle dropdown |
-| 7 | `19efe8a` | feat(marketing): hero + configurator iteration — left-align hero, strip right-column panel chrome |
-| 8 | `b27925a` | feat(marketing): configurator iteration — spacing, sizing, type pass |
-| 9 | `83431f1` | feat(marketing): configurator iteration — type, components, copy, spacing |
-| 10 | `929e515` | feat(marketing): configurator iteration — card hug, dropdown gap, inter-group gap |
-| 11 | `a403570` | feat(marketing): home iteration — drop tool logo farm, retighten hero/configurator gap, trim subhead |
-| 12 | `37e241e` | feat(marketing): hero/configurator gap 80px -> 60px |
-| 13 | `2e7bb64` | feat(marketing): configurator iteration — bottom CTA block, drop top-row Get started |
-| 14 | `35b6e48` | feat(marketing): configurator — add 'None' option to Recommended combinations dropdown |
-| 15 | `8ab3757` | feat(marketing): port dashboard's edit-message experience into configurator |
-| 16 | _(this close-out)_ | docs: Session 74 close — configurator section build + D-375 (Tiptap replicate-not-extract) |
+| 1 | `dbfc58e` | Merge branch 'feat/configurator-section' (no-ff into main, completes Session 74's branch) |
+| 2 | `8abb103` | feat(marketing): home-page restructure to 7 sections; D-376 supersedes D-215 |
+| 3 | `6ec22e4` | docs: Session 75 close — home-page restructure + Session-74 branch merge |
+| 4 | `f655ce9` | fix(marketing): next/image for hero logos; semantic div for inert Continue |
+| 5 | `ca46678` | feat(marketing): wordmark logos, drop hero OTP, drop Included pill |
+| 6 | `38538e1` | feat(marketing): left-align home, balance logos, merge paperwork + pricing |
+| 7 | `1ae01f0` | fix(marketing): bump windsurf logo height to compensate for SVG padding |
+| 8 | `ff2b0ac` | feat(marketing): Verification is toggleable; D-377 supersedes locked-on behavior |
+| 9 | `e709760` | docs: bump decision_count to D-377; flag prototype configurator follow-up |
+| 10 | `ceb8abf` | feat(marketing): Section 3 cut to single H2, two-paragraph body, code only on right |
+| 11 | `5204b54` | feat(marketing): Section 4 absorbs subhead into H2, two-paragraph body with subheads |
+| 12 | `4d5272e` | feat(marketing): swap pricing and paperwork columns |
+| 13 | `af3e0e3` | feat(marketing): CTA copy + bottom-align CTA block with categories |
+| 14 | `a00da51` | feat(marketing): uniform 100px inter-section spacing |
+| 15 | `5e9e6b8` | feat(marketing): add lifecycle eyebrows to home page sections |
+| 16 | _(this final close-out)_ | docs: Session 75 final close — iteration cycle wrap-up |
 
-Commits 1–15 already pushed to `origin/feat/configurator-section`. The close-out commit will be pushed at the end of this session. **Branch will not be merged to main** — Joel verifies on the Vercel preview, PM approves merge.
+Commits 1–15 already pushed to remote (main push for `dbfc58e`; 14 pushes to `origin/feat/home-page-restructure` for the others). The final close-out commit will **not push at session end** — PM review happens before push per session-end direction.
 
 ---
 
 ## What was completed
 
-### 1. Configurator section on `/` (15 feat commits)
+### 1. Merge of `feat/configurator-section` to main (commit `dbfc58e`)
 
-Built from scratch and iterated through ~14 YOLO design rounds. Final shape:
+Session-start work. PM-directed merge of Session 74's configurator branch via `--no-ff` per D-368. Pushed to origin; verified configurator visible on relaykit.ai post-Vercel-deploy via cache-busted curl; deleted branch local + remote.
 
-- **Two-column section** below the hero. Left: "Categories" card with a Recommended-combinations dropdown (six packs + a "None" option) that pre-selects vertical-category combinations; below the dropdown, a Business-name input and a conditional Website input. Right: borderless "Messages" column with a global tone selector (Standard / Friendly / Brief) and a Copy-to-clipboard button.
-- **Read-state message cards** render the body via `interpolateTemplate({key} → preview)` — variables show in brand purple (`text-text-brand-secondary`); business name and website are live-bound to the user's input.
-- **Edit mode (the major Iteration 14 work):** opens an inline edit card mirroring the dashboard's Building-state Messages list edit card from `prototype/components/catalog/catalog-card.tsx` lines 591–884, minus the AI input. Title + info icon at top; Tiptap editor body with atomic purple variable chips; per-message tone pills (Standard / Friendly / Brief, plus a Custom pill that auto-appears when the body diverges from any canned variant); "+ Variable" popover that inserts a chip at the caret; protected-variable compliance gate ("Needs Business name" / "Needs opt-out language" right-aligned with a Fix button that restores the last canned pill's template after a 1500ms simulated delay matching prototype). Save disabled while compliance fails or Fix loading.
-- **18 stub message bodies rewritten** in `{key}` syntax (matches dashboard) with Standard / Friendly / Brief variants. Standard variants always start with `{business_name}: ` (literal colon + space — colon is part of the template, not a hardcoded JSX prefix). Read-state MessageReadCard renders the body directly (no separate "Acme:" prefix prepended in JSX).
-- **Per-message tone state** separate from the global tone selector: global sets the default; per-message override (set in the edit card) applies only to that message and persists across global changes. State model: `globalTone` + `perMessageTone[key]` + `editedBodies[key]`. Effective resolution: if `editedBodies[key]` set → Custom; else `perMessageTone[key] ?? globalTone`.
-- **New-message prefill** = `{business_name}: [your message here] Reply STOP to opt out.` (or without STOP for Verification — would cancel OTP); the variable is a chip, the rest is plain text; new messages start compliant.
-- **Hero section trimmed** in parallel: `pt-16` no `pb`, left-aligned, no tools row, no Why RelayKit. Top-nav "Get early access" CTA flipped from primary to secondary so the configurator's "Save to my workspace →" stays the page's only primary CTA. New `/signup` placeholder route added so the CTA href has a target ("We'll be ready soon.").
+### 2. Original home-page restructure (commit `8abb103`, plus close-out `6ec22e4`)
 
-### 2. D-375 recorded — Tiptap editor replicate-not-extract
+Replaced the prior nine-section home page (hero, configurator, how-it-works 3-step, pricing context line, use-cases 8-card grid, pricing two-card, why-relaykit 4-card grid, comparison table, reassurance line) with seven sections + closing CTA strip: Hero → Configurator → Build it → Test it for real → We handle the paperwork → Pricing → Closing CTA. Two new components (`hero-otp-visual.tsx`, `preview-list-mock.tsx`); `app/page.tsx` rewritten; configurator subhead "OTP is included…" → "Verification codes included…". D-376 recorded in same commit, with the supersession mark on D-215.
 
-`marketing-site/lib/editor/` (variable-token, variable-node, variable-node-view, template-serde, message-editor) is replicated from `prototype/lib/editor/` rather than extracted into a shared workspace package both apps import. Compliance and variable-scope helpers similarly duplicated under `marketing-site/lib/configurator/`. Replicate path chosen because the two apps are independent Next packages with no workspace/yarn-workspaces setup; extraction would require introducing a workspace config (too invasive for a marketing-surface YOLO iteration). Each ported file carries a header comment naming its prototype source and the parity expectation. Future divergence between dashboard and marketing-surface edit experiences must be deliberate and documented — drift is the failure mode this decision accepts in exchange for shipping speed.
+### 3. Iteration cycle (commits `f655ce9` through `5e9e6b8`)
 
-Supersedes: none — additive architectural commitment, layers on top of D-354 (Tiptap chosen) without contradicting it.
+Twelve atomic commits across the same day:
 
-### 3. PROTOTYPE_SPEC.md updated
+- **`f655ce9` next/image + semantic Continue.** Hero logos move from `<img>` to `<Image>` (width=120 height=20 layout hints, `h-5 w-auto` className). Continue element changes from disabled `<button>` to inert `<div>` with `text-center` for visual parity. Stale `@next/next/no-img-element` disable comment removed.
+- **`ca46678` wordmark logos + drop hero OTP + drop Included pill.** Joel placed wordmark SVGs at `marketing-site/public/logos/tool_logos_wordmarks/` (eight files: five `_pos` for light + three `_neg` for future dark mode). Hero adopts the `_pos` variants. Hero OTP visual element deleted (`hero-otp-visual.tsx` removed); hero collapses to single column. Configurator's "Included" pill on the Verification row removed.
+- **`38538e1` left-align + balance logos + merge paperwork+pricing.** Hero / Section 3 / Section 4 / Section 7 H2s drop `text-center` (left-aligned). Per-logo `heightClass` introduced (Cursor h-[22px], windsurf h-[20px], Copilot h-[20px], claude/Cline h-[18px]); `brightness-0` for uniform black; `opacity-70` dropped. Sections 5 (paperwork) + 6 (pricing) merge into one two-col section.
+- **`1ae01f0` windsurf logo height fix.** Root cause: SVG has uniform ~78-unit transparent padding inside a 236-unit-tall viewBox (mark spans y=78 to y=156, ~33% of canvas). Fix: `h-[20px]` → `h-[44px]` to compensate; the flex row's `items-center` keeps visible marks aligned despite windsurf's taller layout box.
+- **`ff2b0ac` Verification toggleable + D-377.** Drops `alwaysOn: true` from the Verification entry, the `disabled` props on the checkbox/button, and the early-return in `handleVerticalToggle`. Adds "Verification only" preset as the page-load default. New `resolvePackId(sel)` helper re-derives the dropdown on manual toggle. New empty-state placeholder ("Pick a category to see message previews.") when no categories selected. D-377 appended to DECISIONS.md in the same commit (Supersedes: none).
+- **`e709760` D-377 mid-cycle close-out.** REPO_INDEX decision_count D-376 → D-377; CC_HANDOFF carry-forward gains the prototype-parity follow-up flag.
+- **`ceb8abf` Section 3 cut.** Single H2 spans the section; left col is two prose paragraphs with path discrimination embedded inline ("Starting fresh." / "Already built."); right col holds a styled `<pre>` code block on dark `bg-bg-primary-solid` with hand-tokenized syntax highlighting using Untitled UI semantic tokens. Drops the prior subhead, h3 sub-headings, build-spec paragraph, tests one-liner, STARTER_KITS const, CODE_BLOCK string.
+- **`5204b54` Section 4 cut.** Single H2 absorbs the prior subhead. Left col gets two body-copy h3+paragraph pairs ("Preview list" / "Testing utilities") with the left-col "Preview list" h3 deliberately rhyming with the mock card's internal "Preview list" h3.
+- **`4d5272e` swap pricing and paperwork columns.** Pricing moves to left col, paperwork to right col in the merged section.
+- **`af3e0e3` CTA copy + bottom-align.** Configurator button copy "Save to my workspace →" → "Start building with SMS →"; right column flex-col + outer grid drops `items-start` + CTA wrapper `mt-8` → `mt-auto pt-8` so the CTA bottom-aligns with the categories panel when categories list is taller. **Marketing-side divergence from the prototype, which keeps prior pattern.**
+- **`a00da51` uniform 100px inter-section spacing.** All `mt-24` → `mt-[100px]` on Sections 3, 4, 5+6, 7. Closing CTA `mb-24` → `mb-[100px]`. Configurator's section-top padding `pt-15` → `pt-[100px]`. Hero `pt-16` left as-is (page-top padding).
+- **`5e9e6b8` lifecycle eyebrows.** Three uniform eyebrows (`text-xs font-semibold uppercase tracking-wide text-text-primary`): "Configure > Build" on Section 3, "Build > Test" on Section 4, "Test > Go live" on Section 5+6 (single eyebrow spans full section width above the two-col grid).
 
-New top-level section `## Production Marketing Site — relaykit.ai` added after the Compliance Page section. Captures stabilized marketing-site surfaces (currently: configurator section + edit card). Documents header row, editor body, compliance/Fix row, tone-pill row + Variable popover, Save/Cancel; per-message tone override model; configurator data conventions including Standard variant colon convention, Friendly/Brief variant divergence allowance, variables/requiresStop semantics, "+ Add message" prefill template.
+### 4. Decisions recorded (D-376, D-377)
 
-### 4. REPO_INDEX.md updated
+- **D-376** — Three days for carrier approval claim. Marketing copy describing carrier approval time uses "three days" (or "about three days" in body register) rather than D-215's "a few days" hedge. Supersedes D-215; supersession mark on D-215 lands in the same commit as the copy change. Reflects Sinch's confirmed ~3-day SLA via Phase 1 evidence and BDR.
+- **D-377** — Verification is a toggleable category with "Verification only" preset. The configurator's Verification category is toggleable like other categories, not locked on. A "Verification only" preset in the Recommended combinations dropdown is the page-load default. When no categories are selected, the message-preview pane shows an empty state. Supersedes: none.
 
-Meta block bumped (Last updated, decision count D-374 → D-375, active branch flipped to `feat/configurator-section`, unpushed local commits note); `/marketing-site` subsection extended with a Session 74 additions block enumerating new files; `DECISIONS.md` and `PROTOTYPE_SPEC.md` doc-table rows refreshed to 2026-05-09; new Session 74 change-log entry appended.
+### 5. PROTOTYPE_SPEC.md updated
+
+- Home-page subsection rewritten for the six-section post-iteration structure (Sections 5+6 are now one merged section, eyebrows added, 100px spacing, hero left-aligned without OTP visual, etc.)
+- Configurator subsection spec sync to current behavior: subhead string "All messages included…"; dropdown options + page-load default + resolution behavior (`resolvePackId`); `pb-3` not `pb-6`; no "Included" pill; Verification toggleable; empty-state placeholder; CTA bottom-align via `mt-auto pt-8` inside `flex flex-col` right col + grid drops `items-start`; button copy "Start building with SMS →"; **two marketing-side divergences from the prototype** (CTA bottom-align + button copy) explicitly flagged.
+
+### 6. BACKLOG.md updated
+
+New entry under Likely → Product Features: "Apply D-377 (Verification toggleable + 'Verification only' preset + empty state) to the prototype configurator." Behavior to mirror enumerated; out of scope for the marketing-site iteration cycle; should be a separate dedicated session/commit; PROTOTYPE_SPEC update lands in that commit.
+
+### 7. REPO_INDEX.md updated
+
+Meta block: Active branch + Unpushed commits refreshed for the iteration-cycle state. Decision count remains D-377 (set in commit `e709760` mid-cycle). New change-log entry appended for the iteration cycle, enumerating all 12 commits with one-line descriptions.
 
 ---
 
 ## What's in progress
 
-Branch is **not** merged. Joel verifies the Vercel preview; PM gives the merge call. No mid-stream code work — the configurator section is functionally complete on this branch.
+`feat/home-page-restructure` is **NOT MERGED**. Joel verifies the latest Vercel preview (rebuilt on each push, latest from commit `5e9e6b8`); PM gives the merge call. No mid-stream code work — the iteration cycle is functionally complete on this branch as of the eyebrows commit.
 
 ---
 
 ## Quality checks passed
 
-- `tsc --noEmit` clean (one TS2345 narrowing fix during the port: `PillId` narrowing didn't survive into a closure, fixed by extracting to `const tone: ToneId = result.pillId` before the closure).
-- `eslint` clean (one `@typescript-eslint/no-dynamic-delete` fix replacing `delete next[key]` with destructuring rest pattern; one stale `react-hooks/exhaustive-deps` disable comment removed because the rule wasn't loaded in eslint config).
-- `next build` green — 12 static pages on this branch, including the new `/signup` placeholder. Bundle for `/` jumped 9.83 kB → 109 kB on this branch (Tiptap weight; expected per D-375).
-- Local dev boot clean, `GET / 200`. End-of-task `.next` clean + dev-server restart per standing rule.
-- DECISIONS ledger pre-flight scan at session start: clean (Active count 289 latest D-374, no missing Supersedes fields, no orphan supersession references). Post-D-375-append: D-375 carries `Supersedes: none` per inline-supersession-enforcement workflow (greped DECISIONS.md + DECISIONS_ARCHIVE.md for "Tiptap", "editor port", "shared package", "workspace" — no genuine conflicts; D-354 is layered-on-top, not superseded).
+- `tsc --noEmit` clean throughout each iteration commit.
+- `eslint` clean throughout each iteration commit (project's `eslint .` script). One stale eslint-disable comment removed in `f655ce9` because the `@next/next/no-img-element` rule isn't loaded in eslint config — same fix-pattern that surfaced in Session 74 with `react-hooks/exhaustive-deps`.
+- `next build` green (8 static pages: `/`, `/_not-found`, `/acceptable-use`, `/privacy`, `/signup`, `/start/get-started`, `/start/verify`, `/terms`).
+- Local dev boot clean (port 3000), `GET / 200` with all expected section markers verified via curl after each commit.
+- Bundle: `/` route 109 kB → 103 kB at the original restructure (`8abb103`); next/image runtime added 5 kB in `f655ce9` (108 kB); rest of the iteration cycle neutral. Final `/` route bundle: **108 kB**.
+- DECISIONS ledger pre-flight scan: clean. D-376 supersedes D-215 (mark in same commit `8abb103`); D-377 supersedes none (committed in `ff2b0ac`). No orphan supersession references. No format-compliance flags.
 
 ---
 
 ## Pending / carry-forward
 
-1. **Joel preview verification + PM merge approval** for `feat/configurator-section`. Branch will not be merged until both clear. If Joel finds issues on the preview, additional iteration commits land on the same branch before merge.
+1. **Joel preview verification + PM merge approval** for `feat/home-page-restructure`. Branch will not be merged until both clear. If feedback requires further iteration, additional commits land on the same branch before merge.
 
-2. **Home page architecture follow-on session** — beyond the configurator, the home page is still hero + configurator only. Suggested next sections per Joel's earlier framing: "Build it" (the developer-facing pitch), "The work we handle" (proxy-side capabilities surfaced as concrete reassurance, not feature list), "Pricing" (one-source-pointer to `docs/PRICING_MODEL.md`'s numbers), and a closing CTA strip. Each section would land as its own iteration cycle on a new branch.
+2. **Apply D-377 to the prototype configurator** (`prototype/components/configurator-section.tsx`). Marketing-side has Verification toggleable + "Verification only" preset + empty state; prototype still locks Verification on. Separate dedicated session/commit. PROTOTYPE_SPEC update lands in that commit. Now also captured in BACKLOG.md under Likely → Product Features.
 
-3. **Dark mode session** — surface-wide pass; not tied to any one section. Lower-leverage than the home-page architecture work but discrete-scope.
+3. **Phase 1 downstream experiments still UNBLOCKED.** Experiment 2b (live sample SMS over the approved campaign), Experiment 3c (Simplified→Full brand upgrade), Experiment 4 (STOP/START/HELP reply handling). All procedures drafted in `experiments/sinch/experiments-log.md`. Joel-driven; high-leverage on product readiness.
 
-4. **Per-vertical hybrid pages** — start with Verification (Phase 6 surface). Each vertical page would carry its own configurator slice + vertical-specific copy + integration code samples. Verification first because the OTP feature is the closest to ship per `docs/VERIFICATION_SPEC.md`.
-
-5. **Earlier carry-forward items still applicable:**
+4. **Earlier carry-forward items still applicable:**
    - Stage 2 (`docs/BRAND_DIRECTION.md`) — consumes the BRAND_AUDIT.md synthesis to produce the design system with point of view. Not yet started; large-scope session.
    - MD-number capture session — strategy-shaped session that walks the BRAND_AUDIT.md synthesis and decides which findings rise to MD-number status in MARKETING_STRATEGY.md.
-   - Phase 1 downstream experiments still UNBLOCKED: Experiment 2b (live sample SMS over approved campaign), Experiment 4 (STOP/START/HELP), Experiment 3c (Simplified→Full brand upgrade). Joel-driven; high-leverage on product readiness.
    - Pumping Defense Wave 2 work deferred to Phase 5/8 design activation.
-   - Broader threat-modeling workstream (BACKLOG Entry G) — launch-period deliverable, promotes `SECURITY_DRAFT.md` to canonical.
-   - Migration 006 manual application (carry-forward from Session 58) — SQL committed but not applied to live shared Supabase.
-   - Joel-actionable marketing items: affiliate signups (ShipFast 50%, Supastarter, Saaspegasus, Makerkit) + remaining tooling confirmation.
+   - Broader threat-modeling workstream (BACKLOG entry) — launch-period deliverable, promotes `SECURITY_DRAFT.md` to canonical.
+   - Migration 006 manual application — SQL committed but not applied to live shared Supabase.
+   - Joel-actionable marketing items: affiliate signups (ShipFast 50%, Supastarter, Saaspegasus, MakerKit) + remaining tooling confirmation.
+   - Dark-mode session — surface-wide pass; not tied to any one section. The wordmark `_neg` variants Joel placed (Cline, Cursor, windsurf) ship in `marketing-site/public/logos/tool_logos_wordmarks/` for this future session; not referenced today.
+   - Per-vertical hybrid pages, starting with Verification — `/verification` page carrying its own configurator slice + vertical-specific copy + integration code samples.
+   - Real cropped screencaps for Section 4's Preview list panel — HTML/CSS mock is v1; Joel may swap real screencaps later.
+   - Brand SVG assets for the Section 3 starter-kit row (ShipFast, Supastarter, MakerKit, Vercel + Supabase) — text labels are v1.
 
 ---
 
@@ -114,70 +133,70 @@ None — mid-phase close-out, drift-watch skipped per CLAUDE.md step 9.
 
 ## Gotchas for next session
 
-1. **Two copies of the Tiptap editor + helpers now exist on disk** (`prototype/lib/editor/` + `marketing-site/lib/editor/`; `prototype/lib/variable-scope.ts` analogue split across `marketing-site/lib/configurator/example-values.ts` + `compliance.ts`). Parity is intentional per D-375; each marketing-site copy carries a header comment naming its prototype source. Future edits to either side must consciously decide whether to mirror or diverge — drift is the failure mode this decision accepts in exchange for avoiding workspace setup. If next iteration touches the dashboard edit experience, ask whether the marketing-site copy should re-sync or whether the divergence is deliberate.
+1. **DO NOT push this close-out commit until PM approves.** Per session-end direction. Once PM reads CC_HANDOFF and approves, push to origin.
 
-2. **Bundle weight for `/` jumped 9.83 kB → 109 kB on this branch** — Tiptap is heavy. If marketing-site bundle size becomes a concern (e.g., LCP regression on the home page), the lift is to lazy-load `MessageEditor` behind the edit-card open state so Tiptap doesn't load until a user clicks Edit. Not blocking for now; flagged as a known trade-off per D-375.
+2. **DO NOT merge `feat/home-page-restructure` until Joel reviews the latest preview and PM approves the merge.** The branch is feature-complete as of `5e9e6b8`; further iteration on the same branch is acceptable if preview review surfaces issues.
 
-3. **Per-message tone state model** is the subtle piece: `globalTone` + `perMessageTone[key]` + `editedBodies[key]` resolve via "if `editedBodies[key]` → Custom; else `perMessageTone[key] ?? globalTone`". Setting global tone does NOT clobber per-message overrides; this is intentional. Any future iteration that adds tone semantics (e.g., a fourth tone) needs to thread the same resolution rule.
+3. **Two marketing-side divergences from the prototype, intentionally retained.** Per PROTOTYPE_SPEC's configurator subsection: (a) the configurator's CTA wrapper uses `mt-auto pt-8` inside a `flex flex-col` right column, with the outer grid dropping `items-start` to allow cell-stretch, so the CTA bottom-aligns with the categories panel; (b) the CTA button copy reads "Start building with SMS →" rather than "Save to my workspace →". Both apply only to `marketing-site/components/configurator-section.tsx`; the prototype's `prototype/components/configurator-section.tsx` keeps the prior `mt-8` spacing and "Save to my workspace →" copy. If a future iteration touches either configurator, decide deliberately whether to mirror or hold the divergence.
 
-4. **Standard variant colon convention** is load-bearing: every Standard tone variant starts with `{business_name}: ` (literal colon + space — colon is part of the template, not a hardcoded JSX prefix). Friendly/Brief variants are allowed to break the pattern (e.g., `"Hey! Your {business_name} code is {code} — expires in 10 minutes."`) for tone-divergence purposes. The Custom-pill detection logic (text ≠ any canned variant ⇒ Custom) depends on this divergence being meaningful.
+4. **D-377 prototype follow-up is parked** in BACKLOG.md (Likely → Product Features) and #2 of Pending/carry-forward above. The prototype configurator still locks Verification on; the marketing-side has been moved to the toggleable model. Mirror in a dedicated session.
 
-5. **`.pm-review.md` and `api/node_modules/`** remain untracked — standing local-only artifacts, not staged this session.
+5. **Windsurf logo's `h-[44px]` value is empirical**, derived from the SVG's ~33% canvas-occupancy ratio. If Joel replaces the windsurf SVG asset with one that doesn't have transparent padding, the `h-[44px]` value should drop back to the per-logo h-[18-22px] range to match the other wordmarks.
+
+6. **Hand-rolled syntax highlighting in Section 3's `CodeSample` component.** The CodeSample function is inline in `marketing-site/app/page.tsx`. Tokens are hand-wrapped with three Untitled UI semantic-color classes (`text-fg-brand-secondary` for keywords, `text-fg-success-secondary` for strings, `text-fg-warning-secondary` for identifiers/keys). If the example call signature changes, hand-edit the JSX accordingly. If a real syntax-highlighting library (e.g., `shiki` for static render) is desired later, that's a follow-up; current cost is zero new deps.
+
+7. **`.pm-review.md`, `api/node_modules/`, and a working-tree `.gitignore` modification (adds `.pm-handoff.md` to ignore)** remain untracked / unstaged — standing local-only artifacts, not staged this session. The `.gitignore` mod predates Session 75 (Joel's working tree carryover from Session 74).
 
 ---
 
 ## Files modified this session
 
-**Branch total (16 files, 15 feat commits since `c1c4ea6`):**
+**Branch total (11 unique files, 14 commits since fork from main):**
 
-New (10):
-- `marketing-site/app/signup/page.tsx`
-- `marketing-site/components/configurator-section.tsx` (replaced earlier section file in commit 1; rewritten in commit 15)
-- `marketing-site/components/configurator/message-edit-card.tsx`
-- `marketing-site/lib/editor/variable-token.ts`
-- `marketing-site/lib/editor/variable-node.ts`
-- `marketing-site/lib/editor/variable-node-view.tsx`
-- `marketing-site/lib/editor/template-serde.ts`
-- `marketing-site/lib/editor/message-editor.tsx`
-- `marketing-site/lib/configurator/types.ts`
-- `marketing-site/lib/configurator/session-context.tsx`
-- `marketing-site/lib/configurator/example-values.ts`
-- `marketing-site/lib/configurator/compliance.ts`
+New (3):
+- `marketing-site/components/preview-list-mock.tsx` (Session 75 original; replicates `prototype/components/test-phones-card.tsx`)
+- `marketing-site/components/hero-otp-visual.tsx` (Session 75 original — **deleted** later in `ca46678`)
+- `marketing-site/public/logos/tool_logos_wordmarks/` (Joel-placed wordmark SVGs, 8 files: 5 `_pos` referenced today, 3 `_neg` for future dark-mode pass)
 
-Touched (4):
-- `marketing-site/app/page.tsx` (hero trim + section wiring)
-- `marketing-site/components/top-nav.tsx` (CTA flipped to secondary)
-- `marketing-site/package.json` (six `@tiptap/*` deps at `^3.0.0`)
-- `marketing-site/package-lock.json` (Tiptap dep tree)
+Modified (4):
+- `marketing-site/app/page.tsx` (rewritten in Session 75 original; iterated heavily across the design-pass cycle)
+- `marketing-site/components/configurator-section.tsx` (subhead string change; "Included" pill drop; D-377 toggleable + preset + empty-state behavior; CTA copy + bottom-align via flex-col + `mt-auto pt-8`; section pt-[100px])
+- `marketing-site/components/top-nav.tsx` (Session 74 carryover, no Session 75 changes — already on main)
+- `marketing-site/lib/configurator/types.ts` (PackId adds "verification-only")
 
-**Close-out (this commit, 4 files):**
-- `DECISIONS.md` (+D-375)
-- `PROTOTYPE_SPEC.md` (+ "## Production Marketing Site — relaykit.ai" section)
-- `REPO_INDEX.md` (Meta + `/marketing-site` subsection + change-log entry + doc-table rows)
+Doc updates this final close-out (4):
+- `PROTOTYPE_SPEC.md` (home-page subsection rewritten for six-section post-iteration; configurator subsection spec sync; configurator edit-card status updated post-merge)
+- `REPO_INDEX.md` (Meta block + change-log continuation entry)
+- `BACKLOG.md` (+1 entry for D-377 prototype follow-up)
 - `CC_HANDOFF.md` (this file — overwrite)
 
 **Untracked-but-untouched (not staged):**
 - `.pm-review.md` — local-only review artifact, not refreshed this session.
 - `api/node_modules/` — standing untracked.
 
-**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `MASTER_PLAN.md`, `BACKLOG.md`, `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md`, all of `/docs/`, audits, experiments. (PROTOTYPE_SPEC's prototype-side sections are unchanged; only the new "Production Marketing Site" section was added.)
+**Working-tree change carried over (not staged):**
+- `.gitignore` — Session 74 carryover adding `.pm-handoff.md` to ignore. Not authored this session, not staged.
+
+**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `MASTER_PLAN.md`, `MARKETING_STRATEGY.md`, all of `/docs/`, audits, experiments. (PROTOTYPE_SPEC's prototype-side sections are unchanged; only the marketing-site Production section was edited.)
 
 ---
 
 ## Suggested next session
 
-1. **Wait for Joel preview verification + PM merge call** on `feat/configurator-section`. If feedback comes back with issues, iterate on the same branch before merge. If feedback is clean, PM directs merge to main.
+Aligned with the active master plan phase (**Phase 1 — Sinch Proving Ground**, still active per MASTER_PLAN v1.6) and the unmerged branch state:
 
-2. **Home page architecture follow-on** — after the configurator merges, build out "Build it / The work we handle / Pricing / CTA strip" on a new branch (`feat/home-architecture` or per-section branches). Each section is its own discrete-scope iteration cycle.
+1. **Wait for Joel preview verification + PM merge call** on `feat/home-page-restructure`. If feedback comes back with issues, iterate on the same branch before merge. If feedback is clean, PM directs merge to main.
 
-3. **Dark mode session** — surface-wide; lower-leverage but bounded scope.
+2. **Apply D-377 to the prototype configurator** — separate dedicated session per BACKLOG item. Mirrors Session 75's marketing-side D-377 work into `prototype/components/configurator-section.tsx`, syncs PROTOTYPE_SPEC's prototype-side configurator entry. Small-scope session.
 
-4. **Per-vertical hybrid pages, starting with Verification** — `/verification` page carrying its own configurator slice + vertical-specific copy + integration code samples. Phase 6 alignment.
+3. **Phase 1 downstream experiments** — Experiments 2b / 3c / 4 remain UNBLOCKED. All procedures drafted. Joel-driven; high-leverage on product-readiness side.
 
-5. **Stage 2 (`BRAND_DIRECTION.md`)** — when Joel routes back to the brand line. Consumes BRAND_AUDIT.md synthesis to produce the design system with point of view.
+4. **Per-vertical hybrid pages, starting with Verification** — `/verification` page carrying its own configurator slice + vertical-specific copy + integration code samples. Phase 6 alignment; not Phase 1 work, but a natural follow-on once the home-page restructure merges.
 
-6. **Phase 1 downstream experiments** — Experiments 2b / 4 / 3c remain UNBLOCKED, all procedures drafted. Joel-driven; high-leverage on product-readiness side.
+5. **Dark-mode session** — surface-wide pass. The wordmark `_neg` SVGs Joel placed today (Cline, Cursor, windsurf) ship for this session; not referenced yet.
+
+6. **Stage 2 (`BRAND_DIRECTION.md`)** — when Joel routes back to the brand line. Consumes BRAND_AUDIT.md synthesis to produce the design system with point of view.
 
 ---
 
-Configurator section build + dashboard edit-mode port wrapped on `feat/configurator-section`. Branch is pushed and ready for Joel preview verification at https://relaykit-marketing-site-bijt8jc9h-joelnatkins-projects.vercel.app. **Do not merge until PM directs.**
+Home-page restructure + design-pass iteration cycle wrapped on `feat/home-page-restructure`. Branch is pushed through `5e9e6b8` and ready for Joel preview verification at the latest Vercel preview URL Vercel posted on the eyebrows commit. **Do not merge until PM directs.** **Do not push this close-out commit until PM reads + approves.** D-376 + D-377 recorded with proper supersession marks. Prototype configurator parity follow-up parked in BACKLOG.

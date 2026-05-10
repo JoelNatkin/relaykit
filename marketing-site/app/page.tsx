@@ -1,369 +1,219 @@
-"use client";
-
-import {
-  Announcement02,
-  BellRinging01,
-  Calendar,
-  CheckCircle,
-  ClipboardCheck,
-  Globe01,
-  MessageChatCircle,
-  MessageCheckCircle,
-  Package,
-  Shield01,
-  StopCircle,
-  Target01,
-  Users01,
-} from "@untitledui/icons";
-import type { FC } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { ConfiguratorSection } from "@/components/configurator-section";
+import { PreviewListMock } from "@/components/preview-list-mock";
 
-interface Category {
-  id: string;
-  label: string;
-  icon: FC<{ className?: string }>;
-  examples: string;
+// Per-logo heights tune visual weight, not pixel height. Heights compensate
+// for two things: (1) icon-plus-wordmark logos (Cursor, Copilot) render
+// taller at a given pixel height than pure wordmarks because the icon
+// glyph takes vertical room; (2) some SVGs have transparent padding baked
+// into the viewBox — windsurf in particular uses only ~33% of its canvas
+// height, so it needs roughly 2x the height of peers to render at matching
+// visible size. The flex row uses items-center, so the taller windsurf
+// cell centers cleanly with shorter siblings.
+const AI_TOOLS = [
+  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", alt: "Claude Code", heightClass: "h-[18px]" },
+  { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", alt: "Cursor", heightClass: "h-[22px]" },
+  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", alt: "Windsurf", heightClass: "h-[44px]" },
+  { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", alt: "GitHub Copilot", heightClass: "h-[20px]" },
+  { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", alt: "Cline", heightClass: "h-[18px]" },
+] as const;
+
+// Hand-tokenized code sample with semantic-token-based syntax highlighting.
+// Untitled UI tokens used for the categories that map cleanly onto code:
+//   keywords  -> text-fg-brand-secondary (brand purple)
+//   strings   -> text-fg-success-secondary (success green)
+//   names     -> text-fg-warning-secondary (warning amber, used for both
+//                identifiers and object keys)
+// Default text on the dark bg uses text-text-white.
+function CodeSample() {
+  return (
+    <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-primary-solid px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
+      <span className="text-fg-brand-secondary">import</span>
+      {" { relaykit } "}
+      <span className="text-fg-brand-secondary">from</span>
+      {" "}
+      <span className="text-fg-success-secondary">{"'relaykit'"}</span>
+      {";\n\n"}
+      <span className="text-fg-brand-secondary">await</span>
+      {" relaykit.appointments."}
+      <span className="text-fg-warning-secondary">sendConfirmation</span>
+      {"({\n  "}
+      <span className="text-fg-warning-secondary">to</span>
+      {": customer.phone,\n  "}
+      <span className="text-fg-warning-secondary">appointment</span>
+      {": { "}
+      <span className="text-fg-warning-secondary">time</span>
+      {": "}
+      <span className="text-fg-success-secondary">{"'2:00 PM Friday'"}</span>
+      {" }\n});"}
+    </pre>
+  );
 }
-
-const CATEGORIES: Category[] = [
-  {
-    id: "appointments",
-    label: "Appointments",
-    icon: Calendar,
-    examples: "Confirmations, reminders, reschedules, cancellations, no-show follow-ups",
-  },
-  {
-    id: "verification",
-    label: "Verification codes",
-    icon: Shield01,
-    examples: "Login OTPs, signup codes, password resets, MFA, new device alerts",
-  },
-  {
-    id: "orders",
-    label: "Order updates",
-    icon: Package,
-    examples: "Shipping confirmations, delivery alerts, return status, refund notices",
-  },
-  {
-    id: "support",
-    label: "Customer support",
-    icon: MessageChatCircle,
-    examples: "Ticket updates, resolution notices, satisfaction follow-ups",
-  },
-  {
-    id: "marketing",
-    label: "Marketing",
-    icon: Announcement02,
-    examples: "Promos, re-engagement, product launches, seasonal campaigns",
-  },
-  {
-    id: "internal",
-    label: "Team alerts",
-    icon: Users01,
-    examples: "Shift reminders, system alerts, escalation pings, on-call notifications",
-  },
-  {
-    id: "community",
-    label: "Community",
-    icon: Globe01,
-    examples: "Event reminders, group updates, membership alerts, RSVP confirmations",
-  },
-  {
-    id: "waitlist",
-    label: "Waitlist",
-    icon: ClipboardCheck,
-    examples: "Spot available, queue position, reservation holds, invite codes",
-  },
-];
-
-const STEPS = [
-  {
-    title: "Pick your use case",
-    description: "A full library of compliant messages.",
-  },
-  {
-    title: "Hand it to your AI",
-    description: "Drop two files in. Your AI handles the rest.",
-  },
-  {
-    title: "Go live when you're ready",
-    description: "Build in a fully functional sandbox. Free.",
-  },
-];
 
 export default function MarketingHome() {
   return (
     <div>
-      {/* Hero */}
+      {/* Section 1 — Hero */}
       <div className="pt-16">
         <div className="mx-auto max-w-5xl px-6">
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
             SMS for builders
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-            Two files. Your AI coding tool. A working SMS feature.
+            Two files. Your AI tool. A working SMS feature.
           </p>
+          <p className="mt-4 text-sm font-medium text-text-primary">
+            $49 + $19/mo. Three days to live.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-3">
+            {AI_TOOLS.map((tool) => (
+              <Image
+                key={tool.alt}
+                src={tool.src}
+                alt={tool.alt}
+                width={140}
+                height={24}
+                className={`${tool.heightClass} w-auto brightness-0`}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Section 2 — Configurator */}
       <ConfiguratorSection />
 
-      {/* How it works */}
-      <div id="how-it-works" className="mx-auto mt-18 max-w-5xl scroll-mt-8 px-6">
-        <p className="text-center text-sm font-semibold text-text-brand-secondary">How it works</p>
-        <h2 className="mt-1 text-center text-2xl font-bold text-text-primary">
-          Shorter than your last standup.
-        </h2>
-        <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-3">
-          {STEPS.map((step, i) => (
-            <div
-              key={i}
-              className="flex flex-col items-center text-center sm:items-start sm:text-left"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-bg-brand-secondary text-lg font-bold text-text-brand-secondary">
-                {i + 1}
-              </div>
-              <h3 className="mt-4 text-base font-bold text-text-primary">{step.title}</h3>
-              <p className="mt-1 text-sm text-text-tertiary">{step.description}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Pricing context line */}
-      <p className="py-8 text-center text-sm text-text-tertiary">
-        Free to build and test. $49 to register, then $19/mo.
-      </p>
-
-      {/* Category grid — visual showcase, non-clickable */}
-      <div id="categories" className="scroll-mt-8 bg-bg-secondary py-16">
-        <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-center text-2xl font-bold text-text-primary">Explore use cases</h2>
-          <p className="mx-auto mt-2 max-w-xl text-center text-text-tertiary">
-            Every message is pre-written, tailored to your use case, and ready for carriers.
-          </p>
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {CATEGORIES.map((cat) => (
-              <div
-                key={cat.id}
-                className="flex flex-col rounded-xl border border-border-secondary bg-bg-primary p-6"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-brand-secondary">
-                    <cat.icon className="size-5 text-fg-brand-primary" />
-                  </div>
-                  <h3 className="text-base font-semibold text-text-primary">{cat.label}</h3>
-                </div>
-                <p className="mt-3 text-sm leading-relaxed text-text-tertiary">{cat.examples}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Pricing */}
-      <div id="pricing" className="mx-auto mt-24 max-w-5xl scroll-mt-8 px-6">
-        <p className="text-center text-sm font-semibold text-text-brand-secondary">
-          Simple pricing
+      {/* Section 3 — Build it */}
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
+          Configure &gt; Build
         </p>
-        <h2 className="mt-1 text-center text-2xl font-bold text-text-primary">
-          Free to build. Pay when you go live.
-        </h2>
+        <h2 className="mt-2 text-2xl font-bold text-text-primary">Two files. Your AI tool.</h2>
 
-        <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {/* Free card */}
-          <div className="flex flex-col rounded-xl border border-border-primary p-6">
-            <h3 className="text-lg font-bold text-text-primary">Free</h3>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-3xl font-bold text-text-primary">$0</span>
-              <span className="text-sm text-text-tertiary">forever</span>
-            </div>
-            <p className="mt-3 text-sm text-text-tertiary">
-              Build and test your SMS integration. No credit card, no time limit.
+        <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
+          <div className="flex flex-col gap-5">
+            <p className="text-base leading-relaxed text-text-secondary">
+              Starting fresh. RelayKit slots into the starter kits you use — ShipFast,
+              Supastarter, MakerKit, Vercel + Supabase.
             </p>
-            <ul className="mt-5 flex flex-col gap-3">
-              {[
-                "Test API key and sandbox phone number",
-                "Pre-written messages for your use case",
-                "Setup instructions your AI coding tool can follow",
-                "Works with Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, and others",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2 text-base text-text-secondary">
-                  <CheckCircle className="mt-1 size-4 shrink-0 text-fg-brand-primary" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <p className="text-base leading-relaxed text-text-secondary">
+              Already built. Hand the build spec to your AI tool, point it at where you handle
+              auth, and let it wire up the rest.
+            </p>
           </div>
 
-          {/* Go live card */}
-          <div className="flex flex-col rounded-xl border border-border-primary p-6">
-            <h3 className="text-lg font-bold text-text-primary">Go live</h3>
-            <div className="mt-3">
-              <span className="text-3xl font-bold text-text-primary">$49</span>
-              <span className="ml-1 text-sm text-text-tertiary">to register</span>
-              <span className="mx-1.5 text-sm text-text-tertiary">+</span>
-              <span className="text-3xl font-bold text-text-primary">$19</span>
-              <span className="text-sm text-text-tertiary">/mo</span>
-            </div>
-            <p className="mt-3 text-base text-text-tertiary">Full refund if not approved.</p>
-            <ul className="mt-5 flex flex-col gap-3">
-              {[
-                "Carrier registration handled for you",
-                "No credit card to start building",
-                "500 messages included per month",
-                "Dedicated phone number",
-                "Every message scanned — issues caught and fixed before they reach carriers",
-                "Need more messages? $8 per 500. Scales with usage.",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-2 text-base text-text-secondary">
-                  <CheckCircle className="mt-1 size-4 shrink-0 text-fg-brand-primary" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+          <div>
+            <CodeSample />
+            <p className="mt-2 text-xs text-text-tertiary">That&apos;s the send.</p>
           </div>
         </div>
+      </section>
 
-        <p className="mt-8 text-center text-xs text-text-tertiary">
-          Volume pricing available above 5,000 messages
+      {/* Section 4 — Test it for real */}
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
+          Build &gt; Test
         </p>
-      </div>
-
-      {/* Compliance — what happens after you go live */}
-      <div id="compliance" className="mt-24 scroll-mt-8 bg-bg-secondary py-16">
-        <div className="mx-auto max-w-5xl px-6">
-          <p className="text-center text-sm font-semibold text-text-brand-secondary">
-            Why RelayKit?
-          </p>
-          <h2 className="mx-auto mt-1 max-w-2xl text-center text-2xl font-bold text-text-primary">
-            Your messages keep delivering. We make sure of it.
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-center leading-relaxed text-text-tertiary">
-            Other platforms send your messages and hope for the best. RelayKit checks every message
-            before it goes out, watches for problems after delivery, and alerts you when something
-            needs attention &mdash; before carriers do.
-          </p>
-
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {[
-              {
-                icon: MessageCheckCircle,
-                title: "Every message checked before sending",
-                desc: "We scan outbound messages against carrier rules. If something looks risky, we flag it before it reaches your users.",
-              },
-              {
-                icon: StopCircle,
-                title: "Opt-outs handled for you",
-                desc: "When someone replies STOP, their number is blocked immediately — no code on your end. If you accidentally try to text them again, we block it and tell you why.",
-              },
-              {
-                icon: Target01,
-                title: "We notice when things drift",
-                desc: "As your app evolves, the messages it sends can gradually shift from what was originally approved. We watch for this and tell you what to fix.",
-              },
-              {
-                icon: BellRinging01,
-                title: "You’ll know when something needs attention",
-                desc: "If we block a message or detect a problem, you hear about it — dashboard alerts, email, or text. No issues sitting quietly on a dashboard waiting for you to notice.",
-              },
-            ].map((card) => (
-              <div
-                key={card.title}
-                className="rounded-xl border border-border-secondary bg-bg-primary p-6"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-bg-brand-secondary">
-                  <card.icon className="size-5 text-fg-brand-primary" />
-                </div>
-                <h3 className="mt-4 text-sm font-bold text-text-primary">{card.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-text-tertiary">{card.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 text-center text-sm font-medium text-text-secondary">
-            Every compliance feature is included for every customer. No paid tiers. No add-ons.
-          </p>
-        </div>
-      </div>
-
-      {/* Problem framing — why this exists */}
-      <div className="mx-auto mt-24 max-w-5xl px-6">
-        <h2 className="mx-auto max-w-2xl text-center text-2xl font-bold text-text-primary">
-          You shouldn&apos;t need a telecom degree to text your users.
+        <h2 className="mt-2 text-2xl font-bold text-text-primary">
+          Real SMS, before customers see anything.
         </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-center leading-relaxed text-text-tertiary">
-          Adding SMS should take an afternoon. Instead, you&apos;re stuck navigating carrier
-          registration, building compliance pages, and hoping your submission doesn&apos;t get
-          rejected. RelayKit handles all of it.
-        </p>
 
-        {/* Desktop column labels */}
-        <div className="mx-auto mb-3 mt-10 hidden max-w-4xl px-5 sm:grid sm:grid-cols-[300px_1fr_1fr_1fr] sm:gap-5">
-          <div />
-          <p className="text-sm font-semibold text-text-primary">DIY</p>
-          <p className="text-sm font-semibold text-text-primary">Others</p>
-          <p className="text-sm font-semibold text-text-primary">RelayKit</p>
+        <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
+          <div className="flex flex-col gap-6">
+            <div>
+              <h3 className="text-base font-bold text-text-primary">Preview list</h3>
+              <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                Add yourself, your team, your beta testers. Each person verifies once. After that,
+                your app&apos;s SMS features work for them the way they will for customers.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-text-primary">Testing utilities</h3>
+              <p className="mt-2 text-base leading-relaxed text-text-secondary">
+                Your AI tool also sets up testing tools in your app. Trigger an OTP, fire a
+                reminder, queue a message — from your editor.
+              </p>
+            </div>
+          </div>
+          <PreviewListMock />
         </div>
+      </section>
 
-        <div className="mx-auto mt-10 flex max-w-4xl flex-col gap-4 sm:mt-0">
-          {[
-            {
-              topic: "Registration",
-              desc: "Carriers require it before you can send a single text. Most people get rejected the first time.",
-              diy: "Learn 10DLC. Fill out carrier forms. Wait weeks.",
-              others: "Same forms. You’re on your own.",
-              relaykit: "Handled, or your money back.",
-            },
-            {
-              topic: "Message content",
-              desc: "Carriers review exactly what you plan to send. Write the wrong thing and your submission is denied.",
-              diy: "Write messages. Hope carriers approve them.",
-              others: "No guidance. No templates.",
-              relaykit: "Pre-written but flexible options, tested for your use case.",
-            },
-            {
-              topic: "Opt-out handling",
-              desc: "Reply STOP must actually stop. Get it wrong and you’re liable.",
-              diy: "Build STOP/HELP yourself. Get TCPA wrong, you’re liable.",
-              others: "Some offer it. Most don’t.",
-              relaykit: "Handled automatically. No code needed.",
-            },
-          ].map((row) => (
-            <div key={row.topic} className="rounded-xl border border-border-secondary p-5">
-              <p className="text-sm font-bold text-text-primary">{row.topic}</p>
-              <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-[300px_1fr_1fr_1fr] sm:items-start sm:gap-5">
-                <div className="sm:pr-4">
-                  <p className="text-sm leading-relaxed text-text-tertiary">{row.desc}</p>
-                </div>
-                <div>
-                  <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-quaternary sm:hidden">
-                    DIY
-                  </p>
-                  <p className="text-sm text-text-tertiary">{row.diy}</p>
-                </div>
-                <div>
-                  <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-quaternary sm:hidden">
-                    Others
-                  </p>
-                  <p className="text-sm text-text-tertiary">{row.others}</p>
-                </div>
-                <div>
-                  <p className="mb-1 text-xs font-medium uppercase tracking-wide text-text-quaternary sm:hidden">
-                    RelayKit
-                  </p>
-                  <p className="text-sm font-medium text-text-primary">{row.relaykit}</p>
-                </div>
+      {/* Section 5 — Pricing + Paperwork (two-col merge) */}
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
+          Test &gt; Go live
+        </p>
+        <div className="mt-2 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
+          {/* Left col: pricing */}
+          <div>
+            <h2 className="text-2xl font-bold text-text-primary">Simple pricing.</h2>
+
+            <div className="mt-6 rounded-xl border border-border-primary p-8">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+                  Stage 1
+                </p>
+                <h3 className="mt-2 text-lg font-bold text-text-primary">Build for free</h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
+                  Set up your messages. Wire up the SDK. Test with real phones. No credit card.
+                </p>
+              </div>
+
+              <hr className="my-6 border-border-secondary" />
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
+                  Stage 2
+                </p>
+                <h3 className="mt-2 text-lg font-bold text-text-primary">
+                  Go live for $49 + $19/mo
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
+                  We file your registration with carriers. Approval takes about three days. 500
+                  messages included per month. $8 per 500 over. Refund if you&apos;re not approved.
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Reassurance line */}
-      <p className="mt-16 pb-16 text-center text-sm text-text-tertiary">
-        No contracts. Cancel anytime. Your code stays yours.
-      </p>
+            <p className="mt-4 text-xs text-text-tertiary">
+              Marketing categories add $10/mo. Volume pricing above 5,000 messages.
+            </p>
+
+            <p className="mt-3 text-sm text-text-tertiary">
+              US and Canada at launch. We don&apos;t handle HIPAA, healthcare-regulated workflows,
+              or enterprise procurement.
+            </p>
+          </div>
+
+          {/* Right col: paperwork */}
+          <div>
+            <h2 className="text-2xl font-bold text-text-primary">We handle the paperwork.</h2>
+            <p className="mt-6 text-base leading-relaxed text-text-secondary">
+              Registration paperwork. The approval back-and-forth. The opt-in form your users see.
+              STOP handling. Opt-out tracking. Delivery monitoring.
+            </p>
+            <p className="mt-6 text-sm italic text-text-tertiary">
+              We read it so you don&apos;t have to.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 6 — Closing CTA */}
+      <section className="mx-auto mt-[100px] mb-[100px] max-w-5xl px-6">
+        <h2 className="text-2xl font-bold text-text-primary">Ready when you are.</h2>
+        <p className="mt-4 max-w-xl text-base leading-relaxed text-text-tertiary">
+          Configure today. Live in three days. Refund if not approved.
+        </p>
+        <Link
+          href="/start/verify"
+          className="mt-8 inline-block rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+        >
+          Get early access
+        </Link>
+      </section>
     </div>
   );
 }

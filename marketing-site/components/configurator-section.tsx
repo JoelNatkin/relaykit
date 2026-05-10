@@ -29,7 +29,6 @@ const VERTICALS: Vertical[] = [
     title: "Verification",
     description:
       "Login OTPs, signup codes, password resets, MFA, new device alerts",
-    alwaysOn: true,
     messages: [
       {
         name: "Verification code",
@@ -296,6 +295,7 @@ const VERTICAL_BY_ID: Record<VerticalId, Vertical> = VERTICALS.reduce(
 );
 
 const PACKS: Array<{ id: PackId; label: string }> = [
+  { id: "verification-only", label: "Verification only" },
   { id: "saas", label: "SaaS" },
   { id: "personal", label: "Personal services" },
   { id: "real-estate", label: "Real estate" },
@@ -305,14 +305,31 @@ const PACKS: Array<{ id: PackId; label: string }> = [
 ];
 
 const PACK_DEFAULTS: Record<PackId, VerticalId[]> = {
+  "verification-only": ["verification"],
   saas: ["verification", "orders", "support", "team"],
   personal: ["verification", "appointments", "support"],
   "real-estate": ["verification", "appointments", "support"],
   fitness: ["verification", "appointments", "marketing", "community"],
   ecommerce: ["verification", "orders", "support", "marketing"],
-  custom: ["verification"],
-  none: ["verification"],
+  custom: [],
+  none: [],
 };
+
+// Manual toggling re-derives the dropdown state. Empty selection becomes
+// "none"; any selection that exactly matches a preset's defaults adopts
+// that preset's id; anything else becomes "custom". The "custom" id is a
+// state marker, not a user-pickable pattern.
+function resolvePackId(sel: Set<VerticalId>): PackId {
+  if (sel.size === 0) return "none";
+  for (const pack of PACKS) {
+    if (pack.id === "custom") continue;
+    const defaults = PACK_DEFAULTS[pack.id];
+    if (defaults.length === sel.size && defaults.every((id) => sel.has(id))) {
+      return pack.id;
+    }
+  }
+  return "custom";
+}
 
 const TONE_OPTIONS: Array<{ id: ToneId; label: string }> = [
   { id: "standard", label: "Standard" },
@@ -457,9 +474,9 @@ interface CustomEditorState {
 }
 
 export function ConfiguratorSection() {
-  const [pack, setPack] = useState<PackId>("saas");
+  const [pack, setPack] = useState<PackId>("verification-only");
   const [selected, setSelected] = useState<Set<VerticalId>>(
-    () => new Set<VerticalId>(PACK_DEFAULTS.saas),
+    () => new Set<VerticalId>(PACK_DEFAULTS["verification-only"]),
   );
   const [globalTone, setGlobalTone] = useState<ToneId>("standard");
   const [businessName, setBusinessName] = useState("");
@@ -517,14 +534,13 @@ export function ConfiguratorSection() {
   }
 
   function handleVerticalToggle(id: VerticalId) {
-    if (VERTICAL_BY_ID[id].alwaysOn) return;
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      setPack(resolvePackId(next));
       return next;
     });
-    setPack("custom");
   }
 
   function handleStubSave(
@@ -632,21 +648,21 @@ export function ConfiguratorSection() {
 
   return (
     <SessionProvider state={sessionState}>
-      <section className="bg-bg-primary pt-15 pb-16 sm:pb-20">
+      <section className="bg-bg-primary pt-[100px] pb-16 sm:pb-20">
         <div className="mx-auto max-w-5xl px-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-text-primary">
               Configure your messages
             </h2>
             <p className="mt-3 text-base text-text-tertiary">
-              OTP is included. You can change any of this later in your workspace.
+              All messages included. You can change these later in your workspace.
             </p>
           </div>
 
-          <div className="mt-8 grid grid-cols-1 items-start gap-8 md:grid-cols-[3fr_7fr]">
+          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[3fr_7fr]">
             {/* Categories panel */}
             <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
-              <div className="px-4 pt-5 pb-6">
+              <div className="px-4 pt-5 pb-3">
                 <h3 className="text-base font-semibold text-text-primary">Categories</h3>
                 <div className="mt-4">
                   <label
@@ -679,7 +695,6 @@ export function ConfiguratorSection() {
               </div>
               {VERTICALS.map((v) => {
                 const isSelected = selected.has(v.id);
-                const isAlwaysOn = v.alwaysOn === true;
                 return (
                   <div
                     key={v.id}
@@ -688,28 +703,19 @@ export function ConfiguratorSection() {
                     <button
                       type="button"
                       onClick={() => handleVerticalToggle(v.id)}
-                      disabled={isAlwaysOn}
-                      className="flex w-full items-start gap-3 text-left disabled:cursor-default"
+                      className="flex w-full items-start gap-3 text-left"
                     >
                       <input
                         type="checkbox"
                         checked={isSelected}
                         readOnly
-                        disabled={isAlwaysOn}
                         tabIndex={-1}
                         className="mt-0.5 size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
                       />
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-text-primary">
-                            {v.title}
-                          </span>
-                          {isAlwaysOn ? (
-                            <span className="shrink-0 rounded-full bg-bg-brand-secondary px-2 py-0.5 text-xs font-medium text-text-brand-secondary">
-                              Included
-                            </span>
-                          ) : null}
-                        </div>
+                        <span className="text-sm font-medium text-text-primary">
+                          {v.title}
+                        </span>
                         <p className="mt-1 text-xs text-text-tertiary">{v.description}</p>
                         {isSelected && v.note ? (
                           <p className="mt-1 text-xs text-text-secondary">{v.note}</p>
@@ -722,7 +728,7 @@ export function ConfiguratorSection() {
             </div>
 
             {/* Messages column */}
-            <div className="md:max-w-[540px]">
+            <div className="flex flex-col md:max-w-[540px]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
                   {TONE_OPTIONS.map((t) => (
@@ -768,6 +774,13 @@ export function ConfiguratorSection() {
               </div>
 
               <div className="mt-8 space-y-7">
+                {selectedInOrder.length === 0 ? (
+                  <div className="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-border-secondary px-6 py-10 text-center">
+                    <p className="text-sm text-text-tertiary">
+                      Pick a category to see message previews.
+                    </p>
+                  </div>
+                ) : null}
                 {selectedInOrder.map((id) => {
                   const vertical = VERTICAL_BY_ID[id];
                   const customs = customMessages[id];
@@ -878,7 +891,7 @@ export function ConfiguratorSection() {
                 })}
               </div>
 
-              <div className="mt-8">
+              <div className="mt-auto pt-8">
                 <p className="text-sm text-text-secondary">
                   Next: a few quick questions, then you build with your AI tool while we
                   register you. Three days to your first real text.
@@ -887,7 +900,7 @@ export function ConfiguratorSection() {
                   href="/signup"
                   className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
                 >
-                  Save to my workspace →
+                  Start building with SMS →
                 </Link>
               </div>
             </div>
