@@ -86,7 +86,10 @@ export default function MarketingHome() {
 
       {/* Section 3 — Build it */}
       <section className="mx-auto mt-[100px] max-w-5xl px-6">
-        <h2 className="text-2xl font-bold text-text-primary">Two files. Your AI tool.</h2>
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
+          Configure &gt; Build
+        </p>
+        <h2 className="mt-2 text-2xl font-bold text-text-primary">Two files. Your AI tool.</h2>
 
         <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           <div className="flex flex-col gap-5">
@@ -109,7 +112,10 @@ export default function MarketingHome() {
 
       {/* Section 4 — Test it for real */}
       <section className="mx-auto mt-[100px] max-w-5xl px-6">
-        <h2 className="text-2xl font-bold text-text-primary">
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
+          Build &gt; Test
+        </p>
+        <h2 className="mt-2 text-2xl font-bold text-text-primary">
           Real SMS, before customers see anything.
         </h2>
 
@@ -136,7 +142,10 @@ export default function MarketingHome() {
 
       {/* Section 5 — Pricing + Paperwork (two-col merge) */}
       <section className="mx-auto mt-[100px] max-w-5xl px-6">
-        <div className="grid grid-cols-1 items-start gap-12 md:grid-cols-2">
+        <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
+          Test &gt; Go live
+        </p>
+        <div className="mt-2 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           {/* Left col: pricing */}
           <div>
             <h2 className="text-2xl font-bold text-text-primary">Simple pricing.</h2>
