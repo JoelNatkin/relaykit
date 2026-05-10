@@ -161,7 +161,19 @@ Compliance is felt across two surfaces: the workspace KPI card (Registered only)
 
 ---
 
-## 11. App Settings — `/apps/[appId]/settings`
+## 11. How compliance is enforced across the customer journey
+
+Compliance enforcement is not a single mechanism — it's three distinct mechanisms operating in three phases of the customer journey, anchored by separate decisions.
+
+**Phase 1 — Pre-registration (sandbox / Building state).** Exploration phase. Customer authors and tests broadly; the constraint is structural, not content-based — sandbox sends route only to verified phones per D-298. No carrier scope committed yet. Marketing namespace is fully usable in sandbox per D-294 even before registration.
+
+**Phase 2 — Registration (the locking moment).** RelayKit derives the TCR campaign shape from the customer's category selections and submits to Sinch. Multiple categories submit simultaneously per D-311 (no sequencing). Marketing auto-submits if used in sandbox, on-demand otherwise per D-294 — either way, marketing is always a separate TCR campaign per D-333. The submitted scope locks at this moment and becomes the operative compliance scope for everything that follows.
+
+**Phase 3 — Post-registration (workspace authoring time).** Compliance enforcement collapses to the moment a message is saved per D-293; non-compliant messages cannot be saved, so they cannot reach production. Custom messages are classified by content at authoring time (not user self-selection) per D-352. Off-scope content routes to expansion, not refusal — when a customer's authored message reads as marketing on a transactional-only registration, the workspace surfaces "register a marketing campaign?" rather than blocking. Carrier-level drift detection (continuous AI-matching of live traffic against registered samples) catches what the workspace misses, but the design intent is that authoring-time classification keeps everything inside scope before the carrier classifier sees it.
+
+---
+
+## 12. App Settings — `/apps/[appId]/settings`
 
 Reached via the gear icon in the workspace header (workspace page only — D-332). 600px max-width centered. Five collapsible card sections. Field-edit semantics gate on `registrationState`.
 
@@ -171,13 +183,13 @@ Reached via the gear icon in the workspace header (workspace page only — D-332
 
 **API keys.** Test key (`rk_test_*` per D-349) always visible with copy button — sandbox keys are deliberately not regeneratable. Live key (`rk_live_*`) masked unless newly generated; Regenerate link opens a confirmation modal. Anchors: D-285, D-291, D-292.
 
-**Billing.** See §13.
+**Billing.** See §14.
 
 **Cancel plan.** Inline link at the bottom (text-tertiary, hover red). Opens a custom modal with a "Type CANCEL" text-input gate. Body copy: "Your plan will stay active through [date]. After that, live messaging stops but test environment stays available — your code, API key, and test setup aren't going anywhere." Cancel-plan button red, disabled until the input matches `CANCEL`. **TBD:** Implementation semantics behind the copy (does live messaging stop at end-of-period? does the test env survive across multi-month gaps?) — the copy is authoritative for now; backend behavior to confirm.
 
 ---
 
-## 12. Account Settings — `/account`
+## 13. Account Settings — `/account`
 
 Reached via the avatar dropdown in top nav. 600px column. Card-format sections. State-independent (consistent across all logged-in users). The "← Back to GlowStudio" link is hardcoded for the prototype.
 
@@ -193,7 +205,7 @@ Reached via the avatar dropdown in top nav. 600px column. Card-format sections. 
 
 ---
 
-## 13. Billing
+## 14. Billing
 
 Pricing surfaces appear in five places, all stating the same facts.
 
@@ -213,7 +225,7 @@ Stripe is the payment processor (managed-only at launch — no BYO carrier billi
 
 ---
 
-## 14. Key product principles
+## 15. Key product principles
 
 These are the principles that shape what the product feels like to the customer. The framing decisions below are some of the ones that most heavily shape product behavior — not a canonical list.
 
@@ -235,7 +247,7 @@ These are the principles that shape what the product feels like to the customer.
 
 ---
 
-## 15. What's not in the product (launch)
+## 16. What's not in the product (launch)
 
 Per MASTER_PLAN §16 and supporting decisions:
 
