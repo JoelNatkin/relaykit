@@ -27,7 +27,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
-      <body className="font-sans antialiased">
+      <body className="bg-bg-primary font-sans antialiased">
         <PostHogProvider>
           <SuspendedPostHogPageView />
           <TopNav />
