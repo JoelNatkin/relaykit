@@ -92,6 +92,16 @@ Close-out: the final commit of the wave updates REPO_INDEX (last_updated, decisi
 
 ---
 
+## Integration Plan as PM Artifact
+
+When PM authors a multi-commit plan in the browser chat (for a wave per Wave-Based Integration Discipline above, or any other multi-step PM-led work), the plan itself is not a deliverable file. The plan is reasoning — what to do, in what order, with what verification — not output. Only the substance the plan produces (new doc sections, lifted patterns, edits) gets committed.
+
+This means: PM-authored prose laying out commit shape, sequencing, and rationale lives in the browser chat (and in PM_HANDOFF when a chat rotates mid-wave), not in repo files. CC executes per the plan but does not commit "the plan." If the plan needs to persist for future reference, it can be summarized as a change-log entry in REPO_INDEX at the wave's close-out — but the plan-as-artifact itself stays out of canonical docs.
+
+Reasoning: integration plans are session-bounded reasoning, not project-bounded knowledge. Committing them clutters the repo with documents accurate only at the moment of authoring. The substance — the new sections, the lifted patterns, the edits — is what persists.
+
+---
+
 ## Master Plan Discipline
 
 MASTER_PLAN.md is the canonical launch plan. Read it at every session start to confirm the active phase. Every chat's work should serve the active phase unless Joel explicitly redirects.

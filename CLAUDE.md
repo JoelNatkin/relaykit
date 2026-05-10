@@ -153,6 +153,8 @@ tr '\n' ' ' < file | tr -s ' ' | grep -oE "(pattern1|pattern2|...).{0,80}"
 
 JSX prose wraps long sentences across lines with leading indent; single-line grep misses split phrases. Multiline-safe grep collapses newlines first, so the grep sees the phrase as a single string. Default for end-of-prose-sweep verification. Concrete miss this catches: "compliance artifacts" leak in `marketing-site/app/privacy/page.tsx` survived three single-line greps in Session 56.
 
+For verification of *added* content in commit specs (rather than *removed* terms), prefer "at least N occurrences" over exact integer counts. Exact counts are brittle when surrounding edits add unrelated mentions of the same term; "at least N" still catches the substantive question (did the new content land?) without requiring perfect knowledge of pre-existing occurrences. The Session 70 pumping-defense wave adopted this pattern across all 5 content commits and ran cleanly; the Session 77 methodology reconciliation wave continued it.
+
 ## Hard platform constraints
 - Never claim guaranteed compliance outcomes. Prohibited: "ensures compliance," "guarantees approval," "fully compliant," "stay compliant automatically"
 - Never write specific day counts for carrier review. Use "a few days" (D-215)
