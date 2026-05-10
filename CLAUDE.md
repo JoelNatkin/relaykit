@@ -131,6 +131,9 @@ Trivial changes (typos, comment-only edits, doc reorgs not touching user-facing 
 
 Branch hygiene: at session close-out, surface any unmerged feature branches in CC_HANDOFF so they don't get lost. Do not delete branches until merged.
 
+## PM review cadence (.pm-review.md)
+After each local commit but before pushing, write `git show HEAD` (or full files if PM-relevant) to `.pm-review.md` at the repo root, overwriting existing content. The file is gitignored — never commit it. Joel pastes its content into the PM chat for review; PM approves push or directs amends. On amend, refresh `.pm-review.md` with the new HEAD. The file represents only the most recent commit awaiting review. See `PM_PROJECT_INSTRUCTIONS.md` "PM Review Cadence" for full procedure.
+
 ## Copy rule
 Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts, modals), read `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` in full and apply the vocabulary table, framing-shift table, emotional-states map, and one-sentence principle. No exceptions for "minor" strings.
 

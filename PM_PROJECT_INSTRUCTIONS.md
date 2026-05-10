@@ -178,7 +178,7 @@ CC writes code. Joel shares key files here for review. PM reviews against decisi
 
 After CC completes a build task and before pushing:
 
-1. Joel shares the key files (types, main module, config) in the PM chat
+1. CC writes the diff (and any full files needing PM attention) to `.pm-review.md` per the PM Review Cadence section below; Joel pastes its content into the PM chat
 2. PM reviews for: type safety, error handling, consistency with decisions, architectural correctness, edge cases, and naming
 3. PM provides a fix prompt if needed — Joel pastes it into CC
 4. CC amends the commits
@@ -226,6 +226,24 @@ Substantive work on production-facing surfaces (currently `/marketing-site`, eve
 Trivial changes (typos, comment-only edits, doc reorgs not touching user-facing copy) may push directly to main per CC's judgment. When in doubt, branch.
 
 `/prototype` is local-dev only — no production deployment, no preview URL needed. `/sdk` previews are tested via local install (`npm pack` + install in a test project). `/api` deployment target is TBD per Phase 5; this workflow generalizes to it when chosen.
+
+---
+
+## PM Review Cadence (.pm-review.md)
+
+Every CC commit awaiting review uses the `.pm-review.md` mechanism:
+
+1. After committing locally, CC writes the diff (typically `git show HEAD`) to `.pm-review.md` at the repo root, overwriting existing content.
+2. The file is gitignored — never committed, never accumulates.
+3. Joel pastes `.pm-review.md` content into the PM chat.
+4. PM reviews for scope adherence, decision consistency, voice/style (if user-facing), and quality gates.
+5. PM either approves push or provides a fix/amend prompt.
+6. On amend, CC refreshes `.pm-review.md` with the new HEAD; PM re-reviews.
+7. After approval: `git push` (to main or branch per the active workflow).
+
+`.pm-review.md` represents only the most recent commit awaiting review. Each new commit overwrites. The file is a transient artifact, not a record.
+
+Applies to all CC work — code commits, doc commits, refactors, doc-only methodology work. The Code Review Step under Quality-First Build Discipline (above) and the Branch and Preview Workflow (above) both use this mechanism. For code work, CC may also include specific full files in `.pm-review.md` when full-file review (not just diff) helps PM evaluate the change.
 
 ---
 
