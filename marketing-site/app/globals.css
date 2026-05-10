@@ -126,6 +126,11 @@
   --color-bg-success-secondary: var(--color-success-100);
   --color-bg-success-solid: var(--color-success-600);
 
+  /* Code-block surface — distinct from bg-primary-solid so the home-page
+     CodeSample stays inverted (dark surface, light text) in both themes,
+     while bg-primary-solid is free to flip with theme tokens. */
+  --color-bg-code-surface: var(--color-gray-950);
+
   /* FEATURED ICON COLORS */
   --color-featured-icon-light-fg-brand: var(--color-brand-600);
   --color-featured-icon-light-fg-gray: var(--color-gray-500);
@@ -211,6 +216,10 @@
   --color-bg-success-primary: var(--color-success-700);
   --color-bg-success-secondary: var(--color-success-700);
   --color-bg-success-solid: var(--color-success-500);
+
+  /* Code-block surface stays gray-950 in dark mode too — intentional
+     theme-invariant value (see light-mode block for rationale). */
+  --color-bg-code-surface: var(--color-gray-950);
 
   /* FEATURED ICON */
   --color-featured-icon-light-fg-brand: var(--color-brand-400);

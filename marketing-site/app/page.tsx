@@ -34,7 +34,7 @@ const AI_TOOLS = [
 // Default text on the dark bg uses text-text-white.
 function CodeSample() {
   return (
-    <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-primary-solid px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
+    <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-code-surface px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
       <span className="text-fg-brand-secondary">import</span>
       {" { relaykit } "}
       <span className="text-fg-brand-secondary">from</span>
