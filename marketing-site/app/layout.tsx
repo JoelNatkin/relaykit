@@ -10,13 +10,23 @@ export const metadata: Metadata = {
   description: "Add SMS to your app in minutes, not months.",
 };
 
+// Runs synchronously in <head> before React hydrates so the page paints
+// in the correct theme on first frame. Reads localStorage first (user
+// override), falls back to prefers-color-scheme, applies the .dark
+// class + color-scheme to <html>. The IIFE is wrapped in try/catch
+// because localStorage can throw under strict privacy modes.
+const themeInitScript = `(function(){try{var s=localStorage.getItem('relaykit-theme');var d=s==='dark'||(!s&&window.matchMedia('(prefers-color-scheme: dark)').matches);var e=document.documentElement;if(d){e.classList.add('dark');e.style.colorScheme='dark';}else{e.style.colorScheme='light';}}catch(_){}})();`;
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="font-sans antialiased">
         <PostHogProvider>
           <SuspendedPostHogPageView />
