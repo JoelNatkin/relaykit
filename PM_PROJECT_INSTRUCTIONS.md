@@ -78,6 +78,20 @@ This rule exists because duplication causes drift. RELAYKIT_PRD_CONSOLIDATED.md 
 
 ---
 
+## Wave-Based Integration Discipline
+
+When a change touches multiple canonical docs at once — strategic repositioning, methodology overhaul, research integration — use the wave pattern: PM scopes a multi-commit plan in the browser chat; CC executes commit-by-commit; each commit is atomic and pushable on its own merits.
+
+When: a single concept requiring synchronized edits across 3+ canonical docs. Pumping Defense Wave 1 (Session 69–70) touched MASTER_PLAN + DECISIONS + MARKETING_STRATEGY + BACKLOG + a new SECURITY_DRAFT. Methodology reconciliation (Session 77) touched PM_INSTRUCTIONS + CLAUDE.md + DECISIONS.md.
+
+Shape: 3–7 content commits plus 1 close-out commit. Each commit atomic with a single clear purpose. Heavier than 10 commits is a smell — scope is too broad and should be split into multiple waves.
+
+Cadence: CC commits each step locally, writes the diff to .pm-review.md, reports verification and hash. PM reviews and approves push or directs amends before the next commit starts. Plan itself stays in the browser chat — only the substance the plan produces is committed.
+
+Close-out: the final commit of the wave updates REPO_INDEX (last_updated, decision_count if applicable, change-log entry) and overwrites CC_HANDOFF. Retirement sweep does not run mid-wave even if the wave touches DECISIONS.md; sweep candidacy is determined at phase-boundary close-out only per existing rule.
+
+---
+
 ## Master Plan Discipline
 
 MASTER_PLAN.md is the canonical launch plan. Read it at every session start to confirm the active phase. Every chat's work should serve the active phase unless Joel explicitly redirects.
