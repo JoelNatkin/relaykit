@@ -1,4 +1,17 @@
 # Phase B Prior-Art Digest
+
+> ⚠ **Caution — framing drift in findings #1, #2, #4. Corrected by D-382 (2026-05-11).**
+>
+> This digest was authored Session 80 before Phase 2a operating discipline was internalized against D-372's three-layer product model (TCR categories / SDK namespaces / audience-packs). As a result, findings #1, #2, and #4 reason about per-category launch posture and "audience fit" at the SDK namespace layer when those questions actually live at the audience-pack layer per D-372 + MD-11:
+>
+> - **Finding #1 (Higher Ed blank slate).** Higher Education ships as the ninth SDK namespace per VERTICAL_TAXONOMY_DRAFT §3 + D-372 — that's settled at the SDK layer, audience-agnostic. The Phase 2a question is whether the indie SaaS pack (pack #1) composes templates that touch the Higher Education namespace at IH launch, not whether the namespace itself ships.
+> - **Finding #2 (indie SaaS audience-pack mismatch).** The framing "these categories are mis-shaped for indie SaaS" mis-locates the problem. SDK namespaces are audience-agnostic infrastructure; what's pack-specific is the templates the pack uses within each namespace and which namespaces the pack chooses to surface in its configurator presets. The mismatch isn't with categories — it's with the pack-level template authoring (which doesn't yet exist for the indie SaaS pack).
+> - **Finding #4 (Verification dual role).** Verification's SDK namespace (D-273, D-370) exists at the SDK layer regardless of pack. The "Verification only" configurator preset (D-377) is a pack-level surface treatment for builders whose apps only need OTP. The "dual role" is dual *layers* per D-372, not a contradiction to resolve.
+>
+> Findings #3 (sender-name + vertical-aware-noun token sprawl + brace-syntax split) and #5 (PRD_05 build-spec architecture sunset by SDK + AGENTS.md model) are layer-agnostic — architectural and historical observations independent of the audience-pack vs SDK namespace distinction. Both remain useful as Phase 2a inputs.
+>
+> Per D-383 (2026-05-11), Phase 2a research substrate is a 4-source external scan per category (competitor surface scan / indie SaaS practice scan / starter kit scan / community signal), not this digest. The digest's per-category sections remain useful as **prior-art floor** — what previous PRDs thought, what survives architecturally, what was explicitly rejected — but are not the research input for "what indie SaaS founders actually use SMS for" or "what best-practice SMS messaging looks like in 2026."
+
 Date: 2026-05-11
 Sources (in priority order, all under `docs/archive/` unless noted):
 1. `RELAYKIT_PRD_CONSOLIDATED.md` (Apr 15 2026, archived 2026-04-21)
