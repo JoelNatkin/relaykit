@@ -1,6 +1,8 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.7 — May 11, 2026
+### Version 1.8 — May 11, 2026
+
+**v1.8 — 2026-05-11:** Three audience-binding drift corrections per D-382 + D-383. §10 Phase 6 closing rephrased to clarify that the indie SaaS pack composes templates within existing SDK namespaces, not that namespaces themselves grow per pack. §17 risk row "Indie SaaS pack namespace gap" renamed and reframed as "Indie SaaS pack template coverage gap" — relocates the gap from the SDK namespace layer (where it was a category error against D-372) to the audience-pack layer (where it correctly lives). §18 open architectural question row 1 rephrased to ask which existing namespaces the pack composes from rather than whether new namespaces surface. Working principles, §0 launch focus and long-term shape, §1 strategic repositioning, D-372, MD-11, MD-9 — all unchanged; they were canonical and correct; the §10/§17/§18 drift had fallen out of step with them.
 
 **v1.7 — 2026-05-11:** Added sixth §2 working principle: tamp complexity smartly, feel flexible to users, scope honestly per category. Surfaced during Phase B configurator audit and Phase 2 research scoping. Establishes operating posture for research-driven content authoring across nine verticals × multiple sub-uses.
 
@@ -311,7 +313,7 @@ Marketing pillar "Verification included" becomes truthful at the close of Phase 
 
 Specifics in VERIFICATION_SPEC.md.
 
-Verification ships at Phase 6 close as the cornerstone of the launch package per the indie SaaS positioning (§0). Transactional SMS — account events, order/transactional notifications, critical alerts — and OTP together make the launch surface complete; the indie SaaS pack's specific namespace composition for those account events is tracked in §18 open questions.
+Verification ships at Phase 6 close as the cornerstone of the launch package per the indie SaaS positioning (§0). Transactional SMS — account events, order/transactional notifications, critical alerts — and OTP together make the launch surface complete. Which existing SDK namespaces the indie SaaS pack (pack #1) composes from for these account events, and how the pack's template + intake layer covers them within those namespaces, is tracked in §18 open questions per D-372 + D-382.
 
 ---
 
@@ -470,7 +472,7 @@ Being honest about where the plan could break:
 
 **Multi-campaign upgrade mechanics unresolved at launch.** The campaign architecture story depends on a clean answer to how customers move from LVM-Mixed to multi-campaign as their volume grows. Auto-graduate vs customer-initiated, pricing model, Sinch ISV economics — all unresolved (see §18). Mitigation: launch ships LVM-Mixed default with an explicit roadmap to multi-campaign rather than pretending the question is settled. First ~20 customers' observed traffic shapes inform the resolution.
 
-**Indie SaaS pack namespace gap.** The launch audience's main use cases — signup welcomes, payment-failed alerts, subscription changes, founder-facing app monitoring alerts — don't map cleanly to the existing eight SDK namespaces. `verification` covers OTP. `support` is shaped wrong; `internal` is employee-facing. Either an existing namespace stretches or a new one (`accounts`? `saas`?) surfaces. Mitigation: tracked in §18; resolved at indie SaaS pack composition design before Phase 6 wraps.
+**Indie SaaS pack template coverage gap.** The launch audience's main use cases — signup welcomes, payment-failed alerts, subscription changes, founder-facing app monitoring alerts — don't yet have indie-SaaS-pack-shaped templates. Per D-382, these surface within existing SDK namespaces (composition over namespace growth — the eight namespaces per D-273 plus Higher Education as the ninth per D-372 ship as audience-agnostic infrastructure); pack-specific scope lives at the audience-pack layer (templates, intake flow, configurator presets). Mitigation: resolved in Phase 2a research + Phase 2b template authoring per D-383's 4-source methodology; pack composition recommendations land before Phase 6 wraps.
 
 **Slogan unfinalized.** "SMS configured for your SaaS" is a working direction, not a finalized slogan. Resonance and customer-language testing pending. Mitigation: build-in-public posts test variations, watching which lands. Slogan finalization is not a launch blocker — the audience-pack framing and product surface stand without a finalized slogan.
 
@@ -492,7 +494,7 @@ Each question's substance lives in a single canonical home (BACKLOG entry, draft
 
 | Question | Unblocks at | Substance |
 |---|---|---|
-| Indie SaaS pack namespace composition (existing namespace stretches vs new namespace surfaces for SaaS account events) | Indie SaaS audience-pack composition design (Phase 5 / Phase 6) | NEW BACKLOG entry |
+| Indie SaaS pack template + intake composition: which existing SDK namespaces does the pack compose from for SaaS account events, and what templates does the pack provide within those namespaces per D-382 | Indie SaaS audience-pack composition design (Phase 2a research + Phase 2b template authoring) | Phase 2a/2b workstream per D-383 |
 | Multi-campaign upgrade UX — auto-graduating (telemetry-driven) vs customer-initiated (dashboard prompt) | Phase 5 design + first ~20 customers' observed traffic shapes | NEW BACKLOG entry |
 | Launch LVM-Mixed-for-everyone vs auto-route high-projection customers into Standard campaigns from intake | Phase 5 design (conservative-vs-aggressive launch choice) | NEW BACKLOG entry |
 | Pricing implications of multi-campaign (per-campaign add-on vs all-included tier pricing) | Phase 5 design + Sinch ISV economics confirmation | NEW BACKLOG entry |
