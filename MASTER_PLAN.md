@@ -1,6 +1,8 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.6 — May 3, 2026
+### Version 1.7 — May 11, 2026
+
+**v1.7 — 2026-05-11:** Added sixth §2 working principle: tamp complexity smartly, feel flexible to users, scope honestly per category. Surfaced during Phase B configurator audit and Phase 2 research scoping. Establishes operating posture for research-driven content authoring across nine verticals × multiple sub-uses.
 
 **v1.6 — 2026-05-03:** Pumping defense architectural commitment + canonical security doc. New working principle in §2 (two-layer defense). Phase 5 scope expansion (pipeline-side Layers 1–4 + manual monitoring bridge). Phase 8 scope expansion (Layer A integration guidance). Four new §17 risks (Layer A skipping, sophisticated attackers, manual monitoring scaling, adjacent threats). Five new §18 open questions. §16 addition for deferred automated anomaly detection. New canonical doc: `docs/SECURITY_DRAFT.md`.
 
@@ -89,6 +91,8 @@ These are the rules we operate by. If we violate one, we're probably making a mi
 **Pumping defense by default — two-layer.** Customer's app defends what reaches RelayKit's API (Layer A, via integration-time guidance prescribed in AGENTS.md, integration prompt, per-builder guides). RelayKit's pipeline defends what reaches Sinch (Layer B, namespace-agnostic: country allow-list, per-destination rate limit, per-customer rate limit, premium-prefix block). The two-layer structure is load-bearing for the security promise — neither layer alone is sufficient. Structurally only an integration-driven SDK like RelayKit's can prescribe Layer A in a way usage-based incumbents can't match. Canonical detail: `docs/SECURITY_DRAFT.md` §3.
 
 *These four AI-config-substrate principles constrain current Phase 5/6 build decisions so that the post-launch AI-driven configuration layer (named in §16 out-of-scope and recorded in §18 open questions) has a clean substrate to operate on. The cost of getting this right at build time is small. The cost of retrofitting later is large.*
+
+**Tamp complexity smartly, feel flexible to users, scope honestly per category.** RelayKit will support more verticals, more sub-uses, and more workflows over time. Internal complexity gets controlled aggressively — canonical workflows with smart variables over message proliferation, deferred work over half-built features, explicit per-category 80/20 cuts over exhaustive parameterization. External experience feels magically flexible: customers see the product fits their use case without working for it. Honest scope is the precondition for both — we ship what we can ship well; we defer the rest with explicit quality gates; we don't pad with bland defaults to look broader than we are. Cross-reference: D-379/D-380/D-381 establish the home-page surface where this principle is first instantiated.
 
 ---
 
