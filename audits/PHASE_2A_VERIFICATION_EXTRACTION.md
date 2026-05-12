@@ -247,3 +247,109 @@ From channel/method enumeration, **PSD2** (Strong Customer Authentication for EU
 - **Free trial / sandbox / test credits for Verify specifically** — *not observed in public docs* on the Verify pricing or product pages
 - **Exact character/segment limits beyond the 160-character recommendation** — custom-templates page recommends "Keep your templates under 160 characters when possible to avoid message splitting and additional costs" (verbatim); exact over-limit segment-handling behavior not pulled
 - **Rate-limit defaults** — *not observed in public docs* in the surfaces examined
+
+### Plivo Verify
+
+Plivo's verification API. API model exposes a Verify Application (configured at Plivo console with brand name, OTP length, expiry, retry attempts, and template) and verification Sessions (created and validated via two endpoints). No per-verification platform fee — customer pays channel cost only. Extraction sourced from `plivo.com/verify/` (product landing), `plivo.com/docs/verify/` (API docs root including `/api/overview/` and `/api/session/create-a-session`), `plivo.com/verify/pricing/` (pricing), and `plivo.com/blog/` posts for code-sample detail.
+
+**Positioning headline:**
+
+> "Verify new users with Plivo"
+
+> "Eliminate fake accounts and verify customers anywhere, in real time, with a 95% conversion rate."
+
+Sub-headline:
+
+> "Plivo Verify is the best way to secure users & boost OTP conversions"
+
+**Source:** https://www.plivo.com/verify/
+
+**Public-docs API surface:** Two primary API operations documented:
+
+- **Create Session API** — initiates OTP delivery
+- **Validate Session API** — confirms user-entered OTP
+
+Key Create Session parameters per the docs overview and blog: `recipient` (phone number), `app_uuid` (Verify Application identifier), `channel` (sms or voice), `locale` (language override), `url` and `method` (callback for OTP final-state delivery), `otp` (optional — customer-supplied OTP instead of Plivo-generated). Channels per the API overview: SMS and Voice. Channels per the product landing: SMS, Voice, WhatsApp listed as Active; RCS and Email noted as coming soon (paraphrased).
+
+**Source:** https://www.plivo.com/docs/verify/api/overview/ ; https://www.plivo.com/verify/ ; https://www.plivo.com/docs/verify/api/session/create-a-session
+
+**Verbatim sample messages:**
+
+Template example shown in the API overview as the default structure:
+
+```
+Your ${brand} verification code is ${code}
+```
+
+The 5-minute-tutorial blog shows code-side parameter usage (recipient, app_uuid, otp, locale) but does not surface the rendered SMS message body in prose form (paraphrased).
+
+**Source:** https://www.plivo.com/docs/verify/api/overview/ ; https://www.plivo.com/blog/send-sms-verification-code-in-5-minutes/
+
+**Variable/placeholder convention:** Templates use **dollar-sign plus curly braces** — `${variable_name}` — per the API overview. This is distinct from the `{{variable_name}}` convention used by Twilio Verify and Telnyx Verify. Two named template variables documented:
+
+- `${brand}` — brand name configured at Verify Application creation
+- `${code}` — the OTP
+
+Verify Application–level configurable settings per the overview: Brand name, Code length, Expiry, Attempts, Template.
+
+**Source:** https://www.plivo.com/docs/verify/api/overview/
+
+**Opt-out language:** Plivo Verify–specific docs (API overview, Create Session API reference, Verify support category) contain no explicit guidance on STOP/HELP language inside OTP message bodies (paraphrased). No prescription about opt-out copy at the template-authoring level was observed in the Verify surfaces examined. Whether Verify OTP messages are formally exempt from STOP/HELP-in-body requirements is not stated.
+
+**Source:** https://www.plivo.com/docs/verify/api/overview/
+
+**Enumerated sub-uses:**
+
+Product landing names broad framings (eliminate fake accounts, user verification, account security) without a discrete sub-use enumeration (paraphrased).
+
+From the 5-minute-tutorial blog, example application domains (verbatim):
+
+> "Financial institutions, e-commerce sites, streaming platforms, and delivery apps."
+
+Additional sub-use phrases pulled from the same blog (verbatim):
+
+> "peer-to-peer payment platform"
+
+> "unauthorized purchases or account takeovers"
+
+Two-factor and multi-factor authentication are framed across blog and product surfaces as the umbrella security pattern (paraphrased).
+
+**Source:** https://www.plivo.com/verify/ ; https://www.plivo.com/blog/send-sms-verification-code-in-5-minutes/
+
+**Pricing visibility:** Per-verification platform fee is $0 — customer pays channel cost only.
+
+- **Per-verification platform fee:** $0 — verbatim: "$0 OTP Verification costs" and "Only pay SMS, Voice, or WhatsApp channel charges."
+- **SMS (US):** verbatim: "Starts at $0.0077/sms"
+- **Voice:** verbatim: "Starts at $0.0115/min"
+- **WhatsApp:** verbatim: "Starts at $0.0143/conversation"
+- **Fraud Shield:** verbatim: "$0 for Plivo Fraud Shield" — included at no extra cost
+- **Free tier / trial:** sign-up flow advertises free credits with no credit card required (paraphrased from page copy); specific credit amount not surfaced
+- **Volume discounts:** none observed in the pricing calculator — verification rates remain constant across volume tiers (paraphrased)
+- **Starter / indie-developer tier:** none observed
+
+Carrier surcharges (AT&T, T-Mobile, Verizon) apply on top of the base SMS rate per the broader Plivo SMS pricing landing (paraphrased).
+
+**Source:** https://www.plivo.com/verify/pricing/
+
+**Indie-SaaS-relevant positioning signal:** The 5-minute-tutorial blog leads with speed-of-integration framing. Verbatim:
+
+> "Our API allows you to send your first OTP in 90% less implementation time than a legacy verification solution."
+
+> "Start sending OTPs in one second with Plivo's Verify API."
+
+> "in just 5 minutes."
+
+The $0 verification fee plus free credits and no-credit-card signup lower the entry barrier for small teams (paraphrased). No explicit indie SaaS / founder / startup audience callout observed in the surfaces examined; the framing is broad-developer with implicit cost-and-speed-relative positioning vs. Twilio.
+
+**Source:** https://www.plivo.com/blog/send-sms-verification-code-in-5-minutes/ ; https://www.plivo.com/verify/pricing/
+
+**Gaps:**
+
+- **Production-default English template body beyond the docs sample** — overview shows `Your ${brand} verification code is ${code}` as the template shape; whether this is the literal production English default or one of several built-in template options is *source unclear*
+- **Custom-template authoring shape** — overview lists "Template" as a Verify Application setting but the create-application API detail was not pulled; the boundary between built-in template selection and full custom template authoring is *source unclear*
+- **OTP-message exemption from STOP/HELP-in-body requirements** — *not observed in public docs*
+- **WhatsApp Verify API shape** — *source unclear* (WhatsApp listed as Active on product landing and priced on the Verify pricing page, but the API overview channel list shows only sms/voice; create-session API behavior for WhatsApp specifically not exposed in the surfaces examined)
+- **Free-credit amount and signup-credit duration** — *not observed in public docs* on the Verify pricing or landing pages
+- **Device-verification, SMS-as-login-link, recovery-code-delivery sub-uses** — *not observed in public docs* as named sub-uses
+- **Rate-limit defaults at the API level** — *not observed in public docs* (retry-attempts and OTP expiry are Verify Application–level configs; per-account or per-session rate-limit defaults not surfaced)
+- **Character/segment-limit guidance for SMS template content** — *not observed in public docs* in the Verify-specific surfaces examined
