@@ -18,6 +18,14 @@
 
 ---
 
+## Active explorations
+
+Sandbox space for product, strategy, and design ideas being prototyped before canonical commitment. See `/explorations/README.md` and `PM_PROJECT_INSTRUCTIONS.md` "Explorations (sandbox before canon)" for the workflow.
+
+_No active explorations._
+
+---
+
 ## Tier classification for browser chat uploads
 
 **Tier 1 — Claude.ai project knowledge (permanent, rare updates):**
@@ -210,6 +218,10 @@ Root-level migrations directory — `/src`-era, Twilio-shaped. **Slated for arch
 ### `/audits`
 
 Read-only audit reports and Phase 2a research deliverables. Created Session 47 with `DECISIONS_AUDIT_2026-04-24.md` (pre-Phase-2 DECISIONS ledger audit, BACKLOG-promoted). Convention: dated reports use `YYYY-MM-DD` in the filename, never overwritten — superseded audits stay for historical comparison; named research deliverables (no date in filename) follow per-deliverable conventions. Reports are findings-only by design; cleanup actions land in DECISIONS.md / DECISIONS_ARCHIVE.md only after explicit PM triage and never as part of the audit commit itself. Phase 2a research deliverables landed here: Session 80 added `PHASE_B_PRIOR_ART_DIGEST.md` (prior-art floor synthesis of `/docs/archive` PRDs + light `/src` scan; Session 81 corrective header flags findings #1/#2/#4 as framing drift per D-382); Session 82 added `PHASE_2A_VERIFICATION_EXTRACTION.md` (CC half of the D-384 hybrid extraction/synthesis split — 8 targets across D-383 Source 1 competitors + Source 3 starter kits, scoped to Verification as the pilot category); Session 83 added `PHASE_2A_VERIFICATION_SYNTHESIS.md` (PM half of the same hybrid split — synthesis output from Sources 2 + 4, Verification category). Together the EXTRACTION + SYNTHESIS pair forms the substrate for Phase 2b Verification template authoring.
+
+### `/explorations/`
+
+Sandbox for product/strategy/design ideas being prototyped before canonical commitment. See `/explorations/README.md` for status-header conventions and `PM_PROJECT_INSTRUCTIONS.md` "Explorations (sandbox before canon)" for workflow rules. Currently empty; first explorations land when PM scaffolds.
 
 ### `/experiments/sinch/`
 

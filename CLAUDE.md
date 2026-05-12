@@ -142,7 +142,7 @@ Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts,
 Marketing decisions and plays live in `docs/MARKETING_STRATEGY.md`, not DECISIONS.md. Decision sequence is MD-1, MD-2, etc. — independent from D-numbered product decisions. Same gate-test rigor (PM_PROJECT_INSTRUCTIONS.md seven gate tests). Archive at `docs/MARKETING_STRATEGY_ARCHIVE.md`. Product/marketing seam rule: mostly-product decisions live in MASTER_PLAN/DECISIONS with marketing cross-reference; mostly-marketing decisions live in MARKETING_STRATEGY with product cross-reference. Load on demand only — not read at session start.
 
 ## Wave-based integration discipline
-PM may direct multi-commit waves spanning multiple canonical docs. CC executes each commit independently per its scoped prompt; each commit is atomic and PM-approved before push. See PM_PROJECT_INSTRUCTIONS.md "Wave-Based Integration Discipline" for shape and cadence. Retirement sweep does not run mid-wave; sweep candidacy is determined at phase-boundary close-outs only.
+PM may direct multi-commit waves spanning multiple canonical docs. CC executes each commit independently per its scoped prompt; each commit is atomic and PM-approved before push. See PM_PROJECT_INSTRUCTIONS.md "Waves" for shape and cadence. Retirement sweep does not run mid-wave; sweep candidacy is determined at phase-boundary close-outs only.
 
 ## Prose-sweep verification
 
