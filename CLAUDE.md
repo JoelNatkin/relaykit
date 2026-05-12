@@ -100,6 +100,32 @@ If you're about to build something that contradicts a decision:
 ⚠ DECISION CONFLICT: contradicts D-[number]. Confirm override before I continue.
 ```
 
+## Explorations tracking
+
+CC maintains four cross-doc surfaces when explorations change state. PM gates entry; CC executes on disk.
+
+**When an exploration is created** (PM says "scaffold as an exploration"):
+- Create `/explorations/[name].md` with status header `Status: exploring` and the substance PM provides
+- Add row to REPO_INDEX "Active explorations" section: `| [name] | exploring | /explorations/[name].md | [one-sentence description] |`
+- If UI-related: add pointer to relevant section in PROTOTYPE_SPEC.md
+- If customer-experience-related: add pointer to relevant section in PRODUCT_SUMMARY.md
+
+**When status changes to paused:**
+- Update file header: `Status: paused (YYYY-MM-DD) — [brief context]`
+- Update REPO_INDEX row status column
+
+**When status changes to killed:**
+- Update file header: `Status: killed (YYYY-MM-DD) — [brief reason]`
+- Remove row from REPO_INDEX "Active explorations" section
+- Remove pointers from PROTOTYPE_SPEC and PRODUCT_SUMMARY (file remains in /explorations/ as graveyard record)
+
+**When status changes to promoted:**
+- A D-number lands in DECISIONS.md per the seven gate tests in PM_PROJECT_INSTRUCTIONS.md
+- Update file header: `Status: promoted to D-XXX (YYYY-MM-DD)`
+- Remove row from REPO_INDEX "Active explorations" section
+- Promote content into canonical docs (PROTOTYPE_SPEC if UI, PRODUCT_SUMMARY if customer-experience, etc.) per the substance of the decision; remove the prior pointer
+- File remains in /explorations/ as historical record of why the canonical decision looks the way it does
+
 ## Session start
 When you see `DECISIONS CHECK`, read these four files and confirm each:
 1. DECISIONS.md — active decision count + archived range noted
