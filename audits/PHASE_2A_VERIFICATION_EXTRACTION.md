@@ -522,3 +522,47 @@ SMS is absent — not fallback, not optional add-on. The kit's auth story is ent
 **Gaps:**
 
 - **None worth chasing.** Per the Source 3 prompt note, absence of SMS verification is a complete finding for this target. The starter is a paid closed-source code package; deeper inspection beyond marketing-and-docs is purchase-gated, but the public surface is unambiguous on the SMS-absence point. No SMS provider, no phone field in auth flows, no OTP-by-SMS feature anywhere in the public materials examined.
+
+### Supastarter
+
+Paid SaaS starter kit & boilerplate available in multiple variants (Next.js + better-auth, Next.js + Supabase, Nuxt + better-auth, TanStack Start). Public docs and landing pages examined for both Next.js variants; no public source repository for code-level inspection. Extraction sourced from `supastarter.dev` (product landing), `supastarter.dev/docs/nextjs/authentication/overview` (auth overview docs), and the two Next.js variant landings (`/nextjs-better-auth-boilerplate`, `/nextjs-supabase-boilerplate`).
+
+**Ships SMS verification:** **No.** No SMS verification, phone-number authentication, or OTP-by-SMS feature surfaced in the product landing, variant landings, or auth overview docs examined across both Next.js variants. The auth feature enumeration is consistent across surfaces (verbatim list items):
+
+> "Password, Passkeys & magic link"
+
+> "oAuth"
+
+> "2FA"
+
+> "Forgot/reset password flow"
+
+Phone, SMS, and OTP-by-SMS do not appear. No mention of Twilio, Telnyx, Plivo, Sinch, or any SMS provider in the public surfaces examined (paraphrased).
+
+**Source:** https://supastarter.dev ; https://supastarter.dev/docs/nextjs/authentication/overview ; https://supastarter.dev/nextjs-better-auth-boilerplate ; https://supastarter.dev/nextjs-supabase-boilerplate
+
+**If yes — provider/library:** n/a (no SMS verification shipped).
+
+**Integration pattern:** n/a (no SMS verification shipped pre-wired).
+
+**Default auth pattern + relationship to SMS:** Password (with passkeys and magic-link as passwordless options) plus OAuth social logins, with 2FA layered on top. The 2FA implementation type is not explicitly stated in the Supastarter docs examined; defaults to TOTP-app-based per the underlying better-auth library (paraphrased — inferred from better-auth defaults, not confirmed verbatim Supastarter-side).
+
+The Next.js + better-auth variant uses **better-auth** as the auth library; the Next.js + Supabase variant uses **Supabase Auth**. Landing-page verbatim:
+
+> "supastarter uses better-auth, a modern TypeScript authentication library."
+
+OAuth provider list, verbatim:
+
+> "Google, GitHub, Apple, and many other OAuth providers"
+
+SMS-to-kit relationship (paraphrased): SMS verification is not pre-wired in either Next.js variant. Both variants' underlying auth libraries support SMS-based 2FA as a developer-implemented extension — better-auth via a customer-provided `sendOTP` callback (the kit does not include SMS-provider plumbing), Supabase Auth via its native phone-auth integration (which itself requires Twilio/Vonage configuration). Neither path is shipped pre-configured; SMS is an extension on top of the kit, not a shipped feature.
+
+**Source:** https://supastarter.dev ; https://supastarter.dev/docs/nextjs/authentication/overview ; https://better-auth.com/docs/plugins/2fa (capability-boundary reference)
+
+**Opt-out treatment:** n/a — no SMS surface means no STOP/HELP handling. Not implemented; not applicable.
+
+**Gaps:**
+
+- **Verbatim confirmation that shipped 2FA is TOTP-only** — *source unclear* (Supastarter feature lists name "2FA" without specifying implementation type; defaults inferred from better-auth library are TOTP-app-based, but not confirmed verbatim in the Supastarter surfaces examined)
+- **Whether the Supabase variant pre-exposes any phone-auth surface in shipped UI** — *not observed in public docs* (Next.js + Supabase variant landing does not surface phone auth; whether the kit's shipped code includes a phone-auth route, even if unsurfaced in marketing, was not extractable from public materials)
+- **Closed-source code access** — paid code package; deeper inspection beyond marketing-and-docs is purchase-gated. Public surface across two Next.js variants is consistent on the SMS-absence point.
