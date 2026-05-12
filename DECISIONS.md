@@ -1580,3 +1580,13 @@ Phase 2a per-category research uses four source types per category: (1) **Compet
 **Reasoning:** External best-practice research grounded in the actual indie SaaS pack audience and competitive landscape is the load-bearing input for Phase 2a authoring. The digest's internal-only basis caused finding-level framing drift (corrected by D-382 above) and is not the right substrate for "what indie SaaS founders actually use SMS for" or "what best-practice SMS messaging looks like in 2026."
 
 **Affects:** Phase 2a workstream shape and chat-sequencing; the corrective header on `audits/PHASE_B_PRIOR_ART_DIGEST.md`; Phase 2b authoring scope.
+
+**D-384 — Phase 2a research execution split: CC handles extraction-heavy sources, PM handles synthesis-heavy sources** (Date: 2026-05-11)
+
+Phase 2a per-category research per D-383 splits execution between CC and PM by source type. CC produces structured extraction files under `/audits/` for Source 1 (competitor surface scan: Twilio / Telnyx / Plivo / Sinch messaging products) and Source 3 (starter kit scan: ShipFast / Supastarter / MakerKit / Vercel-Supabase). PM-led browser chat covers Source 2 (indie SaaS practice scan: Stripe / Vercel / Linear / Lemon Squeezy / GitHub) and Source 4 (community signal: Indie Hackers / r/SaaS / Twitter-X / AI-tool Discords), and produces the audience-pack composition synthesis per category. Verification pilots the split; after Verification ships, PM evaluates whether the shape generalizes to the other 8 categories or some warrant a different split.
+
+**Supersedes:** none
+
+**Reasoning:** Extraction is mechanical and parallelizable — frees up active hands during data-gathering and carries low framing risk. Synthesis is where the Session 81 audience-binding drift surfaced (per D-382 + D-383 origin notes) — PM-with-Joel reaction loop in browser chat is the cheaper safeguard for audience-fit judgment. Layered on top of D-383: D-383 records what the four sources are; D-384 records how they are executed. Verification pilots the shape because OTP shape is consistent across competitors; if CC delivers clean extraction here, the pattern generalizes.
+
+**Affects:** Phase 2a workstream execution per category; `/audits/PHASE_2A_*_EXTRACTION.md` file convention; PM_HANDOFF + CC_HANDOFF cross-handoff pattern for the synthesis-after-extraction sequence.
