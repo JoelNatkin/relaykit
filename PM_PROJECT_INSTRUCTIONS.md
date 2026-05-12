@@ -1,6 +1,12 @@
 # RelayKit — Project Instructions
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: May 10, 2026
+### Updated: May 12, 2026
+
+---
+
+## File size discipline
+
+Keep this file under 400 lines. When adding guidance, also cut. If you can't cut enough to stay under the ceiling, the new guidance probably belongs elsewhere (CLAUDE.md if CC-facing, BACKLOG if a candidate, or a separate focused spec). When this file exceeds the ceiling, a trim audit is a separate wave (not a passive carry-forward).
 
 ---
 
@@ -152,6 +158,7 @@ At the start of every new browser chat, before any planning:
 2. **Note the active phase.** Reference it when scoping the chat's work.
 3. **Verify `decision_count`** against DECISIONS.md if uploaded, or against PM_HANDOFF.md.
 4. **Check `last_updated` on REPO_INDEX and `Master plan last updated` in Meta.** If either is more than ~7 days old, flag staleness and push for a close-out or plan amendment as appropriate.
+5. **Check PRODUCT_SUMMARY.md "Last reviewed" date** against recent customer-facing work visible in CC_HANDOFF or REPO_INDEX docs table. If recent customer-facing changes (new screens, new flows, removed features, changed customer journey) landed without a corresponding PRODUCT_SUMMARY update, flag drift before engaging on customer-facing work. PRODUCT_SUMMARY maintenance is a numbered close-out step in CLAUDE.md; this audit step catches misses.
 
 ---
 
@@ -461,16 +468,17 @@ Session close-out:
 2. Commit everything that's working.
 3. Append any unrecorded decisions to DECISIONS.md using the canonical format including a filled-in Supersedes field. Apply all seven gate tests (shortcut, implementation-of-decision, string-level copy, code-only rename, six-month, scope, alternative). If any new decision supersedes an existing one, append the supersession note to the older decision in the same commit. Layout tweaks, visual polish, and code-only renames go in PROTOTYPE_SPEC or nowhere, not DECISIONS.
 4. Update PROTOTYPE_SPEC.md for any screens that changed.
-5. Update MASTER_PLAN.md if PM flagged a plan change this session — bump version if substantive, add changelog entry at top of doc. Update Master plan last updated field in REPO_INDEX.
-6. If this close-out crosses a MASTER_PLAN phase boundary, run the retirement sweep per CLAUDE.md and include findings block in CC_HANDOFF (do not execute sweep findings — await PM approval).
-7. Update REPO_INDEX.md:
+5. Update PRODUCT_SUMMARY.md if this session changed what a customer would experience differently (new screens, new flows, removed features, changed customer journey, new architectural commitments that affect what the customer sees or does). Bump "Last reviewed" date. Criteria for substantive vs. non-substantive change live in CLAUDE.md's PRODUCT_SUMMARY.md maintenance section.
+6. Update MASTER_PLAN.md if PM flagged a plan change this session — bump version if substantive, add changelog entry at top of doc. Update Master plan last updated field in REPO_INDEX.
+7. If this close-out crosses a MASTER_PLAN phase boundary, run the retirement sweep per CLAUDE.md and include findings block in CC_HANDOFF (do not execute sweep findings — await PM approval).
+8. Update REPO_INDEX.md:
    - Bump last_updated to today
    - Update decision_count to latest D-number
    - Update Master plan last updated if MASTER_PLAN changed
    - Add any new repo files
    - Remove any deleted/archived files
    - Update Active plan pointer if phase changed
-8. Write CC_HANDOFF.md (overwrite existing) with:
+9. Write CC_HANDOFF.md (overwrite existing) with:
    - Commits this session
    - What was completed
    - What's in progress
@@ -478,6 +486,7 @@ Session close-out:
    - Retirement sweep findings (if phase-boundary close-out)
    - Gotchas for next session
    - Files modified
+   - Unmerged feature branches with their current state and what they're waiting on
    - Suggested next tasks (aligned with active master plan phase)
 
 Do NOT push to remote — PM review happens first.
@@ -536,7 +545,7 @@ CC reads these when the task requires them:
 - Multiple topic shifts and early context is stale
 
 **When rotating, produce PM_HANDOFF.md with:**
-1. Where we are — active master plan phase, what's been built, what's in progress
+1. Where we are — active master plan phase, what's been built, what's in progress. Be sure to anticipate any questions about the repo so that Joel doesn't have to waste cycles confirming what was done.
 2. What was completed since last handoff
 3. Active decisions or open questions
 4. Pending MASTER_PLAN amendments (if any)
@@ -736,6 +745,19 @@ Settled. Reject alternatives unless Joel explicitly wants to revisit:
 
 **Response brevity.** Joel is reviewing and deciding all day — don't make him read more than necessary. Default to the shortest response that answers the question.
 
+Plain-language alignment before substantive work.
+Before engaging on anything substantive — synthesis, strategy drafting, multi-step recommendations, plan-mode CC work, a wave, anything that will produce sustained output — PM writes a plain-language alignment paragraph and waits for Joel's read before proceeding.
+
+The paragraph is jargon-free, no org-speak, at the level a smart non-technical 18-year-old could follow without prior context. It states what PM thinks we're about to do, names the premises underneath it, and calls out anything PM is uncertain about. Joel pushes back on wrong premises or refines framing. Then engage.
+
+Reason this exists: writing volume and technical density make red flags hard to detect once substance has crystallized. By the time wrong premises land in a 200-line doc, they're expensive to extract. A pre-engagement paragraph at low fidelity is cheap and forces premises to surface where they can be challenged.
+
+Triggers alignment: synthesis, strategy work, multi-step recommendations, decision drafts before recording, plan-mode CC work, wave scoping, anything that will produce a doc or sustained output.
+
+Does NOT trigger alignment: Q&A, small fact checks, single-step asks, continuation within an already-aligned workstream.
+
+PM applies this proactively. Joel shouldn't have to ask. If PM is about to write something substantive without having done the alignment paragraph, that's the methodology slip.
+
 - Lead with the recommendation. One or two sentences of reasoning only if the tradeoff isn't obvious.
 - Skip restating what Joel already knows or already said.
 - Skip "what I'd NOT do" sections, "edge cases to consider" sections, and "here's why this matches your principles" sections unless Joel asked.
@@ -823,6 +845,8 @@ Every CC prompt PM gives Joel begins with an explicit mode line. No guessing, no
 - **`Mode: plan.`** — Joel presses Shift+Tab until status bar reads "plan mode," then pastes.
 
 If PM forgets the mode line, Joel calls it out before sending. If a prompt is ambiguous and Joel isn't sure, default to bypass and ask PM before sending.
+
+**Every CC-destined instruction lives in a code block, regardless of length.** Whether it's a multi-paragraph build prompt or a one-line "push commit X to origin/main," it goes in a fenced code box so Joel can copy verbatim. Prose CC instructions ("tell CC to push the commit") force Joel to reconstruct the message from chat text — friction. Mode line still goes above the box; the box contains exactly what Joel pastes into CC.
 
 ### When PM specifies `Mode: plan`
 
