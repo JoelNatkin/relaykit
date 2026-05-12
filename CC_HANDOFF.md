@@ -1,11 +1,11 @@
-# CC_HANDOFF — Session 82 (Phase 2a Verification CC-scope extraction)
+# CC_HANDOFF — Session 83 (Wave 1 methodology hygiene + Phase 2a Verification synthesis sidebar)
 
-**Date:** 2026-05-11
-**Session character:** Doc-only on `main`. Executed CC's half of the D-384 hybrid CC-extraction / PM-synthesis split for Verification as the pilot category — Source 1 competitor surface scan (Twilio Verify / Telnyx Verify / Plivo Verify / Sinch Verification) plus Source 3 starter kit scan (ShipFast / Supastarter / MakerKit / Vercel-Supabase starter). New file `audits/PHASE_2A_VERIFICATION_EXTRACTION.md` (684 lines) authored end-to-end across 8 per-target commits with per-commit `.pm-review.md` cadence. D-384 appended at session start (Commit 1) records the execution-split methodology. PM-led Source 2 (Indie SaaS practice scan) + Source 4 (Community signal) browser chat handles the synthesis-heavy sources separately per D-384 — that chat is the next workstream.
+**Date:** 2026-05-12
+**Session character:** Doc-only on `main`. Wave 1 methodology hygiene wave (3 substantive content commits) + Phase 2a Verification synthesis file added as a sidebar commit in the same session. Underlying reasoning insight surfaced and acted on: rules in numbered checklists get followed; rules in standalone prose sections get skipped. PRODUCT_SUMMARY drift surfaced the pattern (CLAUDE.md §175-176 PRODUCT_SUMMARY maintenance criteria + §132 unmerged-feature-branches branch hygiene were both prose-only and getting missed); Wave 1 fixes it operationally by promoting both into the numbered close-out checklist and mirroring the additions into PM_PROJECT_INSTRUCTIONS.md's embedded close-out prompt per methodology cross-reference discipline.
 
-**Branch:** `main`. Commits 1–9 (`b38384e` / `4b108c1` / `a50e86a` / `c74c36b` / `46c707a` / `2a4ee6f` / `0c662c0` / `0e84549` / `7624afb`) pushed to `origin/main` individually mid-session after PM `.pm-review.md` approval. This close-out (Commit 10) is the only unpushed commit at session close, awaiting PM approval.
+**Branch:** `main`. Commits 1–3 (`d4d2f85` / `29128aa` / `8157551`) pushed to `origin/main` individually mid-session after PM `.pm-review.md` approval per the per-commit cadence codified Session 77. This close-out (Commit 4) is the only unpushed commit at session close, awaiting PM approval.
 
-`Commits: 10 (1 D-384 append + 8 per-target extraction commits + this close-out) | Files modified: 4 (DECISIONS.md, audits/PHASE_2A_VERIFICATION_EXTRACTION.md, REPO_INDEX.md, CC_HANDOFF.md) | Decisions added: 1 (D-384 Phase 2a research execution split) | External actions: 10 (9 individual mid-session pushes + this close-out push pending)`
+`Commits: 4 | Files modified: 5 | Decisions added: 0 | External actions: 3`
 
 ---
 
@@ -13,125 +13,124 @@
 
 | # | Hash | Type | Description |
 |---|------|------|-------------|
-| 1 | `b38384e` | Content | `docs(decisions): append D-384 (Phase 2a research execution split: CC extraction-heavy, PM synthesis-heavy)` — DECISIONS.md +10 lines. Active count 298 → 299. `Supersedes: none` (layers on D-383). Pushed mid-session post-PM-approval. |
-| 2 | `4b108c1` | Content | `docs(audits): add PHASE_2A_VERIFICATION_EXTRACTION.md — Source 1 / Twilio Verify` — new file with header preamble + Twilio Verify section (8-field shape; 105 lines, 8 fetches). Pushed mid-session. |
-| 3 | `a50e86a` | Content | `docs(audits): add Telnyx Verify section to PHASE_2A_VERIFICATION_EXTRACTION.md` — +144 lines (extraction file 249 lines). 7 fetches. Pushed mid-session. |
-| 4 | `c74c36b` | Content | `docs(audits): add Plivo Verify section to PHASE_2A_VERIFICATION_EXTRACTION.md` — +106 lines (extraction file 355 lines). 6 fetches. Paraphrased-no-quote-marks convention adopted from this commit onward. Pushed mid-session. |
-| 5 | `46c707a` | Content | `docs(audits): add Sinch Verification section to PHASE_2A_VERIFICATION_EXTRACTION.md` — +127 lines (extraction file 482 lines). 7 fetches. Source 1 complete (4/4 competitors). Pushed mid-session. |
-| 6 | `2a4ee6f` | Content | `docs(audits): add ShipFast section to PHASE_2A_VERIFICATION_EXTRACTION.md` — +42 lines incl. Source 3 H2 separator + 6-field shape preamble (extraction file 524 lines). 4 fetches. Pushed mid-session. |
-| 7 | `0c662c0` | Content | `docs(audits): add Supastarter section to PHASE_2A_VERIFICATION_EXTRACTION.md` — +44 lines (extraction file 568 lines). 5 fetches. Pushed mid-session. |
-| 8 | `0e84549` | Content | `docs(audits): add MakerKit section to PHASE_2A_VERIFICATION_EXTRACTION.md` — +58 lines (extraction file 626 lines). 5 fetches. Pushed mid-session. |
-| 9 | `7624afb` | Content | `docs(audits): add Vercel-Supabase starter section to PHASE_2A_VERIFICATION_EXTRACTION.md` — +58 lines (extraction file 684 lines). 4 fetches. Source 3 complete (4/4 starter kits). Pushed mid-session. |
-| 10 | _(this close-out)_ | Close-out | `docs: Session 82 close-out — REPO_INDEX Meta refresh + new audits row + CC_HANDOFF overwrite (Phase 2a Verification CC-scope extraction)` *(pending PM approval at session close)* |
-
-External actions this session: 10 — 9 individual mid-session pushes after PM `.pm-review.md` approval, plus this close-out push pending at session close.
+| 1 | `d4d2f85` | Content | `docs(claude): add PRODUCT_SUMMARY and unmerged-branches to numbered close-out checklist` — CLAUDE.md 190 → 191 lines. New step 5 PRODUCT_SUMMARY inserted; steps 5-10 renumbered to 6-11; unmerged-branches bullet added to renumbered step 9's CC_HANDOFF content list; in-file cross-reference on renumbered step 10's drift-watch line bumped from "step 6" to "step 7". Pushed mid-session post-PM-approval. |
+| 2 | `29128aa` | Content | `docs(pm-instructions): add file size discipline, PRODUCT_SUMMARY freshness audit, close-out prompt parity with CLAUDE.md, and prior in-flight edits (alignment discipline, CC-instruction-code-block rule, PM_HANDOFF item 1 expansion, date bump)` — PM_PROJECT_INSTRUCTIONS.md 859 → 868 lines including Joel's prior in-flight working-tree edits authorized to land alongside per PM's "treat the working-tree version as your starting point" instruction. New `## File size discipline` section installing a 400-line ceiling (file already over — known carry-forward); Session-Start Audit step 5 PRODUCT_SUMMARY freshness check; embedded close-out prompt mirrors CLAUDE.md Commit 1's three additions. Pushed mid-session post-PM-approval. |
+| 3 | `8157551` | Content | `docs(audits): add Phase 2a Verification synthesis (Sources 2 + 4)` — new file `audits/PHASE_2A_VERIFICATION_SYNTHESIS.md` (206 lines, PM-authored Session 83) — synthesis output from Source 2 (indie SaaS practice scan) + Source 4 (community signal) per D-383/D-384's hybrid CC-extraction / PM-synthesis split. Pairs with `audits/PHASE_2A_VERIFICATION_EXTRACTION.md` from Session 82. Pushed mid-session post-PM-approval. |
+| 4 | _(this close-out)_ | Close-out | `docs: wave 1 close-out — REPO_INDEX bookkeeping + CC_HANDOFF` *(pending PM approval at session close)* |
 
 ---
 
 ## What was completed
 
-### Commit 1 — D-384 to DECISIONS.md
+### Commit 1 — CLAUDE.md numbered close-out checklist additions
 
-**D-384 — *Phase 2a research execution split: CC handles extraction-heavy sources, PM handles synthesis-heavy sources*** — codifies the operational split: CC produces structured extraction files under `/audits/` for Source 1 (competitor surface scan: Twilio / Telnyx / Plivo / Sinch messaging products) and Source 3 (starter kit scan: ShipFast / Supastarter / MakerKit / Vercel-Supabase). PM-led browser chat covers Source 2 (indie SaaS practice scan: Stripe / Vercel / Linear / Lemon Squeezy / GitHub) and Source 4 (community signal: Indie Hackers / r/SaaS / Twitter-X / AI-tool Discords), and produces the audience-pack composition synthesis per category. Verification pilots the split; after Verification ships, PM evaluates whether the shape generalizes to the other 8 categories or some warrant a different split. **Supersedes:** none (layers on D-383 — D-383 records what the four sources are, D-384 records how they are executed). Reasoning: extraction is mechanical and parallelizable (low framing risk, frees up active hands during data-gathering); synthesis is where Session 81 audience-binding drift surfaced (per D-382 + D-383 origin notes), so PM-with-Joel reaction loop in browser chat is the cheaper safeguard for audience-fit judgment.
+Promoted two load-bearing rules from standalone prose paragraphs into the numbered close-out checklist where they get operational treatment instead of being skipped:
 
-### Commits 2–5 — Source 1 (competitor surface scan)
+- **New step 5: PRODUCT_SUMMARY.md update** (verbatim body in CLAUDE.md after edit): "Update PRODUCT_SUMMARY.md if this session changed what a customer would experience differently (new screens, new flows, removed features, changed customer journey, new architectural commitments that affect what the customer sees or does). Bump 'Last reviewed' date. Criteria for substantive vs. non-substantive change live in the PRODUCT_SUMMARY.md maintenance section below." Inserted between old step 4 (PROTOTYPE_SPEC) and old step 5 (MASTER_PLAN). Existing PRODUCT_SUMMARY.md maintenance prose at §176 preserved as the criteria reference; the new numbered step makes it operational.
+- **Unmerged-branches bullet in renumbered step 9** (was step 8 — CC_HANDOFF content list): added "unmerged feature branches with their current state and what they're waiting on" between "files modified" and "suggested next tasks". Preserves the state-of-work / forward-looking grouping in the bullet list. Existing branch hygiene prose at §132 preserved as the criteria reference.
 
-Per-target 8-field shape: positioning headline, public-docs API surface, verbatim sample messages, variable/placeholder convention, opt-out language, enumerated sub-uses, pricing visibility, indie-SaaS-relevant positioning signal. Each target opens with a one-paragraph orientation (what it is + domain-root sources) and closes with a per-target `Gaps:` block enumerating fields marked "source unclear" or "not observed in public docs."
+Steps 5-10 renumbered to 6-11 in-place. In-file cross-reference on the renumbered step 10 (drift watch) bumped from "Pairs with retirement sweep at step 6" to "step 7" after the PRODUCT_SUMMARY insert pushed retirement sweep from step 6 to step 7. File 190 → 191 lines (within the 200-line ceiling per §3 file size discipline). All verification greps clean per the plan in `/Users/macbookpro/.claude/plans/this-is-a-doc-only-linked-kahn.md`.
 
-- **Twilio Verify** (`4b108c1`, 8 fetches) — `{{code}}` lowercase variable convention; 3-tier sub-use categorization on landing (Signup verification / Login protection / Secure transactions); $0.05/successful-verification + $0.0083/SMS US pricing (~$0.058/US-SMS-verification); enterprise-scale framing ("4.8B+ verifications each year") with no explicit indie SaaS callout.
-- **Telnyx Verify** (`a50e86a`, 7 fetches) — `{{code}}` lowercase; $0.03/verification + channel costs; "Developer-friendly, scalable API" framing; PSD2 (Strong Customer Authentication for EU payments) listed as a distinct verification method.
-- **Plivo Verify** (`c74c36b`, 6 fetches) — **`${code}` dollar-brace** (distinct from other 3 competitors); $0 platform fee channel-cost-only ("Only pay SMS, Voice, or WhatsApp channel charges" verbatim); "first OTP in 90% less implementation time than a legacy verification solution" framing.
-- **Sinch Verification** (`46c707a`, 7 fetches) — **`{{CODE}}` uppercase** (distinct from other 3 competitors); pricing public-page-gated behind Build dashboard download; CIAM-partner Okta/Auth0 integration framing; verbatim Spanish-locale sample `Tu código de verificación es {{CODE}}.` from API response shape; community-forum source notes custom-template adjustment typically requires Sinch support/account-manager intervention.
+### Commit 2 — PM_PROJECT_INSTRUCTIONS.md methodology additions + Joel's prior in-flight edits
 
-### Commits 6–9 — Source 3 (starter kit scan)
+Three primary edits per the plan's specification:
 
-Per-target 6-field shape (lighter than competitor 8-field): ships SMS verification (yes/no/partial), provider/library if yes, integration pattern, default auth pattern + relationship to SMS, opt-out treatment, source URL trail. Closing `Gaps:` block per target.
+- **Edit 1 — `## File size discipline` section** installed after the title block: "Keep this file under 400 lines. When adding guidance, also cut. If you can't cut enough to stay under the ceiling, the new guidance probably belongs elsewhere (CLAUDE.md if CC-facing, BACKLOG if a candidate, or a separate focused spec). When this file exceeds the ceiling, a trim audit is a separate wave (not a passive carry-forward)." File currently at 869 lines — over the new 400-line ceiling. Known carry-forward for a separate trim audit wave; the ceiling is a forward-looking guardrail, not retroactive.
+- **Edit 2 — Session-Start Audit step 5** appended: "Check PRODUCT_SUMMARY.md 'Last reviewed' date against recent customer-facing work visible in CC_HANDOFF or REPO_INDEX docs table. If recent customer-facing changes (new screens, new flows, removed features, changed customer journey) landed without a corresponding PRODUCT_SUMMARY update, flag drift before engaging on customer-facing work. PRODUCT_SUMMARY maintenance is a numbered close-out step in CLAUDE.md; this audit step catches misses."
+- **Edit 3 — embedded CC Session Close-Out Prompt** mirrors CLAUDE.md Commit 1 per methodology cross-reference discipline (§79): new step 5 PRODUCT_SUMMARY inserted between PROTOTYPE_SPEC (step 4) and MASTER_PLAN (was step 5); steps 5-8 renumbered to 6-9; unmerged-feature-branches bullet added to renumbered step 9's CC_HANDOFF content list (sentence-case "Unmerged feature branches with their current state and what they're waiting on" preserves the existing bullet-list style).
 
-- **ShipFast** (`2a4ee6f`, 4 fetches) — **No** to SMS verification. Google OAuth + magic-link email via NextAuth. Closed-source paid kit; verbatim feature list from docs index confirms absence of SMS / phone / OTP / verification.
-- **Supastarter** (`0c662c0`, 5 fetches) — **No** to SMS. Password / passkeys / magic-link / 2FA via better-auth (Next.js + better-auth variant) or Supabase Auth (Next.js + Supabase variant). SMS-2FA possible as developer-implemented extension via better-auth's `sendOTP` callback but not pre-wired by the kit in any variant.
-- **MakerKit** (`0e84549`, 5 fetches) — **No** to SMS — but substantively ships an **email-channel OTP infrastructure** (server-side hashed storage, expiration, verification tracking, ready-to-use form component) for in-app sensitive-operation verification (account deletion, ownership transfers); verbatim `api.sendOtpEmail({ email, otp })` method signature. 4 verbatim auth-method descriptions on landing. 21-OAuth-provider verbatim list. Variant-vs-library mapping: Supabase Auth for Supabase kits, Better Auth for Drizzle/Prisma kits.
-- **Vercel-Supabase starter** (`7624afb`, 4 fetches) — **No** to SMS. Open-source minimal demo template (`vercel/next.js with-supabase` example). Password-only via Supabase Auth + `supabase-ssr` cookies. Auth-routes directory listing verifiable at GitHub source level (7 dirs: `confirm/error/forgot-password/login/sign-up/sign-up-success/update-password` — no `phone/sms/otp/verify` route directories).
+**Joel's prior in-flight working-tree edits** (carry-forward unstaged across Sessions 79-82 per CC_HANDOFF gotchas) landed in the same commit per the user's explicit authorization ("Joel has confirmed these should remain; treat the working-tree version as your starting point"): header date bump May 10 → May 12; PM_HANDOFF item 1 expansion to anticipate questions about the repo; "plain-language alignment before substantive work" methodology block requiring PM to surface premises before substantive work; "every CC-destined instruction lives in a code block, regardless of length" rule. All four pre-existing edits honestly acknowledged in the commit message tail so future grep for "alignment discipline" or "CC-instruction-code-block rule" lands on this commit.
 
-### Commit 10 — this close-out
+File 859 → 868 lines (+9 net from primary edits; Joel's edits add ~15 more lines for a total +24 line delta against HEAD).
 
-REPO_INDEX.md Meta block refresh (Last updated leads Session 82 with substantive findings inline; Session 81 tagged as "Earlier Session 81"); Decision count D-383 / 298 → D-384 / 299; Active CC session branch + Unpushed local commits updated for Session 82 state; new row added to canonical-docs-root table for `audits/PHASE_2A_VERIFICATION_EXTRACTION.md`; `Last touched` bumps on DECISIONS / REPO_INDEX / CC_HANDOFF rows; `/audits` subdirectory entry updated to reference both Phase 2a research deliverables (`PHASE_B_PRIOR_ART_DIGEST.md` + `PHASE_2A_VERIFICATION_EXTRACTION.md`); Session 82 change-log entry appended chronologically after Session 81. CC_HANDOFF.md full overwrite per PM_INSTRUCTIONS template (this file).
+### Commit 3 — Phase 2a Verification synthesis file
 
-### Mid-session methodology refinements (captured in extraction file's preamble, not D-number territory)
+New file `audits/PHASE_2A_VERIFICATION_SYNTHESIS.md` (206 lines, PM-authored Session 83). Synthesis output from D-383's Source 2 (Indie SaaS practice scan — Stripe / Vercel / Linear / Lemon Squeezy / GitHub OTP patterns) and Source 4 (Community signal — Indie Hackers / r/SaaS / Twitter-X / AI-tool Discords) per D-384's hybrid CC-extraction / PM-synthesis split.
 
-- **Starter-kit 6-field shape** — lighter than competitor 8-field shape because the load-bearing signal for a starter kit is whether and how SMS verification is wired, not pricing or positioning. Field shape: yes/no/partial + provider + integration pattern + default auth + opt-out + source.
-- **Paraphrased-content-no-quote-marks convention** — reinforced from Plivo onward (Twilio + Telnyx had a few violations under inline `(paraphrased)` flags within quote marks). Quotes reserved for literal verbatim text only (or code blocks for multi-line). Paraphrased content rendered as plain prose with `(paraphrased)` flag, never inside quote marks.
+Pairs with `audits/PHASE_2A_VERIFICATION_EXTRACTION.md` from Session 82 (CC half — Sources 1+3 covering Twilio Verify / Telnyx Verify / Plivo Verify / Sinch Verification + ShipFast / Supastarter / MakerKit / Vercel-Supabase starter). Together the EXTRACTION + SYNTHESIS pair forms the substrate for Phase 2b Verification template authoring. Per the file's own framing, Verification surfaces universally across all recommended combinations (including SaaS, Verification-only, and others per D-372 + D-377).
 
-### Substantive findings worth surfacing for PM synthesis
+Sidebar to the Wave 1 methodology hygiene work — distinct conceptual unit, committed atomically per the user's instruction.
 
-- All 4 starter kits answer "No" to ships-SMS-verification but in materially different shapes: magic-link-only via NextAuth (ShipFast); library-supported-but-not-pre-wired via better-auth's `sendOTP` (Supastarter); email-channel OTP infrastructure with no SMS-channel binding (MakerKit); minimal password-only demo template (Vercel-Supabase starter).
-- Competitor variable-placeholder syntax splits three ways: Twilio + Telnyx `{{code}}` lowercase; Plivo `${code}` dollar-brace; Sinch `{{CODE}}` uppercase.
-- None of the 4 competitors prescribe STOP/HELP language inside OTP message bodies in their Verify-specific docs — compliance is treated at the campaign-registration layer or left to developer/template-author responsibility, not via SMS-body-prescription.
-- MakerKit's email-channel OTP infrastructure is the most architecturally analogous shape to what an SMS-OTP primitive would look like — same storage/expiration/verification scaffolding, different channel binding.
+### Commit 4 — this close-out
+
+REPO_INDEX.md updates: Meta block refresh (Last updated narrative leads with Session 83 wave purpose + 3 substantive commits + this close-out + carry-forward items, then tags Session 82 as "Earlier Session 82" with the existing Session 81/80/79/78/77/76/75/74/73/72/71 cascade chain preserved); Decision count unchanged at D-384 / 299 with explicit "No D-numbers added Session 83" annotation; Active CC session branch + Unpushed local commits updated; Master plan last updated unchanged at v1.8; new row added to canonical-docs-root table for `audits/PHASE_2A_VERIFICATION_SYNTHESIS.md`; `Last touched` bumps on CLAUDE.md / PM_PROJECT_INSTRUCTIONS.md / REPO_INDEX.md / CC_HANDOFF.md rows; `/audits` subdirectory entry updated to reference both Phase 2a Verification deliverables (EXTRACTION + SYNTHESIS); Session 83 change-log entry appended chronologically after Session 82. CC_HANDOFF.md full overwrite per PM_INSTRUCTIONS template (this file).
+
+---
+
+## In-progress work
+
+None — wave complete. All three substantive commits content-complete and pushed; close-out Commit 4 pending PM approval before push.
 
 ---
 
 ## Quality checks passed
 
-- **Per-commit `.pm-review.md` cadence (codified Session 77) followed throughout** — each of the 9 content commits' `git show HEAD` written to `.pm-review.md` after commit; PM approved each before its individual push; this close-out repeats the cadence for Commit 10.
-- **No tsc/eslint/build run** — doc-only session per CLAUDE.md close-out gates (apply only to modified code directories under `/api`, `/sdk`, `/prototype`, `/marketing-site`).
-- **Pre-flight DECISIONS ledger scan at session start:** Active count 298 (latest D-383), Archive D-01–D-83, no new decisions since Session 81. Scan clean. D-384 added this session via Commit 1 — active count 298 → 299 (latest D-384).
-- **Fetch budget:** 46 web_search + web_fetch calls total (Source 1 dominated at 28 calls; Source 3 at 18 calls). Final total sits at the upper end of the 20–50 estimate set in the session-opening plan.
+- **Per-commit `.pm-review.md` cadence (codified Session 77) followed throughout** — each of the 3 substantive commits' `git show HEAD` written to `.pm-review.md` after commit; PM approved each before its individual push; this close-out repeats the cadence for Commit 4.
+- **No tsc/eslint/build/vitest run** — doc-only session per CLAUDE.md close-out gate (skip applies only to modified code directories under `/api`, `/sdk`, `/prototype`, `/marketing-site`).
+- **Pre-flight DECISIONS ledger scan at session start:** Active count 299 (latest D-384), Archive D-01–D-83, no new decisions since Session 82. Scan clean. No new D-numbers added Session 83 (Wave 1 doc-only methodology changes do not pass the seven gate tests as decisions).
+- **Verification greps clean per commit** — Commit 1: line count 190→191; numbered steps 1-11 sequential; "step [0-9]+" returns 2 matches (inline supersession sequence step 3 unchanged + drift-watch step 7 updated); PRODUCT_SUMMARY 3 matches (new step + 2 in existing maintenance section); "unmerged feature branches" 2 matches (new bullet + §133 branch hygiene prose). Commit 2: PM_PROJECT_INSTRUCTIONS line count 859→868; numbered steps 1-9 in embedded close-out prompt confirmed sequential; PRODUCT_SUMMARY 4 matches (Tier 2 list + new audit step + new close-out step + Standing Reminders); "unmerged" 1 match (new bullet at line 489, sentence-case preserves bullet-list style). Commit 3: synthesis file landed at 206 lines; staged independently of other working-tree changes per the user's instruction.
 
 ---
 
 ## Retirement sweep findings
 
-None — mid-phase doc session per CLAUDE.md skip rules; not a MASTER_PLAN phase boundary. Sweep skipped.
+None — mid-phase doc-only wave per CLAUDE.md skip rules; not a MASTER_PLAN phase boundary. Sweep skipped.
 
 ---
 
 ## Drift-watch findings
 
-None — mid-phase, drift-watch skipped per CLAUDE.md step 9.
+None — mid-phase, drift-watch skipped per CLAUDE.md step 10.
 
 ---
 
 ## Gotchas for next session
 
-1. **Context pressure surfaced mid-session after Supastarter** — CC self-flagged "/clear to save 192k tokens" during the run. Performance never degraded and the per-commit `.pm-review.md` cadence held throughout, but worth flagging for same-shape multi-target sessions: 8 targets in one session is at the upper boundary of comfortable single-session scope when each target carries a 5–8-fetch research pass plus a substantial extraction write. Future per-category extraction sessions (Marketing, Orders, Support, etc.) may want to split across two sessions if the per-target depth holds.
+1. **PM_PROJECT_INSTRUCTIONS.md is at 869 lines, over the new 400-line ceiling** installed in Commit 2 (`29128aa`). Trim audit is a queued carry-forward as its own focused wave (~1-2 hours work). Not blocking other work; the ceiling is a forward-looking guardrail. When the trim audit runs, candidate content to move out: Standing Reminders sections that have aged out of relevance; Marketing Operating Posture that could move to MARKETING_STRATEGY.md; Branch and Preview Workflow which has substantive overlap with CLAUDE.md §126-130 and may consolidate.
 
-2. **Carry-forward unchanged: six DECISIONS.md format anomalies** — D-153, D-154, D-358, D-359, D-360, D-361 use `**D-N: Title**` (colon) instead of canonical `**D-N — Title**` (em-dash). Format normalization sweep appropriate before next ledger amendment if it touches any of these entries.
+2. **Embedded close-out prompt vs CLAUDE.md numbered-checklist divergence is now sharper.** The embedded prompt in PM_PROJECT_INSTRUCTIONS.md (now 9 steps after Wave 1 Commit 2) has historically been a simplified subset of CLAUDE.md's full numbered checklist (now 11 steps after Wave 1 Commit 1). Specifically: the embedded prompt's step list omits CLAUDE.md's "Drift watch (phase-boundary only)" and "Do NOT push" as discrete steps. Additionally, line 459's CLAUDE.md line-number references (`L120` / `L121` / `L138`) are now stale by +1 after Commit 1's CLAUDE.md edits — they point at lines that shifted. Out-of-scope for Wave 1 per the user's explicit instruction; the broader embedded-prompt-vs-CLAUDE.md divergence is a separate methodology question. Worth surfacing for PM disposition on whether to reconcile in a future wave or accept as standing simplified-subset shape.
 
-3. **Carry-forward unchanged: three `text-white` form-page literals** — `app/signup/page.tsx:15`, `app/start/get-started/get-started-form.tsx:55`, `app/start/verify/verify-form.tsx:44` (same `text-white` on `bg-bg-brand-solid` button pattern that Session 76 commit 5 replaced on configurator + edit-card). Trivial follow-up branch.
+3. **Joel needs to update the Claude.ai UI copy of PM_PROJECT_INSTRUCTIONS to match the repo** per the PM instructions sync rule (PM_PROJECT_INSTRUCTIONS.md §54 — "edit the repo file and paste into Claude.ai UI in the same motion"). The full repo file at HEAD after Commit 2 (868 lines) is what should be pasted. Most efficient flow: open the file in the editor, select all, copy, paste over the existing Claude.ai UI version. If not done before next session, this is the carry-forward to flag at session open.
 
-4. **`PM_PROJECT_INSTRUCTIONS.md` has unstaged in-flight edits in Joel's working tree** — untouched this session (same status as Sessions 79, 80, and 81 close).
+4. **Carry-forward unchanged: six DECISIONS.md format anomalies** — D-153, D-154, D-358, D-359, D-360, D-361 use `**D-N: Title**` (colon) instead of canonical `**D-N — Title**` (em-dash). Format normalization sweep appropriate before next ledger amendment if it touches any of these entries. Carries forward from Session 78/79/80/81/82.
 
-5. **D-384's hybrid-split pattern is unproven beyond Verification** — Verification was the pilot. PM evaluation of whether the shape generalizes to the other 8 categories happens after Verification ships per D-384. If MakerKit/email-OTP shape suggests competitor categories vary more than expected, the split may need per-category tuning.
+5. **Carry-forward unchanged: three `text-white` form-page literals** — `app/signup/page.tsx:15`, `app/start/get-started/get-started-form.tsx:55`, `app/start/verify/verify-form.tsx:44` (same `text-white` on `bg-bg-brand-solid` button pattern that Session 76 commit 5 replaced on configurator + edit-card). Trivial follow-up branch. Carries forward from Session 76/79/80/81/82.
 
 ---
 
 ## Files modified this session
 
-- `DECISIONS.md` (Commit 1: +10 lines appending D-384)
-- `audits/PHASE_2A_VERIFICATION_EXTRACTION.md` (Commits 2–9: new file, 8 per-target sections; final size 684 lines)
-- `REPO_INDEX.md` (Commit 10 — this close-out: Meta block refresh + new audits row + 3 docs-table `Last touched` bumps + `/audits` subdirectory entry update + Session 82 change-log entry appended)
-- `CC_HANDOFF.md` (Commit 10 — full overwrite, this file)
+- `CLAUDE.md` (Commit 1: +1 net line, three structural edits — new step 5, renumber 5-10 to 6-11, unmerged-branches bullet in step 9, "step 6 → step 7" cross-ref bump in step 10)
+- `PM_PROJECT_INSTRUCTIONS.md` (Commit 2: +9 net lines from primary edits + Joel's prior in-flight ~15-line delta = +24 lines vs HEAD; three primary edits — file size discipline section, Session-Start Audit step 5, embedded close-out prompt parity)
+- `audits/PHASE_2A_VERIFICATION_SYNTHESIS.md` (Commit 3: new file, 206 lines, PM-authored synthesis from Sources 2+4 per D-383/D-384)
+- `REPO_INDEX.md` (Commit 4 — this close-out: Meta block refresh + Last touched bumps on 4 rows + new audits row + `/audits` subdirectory entry refresh + Session 83 change-log entry appended)
+- `CC_HANDOFF.md` (Commit 4 — full overwrite, this file)
 
 **Untracked-but-untouched (not staged):**
 - `.pm-review.md` — local-only review artifact, refreshed at every commit per PM Review Cadence; gitignored.
 - `api/node_modules/` — standing untracked.
 
-**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `/marketing-site`, PROTOTYPE_SPEC.md, PRODUCT_SUMMARY.md, BACKLOG.md, MARKETING_STRATEGY.md, MASTER_PLAN.md, CLAUDE.md, all of `/docs/`, `experiments/`, `audits/PHASE_B_PRIOR_ART_DIGEST.md`. PM_PROJECT_INSTRUCTIONS.md still has Joel's in-flight unstaged edits in working tree (untouched).
+**Untouched this session:** `/prototype`, `/api`, `/sdk`, `/src`, `/marketing-site`, PROTOTYPE_SPEC.md, PRODUCT_SUMMARY.md, BACKLOG.md, MARKETING_STRATEGY.md, MASTER_PLAN.md, DECISIONS.md, all of `/docs/`, `/experiments/`, `audits/PHASE_B_PRIOR_ART_DIGEST.md`, `audits/PHASE_2A_VERIFICATION_EXTRACTION.md`.
+
+---
+
+## Unmerged feature branches with their current state and what they're waiting on
+
+**None for this wave** — all three Wave 1 substantive commits went directly to `main` as doc-only work, which is appropriate per CLAUDE.md §126-130 branching guidance (production-facing surfaces require feature branches; doc-only methodology changes may go directly to main). No feature branches were created this session. Joel's pre-existing branch context from prior sessions (if any persists) is unaffected by this wave.
 
 ---
 
 ## Suggested next session
 
-**Rotate to fresh browser chat for PM-led Source 2 + Source 4 synthesis pass on Verification per D-384.** Source 2 covers Indie SaaS practice scan — what notification sub-uses Stripe, Vercel, Linear, Lemon Squeezy, GitHub, and similar products actually expose around OTP / verification flows. Source 4 covers Community signal — what SMS verification use cases indie SaaS founders discuss on Indie Hackers, r/SaaS, Twitter / X, and AI-tool Discords. Output per D-383: indie SaaS pack's Verification template composition + sub-use prioritization + pack-composition recommendation. Output feeds Phase 2b per-category template authoring (for the indie SaaS pack) and the configurator's "recommended combinations" presets per D-372.
+**Wave 2 — "pack" → "Recommended combinations" terminology retirement across canonical docs.** PM_HANDOFF for Wave 2 was authored in the browser chat this session; Joel will paste at next session start. Wave touches MASTER_PLAN, MARKETING_STRATEGY, DECISIONS (via D-372 supersession), VERTICAL_TAXONOMY_DRAFT, PRODUCT_SUMMARY. Expected shape: ~5-6 substantive content commits + close-out, following the per-commit `.pm-review.md` cadence and the wave-based integration discipline (PM_PROJECT_INSTRUCTIONS.md §85-95).
 
-This session's extraction file (`audits/PHASE_2A_VERIFICATION_EXTRACTION.md`) is the substrate the synthesis chat reads alongside Sources 2 + 4 — competitor variable-syntax findings, starter-kit pre-wiring patterns, opt-out-language treatment, and pricing visibility all carry forward as factual inputs PM does not need to re-derive.
-
-Per D-384: after Verification ships, PM evaluates whether the hybrid CC-extraction / PM-synthesis split generalizes to the other 8 categories or whether some warrant a different split. The MakerKit email-OTP-infrastructure finding may be especially relevant for the Marketing category (where bulk-send patterns differ structurally from OTP) and for the Account-Events sub-uses tracked under MASTER_PLAN §10 Phase 6.
-
-**Carry-forward queue (available if Phase 2a stalls):**
+**Carry-forward queue (available if Wave 2 stalls):**
+- PM_PROJECT_INSTRUCTIONS.md trim audit (file at 869 lines, over the new 400-line ceiling installed this session).
+- Embedded close-out prompt vs CLAUDE.md numbered-checklist divergence resolution (stale L120/L121/L138 references; simplified-subset reconciliation question).
 - DECISIONS.md format anomaly normalization sweep (six entries — D-153, D-154, D-358, D-359, D-360, D-361).
-- Three `text-white` form-page literals sweep.
-- Phase 1 downstream experiments first-pickup (2b inbound MO shape / 3c Simplified→Full brand upgrade / 4 STOP/START/HELP reply handling).
+- Three `text-white` form-page literals sweep (Session 76 carry).
+- Phase 1 downstream experiments first-pickup (2b inbound MO / 3c Simplified→Full brand upgrade / 4 STOP/START/HELP reply handling).
+- Phase 2a remaining 8 categories' research per D-384 — Marketing likely next per IH-launch priority. D-384's hybrid CC-extraction / PM-synthesis split now has its Verification pilot complete (extraction Session 82 + synthesis Session 83); PM evaluates whether the split shape generalizes or whether some categories warrant a different split.
 - Stage 2 BRAND_DIRECTION.md authoring + MD-number capture from BRAND_AUDIT.md.
 - Pumping Defense Wave 2 implementation.
 - Migration 006 manual application.
@@ -139,4 +138,4 @@ Per D-384: after Verification ships, PM evaluates whether the hybrid CC-extracti
 
 ---
 
-Session 82 wrapped: Phase 2a Verification CC-scope extraction complete on main; 10 doc-only commits including this close-out; 1 new D-number (D-384 hybrid execution-split methodology); new file `audits/PHASE_2A_VERIFICATION_EXTRACTION.md` (684 lines, 8 targets across Sources 1 + 3) authored end-to-end via per-target commits with per-commit `.pm-review.md` cadence held throughout. Zero outstanding feat branches. Phase 1 still active per MASTER_PLAN v1.8. Active D-count on main: 299 (latest D-384). PM-led Source 2 + 4 synthesis chat for Verification is the unblocked next workstream per D-384's hybrid split.
+Session 83 wrapped: Wave 1 methodology hygiene + Phase 2a Verification synthesis sidebar complete on main; 4 doc-only commits including this close-out; 0 new D-numbers (Wave 1 changes are doc-only operational, not decisions); new file `audits/PHASE_2A_VERIFICATION_SYNTHESIS.md` (206 lines, PM-authored Session 83 substrate for Phase 2b) added end-of-session as Commit 3. Zero outstanding feat branches. Phase 1 still active per MASTER_PLAN v1.8. Active D-count on main: 299 (latest D-384, unchanged). Wave 2 "pack" → "Recommended combinations" terminology retirement is the queued next workstream per PM_HANDOFF.
