@@ -480,3 +480,45 @@ No flat published per-verification dollar amount surfaced on the public product 
 - **Per-method dollar pricing breakdown** — *not observed in public docs* (per-request fixed-fee for flashcall, per-SMS for SMS, but specific dollar amounts not published)
 - **Character/segment-limit guidance for custom SMS template content** — *not observed in public docs* in the Verification surfaces examined
 - **Rate-limit defaults** — *not observed in public docs* in the surfaces examined
+
+---
+
+## Source 3 — Starter kit scan
+
+Per-target field shape per D-384 follow-up scoping: starter kits use a 6-field structure focused on whether and how SMS verification is wired, not the 8-field competitor treatment. Fields per target: (1) ships SMS verification (yes/no/partial), (2) if yes — provider/library, (3) integration pattern, (4) default auth pattern plus relationship to SMS, (5) opt-out treatment, (6) source URL trail. Closing **Gaps:** block per target as in Source 1.
+
+### ShipFast
+
+Marc Lou's Next.js SaaS boilerplate, sold as a paid closed-source code package. Marketing-site and public docs index examined; no public source repository available for code-level inspection. Extraction sourced from `shipfa.st` (product landing including pricing and FAQ) and `shipfa.st/docs` (public docs index).
+
+**Ships SMS verification:** **No.** No SMS verification, phone-number authentication, or OTP-by-SMS feature surfaced anywhere in the product landing, pricing tiers, FAQ, or public docs index examined. The docs-index feature enumeration (verbatim list items):
+
+> "SEO", "Database", "Emails", "Payments", "Google Oauth", "Magic Links", "Customer support", "Error handling", "Analytics"
+
+Phone, SMS, OTP, and verification do not appear. No mention of Twilio, Telnyx, Plivo, Sinch, or any SMS provider in the marketing-and-docs surfaces examined (paraphrased).
+
+**Source:** https://shipfa.st ; https://shipfa.st/docs
+
+**If yes — provider/library:** n/a (no SMS verification shipped).
+
+**Integration pattern:** n/a (no SMS verification shipped).
+
+**Default auth pattern + relationship to SMS:** Email magic-link plus Google OAuth, wired through NextAuth. The docs-index header surfaces two auth-backend choices (verbatim):
+
+> "NextAuth + Mongo-DB"
+
+> "Supabase"
+
+For the NextAuth-plus-Mongo path, NextAuth handles the magic-link adapter and stores users in MongoDB (paraphrased). For the Supabase path, Supabase Auth handles magic-link delivery without manual NextAuth adapter wiring (paraphrased — secondary source via ShipFast Guide TS). Landing-page FAQ surfaces magic-link economics (verbatim):
+
+> "If you use Magic Link sign-ups, you'll spend $1 per 1,000 users."
+
+SMS is absent — not fallback, not optional add-on. The kit's auth story is entirely email-channel-plus-OAuth (paraphrased).
+
+**Source:** https://shipfa.st ; https://shipfa.st/docs ; https://shipfast.guide/ts/guides/user-auth
+
+**Opt-out treatment:** n/a — no SMS surface means no STOP/HELP handling. Not implemented; not applicable.
+
+**Gaps:**
+
+- **None worth chasing.** Per the Source 3 prompt note, absence of SMS verification is a complete finding for this target. The starter is a paid closed-source code package; deeper inspection beyond marketing-and-docs is purchase-gated, but the public surface is unambiguous on the SMS-absence point. No SMS provider, no phone field in auth flows, no OTP-by-SMS feature anywhere in the public materials examined.
