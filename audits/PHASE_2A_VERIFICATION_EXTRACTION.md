@@ -566,3 +566,61 @@ SMS-to-kit relationship (paraphrased): SMS verification is not pre-wired in eith
 - **Verbatim confirmation that shipped 2FA is TOTP-only** — *source unclear* (Supastarter feature lists name "2FA" without specifying implementation type; defaults inferred from better-auth library are TOTP-app-based, but not confirmed verbatim in the Supastarter surfaces examined)
 - **Whether the Supabase variant pre-exposes any phone-auth surface in shipped UI** — *not observed in public docs* (Next.js + Supabase variant landing does not surface phone auth; whether the kit's shipped code includes a phone-auth route, even if unsurfaced in marketing, was not extractable from public materials)
 - **Closed-source code access** — paid code package; deeper inspection beyond marketing-and-docs is purchase-gated. Public surface across two Next.js variants is consistent on the SMS-absence point.
+
+### MakerKit
+
+Paid SaaS Starter Kit for React, Next.js, and Remix, available in multiple variants — `next-supabase-turbo` (Next.js + Supabase) and `remix-supabase-turbo` (Remix + Supabase) use Supabase Auth; Drizzle and Prisma kit variants use Better Auth. Extensive public documentation with API reference, configuration guides, and a changelog blog; no public source repository for code-level inspection. Extraction sourced from `makerkit.dev` (product landing), `makerkit.dev/docs/next-supabase-turbo/configuration/authentication-configuration` (auth config docs), and `makerkit.dev/docs/next-supabase-turbo/api/otp-api` (OTP API docs).
+
+**Ships SMS verification:** **No.** No SMS verification, phone-number authentication, or OTP-by-SMS feature surfaced in the product landing, authentication configuration docs, or OTP API docs examined. Configurable auth methods are explicitly listed as environment-variable flags (verbatim):
+
+> `NEXT_PUBLIC_AUTH_PASSWORD` — Traditional email/password
+
+> `NEXT_PUBLIC_AUTH_MAGIC_LINK` — Passwordless email links
+
+> `NEXT_PUBLIC_AUTH_OTP` — One-time password codes
+
+> `oAuth` — OAuth providers array
+
+No `phone`, `sms`, or equivalent config key exists in the documented surface. No mention of Twilio, Telnyx, Plivo, Sinch, or any SMS provider in the public materials examined (paraphrased).
+
+**Source:** https://makerkit.dev ; https://makerkit.dev/docs/next-supabase-turbo/configuration/authentication-configuration ; https://makerkit.dev/docs/next-supabase-turbo/api/otp-api
+
+**If yes — provider/library:** n/a (no SMS verification shipped).
+
+**Integration pattern:** n/a for SMS specifically. MakerKit does ship a server-side OTP infrastructure layer used for in-app verification of sensitive operations — verbatim use-case framing: "destructive actions in the SaaS Kit, such as deleting accounts, deleting teams, and deleting users." The OTP delivery channel is **email-only** per the OTP API docs; the documented method signature (verbatim from docs):
+
+```
+api.sendOtpEmail({ email: userEmail, otp: token.token })
+```
+
+OTP infrastructure features (paraphrased from the OTP API docs and the 2.11.0 changelog entry): server-side token generation, hashed storage in Supabase, automatic expiration, verification tracking, and a ready-to-use OTP verification form component.
+
+**Default auth pattern + relationship to SMS:** Email/password plus magic-link plus email-OTP plus OAuth social, with TOTP-based MFA layered on top. The four-method authentication surface, verbatim from the product landing:
+
+> "Email/Password — Secure email/password authentication with built-in password reset, email verification, and account recovery flows."
+
+> "Magic Link — Passwordless authentication that delights users. One-click sign-in via email—no passwords to remember."
+
+> "Social Sign-in — Google, GitHub, Facebook, X, Discord, and many more OAuth providers ready to configure."
+
+> "Multi-Factor Authentication — TOTP-based MFA to protect your users' accounts."
+
+OAuth providers documented in the auth config (verbatim list — 21 providers): Apple, Azure, Bitbucket, Discord, Facebook, Figma, GitHub, GitLab, Google, Fly, Kakao, Keycloak, LinkedIn, LinkedIn OIDC, Notion, Slack, Spotify, Twitch, Twitter, WorkOS, Zoom.
+
+Auth library by variant (paraphrased from product landing):
+
+- Supabase-stack variants (Next.js + Supabase, Remix + Supabase) use Supabase Auth
+- Drizzle and Prisma kit variants use Better Auth
+
+SMS-to-kit relationship (paraphrased): SMS verification is not pre-wired in any variant. The Supabase-stack path could in principle enable Supabase Auth's native phone-login by configuring a Supabase-supported SMS provider (MessageBird / Twilio / Vonage / TextLocal per Supabase docs), but MakerKit does not surface phone auth as a shipped kit feature, configurable kit option, or documented integration path. The Drizzle/Prisma path uses Better Auth, which supports SMS-2FA via developer-provided `sendOTP` callback (capability boundary noted in the Supastarter section above) — also not pre-wired. SMS is a customer-implemented extension on top of the shipped auth surface in all variants.
+
+**Source:** https://makerkit.dev ; https://makerkit.dev/docs/next-supabase-turbo/configuration/authentication-configuration ; https://makerkit.dev/docs/next-supabase-turbo/api/otp-api
+
+**Opt-out treatment:** n/a — no SMS surface means no STOP/HELP handling. Not implemented; not applicable.
+
+**Gaps:**
+
+- **Whether the Supabase-stack variants' shipped UI includes a phone-auth route that's just unsurfaced in marketing** — *not observed in public docs* (Supabase Auth phone-login is a backend capability the kit could surface, but the documented auth configuration does not expose a phone-auth option and no `phone`/`sms` config keys are documented)
+- **MFA implementation specifics across variants** — *source unclear* on whether any kit pre-wires SMS-MFA via Supabase Auth's phone-MFA capability (auth config docs say MFA is built into Supabase Auth without specifying TOTP-only vs. also-phone-MFA at the kit level; product landing's "TOTP-based MFA" claim is the only explicit signal and points to TOTP-only)
+- **Whether the email-channel OTP infrastructure is channel-pluggable** — *not observed in public docs* (the `sendOtpEmail` method signature is channel-specific; whether the surrounding storage / expiration / verification layer could be re-pointed at SMS by a customer extension is not addressed in the OTP API docs examined)
+- **Closed-source code access** — paid code package across all kit variants; deeper inspection beyond marketing-and-docs is purchase-gated. Public surface across multiple variants plus detailed config + API docs is consistent on the SMS-absence point.
