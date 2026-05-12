@@ -624,3 +624,61 @@ SMS-to-kit relationship (paraphrased): SMS verification is not pre-wired in any 
 - **MFA implementation specifics across variants** — *source unclear* on whether any kit pre-wires SMS-MFA via Supabase Auth's phone-MFA capability (auth config docs say MFA is built into Supabase Auth without specifying TOTP-only vs. also-phone-MFA at the kit level; product landing's "TOTP-based MFA" claim is the only explicit signal and points to TOTP-only)
 - **Whether the email-channel OTP infrastructure is channel-pluggable** — *not observed in public docs* (the `sendOtpEmail` method signature is channel-specific; whether the surrounding storage / expiration / verification layer could be re-pointed at SMS by a customer extension is not addressed in the OTP API docs examined)
 - **Closed-source code access** — paid code package across all kit variants; deeper inspection beyond marketing-and-docs is purchase-gated. Public surface across multiple variants plus detailed config + API docs is consistent on the SMS-absence point.
+
+### Vercel-Supabase starter
+
+The official `vercel/next.js` `with-supabase` example template — open-source, free, installable via `npx create-next-app --example with-supabase`. Serves as a wiring demonstration for Supabase Auth + Next.js App Router rather than a full SaaS stack. Extraction sourced from `vercel.com/templates/next.js/supabase` (Vercel template page) and `github.com/vercel/next.js/tree/canary/examples/with-supabase` (source repo README + `app/auth/` route directory).
+
+**Ships SMS verification:** **No.** No SMS verification, phone-number authentication, or OTP-by-SMS feature in the starter. The README's verbatim feature list:
+
+> "Works across the entire Next.js stack"
+
+> "supabase-ssr package for cookie-based auth"
+
+> "Password-based authentication block installed via the Supabase UI Library"
+
+> "Tailwind CSS styling"
+
+> "shadcn/ui components"
+
+> "Supabase Vercel Integration with auto-assigned environment variables"
+
+The auth routes shipped in `app/auth/` (verbatim directory listing from the source repo):
+
+- `confirm/`
+- `error/`
+- `forgot-password/`
+- `login/`
+- `sign-up/`
+- `sign-up-success/`
+- `update-password/`
+
+No `phone/`, `sms/`, `otp/`, `verify/`, or `oauth-callback/` route directory. No mention of Twilio, Telnyx, Plivo, Sinch, or any SMS provider in the README or template page (paraphrased).
+
+**Source:** https://vercel.com/templates/next.js/supabase ; https://github.com/vercel/next.js/tree/canary/examples/with-supabase ; https://github.com/vercel/next.js/blob/canary/examples/with-supabase/README.md
+
+**If yes — provider/library:** n/a (no SMS verification shipped).
+
+**Integration pattern:** n/a (no SMS verification shipped). No OTP infrastructure of any kind in the starter — neither email-channel nor SMS-channel. Verification, where present, is via Supabase Auth's email-confirmation-link flow only (paraphrased — implied by the `confirm/` route and the password-based-auth feature description; not explicitly elaborated in the README).
+
+**Default auth pattern + relationship to SMS:** Password-based email/password authentication via Supabase Auth, configured for cookie-based sessions through the `supabase-ssr` package. The README states verbatim:
+
+> "Password-based authentication block installed via the Supabase UI Library"
+
+> "A package to configure Supabase Auth to use cookies"
+
+Auth library: **Supabase Auth** (via the `supabase-ssr` package). UI: Supabase UI Library + shadcn/ui components + Tailwind.
+
+The pre-wired auth surface is password-only — magic-link, OAuth, OTP, MFA, and phone-auth all require customer-added wiring (paraphrased — observed from the README feature list combined with the `app/auth/` route inventory).
+
+SMS-to-kit relationship (paraphrased): SMS verification is not pre-wired. The underlying Supabase Auth backend supports phone-login via configurable SMS providers (MessageBird / Twilio / Vonage / TextLocal per Supabase docs), but this starter does not surface or wire it. Adding SMS verification would require enabling Supabase phone-login in the Supabase dashboard, configuring an SMS provider, and building new auth routes in `app/auth/` — no scaffolding to extend, since the existing routes are email-confirmation-shaped.
+
+**Source:** https://github.com/vercel/next.js/blob/canary/examples/with-supabase/README.md ; https://github.com/vercel/next.js/tree/canary/examples/with-supabase/app/auth
+
+**Opt-out treatment:** n/a — no SMS surface means no STOP/HELP handling. Not implemented; not applicable.
+
+**Gaps:**
+
+- **Whether the starter intentionally limits to password-only or expects developers to extend with OAuth/magic-link/phone** — *not observed in public docs* (README and template page do not address extensibility intent; the scoping rationale is unstated)
+- **Whether the Supabase UI Library that ships in the starter exposes phone-login UI blocks that could be dropped in alongside the password block** — *source unclear* (the starter installs the password-based-auth UI block specifically; whether parallel phone-login blocks exist in the Supabase UI Library catalog and could be added without writing custom routes was not extracted from the README)
+- **Source-code verification of SMS-absence** — open-source repository allows direct inspection; the SMS-absence finding is verifiable from the `app/auth/` directory listing and the README feature list, not only from marketing copy. Recorded here for traceability rather than as an outstanding gap.
