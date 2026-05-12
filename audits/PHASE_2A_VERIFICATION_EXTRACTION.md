@@ -353,3 +353,130 @@ The $0 verification fee plus free credits and no-credit-card signup lower the en
 - **Device-verification, SMS-as-login-link, recovery-code-delivery sub-uses** — *not observed in public docs* as named sub-uses
 - **Rate-limit defaults at the API level** — *not observed in public docs* (retry-attempts and OTP expiry are Verify Application–level configs; per-account or per-session rate-limit defaults not surfaced)
 - **Character/segment-limit guidance for SMS template content** — *not observed in public docs* in the Verify-specific surfaces examined
+
+### Sinch Verification
+
+Sinch's verification API and mobile SDKs. Customer creates a Verification application in the Sinch dashboard, then triggers verifications via REST endpoints under `verification.api.sinch.com` (back-end usage) or via mobile SDKs (Android, iOS, JavaScript) for client-side flows including automatic SMS / flashcall code capture. Four verification methods span SMS, flashcall, phone call, and Data verification (carrier-infrastructure-based). Extraction sourced from `sinch.com/products/apis/verification/` (product landing), `developers.sinch.com/docs/verification/` (developer docs root, including `/introduction`, `/api-reference/verification/section/api-overview`, `/api-reference/verification/section/sms-verification`), and Sinch community-forum threads for custom-template detail.
+
+**Positioning headline:**
+
+> "Step up security, keep engagements flowing"
+
+Sub-headlines:
+
+> "Enhance app security with scalable multi-factor authentication solutions built with conversion in mind"
+
+> "Don't choose between security and conversions"
+
+> "Safer, smarter, cheaper: Pick your verification solution(s)!"
+
+**Source:** https://www.sinch.com/products/apis/verification/
+
+**Public-docs API surface:** Base URL: `https://verification.api.sinch.com`. Verification REST endpoints:
+
+- `POST /verification/v1/verifications` — start a new verification request
+- `PUT /verification/v1/verifications/number/{endpoint}` — report verification by phone number
+- `PUT /verification/v1/verifications/id/{id}` — report verification by ID
+- `GET /verification/v1/verifications/id/{id}` — query status by ID
+- `GET /verification/v1/verifications/{method}/number/{endpoint}` — query status by number
+- `GET /verification/v1/verifications/reference/{reference}` — query status by custom reference
+
+Callback webhooks (POSTed to a customer-configured URL):
+
+- `VerificationRequestEvent` — backend authorizes whether the verification may proceed
+- `VerificationResultEvent` — verification completion result
+- `SmsDeliveredEvent` — SMS delivery notification
+
+Verification methods, verbatim per the API overview:
+
+- **SMS** — "Sending an SMS message with an OTP code"
+- **FlashCall** — "Placing a flashcall (missed call) and detecting the incoming calling number (CLI)"
+- **Phone Call** — "Placing a PSTN call to the user's phone and playing a message containing the code"
+- **Data** — "By accessing internal infrastructure of mobile carriers to verify if given verification attempt was originated from device with matching phone number"
+
+Authentication options documented: Application Signed Request (recommended for production), Basic Authentication (recommended for prototyping), Public Authentication (paraphrased — labels verbatim, descriptions condensed).
+
+**Source:** https://developers.sinch.com/docs/verification/api-reference/verification/section/api-overview
+
+**Verbatim sample messages:**
+
+The only verbatim SMS template body observed in the developer docs is the Spanish-locale sample returned in an API response (response shape, verbatim):
+
+```json
+{
+  "id": "1087388",
+  "sms": {
+    "template": "Tu código de verificación es {{CODE}}.",
+    "interceptionTimeout": 120
+  }
+}
+```
+
+No verbatim English-default template body was surfaced in the developer docs examined (paraphrased — secondary sources note the default content language is en-US but the literal English template string was not exposed).
+
+**Source:** https://developers.sinch.com/docs/verification/api-reference/verification/section/api-overview ; https://developers.sinch.com/docs/verification/api-reference/verification/section/sms-verification
+
+**Variable/placeholder convention:** Templates use **uppercase `{{CODE}}`** inside double curly braces — distinct from Twilio Verify (`{{code}}` lowercase), Telnyx Verify (`{{code}}` lowercase), and Plivo Verify (`${code}` dollar-brace). Only one named template variable observed in the verification SMS surface:
+
+- `{{CODE}}` — the OTP
+
+The `Accept-Language` request header (or the application's default content language, which defaults to en-US) selects the locale-specific template; carrier-provider-specific templates may override the content language at delivery time for compliance reasons, per the SMS verification docs (verbatim):
+
+> "The content language specified in the API request or in the callback can be overridden by carrier provider specific templates, due to compliance and legal requirements, such as US shortcode requirements."
+
+Per Sinch community-forum discussion, custom-template adjustment via the verification request is disabled in certain countries; applying a custom template typically requires contacting Sinch support or an account manager (paraphrased from community-forum source).
+
+**Source:** https://developers.sinch.com/docs/verification/api-reference/verification/section/sms-verification ; https://community.sinch.com/t5/Discussion-Forum/SMS-Verification/td-p/15702
+
+**Opt-out language:** Verification-specific docs (introduction, API overview, SMS verification section) contain no explicit guidance on STOP/HELP language inside OTP message bodies (paraphrased). The SMS verification docs note that carrier-provider-specific templates may override content language for compliance reasons (verbatim quoted in the Variable convention section above) but do not prescribe STOP/HELP-in-body content. Whether Verification OTP messages are formally exempt from STOP/HELP-in-body requirements is not stated in the surfaces examined.
+
+**Source:** https://developers.sinch.com/docs/verification/api-reference/verification/section/sms-verification
+
+**Enumerated sub-uses:**
+
+Product landing enumerates the following sub-uses (verbatim list items):
+
+- Sign-up
+- Log-in
+- Password resets
+- Reducing unauthorized payments and account takeovers
+- One-factor authentication
+
+Per-method positioning copy on the product landing (verbatim):
+
+> "Flash call verification – faster, more cost-efficient alternative to traditional SMS"
+
+> "SMS Verification – Secure login and sign-up, reduce churn and boost revenue"
+
+> "Data Verification – Instant verification with proven security"
+
+> "Phone Call Verification – Global call verification for mobile and landline numbers"
+
+Integration partnerships mentioned on the product landing: Okta and Auth0 (CIAM platforms) — positioning anchored to multi-factor-auth ecosystems (paraphrased).
+
+**Source:** https://www.sinch.com/products/apis/verification/
+
+**Pricing visibility:** Per-request basis. Verification fee structure per the API overview (verbatim):
+
+> "Verification pricing is calculated on a per request basis. A fixed price is charged for each flash call attempted and a SMS price (depending on country and operator) is charged for each SMS verification attempt."
+
+No flat published per-verification dollar amount surfaced on the public product or developer pages; the API overview directs the reader to download the current pricing list from the Sinch Build dashboard (paraphrased — dashboard access required for the actual numbers). Secondary search-index source cites US 10DLC SMS at approximately $0.0078 per outbound message plus carrier surcharges (paraphrased — not a Sinch-first-party quote). Volume discounts available via sales conversation (paraphrased — not enumerated on public pages). Free trial / sandbox / indie-developer tier: not observed in public docs.
+
+**Source:** https://developers.sinch.com/docs/verification/api-reference/verification/section/api-overview ; https://sinch.com/pricing/sms/
+
+**Indie-SaaS-relevant positioning signal:** No explicit indie SaaS / founder / startup audience callout observed in the surfaces examined. Product surface emphasizes scale, conversion optimization, CIAM-partner integrations (Okta, Auth0), and multi-method coverage — reads as enterprise / mid-market positioning (paraphrased). The sub-headline "Don't choose between security and conversions" (verbatim) is broad-developer framing not specifically aimed at indie SaaS founders.
+
+**Source:** https://www.sinch.com/products/apis/verification/
+
+**Gaps:**
+
+- **Verbatim English-default SMS template body** — *source unclear* (default content language is en-US per secondary source, but the literal English template string was not exposed in the developer docs examined; only the Spanish-locale sample surfaced verbatim)
+- **Public flat US pricing for SMS verification** — *not observed in public docs* (pricing list requires Sinch Build-dashboard download; community/secondary sources cite ~$0.0078 per 10DLC SMS but no per-verification fee disclosed publicly)
+- **OTP-message exemption from STOP/HELP-in-body requirements** — *not observed in public docs* (Verification-specific docs do not address STOP/HELP-in-body; only language-override-for-compliance is mentioned)
+- **Custom-template authoring shape via API** — *source unclear* (community-forum thread suggests custom templates are typically applied via support / account-manager intervention; an API-side surface for direct custom-template-text submission is not exposed in the docs examined)
+- **Free trial / sandbox / test credits for Verification specifically** — *not observed in public docs* on the Verification product or pricing pages
+- **WhatsApp / RCS / Email channels for Verification** — *not observed in public docs* on the Verification product page (channels listed are SMS, FlashCall, Phone Call, Data; Sinch's broader product line includes WhatsApp/RCS/Email but the Verification surfaces examined do not enumerate them)
+- **Device-verification, SMS-as-login-link, recovery-code-delivery sub-uses** — *not observed in public docs* as named sub-uses (Data verification semantically overlaps device-context-verification; the product does not label it that way)
+- **Per-method dollar pricing breakdown** — *not observed in public docs* (per-request fixed-fee for flashcall, per-SMS for SMS, but specific dollar amounts not published)
+- **Character/segment-limit guidance for custom SMS template content** — *not observed in public docs* in the Verification surfaces examined
+- **Rate-limit defaults** — *not observed in public docs* in the surfaces examined
