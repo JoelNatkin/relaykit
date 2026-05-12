@@ -103,3 +103,147 @@ Additional sub-uses named on the same page (paraphrased, not verbatim taglines):
 - **SMS-as-login-link sub-use** — *not observed in public docs* (Twilio Verify is code-entry-shaped; magic-link-via-SMS is not the product's surface)
 - **Exact rate-limit defaults at the API level** — Service Rate Limits and Service Rate Limit Buckets resources are named but specific default thresholds were not extracted from the API-overview surface
 - **Template character-budget specifics beyond one-segment guidance** — best-practices doc says "Keep messages to one SMS segment (160 GSM characters or 70 non-GSM characters)" but exact segment-handling behavior for over-limit templates was not pulled
+
+### Telnyx Verify
+
+Telnyx's authentication API, positioned primarily as 2FA infrastructure. Managed verification with profile-scoped templates: the customer creates a Verify Profile, selects (or creates) a template, and triggers verifications through channel-specific endpoints. Telnyx handles code generation, delivery, and validation. Extraction sourced from `telnyx.com/products/verify-api` (product landing), `developers.telnyx.com/docs/identity/verify/` (Verify docs root including `/quickstart` and `/custom-templates`), `telnyx.com/pricing/verify-api` (pricing), and `support.telnyx.com` (help-center articles for sample messages and channel detail).
+
+**Positioning headline:**
+
+> "Create your own authentication program or build one into your existing product. Use a single phone verification API to reach users across all devices with OTP and more."
+
+Sub-headlines (verbatim):
+
+> "A two-factor authentication solution at a great price"
+
+> "Simple two-factor authentication API"
+
+> "Developer-friendly, scalable API"
+
+**Source:** https://telnyx.com/products/verify-api
+
+**Public-docs API surface:** Verify API v2 endpoints documented in the quickstart:
+
+- `POST /v2/verify_profiles` — create a verify profile
+- `GET /v2/verify_profiles/templates` — list available message templates
+- `POST /v2/verifications/sms` — initiate SMS verification
+- `POST /v2/verifications/call` — initiate voice-call verification
+- `POST /v2/verifications/by_phone_number/{phone_number}/actions/verify` — submit user-entered code for validation
+
+A flashcall endpoint exists by analogue to SMS/call (channel is described in the quickstart) but the exact path was not exposed verbatim on the quickstart surface examined. Supported channels per product surfaces: **SMS, Voice (Call), Flash Call, WhatsApp** (mentioned in product-landing configuration guides), and **PSD2** (Strong Customer Authentication for EU payments, exposed as a verification method alongside the channels).
+
+**Source:** https://developers.telnyx.com/docs/identity/verify/quickstart ; https://telnyx.com/products/verify-api ; https://support.telnyx.com/en/articles/5701653-telnyx-verify-2fa-made-easy
+
+**Verbatim sample messages:**
+
+Default-template body (when no custom template is selected) per quickstart docs:
+
+```
+Your verification code is {code}.
+```
+
+Default template selectable via a known template SID (`0abb5b4f-459f-445a-bfcd-488998b7572d`), per quickstart sample:
+
+```
+Your {{app_name}} verification code is: {{code}}.
+```
+
+Custom-template example strings from the custom-templates docs:
+
+```
+Your {{app_name}} verification code is {{code}}. Do not share this code.
+```
+
+```
+Your {{app_name}} verification code is {{code}}. Complete your purchase securely.
+```
+
+```
+{{code}} is your {{app_name}} security code. Never share this with anyone.
+```
+
+```
+Your {{app_name}} appointment verification code: {{code}}.
+```
+
+```
+Your {{app_name}} delivery confirmation code is {{code}}.
+```
+
+Support-article examples (single-brace `{code}` rendering — likely paraphrased display rather than API-stored template syntax):
+
+```
+Hello, this is the Acme Inc verification code you requested: {code}.
+```
+
+```
+Your code is {code} for payment to {payee} in the amount of {amount} {currency}.
+```
+
+```
+Your verification code is {code}.
+```
+
+**Source:** https://developers.telnyx.com/docs/identity/verify/quickstart ; https://developers.telnyx.com/docs/identity/verify/custom-templates ; https://support.telnyx.com/en/articles/5701653-telnyx-verify-2fa-made-easy
+
+**Variable/placeholder convention:** Templates use **double curly braces** — `{{variable_name}}` — per the custom-templates docs. Two named variables documented:
+
+- `{{app_name}}` — application name as configured in the Verify Profile
+- `{{code}}` — verification code sent to the user
+
+`app_name` is set at Verify Profile creation; templates bind to a profile, so the `{{app_name}}` value resolves from the profile context. Quickstart and support-article examples use single-brace `{code}` syntax in some places — appears to be paraphrased/display rendering rather than the underlying API syntax; the custom-templates page is authoritative on `{{...}}`.
+
+**Source:** https://developers.telnyx.com/docs/identity/verify/custom-templates
+
+**Opt-out language:** Verify-specific docs (quickstart, custom-templates, support article) contain **no explicit guidance** on STOP/HELP language inside OTP message bodies. The custom-templates docs prescribe that templates "comply with industry regulations (HIPAA, PCI-DSS, GDPR), carrier SMS requirements, local laws, and organizational security policies" (paraphrased) but do not prescribe specific STOP/HELP-in-body content. Recommended security language called out is anti-phishing copy ("Never share this code with anyone", "If you didn't request this, contact support immediately"), not opt-out copy. Whether Verify OTP messages are formally exempt from STOP/HELP-in-body requirements is not stated in the Verify-specific surfaces examined.
+
+**Source:** https://developers.telnyx.com/docs/identity/verify/custom-templates
+
+**Enumerated sub-uses:**
+
+Primary positioning is **2FA** as the umbrella. Sub-uses surface in quickstart and custom-template examples rather than as a single canonical enumeration on the landing.
+
+From quickstart (verbatim use-case labels):
+
+- "General account login and registration"
+- "Payment confirmation workflows"
+- "Two-factor authentication (2FA) across web and mobile applications"
+
+From custom-template example shapes (sub-use implied by template content, paraphrased categorization):
+
+- Payment / purchase verification — "Complete your purchase securely"
+- Appointment verification — "appointment verification code"
+- Delivery confirmation — "delivery confirmation code"
+- General security / step-up auth — "security code"
+
+From channel/method enumeration, **PSD2** (Strong Customer Authentication for EU payments) is surfaced as a distinct verification method — overlaps payment-verification sub-use with a regulatory-specific shape.
+
+**Source:** https://developers.telnyx.com/docs/identity/verify/quickstart ; https://developers.telnyx.com/docs/identity/verify/custom-templates ; https://support.telnyx.com/en/articles/5701653-telnyx-verify-2fa-made-easy
+
+**Pricing visibility:** Per-successful-verification fee plus channel-specific surcharge (channel API pricing applied on top).
+
+- **SMS (US):** $0.03 per successful verification + SMS API pricing (Telnyx general SMS pricing starts at $0.004 per message per the broader Telnyx pricing surface — paraphrased)
+- **Voice:** $0.03 per successful verification + Voice API pricing
+- **Flash call:** $0.03 per successful verification + Flash pricing
+- **WhatsApp:** not listed with specific pricing on the Verify pricing page
+- **Volume discounts:** "Receive a discounted rate with the more you spend instead of our pay-as-you-go rates" — contract-based tier (paraphrased)
+- **Free tier / trial:** not enumerated on the Verify pricing page; product landing notes "no monthly commitments" (paraphrased)
+- **Starter / indie-developer tier:** none observed
+
+**Source:** https://telnyx.com/pricing/verify-api
+
+**Indie-SaaS-relevant positioning signal:** "Developer-friendly, scalable API" and "A two-factor authentication solution at a great price" — cost-conscious developer framing. Sub-headline framing positions Verify as a component to "build into your existing product," not a platform takeover. "No monthly commitments" lowers the entry barrier for small teams. No explicit indie SaaS / founder / startup audience callout observed in the surfaces examined; the framing is broad-developer with implicit cost-relative positioning.
+
+**Source:** https://telnyx.com/products/verify-api ; https://telnyx.com/pricing/verify-api
+
+**Gaps:**
+
+- **Verbatim default-template syntax at the storage layer** — quickstart shows the no-custom-template default rendered as `Your verification code is {code}.` (single-brace); whether the underlying API-stored template uses `{{code}}` per the custom-templates `{{...}}` convention is *source unclear*
+- **OTP-message exemption from STOP/HELP-in-body requirements** — *not observed in public docs* (Telnyx Verify-specific docs do not address whether OTP bodies are exempt from carrier opt-out-language inclusion)
+- **WhatsApp Verify pricing** — *not observed in public docs* on the Verify pricing page (channel is named in product surfaces but per-verify pricing not enumerated)
+- **Flash-call endpoint path** — *source unclear* (channel exists per quickstart channel description but exact endpoint path not exposed in the surface examined)
+- **PSD2 endpoint detail and template requirements** — *source unclear* (PSD2 named as a method but per-PSD2 verification-request shape and template constraints not surfaced in the docs examined)
+- **Device-verification, SMS-as-login-link, recovery-code-delivery sub-uses** — *not observed in public docs* as named sub-uses (Telnyx Verify shape is code-entry across SMS/Voice/FlashCall; magic-link-via-SMS is not the product's surface)
+- **Free trial / sandbox / test credits for Verify specifically** — *not observed in public docs* on the Verify pricing or product pages
+- **Exact character/segment limits beyond the 160-character recommendation** — custom-templates page recommends "Keep your templates under 160 characters when possible to avoid message splitting and additional costs" (verbatim); exact over-limit segment-handling behavior not pulled
+- **Rate-limit defaults** — *not observed in public docs* in the surfaces examined
