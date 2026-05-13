@@ -7,9 +7,8 @@
 ## Meta
 
 - Last updated: 2026-05-13
-- Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md v1.9)
+- Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md)
 - Decision count: 301 active, latest D-386; D-01–D-83 archived. Marketing decisions: latest MD-18.
-- Master plan version: v1.9, 2026-05-12
 - Branch state: main; no unmerged feature branches
 - Active explorations: None
 
@@ -25,7 +24,7 @@ _No active explorations._
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
 | `REPO_INDEX.md` | 2026-05-13 | This file: doc inventory, current-state pointers, canonical-sources index. |
-| `MASTER_PLAN.md` | 2026-05-13 | 10-phase launch plan, North Star, customer values, out-of-scope, risks. |
+| `MASTER_PLAN.md` | 2026-05-13 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-13 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-12 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
 | `DECISIONS.md` | 2026-05-12 | Active product decisions D-84+. |
@@ -66,7 +65,7 @@ This index maps each major topic to its single canonical doc. Per the One Source
 
 ### Product
 - Pricing facts (numbers, refund policy, tier definitions) → `docs/PRICING_MODEL.md`
-- Phases / scope / out-of-scope / North Star / risks → `MASTER_PLAN.md`
+- Phases / scope / out-of-scope / North Star → `MASTER_PLAN.md`
 - Customer-experience narrative (PM-facing reference) → `docs/PRODUCT_SUMMARY.md`
 - Voice / copy principles / kill list → `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`
 - Parked ideas / Rejected table → `BACKLOG.md`
