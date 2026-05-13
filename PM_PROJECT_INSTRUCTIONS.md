@@ -294,7 +294,7 @@ User-facing terminology shifts apply ONLY to strings users actually read.
 When Joel says **"open CC"** or **"starting CC"**:
 
 ```
-DECISIONS CHECK — Read DECISIONS.md, CC_HANDOFF.md, PROTOTYPE_SPEC.md, and MASTER_PLAN.md. Confirm with: active decision count, archived decision range noted, CC_HANDOFF summary, PROTOTYPE_SPEC acknowledgment, active master plan phase, and the pre-flight decision ledger scan per CLAUDE.md. Do NOT read DECISIONS_ARCHIVE.md unless I tell you to check a specific decision.
+Session open. Follow the CLAUDE.md session-start protocol.
 ```
 
 Task-specific specs load on demand as part of the task prompt, not at session start.

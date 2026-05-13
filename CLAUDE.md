@@ -131,12 +131,12 @@ CC maintains four cross-doc surfaces when explorations change state. PM gates en
 - File remains in /explorations/ as historical record of why the canonical decision looks the way it does
 
 ## Session start
-When you see `DECISIONS CHECK`, read these five files and confirm each:
-1. DECISIONS.md — active decision count + archived range noted
-2. CC_HANDOFF.md — summary of previous session
-3. PROTOTYPE_SPEC.md — acknowledged
-4. MASTER_PLAN.md — active phase noted
-5. REPO_INDEX.md — active phase noted, decision count noted
+At session open, read these five files and confirm each:
+1. REPO_INDEX.md — last-updated date, active phase, decision count
+2. DECISIONS.md — active decision count + archived range
+3. CC_HANDOFF.md — previous session summary
+4. PROTOTYPE_SPEC.md — acknowledged
+5. MASTER_PLAN.md — active phase
 
 Then run the pre-flight ledger scan (above) and report findings.
 
