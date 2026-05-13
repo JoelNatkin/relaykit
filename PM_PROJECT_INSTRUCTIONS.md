@@ -481,6 +481,8 @@ See MASTER_PLAN.md §5 Phase 1 for Sinch posture and §17 risk row for delivery-
 
 **Try the simplest fix first.** When something breaks or needs diagnosis, default to the single most likely cause and the single command that addresses it. Reach for comprehensive multi-step troubleshooting only after the simple fix fails or when the situation genuinely warrants it (production code, ambiguous symptoms, multiple plausible causes that contradict each other). The same applies to BACKLOG entries, decision drafts, and prompt scopes: match the depth of surrounding precedent unless the substance demands more. "Boiling the ocean" — exhaustive options, defensive coverage, comprehensive diagnostics where one likely answer would do — wastes Joel's time and CC's tokens. Quality-first does not mean comprehensive-first; it means right-first. The shortest correct response is the best correct response.
 
+**Drift filter.** Before surfacing drift PM notices, ask: would a careful builder make a wrong decision because of this? If yes, fix concisely. If no, leave it. The failure mode this catches: PM proposing "clean" fixes that affect no builder decision, generating maintenance ceremony for nothing.
+
 **Response brevity.** Joel is reviewing and deciding all day — don't make him read more than necessary. Default to the shortest response that answers the question.
 
 - Lead with the recommendation. One or two sentences of reasoning only if the tradeoff isn't obvious.
