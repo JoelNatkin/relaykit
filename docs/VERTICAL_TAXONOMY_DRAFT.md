@@ -1,26 +1,10 @@
 # RelayKit vertical taxonomy
 
-> **Status: DRAFT — v0.2.** This document captures the vertical taxonomy thinking surfaced by Experiments 3a/3b (Sinch's TCR use-case dashboard) and the three-layer product model that frames it (§0, added v0.2). It is a working draft awaiting Phase 5 design resolution on the three directional pieces flagged in §4. The settled calls in §3 are firm; the directional pieces in §4 are explicitly unresolved. Iterate based on Phase 5 design resolutions before treating as canonical.
+> **Status: DRAFT — v0.3.** This document captures the vertical taxonomy thinking surfaced by Experiments 3a/3b (Sinch's TCR use-case dashboard). It is a working draft awaiting Phase 5 design resolution on the three directional pieces flagged in §4. The settled calls in §3 are firm; the directional pieces in §4 are explicitly unresolved. Iterate based on Phase 5 design resolutions before treating as canonical.
 >
 > **Phase 5 prerequisite gate.** Any Phase 5 work item touching customer registration form design, intake question design, vertical surface in onboarding, message template authorship for new/changed verticals, or registration backend logic — read this draft first as a prerequisite, not as a reference. The doors UX and the per-vertical TCR mapping decisions live here until promoted to a D-number or to PROTOTYPE_SPEC.
-
----
-
-## §0 — Three-layer relationship (read this first)
-
-This document operates at the boundary between two of RelayKit's three product layers. The canonical model is recorded in MASTER_PLAN v1.5 §1 and D-372.
-
-1. **TCR categories** — carrier-side, immutable, defined by The Campaign Registry. §1 below is the primer.
-2. **SDK namespaces** — RelayKit's developer-facing API. Eight per D-273 (`appointments`, `orders`, `verification`, `support`, `marketing`, `internal`, `community`, `waitlist`) plus `relaykit.send()` escape hatch (D-275) and top-level consent (D-274). §2 maps these to TCR categories.
-3. **Audience-packs** — curated configurations (templates, intake flow, marketing voice, landing page surface) for specific business types, composing across multiple SDK namespaces within the fixed TCR taxonomy. Indie SaaS is audience-pack #1 (MASTER_PLAN v1.5 §0, MARKETING_STRATEGY MD-11).
-
-**The eight verticals enumerated in §2 are SDK namespaces, not audience-packs.** A single pack composes across multiple namespaces (e.g., indie SaaS draws from `verification` plus account-event handling); a single namespace can serve multiple future packs (e.g., `appointments` could serve both a salons pack and a real estate pack candidate). Audience-packs sit above SDK namespaces; TCR taxonomy sits below; namespaces sit between.
-
-**LVM is load-bearing for audience-pack composition.** When a pack's use-case mix doesn't map cleanly to a canonical Standard category (2FA / Account Notification / Customer Care / Delivery Notification / Marketing / Higher Education), Low Volume Mixed is where the campaign registers. §3 frames LVM as a deliberate product surface, not a fallback; future audience-packs serving niche or composite use cases will lean on LVM heavily.
-
-Two layer-naming coincidences worth flagging: (a) "Marketing" exists at both TCR-category and SDK-namespace layers — coincidence of naming, not layer collapse. (b) "Verification" at the SDK-namespace layer maps to TCR 2FA at carrier submission time — different layer, different name, expected.
-
-§3 settled calls and §4 directional pieces below remain at the namespace-and-TCR-category level. Audience-pack composition design (which namespaces, templates, and intake flow shape each pack) is a Phase 5/6 design surface called out in §5 implementation impact.
+>
+> **v0.3 (2026-05-12):** §0 Three-layer relationship deleted; audience-pack framing excised per D-385; Higher Education references removed per D-386.
 
 ---
 
@@ -72,15 +56,12 @@ One orthogonal concept: **Carrier Exemptions** — not a category, a per-carrier
 | Internal | (no Standard fit) | — | **Reframe as curated LVM** | TCR has no employee-comms category. RelayKit authors templates; surface as LVM internally. See §3 settled call. |
 | Community | Social | Special | **Disposition pending** | Social is Special; "accept Special friction" is off the table per §3. Either redefine or drop. See §4 directional. |
 | Waitlist | Account Notification *or* Customer Care | Standard | Best-fit pending | Waitlist join confirmation = AN; queue progression notifications = CC. May warrant per-message classification at Phase 5. |
-| **Higher Education** *(new)* | Higher Education | Standard | Clean | 1:1, no vetting. Add as new vertical per §3. |
 
 ---
 
 ## §3 — Settled calls (firm)
 
 **Special TCR categories out of scope at launch.** Vetting workflows (Aegis third-party verification, Campaign Verify for political, carrier human review, documentation back-and-forth) are incompatible with the one-person-shop automation posture and with the planned paid-lookup-plus-AI-research approval-confidence stack. Decline at intake — pattern adapted from D-18's hard-decline. Decline copy TBD per Voice & Product Principles when intake flow design activates in Phase 5. Post-launch revisit gated on observed customer pull from these segments.
-
-**Add Higher Education vertical.** TCR Standard category, clean 1:1 fit, no vetting friction. Real ICP segment (universities, online learning programs, postsecondary institutions). Adds full message template set (verification, registration confirmation, deadline reminders, course/cohort communications), intake entry, dashboard surface, onboarding-wizard vertical option. Phase 5 implementation work — additive, no architecture change.
 
 **Internal reframed as RelayKit-curated LVM.** TCR has no employee-comms category, and forcing Internal into Account Notification or Customer Care misrepresents the traffic. LVM is the architecturally correct home for non-canonical Standard traffic. RelayKit authors the templates (curated, not customer-defined) so the customer experience reads as a product surface, not a workaround.
 
@@ -111,15 +92,13 @@ Pending.
 
 Docs and surfaces that need revision/authorship when this work activates:
 
-- **`docs/PRODUCT_SUMMARY.md`** — vertical descriptions in §4 (vertical-to-carrier-use-case mapping internals); §14 (intake interrogates); add Higher Education throughout; revise Internal to reflect the LVM-curated framing; update Community per disposition decision.
+- **`docs/PRODUCT_SUMMARY.md`** — vertical descriptions in §4 (vertical-to-carrier-use-case mapping internals); §14 (intake interrogates); revise Internal to reflect the LVM-curated framing; update Community per disposition decision.
 - **Existing 8 verticals' message templates** — review for TCR-mapping accuracy. Some may need revision (Internal especially under the LVM-curated reframing).
-- **Higher Education template set** — full new set: verification SMS, registration confirmation, deadline reminders, course/cohort communications. Author per VOICE_AND_PRODUCT_PRINCIPLES_v2.
 - **Customer registration form** — single/multi/custom routing logic per the doors decision.
 - **Intake question design** — the doors UX (whichever count is decided). Surfaces as the first vertical-selection moment in onboarding.
-- **Onboarding wizard** — vertical surface; drop or redefine Community accordingly; add Higher Education option.
+- **Onboarding wizard** — vertical surface; drop or redefine Community accordingly.
 - **Registration backend logic** — TCR category selection per door taken; Mixed sub-use-case enumeration when Multi is chosen; LVM use-case description capture when Custom is chosen.
 - **Marketing positioning** — the "we know which TCR category fits you" angle becomes a real claim. Ties to MARKETING_STRATEGY (potential MD-number after taxonomy decisions resolve, not now).
-- **Audience-pack composition** — the design surface that defines which SDK namespaces, templates, intake flow, marketing voice, and landing page surface compose each audience-pack. Indie SaaS pack composition is the immediate Phase 5/6 work; future packs (salons, real estate, fitness, e-commerce candidates per MARKETING_STRATEGY MD-11) follow the same composition pattern. Cross-cutting input to the registration form / intake question / template authorship / onboarding wizard work above. Cross-reference: MASTER_PLAN v1.5 §18 Open Architectural Questions (indie SaaS pack namespace composition row).
 
 ---
 
@@ -129,8 +108,8 @@ Resolution-ordering for Phase 5 work items dependent on this draft:
 
 1. **Customer registration form design** ← blocked on doors decision (§4)
 2. **Intake question design** ← blocked on doors decision (§4) + Community disposition (§4)
-3. **Vertical surface in onboarding** ← blocked on Community disposition (§4) + Higher Education addition (§3)
-4. **Message template authorship for new/changed verticals** ← blocked on Internal LVM-curated reframing (§3) + Higher Education addition (§3) + Community disposition (§4)
+3. **Vertical surface in onboarding** ← blocked on Community disposition (§4)
+4. **Message template authorship for new/changed verticals** ← blocked on Internal LVM-curated reframing (§3) + Community disposition (§4)
 5. **Registration backend logic** ← blocked on doors decision (§4) + AI-assist scope (§4)
 
 The three §4 directional pieces are the unblocking critical path. Once they resolve, the §3 settled calls + §4 resolved positions promote out of this draft into D-numbers, MASTER_PLAN amendments, or PROTOTYPE_SPEC sections as appropriate, and this file graduates from `VERTICAL_TAXONOMY_DRAFT.md` to `VERTICAL_TAXONOMY.md`.
