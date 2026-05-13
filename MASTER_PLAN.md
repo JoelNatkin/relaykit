@@ -1,6 +1,8 @@
 # RelayKit Master Plan
 ### The holistic plan that guides all of our work
-### Version 1.8 — May 11, 2026
+### Version 1.9 — May 12, 2026
+
+**v1.9 — 2026-05-12:** Audience-pack architectural layer excised per D-385 (supersedes D-372 + D-382). The 2026-05-03 strategic-repositioning amendment forecast a three-layer product model (TCR categories / SDK namespaces / audience-packs); product evidence — the "Recommended combinations" dropdown ships as a checkbox preset with no audience-specific behavior — showed the pack layer never materialized. Reverts to a two-layer model. Indie SaaS founders remain the launch target audience as a marketing-positioning fact (MD-9), not as "pack #1 of a future audience-pack platform." Companion record MD-18 supersedes MD-11. Higher Education deferred from launch per D-386 (Session 81 deferral backfilled). §0 Launch focus rewritten (AI-driven configuration repositioned as a backlog candidate rather than the long-term shape). §1 Strategic repositioning paragraph updated to record the retraction. §2 "audience-pack fit" template metadata field dropped. §10 Phase 6 closing rewritten without pack-composition framing. §17 risk row "Indie SaaS pack template coverage gap" renamed and rewritten; §17 slogan row's "audience-pack framing" clause dropped. §18 open architectural question row 1 (pack-namespace composition) deleted entirely. Working principles, north star, Phase 5 mechanics, downstream phase scopes — all unchanged. Changelog entries v1.5 and v1.8 left intact as historical record.
 
 **v1.8 — 2026-05-11:** Three audience-binding drift corrections per D-382 + D-383. §10 Phase 6 closing rephrased to clarify that the indie SaaS pack composes templates within existing SDK namespaces, not that namespaces themselves grow per pack. §17 risk row "Indie SaaS pack namespace gap" renamed and reframed as "Indie SaaS pack template coverage gap" — relocates the gap from the SDK namespace layer (where it was a category error against D-372) to the audience-pack layer (where it correctly lives). §18 open architectural question row 1 rephrased to ask which existing namespaces the pack composes from rather than whether new namespaces surface. Working principles, §0 launch focus and long-term shape, §1 strategic repositioning, D-372, MD-11, MD-9 — all unchanged; they were canonical and correct; the §10/§17/§18 drift had fallen out of step with them.
 
@@ -30,7 +32,7 @@ RelayKit exists so that an independent developer building an application that ne
 
 That is the whole thesis. Every phase of this plan serves it. If a phase stops serving it, we stop that phase.
 
-**Launch focus and long-term shape.** The North Star above is RelayKit's eventual purpose — serving any independent developer who needs SMS, regardless of audience. The launch product is configured for indie SaaS founders specifically: the first audience-pack of a platform that will eventually ship SMS configured for who you are. Future packs (e.g., salons, real estate, fitness, e-commerce) will serve other audiences with the same compliance machinery and configurability, each with its own tailored intake, templates, and surface treatment. Pack #2 doesn't ship until pack #1 has stable economics and at least 50 paying customers. Same product underneath, focused launch, broader long-term shape.
+**Launch focus.** The North Star above is RelayKit's eventual purpose — serving any independent developer who needs SMS, regardless of audience. The launch is targeted at indie SaaS founders specifically: they're who we can reach (Indie Hackers, dev Twitter, AI-tool communities) and whose needs the product's category-organized SMS infrastructure serves well. Other audiences are served by the same product without modification — same categories, same templates, same compliance machinery. Future enhancements (AI-driven configuration is one possible direction) sit in the backlog rather than the strategic plan.
 
 **The customer values, ranked:**
 
@@ -58,7 +60,7 @@ The technical-debt story is unchanged in shape but has hardened in form. The ori
 
 Nothing is on fire. The foundation is solid. Phase 1 is producing the evidence Phase 2+ depends on, on the elapsed-time cadence the plan budgeted for, and the discipline of proving things work before building on top of them is what will make this successful.
 
-**Strategic repositioning landed 2026-05-03.** The launch positioning that had been "for indie hackers and AI-tool builders broadly" sharpened to "for indie SaaS founders specifically." Working slogan direction: *SMS configured for your SaaS*. The eight SDK namespaces (D-273) stay unchanged as developer-facing building blocks; audience-packs are a new framing layer above them, composing across namespaces within the fixed TCR taxonomy. The repositioning surfaced architectural design principles (recorded in §2) and a set of open architectural questions about pack composition, campaign architecture at scale, and launch UX (recorded in new §18). No code or build changes triggered by the repositioning itself — the architectural shifts are about how future Phase 5/6 work is shaped, not retrofits.
+**Strategic repositioning landed 2026-05-03; pack-layer commitment retracted 2026-05-12 (D-385).** The launch positioning that had been "for indie hackers and AI-tool builders broadly" sharpened to "for indie SaaS founders specifically." Working slogan direction: *SMS configured for your SaaS*. The eight SDK namespaces (D-273) stay unchanged as developer-facing building blocks. The audience-pack framing committed in the original 2026-05-03 amendment is excised per D-385 — RelayKit's product is two layers (TCR categories + SDK namespaces), not three, and the launch positioning stands on the marketing-positioning fact alone (MD-9: indie SaaS founders as the launch audience). The repositioning surfaced architectural design principles (recorded in §2) and a set of open architectural questions about campaign architecture at scale and launch UX (recorded in §18; pack-composition questions removed). No code or build changes triggered — the architectural shifts are about how future Phase 5/6 work is shaped, not retrofits.
 
 ---
 
@@ -84,7 +86,7 @@ These are the rules we operate by. If we violate one, we're probably making a mi
 
 **Intake structure maps to compliance constraints.** Even at launch, the customer's onboarding intake collects answers in shapes that map cleanly to TCR categories, brand entity types, throughput classes, and campaign sub-use-cases. No free-text intake an AI configuration layer would later have to reverse-engineer. The shape of what's collected is constrained from day one.
 
-**Templates tagged with structured metadata from the start.** Every template (canon and custom) carries machine-readable metadata: applicable use case, variables, compliance gates, audience-pack fit, throughput class implications. Templates are the building blocks the future AI configuration layer selects from; metadata is what makes that selection possible.
+**Templates tagged with structured metadata from the start.** Every template (canon and custom) carries machine-readable metadata: applicable use case, variables, compliance gates, throughput class implications. Templates are the building blocks future configuration layers (manual, AI-assisted, or both) select from; metadata is what makes that selection possible.
 
 **Compliance constraints encoded as data, not narrative.** TCR categories, Sinch entity types (`PRIVATE` / `PUBLIC` / `CHARITY_NON_PROFIT` per CARRIER_BRAND_REGISTRATION_FIELDS.md), throughput classes, gating rules, vetting requirements — encoded as structured data in the codebase, not just described in prose docs. The AI configuration layer queries this data at runtime; humans read it through the prose docs that describe it.
 
@@ -313,7 +315,7 @@ Marketing pillar "Verification included" becomes truthful at the close of Phase 
 
 Specifics in VERIFICATION_SPEC.md.
 
-Verification ships at Phase 6 close as the cornerstone of the launch package per the indie SaaS positioning (§0). Transactional SMS — account events, order/transactional notifications, critical alerts — and OTP together make the launch surface complete. Which existing SDK namespaces the indie SaaS pack (pack #1) composes from for these account events, and how the pack's template + intake layer covers them within those namespaces, is tracked in §18 open questions per D-372 + D-382.
+Verification ships at Phase 6 close as the cornerstone of the launch package per the indie SaaS positioning (§0). Transactional SMS — account events, order/transactional notifications, critical alerts — and OTP together make the launch surface complete. Which SDK namespaces the indie SaaS launch audience's account events surface within, and what templates they use, is the substance of Phase 2a research and Phase 2b authoring (D-383, D-384).
 
 ---
 
@@ -472,9 +474,9 @@ Being honest about where the plan could break:
 
 **Multi-campaign upgrade mechanics unresolved at launch.** The campaign architecture story depends on a clean answer to how customers move from LVM-Mixed to multi-campaign as their volume grows. Auto-graduate vs customer-initiated, pricing model, Sinch ISV economics — all unresolved (see §18). Mitigation: launch ships LVM-Mixed default with an explicit roadmap to multi-campaign rather than pretending the question is settled. First ~20 customers' observed traffic shapes inform the resolution.
 
-**Indie SaaS pack template coverage gap.** The launch audience's main use cases — signup welcomes, payment-failed alerts, subscription changes, founder-facing app monitoring alerts — don't yet have indie-SaaS-pack-shaped templates. Per D-382, these surface within existing SDK namespaces (composition over namespace growth — the eight namespaces per D-273 plus Higher Education as the ninth per D-372 ship as audience-agnostic infrastructure); pack-specific scope lives at the audience-pack layer (templates, intake flow, configurator presets). Mitigation: resolved in Phase 2a research + Phase 2b template authoring per D-383's 4-source methodology; pack composition recommendations land before Phase 6 wraps.
+**Indie SaaS launch-audience template coverage gap.** The launch audience's main use cases — signup welcomes, payment-failed alerts, subscription changes, founder-facing app monitoring alerts — don't yet have templates shaped for indie SaaS founders specifically. Per D-273, the eight SDK namespaces ship as audience-agnostic infrastructure; what's needed for the launch audience is the right templates within those namespaces, informed by how indie SaaS founders actually communicate with their users. Mitigation: resolved in Phase 2a research + Phase 2b template authoring per D-383's 4-source methodology; launch-audience template coverage lands before Phase 6 wraps.
 
-**Slogan unfinalized.** "SMS configured for your SaaS" is a working direction, not a finalized slogan. Resonance and customer-language testing pending. Mitigation: build-in-public posts test variations, watching which lands. Slogan finalization is not a launch blocker — the audience-pack framing and product surface stand without a finalized slogan.
+**Slogan unfinalized.** "SMS configured for your SaaS" is a working direction, not a finalized slogan. Resonance and customer-language testing pending. Mitigation: build-in-public posts test variations, watching which lands. Slogan finalization is not a launch blocker — the product and launch positioning stand without a finalized slogan.
 
 **Layer A skipping.** AGENTS.md prescribes app-side defenses but RelayKit can't enforce that the customer's AI tool actually wired them in. A customer who skips Layer A relies entirely on Layer B as their first line. If many customers skip, attack volume against Layer B rises beyond what manual monitoring can handle. Mitigation: integration prompt makes defenses load-bearing in AI-generated code, not optional appendix; TESTING_GUIDE 9th signal validates defenses fired during developer testing; possible Layer A enforcement check (open question in §18).
 
@@ -494,7 +496,6 @@ Each question's substance lives in a single canonical home (BACKLOG entry, draft
 
 | Question | Unblocks at | Substance |
 |---|---|---|
-| Indie SaaS pack template + intake composition: which existing SDK namespaces does the pack compose from for SaaS account events, and what templates does the pack provide within those namespaces per D-382 | Indie SaaS audience-pack composition design (Phase 2a research + Phase 2b template authoring) | Phase 2a/2b workstream per D-383 |
 | Multi-campaign upgrade UX — auto-graduating (telemetry-driven) vs customer-initiated (dashboard prompt) | Phase 5 design + first ~20 customers' observed traffic shapes | NEW BACKLOG entry |
 | Launch LVM-Mixed-for-everyone vs auto-route high-projection customers into Standard campaigns from intake | Phase 5 design (conservative-vs-aggressive launch choice) | NEW BACKLOG entry |
 | Pricing implications of multi-campaign (per-campaign add-on vs all-included tier pricing) | Phase 5 design + Sinch ISV economics confirmation | NEW BACKLOG entry |
