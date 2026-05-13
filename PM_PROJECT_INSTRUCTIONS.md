@@ -74,6 +74,7 @@ Each canonical doc has a length budget set by the job it does. The audit trail o
 
 - **Methodology cross-reference discipline.** When amending CLAUDE.md or PM_PROJECT_INSTRUCTIONS.md, check whether the concept also appears in the other or in DECISIONS.md's header primer; update the cross-reference in the same commit.
 - **Promotion-from-practice rule.** When a new methodology pattern works in two or more sessions, promote it to canonical (CLAUDE.md or PM_PROJECT_INSTRUCTIONS.md) or capture in BACKLOG.
+- **Periodic audit sweeps.** Process defined in `audits/audits-README.md`. Joel-triggered cadence; PM consults on sweep scope and triages findings with Joel.
 
 ---
 

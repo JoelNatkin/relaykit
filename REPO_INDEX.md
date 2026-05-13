@@ -107,6 +107,6 @@ If PM or CC discovers two docs that both claim canonical ownership of the same t
 ## Subdirectories
 
 - `/docs/archive` — superseded PRDs and old strategy
-- `/audits` — read-only audit deliverables
+- `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`
 - `/explorations` — sandbox files (see Active explorations above)
 - `/experiments` — Phase 1 Sinch proving-ground throwaway code
