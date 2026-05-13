@@ -1,4 +1,9 @@
 # BACKLOG.md — RelayKit
+
+> **Purpose:** Parking lot for ideas that aren't being worked on but might matter later. Never build from without explicit promotion. Entries are one line by default.
+>
+> Not for: active workstream items (MASTER_PLAN phase scope), recorded decisions (DECISIONS), active prototypes (`/explorations/`).
+
 ## Ideas, Deferred Work, and Future Features
 ### Last updated: May 9, 2026
 

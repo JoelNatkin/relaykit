@@ -1,4 +1,9 @@
 # PROTOTYPE_SPEC.md — RelayKit
+
+> **Purpose:** Screen-level specifications for every UI surface — what each screen looks like, what it does, how it behaves. CC writes and maintains as prototypes evolve.
+>
+> Not for: backend implementation (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN), customer-experience narrative (PRODUCT_SUMMARY), decisions that resolve alternatives (DECISIONS). If code disagrees with spec, code wins — flag the discrepancy.
+
 ## Screen-Level Prototype Specifications
 ### Last updated: May 9, 2026
 

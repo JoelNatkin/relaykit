@@ -1,4 +1,9 @@
 # RelayKit Product Summary
+
+> **Purpose:** Customer-experience-oriented summary of RelayKit — what a customer actually experiences end to end. CC translates PROTOTYPE_SPEC into this; PM reads, doesn't edit.
+>
+> Not for: implementation details (spec docs), screen-level UI (PROTOTYPE_SPEC), decision rationale (DECISIONS).
+
 ## PM-facing customer experience reference
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.

@@ -1,5 +1,9 @@
 # CC_HANDOFF — Session 85 (audience-pack excision wave + BACKLOG hygiene follow-up)
 
+> **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out. Includes commits, completed work, in-progress, gotchas, files modified, unmerged branches, suggested next tasks.
+>
+> Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader, not as a session memoir.
+
 **Date:** 2026-05-12 → 2026-05-13
 **Branch:** `main` — 7 commits already on `origin/main` (wave's 6 + hygiene follow-up). This close-out commit is local-only, awaiting PM approval before push. No unmerged feature branches outstanding.
 

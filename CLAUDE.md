@@ -1,10 +1,14 @@
 # CLAUDE.md — RelayKit
 
+> **Purpose:** Standing instructions for CC — what to read at session start, how to write code, how to maintain the decision ledger, how to close out sessions.
+>
+> Not for: PM-side methodology (PM_PROJECT_INSTRUCTIONS), product specifications (spec docs), session narrative.
+
 ## File size discipline
 Keep this file under 200 lines; target ~120. When adding guidance, also cut. If you can't cut enough to stay under the ceiling, the new guidance probably belongs in a focused spec doc (DECISIONS, PROTOTYPE_SPEC, MESSAGE_PIPELINE_SPEC) with a one-line pointer here instead of inline expansion.
 
 ## Project
-SMS compliance + delivery service for indie developers. Prototype-first development; production code ports from `/prototype` (port 3001) to `/api` + future surfaces once screens stabilize. `/src` is sunset per D-358. Current pricing: $49 registration + $19/mo (or $29/mo with marketing).
+SMS compliance + delivery service for indie developers. Prototype-first development; production code ports from `/prototype` to `/api` + future surfaces once screens stabilize. `/src` is sunset per D-358. Current pricing: $49 registration + $19/mo (or $29/mo with marketing).
 
 ## Stack
 - Next.js 15 App Router, TypeScript strict, kebab-case filenames
@@ -127,11 +131,12 @@ CC maintains four cross-doc surfaces when explorations change state. PM gates en
 - File remains in /explorations/ as historical record of why the canonical decision looks the way it does
 
 ## Session start
-When you see `DECISIONS CHECK`, read these four files and confirm each:
+When you see `DECISIONS CHECK`, read these five files and confirm each:
 1. DECISIONS.md — active decision count + archived range noted
 2. CC_HANDOFF.md — summary of previous session
 3. PROTOTYPE_SPEC.md — acknowledged
 4. MASTER_PLAN.md — active phase noted
+5. REPO_INDEX.md — active phase noted, decision count noted
 
 Then run the pre-flight ledger scan (above) and report findings.
 

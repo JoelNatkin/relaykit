@@ -1,4 +1,9 @@
 # DECISIONS.md — RelayKit
+
+> **Purpose:** Numbered ledger of product choices that resolve alternatives. Each entry: D-number + one-line decision + optional one-line why + Supersedes field when applicable. 3-4 lines per entry max.
+>
+> Not for: session narratives, layout tweaks, copy changes, code-only renames. Archived entries D-01–D-83 live in DECISIONS_ARCHIVE.md.
+
 ## Authoritative Decision Log
 
 > **How this file works:**
@@ -10,12 +15,13 @@
 
 ---
 
-Every new decision uses this template. Supersedes is required — write "none" if nothing is superseded. Skipping the field is a process failure.
-**D-### — Title** (Date: YYYY-MM-DD)
-[One paragraph stating the decision in declarative voice. What was chosen, and what that means concretely.]
-**Supersedes:** D-###, D-### (or "none")
-**Reasoning:** [One paragraph — only if non-obvious. Skip for straightforward choices.]
-**Affects:** [Concrete files, systems, or docs the decision touches.]
+**Canonical entry format:**
+
+D-N: [One-line decision title.]
+[Optional one-line why or rejected alternative.]
+Supersedes: D-X, D-Y (or "none")
+
+Existing entries pre-date this format and will be trimmed in passing as CC touches them for other reasons.
 Seven gate tests — a proposed decision must pass ALL seven
 
 Shortcut test. Can the change be fully expressed as "move X below Y" or "change size to Z"? → PROTOTYPE_SPEC, not a decision.

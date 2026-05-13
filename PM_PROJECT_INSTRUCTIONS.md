@@ -1,4 +1,9 @@
 # RelayKit — Project Instructions
+
+> **Purpose:** Canonical instructions for the PM/Architect agent guiding Joel through CC build sessions. Synced manually to the Claude.ai UI custom-instructions copy.
+>
+> Not for: CC's operational rules (CLAUDE.md), product specifications (spec docs), session narrative.
+
 ## For the PM/Architect guiding Joel through CC build sessions
 ### Updated: May 13, 2026
 
@@ -59,7 +64,7 @@ Every canonical doc opens with a short scope header right after the title: a one
 
 Each canonical doc has a length budget set by the job it does. The audit trail of *what happened* lives in git log + CC_HANDOFF; it should not appear in REPO_INDEX, DECISIONS entries, or anywhere else.
 
-- **DECISIONS entries:** fit a single screen. Choice + alternative rejected + why + Supersedes field. No session narrative, no remediation backstory, no method-of-discovery prose.
+- **DECISIONS entries:** D-number + one-line decision + optional one-line why + Supersedes field when applicable. 3-4 lines per entry max. No session narrative, no remediation backstory, no method-of-discovery prose.
 - **REPO_INDEX:** a true index. File → one-sentence purpose → last-touched date, plus current-state pointers (active phase, decision count, master plan version, branch state, active explorations). No session narratives, no change-log section, no multi-paragraph Meta block.
 - **CC_HANDOFF:** serves the next session. Commits, gotchas, in-progress work, suggested next tasks. Size as needed for that purpose — transient and overwritten each close-out, no strict length budget, but write for the reader not as a session memoir.
 - **MASTER_PLAN:** comprehensive on what we're building and in what order. Length budget is whatever the substance demands.
@@ -107,6 +112,7 @@ The four-line assessment:
 - **Forces:** new work created (D-numbers, doc updates, code, design)
 - **Makes hard to unwind:** what becomes load-bearing if we proceed
 - **Size:** single edit / one focused commit / inline cross-doc / wave (3+ synchronized commits)
+- **MASTER_PLAN impact:** would this trigger a MASTER_PLAN update?
 
 Apply to: new strategy ideas, scope additions, architectural shifts, doc reorganizations, naming changes that cross docs, deferring something previously committed, anything that touches more than one canonical file.
 
@@ -226,23 +232,6 @@ When review IS required, the commit uses `.pm-review.md`: CC writes `git show HE
 - **`/audits`** — One-off audit deliverables, read-only.
 - **`/explorations`** — Sandbox for ideas being prototyped before commitment.
 
-### Key repo files
-
-| File | Purpose |
-|------|---------|
-| MASTER_PLAN.md | Phased launch plan, North Star, customer values, out-of-scope |
-| REPO_INDEX.md | Index of current repo state (file → purpose → date, plus current-state pointers) |
-| DECISIONS.md / DECISIONS_ARCHIVE.md | Numbered product decisions (D-84+ active, D-01–D-83 archive) |
-| PROTOTYPE_SPEC.md | Screen-level UI specifications (CC-maintained) |
-| WORKSPACE_DESIGN_SPEC.md | Post-signup architecture target |
-| MESSAGE_PIPELINE_SPEC.md | Backend message pipeline |
-| SDK_BUILD_PLAN.md | SDK delivery spec |
-| SRC_SUNSET.md | `/src` capability-to-phase map |
-| PRODUCT_SUMMARY.md | Customer-experience-oriented summary (CC-maintained, translated from PROTOTYPE_SPEC) |
-| CC_HANDOFF.md | Previous CC session summary (transient, overwritten each close-out) |
-| BACKLOG.md | Deferred ideas |
-| CLAUDE.md | CC standing instructions |
-
 ---
 
 ## The DECISIONS System
@@ -276,7 +265,7 @@ When review IS required, the commit uses `.pm-review.md`: CC writes `git show HE
 
 When Joel says "let's do X instead of Y," tell him: "That's a new decision. Tell CC: **Append this to DECISIONS.md as D-[next number] now, with Supersedes field filled in. Mark superseded entries in the same commit.**"
 
-Apply all seven gate tests before recording. Entries fit a single screen — no session narrative.
+Apply all seven gate tests before recording. Format: D-number + one-line decision title; optional one-line "why" or rejected alternative; Supersedes field (filled with D-numbers or "none"). 3-4 lines per entry maximum. No multi-paragraph rationale, no session narrative, no method-of-discovery prose.
 
 ### When you spot a conflict
 

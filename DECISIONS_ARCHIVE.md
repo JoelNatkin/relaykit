@@ -1,4 +1,9 @@
 # DECISIONS_ARCHIVE.md — RelayKit
+
+> **Purpose:** Historical record of decisions D-01–D-83 with their original substance plus any supersession marks landed against them later.
+>
+> Not for: new decisions (DECISIONS.md), edits to archived entries beyond supersession marks.
+
 ## Archived Decisions (D-01 through D-83)
 
 > **How this file works:**
