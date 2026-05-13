@@ -1,8 +1,8 @@
 # SDK_BUILD_PLAN.md
 
-> **Purpose:** Living spec for the RelayKit npm package (`/sdk`). Split into two parts: a retrospective of what shipped in `relaykit@0.1.0` (the facts CC and future maintainers need as ground truth) and a forward-looking section for Phase 8 delivery (npm publish, README, AGENTS.md, integration prompt). Reference tables document the structural decisions that still govern SDK work.
+> **Purpose:** `/sdk` retrospective and forward plan — what shipped in v0.1.0 (TypeScript conversion, tsup build, eight namespaces × ~30 methods, consent API, tests) plus Phase 8 delivery scope (npm publish, README, AGENTS.md, per-builder guides).
 >
-> **Audience:** CC working in `/sdk` or on Phase 8 artifacts; whoever authors the README copy and AGENTS.md snippet when Phase 8 begins.
+> Not for: message pipeline internals (MESSAGE_PIPELINE_SPEC), carrier mechanics (`experiments/sinch/experiments-log.md`), server-side routing, registration flow (MASTER_PLAN Phase 5).
 >
 > **CC: before implementing any section, verify every D-number cited here against DECISIONS.md. If a summary here doesn't match the recorded decision, stop and flag the mismatch before writing code.**
 

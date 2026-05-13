@@ -1,8 +1,8 @@
 # SRC_SUNSET.md — `/src` Capability-to-Phase Map
 
-> **Authority:** D-358 (`/src` sunset — rebuild on `/api` + Sinch). MASTER_PLAN.md phases 2–5 drive the rebuilds.
-> **Purpose:** Answer the question "where does `/src` capability X get rebuilt, and when?" for every capability surviving in the frozen legacy app.
-> **Companion to:** MASTER_PLAN.md (scope per phase), docs/archive/CURRENT_STATE_AUDIT.md §2.1 (source-of-truth `/src` inventory).
+> **Purpose:** `/src` capability-to-phase rebuild map per D-358 — which legacy Twilio-era capability rebuilds where on `/api` + Sinch, which phase owns it, and current status per capability. Retires when Phase 5 closes.
+>
+> Not for: implementation details (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN), Sinch API shapes (`experiments/sinch/experiments-log.md`), phase roadmap (MASTER_PLAN).
 > **Last updated:** 2026-04-21 (Session 41 — Phase 0 Group F)
 > **Retires:** when Phase 5 demo passes and all non-excluded capabilities are marked "rebuilt." Moves to `docs/archive/` with a deprecation header citing MASTER_PLAN.md §9 completion.
 

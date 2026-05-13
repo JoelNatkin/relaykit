@@ -1,8 +1,8 @@
 # RelayKit Marketing Strategy
 
-> **Purpose:** Single source for how we win the market with what we're building. Strategy, plays, decisions, channels, tooling. Audience-organized, trigger-conditioned, prose-readable.
+> **Purpose:** Canonical marketing strategy — North Star, unfair advantages, audience segmentation, plays ranked by leverage, MD-numbered marketing decisions, channels, tools, trigger-conditioned sequencing. MD-numbered decisions live here, not in DECISIONS.md.
 >
-> **Tier 3 doc.** Load on demand when marketing topics surface. Not read at session start.
+> Not for: product decisions (DECISIONS), pricing numbers (referenced only — canonical in PRICING_MODEL), engineering specs, deprecated marketing approaches (MARKETING_STRATEGY_ARCHIVE).
 >
 > **Decisions discipline:** Marketing decisions live here, not in DECISIONS.md. DECISIONS.md carries a one-line pointer back to this doc for marketing-domain decisions. Same seven-gate-test rigor as product decisions; different file.
 >

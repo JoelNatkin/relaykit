@@ -1,4 +1,9 @@
-RelayKit Workspace Design Spec
+# RelayKit Workspace Design Spec
+
+> **Purpose:** Post-signup workspace architecture — state machine across registration states (Onboarding → Building → Pending → Registered → Rejected), route map, and layout systems (WizardStepShell, WizardLayout, AppLayout). Canonical source for how the workspace shell behaves.
+>
+> Not for: screen-level UI specs (PROTOTYPE_SPEC), Settings business logic (PRD_SETTINGS), pricing (PRICING_MODEL), carrier mechanics (MESSAGE_PIPELINE_SPEC).
+
 From wizard to workspace — the new developer experience
 Updated: April 27, 2026
 

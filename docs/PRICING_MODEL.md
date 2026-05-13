@@ -1,8 +1,11 @@
 # PRICING MODEL UPDATE
+
+> **Purpose:** Canonical source for all pricing facts — tier definitions (Sandbox, Full-Stack Setup $49, Full-Stack Monthly $19/$29, BYO Twilio), refund policy, costs to RelayKit, conversion path, EIN-gating for marketing.
+>
+> Not for: Settings UI field rules and rejection-behavior mechanics (PRD_SETTINGS), carrier registration mechanics (MASTER_PLAN Phase 5), compliance features beyond pricing scope.
+
 ## RelayKit — Managed SMS Compliance Infrastructure with Free Sandbox
 ### Version 6.0 — April 8, 2026
-
-> **This document is the canonical source for RelayKit pricing facts (numbers, refund policy, tier definitions) per REPO_INDEX "Canonical sources by topic". Other docs point at it; they may not restate.**
 >
 > **CHANGE LOG (v6.0):** Registration simplified to $49 flat fee — no $150 go-live payment, no two-part payment structure (D-320). Overages changed to $8 per 500 messages (D-321). Marketing campaign bundled into $49 registration — no additional registration charge for second campaign (D-334). EIN is the gate for marketing, not payment. Beta pricing section removed — $49 is the price for everyone. Unit economics and LTV models recalculated.
 >

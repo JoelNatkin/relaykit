@@ -1,4 +1,9 @@
 # PRD: Settings
+
+> **Purpose:** Settings business logic — lifecycle states (Building → Pending → Registered → Rejected), field visibility rules, rejection-behavior model, refund-policy mechanics, error-code mapping, notification triggers, account-vs-app field split.
+>
+> Not for: Settings UI layout (PROTOTYPE_SPEC owns canonical screen-level layout), pricing tiers and dollar facts (PRICING_MODEL), carrier registration mechanics (MASTER_PLAN Phase 5).
+
 ## RelayKit — Per-App Settings + Account Settings
 ### Version 2.3 — April 15, 2026
 

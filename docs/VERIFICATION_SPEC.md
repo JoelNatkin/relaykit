@@ -1,6 +1,8 @@
 # Verification Specification
 
-> **Purpose:** Canonical source for OTP/verification feature surface across server, SDK, dashboard, and onboarding. Drives D-369, D-370, D-371. Phase 6 implementation reads this; no other doc restates these facts.
+> **Purpose:** Canonical OTP/verification feature surface — SDK contract (sendCode/checkCode per namespace), server endpoint (`POST /v1/verify/check`), code storage schema, validation logic, rate limits, TTL, customizability, dashboard panel, onboarding integration. Drives D-369/D-370/D-371.
+>
+> Not for: verification UI screens (PROTOTYPE_SPEC), carrier-level verification API differences, marketing copy about verification (MARKETING_STRATEGY).
 
 ## 1. Scope and intent
 

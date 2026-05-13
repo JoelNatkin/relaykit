@@ -1,8 +1,8 @@
 # MESSAGE_PIPELINE_SPEC.md
 
-> **Purpose:** Build spec for the `/api` message delivery pipeline. Three sessions (A, B, C) covering foundation, carrier send, and quiet hours. Plus future sections for consent API and EIN verification.
+> **Purpose:** Build spec for the `/api` message delivery pipeline — Session A (normalization, interpolation, consent) complete; Session B (Sinch outbound + delivery callbacks) addressed by Phase 2; Session C (quiet hours) deferred post-launch. Defines the pipeline step interface, MessageContext type, and execution order.
 >
-> **Audience:** CC working in the `/api` directory. Each session is a self-contained prompt; drop it in at the start of a build session after the standard `DECISIONS CHECK`.
+> Not for: SDK surface (SDK_BUILD_PLAN), registration pipeline (MASTER_PLAN Phase 5 + `experiments/sinch/experiments-log.md`), UI/dashboard surfaces (PROTOTYPE_SPEC).
 >
 > **CC: before implementing any section, verify every D-number cited in this spec against DECISIONS.md. If a summary here doesn't match the recorded decision, stop and flag the mismatch before writing code.**
 
