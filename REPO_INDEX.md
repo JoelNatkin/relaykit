@@ -6,7 +6,7 @@
 
 ## Meta
 
-- Last updated: 2026-05-13
+- Last updated: 2026-05-14
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md)
 - Decision count: 301 active, latest D-386; D-01–D-83 archived. Marketing decisions: latest MD-18.
 - Branch state: main; no unmerged feature branches
@@ -23,7 +23,7 @@ _No active explorations._
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-13 | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-14 | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-13 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-13 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
@@ -35,7 +35,7 @@ _No active explorations._
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-13 | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-14 | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-13 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -107,6 +107,7 @@ If PM or CC discovers two docs that both claim canonical ownership of the same t
 ## Subdirectories
 
 - `/docs/archive` — superseded PRDs and old strategy
-- `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`
+- `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`. Current outputs: `audits/prototype-inventory-2026-05-13.md` (read-only inventory of /prototype/ that drove the Session 87 archive operation).
 - `/explorations` — sandbox files (see Active explorations above)
 - `/experiments` — Phase 1 Sinch proving-ground throwaway code
+- `/prototype/archive` — files removed from the active prototype on 2026-05-13 (Session 87 bulk archive); source paths mirrored; see `prototype/archive/README.md` for the un-archive procedure
