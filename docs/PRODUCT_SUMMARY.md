@@ -20,15 +20,15 @@ RelayKit is an SMS compliance and delivery service for indie developers. The cus
 
 ## 2. Customer journey
 
-The customer arrives at the marketing site, clicks into a use-case page, browses pre-written messages, and either downloads them or starts onboarding. Onboarding is a six-step wizard that captures vertical, business name (and optional EIN), industry/service type, website, free-text context, and a verified phone number. After phone verification, the customer reviews what they're about to build, creates an account (email + OTP), and lands on a Get-Started screen that hands their AI coding tool a pre-populated prompt. Clicking through transitions the workspace from Onboarding to Building. From Building, the customer can submit registration ($49 fee charged at submit), which moves the workspace to Pending. Approval ("a few days" — never quoted in days) transitions to Registered, where the customer's app is live and the workspace shows delivery metrics, message editing, custom-message authoring, an Ask-Claude assistant, and a marketing-message upsell. Settings and billing live as child pages reachable from a gear icon and the top-nav avatar.
+The customer arrives at `relaykit.ai` (the marketing site), engages the configurator on the home page to pick categories and preview/customize messages with their own business name and website, and clicks through to start onboarding. Onboarding is a six-step wizard that captures vertical, business name (and optional EIN), industry/service type, website, free-text context, and a verified phone number. After phone verification, the customer reviews what they're about to build, creates an account (email + OTP), and lands on a Get-Started screen that hands their AI coding tool a pre-populated prompt. Clicking through transitions the workspace from Onboarding to Building. From Building, the customer can submit registration ($49 fee charged at submit), which moves the workspace to Pending. Approval ("a few days" — never quoted in days) transitions to Registered, where the customer's app is live and the workspace shows delivery metrics, message editing, custom-message authoring, an Ask-Claude assistant, and a marketing-message upsell. Settings and billing live as child pages reachable from a gear icon and the top-nav avatar.
 
 ---
 
-## 3. Public surfaces
+## 3. Pre-auth surfaces + marketing-site reference
 
 > **Architecture note (post 2026-05-14):** All public marketing surfaces live on the separate `/marketing-site/` Next.js app at `relaykit.ai`. The `/prototype/` app — which models `app.relaykit.ai` (the post-signup workspace) — no longer renders any marketing pages. The prototype's pre-existing marketing home (`/`), `/sms/[category]` category landing, public messages page, and `/compliance` explainer were all archived across two waves (2026-05-13 bulk archive + 2026-05-14 marketing-surface migration). See `prototype/archive/README.md` for the inventory.
 
-The customer-experience side of the marketing surface — what visitors see at relaykit.ai before they engage — is described against the marketing-site implementation in `PROTOTYPE_SPEC.md` §"Production Marketing Site — relaykit.ai". The condensed shape: a 7-section home page (hero, configurator, build it, test it for real, pricing + paperwork, closing CTA), legal docs (Terms, Privacy, Acceptable Use), a waitlist signup flow (`/start/verify` + `/start/get-started`), and a "we'll be ready soon" `/signup` placeholder. The configurator on the home page is the central conversion surface — customers pick categories and tones, see their messages render live, and click through to the waitlist flow.
+The customer-experience side of the marketing surface — what visitors see at relaykit.ai before they engage — is described against the marketing-site implementation in `PROTOTYPE_SPEC.md` §"Production Marketing Site — relaykit.ai". The condensed shape: a 6-section home page (hero, configurator, build it, test it for real, pricing + paperwork, closing CTA), legal docs (Terms, Privacy, Acceptable Use), a waitlist signup flow (`/start/verify` + `/start/get-started`), and a "we'll be ready soon" `/signup` placeholder. The configurator on the home page is the central conversion surface — customers pick categories and tones, see their messages render live, and click through to the waitlist flow.
 
 ### 3.1 Sign-in landing — `/sign-in` (prototype, placeholder)
 
@@ -149,7 +149,7 @@ Compliance is felt across two surfaces: the workspace KPI card (Registered only)
 
 **Quiet hours and opt-out.** Enforced at the proxy layer, not in the customer's code. Marketing messages are blocked outside 8 AM–9 PM local time per D-309. Customer-authored opt-out copy remains required in message bodies (per the four-element disclosure pattern at point of phone collection, D-365).
 
-**Per-customer compliance site (msgverified.com).** **TBD:** Phase 10 deliverable per MASTER_PLAN §14. Each registered customer would have a dedicated public compliance landing (privacy policy, terms, opt-in/out language, contact). Not yet built; Phase 10 work. The public `/compliance` page (§3.4) is a separate marketing surface, not this.
+**Per-customer compliance site (msgverified.com).** **TBD:** Phase 10 deliverable per MASTER_PLAN §14. Each registered customer would have a dedicated public compliance landing (privacy policy, terms, opt-in/out language, contact). Not yet built; Phase 10 work. Distinct from the canonical marketing-site compliance content at relaykit.ai (the prototype's old `/compliance` page is archived per §3.2 archive pointers).
 
 ---
 
@@ -201,9 +201,7 @@ Reached via the avatar dropdown in top nav. 600px column. Card-format sections. 
 
 Pricing surfaces appear in five places, all stating the same facts.
 
-**Marketing home.** Two pricing cards (Free $0, Go live $49 + $19/mo with refund-if-rejected line). One CTA below both.
-
-**Use-case landing + public message library.** Pricing context line: "Free sandbox, no credit card. $49 to register, $19/mo after approval."
+**Marketing site (`relaykit.ai`) home page.** Single staged pricing card with two stages separated by a divider — Stage 1 "Build for free", Stage 2 "Go live for $49 + $19/mo." Below: fine print "Marketing categories add $10/mo. Volume pricing above 5,000 messages." Scope paragraph notes US/Canada at launch, no HIPAA/healthcare/enterprise. Right-column "We handle the paperwork." H2 + period-list of nouns + italic kicker "We read it so you don't have to."
 
 **Ready page (account creation review).** Inline summary: free during build/test; $49 + $19/mo after approval.
 

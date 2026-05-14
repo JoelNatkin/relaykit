@@ -1,11 +1,11 @@
 # PROTOTYPE_SPEC.md — RelayKit
 
-> **Purpose:** Screen-level specifications for every UI surface — what each screen looks like, what it does, how it behaves. CC writes and maintains as prototypes evolve.
+> **Purpose:** Screen-level specifications for every UI surface across all RelayKit prototyping work — both the `/prototype/` app (modeling `app.relaykit.ai`, the post-signup workspace) and the `/marketing-site/` app (production marketing at `relaykit.ai`). CC writes and maintains as prototyping evolves.
 >
 > Not for: backend implementation (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN), customer-experience narrative (PRODUCT_SUMMARY), decisions that resolve alternatives (DECISIONS). If code disagrees with spec, code wins — flag the discrepancy.
 
 ## Screen-Level Prototype Specifications
-### Last updated: May 13, 2026
+### Last updated: May 14, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -30,24 +30,14 @@ Per-project tabs live exclusively in the app layout shell, not in top nav. (D-11
 **Breadcrumbs:** No surviving prototype route uses breadcrumbs. Category landing, public messages page, and `/compliance` — all of which previously carried "Home / …" breadcrumbs — were archived (Session 87 + 2026-05-14 marketing-surface migration). Breadcrumbs may return when category pages eventually land on the marketing-site per Phase 2a content authoring (D-384).
 
 ### Sign-In Modal (DORMANT, post 2026-05-14)
-
-**File:** `prototype/components/sign-in-modal.tsx`
-Status: dormant. No active prototype file imports this component as of 2026-05-14. The modal trigger in top-nav (Sign in button) was removed when no logged-out route remained that could surface it. The standalone `/sign-in` route (next section) now carries the email→OTP flow. The modal file itself remains in `components/` and will be retired by the future auth refactor alongside `/sign-in`.
-
-Original spec preserved for historical context — the placeholder `/sign-in` route ports its content directly:
-
-**Step 1 (Email):** Mail01 icon (brand secondary), "Sign in to RelayKit" h2, "Enter your email and we'll send you a code." body, email input, "Send code" button. Button shows "Sending..." disabled state for 500ms before advancing.
-
-**Step 2 (OTP):** Mail01 icon (success secondary), "Check your email" h2, shows submitted email. 6-digit OTP input boxes (auto-advance, paste support, backspace navigates back). Extra 16px margin above and below input row. "Resend code in 0:30" countdown → clickable "Resend code" when timer hits zero. "Use a different email" link returns to Step 1. Auto-submit when all 6 digits entered → `setLoggedIn(true)` + `router.push("/apps")`. Prototype hint: "(Prototype: any 6 digits will work)".
+**File:** `prototype/components/sign-in-modal.tsx`. Dormant — no active importer. The `/sign-in` route (see Pre-Auth Surfaces below) is the source of truth for the email→OTP flow; the future auth refactor will retire both together.
 
 ### State Switchers (Prototype Only)
 
 Every page that has multiple lifecycle states includes small dropdown selectors (`text-xs text-text-quaternary`) for switching between states during development. Positioned LEFT of the status indicator (colored dot + label) with 40px gap (`ml-10`) between last switcher and status indicator. Native browser chevrons (no custom icons). These are prototype controls — production state comes from server data. Retain throughout prototype work; strip when porting to production.
 
 ### Footer (DORMANT, post 2026-05-14)
-
-**File:** `prototype/components/footer.tsx`
-Status: dormant. The marketing pages this footer was designed for — Home, Category Landing, Messages, Compliance — have all been archived. No active prototype file imports it as of 2026-05-14. The file remains in `components/` pending a future cleanup pass; the marketing-site has its own footer (`marketing-site/components/footer.tsx`) with the canonical production legal links.
+**File:** `prototype/components/footer.tsx`. Dormant — no active importer (target marketing pages all archived). Canonical production footer lives at `marketing-site/components/footer.tsx`.
 
 ### Auth
 
@@ -261,7 +251,7 @@ The `ProtoNavHelper` (bottom-left "Nav ↑" pill) is mounted globally and also i
 
 Minimal, focused layout for the pre-signup wizard flow.
 
-**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + onboarding nav dropdown (right). No "Your Apps" link, no Use Cases/Compliance links, no Sign out. TopNav detects the wizard context via pathname + registrationState — regex matches `^/apps/[appId](/(ready|signup(/verify)?|get-started))?$` — workspace root or any wizard subroute (D-345). Sign out is hidden on all wizard-state pages.
+**Top nav (rendered by TopNav, wizard-aware):** RelayKit wordmark + "Appointments" pill (left) → state switcher dropdown + onboarding nav dropdown (right). No "Your Apps" link, no Sign out. TopNav detects the wizard context via pathname + registrationState — regex matches `^/apps/[appId](/(ready|signup(/verify)?|get-started))?$` — workspace root or any wizard subroute (D-345). Sign out is hidden on all wizard-state pages.
 **Onboarding nav dropdown:** Native `<select>` (`text-xs text-text-quaternary`) to the right of the state switcher. Label "Onboarding" (disabled default option). 11 numbered options covering the full wizard flow from vertical picker through get-started. Resets to label after navigation. Also appears on `/start/*` routes (right side of wordmark-only nav). Only visible when `registrationState === "onboarding"`.
 **Continue button:** Absolutely positioned top-right (`absolute top-6 right-6`) so it doesn't push the content column down. Hidden when no `continueButton` is present.
 **Back link:** Inside the centered content column (`mb-6`), left-aligned with headline and body text. Hidden when `backHref` is absent.
@@ -561,16 +551,12 @@ The last screen before the dashboard. Developer has verified their email and lan
 - **CTA** (`mt-8`): Full-width purple "View on dashboard" button. On click: `setRegistrationState("building")` + navigate to `/apps/[appId]/messages`.
 
 ### Opt-in form component (MOVED, post 2026-05-14)
-**File:** `marketing-site/components/catalog/catalog-opt-in.tsx` (was `prototype/components/catalog/catalog-opt-in.tsx`)
-**Status:** Moved to marketing-site as dormant preservation for future Phase 2a (D-384) category-page consumption; archived prototype copy at `prototype/archive/components/catalog/catalog-opt-in.tsx`. The detail below describes the component as authored on the prototype side; some of it predates current usage and reflects a wizard-step incarnation that no longer exists. The behavior preserved on /marketing-site/ is the form preview + consent checkboxes + fine print only.
-- Consent checkbox label is the singular category + business name only (e.g., "I agree to receive appointment text messages from GlowStudio."). `CATEGORY_CONSENT_WORD` map converts categoryId → singular consent word. Fine print carries the TCPA disclosure details. Matches PRD_02 opt-in language pattern.
-- Checkbox labels and fine print use `leading-snug`.
-- Sign-up CTA button uses `bg-[#98A2B3]` (hover `bg-[#7A808A]`) — a lighter mid-gray than the previous `bg-[#61656C]`.
-- "Continue" button below opt-in form (`mt-8`). Same primary purple treatment as other wizard advances.
-- Continue target: placeholder — signup page not built yet. Currently links back to messages.
-- Stub note: "Signup page coming soon" in `text-xs text-text-quaternary` below Continue.
+**File:** `marketing-site/components/catalog/catalog-opt-in.tsx` (was `prototype/components/catalog/catalog-opt-in.tsx`; archived prototype copy at `prototype/archive/components/catalog/catalog-opt-in.tsx`).
+**Status:** Dormant on marketing-site, awaiting Phase 2a (D-384) category-page consumption. Renders: form preview with name + phone inputs, category-named consent checkbox (e.g., "I agree to receive appointment text messages from {appName}."), optional separate marketing-consent checkbox (when message set has marketing-tier entries), TCPA fine print, "Sign up for messages" CTA. `CATEGORY_CONSENT_WORD` map keyed by `categoryId`; matches PRD_02 opt-in language pattern.
 
-**Wizard chrome:** Same as messages page — no Sandbox indicator, no Settings gear. Layout `isWizardMode` detection covers `/opt-in` path.
+### Playbook diagram component (MOVED, post 2026-05-14)
+**File:** `marketing-site/components/playbook-flow.tsx` (was `prototype/components/playbook-flow.tsx`; archived prototype copy at `prototype/archive/components/playbook-flow.tsx`).
+**Status:** Dormant on marketing-site, awaiting Phase 2a (D-384) category-page consumption. Exports `PlaybookSummary` (component) and `PLAYBOOK_FLOWS` (data object). Renders a horizontal flow of 6 numbered nodes connected by arrows, each with hover tooltip; vertical stepper on mobile. Heading + tagline above. Returns `null` for categories not in `PLAYBOOK_FLOWS`. Only `appointments` is populated today (6 steps: Booking confirmed → Reminder sent → Pre-visit sent → Reschedule handled → No-show followed up → Cancellation handled, per D-223); additional categories arrive with Phase 2a content authoring.
 
 ---
 
@@ -681,8 +667,6 @@ Shared `ConfirmModal` helper used for the live-key Regenerate modal. Backdrop `b
 
 ---
 
-## Screens Not Yet Built
-
 ### Registration Form — `/apps/[appId]/register`
 **File:** `prototype/app/apps/[appId]/register/page.tsx`
 **Status:** Stable
@@ -710,6 +694,10 @@ Tab bar hidden. "← Back to business details" navigation. Reads form data from 
 
 **Bottom:** Pricing breakdown: "Registration submission $49 / Due today $49". Below: "After approval, $19/mo for your live API key and dedicated phone number. 500 messages included monthly. Additional messages $8 per 500. Not approved? Full refund." Monitoring consent checkbox. CTA: "Start my registration — $49".
 
+---
+
+## Open design items
+
 ### Compliance Modal Revision
 **Status:** `[NEEDS REVISION]`
 
@@ -726,7 +714,7 @@ Current "Content blocked" modal has "Fix it with AI" section with copyable promp
 
 ## File Map
 
-Reflects active `/prototype/` after the May 2026 bulk archive. Archived files preserved at `prototype/archive/` (mirrored paths); see `prototype/archive/README.md` for the full archived inventory and un-archive procedure.
+Reflects active `/prototype/` after the May 2026 archive waves (2026-05-13 bulk archive + 2026-05-14 marketing-surface migration). Archived files preserved at `prototype/archive/` (mirrored paths); see `prototype/archive/README.md` for the full archived inventory and un-archive procedure.
 
 ```
 prototype/
@@ -817,4 +805,4 @@ prototype/
 | Compliance modal "Fix it with AI" generates risky prompts | Needs revision | PM_HANDOFF item 2 |
 | Bar thickness 8px consistency across row 2 cards | May need verification | PM_HANDOFF |
 | Registration form pre-fill: "Pre-filled" state may not auto-validate EIN path fields | Touch-all ref validates on click, but initial mount may not trigger | Register page |
-| `proto-nav-helper.tsx` references `/apps/[appId]/overview` — phantom route, file never existed on disk | Cleanup deferred per BACKLOG | Audit 2026-05-13 |
+| `proto-nav-helper.tsx` references `/apps/[appId]/overview` — phantom route, file never existed on disk | Cleanup deferred per BACKLOG; survived both archive waves | Audits 2026-05-13 + 2026-05-14 |
