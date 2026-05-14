@@ -1,54 +1,53 @@
-# CC_HANDOFF — Session 87 (salvage + bulk archive + post-archive reconcile)
+# CC_HANDOFF — Session 88 (marketing-surface migration out of /prototype/)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out. Includes commits, completed work, in-progress, gotchas, files modified, unmerged branches, suggested next tasks.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader, not as a session memoir.
 
 **Date:** 2026-05-14
-**Branch:** `main` — all session commits on `origin/main` except this close-out commit at push time. No unmerged feature branches.
+**Branch:** `main` after fast-forward merge of `chore/migrate-marketing-out-of-prototype` (5 lift commits + 1 close-out commit). No unmerged feature branches.
 
-`Commits: 5 | Files modified: 36 | Decisions added: 0 | External actions: 5`
+`Commits: 6 | Files modified: 15 | Decisions added: 0 | External actions: 4`
 
 ---
 
 ## Session character
 
-Three coordinated operations in /prototype/, then post-state doc reconcile.
+Single migration lift with PM-aligned scope: marketing-shaped surfaces leave the prototype so it models `app.relaykit.ai` cleanly, and two prototype components useful for future Phase 2a category pages (D-384) get preserved on `/marketing-site/` as dormant code. Marketing-site does NOT gain category routes or a Use Cases dropdown in this lift — that work waits until Phase 2a delivers real per-category content. Plan-mode workflow: investigation → plan file → 5 ordered execution steps → verification → 5-commit history matching the steps → close-out.
 
-1. **Salvage** — extracted the playbook workflow diagram and the opt-in form sample off the public messages page (slated for archive) and onto the category landing page (`/sms/[category]`), which is becoming a hybrid docs/info page. New shared component at `prototype/components/playbook-flow.tsx` consumed by both pages.
-2. **Audit** — read-only inventory of all 85 files in /prototype/, produced `audits/prototype-inventory-2026-05-13.md` for PM + Joel triage. Identified 22 archive candidates.
-3. **Bulk archive** — moved 21 dead/out-of-scope files to `prototype/archive/` mirroring source paths (the 22nd candidate, `app/page.tsx` route `/`, retained because removing it would break wordmark and breadcrumb links across the surviving tree). Three surviving-tree edits resolved blockers: Compliance nav removed from top-nav, opt-in pill removed from proto-nav-helper, dead CTAs removed from /sms/[category] page. `prototype/archive/README.md` documents the operation; `prototype/tsconfig.json` excludes `archive` so tsc doesn't traverse archived files with severed import paths.
-4. **Post-archive reconcile** — PROTOTYPE_SPEC trimmed 1079 → 848 lines (removed Public Messages Page, Compliance Page, Overview/marketing-modal phantom, Opt-in Form Preview, Admin Dashboard, /registration-test sections; rebuilt File Map; cleaned Known Issues). PRODUCT_SUMMARY §3 intro + §3.1–§3.4 reconciled to current state. BACKLOG: 3 net additions plus annotation merge into the existing eslint entry.
-
-Session also opened with a tiny doc-sync wave: CLAUDE.md `Session start` section condensed (trigger renamed `DECISIONS CHECK` → `Session open`); PM_PROJECT_INSTRUCTIONS.md gained the matching opening-prompt section.
+The lift resolves the Session 87 retention caveat about the marketing home being load-bearing for wordmark/breadcrumb links: the new auth-aware `/` redirect and the top-nav cleanup repointed everything that depended on the old `/`. Top-nav reduced 277 → 200 lines; net prototype LOC down ~1,300 (archive) and up ~270 (new redirect + sign-in placeholder).
 
 ## Commits this session
 
-- `2d666cd` docs: collapse session-start protocol to single source in CLAUDE.md, PM_INSTRUCTIONS points
-- `d387f35` feat(prototype): move playbook + opt-in form sample to category landing page (salvage)
-- `439f941` chore(prototype): archive 21 dead/out-of-scope files to prototype/archive/ (bulk archive; landed on `chore/prototype-archive-bulk-1`, fast-forwarded to main)
-- `db14644` docs(close-out): Session 87 — PROTOTYPE_SPEC + PRODUCT_SUMMARY + BACKLOG reconcile to post-archive state (substantive close-out; amended once after PM review to merge the ESLint BACKLOG entry into the existing Session-60 entry)
-- (this close-out) docs(close-out): Session 87 mechanical — REPO_INDEX + CC_HANDOFF + audit file
+1. `10f5d34` chore(marketing-site): preserve playbook-flow + catalog-opt-in for Phase 2a category pages
+2. `8635043` chore(prototype): archive 4 marketing-surface files via git mv (4 100% renames)
+3. `73acb8e` feat(prototype): add auth-aware / redirect and /sign-in placeholder
+4. `bc9d463` refactor(prototype): clean top-nav post-archive; retarget sign-out + /apps guard to /sign-in
+5. `5e2e8f9` docs(prototype): log 2026-05-14 marketing migration in archive/README.md
+6. (this close-out) docs(close-out): Session 88 — PROTOTYPE_SPEC + PRODUCT_SUMMARY + REPO_INDEX + CC_HANDOFF reconcile post-migration
 
 ## Files modified
 
-36 unique files across the session:
+15 unique paths across the session:
 
-- **New (3):** `prototype/components/playbook-flow.tsx`, `prototype/archive/README.md`, `audits/prototype-inventory-2026-05-13.md`
-- **Archived (21):** see `prototype/archive/README.md` for the full grouped list
-- **Substantive edits to surviving tree:** `prototype/app/sms/[category]/page.tsx`, `prototype/components/top-nav.tsx`, `prototype/components/proto-nav-helper.tsx`, `prototype/tsconfig.json`
-- **Doc + governance:** `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md`, `PROTOTYPE_SPEC.md`, `docs/PRODUCT_SUMMARY.md`, `BACKLOG.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`
-- **Source file edited then archived:** `prototype/app/sms/[category]/messages/page.tsx` (inline playbook code removed during salvage, then file moved to archive)
+- **Marketing-site additions (2):** `marketing-site/components/playbook-flow.tsx`, `marketing-site/components/catalog/catalog-opt-in.tsx` (dormant; inlined local `Message` type + dropped unused `website` prop on the catalog port).
+- **Prototype archive moves (4 renames):** `prototype/app/page.tsx`, `prototype/app/sms/[category]/page.tsx`, `prototype/components/playbook-flow.tsx`, `prototype/components/catalog/catalog-opt-in.tsx` → `prototype/archive/...` (mirrored paths). Empty `/sms/[category]` and `/sms/` route directories also removed.
+- **Prototype new routes (2):** `prototype/app/page.tsx` (auth-aware redirect, ~20 LOC) and `prototype/app/sign-in/page.tsx` (placeholder OTP landing, ~220 LOC).
+- **Prototype rewires (2):** `prototype/components/top-nav.tsx` (Use Cases dropdown removed, Sign in modal trigger removed, wordmark simplified, sign-out target → `/sign-in`); `prototype/app/apps/page.tsx` (auth-guard target → `/sign-in`).
+- **Doc + governance (5):** `prototype/archive/README.md` (new 2026-05-14 section), `PROTOTYPE_SPEC.md` (nav + sign-in + public-pages reshape + file map), `docs/PRODUCT_SUMMARY.md` (§3 reshape, Last reviewed bumped), `REPO_INDEX.md` (touched dates), `CC_HANDOFF.md` (this file).
 
 ## DECISIONS ledger
 
-Pre-flight scan at session start: 301 active, latest D-386, archive D-01–D-83. Scan clean. **No new D-numbers this session** — all seven gate tests applied to both the salvage operation (implements D-217 + D-224) and the bulk archive (implements existing scope decisions documented in `prototype/archive/README.md`). PM confirmation matches.
+Pre-flight scan at session start: 301 active, latest D-386, archive D-01–D-83. Scan clean. **No new D-numbers this session** — the lift implements existing architectural commitments (D-368 production-facing branching, D-378 future surfaces under app.relaykit.ai, D-381 message-source-deferred, D-384 Phase 2a content authoring). PM confirmed no D-number needed for this scope.
 
 ## Quality gates
 
-- `npx tsc --noEmit` clean on /prototype throughout the session (one mid-session fix: `prototype/tsconfig.json` updated to exclude `archive` so tsc doesn't traverse archived files with severed import paths).
-- ESLint: not run on /prototype — no config exists there. The gap is now a tracked BACKLOG item (Infrastructure & Operations, "Configure eslint in /prototype", Session 60 origin with Session 87 resurfacing note). Other workspaces (`/marketing-site`, `/sdk`, `/api`) have configs.
-- HTTP smoke tests on the archive verified all 18 KEEP routes return 200 and all 11 archived routes return 404.
+- `npx tsc --noEmit` clean on both `/marketing-site/` and `/prototype/` after every step. `.next` cache cleared between archive and verify per the standing rule (else cache stale-references the just-archived routes).
+- `npx eslint .` clean on `/marketing-site/` (no prototype eslint config — pre-existing BACKLOG entry from Session 87; out of scope here).
+- HTTP smoke (fresh dev servers on :3001 and :3002) matched the plan's expected table exactly:
+  - Prototype: `/` 200 (redirect), `/sign-in` 200, `/apps` 200, `/sms/appointments` 404, `/sms/orders` 404, `/sms/anything` 404, `/start` 200, `/account` 200
+  - Marketing-site: `/` 200, `/terms` 200, `/privacy` 200, `/acceptable-use` 200, `/signup` 200, `/start/get-started` 200, `/start/verify` 200, `/sms/appointments` 404 (confirms no scope creep), `/sign-in` 404 (confirms no scope creep)
+- Link audit grep clean: only header-comment self-references to archived paths remain in active prototype tree.
 
 ## Retirement sweep + drift watch
 
@@ -56,40 +55,39 @@ Phase 1 — Sinch Proving Ground active at session start, still active. No phase
 
 ## Gotchas for next session
 
-1. **Pre-existing `/apps/[appId]/overview` drift** — `prototype/components/proto-nav-helper.tsx` references the route at lines 18, 21, 24, 27, 28 (post-archive line numbers), but `prototype/app/apps/[appId]/overview/page.tsx` never existed on disk. PROTOTYPE_SPEC's Overview section was likewise phantom and got removed in the substantive close-out commit. Cleanup is in BACKLOG (Infrastructure & Operations) — requires understanding the state-switcher mechanism the nav helper is jumping between; "overview" may be a stale name for the workspace home at `/apps/[appId]`.
-2. **Marketing home retention** — `prototype/app/page.tsx` (route `/`) was on the audit's archive list but retained because it's load-bearing for the surviving tree (wordmark + breadcrumb links). BACKLOG item tracks future consolidation with `/marketing-site/`.
-3. **tsconfig exclude needed during archive** — without `"archive"` in `exclude`, tsc traverses moved files whose relative imports now point at non-existent paths. Future archive operations: add to exclude before running tsc.
-4. **Dev server stale-cache trap** — encountered during salvage verification: an existing dev-server process (3-day uptime) returned HTTP 500 after I cleared `.next` underneath it. Kill before clearing `.next`, then start fresh.
-5. **Multiline commit messages with `git commit -m "$(cat <<'EOF' ... EOF)"`** failed once on what looked like quoting drift. Switched to `git commit -F <file>` and it worked first try — that's the safer pattern for any commit message with literal `'` or special characters.
+1. **Two prototype components are now dormant code:** `prototype/components/sign-in-modal.tsx` (no importers — replaced by the standalone `/sign-in` route) and `prototype/components/footer.tsx` (no importers — target marketing pages all archived). Both are tagged "DORMANT" in PROTOTYPE_SPEC. The future auth refactor will retire `SignInModal`; `footer.tsx` may want a separate cleanup pass. No urgency — they don't break anything by sitting there.
+2. **Pre-existing wizard-step drift in PROTOTYPE_SPEC §"Opt-in form component"** (around line 564): the section describes a Continue button + "Signup page coming soon" stub note that the actual `catalog-opt-in.tsx` doesn't have. This drift predates this session; only the `**File:**` and `**Status:**` lines were updated to reflect the move to marketing-site, leaving the stale detail intact. Worth a clean-up pass when the doc next gets touched.
+3. **`/start/*` wordmark still targets `/`.** The `/start` nav uses its own override (line 121 of top-nav.tsx) with `<Link href="/">` for the wordmark. Post-lift, `/` redirects to `/sign-in` for logged-out users mid-onboarding — defensible (clicking the wordmark exits onboarding to sign in) but slightly unusual. Flagged in `prototype/archive/README.md` 2026-05-14 entry in case it gets revisited.
+4. **Stale dev-server trap recurred.** Two old dev-server processes from a prior session were still bound to 3001/3002 (3-day uptime). Same shape as the Session 87 gotcha: `lsof -nP -iTCP:3001 -iTCP:3002 -sTCP:LISTEN` to find them, kill, then start fresh. Standing rule applies: kill + `rm -rf .next` + restart at end of every task.
+5. **`git mv` with bracketed segment names** (`'prototype/app/sms/[category]/page.tsx'`) needs single-quoting to defeat shell globbing. Worked clean once quoted.
 
 ## Carry-forward queue
 
 Active workstreams (not closed this session):
-- PM_PROJECT_INSTRUCTIONS.md still 469 / 400-line ceiling (improved from 869 in Session 86; trim audit queued)
-- CLAUDE.md still over 200-line ceiling after the session-start collapse (Session 86 was 222; latest collapse trimmed a few lines but not enough — recheck and trim audit)
-- Phase 1 downstream experiments first-pickup (2b inbound MO shape, 3c brand upgrade, 4 STOP/START/HELP)
-- Phase 2a remaining 8 categories' research per D-384
+- PM_PROJECT_INSTRUCTIONS.md still 469 / 400-line ceiling (carry-forward from Session 86 → 87)
+- CLAUDE.md still over 200-line ceiling (carry-forward)
+- Phase 1 downstream experiments first-pickup (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP)
+- Phase 2a per-category research per D-384 (8 categories — this lift's preserved components are for the eventual category pages this work feeds)
 - Stage 2 `BRAND_DIRECTION.md` authoring + MD-number capture from `BRAND_AUDIT.md`
 - Pumping Defense Wave 2 implementation
 - Migration 006 manual application
 - Broader threat-modeling workstream
 
-New from this session (in BACKLOG):
-- /overview drift in proto-nav-helper.tsx
-- Marketing home consolidation (consolidate or retire when prototype/marketing-site split resolves)
-- /marketing-site/ inventory audit (deferred until after marketing retrenchment lands)
-- ESLint config on /prototype (merged annotation on existing entry)
+New from this session (no BACKLOG entries added; surfaced for the next session):
+- Future auth refactor will retire both `prototype/components/sign-in-modal.tsx` (dormant) and `prototype/app/sign-in/page.tsx` (placeholder); the two surfaces share content and should be unified there.
+- `prototype/components/footer.tsx` is now dormant; minor cleanup candidate.
+- The `/start/*` wordmark behavior (clicking exits onboarding to /sign-in) is defensible but worth revisiting if onboarding UX gets a polish pass.
 
 ## Unmerged branches
 
-None. `chore/prototype-archive-bulk-1` was created for the archive operation, fast-forwarded into main, pushed, and the local branch deleted (no remote was created).
+None. `chore/migrate-marketing-out-of-prototype` was created for this lift, accumulated 5 lift commits + 1 close-out commit, and was fast-forward merged into main. Local branch deleted post-merge.
 
 ## Suggested next session
 
 Three plausible threads:
 
-1. **Phase 1 downstream experiments first-pickup** — closest to the active phase. Experiments 2b (inbound MO), 3c (brand upgrade), 4 (STOP/START/HELP) are all unblocked and waiting. Picking up the most concrete one would advance Phase 1 toward close.
-2. **Stage 2 `BRAND_DIRECTION.md` authoring** — Stage 1 audit synthesis in `docs/BRAND_AUDIT.md` is the input; Stage 2 needs an authoring session to produce direction + MD-numbered decisions.
-3. **/marketing-site/ inventory audit** — same shape as the prototype inventory just produced. Only pick this up after the pending marketing retrenchment lands, else the audit goes stale immediately.
+1. **Phase 1 downstream experiments first-pickup** — same recommendation as Session 87's carry-forward. Experiments 2b (inbound MO), 3c (brand upgrade), 4 (STOP/START/HELP) all unblocked. The closest to closing Phase 1.
+2. **Stage 2 `BRAND_DIRECTION.md` authoring** — Stage 1 audit synthesis in `docs/BRAND_AUDIT.md` is the input; an authoring session would produce direction + MD-numbered decisions.
+3. **Phase 2a content authoring kickoff** — the components preserved on marketing-site this session are for Phase 2a's eventual per-category pages. If the per-category research per D-384 is ready to enter authoring, this session sets up that downstream work.
 
-If PM redirects: PM_INSTRUCTIONS / CLAUDE.md trim audit wave is also queued and low-coordination.
+If PM redirects: the PM_INSTRUCTIONS / CLAUDE.md trim audit wave remains queued and low-coordination, as does cleanup of the dormant `sign-in-modal.tsx` / `footer.tsx` files.

@@ -8,7 +8,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-05-13
+> **Last reviewed:** 2026-05-14
 
 ---
 
@@ -26,29 +26,20 @@ The customer arrives at the marketing site, clicks into a use-case page, browses
 
 ## 3. Public surfaces
 
-> **Note:** Public marketing surfaces are split. The prototype retains a marketing home (`/`) as a dev entry point and the use-case landing (`/sms/[category]`) as a hybrid docs/info page. The canonical customer-facing marketing site lives at `/marketing-site/` (separate Next.js app, deployed independently). The prototype's old public messages page and `/compliance` page were archived on 2026-05-13 — see `prototype/archive/README.md`.
+> **Architecture note (post 2026-05-14):** All public marketing surfaces live on the separate `/marketing-site/` Next.js app at `relaykit.ai`. The `/prototype/` app — which models `app.relaykit.ai` (the post-signup workspace) — no longer renders any marketing pages. The prototype's pre-existing marketing home (`/`), `/sms/[category]` category landing, public messages page, and `/compliance` explainer were all archived across two waves (2026-05-13 bulk archive + 2026-05-14 marketing-surface migration). See `prototype/archive/README.md` for the inventory.
 
-### 3.1 Marketing home — `/`
+The customer-experience side of the marketing surface — what visitors see at relaykit.ai before they engage — is described against the marketing-site implementation in `PROTOTYPE_SPEC.md` §"Production Marketing Site — relaykit.ai". The condensed shape: a 7-section home page (hero, configurator, build it, test it for real, pricing + paperwork, closing CTA), legal docs (Terms, Privacy, Acceptable Use), a waitlist signup flow (`/start/verify` + `/start/get-started`), and a "we'll be ready soon" `/signup` placeholder. The configurator on the home page is the central conversion surface — customers pick categories and tones, see their messages render live, and click through to the waitlist flow.
 
-What the customer sees: hero band ("Two files. Your AI coding tool. A working SMS feature."), AI tool logos (Claude Code, Cursor, Windsurf, Copilot, Cline, plus Other), two CTAs (Why RelayKit / Pick your use case), three-step "How it works" grid (Pick / Hand it to your AI / Go live), pricing context line, two pricing cards (Free $0 forever; Go live $49 + $19/mo with refund-if-rejected), single centered "Start building free →" CTA, problem framing, footer.
+### 3.1 Sign-in landing — `/sign-in` (prototype, placeholder)
 
-What the customer does: lands, scans pricing, picks a use case (or signs in via top-nav modal). The pricing cards have no per-card buttons — there's one CTA below both. Anchors: D-219 (hero), D-216, D-220, D-241 (pricing + compliance framing).
+The only prototype-side route reachable without an authenticated session (besides the root redirect, which sends visitors to `/apps` or `/sign-in` based on auth state). A standalone email → OTP form ported from the now-dormant SignInModal, wrapped in a centered card layout. Placeholder pending the future auth refactor (Supabase social providers, UI redesign), which will replace both this page and the dormant modal. Production behavior — the actual sign-in surface a customer reaches at `app.relaykit.ai/sign-in` — will be shaped by that refactor, not this placeholder.
 
-> Retained on the prototype as the dev-server entry point. Customer-facing marketing home lives at `/marketing-site/`.
+### 3.2 Archive pointers (historical)
 
-### 3.2 Use-case landing — `/sms/[category]`
-
-What the customer sees: breadcrumb (Home / Appointments), subhead ("Your AI coding tool builds the integration. RelayKit handles the carriers."), single secondary "See all categories" hero CTA, **playbook workflow diagram** ("Your complete appointment SMS system" — 6 numbered nodes with hover tooltips, salvaged from the archived public messages page), message preview section with three style pills (Brand-first / Action-first / Context-first) and three sample message cards, pricing context line, **opt-in form sample** ("Opt-in" eyebrow + framing copy "Your AI tool wires opt-in into your app. We host and maintain the form, generate the consent language, and update it if rules change. Here's what your customers see when they sign up:" + centered `CatalogOptIn` form preview), "What you get" 4-card gray band, registration scope section ("Your registration / What's included from day one") + "Need marketing messages too?" sub-section with EIN note, two-card FAQ ("Why can't I just register myself?" / "What happens after I'm approved?").
-
-What the customer does: scans the full "what you're building" picture — workflow + messages + opt-in form — before registration logistics. Sees three example messages with their variables interpolated in brand-purple. Built for Appointments only; other verticals stub. Anchors: D-217, D-224 (playbook diagram, salvaged onto this page May 2026); D-220, D-241, D-230, D-231, D-91, D-106 (the rest).
-
-### 3.3 Public message library — archived
-
-The prototype's public messages page at `/sms/[category]/messages` was archived on 2026-05-13. Its load-bearing content — playbook diagram and opt-in form sample — was salvaged onto the §3.2 category landing page first; the messages page itself then moved to `prototype/archive/`. The strangers-become-users surface is now the category landing above. Anchors retained for historical reference: D-217, D-223, D-224 (playbook); D-184, D-185 (personalize); D-187, D-188 (template/preview); D-182 (post-download band) — the personalize / template / copy-all mechanics didn't survive the archive and live on only in the archived file.
-
-### 3.4 Compliance explainer — archived from prototype
-
-The prototype's `/compliance` page was archived on 2026-05-13. Canonical customer-facing compliance content lives at `/marketing-site/compliance/`. The per-customer "msgverified.com" compliance site referenced in MASTER_PLAN §14 remains a Phase 10 deliverable — see §10 below.
+- **Marketing home** — archived 2026-05-14 from `prototype/app/page.tsx`. Replaced in-place by the auth-aware root redirect. Anchors retained for history: D-219, D-216, D-220, D-241.
+- **Use-case landing — `/sms/[category]`** — archived 2026-05-14. Anchors: D-217, D-224 (playbook diagram, since moved to `marketing-site/components/playbook-flow.tsx` as preservation per Phase 2a / D-384); D-230, D-231, D-91, D-106 (rest of the page).
+- **Public message library — `/sms/[category]/messages`** — archived 2026-05-13. Anchors: D-217, D-223, D-224 (playbook); D-184, D-185 (personalize); D-187, D-188 (template/preview); D-182 (post-download band).
+- **Compliance explainer — `/compliance`** — archived 2026-05-13. Canonical customer-facing compliance content lives on `marketing-site/`. The per-customer "msgverified.com" compliance site referenced in MASTER_PLAN §14 remains a Phase 10 deliverable — see §10 below.
 
 ---
 

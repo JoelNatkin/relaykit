@@ -21,21 +21,20 @@
 
 ### Navigation
 
-**Logged-out (marketing) nav:** RelayKit wordmark (left) → Use Cases (dropdown: Appointments → `/sms/appointments`) → Compliance (`/compliance`) → Sign in (right, opens sign-in modal). No Prototype badge. (D-118, updated March 27 2026)
+**Logged-out nav:** RelayKit wordmark (left) only. No Use Cases dropdown, no Compliance link, no Sign in button. Post-2026-05-14 marketing-surface migration, no logged-out user reaches a page rendering the full top-nav from inside the prototype: `/` redirects, `/sms/*` is archived, `/start/*` uses a wordmark-only override nav, `/apps` requires auth. The only surviving logged-out destination is `/sign-in` (see below) where the layout TopNav renders with wordmark only. (D-118, last touched 2026-05-14.)
 
-**Logged-in (app) nav:** RelayKit wordmark (left) → "Your Apps" (plain text link to `/apps`, left-aligned after wordmark) → avatar button (right, 32px round `bg-gray-200` with `User01` icon). Clicking the avatar opens a dropdown menu aligned to the right edge: **Account settings** (→ `/account`) and **Sign out** (toggles state + navigates to `/`). Menu closes on outside click. The freestanding "Sign out" text link was removed — sign out lives exclusively in the avatar dropdown. No Prototype badge, no pill styling. (PRD_SETTINGS v2.3 §2; implements D-347.)
+**Logged-in (app) nav:** RelayKit wordmark (left, always `href="/apps"`) → "Your Apps" (plain text link to `/apps`, left-aligned after wordmark) → avatar button (right, 32px round `bg-gray-200` with `User01` icon). Clicking the avatar opens a dropdown menu aligned to the right edge: **Account settings** (→ `/account`) and **Sign out** (`setLoggedIn(false)` + `router.push("/sign-in")`). Menu closes on outside click. The freestanding "Sign out" text link was removed — sign out lives exclusively in the avatar dropdown. No Prototype badge, no pill styling. (PRD_SETTINGS v2.3 §2; implements D-347; sign-out target updated 2026-05-14.)
 
 Per-project tabs live exclusively in the app layout shell, not in top nav. (D-118)
 
-**Breadcrumbs:** All marketing/public pages except Home have breadcrumbs. Styled: `text-sm text-text-tertiary`, " / " separator, last item is current page (not a link). 24px below nav (`mt-6`). Placement:
-- Category landing (`/sms/appointments`): Home / Appointments — above hero, inside page content area.
-- Messages page (`/sms/appointments/messages`): Home / Appointments / Messages — inside gray hero band as first element, `pt-6 pb-12` on band.
-- Compliance (`/compliance`): Home / Compliance — above hero, inside page content area.
+**Breadcrumbs:** No surviving prototype route uses breadcrumbs. Category landing, public messages page, and `/compliance` — all of which previously carried "Home / …" breadcrumbs — were archived (Session 87 + 2026-05-14 marketing-surface migration). Breadcrumbs may return when category pages eventually land on the marketing-site per Phase 2a content authoring (D-384).
 
-### Sign-In Modal
+### Sign-In Modal (DORMANT, post 2026-05-14)
 
 **File:** `prototype/components/sign-in-modal.tsx`
-Two-step modal triggered by "Sign in" in top nav. Semi-transparent backdrop (`bg-black/50`). Max-width 400px. XClose button top-right. Escape key and backdrop click close without signing in. Body scroll locked when open.
+Status: dormant. No active prototype file imports this component as of 2026-05-14. The modal trigger in top-nav (Sign in button) was removed when no logged-out route remained that could surface it. The standalone `/sign-in` route (next section) now carries the email→OTP flow. The modal file itself remains in `components/` and will be retired by the future auth refactor alongside `/sign-in`.
+
+Original spec preserved for historical context — the placeholder `/sign-in` route ports its content directly:
 
 **Step 1 (Email):** Mail01 icon (brand secondary), "Sign in to RelayKit" h2, "Enter your email and we'll send you a code." body, email input, "Send code" button. Button shows "Sending..." disabled state for 500ms before advancing.
 
@@ -45,14 +44,14 @@ Two-step modal triggered by "Sign in" in top nav. Semi-transparent backdrop (`bg
 
 Every page that has multiple lifecycle states includes small dropdown selectors (`text-xs text-text-quaternary`) for switching between states during development. Positioned LEFT of the status indicator (colored dot + label) with 40px gap (`ml-10`) between last switcher and status indicator. Native browser chevrons (no custom icons). These are prototype controls — production state comes from server data. Retain throughout prototype work; strip when porting to production.
 
-### Footer
+### Footer (DORMANT, post 2026-05-14)
 
 **File:** `prototype/components/footer.tsx`
-Present on all marketing pages: Home, Category Landing, Messages, Compliance. Two-column grid: Product (How it works, Use cases, Compliance — clickable links) and Legal (Terms, Privacy, Acceptable Use — plain `<span>` text, not clickable, no pages exist yet). Copyright: "© 2026 RelayKit LLC" (D-195).
+Status: dormant. The marketing pages this footer was designed for — Home, Category Landing, Messages, Compliance — have all been archived. No active prototype file imports it as of 2026-05-14. The file remains in `components/` pending a future cleanup pass; the marketing-site has its own footer (`marketing-site/components/footer.tsx`) with the canonical production legal links.
 
 ### Auth
 
-Sign-in modal provides email → OTP flow (see Sign-In Modal above). "Sign out" in top nav calls `setLoggedIn(false)` + `router.push("/")`. Production uses email OTP (D-59).
+The placeholder `/sign-in` route provides the email → OTP flow (see `/sign-in` page below). "Sign out" in top nav calls `setLoggedIn(false)` + `router.push("/sign-in")`. The `/apps` route guard redirects unauthenticated visits to `/sign-in`. Production uses email OTP (D-59); the future auth refactor will replace the placeholder.
 
 ### Design System
 
@@ -64,52 +63,27 @@ All data is mocked. Session context provides state management. localStorage key:
 
 ---
 
-## Public Pages (No Auth Required)
+## Pre-Auth Surfaces
 
-### Marketing Home — `/`
+Post 2026-05-14 marketing-surface migration, the prototype models `app.relaykit.ai` and contains no marketing pages. Only two routes are reachable without an authenticated session: the root redirect and the placeholder sign-in landing. Marketing-shaped surfaces — the old marketing home, the `/sms/[category]` category landing, the `/compliance` page — were all archived; archived copies live under `prototype/archive/` with mirrored source paths.
+
+### Root redirect — `/`
 **File:** `prototype/app/page.tsx`
-**Status:** Stable
+**Status:** Stable (placeholder).
 
-**Hero:** Gray band (`bg-bg-tertiary`). H1 + subhead ("Two files. Your AI coding tool. A working SMS feature.") + AI tool logo row (6 tools, white circle backgrounds) + two CTA buttons ("Why RelayKit?" with white bg, "Pick your use case" purple). (D-219)
+Thin client component. Reads `state.isLoggedIn` from `useSession()`, then in `useEffect` calls `router.replace("/apps")` for logged-in users and `router.replace("/sign-in")` otherwise. Renders `null` during the redirect tick. The route exists primarily to give the session-context-driven redirect a single source-of-truth landing; future hardening (Supabase server-side auth) will reshape this.
 
-**How it works:** Three-step grid (Pick / Hand it to your AI / Go live). Followed by centered pricing context line.
+### Sign-In Landing — `/sign-in`
+**File:** `prototype/app/sign-in/page.tsx`
+**Status:** Stable (placeholder).
 
-**How it works pricing context:** "Free to build and test. $49 to register, then $19/mo."
+Standalone two-step email → OTP page. Reuses the form content from `prototype/components/sign-in-modal.tsx` (now dormant), wrapped in a standalone page layout — centered card on `bg-bg-primary` with `rounded-2xl p-8 shadow-xl`, max-width 400px, vertically centered inside `min-h-[calc(100vh-3.5rem)]` (viewport minus top-nav height), no backdrop, no XClose. The page renders inside the standard root layout, so the top-nav appears above it — for a logged-out user, that nav shows wordmark only.
 
-**Pricing:** Two cards — "Free" ($0 forever, 4 features at text-base) and "Go live" ($49 to register + $19/mo headline, "Full refund if not approved." subline in `text-base text-text-tertiary`, 6 feature bullets including "No credit card to start building" and "Every message scanned — issues caught and fixed before they reach carriers" (D-241)). No per-card buttons. Single centered "Start building free →" CTA below both. Volume pricing note. Pricing canonical source: docs/PRICING_MODEL.md (D-320 single $49 flat, no go-live split; D-321 $8/500 overage; supersedes D-216 split-pricing structure). (D-220, D-320)
+**Step 1 (Email):** Mail01 icon (brand secondary) → "Sign in to RelayKit" h2 → email input → "Send code" button. 500ms "Sending..." disabled state on submit before advancing.
 
-**Why RelayKit / Problem framing / Footer:** Unchanged from prior session. Reassurance line ("No contracts. Cancel anytime. Your code stays yours.") before footer. Inline footer with scroll-to-section links.
+**Step 2 (OTP):** Mail01 icon (success secondary) → "Check your email" h2 with submitted email echoed back → 6-digit OTP input row (auto-advance, paste support, backspace navigates back) → resend-code countdown ("Resend code in 0:30" → clickable "Resend code" at 0) → "Use a different email" back-link → "(Prototype: any 6 digits will work)" hint. Auto-submit on 6 complete digits: `setLoggedIn(true)` + `router.push("/apps")`.
 
-### Category Landing — `/sms/[category]`
-**File:** `prototype/app/sms/[category]/page.tsx`
-**Status:** Stable (appointments only). Hybrid docs/info page — absorbed playbook + opt-in form sample from the now-archived public messages page (May 2026 salvage).
-
-**Breadcrumb:** Home / Appointments (see Global Patterns > Breadcrumbs). No Appointments pill badge in hero — breadcrumb handles category identification.
-
-**Subhead:** "Your AI coding tool builds the integration. RelayKit handles the carriers."
-
-**Hero CTAs:** Single secondary CTA "See all categories" (links `/`). The prior "Browse messages" hero CTA was removed alongside the messages-page archive (target gone).
-
-**Playbook workflow diagram (D-217, D-224):** Full-width gray band between hero and message-preview section. Imported from `@/components/playbook-flow` (extracted in May 2026 salvage; previously inline on the public messages page). Heading "Your complete appointment SMS system" + horizontal flow with 6 numbered nodes (24px filled purple circles, white numbers, CSS hover tooltips) connected by arrows. Labels left-aligned, max-width ~90px. Vertical stepper on mobile. Tagline "One prompt. Your AI tool builds the whole flow." Data in `PLAYBOOK_FLOWS` keyed by category. Node order: 1 Booking confirmed, 2 Reminder sent, 3 Pre-visit sent, 4 Reschedule handled, 5 No-show followed up, 6 Cancellation handled (D-223). Returns null for categories not in `PLAYBOOK_FLOWS` (currently only `appointments` populated).
-
-**Message style preview section:** Three style pills (Brand-first / Action-first / Context-first) and three sample message cards. Variable values render in `font-medium text-text-brand-tertiary`. Trigger lines use "Sent when..." format. Demonstrates anti-cookie-cutter strategy (D-91, D-106).
-
-**Pricing context line:** Below message preview cards, `mt-5`. Styled: `text-base text-center text-text-tertiary`. "$49" and "$19/mo" in `font-semibold text-text-primary`. Full text: "Free sandbox. No credit card. $49 to register, $19/mo after approval." The prior "See all appointment messages →" CTA above this line was removed alongside the messages-page archive.
-
-**Opt-in form sample section:** Below the pricing context line, before the "What you get" gray band. Centered eyebrow "Opt-in" (`text-text-brand-secondary`). Framing copy (PM-provided, May 2026 salvage): "Your AI tool wires opt-in into your app. We host and maintain the form, generate the consent language, and update it if rules change. Here's what your customers see when they sign up:" Below that, centered `<CatalogOptIn>` in a `max-w-sm` wrapper. Props wired with `appName="GlowStudio"`, `website="glowstudio.com"`, `allMessages={MESSAGES[category] || []}` — matches the mock business identity used in the message-preview interpolation above so the page is coherent end-to-end.
-
-**What you get cards (updated D-220, D-241):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section is a true full-width gray band (`bg-bg-secondary`). Cards have `bg-bg-primary` to pop against gray. "Compliance that runs itself" card has extended description: original text + "Issues caught are fixed automatically — you get a heads-up, not an emergency." (D-241)
-
-**Registration scope section (D-230, D-231):** Between "What you get" gray band and the "Preview the full message library" teaser. Section eyebrow "Your registration" + heading "What's included from day one." Two sub-sections (no bounding boxes, content breathes):
-- "What your registration covers" — green `CheckCircle` items pulled from `USE_CASES[category].included`. Body text capped at `max-w-[600px]`.
-- "Need marketing messages too?" — body text explaining separate registration + two example message cards (Promotional offer, Feedback request). EIN note: "Note: adding a marketing campaign requires an EIN. Sole proprietor registrations are limited to one campaign."
-
-**Why registration matters FAQ:** Two cards: "Why can't I just register myself?" and "What happens after I'm approved?" Body text capped at `max-w-[600px]`.
-
-> The public messages page at `/sms/[category]/messages` was archived on 2026-05-13 to `prototype/archive/app/sms/[category]/messages/page.tsx`. Its load-bearing content (playbook diagram + opt-in form sample) was salvaged onto this category landing page first; the archive operation then removed the live route. See `prototype/archive/README.md`.
-
-### Compliance Page — `/compliance`
-**Status:** Archived from prototype on 2026-05-13. The compliance page is canonical at `/marketing-site/compliance/` per the marketing-site retrenchment. The prototype copy lives at `prototype/archive/app/compliance/page.tsx` as historical record.
+Pending the future auth refactor (Supabase social providers, UI redesign), which will retire this placeholder along with the dormant `SignInModal`.
 
 ---
 
@@ -586,9 +560,9 @@ The last screen before the dashboard. Developer has verified their email and lan
   3. "3. Add SMS to your app" / "Paste this prompt into your AI tool to start building." / hardcoded Club Woman prompt (production will generate from wizard data)
 - **CTA** (`mt-8`): Full-width purple "View on dashboard" button. On click: `setRegistrationState("building")` + navigate to `/apps/[appId]/messages`.
 
-### Opt-in form component
-**File:** `prototype/components/catalog/catalog-opt-in.tsx`
-**Status:** Retained — used only by public marketing pages (not the wizard flow).
+### Opt-in form component (MOVED, post 2026-05-14)
+**File:** `marketing-site/components/catalog/catalog-opt-in.tsx` (was `prototype/components/catalog/catalog-opt-in.tsx`)
+**Status:** Moved to marketing-site as dormant preservation for future Phase 2a (D-384) category-page consumption; archived prototype copy at `prototype/archive/components/catalog/catalog-opt-in.tsx`. The detail below describes the component as authored on the prototype side; some of it predates current usage and reflects a wizard-step incarnation that no longer exists. The behavior preserved on /marketing-site/ is the form preview + consent checkboxes + fine print only.
 - Consent checkbox label is the singular category + business name only (e.g., "I agree to receive appointment text messages from GlowStudio."). `CATEGORY_CONSENT_WORD` map converts categoryId → singular consent word. Fine print carries the TCPA disclosure details. Matches PRD_02 opt-in language pattern.
 - Checkbox labels and fine print use `leading-snug`.
 - Sign-up CTA button uses `bg-[#98A2B3]` (hover `bg-[#7A808A]`) — a lighter mid-gray than the previous `bg-[#61656C]`.
@@ -757,7 +731,8 @@ Reflects active `/prototype/` after the May 2026 bulk archive. Archived files pr
 ```
 prototype/
 ├── app/
-│   ├── page.tsx                          # Marketing home (retained as dev entry point)
+│   ├── page.tsx                          # Root redirect (auth-aware: → /apps or /sign-in)
+│   ├── sign-in/page.tsx                  # Placeholder sign-in landing (email → OTP; reuses sign-in-modal content)
 │   ├── layout.tsx                        # Root layout — SessionProvider + TopNav + ProtoNavHelper
 │   ├── globals.css                       # Tailwind v4 theme + Untitled UI semantic tokens
 │   ├── account/page.tsx                  # Account settings (account-level, D-347)
@@ -775,7 +750,6 @@ prototype/
 │   │       │   ├── page.tsx              # Registration form
 │   │       │   └── review/page.tsx       # Review & confirm
 │   │       └── settings/page.tsx         # 600px settings page
-│   ├── sms/[category]/page.tsx           # Category landing (hybrid docs/info)
 │   └── start/                            # Onboarding wizard (5 steps)
 │       ├── layout.tsx
 │       ├── page.tsx
@@ -784,16 +758,15 @@ prototype/
 │       ├── details/page.tsx
 │       ├── verify/page.tsx
 │       └── website/page.tsx
-├── archive/                              # Files removed in the 2026-05-13 bulk archive (see archive/README.md)
+├── archive/                              # Files removed in two waves: 2026-05-13 bulk archive + 2026-05-14 marketing-surface migration (see archive/README.md)
 ├── components/
 │   ├── top-nav.tsx                       # Context-aware nav (D-118)
 │   ├── wizard-layout.tsx                 # Wizard layout wrapper
 │   ├── wizard-step-shell.tsx             # Generic wizard step wrapper
 │   ├── dashboard-layout.tsx              # Dashboard layout wrapper
 │   ├── proto-nav-helper.tsx              # Dev nav helper (prototype only)
-│   ├── playbook-flow.tsx                 # Shared playbook diagram (extracted May 2026 salvage; consumed by /sms/[category])
-│   ├── sign-in-modal.tsx                 # Email → OTP modal (D-347)
-│   ├── footer.tsx                        # Shared footer (D-121)
+│   ├── sign-in-modal.tsx                 # Email → OTP modal (D-347) — DORMANT after 2026-05-14 (no importer; auth refactor will retire it)
+│   ├── footer.tsx                        # Shared footer (D-121) — DORMANT after 2026-05-14 (target marketing pages archived)
 │   ├── ask-claude-panel.tsx              # AskClaude slideout
 │   ├── copy-button.tsx                   # Reusable copy-to-clipboard button
 │   ├── edit-business-details-modal.tsx   # Dev/prototype-only biz-name + service-type editor
@@ -802,7 +775,6 @@ prototype/
 │   ├── test-phones-card.tsx              # Verified-test-phones management card
 │   ├── catalog/
 │   │   ├── catalog-card.tsx              # Per-message catalog card (editor + activity)
-│   │   ├── catalog-opt-in.tsx            # Opt-in form sample (consumed by /sms/[category] + /apps/[appId])
 │   │   ├── custom-message-card.tsx       # Custom-message card variant
 │   │   └── message-action-modal.tsx      # Generic action modal
 │   └── registration/
