@@ -43,10 +43,10 @@ export default function YourApps() {
   const router = useRouter();
   const { state } = useSession();
 
-  // Redirect to home if not logged in
+  // Redirect to sign-in if not logged in
   useEffect(() => {
     if (!state.isLoggedIn) {
-      router.replace("/");
+      router.replace("/sign-in");
     }
   }, [state.isLoggedIn, router]);
 
