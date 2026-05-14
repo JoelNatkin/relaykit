@@ -13,7 +13,10 @@ import {
   Monitor01,
 } from "@untitledui/icons";
 import { USE_CASES, type UseCaseId } from "@/lib/intake/use-case-data";
+import { MESSAGES } from "@/data/messages";
 import { Footer } from "@/components/footer";
+import { CatalogOptIn } from "@/components/catalog/catalog-opt-in";
+import { PlaybookSummary } from "@/components/playbook-flow";
 import { VARIABLE_TOKEN_CLASSES } from "@/lib/variable-token";
 
 /* ── Appointments-specific content (stub 1 category as the primary example) ── */
@@ -220,7 +223,14 @@ export default function CategoryLanding() {
           </Link>
         </div>
       </div>
+      </div>
 
+      {/* Playbook workflow diagram */}
+      <div className="mt-12">
+        <PlaybookSummary categoryId={category} />
+      </div>
+
+      <div className="mx-auto max-w-4xl px-6">
       {/* Message style preview */}
       <div className="mt-16">
         {/* Style toggle pills */}
@@ -278,6 +288,23 @@ export default function CategoryLanding() {
           <span className="font-semibold text-text-primary">$19/mo</span> after approval.
         </p>
       </div>
+
+      {/* Opt-in form */}
+      <section className="mt-16">
+        <p className="text-center text-sm font-semibold text-text-brand-secondary">
+          Opt-in
+        </p>
+        <p className="mt-3 mx-auto max-w-[600px] text-center text-sm text-text-tertiary">
+          Your AI tool wires opt-in into your app. We host and maintain the form, generate the consent language, and update it if rules change. Here&apos;s what your customers see when they sign up:
+        </p>
+        <div className="mt-6 mx-auto max-w-sm">
+          <CatalogOptIn
+            appName="GlowStudio"
+            website="glowstudio.com"
+            allMessages={MESSAGES[category] || []}
+          />
+        </div>
+      </section>
 
       </div>
 
