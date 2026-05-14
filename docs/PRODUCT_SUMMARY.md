@@ -8,7 +8,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-05-01
+> **Last reviewed:** 2026-05-13
 
 ---
 
@@ -26,33 +26,29 @@ The customer arrives at the marketing site, clicks into a use-case page, browses
 
 ## 3. Public surfaces
 
-> **Note:** The marketing pages described in this section (home, use-case landing, public message library, `/compliance`) are scheduled for retrenchment. The descriptions below reflect *current prototype state*, not target state. Do not treat as forward-looking spec.
+> **Note:** Public marketing surfaces are split. The prototype retains a marketing home (`/`) as a dev entry point and the use-case landing (`/sms/[category]`) as a hybrid docs/info page. The canonical customer-facing marketing site lives at `/marketing-site/` (separate Next.js app, deployed independently). The prototype's old public messages page and `/compliance` page were archived on 2026-05-13 — see `prototype/archive/README.md`.
 
-### 3.1 Marketing home — `/` (TBD: pending marketing retrenchment)
+### 3.1 Marketing home — `/`
 
 What the customer sees: hero band ("Two files. Your AI coding tool. A working SMS feature."), AI tool logos (Claude Code, Cursor, Windsurf, Copilot, Cline, plus Other), two CTAs (Why RelayKit / Pick your use case), three-step "How it works" grid (Pick / Hand it to your AI / Go live), pricing context line, two pricing cards (Free $0 forever; Go live $49 + $19/mo with refund-if-rejected), single centered "Start building free →" CTA, problem framing, footer.
 
 What the customer does: lands, scans pricing, picks a use case (or signs in via top-nav modal). The pricing cards have no per-card buttons — there's one CTA below both. Anchors: D-219 (hero), D-216, D-220, D-241 (pricing + compliance framing).
 
-### 3.2 Use-case landing — `/sms/[category]` (TBD: pending marketing retrenchment)
+> Retained on the prototype as the dev-server entry point. Customer-facing marketing home lives at `/marketing-site/`.
 
-What the customer sees: breadcrumb (Home / Appointments), subhead ("Your AI coding tool builds the integration. RelayKit handles the carriers."), pricing context line, "What you get" 4-card gray band, message preview section with three style pills (Brand-first / Action-first / Context-first), registration scope section ("Your registration / What's included from day one"), "Need marketing messages too?" sub-section with EIN note, two-card FAQ ("Why can't I just register myself?" / "What happens after I'm approved?").
+### 3.2 Use-case landing — `/sms/[category]`
 
-What the customer does: scans the value proposition, sees three example messages with their variables interpolated in brand-purple, clicks through to the public message library or returns home. Built for Appointments only; other verticals stub. Anchors: D-220, D-241, D-230, D-231, D-91, D-106.
+What the customer sees: breadcrumb (Home / Appointments), subhead ("Your AI coding tool builds the integration. RelayKit handles the carriers."), single secondary "See all categories" hero CTA, **playbook workflow diagram** ("Your complete appointment SMS system" — 6 numbered nodes with hover tooltips, salvaged from the archived public messages page), message preview section with three style pills (Brand-first / Action-first / Context-first) and three sample message cards, pricing context line, **opt-in form sample** ("Opt-in" eyebrow + framing copy "Your AI tool wires opt-in into your app. We host and maintain the form, generate the consent language, and update it if rules change. Here's what your customers see when they sign up:" + centered `CatalogOptIn` form preview), "What you get" 4-card gray band, registration scope section ("Your registration / What's included from day one") + "Need marketing messages too?" sub-section with EIN note, two-card FAQ ("Why can't I just register myself?" / "What happens after I'm approved?").
 
-### 3.3 Public message library — `/sms/[category]/messages` (TBD: pending marketing retrenchment)
+What the customer does: scans the full "what you're building" picture — workflow + messages + opt-in form — before registration logistics. Sees three example messages with their variables interpolated in brand-purple. Built for Appointments only; other verticals stub. Anchors: D-217, D-224 (playbook diagram, salvaged onto this page May 2026); D-220, D-241, D-230, D-231, D-91, D-106 (the rest).
 
-The strangers-become-users surface. The download happens here.
+### 3.3 Public message library — archived
 
-What the customer sees: hero with "Appointment messages, ready to send.", logo row, pricing context, "How it works" link (full-page modal), playbook flow (6 numbered nodes connected by arrows — Booking confirmed → Reminder sent → Pre-visit → Reschedule → No-show follow-up → Cancellation), two-column body with messages on the left and a sticky opt-in form preview on the right. Six numbered message cards with style pills, "Modify with AI ›" expanders, "Personalize" slideout, "Show template / Show preview" toggle, "Copy all" button.
+The prototype's public messages page at `/sms/[category]/messages` was archived on 2026-05-13. Its load-bearing content — playbook diagram and opt-in form sample — was salvaged onto the §3.2 category landing page first; the messages page itself then moved to `prototype/archive/`. The strangers-become-users surface is now the category landing above. Anchors retained for historical reference: D-217, D-223, D-224 (playbook); D-184, D-185 (personalize); D-187, D-188 (template/preview); D-182 (post-download band) — the personalize / template / copy-all mechanics didn't survive the archive and live on only in the archived file.
 
-What the customer does: browses messages, optionally personalizes them with their business name/category/etc., copies them or downloads the "two files" bundle. After download, an AI-prompts band appears between playbook and messages with tool-specific copy snippets. Anchors: D-217, D-223, D-224 (playbook); D-184, D-185 (personalize); D-187, D-188 (template/preview); D-182 (post-download band).
+### 3.4 Compliance explainer — archived from prototype
 
-### 3.4 Compliance explainer — `/compliance` (TBD: pending marketing retrenchment)
-
-What the customer sees: placeholder. Public-facing compliance information page, not yet fully designed. Marketing nav links here from the top.
-
-What the customer does: not much yet. **TBD:** This is the public marketing compliance page. Distinct from the per-customer "msgverified.com" compliance site referenced in MASTER_PLAN §14 (Phase 10 deliverable). The per-customer site doesn't exist yet — see §10 below.
+The prototype's `/compliance` page was archived on 2026-05-13. Canonical customer-facing compliance content lives at `/marketing-site/compliance/`. The per-customer "msgverified.com" compliance site referenced in MASTER_PLAN §14 remains a Phase 10 deliverable — see §10 below.
 
 ---
 

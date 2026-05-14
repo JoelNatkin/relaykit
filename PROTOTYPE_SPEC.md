@@ -5,7 +5,7 @@
 > Not for: backend implementation (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN), customer-experience narrative (PRODUCT_SUMMARY), decisions that resolve alternatives (DECISIONS). If code disagrees with spec, code wins — flag the discrepancy.
 
 ## Screen-Level Prototype Specifications
-### Last updated: May 9, 2026
+### Last updated: May 13, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -82,69 +82,34 @@ All data is mocked. Session context provides state management. localStorage key:
 
 ### Category Landing — `/sms/[category]`
 **File:** `prototype/app/sms/[category]/page.tsx`
-**Status:** Stable (appointments only)
+**Status:** Stable (appointments only). Hybrid docs/info page — absorbed playbook + opt-in form sample from the now-archived public messages page (May 2026 salvage).
 
 **Breadcrumb:** Home / Appointments (see Global Patterns > Breadcrumbs). No Appointments pill badge in hero — breadcrumb handles category identification.
 
-**Subhead:** "Your AI coding tool builds the integration. RelayKit handles the carriers." (updated from prior copy)
+**Subhead:** "Your AI coding tool builds the integration. RelayKit handles the carriers."
 
-**Pricing context line:** Below "See all appointment messages →" CTA link with `mt-5`. Styled: `text-base text-center text-text-tertiary`. "$49" and "$19/mo" in `font-semibold text-text-primary`. Full text: "Free sandbox. No credit card. $49 to register, $19/mo after approval."
+**Hero CTAs:** Single secondary CTA "See all categories" (links `/`). The prior "Browse messages" hero CTA was removed alongside the messages-page archive (target gone).
 
-**What you get cards (updated D-220, D-241):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section is a true full-width gray band (`bg-bg-secondary`) — outer page container is `py-16` with no max-width, content sections use `mx-auto max-w-4xl px-6`. Cards have `bg-bg-primary` to pop against gray. "Compliance that runs itself" card has extended description: original text + "Issues caught are fixed automatically — you get a heads-up, not an emergency." (D-241)
+**Playbook workflow diagram (D-217, D-224):** Full-width gray band between hero and message-preview section. Imported from `@/components/playbook-flow` (extracted in May 2026 salvage; previously inline on the public messages page). Heading "Your complete appointment SMS system" + horizontal flow with 6 numbered nodes (24px filled purple circles, white numbers, CSS hover tooltips) connected by arrows. Labels left-aligned, max-width ~90px. Vertical stepper on mobile. Tagline "One prompt. Your AI tool builds the whole flow." Data in `PLAYBOOK_FLOWS` keyed by category. Node order: 1 Booking confirmed, 2 Reminder sent, 3 Pre-visit sent, 4 Reschedule handled, 5 No-show followed up, 6 Cancellation handled (D-223). Returns null for categories not in `PLAYBOOK_FLOWS` (currently only `appointments` populated).
 
-Below-hero message preview section with three style pills (Brand-first / Action-first / Context-first) and three sample message cards. Variable values render in `font-medium text-text-brand-tertiary`. Trigger lines use "Sent when..." format. Demonstrates anti-cookie-cutter strategy (D-91, D-106).
+**Message style preview section:** Three style pills (Brand-first / Action-first / Context-first) and three sample message cards. Variable values render in `font-medium text-text-brand-tertiary`. Trigger lines use "Sent when..." format. Demonstrates anti-cookie-cutter strategy (D-91, D-106).
 
-**Registration scope section (D-230, D-231):** Between "What you get" gray band and the "Preview the full message library" CTA band. Section eyebrow "Your registration" (brand purple, centered) + heading "What's included from day one." Two sub-sections (no bounding boxes, content breathes):
+**Pricing context line:** Below message preview cards, `mt-5`. Styled: `text-base text-center text-text-tertiary`. "$49" and "$19/mo" in `font-semibold text-text-primary`. Full text: "Free sandbox. No credit card. $49 to register, $19/mo after approval." The prior "See all appointment messages →" CTA above this line was removed alongside the messages-page archive.
+
+**Opt-in form sample section:** Below the pricing context line, before the "What you get" gray band. Centered eyebrow "Opt-in" (`text-text-brand-secondary`). Framing copy (PM-provided, May 2026 salvage): "Your AI tool wires opt-in into your app. We host and maintain the form, generate the consent language, and update it if rules change. Here's what your customers see when they sign up:" Below that, centered `<CatalogOptIn>` in a `max-w-sm` wrapper. Props wired with `appName="GlowStudio"`, `website="glowstudio.com"`, `allMessages={MESSAGES[category] || []}` — matches the mock business identity used in the message-preview interpolation above so the page is coherent end-to-end.
+
+**What you get cards (updated D-220, D-241):** Messages that get approved / A build spec your AI tool reads / Registration you don't touch / Compliance that runs itself. Section is a true full-width gray band (`bg-bg-secondary`). Cards have `bg-bg-primary` to pop against gray. "Compliance that runs itself" card has extended description: original text + "Issues caught are fixed automatically — you get a heads-up, not an emergency." (D-241)
+
+**Registration scope section (D-230, D-231):** Between "What you get" gray band and the "Preview the full message library" teaser. Section eyebrow "Your registration" + heading "What's included from day one." Two sub-sections (no bounding boxes, content breathes):
 - "What your registration covers" — green `CheckCircle` items pulled from `USE_CASES[category].included`. Body text capped at `max-w-[600px]`.
-- "Need marketing messages too?" — body text explaining separate registration + two example message cards (Promotional offer, Feedback request) using the same `interpolate()` + brand-purple variable styling as hero previews. EIN note: "Note: adding a marketing campaign requires an EIN. Sole proprietor registrations are limited to one campaign."
+- "Need marketing messages too?" — body text explaining separate registration + two example message cards (Promotional offer, Feedback request). EIN note: "Note: adding a marketing campaign requires an EIN. Sole proprietor registrations are limited to one campaign."
 
-**Why registration matters FAQ:** Two cards (down from three): "Why can't I just register myself?" and "What happens after I'm approved?" Body text capped at `max-w-[600px]`.
+**Why registration matters FAQ:** Two cards: "Why can't I just register myself?" and "What happens after I'm approved?" Body text capped at `max-w-[600px]`.
 
-### Public Messages Page — `/sms/[category]/messages`
-**File:** `prototype/app/sms/[category]/messages/page.tsx`
-**Status:** Stable
-
-**This is the most important page in the product.** It's where strangers become users. The download happens here.
-
-**Breadcrumb:** Home / Appointments / Messages — inside gray hero band as first element (see Global Patterns > Breadcrumbs). No Appointments pill badge — breadcrumb handles category identification.
-
-**Hero:** Gray band (`bg-bg-tertiary`, `pt-6 pb-12`). H1 ("Appointment messages, ready to send.") with subhead grouped below ("Everything your AI coding tool needs to add SMS — in two files."). Desktop CTA right-aligned with "Free to build and test. No lock-in." below. Mobile CTA full-width after logos. Logo row (6 tools, 48px circles with `border-[#999999]`). Pricing context below logos: "Free sandbox, no credit card. $49 to register, $19/mo after approval." with line break before "You'll get two files and a sandbox API key." "How it works" link (Expand06 icon, brand purple semibold) opens full-page modal (D-218).
-
-**Playbook summary (D-217, D-224):** Between hero and messages. `bg-bg-secondary` band. Heading "Your complete appointment SMS system" + horizontal flow with 6 numbered nodes (24px filled purple circles, white numbers, CSS hover tooltips) connected by arrows. Labels left-aligned, max-width ~90px. Vertical stepper on mobile. Tagline "One prompt. Your AI tool builds the whole flow." Data in `PLAYBOOK_FLOWS` keyed by category. Node order: 1 Booking confirmed, 2 Reminder sent, 3 Pre-visit sent, 4 Reschedule handled, 5 No-show followed up, 6 Cancellation handled (D-223).
-
-**Layout:** StepsLayout is the default (D-113). Two-column grid (`lg:grid-cols-[1fr_376px]`) — messages on left (`max-w-[500px]`), opt-in on right. Old layout preserved at `?layout=default`.
-
-**Post-download AI prompts band (D-182):** Appears between playbook and messages after user dismisses the "just the files" confirmation modal (`hasDownloaded` state flag). Contains AI prompt cards and interactive tool selector. Only triggered by "just the files" path.
-
-**Left column — Messages:**
-- "Messages" h2 + body copy: "Every message is pre-written for your use case and formatted for carriers. Copy them, adapt them, or let your AI tool use them as a starting point."
-- Style variant pills (Brand-first / Action-first / Context-first / Marketing with ArrowDown icon) — `flex-wrap` with `whitespace-nowrap` for mobile wrapping. Marketing pill scrolls to marketing section.
-- Toolbar row (`mb-3`): Left: "Personalize" (brand purple semibold, Sliders04 icon — opens slideout). Right: "Show template"/"Show preview" toggle + "Copy all". (D-185)
-- Default view: template mode — variables render as brand-purple inline text (D-187). Clicking "Show preview" with empty personalization opens slideout (D-188).
-- 6 numbered `CatalogCard` components (D-223) — brand purple number to left of title, no checkboxes (D-171), "Modify with AI ›" expander per card (D-174). Order: 1 Booking confirmation, 2 Appointment reminder, 3 Pre-visit instructions, 4 Reschedule notice, 5 No-show follow-up, 6 Cancellation notice.
-- "Need marketing messages too?" marketing callout
-
-**Personalization slideout (D-184):** Unchanged from prior session.
-
-**Right column (sticky, `lg:top-20`):**
-- "Opt-in form" (`text-lg font-semibold`) + body: "Carriers require an opt-in form before you can send messages. RelayKit generates and maintains yours."
-- `CatalogOptIn` (preview only, no copy — D-173). Placeholder fields: "Enter name", "Enter phone" (D-190).
-
-**Logo circles:** White backgrounds (`bg-white`) on hero logo row (D-227).
-
-**"Learn more about RelayKit →"** link below marketing section, before footer.
-
-**How it works modal (D-218):** Full-page overlay (z-50, bg-white, overflow-y-auto). Sticky close button. Content: H1 "How it works" (text-3xl/4xl), subhead, "What you get" 4-card grid, pricing section in gray band (Free + Go live cards, $49 + $19/mo per D-320 pricing), "Why registration matters" FAQ, "Back to messages" CTA.
-
-**Download modal:** Unchanged from prior session.
-
-**Shared footer:** Uses shared `Footer` component (D-121).
+> The public messages page at `/sms/[category]/messages` was archived on 2026-05-13 to `prototype/archive/app/sms/[category]/messages/page.tsx`. Its load-bearing content (playbook diagram + opt-in form sample) was salvaged onto this category landing page first; the archive operation then removed the live route. See `prototype/archive/README.md`.
 
 ### Compliance Page — `/compliance`
-**File:** `prototype/app/compliance/page.tsx`
-**Status:** Placeholder
-
-Public-facing compliance information page. Not yet fully designed.
+**Status:** Archived from prototype on 2026-05-13. The compliance page is canonical at `/marketing-site/compliance/` per the marketing-site retrenchment. The prototype copy lives at `prototype/archive/app/compliance/page.tsx` as historical record.
 
 ---
 
@@ -360,64 +325,6 @@ Floating "Nav ↑" pill (bottom-left, z-200). Expands to show jump links to ever
 
 ---
 
-### Overview — `/apps/[appId]/overview`
-**File:** `prototype/app/apps/[appId]/overview/page.tsx` + `approved-dashboard.tsx`
-**Status:** Restructured (D-326, D-327) — accordion removed, Start building content across all non-Registered states
-
-Conditional render: `isApproved ? <ApprovedDashboard /> : <two-column layout />`
-
-#### Non-Registered States (Building, Pending, Extended Review, Rejected)
-Note: Onboarding state redirects `/overview` → `/messages` — Overview is never rendered in Onboarding.
-
-**Layout:** Two-column flex layout `flex-col md:flex-row gap-6 md:gap-16`. Left column `min-w-0 flex-1`. Right column `md:w-[280px] md:shrink-0`, `order-first md:order-last`. Stacks on mobile below `md:` breakpoint.
-
-**Left column — Start building content (D-326, D-327):**
-Same content across all non-Registered states. Replaces the former 4-step "Build your SMS feature" accordion.
-- Heading: "Start building" (`text-2xl font-bold`)
-- Body: "Everything your AI tool needs to build your SMS feature." (`text-sm text-text-tertiary`)
-- **Tool logo farm** (`mt-4 mb-5`): 6 left-aligned logos (40px circles, `border border-[#c4c4c4] bg-white p-1`, `gap-3`): Claude Code, Cursor, Windsurf, GitHub Copilot, Cline, Other (Code02 icon fallback). Same assets as get-started page.
-- **Three numbered cards** (`space-y-4`): Each `rounded-xl border border-border-secondary p-4` with label + CopyButton (Copy01 → Check 2s swap) + helper text (`text-xs text-text-quaternary`) + content block (`bg-bg-secondary rounded-lg px-3 py-2`):
-  1. "1. Install RelayKit" / "Run this in your project's terminal." / `npm install relaykit`
-  2. "2. Add your API key" / "Paste this prompt into your AI tool to add the key." / env text
-  3. "3. Add SMS to your app" / "Paste this prompt into your AI tool to start building." / hardcoded Club Woman prompt
-
-**Right column — registration sidebar card:**
-`rounded-xl bg-gray-50 p-6 md:sticky md:top-20`, `md:w-[300px]`. Content varies by state:
-- **Building state — Card A (D-326, D-335, D-337):** "Ready to go live?" heading. With EIN: "Registration takes a few days." body, campaign radios ("Just [vertical]" default $19/mo, "Add marketing messages too" $29/mo with helper text showing dynamic vertical name), pricing, "Start registration →" CTA. No EIN: body includes "An EIN lets us enable optional marketing messages. [Add EIN.]" inline link. Clicking "Add EIN." swaps to Card B.
-- **Building state — Card B (D-337):** "Add your EIN" heading, EIN explanation body, "Business tax ID (EIN)" label, input + grey "Verify" button, stub switcher (Default/Verified/Failed), two-phase spinner stub (Verifying → Checking sources), business identity confirmation card, "This is my business" checkbox, "Try a different EIN" tertiary text link below checkbox (clears EIN state and reopens input), Cancel + Save buttons (right-aligned together). Cancel returns to Card A. Save writes EIN to sessionStorage, dispatches `relaykit-ein-change` event, returns to Card A with radios. Failed state shows light red error box. 200ms crossfade between Card A and Card B. Shared component: `prototype/components/ein-inline-verify.tsx`. Same "Try a different EIN" link is also present on the onboarding business page (`/start/business`) verified state.
-- **Pending state (D-338, D-339, D-340):** Registration status tracker card + (optional) marketing upsell card below a divider. Tracker shows "Registration status" heading with info tooltip icon (InfoCircle, tooltip text: "Registration usually takes 2–3 days per message type."). Per-type rows: bold type name on top (`text-text-primary font-semibold`), "Submitted 3/17/2026" below (`text-xs text-text-tertiary mt-0.5`), "In review" badge right-aligned (`bg-bg-brand-secondary text-text-brand-secondary mt-1` for vertical centering with name). Row gap: `space-y-2`. Marketing row appears when marketing was added at signup (has EIN) OR after upsell confirmation. Default shows Appointments row only. Pending tracker has no dropdown — everything is always "In review" in this state. Below the tracker, if marketing isn't added yet, a divider (`border-t border-border-secondary pt-4`) + marketing upsell card: "Add marketing messages" heading, benefit copy ("Promote new services, announce specials, and bring past clients back."), "$29/mo instead of $19/mo." bold pricing line, CTA button ("Add your EIN →" no-EIN / "Add marketing messages →" with-EIN). Upsell CTA paths: no-EIN → `EinInlineVerify` card swap (entire card replaced) → on save → pricing confirmation step → Confirm → upsell disappears + Marketing row added to tracker. With-EIN → pricing confirmation step directly. Pricing confirmation card: "Confirm marketing messages" heading, "Your plan updates from $19/mo to $29/mo. Registration typically takes a few days." body, "Marketing messages share your 500 included messages." detail, Cancel (tertiary left) + Confirm (primary right, 20px gap, `justify-end`).
-- **Extended Review:** "Registration status" heading, purple "Under review" pill, submitted/updated dates, longer-than-expected copy.
-- **Rejected:** "Registration status" heading, red "Not approved" pill, "$49 refunded" in green, divider, "What happened" section, mailto link. No retry button.
-- **Registered (D-338, D-339, D-340):** Right rail shows one of three things depending on marketing status: (1) Marketing upsell card when marketing not added yet — same shape as Pending upsell card, including EIN card swap for no-EIN and pricing confirmation step. After Confirm, transitions to (2). (2) Marketing-only registration tracker after upsell confirmation — same card pattern as Pending tracker but only one row: "Marketing" / "Submitted 3/17/2026" / "In review" badge. No Appointments row because transactional is already live. Prototype dropdown on card (top-right): "In review" / "Registered" — cycles the badge state. "Registered" state: heading changes to "Your messages are live!" (no tooltip), badge becomes green "Registered", right-aligned primary Close button appears. Close permanently dismisses the card. (3) Nothing — grey card wrapper `null` when marketing registered and tracker dismissed.
-
-#### Registered State — Operational Dashboard (D-150)
-
-**Layout:** Full-width 3×2 card grid. No right sidebar.
-
-**Row 1 — KPI cards:**
-- **Delivery:** 98.4% big number, delivered/failed/pending dot-separated stats, trend line
-- **Recipients:** 284 big number, opt-outs/replies dot-separated, trend line (format matches Delivery)
-- **Compliance:** 99.4% rate. Two modes:
-  - "All clear": green, dot + "All clear", clean/blocked/warned breakdown
-  - "Has alerts": amber, two alert summary rows with "Fix →" / "View →" links opening detail modal
-
-**Row 2 — Detail/Chart cards:**
-- **Usage & Billing:** 347/500 big number, progress bar (h-3), remaining count. Simplified: "Plan: $19/mo · 500 included"
-- **Message Types:** Horizontal bar chart, 4 appointment types. Bar thickness matches progress bar.
-- **Sending Patterns:** 24-bar hourly chart, quiet hours in amber. Label: "Peak: 2–4 PM · Quiet: 9 PM–9 AM"
-
-**Alert detail modal:** Flagged message in code block, what triggered it, what to do, copyable AI prompt for fixing.
-
-**Marketing upsell banner (D-254):** Between row 1 and compliance section. Contained message bar (border, info icon, heading + body, brand link, dismiss X). Only visible when "Has alerts" compliance view selected. Dismissible per session. Copy: "Want to send marketing messages?" + "Add marketing alongside your appointment reminders." + "Learn more →" button opens marketing modal.
-
-**D-239 Compliance alerts on Approved empty state:** Same pattern as sandbox. Alerts on: heading "You're live and sending" + "Delivery is healthy. [br] We'll text you if anything changes." Alerts off: heading "You're live and sending" + "Delivery is healthy." + "Want a text when we catch something? Enable alerts" link. Alerts status indicator also shown on compliance header row (same as sandbox Placement 2).
-
-**Marketing modal:** Full-screen overlay (z-50, bg-white, overflow-y-auto). Sticky header with state switcher (Info/In review/Active) + X close. Opened from Overview banner "Learn more →" and Messages tab marketing CTA. Content in Info state: gray hero band with headline/subhead/purple CTA at top → white pricing ($29 one-time / +$10/mo) → gray "Messages you'll unlock" band with style pills (Brand-first/Action-first/Context-first) and 3-column message cards (Discount offer, Re-engagement, Review request with personalized values) → white "How it works" numbered steps (1-2-3) → gray "How consent works" bullet list (max-w-500px centered) → white bottom CTA repeat. In review: hero CTA replaced by registration stepper card. Active: centered confirmation "Marketing messages are live" + link to Messages tab.
-
-**File:** `prototype/components/marketing-modal.tsx`
-
----
-
 ### Messages Page — `/apps/[appId]` (D-345)
 **File:** `prototype/app/apps/[appId]/page.tsx`, `prototype/components/catalog/catalog-card.tsx`
 **Status:** REDESIGNED — Phase 2 card redesign + wizard skeleton (WORKSPACE_DESIGN_SPEC.md)
@@ -610,10 +517,6 @@ Onboarding wizard: no Verification panel. Verification renders identically to ot
 
 Compliance gates extend existing message-editor logic (`/prototype/lib/editor/`) with one new required-and-immutable placeholder: `{code}` for verification templates. All other gates (opt-out, character cap) inherit unchanged.
 
-### Opt-in Form Preview — `/apps/[appId]/opt-in`
-**File:** `prototype/app/apps/[appId]/opt-in/page.tsx`
-**Status:** REMOVED from wizard flow (D-317 tabled). All access redirects to `/messages` via AppLayout. The page file is retained — the component returns `null` and the original implementation is preserved inside a reference comment for future redesign. The `CatalogOptIn` component (`prototype/components/catalog/catalog-opt-in.tsx`) is still used by the public marketing pages.
-
 ### Ready-to-build Confirmation — `/apps/[appId]/ready`
 **File:** `prototype/app/apps/[appId]/ready/page.tsx`
 **Status:** Stable — wizard step between messages and signup
@@ -804,144 +707,6 @@ Shared `ConfirmModal` helper used for the live-key Regenerate modal. Backdrop `b
 
 ---
 
-## Admin Dashboard (D-234)
-
-Operator/admin dashboard at `/admin` — separate from customer-facing app. Same design system but distinct layout and context. All mock data, no backend.
-
-### Admin Layout — `/admin/layout.tsx`
-**File:** `prototype/app/admin/layout.tsx`
-**Status:** Stable
-
-**Sidebar:** 240px fixed width, `bg-gray-900` dark background, white text. Shield icon + "RelayKit Admin" header with border-b separator. Four nav links with active state highlighting (bg-gray-800): Control Room, Registrations, Customers, Revenue. "View as customer →" footer link to `/apps`.
-
-**Main content:** `flex-1` with `bg-bg-primary`, `max-w-6xl px-8 py-8` inner container.
-
-### Control Room — `/admin`
-**File:** `prototype/app/admin/page.tsx`
-**Status:** Stable
-
-**Header:** "Control Room" h1 + subtitle. State switcher (Normal / Crisis) top-right. Manual review toggle (D-235) — purple toggle switch, defaults to Manual (on), shows "(reviewing before submission)" when active. Independent from state switcher.
-
-**4 KPI cards** in responsive grid (`sm:grid-cols-2 lg:grid-cols-4`):
-- **Platform Compliance:** Large % in green/amber, clean/blocked/warned breakdown, trend line
-- **Active Customers:** Count, approved/sandbox/new breakdown
-- **Registrations:** Pipeline count. Manual review on: shows "X awaiting your review" in brand purple + carrier review + submitted today. Manual review off: standard pipeline counts.
-- **Revenue:** MRR figure, subscriptions/overage breakdown, trend
-
-**State switcher modes:**
-- Normal: 99.1% compliance, 23 customers, 4-5 pipeline, $2,847 MRR
-- Crisis: 94.2% compliance (amber), 2 suspended customers, 7-9 pipeline, $2,614 MRR, downward trends in red
-
-**Attention queue (D-238, D-242):** Below KPI cards. Monitoring feed with expandable inline detail. Severity dots (red/orange/yellow), customer name, issue description, timestamps. Compliance items show tier badge (Minor/Escalated/Suspended) and expand on click (one at a time). Non-compliance items (carrier suspension, registration rejection, payment) are static rows.
-
-**Expanded compliance detail:**
-- Tier badge (Minor = `text-text-tertiary`, Escalated = `text-text-warning-primary`, Suspended = `text-text-error-primary`)
-- Context grid: message type, "Rewriting since [date] (N messages)" — no redundant Customer field
-- Escalated: deadline countdown ("Day N of 30 — message suspends [date]"), original vs rewritten side by side, notification history
-- Suspended: "Blocked since [date] — awaiting customer fix", blocked message only (no rewrite), notification history
-- Minor: original vs rewritten side by side, no countdown
-- Operator buttons (right-aligned): Dismiss, Change severity dropdown (Minor/Escalated/Suspended), Unsuspend (Suspended only)
-
-**Queue items:** Normal mode: 6 items (1 Escalated PetPals, 1 Minor GlowStudio demo, 4 non-compliance). Crisis mode: 7 items (adds Suspended UrbanBites, promotes GlowStudio to Escalated). State switcher resets expanded state.
-
-### Registration Pipeline — `/admin/registrations`
-**File:** `prototype/app/admin/registrations/page.tsx`
-**Status:** Stable
-
-**Header:** "Registration Pipeline" h1 + subtitle.
-
-**Filter pills:** Active (default, excludes Approved + Closed), Awaiting Review, In Carrier Review, Extended Review, Rejected, Closed (Declined + Abandoned), All, Approved. Count badges on each. Active pill: `bg-gray-900 text-white`.
-
-**List view:** Each registration is a clickable row with: customer name + app name, time in status, use case pill (brand purple), status pill (color-coded), action link, expand chevron.
-
-**Status colors:**
-- Awaiting review: `bg-blue-100 text-blue-700`
-- In carrier review: `bg-gray-100 text-gray-600`
-- Approved: `bg-green-100 text-green-700`
-- Rejected: `bg-red-100 text-red-700`
-- Extended review: `bg-amber-100 text-amber-700`
-- Declined / Abandoned: `bg-gray-200 text-gray-700`
-
-**Submission tracking:** `attempt` field. Status pill shows "(2nd attempt)", "(3rd attempt)" suffix.
-
-**10 mock registrations:** GlowStudio (awaiting, clean), TechRepair (awaiting, amber flag), FreshCuts (rejected 2nd attempt, red flag), PetPals (in review), YogaFlow (extended review), BookWorm (in review), QuickFix Auto (approved), MealPrep Pro (approved), CannaBliss (declined — cannabis gating), SpamKing (abandoned 3rd attempt — spam).
-
-**Expanded detail — two-column grid:**
-Left: Business Details. Editable fields (awaiting/rejected): name, address, phone, email, website — transparent inline inputs with bottom border on focus, blue dot indicator when modified. Read-only always: type, EIN.
-Right: Campaign section — use case, message type pills, editable campaign description textarea (awaiting/rejected), compliance site link.
-
-**AI pre-review (D-236) — traffic light system** (awaiting/rejected only):
-- **Green:** Single line — green circle check + "Ready for submission". No box. (GlowStudio)
-- **Amber:** Left-border callout (`border-l-amber-400 bg-amber-50`). Warning icon + one sentence. "✉ Email customer" button right-aligned. (TechRepair: website 404)
-- **Red:** Left-border callout (`border-l-red-400 bg-red-50`). Alert icon + one sentence. Gray quoted block with AI suggested fix. "✉ Email customer" (secondary) + "✦ Apply fix" (primary, writes fix to description textarea) right-aligned. (FreshCuts: "same-day availability" flagged as promotional, suggests reframing as waitlist-triggered)
-
-**Carrier rejection reason:** Red callout (`bg-red-50 border border-red-200`) above AI pre-review for rejected registrations.
-
-**Sample messages:** Numbered labels ("1. Booking confirmation", "2. Appointment reminder"). Editable textareas on awaiting/rejected, read-only bubbles on other states.
-
-**Action buttons (right-aligned, three patterns):**
-- Awaiting review (green AI): "Submit to carrier" (primary) only
-- Awaiting review (amber AI): "✉ Email customer" only (in AI callout)
-- Rejected: "Resubmit to carrier" (primary) only — email is in AI callout above
-- Extended review: "✉ Email customer" + "✉ Email carrier" (both secondary with mail icons)
-
-**Terminal statuses (Declined/Abandoned):**
-- Resolution section: gray callout with reason + refund status ("$49 refunded" in green, or "Process refund →" button)
-- Email action section: expandable email preview with subject/body, "Send email" / "Cancel" buttons. Decline email: direct, respectful, specific reason. Closure email: we-tried tone, carrier feedback summary. "Not yet sent" indicator.
-
-### Customer List — `/admin/customers`
-**File:** `prototype/app/admin/customers/page.tsx`
-**Status:** Stable
-**Decision refs:** D-234
-
-Table view of all customers — Joel's "see all customers at a glance" screen. Light background content area (matches Control Room and Registration Pipeline).
-
-**Header:** "Customers" h1 + "{N} customers" subtitle count.
-
-**Filter pills:** All (default), Sandbox, Pending, Active, Churned. Active pill: `bg-gray-900 text-white`. Inactive: `bg-gray-100 text-text-secondary`. Count shown after label. Same visual pattern as Registration Pipeline filters.
-
-**Table:** Rounded border container (`border-gray-200`), `bg-gray-50` header row. 9 columns: Customer (name bold + app name secondary), Status (badge: gray sandbox, amber pending, green active, red churned), Use case, Registered (formatted date), Messages (this month, with locale formatting), Compliance (color-coded: green ≥95%, amber 80-94%, red <80%, gray dash for 0), Plan (Free / Go Live), MRR (dollar amount, dash for $0), Last activity (relative time).
-
-**Sorting:** All columns sortable by click. Default: last activity descending (newest first). Active sort shows arrow indicator (↑/↓). Numeric columns default to descending, text columns to ascending.
-
-**Row interaction:** Click navigates to `/admin/customers/[customerId]` via `useRouter`. Hover state: `bg-gray-50`.
-
-**Responsive:** Compliance and MRR columns hidden below `lg` breakpoint.
-
-**Mock data:** 12 customers. Reuses businesses from Registration Pipeline (GlowStudio, TechRepair Pro, FreshCuts, PetPals, CannaBliss, SpamKing, YogaFlow) plus new entries (Bella's Nail Studio, QuickFix Plumbing, FitZone Gym, Downtown Deli, UrbanBites). Statuses: 8 active, 1 pending, 1 sandbox, 2 churned.
-
-### Customer Detail — `/admin/customers/[customerId]`
-**File:** `prototype/app/admin/customers/[customerId]/page.tsx`
-**Status:** Stable
-**Decision refs:** D-234, D-193 (pricing)
-
-Single-customer deep-dive — everything about one customer on one page. Max-width 900px. Light background.
-
-**Back navigation:** "← Back to Customers" link at top → `/admin/customers`.
-
-**Page header:** Customer name (h1) + app name (secondary). Right-aligned: use case category pill (`bg-gray-100`) + status badge (same colors as Customer List).
-
-**Six vertically-stacked sections (in this order):**
-
-1. **Registration Summary** — Two-column grid: business name, EIN (masked XX-XXX format), business type, website, phone, email. Below: registration status with date. "View in Registration Pipeline →" link (purple) shows for pending/review states only. Campaign description (if registered). Message type pills (`bg-gray-100 rounded-full`).
-
-2. **Message Volume — Last 30 Days** — Four stat cards in a row: Sent (with daily avg sub-text), Delivered, Failed, Blocked (with "compliance" sub-text). Cards: `border-gray-200 rounded-lg p-4`. Empty state: "No messages sent yet."
-
-3. **Compliance** — Large percentage with color coding + "compliance rate" label. Right side: flagged count with severity or "No compliance issues" (green). Empty state for sandbox/pending: "No messages sent yet — compliance tracking will begin after approval."
-
-4. **Attention Items** — Severity-coded items matching Control Room format (colored dot + issue text + time + action link). Items in `bg-gray-50 rounded-lg` rows. Empty state: "No attention items — this customer is in good standing." (green text).
-
-5. **Billing** — Two-column grid: Plan, Registration fee ("$49 paid [date]"), Monthly rate ($19/mo or $0), Payment status (green "Current" / red "Past due" / gray "N/A"), Current period, Messages this period, Overage.
-
-6. **Recent Messages** — 20-row table (longest section, at bottom). Columns: Time, Recipient (masked •••-••-XXXX), Type, Preview (truncated ~60 chars), Status (colored dot: green delivered, red failed, yellow pending), Flag (only shows for non-clean: amber "warned", red "blocked" badges). Empty state: "No messages sent yet."
-
-**Mock data mapping:** cust-1 → GlowStudio (active, high volume, 2 warned messages), cust-2 → TechRepair Pro (active, 1 blocked message, 1 attention item), cust-3 → FreshCuts (pending, no messages), cust-5 → QuickFix Plumbing (sandbox, empty). Unknown IDs fall back to GlowStudio.
-
-### Placeholder Pages
-- `/admin/revenue` — "Revenue & Metrics — coming soon"
-
----
-
 ## Screens Not Yet Built
 
 ### Registration Form — `/apps/[appId]/register`
@@ -976,18 +741,6 @@ Tab bar hidden. "← Back to business details" navigation. Reads form data from 
 
 Current "Content blocked" modal has "Fix it with AI" section with copyable prompt — this is wrong (could generate messages outside registered set, causing drift). Replace with plain text guidance: two paths (remove promotional language, or register marketing campaign). Intelligence lives in SMS_GUIDELINES.md, not dashboard-generated prompts.
 
-### Registration Components — `/registration-test`
-**Files:** `prototype/components/catalog/registration-scope.tsx`, `prototype/components/registration/business-details-form.tsx`, `prototype/components/registration/review-confirm.tsx`
-**Test route:** `prototype/app/registration-test/page.tsx`
-**Status:** `[INTEGRATED INTO REGISTRATION FLOW]`
-**Decision refs:** D-225
-
-Components now integrated into `/apps/[appId]/register` and `/apps/[appId]/register/review` routes. Test route at `/registration-test` still available for standalone testing.
-
-**Supporting libs:** `prototype/lib/intake/` — use-case-data.ts, validation.ts (Government added to business types), campaign-type.ts, industry-gating.ts, templates.ts. Pure logic, no component deps.
-
----
-
 ### Download Confirmation Flow
 **Status:** `[NEEDS DESIGN]`
 
@@ -999,67 +752,85 @@ Components now integrated into `/apps/[appId]/register` and `/apps/[appId]/regis
 
 ## File Map
 
+Reflects active `/prototype/` after the May 2026 bulk archive. Archived files preserved at `prototype/archive/` (mirrored paths); see `prototype/archive/README.md` for the full archived inventory and un-archive procedure.
+
 ```
 prototype/
 ├── app/
-│   ├── page.tsx                          # Marketing home
+│   ├── page.tsx                          # Marketing home (retained as dev entry point)
+│   ├── layout.tsx                        # Root layout — SessionProvider + TopNav + ProtoNavHelper
+│   ├── globals.css                       # Tailwind v4 theme + Untitled UI semantic tokens
 │   ├── account/page.tsx                  # Account settings (account-level, D-347)
-│   ├── compliance/page.tsx               # Public compliance page
-│   ├── auth/page.tsx                     # Auth gate (mock)
 │   ├── apps/
 │   │   ├── page.tsx                      # Your Apps (project list)
 │   │   └── [appId]/
 │   │       ├── layout.tsx                # App shell — state-based layout switching (wizard vs dashboard)
-│   │       ├── page.tsx                  # Redirects to /messages
-│   │       ├── overview/
-│   │       │   ├── page.tsx              # Sandbox dashboard (compliance card + build steps + sidebar)
-│   │       │   └── approved-dashboard.tsx # Full 3×2 card grid (Approved state)
-│   │       ├── messages/page.tsx         # Messages workspace — full width, dual Continue in wizard
-│   │       ├── ready/page.tsx           # Ready-to-build confirmation — benefit list + pricing + CTA
+│   │       ├── page.tsx                  # Workspace home (catalog + custom messages + monitor) — D-345
+│   │       ├── ready/page.tsx            # Ready-to-build confirmation
 │   │       ├── signup/
-│   │       │   ├── page.tsx             # Signup email entry (400px, inline Back, Send code)
-│   │       │   └── verify/page.tsx      # Signup OTP verification (400px, 6-digit boxes, Confirm)
-│   │       ├── get-started/page.tsx     # Final onboarding — install/env/prompt cards, state transition (D-322)
-│   │       ├── opt-in/page.tsx          # Opt-in form preview — returns null, redirects to /messages
+│   │       │   ├── page.tsx              # Signup email entry
+│   │       │   └── verify/page.tsx       # Signup OTP verification
+│   │       ├── get-started/page.tsx      # Final onboarding (D-322)
 │   │       ├── register/
-│   │       │   ├── page.tsx              # Registration form (BusinessDetailsForm)
-│   │       │   └── review/page.tsx       # Review & confirm (ReviewConfirm)
-│   │       └── settings/page.tsx         # 600px, 5 sections, full lifecycle state differentiation
-│   ├── sms/[category]/
-│   │   ├── page.tsx                      # Category landing (appointments)
-│   │   └── messages/page.tsx             # Public messages page (steps layout default)
-│   ├── admin/
-│   │   ├── layout.tsx                    # Admin sidebar layout (dark, 240px)
-│   │   ├── page.tsx                      # Control Room (KPI cards + attention queue)
-│   │   ├── registrations/page.tsx        # Registration Pipeline (list + expandable detail)
-│   │   ├── customers/page.tsx            # Customer List (table, filters, sorting)
-│   │   ├── customers/[customerId]/page.tsx # Customer Detail (6 sections, mock data by ID)
-│   │   └── revenue/page.tsx              # Revenue & Metrics (placeholder)
-│   ├── registration-test/page.tsx         # Test route for imported registration components
-│   └── c/[categoryId]/                   # ORPHANED — legacy catalog routes, safe to delete
+│   │       │   ├── page.tsx              # Registration form
+│   │       │   └── review/page.tsx       # Review & confirm
+│   │       └── settings/page.tsx         # 600px settings page
+│   ├── sms/[category]/page.tsx           # Category landing (hybrid docs/info)
+│   └── start/                            # Onboarding wizard (5 steps)
+│       ├── layout.tsx
+│       ├── page.tsx
+│       ├── business/page.tsx
+│       ├── context/page.tsx
+│       ├── details/page.tsx
+│       ├── verify/page.tsx
+│       └── website/page.tsx
+├── archive/                              # Files removed in the 2026-05-13 bulk archive (see archive/README.md)
 ├── components/
 │   ├── top-nav.tsx                       # Context-aware nav (D-118)
-│   ├── wizard-layout.tsx                 # Wizard layout wrapper (Default state)
-│   ├── dashboard-layout.tsx              # Dashboard layout wrapper (non-Default states)
-│   ├── proto-nav-helper.tsx              # Floating nav helper for design review (prototype only)
+│   ├── wizard-layout.tsx                 # Wizard layout wrapper
+│   ├── wizard-step-shell.tsx             # Generic wizard step wrapper
+│   ├── dashboard-layout.tsx              # Dashboard layout wrapper
+│   ├── proto-nav-helper.tsx              # Dev nav helper (prototype only)
+│   ├── playbook-flow.tsx                 # Shared playbook diagram (extracted May 2026 salvage; consumed by /sms/[category])
+│   ├── sign-in-modal.tsx                 # Email → OTP modal (D-347)
 │   ├── footer.tsx                        # Shared footer (D-121)
-│   ├── category-modal.tsx                # Category picker
-│   ├── catalog/                          # Message cards, opt-in form, registration-scope.tsx
-│   ├── registration/                     # Imported registration components (D-225)
-│   │   ├── business-details-form.tsx     # Full business details form with Zod validation
-│   │   └── review-confirm.tsx            # Review & confirm with pricing modal
-│   └── dashboard/                        # ORPHANED — old A/B/C variants, safe to delete
-├── public/logos/                          # SVG logos for tool selector
-├── context/session-context.tsx           # State management (+ registrationState, complianceView)
+│   ├── ask-claude-panel.tsx              # AskClaude slideout
+│   ├── copy-button.tsx                   # Reusable copy-to-clipboard button
+│   ├── edit-business-details-modal.tsx   # Dev/prototype-only biz-name + service-type editor
+│   ├── ein-inline-verify.tsx             # Inline EIN entry / verify widget
+│   ├── setup-instructions.tsx            # Setup-instructions block + setup-toggle hook
+│   ├── test-phones-card.tsx              # Verified-test-phones management card
+│   ├── catalog/
+│   │   ├── catalog-card.tsx              # Per-message catalog card (editor + activity)
+│   │   ├── catalog-opt-in.tsx            # Opt-in form sample (consumed by /sms/[category] + /apps/[appId])
+│   │   ├── custom-message-card.tsx       # Custom-message card variant
+│   │   └── message-action-modal.tsx      # Generic action modal
+│   └── registration/
+│       ├── business-details-form.tsx     # Zod-validated business-details form
+│       └── review-confirm.tsx            # Registration review/confirm component
+├── context/
+│   ├── session-context.tsx               # SessionProvider (logged-in, app state, custom messages)
+│   └── setup-toggle-context.tsx          # Setup-instructions visibility toggle
+├── data/messages.ts                      # Message catalog (MESSAGES, CATEGORY_VARIANTS, Message type)
 ├── lib/
-│   ├── catalog-helpers.ts                # Template interpolation
-│   └── intake/                           # Imported intake logic (D-225)
-│       ├── use-case-data.ts              # 9 use case definitions
-│       ├── validation.ts                 # Zod schemas, formatters, field definitions
-│       ├── campaign-type.ts              # Campaign type determination
-│       ├── industry-gating.ts            # 3-tier industry detection
-│       └── templates.ts                  # Campaign description + sample message generation
-└── data/messages.ts                      # Message library
+│   ├── catalog-helpers.ts                # Catalog interpolation / example values
+│   ├── slug.ts                           # Collision-safe slug generation (D-351)
+│   ├── variable-scope.ts                 # Per-method variable-scope derivation (D-353)
+│   ├── variable-token.ts                 # VARIABLE_TOKEN_CLASSES (D-350)
+│   ├── wizard-storage.ts                 # sessionStorage helpers (key: relaykit_wizard)
+│   ├── editor/                           # Tiptap editor stack
+│   │   ├── message-editor.tsx
+│   │   ├── template-serde.ts
+│   │   ├── variable-node.ts
+│   │   └── variable-node-view.tsx
+│   └── intake/                           # Onboarding intake logic
+│       ├── use-case-data.ts
+│       ├── validation.ts
+│       ├── industry-gating.ts
+│       └── templates.ts
+├── public/logos/                         # SVG logos
+├── middleware.ts                         # Edge middleware (strips cookies on localhost)
+└── (next-env.d.ts, next.config.ts, package.json, tsconfig.json — config files)
 ```
 
 ---
@@ -1070,10 +841,8 @@ prototype/
 |-------|--------|-----|
 | `.next` cache corruption recurring | Workaround: delete before every restart | CC_HANDOFF gotcha #1 |
 | D-17 override: Experience Principles line 88 says "5–7 days" | Needs doc fix | D-17 |
-| Orphaned `/c/` routes and `components/dashboard/` files on disk | Safe to delete | CC_HANDOFF |
 | "Appointments" pill hardcoded in layout.tsx | Needs dynamic category | CC_HANDOFF gotcha |
 | Compliance modal "Fix it with AI" generates risky prompts | Needs revision | PM_HANDOFF item 2 |
 | Bar thickness 8px consistency across row 2 cards | May need verification | PM_HANDOFF |
-| Overview page `changes_requested` copy may still say "Changes requested" | Needs alignment with D-202 | CC_HANDOFF gotcha #18 |
 | Registration form pre-fill: "Pre-filled" state may not auto-validate EIN path fields | Touch-all ref validates on click, but initial mount may not trigger | Register page |
-| ~~Pricing inconsistency~~ | Resolved — all pricing updated to D-320 ($49 flat) / D-321 ($8/500 overage). No go-live fee. | D-320, D-321 |
+| `proto-nav-helper.tsx` references `/apps/[appId]/overview` — phantom route, file never existed on disk | Cleanup deferred per BACKLOG | Audit 2026-05-13 |

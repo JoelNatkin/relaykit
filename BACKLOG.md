@@ -5,7 +5,7 @@
 > Not for: active workstream items (MASTER_PLAN phase scope), recorded decisions (DECISIONS), active prototypes (`/explorations/`).
 
 ## Ideas, Deferred Work, and Future Features
-### Last updated: May 9, 2026
+### Last updated: May 13, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -198,9 +198,15 @@
 
 - **Custom template database lookup path (D-280)** — Current `lookupTemplate(namespace, event)` only checks the static TypeScript registry. Custom messages (D-280) will live in a database. When built, lookupTemplate falls through: static registry first, then `custom_templates` table query with user_id scope. Current function signature is fine — don't couple anything to the assumption that all templates are static. (Origin: April 3 architecture audit, D-280)
 
+- **Pre-existing `/overview` drift in `prototype/components/proto-nav-helper.tsx`** — Nav helper references `/apps/[appId]/overview` but the file never existed on disk; PROTOTYPE_SPEC also referenced it (cleaned up 2026-05-13). Cleanup requires understanding the state-switcher mechanism — the helper's job is jumping between registration states, and "overview" may be a stale name for what is now the workspace home at `/apps/[appId]`. (Origin: 2026-05-13 inventory audit + bulk archive)
+
+- **Marketing home (`prototype/app/page.tsx`) consolidation** — Retained as the prototype's dev-server landing in the 2026-05-13 bulk archive (removing it broke wordmark + breadcrumb links across the surviving tree). Eventually consolidate with `/marketing-site/` or formally retire when the prototype/marketing-site split is resolved. (Origin: 2026-05-13 bulk archive — Blocker 1)
+
+- **/marketing-site/ inventory audit** — Same shape as the 2026-05-13 prototype inventory: read-only walk producing `audits/marketing-site-inventory-YYYY-MM-DD.md` for triage. Deferred until after the pending marketing retrenchment lands so the audit isn't immediately stale. (Origin: 2026-05-13 prototype audit close-out)
+
 - **Pre-Phase-2 DECISIONS.md audit** — Review D-84 through D-362 for internal consistency, identify superseded/conflicting decisions, propose consolidation. Estimated 3–4 hours CC + 1–2 hours PM↔Joel resolution. Run before Phase 2 Session B kickoff. (Origin: Session 44, 2026-04-23 — flagged during Phase 1 Experiment 1 capture when Implications-for-Phase-2 surfaced that the MESSAGE_PIPELINE_SPEC drafted contract may need updates against real-world Sinch behavior)
 
-- **Configure eslint in /prototype** — Production workspaces (/api, /sdk, /marketing-site) all enforce eslint per CLAUDE.md quality gates. /prototype has no eslint config and CC has no automated linting available there. Prototype is the UI source of truth and ports to production verbatim — letting it drift on style or unused-imports/no-explicit-any/etc. costs more than fixing later. Match the eslint config of one of the production workspaces (probably /marketing-site since it's the most recent and uses the same Next 15 + React 19 + TS strict stack). One-session task. (Origin: Session 60, surfaced during custom-message-wizard exposure work, 2026-04-30)
+- **Configure eslint in /prototype** — Production workspaces (/api, /sdk, /marketing-site) all enforce eslint per CLAUDE.md quality gates. /prototype has no eslint config and CC has no automated linting available there. Prototype is the UI source of truth and ports to production verbatim — letting it drift on style or unused-imports/no-explicit-any/etc. costs more than fixing later. Match the eslint config of one of the production workspaces (probably /marketing-site since it's the most recent and uses the same Next 15 + React 19 + TS strict stack). One-session task. (Origin: Session 60, 2026-04-30 — surfaced during custom-message-wizard exposure work; resurfaced Session 87, 2026-05-13 — salvage operation eslint command failed with no config)
 
 - **Recent Activity → full message log with clickthrough** — Cross-cutting work surfaced by Phase 6 verification panel scoping. Every message-type card today shows a Recent Activity tail with database rows in test & debug mode; row count is currently unbounded and there's no clickthrough to see complete history. Cap at 5 rows per card and add a "View all" clickthrough to a full message log filtered to that template type, with columns for phone (masked), timestamp, status, error reason. Affects every message type, not OTP-specific. (Origin: PM Session 62 verification panel scoping, 2026-04-30)
 
