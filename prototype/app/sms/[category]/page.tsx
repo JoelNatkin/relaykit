@@ -214,13 +214,6 @@ export default function CategoryLanding() {
           >
             See all categories
           </Link>
-          <Link
-            href={`/sms/${category}/messages`}
-            className="inline-flex items-center gap-2 rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
-          >
-            Browse messages
-            <ArrowRight className="size-4" />
-          </Link>
         </div>
       </div>
       </div>
@@ -268,17 +261,6 @@ export default function CategoryLanding() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* CTA link */}
-        <div className="mt-6 text-center">
-          <Link
-            href={`/sms/${category}/messages`}
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-text-brand-secondary hover:text-text-brand-secondary_hover transition duration-100 ease-linear"
-          >
-            See all appointment messages
-            <ArrowRight className="size-4" />
-          </Link>
         </div>
 
         {/* Pricing context line */}

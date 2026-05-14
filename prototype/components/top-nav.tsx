@@ -203,17 +203,6 @@ export function TopNav() {
                 )}
               </div>
 
-              {/* Compliance link */}
-              <Link
-                href="/compliance"
-                className={`text-sm transition duration-100 ease-linear ${
-                  pathname === "/compliance"
-                    ? "text-text-secondary"
-                    : "text-text-tertiary hover:text-text-secondary"
-                }`}
-              >
-                Compliance
-              </Link>
             </div>
           )}
         </div>

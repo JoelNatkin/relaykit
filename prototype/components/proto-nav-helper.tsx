@@ -15,7 +15,6 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { label: "Messages (onboarding)", href: `/apps/${APP_ID}`, state: "onboarding" },
-  { label: "Opt-in (onboarding)", href: `/apps/${APP_ID}/opt-in`, state: "onboarding" },
   { label: "Overview (building)", href: `/apps/${APP_ID}/overview`, state: "building" },
   { label: "Messages (building)", href: `/apps/${APP_ID}`, state: "building" },
   { label: "Settings (building)", href: `/apps/${APP_ID}/settings`, state: "building" },
