@@ -25,7 +25,7 @@ _No active explorations._
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
 | `REPO_INDEX.md` | 2026-05-14 | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-13 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, phase list, active focus, out-of-scope. |
-| `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-13 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
+| `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-14 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
 | `DECISIONS.md` | 2026-05-13 | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
