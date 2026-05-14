@@ -381,6 +381,8 @@ PM operates with less context than CC by design. Tier 2 uploads cover orientatio
 
 **Never do:** answer file-knowledge questions by guessing; review without seeing the file being modified; draft a decision without checking DECISIONS.md for conflicts; pretend to remember prior chat content PM can't actually see.
 
+**conversation_search is not a canonical source.** Past chats can be stale, contradictory, or contain errors that prior PM_HANDOFFs codified. For verifying repo facts — decisions, architecture, file structure — the canonical sources are DECISIONS.md, REPO_INDEX.md, MASTER_PLAN.md, and the topic-specific docs in REPO_INDEX's canonical-sources-by-topic index. Ask for the file or have CC grep. Use conversation_search for conversational context only.
+
 ---
 
 ## Marketing Operating Posture
