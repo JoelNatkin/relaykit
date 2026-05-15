@@ -12,6 +12,9 @@ export function PostCard({ post }: { post: Post }) {
     <article className="border-b border-border-secondary py-8 first:pt-0">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <ClusterBadge slug={frontmatter.cluster} />
+        <span className="text-xs text-text-quaternary" aria-hidden="true">
+          ·
+        </span>
         <LaneBadge lane={frontmatter.lane} />
       </div>
       <h2 className="text-xl font-semibold text-text-primary">

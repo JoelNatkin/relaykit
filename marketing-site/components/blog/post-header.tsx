@@ -13,6 +13,9 @@ export function PostHeader({ post }: { post: Post }) {
     <header className="mb-10">
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <ClusterBadge slug={frontmatter.cluster} />
+        <span className="text-xs text-text-quaternary" aria-hidden="true">
+          ·
+        </span>
         <LaneBadge lane={frontmatter.lane} />
       </div>
       <h1 className="text-3xl font-semibold text-text-primary">

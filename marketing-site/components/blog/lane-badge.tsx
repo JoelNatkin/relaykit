@@ -1,12 +1,13 @@
-/** Neutral pill showing a post's narrative lane (Demand / Supply /
- *  Retrospective / Worldview). Styled distinctly from the cluster badge. */
+/** Plain-text lane indicator (Demand / Supply / Retrospective / Worldview).
+ *
+ *  Deliberately NOT a pill: lane filtering is out of scope for V1, so the
+ *  styling must not imply a clickable control. Rendered as quiet tertiary
+ *  text alongside the (clickable) cluster badge. */
 import { LANES } from "@/lib/blog/clusters";
 import type { Lane } from "@/lib/blog/types";
 
 export function LaneBadge({ lane }: { lane: Lane }) {
   return (
-    <span className="inline-flex items-center rounded-full bg-bg-tertiary px-2.5 py-0.5 text-xs font-medium text-text-tertiary">
-      {LANES[lane].label}
-    </span>
+    <span className="text-xs text-text-tertiary">{LANES[lane].label}</span>
   );
 }
