@@ -22,67 +22,67 @@ export const CLUSTERS = [
     slug: "dormant-assumption",
     name: "Dormant Assumptions",
     description:
-      "For founders who wrote SMS off years ago — what has actually changed, and why it is worth a second look.",
+      "For builders who gave up on adding text messages years ago — what's actually changed, and why it's worth another look.",
   },
   {
     slug: "verification-otp",
     name: "Verification & OTP",
     description:
-      "One-time passcodes done right: the universal SMS primitive every indie SaaS eventually needs.",
+      "The verification codes people type in to log in or confirm their number. Almost every app needs them — here's how to send them well.",
   },
   {
     slug: "compliance-registration",
     name: "Compliance & Registration",
     description:
-      "The 10DLC wall most indie founders hit — brand registration, campaigns, and getting approved fast.",
+      "What the phone carriers require before your app can send a single text. We map the bureaucracy so you don't have to — and so it takes days, not weeks.",
   },
   {
     slug: "cost-pricing",
     name: "Cost & Pricing",
     description:
-      "What SMS actually costs, where the hidden fees hide, and how to budget it honestly.",
+      "What sending text messages actually costs, where the hidden fees hide, and how to budget for it honestly.",
   },
   {
     slug: "ai-coding-tools",
     name: "AI Coding Tools",
     description:
-      "Wiring SMS into your app with AI coding assistants — integration that holds up without hallucinations.",
+      "Adding text messages to your app with AI coding assistants — and getting an integration that actually holds up.",
   },
   {
     slug: "integration-code",
     name: "Integration & Code",
     description:
-      "Hands-on integration guides: SDK setup, code patterns, and the details that trip people up.",
+      "Hands-on guides for wiring it up: SDK setup, code patterns, and the details that trip people up.",
   },
   {
     slug: "consent-legal",
     name: "Consent & Legal",
     description:
-      "TCPA liability, opt-in records, and the consent discipline that keeps you out of trouble.",
+      "Getting permission before you text someone — and keeping the records that keep you out of legal trouble.",
   },
   {
     slug: "live-fire-ops",
     name: "Live-Fire Ops",
     description:
-      "War stories from production SMS — incidents, failures, and what they teach about running it well.",
+      "War stories from running text messaging in production: the incidents, the failures, and what they teach.",
   },
   {
     slug: "vertical-patterns",
     name: "Vertical Patterns",
     description:
-      "Industry-specific SMS playbooks for healthcare, restaurants, tutoring, real estate, and e-commerce.",
+      "Text-messaging playbooks for specific industries — healthcare, restaurants, tutoring, real estate, and e-commerce.",
   },
   {
     slug: "retrospective",
     name: "Retrospective",
     description:
-      "Build-in-public posts on what we are making, what went wrong, and what we learned.",
+      "Build-in-public posts on what we're making, what went wrong, and what we learned.",
   },
   {
     slug: "worldview",
     name: "Worldview",
     description:
-      "Industry analysis and the bigger picture of where SMS infrastructure is heading.",
+      "The bigger picture — where text messaging is heading, and what it means for the people building on it.",
   },
 ] as const satisfies readonly Cluster[];
 
