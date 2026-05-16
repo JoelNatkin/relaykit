@@ -8,7 +8,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-05-15
+> **Last reviewed:** 2026-05-16
 
 ---
 
@@ -28,7 +28,7 @@ The customer arrives at `relaykit.ai` (the marketing site), engages the configur
 
 > **Architecture note (post 2026-05-14):** All public marketing surfaces live on the separate `/marketing-site/` Next.js app at `relaykit.ai`. The `/prototype/` app — which models `app.relaykit.ai` (the post-signup workspace) — no longer renders any marketing pages. The prototype's pre-existing marketing home (`/`), `/sms/[category]` category landing, public messages page, and `/compliance` explainer were all archived across two waves (2026-05-13 bulk archive + 2026-05-14 marketing-surface migration). See `prototype/archive/README.md` for the inventory.
 
-The customer-experience side of the marketing surface — what visitors see at relaykit.ai before they engage — is described against the marketing-site implementation in `PROTOTYPE_SPEC.md` §"Production Marketing Site — relaykit.ai". The condensed shape: a 6-section home page (hero, configurator, build it, test it for real, pricing + paperwork, closing CTA), legal docs (Terms, Privacy, Acceptable Use), a waitlist signup flow (`/start/verify` + `/start/get-started`), a "we'll be ready soon" `/signup` placeholder, and a blog (`/blog/*` — see §3.3). The configurator on the home page is the central conversion surface — customers pick categories and tones, see their messages render live, and click through to the waitlist flow.
+The customer-experience side of the marketing surface — what visitors see at relaykit.ai before they engage — is described against the marketing-site implementation in `PROTOTYPE_SPEC.md` §"Production Marketing Site — relaykit.ai". The condensed shape: a 6-section home page (hero, configurator, build it, test it for real, pricing + paperwork, closing CTA), legal docs (Terms, Privacy, Acceptable Use), a waitlist signup flow (`/start/verify` + `/start/get-started`), a "we'll be ready soon" `/signup` placeholder, and a blog (`/blog/*` — see §3.3). The configurator on the home page is the central conversion surface — customers pick categories and tones, see their messages render live; the "Get early access" CTAs then open an in-page early-access waitlist modal (see §3.4).
 
 ### 3.1 Sign-in landing — `/sign-in` (prototype, placeholder)
 
@@ -44,6 +44,10 @@ The only prototype-side route reachable without an authenticated session (beside
 ### 3.3 Blog — `/blog/*`
 
 RelayKit's blog lives on the marketing site at `relaykit.ai/blog` (in-repo MDX per D-387 — not an external platform, not a subdomain). What a visitor sees: a chronological index of posts, individual post pages in a long-form reading layout, and per-topic cluster index pages (`/blog/cluster/[name]`) that group posts by subject. Posts are organized primarily by topical cluster — 11 clusters covering everything from verification codes to pricing to compliance; a secondary "lane" tag shows on each post but is not something the reader filters by. Each post carries SEO metadata, social-share cards, and there's an RSS feed at `/blog/feed.xml`. The blog is reachable from the marketing-site footer. V1 shipped Session 89 with one published post ("Adding text messages to your app shouldn't take a month"); the broader content corpus is planned in `docs/POST_TOPICS.md`. Customer-facing role: it is the SEO and credibility surface that brings indie developers to RelayKit before they ever reach the configurator.
+
+### 3.4 Early-access waitlist modal
+
+While RelayKit is pre-launch, the three "Get early access" buttons on the marketing site — top nav, below the configurator, and the closing call-to-action — open an in-page modal rather than navigating away. The modal shows the visitor the categories they picked in the configurator ("You're interested in: …", defaulting to Verification), takes their email, and adds them to the early-access list. New signups get a short welcome email from Joel: it confirms they're on the list, notes the categories they're interested in, says RelayKit ships summer 2026, and carries a working unsubscribe link. Submitting the same email twice is harmless — no duplicate row, no second email. This is pre-launch behavior; once onboarding ships, the CTAs return to the real product-entry flow. The waitlist runs on RelayKit's own stack (Supabase + Resend) per MD-20, so subscribers are ready for a launch-day announcement with no migration.
 
 ---
 

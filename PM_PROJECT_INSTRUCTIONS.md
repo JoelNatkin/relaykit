@@ -5,7 +5,7 @@
 > Not for: CC's operational rules (CLAUDE.md), product specifications (spec docs), session narrative.
 
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: May 13, 2026
+### Updated: May 16, 2026
 
 ---
 

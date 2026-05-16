@@ -6,10 +6,10 @@
 
 ## Meta
 
-- Last updated: 2026-05-15
+- Last updated: 2026-05-16
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 303 active, latest D-388; D-01–D-83 archived. Marketing decisions: latest MD-18.
-- Branch state: main; `feat/blog-scaffold` unmerged — blog scaffold V1 (D-387/D-388), awaiting Joel's final-tagline pick + merge
+- Decision count: 303 active, latest D-388; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Branch state: main; no unmerged feature branches (the five branches merged this session — `feat/blog-scaffold`, `feat/pre-launch-home`, `feat/configurator-pricing-clarity`, `feat/hero-pricing-clarity`, `feat/waitlist-modal` — remain on origin, deletable)
 - Active explorations: None
 
 ## Active explorations
@@ -23,19 +23,19 @@ _No active explorations._
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-15 | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-16 | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-15 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
-| `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-14 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
+| `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-16 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
 | `DECISIONS.md` | 2026-05-15 | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
 | `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` | 2026-04-27 | Archived REPO_INDEX change-log entries (Sessions 1–49 era). |
-| `PROTOTYPE_SPEC.md` | 2026-05-15 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
+| `PROTOTYPE_SPEC.md` | 2026-05-16 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-05-13 | Post-signup workspace architecture (state machine, layout systems). |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-15 (Session 89) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-16 (Session 90) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-13 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -48,10 +48,11 @@ _No active explorations._
 | `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Tier 1 project knowledge). |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-17 | AGENTS.md / cursor-rules research informing Phase 8; retires when Phase 8 closes. |
 | `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-04-30 | Sinch/TCR brand registration field reference (Experiment 3a capture). |
-| `PRODUCT_SUMMARY.md` | 2026-05-15 | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
+| `PRODUCT_SUMMARY.md` | 2026-05-16 | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
 | `LEGAL_DOC_DEFERRED_CLAIMS.md` | 2026-04-28 | Tracking doc for claims removed from `/marketing-site` legal docs pending feature ship, with restoration triggers. |
+| `PRE_LAUNCH_DEVIATIONS.md` | 2026-05-16 | Tracking doc for marketing-site pre-launch-posture copy/UI deviations, with per-entry pre-launch-only vs permanent classification and restoration triggers. |
 | `VERIFICATION_SPEC.md` | 2026-05-13 | Canonical OTP/verification feature surface (server, SDK, dashboard, onboarding); drives D-369/D-370/D-371. |
-| `MARKETING_STRATEGY.md` | 2026-05-13 | Marketing strategy: plays, MD-numbered decisions, channels, tools, sequencing. |
+| `MARKETING_STRATEGY.md` | 2026-05-16 | Marketing strategy: plays, MD-numbered decisions, channels, tools, sequencing. |
 | `MARKETING_STRATEGY_ARCHIVE.md` | 2026-05-01 | Deprecated marketing approaches with deprecation triggers and revisit conditions. |
 | `TESTING_GUIDE_DRAFT.md` | 2026-05-01 | DRAFT — Phase 8 guide for AI tools building integration test/debug surfaces inside customer apps. |
 | `VERTICAL_TAXONOMY_DRAFT.md` | 2026-05-12 | DRAFT — vertical-taxonomy thinking from Experiments 3a/3b; Phase 5 design prerequisite. |
@@ -106,7 +107,7 @@ If PM or CC discovers two docs that both claim canonical ownership of the same t
 
 ## marketing-site blog (new — Session 89)
 
-V1 blog scaffold per D-387 (in-repo MDX) and D-388 (cluster-primary taxonomy), built on branch `feat/blog-scaffold` (unmerged). Files added to the `marketing-site/` app:
+V1 blog scaffold per D-387 (in-repo MDX) and D-388 (cluster-primary taxonomy), built on branch `feat/blog-scaffold` (merged to main Session 90). Files added to the `marketing-site/` app:
 
 | Path | Purpose |
 |------|---------|
@@ -127,6 +128,23 @@ V1 blog scaffold per D-387 (in-repo MDX) and D-388 (cluster-primary taxonomy), b
 | `public/blog-og-default.png` | Static brand-default OG image. |
 
 Modified: `app/layout.tsx` (added `metadataBase`); `components/footer.tsx` (Blog link, "Resources" column); `package.json` (new deps: `next-mdx-remote` v6, `gray-matter`, `reading-time`, `remark-gfm`, `remark-smartypants`, `rehype-pretty-code`, `shiki`, `feed`); `.env.example` (`NEXT_PUBLIC_SITE_URL`).
+
+## Early-access waitlist (new — Session 90)
+
+Early-access waitlist per MD-20 (DIY on Supabase + Resend over a hosted vendor), built on branch `feat/waitlist-modal` (merged to main). The three "Get early access" CTAs open an in-page modal; signups persist to Supabase and trigger a Resend welcome email. Files added:
+
+| Path | Purpose |
+|------|---------|
+| `api/supabase/migrations/007_early_access_subscribers.sql` | `early_access_subscribers` table (applied via Supabase SQL Editor). |
+| `marketing-site/app/api/early-access/route.ts` | POST — validate email, idempotent insert, welcome email for new signups. |
+| `marketing-site/app/api/unsubscribe/route.ts` | GET — flips `unsubscribed_at` by token; permanent surface (list hygiene). |
+| `marketing-site/lib/email/welcome.ts` | Welcome-email template builder (plain-text + HTML). |
+| `marketing-site/lib/email/send.ts` | Resend wrapper; never throws. |
+| `marketing-site/context/waitlist-context.tsx` | Modal open/close state + configurator-selection summary; provider at layout level. |
+| `marketing-site/components/waitlist-modal.tsx` | The waitlist modal (Untitled UI; idle/loading/success/error). |
+| `marketing-site/components/early-access-button.tsx` | Client button so server components can open the modal. |
+
+Modified: `app/layout.tsx` (WaitlistProvider + modal mount); `app/page.tsx`, `components/top-nav.tsx`, `components/configurator-section.tsx` (CTAs rewired to the modal; configurator publishes its selection summary up); `package.json` (`resend` dep); `.env.example` (`RESEND_API_KEY`). Pre-launch posture deviations tracked in `docs/PRE_LAUNCH_DEVIATIONS.md`.
 
 ## Subdirectories
 

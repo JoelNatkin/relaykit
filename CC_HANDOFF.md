@@ -1,97 +1,90 @@
-# CC_HANDOFF — Session 89 (blog scaffold V1 + content + close-out)
+# CC_HANDOFF — Session 90 (pre-launch posture + early-access waitlist + close-out)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out. Includes commits, completed work, in-progress, gotchas, files modified, unmerged branches, suggested next tasks.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader, not as a session memoir.
 
-**Date:** 2026-05-15
-**Branch:** `feat/blog-scaffold` — **unmerged, not yet pushed at close-out** (the close-out commit awaits PM review before push). Earlier commits on the branch are pushed to `origin/feat/blog-scaffold`.
+**Date:** 2026-05-16
+**Branch:** `main` — all session work merged. The close-out commit is the only commit awaiting push at write time.
 
-`Commits: 5 | Files modified: 13 | Decisions added: 2 | External actions: 2`
+`Commits: 11 | Files modified: 29 | Decisions added: 0 D-numbers (MD-19, MD-20 added to MARKETING_STRATEGY) | External actions: ~14 git pushes`
 
-(Metrics scope: `12a30bd..HEAD` — the range since the prior PM-review checkpoint, per PM instruction. The full branch is 8 commits; see Unmerged branches.)
+(Metrics scope: `ba00a64..HEAD` — session-start HEAD through this close-out. `aa50cbd` in that range is the carried-over Session 89 close-out commit, committed by Joel early this session.)
 
 ---
 
 ## Session character
 
-One long session building the RelayKit blog as V1 infrastructure inside `marketing-site/`, then a close-out. Sequence: plan-mode scaffold → Vercel security block fixed → PM content + UX polish round → landing-copy tweak → this close-out. The blog satisfies the POST_TOPICS.md §7 prerequisite (the corpus needs a canonical home before posts can mirror with `rel=canonical` discipline).
+A long marketing-site session: finish the blog, stand up a pre-launch posture, and build the early-access waitlist. Sequence — blog landing-copy finalize + merge → pre-launch home posture (MD-19) → configurator + hero pricing clarity → early-access waitlist (plan-mode → build → review → merge) → a PM_PROJECT_INSTRUCTIONS process rule → this close-out. Five feature branches created and merged.
 
-## Commits this session (`12a30bd..HEAD`)
+## Commits this session (`ba00a64..HEAD`)
 
-1. `cfbce87` content(blog): finalize first post + voice-audit cluster descriptions
-2. `67f413b` fix(marketing-site): make lane indicator plain text, not a pill
-3. `ba00a64` content(blog): rewrite landing description in reader-facing voice
-4. `33e1ee0` content(blog): final landing description — Joel's tagline pick, committed + pushed by Joel during close-out
-5. (this close-out) docs(close-out): Session 89 — D-387/D-388 + PROTOTYPE_SPEC/PRODUCT_SUMMARY/MASTER_PLAN/REPO_INDEX
-
-Earlier on the branch (pushed, reviewed in prior rounds): `99e36e8` blog scaffold V1, `76a5ebd` footer Blog link, `12a30bd` next-mdx-remote v6 security bump.
+1. `33e1ee0` content(blog): final landing description
+2. `aa50cbd` docs(close-out): Session 89 — blog scaffold V1 close-out *(carried over from Session 89)*
+3. `6b06be1` content(blog): revise landing description
+4. `1e7a4ac` feat(marketing): pre-launch home posture
+5. `a02d5d3` docs(marketing): MD-19 pre-launch marketing site posture
+6. `7683c01` Merge branch 'feat/blog-scaffold'
+7. `71d454d` feat(marketing): configurator pricing clarity
+8. `baba7fe` feat(marketing): hero pricing clarity — free-to-build framing
+9. `ffe5192` feat(marketing): early-access waitlist (modal + Supabase + Resend)
+10. `2874483` docs(pm): add branch sequencing discipline to PM_PROJECT_INSTRUCTIONS
+11. (this close-out) docs(close-out): Session 90 — PROTOTYPE_SPEC/PRODUCT_SUMMARY/REPO_INDEX/CC_HANDOFF
 
 ## Completed work
 
-- **Blog scaffold V1** — routes `/blog`, `/blog/[slug]`, `/blog/cluster/[name]`, `/blog/feed.xml`; new `/sitemap.xml` + `/robots.txt`. In-repo MDX via `next-mdx-remote` v6, `gray-matter` frontmatter, Shiki highlighting (`rehype-pretty-code`), smart quotes (`remark-smartypants`), reading time, per-post OG/Twitter/canonical metadata + JSON-LD `BlogPosting`. Untitled UI tokens; ~68ch reading column. Footer "Resources" link.
-- **First real post** — placeholder replaced with finalized Twilio prose; renamed to keyword-richer slug `adding-text-messages-to-your-app-shouldnt-take-a-month`.
-- **Voice audit** — all 11 cluster descriptions run through V&P_v2; `compliance-registration` de-jargoned off "10DLC"/"campaigns"; the rest softened "SMS" → "text messages" into demand voice.
-- **Lane badge UX fix** — lane was a pill identical to the clickable cluster badge; now plain tertiary text with a `·` separator, so only the cluster badge reads as interactive.
-- **Blog landing tagline set** — `BLOG_DESCRIPTION` is now `"Indie builders gave up on SMS a decade ago. I didn't. These are my notes."` — Joel's pick, applied directly to `marketing-site/lib/blog/site.ts` during close-out. Propagates to the `/blog` tagline, RSS `<description>`, and the meta description (single source). Verified live on all three.
-- **Decisions** — D-387 (blog as in-repo MDX) and D-388 (cluster-primary taxonomy) recorded.
+- **Blog finalized + merged.** Landing `BLOG_DESCRIPTION` settled ("Building with text messages is way too complicated. This is where we work it out."); `feat/blog-scaffold` merged to `main`.
+- **Pre-launch home posture (MD-19).** Hero pre-launch tag, configurator subhead + pre-CTA reframed, mid-page CTA → "Get early access"; `docs/PRE_LAUNCH_DEVIATIONS.md` created to track every deviation with restoration triggers.
+- **Configurator pricing clarity.** Permanent: "All categories included in $19/mo…" note under the Categories header + "(+$10/mo)" marker on the Marketing row.
+- **Hero pricing clarity.** Hero pricing line → "Free to build. $49 + $19/mo to go live." Permanent — the "Hero pricing line" deviation entry was removed from PRE_LAUNCH_DEVIATIONS.md and entries renumbered.
+- **Early-access waitlist (MD-20).** Supabase `early_access_subscribers` table (migration `007`), `POST /api/early-access` + `GET /api/unsubscribe`, Resend welcome email, `WaitlistContext` + `WaitlistModal`, all three "Get early access" CTAs rewired to the modal. Built plan-first (plan mode), PM-reviewed, rebased onto main, merged.
+- **PM process rule.** `PM_PROJECT_INSTRUCTIONS.md` gained a "Branch sequencing" section (merge on approval; trivial copy edits skip the branch).
 
 ## In progress
 
-- **`feat/blog-scaffold` is not merged.** The tagline question is resolved (above). The branch now awaits only PM approval of this close-out and `NEXT_PUBLIC_SITE_URL` being set in Vercel — then push + merge to `main`. PM should confirm the tagline copy as part of close-out review.
-
-## DECISIONS ledger
-
-Pre-flight scan was clean at session start (301 active, latest D-386). **Two decisions added this session:** D-387, D-388 — both `Supersedes: none` (grep of DECISIONS + DECISIONS_ARCHIVE found no conflicting prior entry; the only "Blog" hit was an old prototype-footer decision about a different, now-dormant footer — no genuine conflict by the one-sentence test). Active count now 303, latest D-388.
+Nothing open. The waitlist needs three operator steps before it works end-to-end (see Gotchas) but the code is complete and merged.
 
 ## Quality gates
 
-- `tsc --noEmit` clean, `eslint` clean, `next build` clean (all blog routes static: 1 post path, 11 cluster paths, feed/sitemap/robots static) — re-verified after every code-touching commit and at close-out.
-- Smoke-tested at :3002 each round: routes 200, bogus slugs/clusters 404, OG/Twitter/canonical tags, JSON-LD, Shiki highlighting, smart quotes, RSS, sitemap, robots all verified.
-- `next-mdx-remote` v6 confirmed a drop-in (v5→v6 delta is dependency-only — `unist-util-remove` ^3→^4; public API identical).
+- Every code-touching commit ran `tsc --noEmit` + `eslint` clean before commit; `next build` clean where a build artifact was produced.
+- Waitlist branch re-verified on the rebased tree: `tsc` clean, `eslint` clean, `next build` clean (28 static pages; `/api/early-access` + `/api/unsubscribe` dynamic). API routes smoke-tested at :3002 — invalid email → 400, bad JSON → 400, valid email (no local Supabase env) → 500, unsubscribe → 200 HTML.
+- This close-out is doc-only — no gates re-run.
 
 ## Retirement sweep + drift watch
 
-Phase 1 — Sinch Proving Ground active at session start and still active. No phase boundary crossed; retirement sweep + drift watch skipped per CLAUDE.md mid-phase rules.
+Phase 1 (Sinch Proving Ground) active at session start and still active. No phase boundary crossed — retirement sweep + drift watch skipped per CLAUDE.md mid-phase rules.
 
 ## Gotchas for next session
 
-1. **`NEXT_PUBLIC_SITE_URL` must be set in Vercel** (Preview + Production) before merge. Unset, it falls back to the hardcoded `https://relaykit.ai` — correct for Production, wrong for Preview deploys (canonical/OG/RSS/sitemap URLs).
-2. **Pre-existing `next` + `postcss` advisories** — `npm audit` reports 1 high (`next`) + 1 moderate (`postcss`), unrelated to the blog and not what Vercel blocked on. A `next` version bump is a separate PM call, deliberately not bundled into the blog branch.
-3. **`/sitemap.xml` 404 on a stale dev server** — was a `.next` cache staleness quirk; `rm -rf .next` + restart fixes it. The route is correct (passes `next build` + serves on a fresh server).
-4. **Raw `--` in RSC flight data** — the post body uses `--` for em dashes (`remark-smartypants` converts them); literal `--` still appears inside `<script>` RSC payload but never in visible markup. Not a bug.
-5. **`docs/POST_TOPICS.md` is untracked** — the PM-authored content-planning doc the blog serves has been untracked since before this session. Not committed here (outside the close-out's enumerated files; CC did not author it). Flag for PM: should it be added to the repo?
-6. **MASTER_PLAN.md has no in-file version/date line** — "last-updated" is tracked only via REPO_INDEX's docs table (bumped to 2026-05-15). No version line was invented.
+1. **Waitlist needs three operator steps before it works live:** (a) verify `relaykit.ai` as a Resend sending domain; (b) set `RESEND_API_KEY` + `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `marketing-site/.env.local` (local) and Vercel (Production); (c) apply `api/supabase/migrations/007_early_access_subscribers.sql` via the Supabase SQL Editor. Until then the modal opens but submit returns the error state (route 500s without Supabase env). The full happy path (insert → welcome email → success) was NOT verifiable locally.
+2. **Dev-server working-directory trap.** `npx next dev` started from the repo root instead of `marketing-site/` silently runs the root's Next (v16) against the wrong directory → `/blog` 404s and a version mismatch. Always `cd marketing-site` explicitly before dev/build. Multiple zombie `next` processes racing over `.next` also caused `routes-manifest.json` ENOENT crashes — `pkill -9 -f next` + verify the port is free before restart.
+3. **Rebase auto-merge can mis-number.** Rebasing `feat/waitlist-modal` onto main produced no textual conflict on `PRE_LAUNCH_DEVIATIONS.md`, but the 3-way merge left entry headings non-sequential (gap at 5). A clean rebase ≠ a correct doc — always inspect merged structured docs after a rebase.
+4. **`docs/POST_TOPICS.md` still untracked** — PM-authored content-planning doc, untracked since before Session 89. Not committed this session. PM decision pending on whether to add it to the repo.
+5. **Pre-existing `next`/`postcss` npm audit advisories** persist (1 high, 1 moderate) — unrelated to this session's work; a `next` bump remains a separate PM call.
 
 ## Files modified
 
-13 unique paths in `12a30bd..HEAD`:
-- **Blog code/content (7, committed `cfbce87`/`67f413b`/`ba00a64`):** `marketing-site/components/blog/{lane-badge,post-card,post-header}.tsx`, `marketing-site/lib/blog/{clusters,site}.ts`, `marketing-site/content/posts/adding-text-messages-to-your-app-shouldnt-take-a-month.mdx` (new), `marketing-site/content/posts/adding-sms-shouldnt-take-a-month.mdx` (deleted).
-- **Close-out docs (6, this commit):** `DECISIONS.md`, `PROTOTYPE_SPEC.md`, `docs/PRODUCT_SUMMARY.md`, `MASTER_PLAN.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`.
-
-(Full branch — 99e36e8 onward — also touched the rest of `app/blog/*`, `lib/blog/*`, `components/blog/*`, `app/{sitemap,robots}.ts`, `app/layout.tsx`, `components/footer.tsx`, `package.json`, `.env.example`, `public/blog-og-default.png`.)
+29 unique paths in `ba00a64..HEAD`. Highlights:
+- **Waitlist (new):** `api/supabase/migrations/007_early_access_subscribers.sql`, `marketing-site/app/api/{early-access,unsubscribe}/route.ts`, `marketing-site/lib/email/{welcome,send}.ts`, `marketing-site/context/waitlist-context.tsx`, `marketing-site/components/{waitlist-modal,early-access-button}.tsx`.
+- **Marketing-site modified:** `app/page.tsx`, `app/layout.tsx`, `components/{configurator-section,top-nav,footer}.tsx`, `lib/blog/site.ts`, `package.json`, `package-lock.json`, `.env.example`, blog content.
+- **Docs:** `DECISIONS.md` (Session 89 carry-over), `MARKETING_STRATEGY.md` (MD-19, MD-20), `PRE_LAUNCH_DEVIATIONS.md` (created + revised), `PM_PROJECT_INSTRUCTIONS.md`, and close-out: `PROTOTYPE_SPEC.md`, `docs/PRODUCT_SUMMARY.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`.
 
 ## Unmerged branches
 
-**`feat/blog-scaffold`** — 8 commits (`99e36e8`..close-out). The entire RelayKit blog V1. First 7 commits pushed to `origin` (through `33e1ee0`); only the close-out commit is held for PM review per the REQUIRED review bar (new D-numbers, first PRODUCT_SUMMARY blog entry, MASTER_PLAN active-focus edit). Waiting on: PM approval of this close-out. Then: push → merge to `main`.
+**None.** Five branches were created and merged this session — `feat/blog-scaffold`, `feat/pre-launch-home`, `feat/configurator-pricing-clarity`, `feat/hero-pricing-clarity`, `feat/waitlist-modal`. All remain on `origin` and locally; they are safe to delete (merged into `main`).
 
 ## Carry-forward queue
 
-Active workstreams (not closed this session):
-- **Merge `feat/blog-scaffold`** — tagline is set; branch awaits PM close-out approval, then push + merge to `main`.
-- `NEXT_PUBLIC_SITE_URL` set in Vercel before merge.
-- Pre-existing `next`/`postcss` security advisories — separate PM call on a `next` bump.
-- `docs/POST_TOPICS.md` untracked — PM decision on whether to commit it.
-- PM_PROJECT_INSTRUCTIONS.md still 471 / 400-line ceiling (trim audit queued).
-- CLAUDE.md still over 200-line ceiling (carry-forward).
-- Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) — now gated behind the pre-launch checklist (MASTER_PLAN).
-- Phase 2a per-category research per D-384.
-- Stage 2 `BRAND_DIRECTION.md` authoring + MD-number capture.
-- Pumping Defense Wave 2; Migration 006 manual application; broader threat-modeling.
-- Dormant `prototype/components/{sign-in-modal,footer}.tsx` cleanup candidates.
+- Waitlist operator steps (Resend domain, env vars, migration 007) — see Gotcha 1.
+- `docs/POST_TOPICS.md` untracked — PM decision.
+- `PM_PROJECT_INSTRUCTIONS.md` is 479 lines, over its 400-line ceiling — a trim audit is a separate PM-gated wave (the doc's own File-size-discipline rule), not a passive carry-forward.
+- CLAUDE.md still over its 200-line ceiling (carry-forward).
+- Pre-launch checklist (MASTER_PLAN): blog done; live-site tweaks substantially done (pre-launch posture, pricing clarity, waitlist). Next: configurator message refinement, then first Indie Hackers post — after which Phase 1 experiments resume.
+- Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) still gated behind the pre-launch checklist.
 
 ## Suggested next session
 
-1. **Push + merge `feat/blog-scaffold` to `main`** once PM approves this close-out. (Confirm `NEXT_PUBLIC_SITE_URL` is set in Vercel first. Tagline is already applied.)
-2. **Next pre-launch checklist item: live-site tweaks** — marketing-site polish, per the MASTER_PLAN pre-launch checklist.
-3. Then configurator message refinement, then the first Indie Hackers post — after which Phase 1 experiments resume.
+1. **Waitlist design polish** — a visual/UX pass on the waitlist modal on a new `feat/waitlist-modal-design` branch (the V1 modal is functional but styled only to Untitled UI defaults).
+2. Verify the waitlist end-to-end once the three operator steps are done (welcome email, duplicate-email idempotency, unsubscribe flow).
+3. Configurator message refinement (next pre-launch checklist item), then the first Indie Hackers post.
+4. Branch cleanup — delete the five merged branches locally and on origin.
