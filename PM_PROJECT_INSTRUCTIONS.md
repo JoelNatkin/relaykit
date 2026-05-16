@@ -201,6 +201,14 @@ Branch and preview workflow: see CLAUDE.md §126–130.
 
 ---
 
+## Branch sequencing
+
+Merge each feature branch the moment it's approved — stacking branches forces rebase + conflict resolution + force-push that serial work avoids.
+
+Trivial copy-only edits (one-line tweaks, no logic) can commit straight to main — the branch+review pattern is for engineering work, not single-line copy fixes.
+
+---
+
 ## PM Review Cadence
 
 **Not every CC commit needs PM review.** PM declares a review bar per prompt:
