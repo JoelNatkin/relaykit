@@ -14,7 +14,7 @@ export const SITE_URL = (
 export const BLOG_TITLE = "RelayKit Blog";
 
 export const BLOG_DESCRIPTION =
-  "Indie builders gave up on SMS a decade ago. I didn't. These are my notes.";
+  "Building with text messages is way too complicated. This is where we work it out.";
 
 /** Single-author blog. Used for bylines and JSON-LD `author`. */
 export const BLOG_AUTHOR = "Joel Natkin";
