@@ -665,6 +665,9 @@ export function ConfiguratorSection() {
             <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
               <div className="px-4 pt-5 pb-3">
                 <h3 className="text-base font-semibold text-text-primary">Categories</h3>
+                <p className="mt-2 text-xs text-text-tertiary">
+                  All categories included in $19/mo. Marketing adds $10/mo when you go live.
+                </p>
                 <div className="mt-4">
                   <label
                     htmlFor="recommended-combinations"
@@ -717,6 +720,9 @@ export function ConfiguratorSection() {
                         <span className="text-sm font-medium text-text-primary">
                           {v.title}
                         </span>
+                        {v.id === "marketing" ? (
+                          <span className="ml-1.5 text-xs text-text-tertiary">(+$10/mo)</span>
+                        ) : null}
                         <p className="mt-1 text-xs text-text-tertiary">{v.description}</p>
                         {isSelected && v.note ? (
                           <p className="mt-1 text-xs text-text-secondary">{v.note}</p>
