@@ -41,13 +41,39 @@ function Spinner() {
   );
 }
 
+function CategoryPills({ titles }: { titles: string[] }) {
+  return (
+    <div>
+      <p className="mb-2 text-base text-text-tertiary">Live at launch:</p>
+      <div className="flex flex-wrap gap-1.5">
+        {titles.map((title) => (
+          <span
+            key={title}
+            className="inline-flex items-center rounded-full border border-bg-brand-secondary bg-bg-brand-secondary px-3 py-1.5 text-sm font-medium text-text-brand-secondary"
+          >
+            {title}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FounderSignoff() {
+  return (
+    <p className="mt-2 text-base text-text-tertiary">— Joel, solo founder</p>
+  );
+}
+
 export function WaitlistModal() {
   const { isOpen, closeModal, ctaSource, summary } = useWaitlist();
   const [status, setStatus] = useState<Status>("idle");
   const [email, setEmail] = useState("");
 
-  const categoryDisplay =
-    summary.categoryTitles.join(", ") || "Verification";
+  const categoryTitles =
+    summary.categoryTitles.length > 0
+      ? summary.categoryTitles
+      : ["Verification"];
 
   // Reset to a clean form each time the modal opens.
   useEffect(() => {
@@ -141,39 +167,39 @@ export function WaitlistModal() {
           {status === "success" ? (
             <div>
               <h2 className="text-2xl font-bold text-text-primary">
-                Get on the list
+                You&apos;re in.
               </h2>
-              <p className="mt-3 text-sm leading-relaxed text-text-secondary">
-                You&apos;re on the list. We noted you&apos;re interested in{" "}
-                {categoryDisplay}. We&apos;ll email when we ship — summer 2026.
+              <p className="mt-3 text-base leading-relaxed text-text-secondary">
+                I&apos;ll send you an email when it ships.
               </p>
+              <button
+                type="button"
+                onClick={requestClose}
+                className="mt-10 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+              >
+                Close
+              </button>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} noValidate className="space-y-4">
+            <form
+              onSubmit={handleSubmit}
+              noValidate
+              className="flex min-h-[320px] flex-col gap-4"
+            >
               <div>
                 <h2 className="text-2xl font-bold text-text-primary">
                   Get on the list
                 </h2>
-                <p className="mt-2 text-sm text-text-tertiary">
-                  You&apos;re interested in:{" "}
-                  <span className="font-medium text-text-secondary">
-                    {categoryDisplay}
-                  </span>
+                <p className="mt-2 text-base leading-relaxed text-text-tertiary">
+                  Summer 2026 is the target. I&apos;ll send one email when
+                  it&apos;s live — no drip, no marketing churn.
                 </p>
-                <p className="mt-1 text-xs text-text-quaternary">
-                  We&apos;ll save your selection above so we can send you the
-                  right updates.
-                </p>
+                <FounderSignoff />
               </div>
 
-              {status === "error" ? (
-                <p className="text-sm text-text-error-primary">
-                  Couldn&apos;t reach our list right now. Try again, or email
-                  founder@relaykit.ai.
-                </p>
-              ) : null}
+              <CategoryPills titles={categoryTitles} />
 
-              <div>
+              <div className="mt-4">
                 <label
                   htmlFor="waitlist-email"
                   className="mb-1.5 block text-sm font-medium text-text-secondary"
@@ -190,6 +216,13 @@ export function WaitlistModal() {
                   className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:ring-1 focus:ring-border-brand focus:outline-none"
                 />
               </div>
+
+              {status === "error" ? (
+                <p className="text-sm text-text-error-primary">
+                  Something&apos;s not working on our end. Try again, or email
+                  joel@relaykit.ai and I&apos;ll add you manually.
+                </p>
+              ) : null}
 
               <button
                 type="submit"
