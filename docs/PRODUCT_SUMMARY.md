@@ -8,7 +8,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-05-14
+> **Last reviewed:** 2026-05-15
 
 ---
 
@@ -28,7 +28,7 @@ The customer arrives at `relaykit.ai` (the marketing site), engages the configur
 
 > **Architecture note (post 2026-05-14):** All public marketing surfaces live on the separate `/marketing-site/` Next.js app at `relaykit.ai`. The `/prototype/` app — which models `app.relaykit.ai` (the post-signup workspace) — no longer renders any marketing pages. The prototype's pre-existing marketing home (`/`), `/sms/[category]` category landing, public messages page, and `/compliance` explainer were all archived across two waves (2026-05-13 bulk archive + 2026-05-14 marketing-surface migration). See `prototype/archive/README.md` for the inventory.
 
-The customer-experience side of the marketing surface — what visitors see at relaykit.ai before they engage — is described against the marketing-site implementation in `PROTOTYPE_SPEC.md` §"Production Marketing Site — relaykit.ai". The condensed shape: a 6-section home page (hero, configurator, build it, test it for real, pricing + paperwork, closing CTA), legal docs (Terms, Privacy, Acceptable Use), a waitlist signup flow (`/start/verify` + `/start/get-started`), and a "we'll be ready soon" `/signup` placeholder. The configurator on the home page is the central conversion surface — customers pick categories and tones, see their messages render live, and click through to the waitlist flow.
+The customer-experience side of the marketing surface — what visitors see at relaykit.ai before they engage — is described against the marketing-site implementation in `PROTOTYPE_SPEC.md` §"Production Marketing Site — relaykit.ai". The condensed shape: a 6-section home page (hero, configurator, build it, test it for real, pricing + paperwork, closing CTA), legal docs (Terms, Privacy, Acceptable Use), a waitlist signup flow (`/start/verify` + `/start/get-started`), a "we'll be ready soon" `/signup` placeholder, and a blog (`/blog/*` — see §3.3). The configurator on the home page is the central conversion surface — customers pick categories and tones, see their messages render live, and click through to the waitlist flow.
 
 ### 3.1 Sign-in landing — `/sign-in` (prototype, placeholder)
 
@@ -40,6 +40,10 @@ The only prototype-side route reachable without an authenticated session (beside
 - **Use-case landing — `/sms/[category]`** — archived 2026-05-14. Anchors: D-217, D-224 (playbook diagram, since moved to `marketing-site/components/playbook-flow.tsx` as preservation per Phase 2a / D-384); D-230, D-231, D-91, D-106 (rest of the page).
 - **Public message library — `/sms/[category]/messages`** — archived 2026-05-13. Anchors: D-217, D-223, D-224 (playbook); D-184, D-185 (personalize); D-187, D-188 (template/preview); D-182 (post-download band).
 - **Compliance explainer — `/compliance`** — archived 2026-05-13. Canonical customer-facing compliance content lives on `marketing-site/`. The per-customer "msgverified.com" compliance site referenced in MASTER_PLAN §14 remains a Phase 10 deliverable — see §10 below.
+
+### 3.3 Blog — `/blog/*`
+
+RelayKit's blog lives on the marketing site at `relaykit.ai/blog` (in-repo MDX per D-387 — not an external platform, not a subdomain). What a visitor sees: a chronological index of posts, individual post pages in a long-form reading layout, and per-topic cluster index pages (`/blog/cluster/[name]`) that group posts by subject. Posts are organized primarily by topical cluster — 11 clusters covering everything from verification codes to pricing to compliance; a secondary "lane" tag shows on each post but is not something the reader filters by. Each post carries SEO metadata, social-share cards, and there's an RSS feed at `/blog/feed.xml`. The blog is reachable from the marketing-site footer. V1 shipped Session 89 with one published post ("Adding text messages to your app shouldn't take a month"); the broader content corpus is planned in `docs/POST_TOPICS.md`. Customer-facing role: it is the SEO and credibility surface that brings indie developers to RelayKit before they ever reach the configurator.
 
 ---
 

@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border-secondary">
       <div className="mx-auto max-w-5xl px-6 py-12">
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3">
           <div>
             <p className="text-sm font-semibold text-text-primary">RelayKit</p>
             <div className="mt-3 flex flex-col gap-1 text-sm text-text-tertiary">
@@ -20,6 +20,19 @@ export function Footer() {
                 </a>
               </p>
             </div>
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-text-primary">Resources</p>
+            <ul className="mt-3 flex flex-col gap-2">
+              <li>
+                <Link
+                  href="/blog"
+                  className="text-sm text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                >
+                  Blog
+                </Link>
+              </li>
+            </ul>
           </div>
           <div className="sm:text-right">
             <p className="text-sm font-semibold text-text-primary">Legal</p>

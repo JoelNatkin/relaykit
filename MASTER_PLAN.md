@@ -39,6 +39,17 @@ The North Star is RelayKit's eventual purpose — serving any independent develo
 
 Phases are sequenced chunks of work that move RelayKit toward launch. Each has an ordered number and ends with something demonstrably working before the next begins.
 
+## Pre-launch checklist (active gating work)
+
+Phase 1 (Sinch Proving Ground) is the active phase by the numbered sequence below — but a short pre-launch checklist sits in front of it as gating work. Before the first Indie Hackers post goes out, Joel works through, in order:
+
+1. **Blog infrastructure + first post** — in progress (branch `feat/blog-scaffold`).
+2. **Live-site tweaks** — marketing-site polish.
+3. **Configurator message refinement** — tighten the configurator's message content.
+4. **First Indie Hackers post** — the launch-adjacent introduction post.
+
+Only once the checklist clears do the Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) resume. This checklist is sequencing in front of Phase 1, not a renumbering of the phase list below.
+
 ## The phases
 
 1. **Phase 0 — Doc reconciliation + architectural decisions.** Clean up docs, record `/src` sunset, align ground truth before building.
@@ -57,7 +68,7 @@ Phase 0 + Phase 1 ran in parallel (Phase 0 was doc work, Phase 1 was elapsed-tim
 
 ## Active focus
 
-**Phase 1 — Sinch Proving Ground.** Experiments 3a (brand registration) and 3b (campaign registration) approved, confirming the fast-registration claim with concrete carrier numbers (Brand Tier LOW, AT&T Message Class T). Experiments 2b (inbound MO shape), 3c (Simplified→Full brand upgrade), and 4 (STOP/START/HELP) unblocked and awaiting first pickup. Phase 2 Session B kickoff unblocked on the experiments side.
+**Phase 1 — Sinch Proving Ground.** Experiments 3a (brand registration) and 3b (campaign registration) approved, confirming the fast-registration claim with concrete carrier numbers (Brand Tier LOW, AT&T Message Class T). Experiments 2b (inbound MO shape), 3c (Simplified→Full brand upgrade), and 4 (STOP/START/HELP) unblocked and awaiting first pickup. Phase 2 Session B kickoff unblocked on the experiments side. Pickup of these experiments is gated behind the pre-launch checklist (see "Pre-launch checklist" above) — that checklist is the current active work.
 
 ## Out of scope at launch
 
