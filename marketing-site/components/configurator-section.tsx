@@ -654,8 +654,9 @@ export function ConfiguratorSection() {
             <h2 className="text-2xl font-bold tracking-tight text-text-primary">
               Configure your messages
             </h2>
+            {/* PRE-LAUNCH (2026-05-15): revert to "All messages included. You can change these later in your workspace." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
             <p className="mt-3 text-base text-text-tertiary">
-              All messages included. You can change these later in your workspace.
+              All messages included — yours to copy and use with any provider today.
             </p>
           </div>
 
@@ -892,15 +893,19 @@ export function ConfiguratorSection() {
               </div>
 
               <div className="mt-auto pt-8">
+                {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
                 <p className="text-sm text-text-secondary">
-                  Next: a few quick questions, then you build with your AI tool while we
-                  register you. Three days to your first real text.
+                  Pre-launch. The messages above are yours — copy them and use them
+                  with any provider today. The full product, with onboarding and
+                  delivery, ships summer 2026. Get on the list and we&apos;ll tell
+                  you when.
                 </p>
+                {/* PRE-LAUNCH (2026-05-15): revert to "Start building with SMS →" (href "/signup") when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
                 <Link
-                  href="/signup"
+                  href="/start/verify"
                   className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
                 >
-                  Start building with SMS →
+                  Get early access
                 </Link>
               </div>
             </div>

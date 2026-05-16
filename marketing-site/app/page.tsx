@@ -63,14 +63,19 @@ export default function MarketingHome() {
       {/* Section 1 — Hero */}
       <div className="pt-16">
         <div className="mx-auto max-w-5xl px-6">
+          {/* PRE-LAUNCH (2026-05-15): temporary pre-launch tag — remove this element when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-brand-secondary">
+            PRE-LAUNCH · SHIPPING SUMMER 2026
+          </p>
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
             SMS for builders
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
             Two files. Your AI tool. A working SMS feature.
           </p>
+          {/* PRE-LAUNCH (2026-05-15): revert to "$49 + $19/mo. Three days to live." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
           <p className="mt-4 text-sm font-medium text-text-primary">
-            $49 + $19/mo. Three days to live.
+            $49 + $19/mo.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-3">
             {AI_TOOLS.map((tool) =>
