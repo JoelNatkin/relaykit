@@ -173,6 +173,18 @@ RelayKit leads with the preferred stack — Next.js + Supabase + Vercel + Stripe
 
 The audience-pack roadmap committed in MD-11 (2026-05-03) is deprecated. RelayKit does not ship as an audience-pack platform. Indie SaaS founders remain the launch target audience as a marketing-positioning fact — they are who we can reach via Indie Hackers, dev Twitter, and AI-tool communities, and the current product (SMS infrastructure organized by use-case category) serves their needs well. There is no future-pack rollout planned (no salons pack, no real estate pack, no fitness or e-commerce pack), no pack #2 gating, no audience-pack-specific configuration layer. The product itself is audience-agnostic: same categories, same templates, same compliance machinery serve any developer's needs. If a real audience-bound product layer ever becomes load-bearing (audience-specific templates, intake variations, surface treatments), that future commitment becomes its own decision then. **Supersedes:** MD-11 (audience-packs as long-term shape; indie SaaS is pack #1; pack #2 gated on stable economics + 50+ paying customers) — fully. Side effect: MD-9's "pack #2 trigger from MD-11" revisit-trigger reference becomes dangling; MD-9's substance (indie SaaS as the launch audience narrowing) survives unchanged. **Rejects:** continue with the audience-pack roadmap as a strategic commitment despite the dropdown's empty behavior (extends a forecast that hasn't materialized in product evidence); commit to an alternative audience-bound architectural layer (no current product use case; re-derive when needed). **Trigger to revisit:** real customer signal that audience-specific templates, intake variations, or surface treatments would meaningfully change conversion or retention; OR a partnership or distribution opportunity that depends on an audience-bound product surface; OR launch positioning to a second audience segment with materially different SMS use cases than the indie SaaS launch audience.
 
+**MD-19 — Marketing site pre-launch posture: honest pre-launch with active configurator + waitlist CTA** (Date: 2026-05-16)
+
+Pre-launch marketing home stays live with the configurator as lead magnet and "Get early access" as the primary CTA across all surfaces. The onboarding-promising "Start building with SMS" mid-page CTA is replaced with the waitlist CTA.
+
+**Reasoning:** Banner reads beta-typical; disabled buttons read broken; IH register requires honest pre-launch transparency. Configurator delivers real value (copyable messages) that earns the waitlist signup.
+
+**Supersedes:** none.
+
+**Rejects:** BETA-style banner; disabling/hiding the mid-page CTA; shipping as-is with the broken-promise CTA.
+
+**Operationalized by:** `docs/PRE_LAUNCH_DEVIATIONS.md` — active deviations tracked there until product ships.
+
 ## Tools and Force Multipliers
 
 ### AI roles
