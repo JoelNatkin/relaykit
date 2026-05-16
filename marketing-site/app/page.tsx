@@ -73,9 +73,8 @@ export default function MarketingHome() {
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
             Two files. Your AI tool. A working SMS feature.
           </p>
-          {/* PRE-LAUNCH (2026-05-15): revert to "$49 + $19/mo. Three days to live." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
           <p className="mt-4 text-sm font-medium text-text-primary">
-            $49 + $19/mo.
+            Free to build. $49 + $19/mo to go live.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-3">
             {AI_TOOLS.map((tool) =>

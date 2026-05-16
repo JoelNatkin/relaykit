@@ -18,17 +18,7 @@
 
 **Restoration trigger:** Onboarding and delivery ship — remove the tag element entirely.
 
-### 2 — Hero pricing line
-
-**File:** `marketing-site/app/page.tsx`
-
-**Before:** `$49 + $19/mo. Three days to live.`
-
-**After:** `$49 + $19/mo.`
-
-**Restoration trigger:** Onboarding and delivery ship — restore "Three days to live." to the pricing line.
-
-### 3 — Mid-page CTA below the configurator
+### 2 — Mid-page CTA below the configurator
 
 **File:** `marketing-site/components/configurator-section.tsx`
 
@@ -38,7 +28,7 @@
 
 **Restoration trigger:** Onboarding and delivery ship — restore the label `Start building with SMS →` and `href="/signup"`.
 
-### 4 — Pre-CTA paragraph above the mid-page CTA
+### 3 — Pre-CTA paragraph above the mid-page CTA
 
 **File:** `marketing-site/components/configurator-section.tsx`
 
@@ -48,7 +38,7 @@
 
 **Restoration trigger:** Onboarding and delivery ship — restore the original paragraph.
 
-### 5 — Configurator subhead
+### 4 — Configurator subhead
 
 **File:** `marketing-site/components/configurator-section.tsx`
 
