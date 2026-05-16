@@ -5,7 +5,7 @@
 > Not for: backend implementation (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN), customer-experience narrative (PRODUCT_SUMMARY), decisions that resolve alternatives (DECISIONS). If code disagrees with spec, code wins — flag the discrepancy.
 
 ## Screen-Level Prototype Specifications
-### Last updated: May 14, 2026
+### Last updated: May 15, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -160,6 +160,28 @@ Top-to-bottom:
 - Verification: `{business_name}: [your message here]` (no STOP).
 
 The placeholder `[your message here]` is plain text the user replaces. Starting state is compliant — the variable is present and (where required) STOP language is present — so Save is enabled the moment real content replaces the placeholder.
+
+### Blog — `/blog/*`
+
+**Status:** V1 scaffold shipped Session 89 (branch `feat/blog-scaffold`, unmerged at time of writing). In-repo MDX per D-387; cluster-primary taxonomy per D-388.
+
+The blog is part of the `marketing-site/` app, not the prototype. Posts are MDX files at `marketing-site/content/posts/*.mdx`; rendering, RSS, sitemap, and SEO metadata live in `marketing-site/{lib,components,app}/blog/`. Three route surfaces plus a feed:
+
+**Blog index — `/blog`.** Chronological list of published posts, newest first. Container `mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8` (matches the legal-doc layout). Header: H1 "RelayKit Blog" (`text-3xl font-semibold text-text-primary`) + a one-line tagline from the `BLOG_DESCRIPTION` constant. Body: a stack of post cards. Empty state: "No posts yet — check back soon."
+
+**Post card** (`components/blog/post-card.tsx`, used by the index and cluster pages). Per post: a cluster badge + `·` separator + lane indicator row; H2 title linking to the post; description paragraph; a meta line (date · reading time). `border-b border-border-secondary` between cards.
+
+**Post page — `/blog/[slug]`.** Reading-width column (`Prose` wrapper, `max-w-[68ch]`). Header: cluster badge + `·` + lane indicator, H1 title, meta line (date · reading time · "By Joel Natkin"). Body: MDX rendered through a hand-rolled component map (`lib/blog/mdx-components.tsx`) — the site has no `@tailwindcss/typography`, so every element (headings, lists, blockquote, table, links, code) is styled against semantic tokens. Code blocks: Shiki highlighting at build time (`github-dark` theme) on the theme-invariant `bg-bg-code-surface`. Smart quotes/dashes via `remark-smartypants`. Each post emits a JSON-LD `BlogPosting` block, OG/Twitter metadata, and a canonical link (`canonical_url` frontmatter if set, else self-canonical).
+
+**Cluster index — `/blog/cluster/[name]`.** One page per cluster (11 clusters, slugs in `lib/blog/clusters.ts`). Same container as the blog index. Header: "Cluster" eyebrow (`text-text-brand-secondary`), H1 cluster name, cluster description. Body: post cards filtered to that cluster. Zero-post clusters render an empty state rather than 404, so cluster badge links never break. Unknown cluster slugs 404 (`dynamicParams = false`).
+
+**RSS feed — `/blog/feed.xml`.** RSS 2.0 over published posts, generated statically.
+
+**Cluster badge vs. lane indicator.** The cluster badge is a brand-tinted pill and is clickable (→ `/blog/cluster/[slug]`). The lane indicator is deliberately *not* a pill — it renders as plain `text-xs text-text-tertiary` text, separated from the cluster badge by a `·`. Lane filtering is out of V1 scope (D-388); the flat styling avoids implying a control that does not exist.
+
+**Frontmatter schema** (`lib/blog/types.ts`): `title`, `slug` (must equal filename stem), `date` (ISO), `cluster` (one of 11), `lane` (demand/supply/retrospective/worldview), `status` (draft/ready/published), `description`, optional `canonical_url`, optional `og_image`. Only `status: published` posts appear anywhere in V1 — index, cluster pages, sitemap, RSS, and static params all filter to published; draft/ready posts 404 on direct URL.
+
+**Discoverability.** Linked from the marketing-site footer ("Resources" column). Not in the top nav (V1 scope decision). Reachable also via sitemap and RSS.
 
 ---
 

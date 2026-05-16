@@ -1,99 +1,97 @@
-# CC_HANDOFF — Session 88 (marketing-surface migration + post-migration cleanup)
+# CC_HANDOFF — Session 89 (blog scaffold V1 + content + close-out)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out. Includes commits, completed work, in-progress, gotchas, files modified, unmerged branches, suggested next tasks.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader, not as a session memoir.
 
-**Date:** 2026-05-14
-**Branch:** `main` — all 9 commits pushed to `origin/main`. No unmerged feature branches; the migration's feature branch (`chore/migrate-marketing-out-of-prototype`) was fast-forward merged + local-deleted earlier in the session.
+**Date:** 2026-05-15
+**Branch:** `feat/blog-scaffold` — **unmerged, not yet pushed at close-out** (the close-out commit awaits PM review before push). Earlier commits on the branch are pushed to `origin/feat/blog-scaffold`.
 
-`Commits: 9 | Files modified: 16 | Decisions added: 0 | External actions: 7`
+`Commits: 5 | Files modified: 13 | Decisions added: 2 | External actions: 2`
+
+(Metrics scope: `12a30bd..HEAD` — the range since the prior PM-review checkpoint, per PM instruction. The full branch is 8 commits; see Unmerged branches.)
 
 ---
 
 ## Session character
 
-Three coordinated waves on the same migration thread:
+One long session building the RelayKit blog as V1 infrastructure inside `marketing-site/`, then a close-out. Sequence: plan-mode scaffold → Vercel security block fixed → PM content + UX polish round → landing-copy tweak → this close-out. The blog satisfies the POST_TOPICS.md §7 prerequisite (the corpus needs a canonical home before posts can mirror with `rel=canonical` discipline).
 
-1. **Marketing-surface migration out of /prototype/.** PM-aligned scope: marketing-shaped surfaces (`/`, `/sms/[category]`) leave the prototype so it models `app.relaykit.ai` cleanly. Two prototype components (`playbook-flow.tsx`, `catalog/catalog-opt-in.tsx`) preserved on `/marketing-site/` as dormant code for future Phase 2a (D-384) consumption. Marketing-site does NOT gain category routes or a Use Cases dropdown in this lift — that work waits for Phase 2a content. The prototype's `/` becomes a thin auth-aware redirect; new placeholder `/sign-in` route reuses the email→OTP form content from the existing SignInModal. Plan-mode workflow: investigation → plan file → 5 ordered execution steps → verification → 5 commits matching the steps + 1 close-out commit.
-2. **Read-only post-migration audit + drift cleanup.** Audited PROTOTYPE_SPEC and PRODUCT_SUMMARY against post-migration reality; the audit surfaced 9 substantive items + 3 cosmetic across both docs. Single-pass cleanup commit fixed all 15 items: §3 retitled in PRODUCT_SUMMARY, broken §3.4 cross-ref removed, "7-section" → "6-section" count corrected, stale "Marketing home" pricing description rewritten, asymmetric MOVED treatment between catalog-opt-in and playbook-flow resolved, "Screens Not Yet Built" header restructured (stable Registration Form/Review moved up under Authenticated Pages, in-design items live under new "Open design items" header), dormant SignInModal + Footer sections trimmed to one-line pointers.
-3. **PM-authored mechanical addition to PM_PROJECT_INSTRUCTIONS.md.** New paragraph under "File Requests: Ask, Don't Assume" codifying that `conversation_search` is not a canonical source — past chats can be stale or contradictory; canonical sources are DECISIONS / REPO_INDEX / MASTER_PLAN / topic-specific docs.
+## Commits this session (`12a30bd..HEAD`)
 
-The migration resolves the Session 87 retention caveat about the marketing home being load-bearing for wordmark/breadcrumb links: the new auth-aware `/` redirect and the top-nav cleanup repointed everything that depended on the old `/`. Top-nav reduced 277 → 200 lines.
+1. `cfbce87` content(blog): finalize first post + voice-audit cluster descriptions
+2. `67f413b` fix(marketing-site): make lane indicator plain text, not a pill
+3. `ba00a64` content(blog): rewrite landing description in reader-facing voice
+4. `33e1ee0` content(blog): final landing description — Joel's tagline pick, committed + pushed by Joel during close-out
+5. (this close-out) docs(close-out): Session 89 — D-387/D-388 + PROTOTYPE_SPEC/PRODUCT_SUMMARY/MASTER_PLAN/REPO_INDEX
 
-## Commits this session
+Earlier on the branch (pushed, reviewed in prior rounds): `99e36e8` blog scaffold V1, `76a5ebd` footer Blog link, `12a30bd` next-mdx-remote v6 security bump.
 
-1. `10f5d34` chore(marketing-site): preserve playbook-flow + catalog-opt-in for Phase 2a category pages
-2. `8635043` chore(prototype): archive 4 marketing-surface files via git mv (4 100% renames)
-3. `73acb8e` feat(prototype): add auth-aware / redirect and /sign-in placeholder
-4. `bc9d463` refactor(prototype): clean top-nav post-archive; retarget sign-out + /apps guard to /sign-in
-5. `5e2e8f9` docs(prototype): log 2026-05-14 marketing migration in archive/README.md
-6. `b5f2521` docs(close-out): Session 88 — PROTOTYPE_SPEC + PRODUCT_SUMMARY + REPO_INDEX + CC_HANDOFF reconcile post-migration
-7. `56e252f` docs: post-migration cleanup — PROTOTYPE_SPEC + PRODUCT_SUMMARY drift fixes (15 audit items, single pass, PM-reviewed via .pm-review.md before push)
-8. `99b79a6` docs(pm): codify conversation_search canonical-sources discipline
-9. (this close-out) docs(close-out): Session 88 final — REPO_INDEX touched-date bump + CC_HANDOFF refresh after audit + drift cleanup + PM addition
+## Completed work
 
-## Files modified
+- **Blog scaffold V1** — routes `/blog`, `/blog/[slug]`, `/blog/cluster/[name]`, `/blog/feed.xml`; new `/sitemap.xml` + `/robots.txt`. In-repo MDX via `next-mdx-remote` v6, `gray-matter` frontmatter, Shiki highlighting (`rehype-pretty-code`), smart quotes (`remark-smartypants`), reading time, per-post OG/Twitter/canonical metadata + JSON-LD `BlogPosting`. Untitled UI tokens; ~68ch reading column. Footer "Resources" link.
+- **First real post** — placeholder replaced with finalized Twilio prose; renamed to keyword-richer slug `adding-text-messages-to-your-app-shouldnt-take-a-month`.
+- **Voice audit** — all 11 cluster descriptions run through V&P_v2; `compliance-registration` de-jargoned off "10DLC"/"campaigns"; the rest softened "SMS" → "text messages" into demand voice.
+- **Lane badge UX fix** — lane was a pill identical to the clickable cluster badge; now plain tertiary text with a `·` separator, so only the cluster badge reads as interactive.
+- **Blog landing tagline set** — `BLOG_DESCRIPTION` is now `"Indie builders gave up on SMS a decade ago. I didn't. These are my notes."` — Joel's pick, applied directly to `marketing-site/lib/blog/site.ts` during close-out. Propagates to the `/blog` tagline, RSS `<description>`, and the meta description (single source). Verified live on all three.
+- **Decisions** — D-387 (blog as in-repo MDX) and D-388 (cluster-primary taxonomy) recorded.
 
-16 unique paths across the session:
+## In progress
 
-- **Marketing-site additions (2):** `marketing-site/components/playbook-flow.tsx`, `marketing-site/components/catalog/catalog-opt-in.tsx` (dormant; inlined local `Message` type + dropped unused `website` prop on the catalog port).
-- **Prototype archive moves (4 renames):** `prototype/app/page.tsx`, `prototype/app/sms/[category]/page.tsx`, `prototype/components/playbook-flow.tsx`, `prototype/components/catalog/catalog-opt-in.tsx` → `prototype/archive/...` (mirrored paths). Empty `/sms/[category]` and `/sms/` route directories also removed.
-- **Prototype new routes (2):** `prototype/app/page.tsx` (auth-aware redirect, ~20 LOC) and `prototype/app/sign-in/page.tsx` (placeholder OTP landing, ~220 LOC).
-- **Prototype rewires (2):** `prototype/components/top-nav.tsx` (Use Cases dropdown removed, Sign in modal trigger removed, wordmark simplified, sign-out target → `/sign-in`); `prototype/app/apps/page.tsx` (auth-guard target → `/sign-in`).
-- **Doc + governance (6):** `prototype/archive/README.md`, `PROTOTYPE_SPEC.md` (modified twice — close-out + drift cleanup), `docs/PRODUCT_SUMMARY.md` (modified twice), `REPO_INDEX.md` (modified twice), `CC_HANDOFF.md` (this file, overwritten twice), `PM_PROJECT_INSTRUCTIONS.md` (conversation_search discipline addition).
+- **`feat/blog-scaffold` is not merged.** The tagline question is resolved (above). The branch now awaits only PM approval of this close-out and `NEXT_PUBLIC_SITE_URL` being set in Vercel — then push + merge to `main`. PM should confirm the tagline copy as part of close-out review.
 
 ## DECISIONS ledger
 
-Pre-flight scan at session start: 301 active, latest D-386, archive D-01–D-83. Scan clean. **No new D-numbers this session.** The migration implements existing architectural commitments (D-368 production-facing branching, D-378 future surfaces under app.relaykit.ai, D-381 message-source-deferred, D-384 Phase 2a content authoring); the PM_PROJECT_INSTRUCTIONS conversation_search addition is process-discipline that lives in PM_PROJECT_INSTRUCTIONS, not a product decision (fails the alternative test — no real rejected alternative). PM confirmed no D-numbers needed for any of the three waves.
+Pre-flight scan was clean at session start (301 active, latest D-386). **Two decisions added this session:** D-387, D-388 — both `Supersedes: none` (grep of DECISIONS + DECISIONS_ARCHIVE found no conflicting prior entry; the only "Blog" hit was an old prototype-footer decision about a different, now-dormant footer — no genuine conflict by the one-sentence test). Active count now 303, latest D-388.
 
 ## Quality gates
 
-- `npx tsc --noEmit` clean on both `/marketing-site/` and `/prototype/` after every code-touching step. `.next` cache cleared between archive operations and verification per the standing rule.
-- `npx eslint .` clean on `/marketing-site/` (no prototype eslint config — pre-existing BACKLOG entry from Session 87).
-- HTTP smoke (fresh dev servers on :3001 and :3002) matched the migration plan's expected table exactly: prototype `/` and `/sign-in` 200, `/sms/*` 404; marketing-site unchanged + `/sms/*` and `/sign-in` 404 (confirms no scope creep).
-- Link audit grep clean on active prototype tree post-migration (only header-comment self-references to archived paths remain).
-- Drift cleanup commit was PM-reviewed via `.pm-review.md` before push; PM addition + this close-out are mechanical, no review per cadence.
+- `tsc --noEmit` clean, `eslint` clean, `next build` clean (all blog routes static: 1 post path, 11 cluster paths, feed/sitemap/robots static) — re-verified after every code-touching commit and at close-out.
+- Smoke-tested at :3002 each round: routes 200, bogus slugs/clusters 404, OG/Twitter/canonical tags, JSON-LD, Shiki highlighting, smart quotes, RSS, sitemap, robots all verified.
+- `next-mdx-remote` v6 confirmed a drop-in (v5→v6 delta is dependency-only — `unist-util-remove` ^3→^4; public API identical).
 
 ## Retirement sweep + drift watch
 
-Phase 1 — Sinch Proving Ground active at session start, still active. No phase boundary crossed; sweep + drift watch skipped per CLAUDE.md mid-phase rules.
+Phase 1 — Sinch Proving Ground active at session start and still active. No phase boundary crossed; retirement sweep + drift watch skipped per CLAUDE.md mid-phase rules.
 
 ## Gotchas for next session
 
-1. **Two prototype components are dormant code:** `prototype/components/sign-in-modal.tsx` (no importers — replaced by the standalone `/sign-in` route) and `prototype/components/footer.tsx` (no importers — target marketing pages all archived). Both tagged DORMANT in PROTOTYPE_SPEC with one-line pointers; the future auth refactor will retire `SignInModal`; `footer.tsx` may want a separate cleanup pass.
-2. **`/start/*` wordmark still targets `/`.** Post-lift, `/` redirects to `/sign-in` for logged-out users mid-onboarding — defensible (clicking the wordmark exits onboarding to sign in) but slightly unusual. Flagged in `prototype/archive/README.md` 2026-05-14 entry.
-3. **Stale dev-server trap recurred.** Two old dev-server processes from a prior session were bound to 3001/3002 (3-day uptime). Use `lsof -nP -iTCP:3001 -iTCP:3002 -sTCP:LISTEN` to find them, kill, then start fresh. Standing rule: kill + `rm -rf .next` + restart at end of every task.
-4. **`git mv` with bracketed segment names** (`'prototype/app/sms/[category]/page.tsx'`) needs single-quoting to defeat shell globbing.
-5. **Pre-existing PROTOTYPE_SPEC drift around `prototype/components/proto-nav-helper.tsx` referencing `/apps/[appId]/overview`** (phantom route, file never existed on disk) survived both archive waves. Known Issues table entry tagged "Audits 2026-05-13 + 2026-05-14"; cleanup deferred per BACKLOG.
+1. **`NEXT_PUBLIC_SITE_URL` must be set in Vercel** (Preview + Production) before merge. Unset, it falls back to the hardcoded `https://relaykit.ai` — correct for Production, wrong for Preview deploys (canonical/OG/RSS/sitemap URLs).
+2. **Pre-existing `next` + `postcss` advisories** — `npm audit` reports 1 high (`next`) + 1 moderate (`postcss`), unrelated to the blog and not what Vercel blocked on. A `next` version bump is a separate PM call, deliberately not bundled into the blog branch.
+3. **`/sitemap.xml` 404 on a stale dev server** — was a `.next` cache staleness quirk; `rm -rf .next` + restart fixes it. The route is correct (passes `next build` + serves on a fresh server).
+4. **Raw `--` in RSC flight data** — the post body uses `--` for em dashes (`remark-smartypants` converts them); literal `--` still appears inside `<script>` RSC payload but never in visible markup. Not a bug.
+5. **`docs/POST_TOPICS.md` is untracked** — the PM-authored content-planning doc the blog serves has been untracked since before this session. Not committed here (outside the close-out's enumerated files; CC did not author it). Flag for PM: should it be added to the repo?
+6. **MASTER_PLAN.md has no in-file version/date line** — "last-updated" is tracked only via REPO_INDEX's docs table (bumped to 2026-05-15). No version line was invented.
+
+## Files modified
+
+13 unique paths in `12a30bd..HEAD`:
+- **Blog code/content (7, committed `cfbce87`/`67f413b`/`ba00a64`):** `marketing-site/components/blog/{lane-badge,post-card,post-header}.tsx`, `marketing-site/lib/blog/{clusters,site}.ts`, `marketing-site/content/posts/adding-text-messages-to-your-app-shouldnt-take-a-month.mdx` (new), `marketing-site/content/posts/adding-sms-shouldnt-take-a-month.mdx` (deleted).
+- **Close-out docs (6, this commit):** `DECISIONS.md`, `PROTOTYPE_SPEC.md`, `docs/PRODUCT_SUMMARY.md`, `MASTER_PLAN.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`.
+
+(Full branch — 99e36e8 onward — also touched the rest of `app/blog/*`, `lib/blog/*`, `components/blog/*`, `app/{sitemap,robots}.ts`, `app/layout.tsx`, `components/footer.tsx`, `package.json`, `.env.example`, `public/blog-og-default.png`.)
+
+## Unmerged branches
+
+**`feat/blog-scaffold`** — 8 commits (`99e36e8`..close-out). The entire RelayKit blog V1. First 7 commits pushed to `origin` (through `33e1ee0`); only the close-out commit is held for PM review per the REQUIRED review bar (new D-numbers, first PRODUCT_SUMMARY blog entry, MASTER_PLAN active-focus edit). Waiting on: PM approval of this close-out. Then: push → merge to `main`.
 
 ## Carry-forward queue
 
 Active workstreams (not closed this session):
-- PM_PROJECT_INSTRUCTIONS.md still 471 / 400-line ceiling (gained 2 lines from the conversation_search addition; trim audit queued)
-- CLAUDE.md still over 200-line ceiling (carry-forward)
-- Phase 1 downstream experiments first-pickup (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP)
-- Phase 2a per-category research per D-384 (8 categories — this session's preserved components are for the eventual category pages this work feeds)
-- Stage 2 `BRAND_DIRECTION.md` authoring + MD-number capture from `BRAND_AUDIT.md`
-- Pumping Defense Wave 2 implementation
-- Migration 006 manual application
-- Broader threat-modeling workstream
-
-New from this session (no BACKLOG entries added; surfaced for the next session):
-- Future auth refactor will retire both `prototype/components/sign-in-modal.tsx` (dormant) and `prototype/app/sign-in/page.tsx` (placeholder); the two surfaces share content and should be unified there.
-- `prototype/components/footer.tsx` is now dormant; minor cleanup candidate.
-- The `/start/*` wordmark behavior (clicking exits onboarding to /sign-in) is defensible but worth revisiting if onboarding UX gets a polish pass.
-
-## Unmerged branches
-
-None. `chore/migrate-marketing-out-of-prototype` was created for the migration, accumulated 5 lift commits + 1 close-out commit, fast-forward merged into main, pushed, and local branch deleted. Subsequent commits (drift cleanup, PM addition, this close-out) landed directly on main.
+- **Merge `feat/blog-scaffold`** — tagline is set; branch awaits PM close-out approval, then push + merge to `main`.
+- `NEXT_PUBLIC_SITE_URL` set in Vercel before merge.
+- Pre-existing `next`/`postcss` security advisories — separate PM call on a `next` bump.
+- `docs/POST_TOPICS.md` untracked — PM decision on whether to commit it.
+- PM_PROJECT_INSTRUCTIONS.md still 471 / 400-line ceiling (trim audit queued).
+- CLAUDE.md still over 200-line ceiling (carry-forward).
+- Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) — now gated behind the pre-launch checklist (MASTER_PLAN).
+- Phase 2a per-category research per D-384.
+- Stage 2 `BRAND_DIRECTION.md` authoring + MD-number capture.
+- Pumping Defense Wave 2; Migration 006 manual application; broader threat-modeling.
+- Dormant `prototype/components/{sign-in-modal,footer}.tsx` cleanup candidates.
 
 ## Suggested next session
 
-Three plausible threads:
-
-1. **Phase 1 downstream experiments first-pickup** — same recommendation as Session 87's carry-forward. Experiments 2b (inbound MO), 3c (brand upgrade), 4 (STOP/START/HELP) all unblocked. Closest to closing Phase 1.
-2. **Stage 2 `BRAND_DIRECTION.md` authoring** — Stage 1 audit synthesis in `docs/BRAND_AUDIT.md` is the input; an authoring session would produce direction + MD-numbered decisions.
-3. **Phase 2a content authoring kickoff** — the components preserved on marketing-site this session are for Phase 2a's eventual per-category pages. If per-category research per D-384 is ready to enter authoring, this session sets up that downstream work.
-
-If PM redirects: the PM_INSTRUCTIONS / CLAUDE.md trim audit wave remains queued and low-coordination, as does cleanup of the dormant `sign-in-modal.tsx` / `footer.tsx` files.
+1. **Push + merge `feat/blog-scaffold` to `main`** once PM approves this close-out. (Confirm `NEXT_PUBLIC_SITE_URL` is set in Vercel first. Tagline is already applied.)
+2. **Next pre-launch checklist item: live-site tweaks** — marketing-site polish, per the MASTER_PLAN pre-launch checklist.
+3. Then configurator message refinement, then the first Indie Hackers post — after which Phase 1 experiments resume.
