@@ -185,6 +185,18 @@ Pre-launch marketing home stays live with the configurator as lead magnet and "G
 
 **Operationalized by:** `docs/PRE_LAUNCH_DEVIATIONS.md` — active deviations tracked there until product ships.
 
+**MD-20 — Waitlist signup implementation: DIY (Supabase + Resend) over hosted vendor (Waitlister.me)** (Date: 2026-05-16)
+
+Build waitlist signup on our own stack — a Supabase `early_access_subscribers` table plus a Resend transactional welcome email — rather than using a hosted waitlist vendor.
+
+**Reasoning:** Subscribers live in our existing stack, ready for launch-day broadcasts with no migration. Per-recipient welcome personalization (categories interpolation) is trivial in our own code. Resend Pro ($20/mo) is already required for a second domain regardless, so the DIY incremental cost is $0. Full data ownership.
+
+**Supersedes:** none. Extends MD-19 — this is the concrete waitlist mechanism MD-19 left as a follow-up.
+
+**Rejects:** Waitlister.me Growth ($39/mo, uncertain metadata templating in welcome emails); Waitlister.me Pro + webhook-to-Resend (paying for the vendor while bypassing its main feature).
+
+**Operationalized by:** `marketing-site/app/api/early-access/route.ts` and supporting infrastructure — migration `007_early_access_subscribers.sql`, the waitlist modal, and the entries tracked in `docs/PRE_LAUNCH_DEVIATIONS.md`.
+
 ## Tools and Force Multipliers
 
 ### AI roles

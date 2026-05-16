@@ -3,6 +3,8 @@ import { Footer } from "@/components/footer";
 import { PostHogProvider } from "@/components/posthog-provider";
 import { SuspendedPostHogPageView } from "@/components/posthog-pageview";
 import { TopNav } from "@/components/top-nav";
+import { WaitlistModal } from "@/components/waitlist-modal";
+import { WaitlistProvider } from "@/context/waitlist-context";
 import { SITE_URL } from "@/lib/blog/site";
 import "./globals.css";
 
@@ -33,9 +35,12 @@ export default function RootLayout({
       <body className="bg-bg-primary font-sans antialiased">
         <PostHogProvider>
           <SuspendedPostHogPageView />
-          <TopNav />
-          <main className="pt-14">{children}</main>
-          <Footer />
+          <WaitlistProvider>
+            <TopNav />
+            <main className="pt-14">{children}</main>
+            <Footer />
+            <WaitlistModal />
+          </WaitlistProvider>
         </PostHogProvider>
       </body>
     </html>

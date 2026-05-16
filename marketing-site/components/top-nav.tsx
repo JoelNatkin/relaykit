@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useWaitlist } from "@/context/waitlist-context";
 import { useTheme } from "@/lib/use-theme";
 
 export function TopNav() {
   const { theme, toggle } = useTheme();
+  const { openModal } = useWaitlist();
   // Label names the target state (what the click will switch to). Until
   // the hook reports a real theme post-mount, render a non-breaking
   // space to reserve layout width without flashing wrong copy.
@@ -34,12 +36,13 @@ export function TopNav() {
           >
             {targetLabel}
           </button>
-          <Link
-            href="/start/verify"
-            className="rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+          <button
+            type="button"
+            onClick={() => openModal("top-nav")}
+            className="cursor-pointer rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
           >
             Get early access
-          </Link>
+          </button>
         </div>
       </div>
     </nav>

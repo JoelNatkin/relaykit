@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import { ConfiguratorSection } from "@/components/configurator-section";
+import { EarlyAccessButton } from "@/components/early-access-button";
 import { PreviewListMock } from "@/components/preview-list-mock";
 
 // Per-logo heights tune visual weight, not pixel height. Heights compensate
@@ -237,12 +237,12 @@ export default function MarketingHome() {
         <p className="mt-4 max-w-xl text-base leading-relaxed text-text-tertiary">
           Configure today. Live in three days. Refund if not approved.
         </p>
-        <Link
-          href="/start/verify"
-          className="mt-8 inline-block rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
+        <EarlyAccessButton
+          source="bottom"
+          className="mt-8 inline-block cursor-pointer rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
         >
           Get early access
-        </Link>
+        </EarlyAccessButton>
       </section>
     </div>
   );

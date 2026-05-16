@@ -1,9 +1,9 @@
 "use client";
 
 import { ChevronDown, Copy01, Edit01, Plus } from "@untitledui/icons";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { MessageEditCard } from "@/components/configurator/message-edit-card";
+import { useWaitlist, type WaitlistSummary } from "@/context/waitlist-context";
 import {
   getExampleValues,
   interpolateTemplate,
@@ -507,6 +507,29 @@ export function ConfiguratorSection() {
     [selected],
   );
 
+  // Publish a lightweight summary of the configurator selection to the
+  // waitlist context, so the modal (opened from any "Get early access"
+  // button) can show the visitor what they configured. The heavy editing
+  // state stays local — only this summary travels up. `configuratorTouched`
+  // is the four user-facing inputs diverging from their untouched defaults.
+  const { openModal, setSummary } = useWaitlist();
+  const waitlistSummary = useMemo<WaitlistSummary>(
+    () => ({
+      categoryTitles: selectedInOrder.map((id) => VERTICAL_BY_ID[id].title),
+      tone: globalTone,
+      businessName: businessName.trim(),
+      configuratorTouched:
+        pack !== "verification-only" ||
+        !(selected.size === 1 && selected.has("verification")) ||
+        globalTone !== "standard" ||
+        businessName.trim() !== "",
+    }),
+    [selectedInOrder, pack, selected, globalTone, businessName],
+  );
+  useEffect(() => {
+    setSummary(waitlistSummary);
+  }, [waitlistSummary, setSummary]);
+
   function stubKey(verticalId: VerticalId, index: number): MessageKey {
     return `${verticalId}:stub:${index}`;
   }
@@ -906,13 +929,16 @@ export function ConfiguratorSection() {
                   delivery, ships summer 2026. Get on the list and we&apos;ll tell
                   you when.
                 </p>
-                {/* PRE-LAUNCH (2026-05-15): revert to "Start building with SMS →" (href "/signup") when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-                <Link
-                  href="/start/verify"
-                  className="mt-4 flex h-15 w-full items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                {/* PRE-LAUNCH (2026-05-16): opens the waitlist modal. Revert to
+                    a <Link> "Start building with SMS →" (href "/signup") when
+                    onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
+                <button
+                  type="button"
+                  onClick={() => openModal("mid-page")}
+                  className="mt-4 flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
                 >
                   Get early access
-                </Link>
+                </button>
               </div>
             </div>
           </div>
