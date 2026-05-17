@@ -1,9 +1,10 @@
 # RelayKit vertical taxonomy
 
-> **Status: DRAFT — v0.3.** This document captures the vertical taxonomy thinking surfaced by Experiments 3a/3b (Sinch's TCR use-case dashboard). It is a working draft awaiting Phase 5 design resolution on the three directional pieces flagged in §4. The settled calls in §3 are firm; the directional pieces in §4 are explicitly unresolved. Iterate based on Phase 5 design resolutions before treating as canonical.
+> **Status: DRAFT — v0.4.** This document captures the vertical taxonomy thinking surfaced by Experiments 3a/3b (Sinch's TCR use-case dashboard). It is a working draft awaiting Phase 5 design resolution on the two remaining directional pieces flagged in §4 (doors UX, AI-assisted LVM scope). The Community disposition in §4 closed per D-401 (2026-05-17). The settled calls in §3 are firm; the remaining directional pieces in §4 are explicitly unresolved. Iterate based on Phase 5 design resolutions before treating as canonical.
 >
 > **Phase 5 prerequisite gate.** Any Phase 5 work item touching customer registration form design, intake question design, vertical surface in onboarding, message template authorship for new/changed verticals, or registration backend logic — read this draft first as a prerequisite, not as a reference. The doors UX and the per-vertical TCR mapping decisions live here until promoted to a D-number or to PROTOTYPE_SPEC.
 >
+> **v0.4 (2026-05-17):** §4 Community disposition closed per D-401 (Redefine path adopted).
 > **v0.3 (2026-05-12):** §0 Three-layer relationship deleted; audience-pack framing excised per D-385; Higher Education references removed per D-386.
 
 ---
@@ -80,11 +81,7 @@ One orthogonal concept: **Carrier Exemptions** — not a category, a per-carrier
 
 Conservative-or-deferred most likely. Pending.
 
-**Community vertical disposition.** Currently maps to TCR Social (Special). Per §3 "no Special at launch," the "accept friction" path is off the table. Narrows to:
-- **Redefine:** reshape Community to fit Customer Care semantics (community-of-practice messaging from a business — moderation alerts, event reminders for member groups). Risk: overlaps with Support's CC mapping; differentiation becomes thin.
-- **Drop:** remove Community from the launch vertical list; revisit post-launch if a real customer segment surfaces.
-
-Pending.
+**Community vertical disposition.** **RESOLVED per D-401 (2026-05-17): Redefine path adopted.** Community ships at launch under TCR ACCOUNT_NOTIFICATION as business-to-member messaging (event reminders, RSVPs, moderation updates, milestones, onboarding) — not peer-to-peer (TCR Social, Special-class, vetted). Same outbound shape as Appointments / Waitlist / Account events. Drop alternative rejected. See `audits/research/2026-05-16/community.md` for the validating research.
 
 ---
 
@@ -107,9 +104,9 @@ Docs and surfaces that need revision/authorship when this work activates:
 Resolution-ordering for Phase 5 work items dependent on this draft:
 
 1. **Customer registration form design** ← blocked on doors decision (§4)
-2. **Intake question design** ← blocked on doors decision (§4) + Community disposition (§4)
-3. **Vertical surface in onboarding** ← blocked on Community disposition (§4)
-4. **Message template authorship for new/changed verticals** ← blocked on Internal LVM-curated reframing (§3) + Community disposition (§4)
+2. **Intake question design** ← blocked on doors decision (§4)
+3. **Vertical surface in onboarding** ← Community disposition resolved per D-401; no further blocks from this draft
+4. **Message template authorship for new/changed verticals** ← blocked on Internal LVM-curated reframing (§3); Community disposition resolved per D-401
 5. **Registration backend logic** ← blocked on doors decision (§4) + AI-assist scope (§4)
 
-The three §4 directional pieces are the unblocking critical path. Once they resolve, the §3 settled calls + §4 resolved positions promote out of this draft into D-numbers, MASTER_PLAN amendments, or PROTOTYPE_SPEC sections as appropriate, and this file graduates from `VERTICAL_TAXONOMY_DRAFT.md` to `VERTICAL_TAXONOMY.md`.
+The two §4 directional pieces remaining (doors UX, AI-assisted LVM scope) are the unblocking critical path. Once they resolve, the §3 settled calls + §4 resolved positions promote out of this draft into D-numbers, MASTER_PLAN amendments, or PROTOTYPE_SPEC sections as appropriate, and this file graduates from `VERTICAL_TAXONOMY_DRAFT.md` to `VERTICAL_TAXONOMY.md`.
