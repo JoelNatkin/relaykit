@@ -1772,3 +1772,13 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Reasoning:** VERTICAL_TAXONOMY_DRAFT §4 left Community as one of three directional pieces pending Phase 5 design. §3 had already established that Special-class TCR categories (including Social, the peer-to-peer category) are off the launch table because vetting workflows are incompatible with the one-person-shop automation posture. That narrowed Community's choices to Redefine or Drop. The Wave 2 research file for Community proceeded as if Redefine were settled and validated the path: every Community message we'd author is business outbound to a member (community runs an event, business texts members about it), zero are member-to-member. ACCOUNT_NOTIFICATION fits the shape cleanly — same outbound pattern as Appointments and Waitlist, recipients opted in via community membership, no peer-to-peer routing. We are not skirting vetting; we are correctly classifying business→member notifications under the category that already covers them, regardless of community theming. Recording closes the §4 pending item.
 
 **Affects:** VERTICAL_TAXONOMY_DRAFT.md §4 (Community disposition marked Resolved with this D-number); Community message library (ships at launch with hybrid classification per D-400 — 5 discrete subs + 1 onboarding workflow per the research file); configurator UX (Community surfaces as a launch category alongside the other 8); MASTER_PLAN.md (no change — Community was already a working assumption; this entry closes the formal pending status).
+
+## D-402 — Transactional template character set + single-segment authoring principle
+
+**Decided:** 2026-05-17 (Session 94)
+
+**Decision:** All RelayKit-authored message templates target a single GSM-7 segment after worst-case-realistic variable substitution. Strings authored through RelayKit's UI (template bodies, developer template edits, variable values saved in workspace settings) must contain only GSM-7 base-set characters; non-GSM-7 characters are auto-replaced on paste where a clean ASCII equivalent exists (curly quotes → straight, em/en-dash → hyphen, ellipsis → three dots), and otherwise blocked at save with a plain-language error.
+
+**Why:** Margin discipline (multi-segment UCS-2 messages cost ~2x at the carrier; we've priced flat per-message); delivery reliability (multi-segment messages drop or arrive out of order more often); developer ergonomics (curly-quote auto-insertion from macOS/editors is the most common unintentional bite — silent paste normalization eliminates it). Variables passed via SDK (codes, phone numbers, timestamps) are type-constrained and exempt — the type contract enforces shape, no character rule needed.
+
+**Supersedes:** none
