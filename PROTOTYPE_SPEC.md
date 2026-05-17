@@ -5,7 +5,7 @@
 > Not for: backend implementation (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN), customer-experience narrative (PRODUCT_SUMMARY), decisions that resolve alternatives (DECISIONS). If code disagrees with spec, code wins — flag the discrepancy.
 
 ## Screen-Level Prototype Specifications
-### Last updated: May 16, 2026
+### Last updated: May 17, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -164,17 +164,17 @@ Top-to-bottom:
 The placeholder `[your message here]` is plain text the user replaces. Starting state is compliant — the variable is present and (where required) STOP language is present — so Save is enabled the moment real content replaces the placeholder.
 
 ### Waitlist modal — `marketing-site/components/waitlist-modal.tsx`
-**Status:** Shipped this session (`feat/waitlist-modal`, merged to main). Pre-launch posture surface — reverts when onboarding ships (`docs/PRE_LAUNCH_DEVIATIONS.md` entry 7). Build decision: MD-20 (`docs/MARKETING_STRATEGY.md`).
+**Status:** Shipped Session 90 (`feat/waitlist-modal`); design-polished Session 91 (`feat/waitlist-modal-design`, merged to main). Pre-launch posture surface — reverts when onboarding ships (`docs/PRE_LAUNCH_DEVIATIONS.md` entry 7). Build decision: MD-20 (`docs/MARKETING_STRATEGY.md`).
 
 In-page modal that captures an email for the early-access waitlist. Mounted once at the layout level (`app/layout.tsx`, inside `WaitlistProvider`); opened by all three "Get early access" CTAs (top-nav, configurator mid-page, closing strip), each passing a `cta_source` (`top-nav` / `mid-page` / `bottom`).
 
-Structure (hand-rolled, mirrors `prototype/components/sign-in-modal.tsx`): backdrop `bg-black/50 z-[100]`, card `z-[101] max-w-[400px] rounded-2xl bg-bg-primary p-8`, X close button, Escape + backdrop close, body-scroll lock. Untitled UI tokens only.
+Structure (hand-rolled, mirrors `prototype/components/sign-in-modal.tsx`): backdrop `bg-black/50 z-[100]`, card `z-[101] max-w-[400px] rounded-2xl bg-bg-primary p-8`, X close button, Escape + backdrop close, body-scroll lock. Untitled UI tokens only. The modal reads in a founder voice — a first-person note from Joel, not a transactional form.
 
 Single `status` state — `idle` / `loading` / `success` / `error`:
-- **idle:** header "Get on the list"; selection line "You're interested in: <categories>" (the configurator selection, read from `WaitlistContext`; defaults to "Verification" on pages with no configurator); a disclosure line; email input; "Join the list" submit.
+- **idle:** header "Get on the list"; a founder subhead ("Summer 2026 is the target. I'll send one email when it's live — no drip, no marketing churn."); a "— Joel, solo founder" signoff inline below the subhead; a "Live at launch:" label above a row of non-interactive category pills — one per configurator-selected category, read from `WaitlistContext`, defaulting to a single "Verification" pill on pages with no configurator; email input; "Join the list" submit. The form area carries `min-h-[320px]`; pills use the configurator's selected-tone-pill styling (`bg-bg-brand-secondary` tint, `px-3 py-1.5`).
 - **loading:** spinner in the button, button disabled; backdrop/X/Escape gated off.
-- **success:** replaces the form — "You're on the list. We noted you're interested in [categories]. We'll email when we ship — summer 2026."
-- **error:** message above the form — "Couldn't reach our list right now. Try again, or email founder@relaykit.ai."
+- **success:** its own moment, not a collapsed form — header "You're in.", body "I'll send you an email when it ships.", then a full-width primary "Close" button. No pills, label, or signoff.
+- **error:** inline message — "Something's not working on our end. Try again, or email joel@relaykit.ai and I'll add you manually." The email field stays visible so retry is one click.
 
 The configurator publishes a lightweight selection summary up into `WaitlistContext` (`context/waitlist-context.tsx`) via an effect; the modal reads it. Submit POSTs `{ email, categories, tone, businessName, configuratorTouched, ctaSource }` to `POST /api/early-access`, which writes the `early_access_subscribers` Supabase table (migration `007`) and sends a Resend welcome email for new signups. `GET /api/unsubscribe?token=…` backs the welcome email's unsubscribe link.
 

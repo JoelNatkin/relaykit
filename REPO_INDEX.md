@@ -6,10 +6,10 @@
 
 ## Meta
 
-- Last updated: 2026-05-16
+- Last updated: 2026-05-17
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
 - Decision count: 303 active, latest D-388; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: main; no unmerged feature branches (the five branches merged this session — `feat/blog-scaffold`, `feat/pre-launch-home`, `feat/configurator-pricing-clarity`, `feat/hero-pricing-clarity`, `feat/waitlist-modal` — remain on origin, deletable)
+- Branch state: main; no unmerged feature branches (`feat/waitlist-modal-design` and `feat/message-library-scaffold` merged this session; they plus the five Session 90 branches remain on origin, deletable)
 - Active explorations: None
 
 ## Active explorations
@@ -23,19 +23,19 @@ _No active explorations._
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-16 | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-17 | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-15 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-16 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
 | `DECISIONS.md` | 2026-05-15 | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
 | `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` | 2026-04-27 | Archived REPO_INDEX change-log entries (Sessions 1–49 era). |
-| `PROTOTYPE_SPEC.md` | 2026-05-16 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
+| `PROTOTYPE_SPEC.md` | 2026-05-17 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-05-13 | Post-signup workspace architecture (state machine, layout systems). |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-16 (Session 90) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-17 (Session 91) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-13 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -144,12 +144,23 @@ Early-access waitlist per MD-20 (DIY on Supabase + Resend over a hosted vendor),
 | `marketing-site/components/waitlist-modal.tsx` | The waitlist modal (Untitled UI; idle/loading/success/error). |
 | `marketing-site/components/early-access-button.tsx` | Client button so server components can open the modal. |
 
-Modified: `app/layout.tsx` (WaitlistProvider + modal mount); `app/page.tsx`, `components/top-nav.tsx`, `components/configurator-section.tsx` (CTAs rewired to the modal; configurator publishes its selection summary up); `package.json` (`resend` dep); `.env.example` (`RESEND_API_KEY`). Pre-launch posture deviations tracked in `docs/PRE_LAUNCH_DEVIATIONS.md`.
+Modified: `app/layout.tsx` (WaitlistProvider + modal mount); `app/page.tsx`, `components/top-nav.tsx`, `components/configurator-section.tsx` (CTAs rewired to the modal; configurator publishes its selection summary up); `package.json` (`resend` dep); `.env.example` (`RESEND_API_KEY`). Pre-launch posture deviations tracked in `docs/PRE_LAUNCH_DEVIATIONS.md`. The modal was design-polished Session 91 (`feat/waitlist-modal-design`) — founder voice, category pills, simplified success state.
+
+## message-library scaffold (new — Session 91)
+
+Wave 2 message-library foundation — a typed corpus of SMS message templates organized by category. Scaffolding only (empty data stubs); research and message bodies land in later PM authoring passes. Built on `feat/message-library-scaffold` (merged to main).
+
+| Path | Purpose |
+|------|---------|
+| `marketing-site/lib/message-library/types.ts` | Type system — `Classification` + `TCRMapping` unions; `Message`/`Sub`/`Stage` interfaces; `Discrete`/`Workflow`/`Hybrid` `Category` interfaces discriminated by `classification`. |
+| `marketing-site/lib/message-library/[category].ts` | 9 per-category typed stubs (verification, appointments, order-updates, customer-support, marketing, team-alerts, community, waitlist, account-events) with empty subs/stages. |
+| `marketing-site/lib/message-library/index.ts` | Barrel — re-exports the type system + the 9 category consts. |
+| `audits/research/2026-05-16/[category].md` | 9 per-category lead-magnet research files (PM-authored; empty templates at scaffold time). |
 
 ## Subdirectories
 
 - `/docs/archive` — superseded PRDs and old strategy
-- `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`. Current outputs: `audits/prototype-inventory-2026-05-13.md` (read-only inventory of /prototype/ that drove the Session 87 archive operation).
+- `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`. Current outputs: `audits/prototype-inventory-2026-05-13.md` (read-only inventory of /prototype/ that drove the Session 87 archive operation). `audits/research/2026-05-16/` holds the 9 per-category lead-magnet research files for the Wave 2 message-library workstream (templates scaffolded Session 91; PM authors content).
 - `/explorations` — sandbox files (see Active explorations above)
 - `/experiments` — Phase 1 Sinch proving-ground throwaway code
 - `/prototype/archive` — files removed from the active prototype on 2026-05-13 (Session 87 bulk archive); source paths mirrored; see `prototype/archive/README.md` for the un-archive procedure

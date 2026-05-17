@@ -1,90 +1,80 @@
-# CC_HANDOFF — Session 90 (pre-launch posture + early-access waitlist + close-out)
+# CC_HANDOFF — Session 91 (waitlist modal polish + message-library scaffold + close-out)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out. Includes commits, completed work, in-progress, gotchas, files modified, unmerged branches, suggested next tasks.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader, not as a session memoir.
 
-**Date:** 2026-05-16
-**Branch:** `main` — all session work merged. The close-out commit is the only commit awaiting push at write time.
+**Date:** 2026-05-17
+**Branch:** `main` — all session work merged and pushed. The close-out commit is the only commit awaiting push at write time.
 
-`Commits: 11 | Files modified: 29 | Decisions added: 0 D-numbers (MD-19, MD-20 added to MARKETING_STRATEGY) | External actions: ~14 git pushes`
+`Commits: 3 | Files modified: 24 | Decisions added: 0 | External actions: ~5 git pushes`
 
-(Metrics scope: `ba00a64..HEAD` — session-start HEAD through this close-out. `aa50cbd` in that range is the carried-over Session 89 close-out commit, committed by Joel early this session.)
+(Metrics scope: `89c5ae6..HEAD` — session-start HEAD through this close-out. Files-modified counts unique paths including the close-out commit.)
 
 ---
 
 ## Session character
 
-A long marketing-site session: finish the blog, stand up a pre-launch posture, and build the early-access waitlist. Sequence — blog landing-copy finalize + merge → pre-launch home posture (MD-19) → configurator + hero pricing clarity → early-access waitlist (plan-mode → build → review → merge) → a PM_PROJECT_INSTRUCTIONS process rule → this close-out. Five feature branches created and merged.
+Two pieces of work, each planned → built → merged before the next began. (1) A presentational polish of the early-access waitlist modal, run as an interactive PM-iteration loop (≈10 amendment rounds against a live dev server). (2) Scaffolding the Wave 2 message-library — a typed message-template corpus plus per-category research files — extended mid-task from 8 to 9 categories. Both shipped to `main`.
 
-## Commits this session (`ba00a64..HEAD`)
+## Commits this session (`89c5ae6..HEAD`)
 
-1. `33e1ee0` content(blog): final landing description
-2. `aa50cbd` docs(close-out): Session 89 — blog scaffold V1 close-out *(carried over from Session 89)*
-3. `6b06be1` content(blog): revise landing description
-4. `1e7a4ac` feat(marketing): pre-launch home posture
-5. `a02d5d3` docs(marketing): MD-19 pre-launch marketing site posture
-6. `7683c01` Merge branch 'feat/blog-scaffold'
-7. `71d454d` feat(marketing): configurator pricing clarity
-8. `baba7fe` feat(marketing): hero pricing clarity — free-to-build framing
-9. `ffe5192` feat(marketing): early-access waitlist (modal + Supabase + Resend)
-10. `2874483` docs(pm): add branch sequencing discipline to PM_PROJECT_INSTRUCTIONS
-11. (this close-out) docs(close-out): Session 90 — PROTOTYPE_SPEC/PRODUCT_SUMMARY/REPO_INDEX/CC_HANDOFF
+1. `32b35b4` feat(marketing): waitlist modal design polish — founder voice
+2. `003f00a` feat(marketing): message-library + research scaffolding (Wave 2)
+3. (this close-out) docs(close-out): Session 91 — PROTOTYPE_SPEC/REPO_INDEX/CC_HANDOFF
 
 ## Completed work
 
-- **Blog finalized + merged.** Landing `BLOG_DESCRIPTION` settled ("Building with text messages is way too complicated. This is where we work it out."); `feat/blog-scaffold` merged to `main`.
-- **Pre-launch home posture (MD-19).** Hero pre-launch tag, configurator subhead + pre-CTA reframed, mid-page CTA → "Get early access"; `docs/PRE_LAUNCH_DEVIATIONS.md` created to track every deviation with restoration triggers.
-- **Configurator pricing clarity.** Permanent: "All categories included in $19/mo…" note under the Categories header + "(+$10/mo)" marker on the Marketing row.
-- **Hero pricing clarity.** Hero pricing line → "Free to build. $49 + $19/mo to go live." Permanent — the "Hero pricing line" deviation entry was removed from PRE_LAUNCH_DEVIATIONS.md and entries renumbered.
-- **Early-access waitlist (MD-20).** Supabase `early_access_subscribers` table (migration `007`), `POST /api/early-access` + `GET /api/unsubscribe`, Resend welcome email, `WaitlistContext` + `WaitlistModal`, all three "Get early access" CTAs rewired to the modal. Built plan-first (plan mode), PM-reviewed, rebased onto main, merged.
-- **PM process rule.** `PM_PROJECT_INSTRUCTIONS.md` gained a "Branch sequencing" section (merge on approval; trivial copy edits skip the branch).
+- **Waitlist modal design polish** (`feat/waitlist-modal-design`, merged). Presentational pass on `marketing-site/components/waitlist-modal.tsx` — no state-machine, API-contract, or POST-payload change. Founder-voice subhead + "— Joel, solo founder" signoff; categories rendered as configurator-style purple-tint pills under a "Live at launch:" label; success state reworked into its own moment ("You're in." + own copy + a full-width "Close" button); error copy rewritten in the same voice with the email field kept visible. A brand-accent top bar was added during iteration then removed at PM direction. tsc / eslint / next build clean.
+- **Message-library + research scaffold** (`feat/message-library-scaffold`, merged). Foundation for the Wave 2 message-library workstream — `marketing-site/lib/message-library/` (a `types.ts` discriminated-union type system, 9 per-category typed stub files with empty `subs`/`stages`, an `index.ts` barrel) plus `audits/research/2026-05-16/` (9 empty per-category research templates for PM authoring). Scaffolding only — no message bodies, no research content, no configurator wiring. tsc / eslint clean; `next build` not required (nothing imports the library yet).
 
 ## In progress
 
-Nothing open. The waitlist needs three operator steps before it works end-to-end (see Gotchas) but the code is complete and merged.
+Nothing open.
 
 ## Quality gates
 
-- Every code-touching commit ran `tsc --noEmit` + `eslint` clean before commit; `next build` clean where a build artifact was produced.
-- Waitlist branch re-verified on the rebased tree: `tsc` clean, `eslint` clean, `next build` clean (28 static pages; `/api/early-access` + `/api/unsubscribe` dynamic). API routes smoke-tested at :3002 — invalid email → 400, bad JSON → 400, valid email (no local Supabase env) → 500, unsubscribe → 200 HTML.
-- This close-out is doc-only — no gates re-run.
+- Both code commits ran `tsc --noEmit` + `eslint` clean before commit; the waitlist commit also ran `next build` clean.
+- Close-out re-ran `tsc --noEmit` + `eslint` on `marketing-site` — clean. This close-out commit is doc-only.
 
 ## Retirement sweep + drift watch
 
 Phase 1 (Sinch Proving Ground) active at session start and still active. No phase boundary crossed — retirement sweep + drift watch skipped per CLAUDE.md mid-phase rules.
 
+## Decisions
+
+No D-numbers appended. The waitlist work was wholly presentational (copy + layout → PROTOTYPE_SPEC, not DECISIONS). **Flag for PM:** the message-library introduces a `discrete` / `workflow` / `hybrid` category-classification model — a genuine architectural choice with a real rejected alternative (a flat message list, as in `prototype/data/messages.ts`). It was PM-specified in the scaffold prompt, so CC did not append a D-number unilaterally (PM gates what becomes a decision). PM should decide whether the Wave 2 classification model warrants a D-number or is already tracked in the Wave 2 plan.
+
 ## Gotchas for next session
 
-1. **Waitlist needs three operator steps before it works live:** (a) verify `relaykit.ai` as a Resend sending domain; (b) set `RESEND_API_KEY` + `NEXT_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `marketing-site/.env.local` (local) and Vercel (Production); (c) apply `api/supabase/migrations/007_early_access_subscribers.sql` via the Supabase SQL Editor. Until then the modal opens but submit returns the error state (route 500s without Supabase env). The full happy path (insert → welcome email → success) was NOT verifiable locally.
-2. **Dev-server working-directory trap.** `npx next dev` started from the repo root instead of `marketing-site/` silently runs the root's Next (v16) against the wrong directory → `/blog` 404s and a version mismatch. Always `cd marketing-site` explicitly before dev/build. Multiple zombie `next` processes racing over `.next` also caused `routes-manifest.json` ENOENT crashes — `pkill -9 -f next` + verify the port is free before restart.
-3. **Rebase auto-merge can mis-number.** Rebasing `feat/waitlist-modal` onto main produced no textual conflict on `PRE_LAUNCH_DEVIATIONS.md`, but the 3-way merge left entry headings non-sequential (gap at 5). A clean rebase ≠ a correct doc — always inspect merged structured docs after a rebase.
-4. **`docs/POST_TOPICS.md` still untracked** — PM-authored content-planning doc, untracked since before Session 89. Not committed this session. PM decision pending on whether to add it to the repo.
-5. **Pre-existing `next`/`postcss` npm audit advisories** persist (1 high, 1 moderate) — unrelated to this session's work; a `next` bump remains a separate PM call.
+1. **Message-library ↔ configurator id mismatch (by design, deferred).** The message-library uses category ids `order-updates` / `customer-support` / `team-alerts`; `configurator-section.tsx` `VERTICALS` use `orders` / `support` / `team`. Reconciliation belongs to the future configurator-wiring task — recorded in the `003f00a` commit message. Do not "fix" it ad hoc.
+2. **`team-alerts` + `community` classification is provisional.** Both are typed `HybridCategory` as a placeholder; their research files flag classification as TBD. Expect a type refactor once PM research lands.
+3. **Waitlist still needs three operator steps before it works live** (carry-over from Session 90): verify `relaykit.ai` as a Resend sending domain; set `RESEND_API_KEY` + Supabase env vars (local + Vercel); apply `api/supabase/migrations/007_early_access_subscribers.sql`. The modal's submit happy path is still not verifiable locally.
+4. **Dev-server working-directory trap** (carry-over): always `cd marketing-site` before `next dev`/`build`; `pkill -9 -f next` if zombie processes race over `.next`.
+5. **`docs/POST_TOPICS.md` still untracked** — PM-authored content-planning doc, untracked since before Session 89. PM decision pending on whether to add it to the repo.
 
 ## Files modified
 
-29 unique paths in `ba00a64..HEAD`. Highlights:
-- **Waitlist (new):** `api/supabase/migrations/007_early_access_subscribers.sql`, `marketing-site/app/api/{early-access,unsubscribe}/route.ts`, `marketing-site/lib/email/{welcome,send}.ts`, `marketing-site/context/waitlist-context.tsx`, `marketing-site/components/{waitlist-modal,early-access-button}.tsx`.
-- **Marketing-site modified:** `app/page.tsx`, `app/layout.tsx`, `components/{configurator-section,top-nav,footer}.tsx`, `lib/blog/site.ts`, `package.json`, `package-lock.json`, `.env.example`, blog content.
-- **Docs:** `DECISIONS.md` (Session 89 carry-over), `MARKETING_STRATEGY.md` (MD-19, MD-20), `PRE_LAUNCH_DEVIATIONS.md` (created + revised), `PM_PROJECT_INSTRUCTIONS.md`, and close-out: `PROTOTYPE_SPEC.md`, `docs/PRODUCT_SUMMARY.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`.
+24 unique paths in `89c5ae6..HEAD`. Highlights:
+- **Waitlist:** `marketing-site/components/waitlist-modal.tsx`.
+- **Message-library (new):** `marketing-site/lib/message-library/` — `types.ts`, `index.ts`, 9 category stubs; `audits/research/2026-05-16/` — 9 research `.md` files.
+- **Close-out docs:** `PROTOTYPE_SPEC.md` (waitlist modal section + date), `REPO_INDEX.md` (Meta, message-library section, `/audits` entry, last-touched dates), `CC_HANDOFF.md`.
 
 ## Unmerged branches
 
-**None.** Five branches were created and merged this session — `feat/blog-scaffold`, `feat/pre-launch-home`, `feat/configurator-pricing-clarity`, `feat/hero-pricing-clarity`, `feat/waitlist-modal`. All remain on `origin` and locally; they are safe to delete (merged into `main`).
+**None.** Two branches created and merged this session — `feat/waitlist-modal-design`, `feat/message-library-scaffold`. Both remain on `origin` and locally; safe to delete (merged into `main`), alongside the five Session 90 branches.
 
 ## Carry-forward queue
 
-- Waitlist operator steps (Resend domain, env vars, migration 007) — see Gotcha 1.
+- Waitlist operator steps (Resend domain, env vars, migration 007) — see Gotcha 3.
 - `docs/POST_TOPICS.md` untracked — PM decision.
-- `PM_PROJECT_INSTRUCTIONS.md` is 479 lines, over its 400-line ceiling — a trim audit is a separate PM-gated wave (the doc's own File-size-discipline rule), not a passive carry-forward.
-- CLAUDE.md still over its 200-line ceiling (carry-forward).
-- Pre-launch checklist (MASTER_PLAN): blog done; live-site tweaks substantially done (pre-launch posture, pricing clarity, waitlist). Next: configurator message refinement, then first Indie Hackers post — after which Phase 1 experiments resume.
-- Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) still gated behind the pre-launch checklist.
+- Message-library classification-model D-number — PM decision (see Decisions above).
+- `PM_PROJECT_INSTRUCTIONS.md` over its 400-line ceiling; `CLAUDE.md` over its 200-line ceiling — separate PM-gated trim audits.
+- Pre-launch checklist (MASTER_PLAN): blog done; live-site tweaks substantially done (the waitlist modal polish was part of this). Next: configurator message refinement, then the first Indie Hackers post — after which Phase 1 experiments resume.
 
 ## Suggested next session
 
-1. **Waitlist design polish** — a visual/UX pass on the waitlist modal on a new `feat/waitlist-modal-design` branch (the V1 modal is functional but styled only to Untitled UI defaults).
-2. Verify the waitlist end-to-end once the three operator steps are done (welcome email, duplicate-email idempotency, unsubscribe flow).
+1. **Wave 2 message-library authoring** — PM fills the 9 research files in `audits/research/2026-05-16/`; then message bodies / subs / stages get authored into the `marketing-site/lib/message-library/` stubs; then the configurator-wiring task (resolving the id mismatch in Gotcha 1).
+2. Waitlist operator steps + end-to-end verification once they're done (welcome email, duplicate-email idempotency, unsubscribe).
 3. Configurator message refinement (next pre-launch checklist item), then the first Indie Hackers post.
-4. Branch cleanup — delete the five merged branches locally and on origin.
+4. Branch cleanup — delete the merged branches locally and on origin.
