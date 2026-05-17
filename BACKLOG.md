@@ -19,6 +19,18 @@
 ## Likely — Will probably happen, timing TBD
 
 ### Product Features
+- **HIPAA-regulated appointment template variants** — Healthcare appointment SMS requires restraint (no medical specifics, no procedure names, no provider specialty). Launch ships general appointment templates; healthcare-specific variants flagged as a future variant. Revisit if healthcare becomes a meaningful customer segment. (Origin: Session 93 review of Appointments §6)
+
+- **Order updates Stage 8 — delivery exceptions** — Failed delivery, address unrecognized, weather-delayed, attempted-but-failed. Skipped at launch; most indie SaaS defers these to carrier-direct notifications. Revisit post-launch if customer demand surfaces. (Origin: Session 93 review of Order updates §6)
+
+- **Inbound STATUS keyword for waitlist position query** — Let end-users text STATUS to query their current waitlist position. Depends on Phase 4 inbound MO infrastructure; requires keyword routing logic and a real-time position-query API on the developer's side. Rare in indie SaaS today (restaurants do it via Yelp/NextMe; pre-launch SaaS waitlists basically never do). Post-launch consideration. (Origin: Session 93 review of Waitlist §6, Joel question)
+
+- **SMS-bridge integrations for community SaaS (Discord/Slack)** — Out of scope for launch. A meaningful slice of community SMS demand is actually "send a notification from my Discord/Slack to phone numbers." Future integration vector worth tracking. (Origin: Session 93 review of Community §6)
+
+
+- **Opt-out risk tagging for message templates** — Internal tag (low / medium / high) on each Message/sub, surfaces in configurator to inform developer choices (e.g., "this sub has higher opt-out risk — consider default-off"). Starts internal; consider user-facing exposure later. Schema work: add risk field to Message type, decide level granularity, decide configurator surface. Connects to D-397 (Community milestone default-off) as the first concrete instance of the underlying concept. Lift is moderate; user value is high — opt-out rate is the metric developers most underestimate at integration time, and Twilio Verify-class competitors cannot surface this because they don't author templates. (Origin: Session 93 cross-category review, Joel insight following D-397)
+
+- **Reframe pricing copy + configurator UX for symmetric campaign model** — $19/mo covers ONE TCR campaign (Marketing OR LVM-mixed-transactional covering any combination of the 7 transactional categories). $10/mo adds the second campaign — only when customer wants both Marketing AND transactional. Marketing-only customer pays $19/mo; transactional-only customer pays $19/mo; both campaigns: $29/mo. Current configurator copy "Marketing adds $10/mo" presumes a transactional base, disincentivizes marketing-only customers, and misrepresents the symmetric model. Reframe touches: `docs/PRICING_MODEL.md` (verify against this framing), `marketing-site/components/configurator-section.tsx` (the "Marketing (+$10/mo)" pill copy), marketing site copy generally, registration flow logic, message-library configurator UX. Connects to D-394 (transactional split between Order updates and Account events) — LVM mixed campaign covers all 7 transactional categories together. (Origin: Session 93 review, Joel-surfaced during cross-category #2 discussion)
 
 - **Rejected state registration data display** — Expand "What was submitted" fields based on carrier error code mapping. Currently shows business name, EIN (masked), address, use case. May need website URL, business description, etc. (Origin: Settings PRD session, March 22–23)
 

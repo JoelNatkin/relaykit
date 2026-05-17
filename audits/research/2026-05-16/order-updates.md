@@ -10,7 +10,9 @@ Order updates is the most mature SMS use case after Appointments — e-commerce 
 
 For indie SaaS proper, real Order updates use cases: course-creator platforms confirming purchases and granting access, digital download services, indie e-comm built on Stripe + custom storefront, subscription box services with physical fulfillment, print-on-demand services, hardware + software bundles, and any indie SaaS with a one-time-purchase digital good (templates, presets, fonts, themes).
 
-Reference apps observed: Shopify's native SMS (industry baseline, heavy carrier-link integration), Postscript (Shopify-focused SMS marketing + transactional), Klaviyo's order-update template library, Shippo and EasyPost (delivery-logistics SaaS for shippers), Gumroad and Lemon Squeezy (digital-heavy, mostly email but pattern reference), AfterShip (delivery tracking, multi-carrier integration). Stripe's webhook event taxonomy is the cleanest reference for subscription-adjacent order shapes — though those events lean toward the Account events / Subscription lifecycle category under investigation, not Order updates proper.
+Per D-394: Order updates covers one-time purchases. Subscription lifecycle (renewal succeeded, plan changed, payment failed) routes to Account events, not here.
+
+Reference apps observed: Shopify's native SMS (industry baseline, heavy carrier-link integration), Postscript (Shopify-focused SMS marketing + transactional), Klaviyo's order-update template library, Shippo and EasyPost (delivery-logistics SaaS for shippers), Gumroad and Lemon Squeezy (digital-heavy, mostly email but pattern reference), AfterShip (delivery tracking, multi-carrier integration). Stripe's webhook event taxonomy is the cleanest reference for subscription-adjacent order shapes — though those events lean toward Account events per D-394.
 
 The split between physical-shipped orders and digital-delivered orders is meaningful enough to affect which stages apply per user.
 
@@ -18,7 +20,7 @@ The split between physical-shipped orders and digital-delivered orders is meanin
 
 Seven workflow stages cover the order-update lifecycle. Stage applicability varies by digital-only vs physical-shipped vs hybrid:
 
-1. **Order confirmation** (default on, all order types) — triggerCue: *Sent immediately after order is placed and payment confirmed.* The "your order is locked in" moment. Includes order number, total, and access path or shipping ETA.
+1. **Order confirmation** (default on, all order types) — triggerCue: *Sent immediately after order is placed and payment confirmed.* The "your order is locked in" moment. Includes order number, total, and access path or shipping ETA. **Per D-393: for digital products, the confirmation links to authenticated retrieval — license keys, API keys, and other credentials never appear in the message body.**
 
 2. **Processing** (optional, physical-shipped) — triggerCue: *Sent when order moves from received to in-preparation in the developer's system.* Often skipped in indie SaaS — high-volume retailers use it to set expectations during fulfillment lag.
 
@@ -26,7 +28,7 @@ Seven workflow stages cover the order-update lifecycle. Stage applicability vari
 
 4. **Out for delivery** (optional, physical-shipped) — triggerCue: *Sent when carrier marks package out-for-delivery on delivery day.* Carriers often send their own version; the indie SaaS version is duplicative unless it adds value (delivery instructions, photo confirmation expectation).
 
-5. **Delivered** (default on, physical-shipped) — triggerCue: *Sent when carrier marks package delivered.* Closes the shipping arc. Often paired with action prompt ("Issue with your order? [link]").
+5. **Delivered** (default on, physical-shipped) — triggerCue: *Sent when carrier marks package delivered.* Closes the shipping arc. Often paired with action prompt ("Issue with your order? [link]"). Per D-399: no cross-sell or promotional CTAs in delivered templates.
 
 6. **Return initiated** (conditional, all order types) — triggerCue: *Sent when customer initiates a return through the developer's system.* Confirms return receipt and refund-pending status.
 
@@ -34,7 +36,7 @@ Seven workflow stages cover the order-update lifecycle. Stage applicability vari
 
 **Digital-only orders** typically subscribe to stages 1 and 7 only (plus 6 if returns/refunds apply). **Physical-shipped orders** typically subscribe to 1, 3, 5 minimum, with 2, 4, 6, 7 as add-ons. **Hybrid orders** use all that apply. The lead-magnet checkbox UX scales cleanly across these shapes.
 
-Delivery exception ("address unrecognized," "delivery attempted but failed") was considered as stage 8 — flagged in §6 as a possible add. Currently most indie SaaS defers this to carrier-direct notifications.
+Delivery exception ("address unrecognized," "delivery attempted but failed") was considered as stage 8 — tracked as BACKLOG entry ("Order updates Stage 8 — delivery exceptions"). Most indie SaaS defers this to carrier-direct notifications at launch.
 
 ## 3. Voice patterns observed
 
@@ -65,17 +67,18 @@ Indie SaaS launch audience splits: course creators and digital-product sellers l
 - **TCR DELIVERY_NOTIFICATION mapping.** Standard Class — auto-approved at TCR for Brand Tier LOW per experiment 3a baseline. Lowest carrier scrutiny among the categories we'll register.
 - **STOP language required.** Every message. Standard requirement.
 - **Quiet hours apply with reasonable interpretation.** Recipient-triggered events (your order shipped) acceptable at any time per common industry practice; proactive reminders should respect 8am-9pm.
-- **No promotional content in delivery notifications.** "Your order shipped. Save 10% on your next order!" converts to mixed content and risks the campaign classification. Cross-sell prompts belong in Marketing (separate campaign).
+- **No promotional content** (D-399). "Your order shipped. Save 10% on your next order!" converts to mixed content and risks the campaign classification. Cross-sell prompts belong in Marketing (separate campaign).
+- **No credentials in body** (D-393). License keys, API keys, passwords, and other credentials never appear in the body of any RelayKit-authored SMS template — including digital-fulfillment order confirmations. Confirmation links to authenticated retrieval; the credential lives behind that link.
 - **Carrier-tracking links acceptable.** UPS/USPS/FedEx tracking URLs are well-known to carriers and don't increase suspicion. Public URL shorteners (Bit.ly) still discouraged.
 - **Address/PII in SMS.** Shipping addresses generally omitted from SMS (too long, too sensitive). Confirmation messages should reference order number, not address.
 
 ## 6. Open questions / followups
 
-- **Subscription "orders" vs one-time orders.** Stripe-driven recurring subscription notifications ("your subscription renewed," "payment failed") feel adjacent but probably belong in the Account events / Subscription lifecycle category we're researching as an open question. Confirm split: Order updates = one-time purchases, Account events = recurring subscription lifecycle.
-- **License key / download access delivery for digital products.** "Your license key: ABCDEF" is order-adjacent (tied to a purchase event) but verification-adjacent (a code the user inputs). Probably belongs in Order confirmation as a variant ("Your purchase is confirmed. Download/access: [link]"), not as a separate Verification sub. Flag for confirmation.
-- **Multi-item orders shipping separately.** Behavior varies — some retailers send one SMS per shipment, others consolidate. Lead magnet should support both patterns via parameterization rather than picking one. Flag for messaging guidance.
-- **Delivery exceptions.** Failed delivery, address unrecognized, weather-delayed. Most indie SaaS defers these to carrier-direct notifications rather than wrapping. Add as stage 8 or skip at launch? My lean: skip at launch, add post-launch if customer demand surfaces.
-- **Refund partial vs full.** "Refunded $X of $Y" vs "Refunded $Y in full." Lead magnet should parameterize the refund amount and let the developer choose phrasing. Flag for variable-shape confirmation.
+- **Subscription "orders" vs one-time orders** — **RESOLVED per D-394.** Order updates covers one-time purchases; Account events covers recurring subscription lifecycle (renewals, plan changes, card declined, trial ending).
+- **License key / download access delivery for digital products** — **RESOLVED per D-393.** Credentials never appear in SMS message bodies. Order confirmation links to authenticated retrieval ("Your purchase is confirmed. Access: {{link}}"). No separate license-key sub.
+- **Multi-item orders shipping separately.** Behavior varies — some retailers send one SMS per shipment, others consolidate. **DEFERRED** to message authoring — lead magnet supports both patterns via parameterization.
+- **Delivery exceptions.** Failed delivery, address unrecognized, weather-delayed. **DEFERRED** to post-launch — tracked as BACKLOG entry ("Order updates Stage 8 — delivery exceptions"). Most indie SaaS defers to carrier-direct notifications at launch.
+- **Refund partial vs full.** "Refunded $X of $Y" vs "Refunded $Y in full." **DEFERRED** to message authoring — parameterize the refund amount and let developer choose phrasing.
 
 ## 7. Notable references
 

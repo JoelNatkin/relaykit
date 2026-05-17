@@ -28,7 +28,7 @@ Seven workflow stages cover the appointment lifecycle. Three are typically "defa
 
 6. **No-show follow-up** (optional) — triggerCue: *Sent T+1h after appointment_time if no check-in event received.* Non-judgmental, friction-low rebooking path.
 
-7. **Post-appointment** (optional) — triggerCue: *Sent T+1h to T+24h after appointment completed.* Thanks + optional next-step (rebook, feedback). If this veers promotional ("book again 10% off"), it crosses into Marketing — flag in §6.
+7. **Post-appointment** (optional) — triggerCue: *Sent T+1h to T+24h after appointment completed.* Thanks + optional next-step. **Per D-392: this stage covers thanks + feedback only.** Rebooking promotions and discount offers route through the Marketing campaign, not as an Appointments stage. See also D-399 for the corpus-wide rule.
 
 ## 3. Voice patterns observed
 
@@ -59,17 +59,17 @@ The default voice should land closer to B2C (warmer) with B2B variations noted i
 - **TCR ACCOUNT_NOTIFICATION mapping.** Standard Class category — easier registration than Marketing, lower carrier scrutiny. Auto-approved at TCR for transactional Brand Tier LOW per experiment 3a findings.
 - **STOP language required.** "Reply STOP to opt out" in every message. Less aggressive than Marketing scanning but non-negotiable.
 - **Quiet hours apply.** 8am-9pm recipient local time. Appointment confirmations within quiet hours acceptable when triggered by user action (just booked), but proactive reminders should respect quiet hours.
-- **No promotional content in transactional messages.** Appointment reminders must stay appointment-focused. Adding "Book your next appointment 10% off" to a reminder converts it to mixed content and risks the campaign classification. Promotional follow-ups belong in Marketing (separate campaign).
-- **HIPAA considerations.** Healthcare appointment reminders enjoy a narrow TCPA exemption under HIPAA, but RelayKit shouldn't lean on it — apply standard transactional consent. Healthcare-specific message templates (mention of medical condition, procedure, provider specialty) require extra care; flag for follow-up if healthcare becomes a target vertical.
+- **No promotional content in transactional messages** (D-399). Appointment reminders must stay appointment-focused. Adding "Book your next appointment 10% off" to a reminder converts it to mixed content and risks the campaign classification. Promotional follow-ups belong in Marketing (separate campaign) — D-392 records this specifically for Stage 7.
+- **HIPAA considerations.** Healthcare appointment reminders enjoy a narrow TCPA exemption under HIPAA, but RelayKit shouldn't lean on it — apply standard transactional consent. Healthcare-specific message templates (mention of medical condition, procedure, provider specialty) require extra care; HIPAA-regulated variants are tracked as a future BACKLOG item.
 - **Reschedule/cancel links.** Carrier-friendly when the destination is the developer's own domain. Public URL shorteners increase suspicion.
 
 ## 6. Open questions / followups
 
-- **Post-appointment stage — where does promotional crossover live?** Stage 7 (post-appointment) can lean transactional ("thanks for coming in — feedback?") or promotional ("rebook 10% off"). The transactional version stays in Appointments; the promotional version belongs in Marketing. Likely solution: the Appointments post-appointment stage covers thanks + feedback only; rebooking promos route through Marketing.
-- **Group appointments.** Yoga class, group session, cohort calls — many class names + capacity, not single provider/time. Likely a variation of Confirmation stage with `{{class_name}}` instead of `{{provider_name}}`, but worth confirming the variable shape supports it.
-- **Cancellation auto-fill (waitlist promotion).** When a cancellation opens a slot and a waitlisted user gets promoted — is that an Appointments stage or a Waitlist sub? Probably belongs in Waitlist research; cross-reference there.
-- **HIPAA-regulated appointment SMS.** Healthcare-specific templates require restraint (no medical specifics). Launch with general templates and flag healthcare as a coming-soon variant, or address at launch? Flag for Joel call.
-- **Provider-to-customer vs customer-to-provider direction.** Most appointment SMS is provider-to-customer (your appointment is...). Customer-to-provider SMS (cancel your visit) is inbound — different flow, likely Phase 4 / inbound MO scope.
+- **Post-appointment stage — where does promotional crossover live?** — **RESOLVED per D-392.** Stage 7 covers thanks + feedback only; rebooking promos route to Marketing. Generalized corpus-wide by D-399.
+- **Group appointments.** Yoga class, group session, cohort calls — many class names + capacity, not single provider/time. Likely a variation of Confirmation stage with `{{class_name}}` instead of `{{provider_name}}`. **DEFERRED** to message authoring — variable shape supports it.
+- **Cancellation auto-fill (waitlist promotion).** When a cancellation opens a slot and a waitlisted user gets promoted — that flow belongs in Waitlist research; cross-referenced there.
+- **HIPAA-regulated appointment SMS** — Healthcare-specific templates require restraint (no medical specifics). Launch ships with general templates; healthcare-specific variants tracked as BACKLOG ("HIPAA-regulated appointment template variants"). **DEFERRED.**
+- **Provider-to-customer vs customer-to-provider direction.** Most appointment SMS is provider-to-customer (your appointment is...). Customer-to-provider SMS (cancel your visit) is inbound — different flow, **DEFERRED** to Phase 4 / inbound MO scope.
 
 ## 7. Notable references
 

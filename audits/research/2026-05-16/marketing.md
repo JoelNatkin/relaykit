@@ -16,7 +16,7 @@ Reference apps observed: ConvertKit/Kit (creator-focused), Beehiiv (newsletter S
 
 Four discrete subs cover indie SaaS marketing SMS use cases:
 
-1. **Promotional offer** — discount codes, sale windows, limited-time pricing, BOGO, seasonal campaigns (Black Friday, EOY, holidays). The most regulated and most abused sub. Voice must avoid manipulation cues (false urgency, fake scarcity).
+1. **Promotional offer** — discount codes, sale windows, limited-time pricing, BOGO, seasonal campaigns (Black Friday, EOY, holidays). The most regulated and most abused sub. Voice must avoid manipulation cues (false urgency, fake scarcity). Birthday/anniversary marketing triggers fold into this sub per the §6 resolution below.
 
 2. **Product launch** — new app debut, new product line, major feature release. One-time send to opted-in audience. Often paired with a launch-week sequence in email; SMS is the "the thing is live" moment.
 
@@ -24,7 +24,7 @@ Four discrete subs cover indie SaaS marketing SMS use cases:
 
 4. **Event invitation** — webinar invites, AMA announcements, launch-event RSVPs, beta-access invitations to audience members opted in for marketing. Includes time-sensitive registration windows.
 
-Subscriber confirmation (welcome SMS after marketing opt-in) is intentionally not a separate sub — it ships paired with the first marketing send context, not as a standalone use case. Flagged in §6.
+Subscriber confirmation (welcome SMS after marketing opt-in) is intentionally not a separate sub — it ships paired with the first marketing send context, not as a standalone use case. Affiliate/referral SMS is intentionally not a Marketing sub — per D-390 it routes to Account events because the trigger is account-event-driven, not campaign-driven.
 
 ## 3. Voice patterns observed
 
@@ -61,21 +61,14 @@ Indie SaaS founders span both, but our launch audience leans B2C and creator-eco
 - **Quiet hours.** Default 8am-9pm recipient local time. State laws vary; some require 9am start. RelayKit should ship with conservative default and document state-specific tightening.
 - **Public URL shorteners discouraged.** Bit.ly and similar increase carrier suspicion. Branded short links (or full URLs) preferred.
 
-Pricing implication: $10/mo over the transactional $19/mo per existing pricing model. This research confirms the second-campaign justification; doesn't change pricing.
+Pricing implication: $10/mo over the transactional $19/mo per existing pricing model. **Note (Session 93):** the symmetric campaign model — Marketing-only customer pays $19/mo, not $29/mo — is captured as a Pri 1 BACKLOG entry pending pricing reframe work. Current copy "Marketing adds $10" is wrong-shaped for marketing-only customers; the underlying model is "$19 = one campaign; $10 = second campaign added."
 
 ## 6. Open questions / followups
 
-- **Subscriber confirmation as its own sub?** Currently folded under "first marketing send" context. Does the welcome SMS for a new marketing subscriber deserve its own sub with its own message, or does it always pair with the first promotional/launch send?
-- **Affiliate/referral SMS.** "Your friend joined — get $10 credit." Straddles Marketing and Account Notification. Likely belongs in Account Notification since it's triggered by a specific account event, not a marketing campaign — flag for taxonomy resolution.
-- **Birthday/anniversary marketing.** Triggered automation that lands like marketing. Likely a sub of Promotional offer rather than its own — flag for confirmation.
-- **One-time launches vs. ongoing campaigns.** Indie SaaS often does one-off launch SMS rather than ongoing promotional cadences. The "campaign" framing fits TCR but feels heavy for one-off sends. Confirm voice and messaging handle both shapes naturally.
-
-### Resolved by PM judgment, 2026-05-16
-
-- **Subscriber confirmation:** folds with first marketing send. No separate sub.
-- **Affiliate/referral:** belongs in Account Notification, not Marketing. Cross-reference at taxonomy authoring.
-- **Birthday/anniversary:** folds into the Promotional offer sub.
-- **One-time launches vs. ongoing campaigns:** voice handles both shapes without special treatment.
+- **Subscriber confirmation as its own sub** — **RESOLVED** (PM judgment, 2026-05-16). Folds with first marketing send. No separate sub.
+- **Affiliate/referral SMS** — **RESOLVED per D-390.** Routes to Account events, not Marketing. Trigger is account-event-driven (a referral signup), not campaign-driven.
+- **Birthday/anniversary marketing** — **RESOLVED** (PM judgment, 2026-05-16). Folds into Promotional offer sub.
+- **One-time launches vs ongoing campaigns** — **RESOLVED** (PM judgment, 2026-05-16). Voice handles both shapes without special treatment.
 
 ## 7. Notable references
 

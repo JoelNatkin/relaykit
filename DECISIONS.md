@@ -1640,3 +1640,133 @@ The blog's primary organizing axis is the topical cluster (11 clusters per POST_
 **Reasoning:** The rejected alternative was making lane the primary axis (lane-index pages, lane-filtered navigation). Clusters win on two grounds. SEO: cluster names are topic phrases people actually search ("verification codes", "cost of SMS") and make sensible URL slugs; lane names ("demand", "supply") are internal editorial vocabulary nobody searches. Operational visibility: topic-named URLs and indexes let PM and CC read corpus coverage by subject at a glance. Lane still earns its place as metadata — it drives editorial balance, since the corpus is deliberately demand-heavy — but as a tag, not a navigation structure. Lane filtering is explicitly deferred from V1; the lane indicator renders as plain non-interactive text so it never implies a control the product does not have.
 
 **Affects:** `marketing-site/lib/blog/clusters.ts` (cluster registry as the single source of truth); `app/blog/cluster/[name]/page.tsx` (cluster index pages); the blog frontmatter schema (both `cluster` and `lane` fields, with `cluster` load-bearing for routing); PROTOTYPE_SPEC.md Blog subsection.
+
+**D-389 — Welcome SMS folds into Verification as paired follow-up under Sub-use 1** (Date: 2026-05-17)
+
+Welcome-after-signup ships as a paired template under Verification Sub-use 1 (signup phone verification), not as its own category or as a Marketing/Account events sub. Same trigger (account creation), dominant indie SaaS pattern is paired-with-OTP, standalone welcome rare enough to skip a dedicated home at launch.
+
+**Supersedes:** none
+
+**Reasoning:** Session 91 surfaced "Onboarding / Welcome" as a possible category or sub during the per-category research. Practically, welcome-after-signup is the message that follows immediately after Sub-use 1; splitting it off as its own category or sub fragments the user's mental model and forces developers to wire two surfaces for one trigger. Folding under Verification keeps the workstream consolidated and matches the dominant indie SaaS pattern. If post-launch demand surfaces for standalone welcome (no preceding OTP send), Account events absorbs it as a sub.
+
+**Affects:** Verification research file §6 item 1; Verification message library (Sub-use 1 gains a paired welcome template alongside the OTP template); configurator UX for Verification (Sub-use 1 surfaces welcome as part of the same sub, not as a separate choice).
+
+**D-390 — Affiliate/referral SMS routes to Account events, not Marketing** (Date: 2026-05-17)
+
+Affiliate and referral SMS ("Your friend joined — get $10 credit") triggered by a specific account event (a referral signup) routes to Account events, not Marketing. The trigger is an account-state change, not a campaign send.
+
+**Supersedes:** none
+
+**Reasoning:** Marketing research §6 flagged this as a boundary call between MARKETING and ACCOUNT_NOTIFICATION. The trigger pattern (one user's action causes a notification to another user about a tracked account event) is event-driven, not campaign-driven — it fits ACCOUNT_NOTIFICATION semantically. Routing to Marketing would force a separate campaign registration for a transactional notification and break the campaign mapping.
+
+**Affects:** Marketing research file §6 (resolution captured); Account events message library (potential future sub for referral/affiliate triggers); configurator UX (referral SMS does not appear as a Marketing sub).
+
+**D-391 — Refund SMS routes to Account events Sub 3, not Customer support** (Date: 2026-05-17)
+
+Refund-issued notifications route to Account events Sub 3 (subscription confirmation), not to Customer support. A refund is an account-state change, not a ticket-resolution outcome.
+
+**Supersedes:** none
+
+**Reasoning:** Account events §6 flagged refund placement as ambiguous between Account events (state change shape) and Customer support (some apps treat refunds as support outcomes). The decisive consideration is trigger origin: refunds fire from billing systems (Stripe webhook, manual admin action) regardless of whether a support ticket was involved. The shape is account-state confirmation, identical to renewal-succeeded or plan-changed templates. Keeping refund in Account events also avoids cross-category template duplication for the same trigger.
+
+**Affects:** Account events research file §6 (resolution captured); Account events message library Sub 3 (refund templates ship here); Customer support message library (does not author refund templates).
+
+**D-392 — Post-appointment promotional sends route to Marketing, not Appointments** (Date: 2026-05-17)
+
+Appointments Stage 7 (post-appointment) covers thanks + feedback only. Rebooking promotions, discount offers, and "book again X% off" pivots route through the Marketing campaign, not as an Appointments stage.
+
+**Supersedes:** none
+
+**Reasoning:** Appointments §6 flagged the post-appointment stage as the line where transactional and promotional content can blur. Holding the line strictly here (transactional thanks/feedback only; promotional ships as a separate Marketing campaign) preserves the ACCOUNT_NOTIFICATION campaign mapping for Appointments and forces developers to use the right campaign for promotional intent. This pattern then generalizes — D-399 records the corpus-wide version of this rule.
+
+**Affects:** Appointments research file §6 (resolution captured); Appointments message library Stage 7 (thanks + feedback templates only, no promotional variants); Marketing message library (rebook-promo templates live here if authored).
+
+**D-393 — Credentials never appear in SMS message bodies** (Date: 2026-05-17)
+
+License keys, API keys, passwords, and other credentials never appear in the body of any RelayKit-authored SMS template. Digital-fulfillment order confirmations link to authenticated retrieval; the credential lives behind that link, never in the SMS itself.
+
+**Supersedes:** none
+
+**Reasoning:** Order updates §6 raised the question of whether license-key delivery for digital products warranted its own template variant ("Your license key: ABCDEF"). The shape is a known security anti-pattern: SMS is unencrypted, persists in message history, surfaces on lock screens, and gets backed up to cloud. Sending a credential through SMS exposes it across all of those surfaces. The correct pattern is the standard digital-fulfillment order confirmation ("Your purchase is confirmed. Access: {{link}}"), where the credential lives behind authentication. This rejection holds across all categories and all authored templates — it is not an order-updates-specific call.
+
+**Affects:** Order updates research file §6 (resolution captured); message library authoring guidance across all categories (no credential-in-body templates); future custom-template authoring rules (compliance gate consideration).
+
+**D-394 — Order updates covers one-time purchases; Account events covers recurring subscription lifecycle** (Date: 2026-05-17)
+
+Order updates message library covers one-time-purchase events (order placed, shipped, delivered, returned, refunded for one-off orders). Account events covers recurring subscription lifecycle events (renewal succeeded, payment failed, plan changed, trial ending, subscription canceled).
+
+**Supersedes:** none
+
+**Reasoning:** Order updates §6 surfaced the boundary as an open question because both categories carry billing-adjacent events. The decisive split is recurring vs one-time: subscriptions have a relationship that produces a stream of state changes over time (Account events), while one-time orders have a discrete fulfillment lifecycle (Order updates). This split also matches the underlying trigger systems — Stripe Billing fires subscription events that map to Account events; Shopify/custom-storefront flows fire order events that map to Order updates. Recording the split as a D-number anchors future template authoring and configurator UX against this boundary.
+
+**Affects:** Order updates research file §6 (resolution captured); Order updates message library (one-time scope only); Account events message library (recurring lifecycle scope only); configurator UX (developers picking subscription-billing patterns are routed to Account events, not Order updates).
+
+**D-395 — Waitlist Stage 6 carries a light rejoin CTA; full re-engagement routes to Marketing** (Date: 2026-05-17)
+
+The Waitlist missed/expired stage (Stage 6) may carry a single light "rejoin?" CTA inside the transactional notification. Promotional re-engagement campaigns ("come back, here's a discount") route through the Marketing campaign, not Waitlist.
+
+**Supersedes:** none
+
+**Reasoning:** Waitlist §6 raised the question of whether re-engagement after a missed stage should live in Waitlist or Marketing. The split: a single rejoin link within the transactional notification preserves the ACCOUNT_NOTIFICATION shape (the user is being informed their slot expired, with a path back if relevant). A full promotional re-engagement campaign with offers, discounts, or multi-touch sequencing crosses into MARKETING territory and requires the separate campaign mapping. The light CTA at Stage 6 is enough to capture obvious-recovery conversions without making Waitlist a back-door promotional channel.
+
+**Affects:** Waitlist research file §6 (resolution captured); Waitlist message library Stage 6 (single rejoin CTA permitted, no offers/discounts); Marketing message library (re-engagement campaigns live here).
+
+**D-396 — Service status alerts route to Customer support, not Account events** (Date: 2026-05-17)
+
+Service status alerts (outage notifications, incident updates, degraded-service warnings) route to Customer support, not Account events. Support-shaped per TCR CUSTOMER_CARE; users don't differentiate outage notifications from other support touches.
+
+**Supersedes:** none
+
+**Reasoning:** Customer support §6 flagged service status alerts as a possible Account events item (they are not ticket-driven, which is the dominant Customer support shape). Two reasons keep them in Customer support: (1) the message reads to the user as a support touch (here's what's happening with the service you use), not as an account-state change; (2) TCR CUSTOMER_CARE is the cleaner mapping — service alerts are explicitly about customer experience and service quality. Revisit post-launch if customer pull suggests a different organizing principle, but the launch position is settled.
+
+**Affects:** Customer support research file §6 (resolution captured); Customer support message library Sub 2 (service status alerts ship here); Account events message library (does not author service status templates).
+
+**D-397 — Community member milestone sub ships default-off in configurator** (Date: 2026-05-17)
+
+The Community member milestone sub (anniversary/post-count/tenure congratulations) ships default-off in the configurator. Developers opt in deliberately when their community is ready, rather than receiving milestone SMS by default when Community is selected.
+
+**Supersedes:** none
+
+**Reasoning:** Community §6 surfaced milestone as an engagement signal in mature communities but an annoyance — and opt-out trigger — in early-stage ones. The launch audience is dominated by indie SaaS communities at small/young stages, where casual members outnumber engaged members and milestone messages read as spam. Default-off protects opt-out rates by forcing the deliberate choice. This is the first instance of the broader opt-out risk concept (see BACKLOG Pri 1 entry "Opt-out risk tagging for message templates"), which generalizes the underlying principle.
+
+**Affects:** Community research file §6 (resolution captured); Community configurator UX (milestone sub renders with an opt-in toggle rather than default-checked); future opt-out risk tagging schema (milestone is the first labeled instance).
+
+**D-398 — Account events, Customer support, Team alerts templates include workspace token by default** (Date: 2026-05-17)
+
+All templates in Account events, Customer support, and Team alerts include a `{{workspace_name}}` token by default. Single-workspace apps pass the business name; multi-workspace apps pass the affected workspace. Lowest authoring overhead, no template duplication, critical disambiguator for users belonging to multiple workspaces.
+
+**Supersedes:** none
+
+**Reasoning:** Cross-category resolution in Session 93. Many indie SaaS apps allow one user to belong to multiple accounts/workspaces (Linear, Stripe Connect, Slack-like apps, agency tools). Without identification, transactional messages like "Your card was declined" or "Your ticket got a reply" leave the user unable to know which account is affected — confusing at best, phishing-feel at worst. The three categories listed are the ones where multi-workspace ambiguity is highest-stakes (billing, support, ops). The rejected alternatives — opt-in variable per-template, or two template variants per sub — were rejected on authoring overhead and configurator branching cost. Universal default token with sensible single-workspace fallback (pass business name) is the lowest-friction solution.
+
+**Affects:** Account events / Customer support / Team alerts message library (every template includes `{{workspace_name}}`); SDK contract (event payloads carry `workspace_name`); configurator UX (variable surfaces consistently across the three categories); future cross-category audits (workspace-token presence is a coverage check).
+
+**D-399 — Transactional templates carry zero promotional content; promotional touches ship as Marketing templates** (Date: 2026-05-17)
+
+Corpus-wide authoring rule. Discount codes, offers, "upgrade now" CTAs, and promotional pivots never bolt onto transactional templates regardless of category. System-enforced: when developers attempt to author or edit promotional content into a transactional template, the editor surfaces an error and points them to the Marketing campaign (or to enabling it if not yet active). Voice rule + TCR-mapping rule + UX enforcement combined.
+
+**Supersedes:** none
+
+**Reasoning:** Cross-category resolution in Session 93. The transactional/marketing boundary at the TCR-campaign level is sharp; at the message level it is fuzzy and tempting to blur. Examples of the fuzzy seam across the corpus: trial-ending + upgrade discount (Account events Sub 2), community milestone + premium offer (Community), order-delivered + shop-again discount (Order updates), post-appointment + rebook offer (Appointments — covered specifically by D-392). Authoring guidance in nine separate research files will not hold this line uniformly. A corpus-wide rule with system enforcement (editor-level error + redirect to Marketing) protects compliance posture, holds the campaign mapping, and protects developers from accidentally breaking carrier registration. The UX enforcement piece is load-bearing — without it, the rule is advice that fails on first contact with a developer who wants to add "10% off" to a trial-ending template.
+
+**Affects:** All transactional message libraries (compliance gate on promotional-content patterns); message editor compliance gate set; configurator UX (Marketing-campaign enablement path surfaces from the error); D-392 (this entry generalizes it to a corpus-wide rule).
+
+**D-400 — Message Library categories classified as discrete, workflow, or hybrid** (Date: 2026-05-17)
+
+Three structural classification patterns drive per-category SDK shape, configurator UX, and message library typing. Discrete = each sub is its own trigger-response (Verification, Marketing, Account events, Team alerts). Workflow = sequential stages over a lifecycle (Appointments, Order updates, Waitlist). Hybrid = both shapes within one category (Customer support, Community, Team alerts). Rejected: a flat message list (the legacy pattern in `prototype/data/messages.ts`).
+
+**Supersedes:** none
+
+**Reasoning:** Wave 2 message-library scaffolding introduced this classification model in code (`marketing-site/lib/message-library/types.ts` discriminated-union `DiscreteCategory | WorkflowCategory | HybridCategory`). CC flagged it as a D-number candidate in the Session 91 close-out. The architectural choice has a real rejected alternative (flat message list), shapes the entire message library's type system, drives configurator UX (checkbox subs vs stage visualization vs both), and a future contributor reading the type definitions absolutely needs to know why three classifications exist instead of one. Passes all seven gate tests. Recording here closes the open D-number candidacy.
+
+**Affects:** `marketing-site/lib/message-library/types.ts` (discriminated-union typing); per-category .ts stub files (each typed as one of the three classifications); configurator UX (rendering surface varies by classification); future message-library audits (classification is a coverage axis).
+
+**D-401 — Community ships at launch under TCR ACCOUNT_NOTIFICATION via the Redefine path** (Date: 2026-05-17)
+
+Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. The Redefine path from VERTICAL_TAXONOMY_DRAFT §4 is adopted: Community is redefined as business-to-member messaging (event reminders, RSVPs, moderation updates, milestones, onboarding) — not peer-to-peer messaging (which would land in TCR Social, Special-class, vetted). Same outbound shape as Appointments / Waitlist / Account events.
+
+**Supersedes:** VERTICAL_TAXONOMY_DRAFT §4 Community disposition pending item — fully closed by this entry. The Drop alternative is rejected.
+
+**Reasoning:** VERTICAL_TAXONOMY_DRAFT §4 left Community as one of three directional pieces pending Phase 5 design. §3 had already established that Special-class TCR categories (including Social, the peer-to-peer category) are off the launch table because vetting workflows are incompatible with the one-person-shop automation posture. That narrowed Community's choices to Redefine or Drop. The Wave 2 research file for Community proceeded as if Redefine were settled and validated the path: every Community message we'd author is business outbound to a member (community runs an event, business texts members about it), zero are member-to-member. ACCOUNT_NOTIFICATION fits the shape cleanly — same outbound pattern as Appointments and Waitlist, recipients opted in via community membership, no peer-to-peer routing. We are not skirting vetting; we are correctly classifying business→member notifications under the category that already covers them, regardless of community theming. Recording closes the §4 pending item.
+
+**Affects:** VERTICAL_TAXONOMY_DRAFT.md §4 (Community disposition marked Resolved with this D-number); Community message library (ships at launch with hybrid classification per D-400 — 5 discrete subs + 1 onboarding workflow per the research file); configurator UX (Community surfaces as a launch category alongside the other 8); MASTER_PLAN.md (no change — Community was already a working assumption; this entry closes the formal pending status).

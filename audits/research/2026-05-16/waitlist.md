@@ -35,9 +35,7 @@ Six stages cover both shapes cleanly. Each has a clear trigger cue.
 
 5. **Grace window expiring** (trigger: user hasn't responded within configured window — e.g., 10 min for restaurants, 48 hours for beta) — last chance, explicit expiration timing. A meaningful share of conversions on capacity-recovery waitlists happen in this stage; under-leveraged in pre-launch flows.
 
-6. **Missed / expired** (trigger: grace window closed without action) — notification of lapse, optional re-join CTA, optional refund or reschedule path. Tone matters: the missed message should not punish the user.
-
-Optional re-engagement (post-missed, pre-launch flows) is intentionally not a 7th stage — it ships under Marketing as Re-engagement, not under Waitlist. Flagged in §6.
+6. **Missed / expired** (trigger: grace window closed without action) — notification of lapse, optional re-join CTA. Tone matters: the missed message should not punish the user. **Per D-395: this stage may carry a single light "rejoin?" CTA but no promotional content.** Full re-engagement campaigns (offers, discounts, multi-touch sequencing) route through the Marketing campaign.
 
 ## 3. Voice patterns observed
 
@@ -70,15 +68,16 @@ Carrier-side considerations:
 - **Frequency disclosure**: capacity-recovery flows can be minutes apart in busy venues. Higher-volume waitlists may trip frequency-perception thresholds at carriers. Most indie SaaS waitlists send 3-6 messages over the workflow lifecycle — well below problematic thresholds.
 - **Grace-window timing** is a UX concern, not a compliance one — carriers don't enforce a minimum window. RelayKit's default timing recommendations ship as part of message authoring (stages 4→5 default windows per shape).
 
-Critical line-hold: pre-launch waitlists must not drift into Marketing. "Your beta is ready" is ACCOUNT_NOTIFICATION; "BTW have you tried our other product?" appended is MARKETING and breaks the campaign mapping. Voice must stay tight.
+Critical line-hold (D-399): pre-launch waitlists must not drift into Marketing. "Your beta is ready" is ACCOUNT_NOTIFICATION; "BTW have you tried our other product?" appended is MARKETING and breaks the campaign mapping. Voice must stay tight.
 
 ## 6. Open questions / followups
 
-- **Re-engagement stage placement.** Currently flagged as Marketing/Re-engagement after the missed stage. Should it remain there, or does a "rejoin waitlist?" CTA in the missed message belong inside Waitlist? Lean: keep it light inside Waitlist (single CTA, no marketing flavor), full re-engagement campaign lives under Marketing.
-- **Position-update frequency cap.** No clear industry standard. Restaurants tend to send 0 position updates between join and ready; beta waitlists sometimes send weekly. RelayKit should ship a default cap (≤1 per week?) to prevent over-messaging.
-- **Capacity-recovery vs. pre-launch as separate sub-workflows.** Both fit the workflow classification but have meaningfully different stage timing and message density. Worth considering whether the configurator surfaces these as two presets within Waitlist rather than one generic flow.
-- **Cohort/event subset.** Cohort waitlists (course launches, event RSVPs) sit between capacity-recovery and pre-launch. Either folds into pre-launch with notes, or warrants explicit treatment.
-- **"Your turn" action-token universality.** Most waitlists need a link or code in stage 4. Some (restaurants) just need "come to the host stand." The schema should allow both shapes — required action token field on stage 4 with a "physical-presence" type for venue waitlists.
+- **Re-engagement stage placement** — **RESOLVED per D-395.** Stage 6 carries a light "rejoin?" CTA only; full re-engagement campaign (offers, discounts) lives in Marketing.
+- **Position-update frequency cap** — **DEFERRED** to message authoring. Lean: ship default cap (≤1 per week?) to prevent over-messaging.
+- **Capacity-recovery vs. pre-launch as separate sub-workflows** — Both fit the workflow classification but have meaningfully different stage timing and message density. **DEFERRED** to configurator UX — likely surfaces as two presets within Waitlist rather than one generic flow.
+- **Cohort/event subset** — **DEFERRED** to message authoring. Folds into pre-launch with notes; doesn't warrant its own classification.
+- **"Your turn" action-token universality** — **DEFERRED** to message authoring. Schema allows both shapes — required action token field on stage 4 with a "physical-presence" type variant for venue waitlists.
+- **Inbound STATUS keyword for position query** (Session 93 surfaced) — Letting end-users text STATUS to query their current waitlist position. Rare in indie SaaS today; depends on Phase 4 inbound MO infrastructure. **DEFERRED** to post-launch — tracked as BACKLOG entry ("Inbound STATUS keyword for waitlist position query").
 
 ## 7. Notable references
 

@@ -1,12 +1,12 @@
 # Community — Lead-Magnet Research
 **Date:** 2026-05-16
 **TCR mapping:** ACCOUNT_NOTIFICATION
-**Classification:** hybrid (5 discrete subs + 1 onboarding workflow) — validates VERTICAL_TAXONOMY_DRAFT §4 Redefine path
+**Classification:** hybrid (5 discrete subs + 1 onboarding workflow) — validates VERTICAL_TAXONOMY_DRAFT §4 Redefine path (now closed per D-401)
 **Authored by:** PM (Session 92)
 
 ## 1. Industry pattern observations
 
-Per VERTICAL_TAXONOMY_DRAFT §4, Community was redefined away from TCR's Social category (Special, vetted, off-limits at launch per §3 settled call) toward business-to-community messaging — a business sending SMS to its community members. The traffic shape is ACCOUNT_NOTIFICATION: confirmations of community-membership events that the recipient already opted into. This research validates that redefinition holds across observed patterns.
+Per VERTICAL_TAXONOMY_DRAFT §4 and now formally closed by D-401, Community was redefined away from TCR's Social category (Special, vetted, off-limits at launch per §3 settled call) toward business-to-community messaging — a business sending SMS to its community members. The traffic shape is ACCOUNT_NOTIFICATION: confirmations of community-membership events that the recipient already opted into. This research validated that redefinition holds across observed patterns; D-401 records the closing call.
 
 Reference apps observed:
 - Community SaaS proper: Circle, Mighty Networks, Skool, Tribe
@@ -32,9 +32,9 @@ Five discrete subs plus one workflow sub (onboarding) — the hybrid shape, matc
 
 3. **Moderation / urgent update** — "We've paused new posts in #channel-name pending review. Update at {{link}}." Low frequency; high signal. Sent only when the community needs attention.
 
-4. **Member milestone** — "🎉 You've been in the community for 1 year." Triggered on per-member anniversaries, post-count thresholds, role changes. Optional in most communities; resonates with engaged members, annoys casual members. RelayKit should ship this default-off.
+4. **Member milestone** — "🎉 You've been in the community for 1 year." Triggered on per-member anniversaries, post-count thresholds, role changes. **Per D-397: ships default-off in configurator** — engagement signal in mature communities, annoyance in early-stage ones; opt-out risk is high if defaulted on. Developer opts in deliberately when their community is ready.
 
-5. **Community announcement** — "We've launched a new track for B2B founders — check it out." Mid-frequency standalone announcements. Adjacent to Marketing but distinct: announcement is community-housekeeping (new channel, new feature in the community itself), not promotional offer. The boundary is voice-discipline (see §5).
+5. **Community announcement** — "We've launched a new track for B2B founders — check it out." Mid-frequency standalone announcements. Adjacent to Marketing but distinct: announcement is community-housekeeping (new channel, new feature in the community itself), not promotional offer. The boundary is voice-discipline — D-399 corpus-wide rule applies (transactional templates carry zero promotional content; if the announcement carries an offer or discount it ships as Marketing).
 
 **Workflow sub:**
 
@@ -44,7 +44,7 @@ Five discrete subs plus one workflow sub (onboarding) — the hybrid shape, matc
    - Resource pointer (3-5 days after join — "here's the orientation guide")
    - Week-1 check-in (7 days after join — "how's it going?")
 
-The hybrid shape (5 discrete + 1 workflow) maps cleanly to the type system's HybridCategory and validates community's planned move from TBD to hybrid.
+The hybrid shape (5 discrete + 1 workflow) maps cleanly to the type system's HybridCategory and confirms community's classification.
 
 ## 3. Voice patterns observed
 
@@ -66,9 +66,9 @@ Open-source dev communities almost never use SMS (Discord/Slack-native); not a r
 
 ## 5. Compliance constraints / TCR considerations
 
-ACCOUNT_NOTIFICATION mapping is correct per the §4 redefinition. The recipient joined the community → opted into membership-related notifications → SMS is the channel for the time-sensitive subset. Standard ACCOUNT_NOTIFICATION rules apply (STOP/START/HELP, frequency-perception thresholds, opt-in disclosure at join surface).
+ACCOUNT_NOTIFICATION mapping is correct per D-401 (closing the §4 redefinition). The recipient joined the community → opted into membership-related notifications → SMS is the channel for the time-sensitive subset. Standard ACCOUNT_NOTIFICATION rules apply (STOP/START/HELP, frequency-perception thresholds, opt-in disclosure at join surface).
 
-Critical compliance pressure point: **member milestone and community announcement subs sit adjacent to MARKETING territory.** A milestone message that includes a promotional offer ("you've been here 1 year — here's 20% off") crosses from ACCOUNT_NOTIFICATION into MARKETING and requires a separate campaign registration. RelayKit's authored templates must hold the line — milestones congratulate, announcements inform; neither sells.
+Critical compliance pressure point: **member milestone and community announcement subs sit adjacent to MARKETING territory.** Covered by D-399 (corpus-wide rule). A milestone message that includes a promotional offer ("you've been here 1 year — here's 20% off") crosses from ACCOUNT_NOTIFICATION into MARKETING and requires a separate campaign registration. RelayKit's authored templates hold the line — milestones congratulate, announcements inform; neither sells.
 
 Live-event reminder volume can spike if a community runs multiple events per week. Frequency disclosure at join time should set expectations ("we'll text you for live events and major community updates").
 
@@ -76,11 +76,11 @@ Onboarding workflow stages compound — a member joining and immediately receivi
 
 ## 6. Open questions / followups
 
-- **Should member milestone ship by default?** Engagement signal in mature communities, annoyance in new/casual ones. Lean: default-off, surface as an opt-in feature in the configurator.
-- **Cohort-launch vs. ongoing community.** Cohort-based communities (Maven format) have a beginning-middle-end shape; ongoing communities (Circle, Skool) don't. The onboarding workflow fits both, but live-event reminder cadence differs — cohort communities cluster events into intensive weeks; ongoing communities space them. Worth surfacing in the configurator as two presets.
-- **Community announcement vs. Marketing announcement boundary** needs explicit voice rules. Community announcement is "we built X within the community"; Marketing is "we built X, here's a discount." The line is real but easy for developers to blur. Voice guidance in §3 should make this explicit during authoring.
-- **Cross-category overlap with Team alerts.** Community moderation alerts ("we paused #channel pending review") are sent by the business to community members, not to the team. Team alerts goes the other direction (business → team about ops). The distinction holds, but the line is fuzzy for community-managed-by-team scenarios. Worth noting in voice guidance.
-- **SMS-bridge integrations.** A meaningful chunk of community SMS demand is actually "send a notification from my Discord/Slack to phone numbers." Out of scope for launch but worth tracking — could be a future integration vector.
+- **Should member milestone ship by default?** — **RESOLVED per D-397.** Default-off, surface as opt-in in configurator. Connects to the broader opt-out risk tagging concept (BACKLOG Pri 1) as the first concrete instance.
+- **Cohort-launch vs. ongoing community.** Cohort-based communities (Maven format) have a beginning-middle-end shape; ongoing communities (Circle, Skool) don't. The onboarding workflow fits both, but live-event reminder cadence differs. **DEFERRED** to configurator UX — worth surfacing as two presets within Community.
+- **Community announcement vs. Marketing announcement boundary** — **RESOLVED** by D-399 (corpus-wide rule). Community announcement is "we built X within the community"; Marketing is "we built X, here's a discount." System-enforced via editor compliance gate.
+- **Cross-category overlap with Team alerts.** Community moderation alerts ("we paused #channel pending review") are sent by the business to community members, not to the team. Team alerts goes the other direction (business → team about ops). **RESOLVED** — the distinction holds, captured as voice guidance.
+- **SMS-bridge integrations.** A meaningful chunk of community SMS demand is actually "send a notification from my Discord/Slack to phone numbers." **DEFERRED** to post-launch — tracked as BACKLOG entry ("SMS-bridge integrations for community SaaS (Discord/Slack)").
 
 ## 7. Notable references
 
@@ -89,5 +89,5 @@ Onboarding workflow stages compound — a member joining and immediately receivi
 - Skool community notification settings
 - Mighty Networks event reminder defaults
 - TCR ACCOUNT_NOTIFICATION definition (use case classification rules)
-- VERTICAL_TAXONOMY_DRAFT.md §4 Community redefinition rationale (validated by this research)
+- VERTICAL_TAXONOMY_DRAFT.md §4 Community redefinition rationale (closed by D-401)
 - RelayKit's own product positioning re: we serve community SaaS, we don't replace it
