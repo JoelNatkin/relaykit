@@ -1641,15 +1641,17 @@ The blog's primary organizing axis is the topical cluster (11 clusters per POST_
 
 **Affects:** `marketing-site/lib/blog/clusters.ts` (cluster registry as the single source of truth); `app/blog/cluster/[name]/page.tsx` (cluster index pages); the blog frontmatter schema (both `cluster` and `lane` fields, with `cluster` load-bearing for routing); PROTOTYPE_SPEC.md Blog subsection.
 
-**D-389 — Welcome SMS folds into Verification as paired follow-up under Sub-use 1** (Date: 2026-05-17)
+## D-389 — Welcome SMS not paired with Sub 1 signup OTP at launch
 
-Welcome-after-signup ships as a paired template under Verification Sub-use 1 (signup phone verification), not as its own category or as a Marketing/Account events sub. Same trigger (account creation), dominant indie SaaS pattern is paired-with-OTP, standalone welcome rare enough to skip a dedicated home at launch.
+**Decided:** 2026-05-16 (Session 93), **amended:** 2026-05-17 (Session 94)
+
+**Decision:** Verification Sub 1 (signup phone verification) ships as the OTP only — no paired welcome template. The user is on the developer's welcome screen at this moment and doesn't need SMS to confirm they're in. The opt-in-list confirmation moment (a different shape: someone joining a list, where the SMS is the actual confirmation that they joined) is real but lives in Marketing and Community categories, not Verification.
+
+**Why:** Earlier framing assumed welcome SMS was a paired transactional moment; pressure-testing during message authoring (Session 94) found the use case is unwelcome for most signup flows. The opt-in-list pattern is a separate moment that lands properly in marketing-shaped categories.
+
+**Amended from:** "Welcome folds into Verification Sub 1 as paired template." Pre-implementation amendment; no code, UI, or other decisions referenced this entry.
 
 **Supersedes:** none
-
-**Reasoning:** Session 91 surfaced "Onboarding / Welcome" as a possible category or sub during the per-category research. Practically, welcome-after-signup is the message that follows immediately after Sub-use 1; splitting it off as its own category or sub fragments the user's mental model and forces developers to wire two surfaces for one trigger. Folding under Verification keeps the workstream consolidated and matches the dominant indie SaaS pattern. If post-launch demand surfaces for standalone welcome (no preceding OTP send), Account events absorbs it as a sub.
-
-**Affects:** Verification research file §6 item 1; Verification message library (Sub-use 1 gains a paired welcome template alongside the OTP template); configurator UX for Verification (Sub-use 1 surfaces welcome as part of the same sub, not as a separate choice).
 
 **D-390 — Affiliate/referral SMS routes to Account events, not Marketing** (Date: 2026-05-17)
 
