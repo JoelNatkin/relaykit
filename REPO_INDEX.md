@@ -8,7 +8,7 @@
 
 - Last updated: 2026-05-17
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 303 active, latest D-388; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Decision count: 316 active, latest D-401; D-01–D-83 archived. Marketing decisions: latest MD-20.
 - Branch state: main; no unmerged feature branches (`feat/waitlist-modal-design` and `feat/message-library-scaffold` merged this session; they plus the five Session 90 branches remain on origin, deletable)
 - Active explorations: None
 
@@ -27,7 +27,7 @@ _No active explorations._
 | `MASTER_PLAN.md` | 2026-05-15 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-16 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
-| `DECISIONS.md` | 2026-05-15 | Active product decisions D-84+. |
+| `DECISIONS.md` | 2026-05-17 | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
 | `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` | 2026-04-27 | Archived REPO_INDEX change-log entries (Sessions 1–49 era). |
 | `PROTOTYPE_SPEC.md` | 2026-05-17 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
@@ -35,8 +35,8 @@ _No active explorations._
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-17 (Session 91) | Previous CC session state (transient, overwritten each close-out). |
-| `BACKLOG.md` | 2026-05-13 | Parked ideas; never build without explicit promotion. |
+| `CC_HANDOFF.md` | 2026-05-17 (Session 93) | Previous CC session state (transient, overwritten each close-out). |
+| `BACKLOG.md` | 2026-05-17 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
 
@@ -55,7 +55,7 @@ _No active explorations._
 | `MARKETING_STRATEGY.md` | 2026-05-16 | Marketing strategy: plays, MD-numbered decisions, channels, tools, sequencing. |
 | `MARKETING_STRATEGY_ARCHIVE.md` | 2026-05-01 | Deprecated marketing approaches with deprecation triggers and revisit conditions. |
 | `TESTING_GUIDE_DRAFT.md` | 2026-05-01 | DRAFT — Phase 8 guide for AI tools building integration test/debug surfaces inside customer apps. |
-| `VERTICAL_TAXONOMY_DRAFT.md` | 2026-05-12 | DRAFT — vertical-taxonomy thinking from Experiments 3a/3b; Phase 5 design prerequisite. |
+| `VERTICAL_TAXONOMY_DRAFT.md` | 2026-05-17 (v0.4) | DRAFT — vertical-taxonomy thinking from Experiments 3a/3b; Phase 5 design prerequisite. |
 | `BRAND_AUDIT.md` | 2026-05-07 | Stage 1 brand audit synthesis from 24 SaaS sites; informs Stage 2 brand direction. |
 | `BRAND_AUDIT_LENS.md` | 2026-05-05 | Stage 1 operating mode for brand audit walks; retires when Stage 2 consumes outputs. |
 | `SECURITY_DRAFT.md` | 2026-05-03 | DRAFT — canonical security posture, threat surface inventory, pumping defense detail (§3). |
@@ -160,7 +160,7 @@ Wave 2 message-library foundation — a typed corpus of SMS message templates or
 ## Subdirectories
 
 - `/docs/archive` — superseded PRDs and old strategy
-- `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`. Current outputs: `audits/prototype-inventory-2026-05-13.md` (read-only inventory of /prototype/ that drove the Session 87 archive operation). `audits/research/2026-05-16/` holds the 9 per-category lead-magnet research files for the Wave 2 message-library workstream (templates scaffolded Session 91; PM authors content).
+- `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`. Current outputs: `audits/prototype-inventory-2026-05-13.md` (read-only inventory of /prototype/ that drove the Session 87 archive operation). `audits/research/2026-05-16/` holds the 9 per-category lead-magnet research files for the Wave 2 message-library workstream (templates scaffolded Session 91; research content + §6 RESOLVED/DEFERRED/D-link resolutions populated 2026-05-17, Session 93).
 - `/explorations` — sandbox files (see Active explorations above)
 - `/experiments` — Phase 1 Sinch proving-ground throwaway code
 - `/prototype/archive` — files removed from the active prototype on 2026-05-13 (Session 87 bulk archive); source paths mirrored; see `prototype/archive/README.md` for the un-archive procedure
