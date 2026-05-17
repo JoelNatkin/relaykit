@@ -8,8 +8,8 @@
 
 - Last updated: 2026-05-17
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 316 active, latest D-401; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: main; no unmerged feature branches (`feat/waitlist-modal-design` and `feat/message-library-scaffold` merged this session; they plus the five Session 90 branches remain on origin, deletable)
+- Decision count: 317 active, latest D-402; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Branch state: main; no unmerged feature branches (`feat/verification-message-authoring` merged + deleted this session)
 - Active explorations: None
 
 ## Active explorations
@@ -35,7 +35,7 @@ _No active explorations._
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-17 (Session 93) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-17 (Session 94) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-17 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -146,16 +146,18 @@ Early-access waitlist per MD-20 (DIY on Supabase + Resend over a hosted vendor),
 
 Modified: `app/layout.tsx` (WaitlistProvider + modal mount); `app/page.tsx`, `components/top-nav.tsx`, `components/configurator-section.tsx` (CTAs rewired to the modal; configurator publishes its selection summary up); `package.json` (`resend` dep); `.env.example` (`RESEND_API_KEY`). Pre-launch posture deviations tracked in `docs/PRE_LAUNCH_DEVIATIONS.md`. The modal was design-polished Session 91 (`feat/waitlist-modal-design`) — founder voice, category pills, simplified success state.
 
-## message-library scaffold (new — Session 91)
+## message-library (Session 91 scaffold; Session 94 Verification authoring)
 
-Wave 2 message-library foundation — a typed corpus of SMS message templates organized by category. Scaffolding only (empty data stubs); research and message bodies land in later PM authoring passes. Built on `feat/message-library-scaffold` (merged to main).
+Wave 2 message-library — a typed corpus of SMS message templates organized by category. Scaffolded Session 91 on `feat/message-library-scaffold`; Session 94 extended the schema corpus-wide (tone variants, per-category variable catalogs, compliance blocks) and authored the first category, Verification, on `feat/verification-message-authoring` (merged to main). The other 8 categories remain empty stubs pending later authoring passes.
 
 | Path | Purpose |
 |------|---------|
-| `marketing-site/lib/message-library/types.ts` | Type system — `Classification` + `TCRMapping` unions; `Message`/`Sub`/`Stage` interfaces; `Discrete`/`Workflow`/`Hybrid` `Category` interfaces discriminated by `classification`. |
-| `marketing-site/lib/message-library/[category].ts` | 9 per-category typed stubs (verification, appointments, order-updates, customer-support, marketing, team-alerts, community, waitlist, account-events) with empty subs/stages. |
-| `marketing-site/lib/message-library/index.ts` | Barrel — re-exports the type system + the 9 category consts. |
-| `audits/research/2026-05-16/[category].md` | 9 per-category lead-magnet research files (PM-authored; empty templates at scaffold time). |
+| `marketing-site/lib/message-library/types.ts` | Type system — `Classification`/`TCRMapping`/`VariantTone`/`VariableSource` unions; `Variable`, `MessageVariant`, `Message`, `CategoryCompliance`, `Sub`/`Stage` interfaces; `Discrete`/`Workflow`/`Hybrid` `Category` interfaces (each carrying `variables` + `compliance`) discriminated by `classification`. |
+| `marketing-site/lib/message-library/shared-variables.ts` | Cross-corpus variable catalog (`SHARED_VARIABLES` — business_name, workspace_name, customer_name, first_name); categories import the entries they use. |
+| `marketing-site/lib/message-library/verification.ts` | Verification category — **populated** (Session 94): 4 subs / 4 messages / 12 tone variants, 3-variable catalog, 5-rule compliance block. |
+| `marketing-site/lib/message-library/[category].ts` | 8 remaining per-category typed stubs (appointments, order-updates, customer-support, marketing, team-alerts, community, waitlist, account-events) — empty subs/stages, empty `variables`/`compliance`. |
+| `marketing-site/lib/message-library/index.ts` | Barrel — re-exports the type system, `SHARED_VARIABLES`, and the 9 category consts. |
+| `audits/research/2026-05-16/[category].md` | 9 per-category lead-magnet research files (PM-authored; §6-resolved Session 93). |
 
 ## Subdirectories
 

@@ -5,7 +5,7 @@
 > Not for: active workstream items (MASTER_PLAN phase scope), recorded decisions (DECISIONS), active prototypes (`/explorations/`).
 
 ## Ideas, Deferred Work, and Future Features
-### Last updated: May 13, 2026
+### Last updated: May 17, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -31,6 +31,8 @@
 - **Opt-out risk tagging for message templates** — Internal tag (low / medium / high) on each Message/sub, surfaces in configurator to inform developer choices (e.g., "this sub has higher opt-out risk — consider default-off"). Starts internal; consider user-facing exposure later. Schema work: add risk field to Message type, decide level granularity, decide configurator surface. Connects to D-397 (Community milestone default-off) as the first concrete instance of the underlying concept. Lift is moderate; user value is high — opt-out rate is the metric developers most underestimate at integration time, and Twilio Verify-class competitors cannot surface this because they don't author templates. (Origin: Session 93 cross-category review, Joel insight following D-397)
 
 - **Reframe pricing copy + configurator UX for symmetric campaign model** — $19/mo covers ONE TCR campaign (Marketing OR LVM-mixed-transactional covering any combination of the 7 transactional categories). $10/mo adds the second campaign — only when customer wants both Marketing AND transactional. Marketing-only customer pays $19/mo; transactional-only customer pays $19/mo; both campaigns: $29/mo. Current configurator copy "Marketing adds $10/mo" presumes a transactional base, disincentivizes marketing-only customers, and misrepresents the symmetric model. Reframe touches: `docs/PRICING_MODEL.md` (verify against this framing), `marketing-site/components/configurator-section.tsx` (the "Marketing (+$10/mo)" pill copy), marketing site copy generally, registration flow logic, message-library configurator UX. Connects to D-394 (transactional split between Order updates and Account events) — LVM mixed campaign covers all 7 transactional categories together. (Origin: Session 93 review, Joel-surfaced during cross-category #2 discussion)
+
+- **Per-send free-text variables (e.g. action context in step-up confirmations)** — Pri 3 / post-launch. Some transactional templates would benefit from a free-text variable passed at SDK send-time (e.g. "Confirm {{action_context}}. Code: {{code}}"). Currently developers handle this by creating one template per action. Shipping would require a new variable category (free-text, developer-authored, per-send), server-side content validation, and a preview surface in the workspace. Surfaces if customers complain about action-specific template duplication. (Origin: Session 94 Verification message authoring)
 
 - **Rejected state registration data display** — Expand "What was submitted" fields based on carrier error code mapping. Currently shows business name, EIN (masked), address, use case. May need website URL, business description, etc. (Origin: Settings PRD session, March 22–23)
 
