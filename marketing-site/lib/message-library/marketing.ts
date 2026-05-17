@@ -5,5 +5,7 @@ export const MARKETING: DiscreteCategory = {
   name: "Marketing",
   tcrMapping: "MARKETING",
   classification: "discrete",
+  variables: [],
+  compliance: { rules: [] },
   subs: [],
 };

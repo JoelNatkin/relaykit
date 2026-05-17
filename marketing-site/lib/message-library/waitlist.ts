@@ -5,5 +5,7 @@ export const WAITLIST: WorkflowCategory = {
   name: "Waitlist",
   tcrMapping: "ACCOUNT_NOTIFICATION",
   classification: "workflow",
+  variables: [],
+  compliance: { rules: [] },
   stages: [],
 };

@@ -5,5 +5,7 @@ export const ORDER_UPDATES: WorkflowCategory = {
   name: "Order updates",
   tcrMapping: "DELIVERY_NOTIFICATION",
   classification: "workflow",
+  variables: [],
+  compliance: { rules: [] },
   stages: [],
 };

@@ -5,6 +5,8 @@ export const CUSTOMER_SUPPORT: HybridCategory = {
   name: "Customer support",
   tcrMapping: "CUSTOMER_CARE",
   classification: "hybrid",
+  variables: [],
+  compliance: { rules: [] },
   stages: [],
   subs: [],
 };

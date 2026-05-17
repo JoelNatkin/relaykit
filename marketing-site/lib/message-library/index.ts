@@ -7,7 +7,12 @@
 export type {
   Classification,
   TCRMapping,
+  VariantTone,
+  VariableSource,
+  Variable,
+  MessageVariant,
   Message,
+  CategoryCompliance,
   Sub,
   Stage,
   DiscreteCategory,
@@ -15,6 +20,8 @@ export type {
   HybridCategory,
   Category,
 } from "./types";
+
+export { SHARED_VARIABLES } from "./shared-variables";
 
 export { VERIFICATION } from "./verification";
 export { APPOINTMENTS } from "./appointments";

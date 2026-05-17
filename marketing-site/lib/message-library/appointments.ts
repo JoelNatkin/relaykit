@@ -5,5 +5,7 @@ export const APPOINTMENTS: WorkflowCategory = {
   name: "Appointments",
   tcrMapping: "ACCOUNT_NOTIFICATION",
   classification: "workflow",
+  variables: [],
+  compliance: { rules: [] },
   stages: [],
 };

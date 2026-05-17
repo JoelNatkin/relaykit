@@ -5,5 +5,7 @@ export const ACCOUNT_EVENTS: DiscreteCategory = {
   name: "Account events",
   tcrMapping: "ACCOUNT_NOTIFICATION",
   classification: "discrete",
+  variables: [],
+  compliance: { rules: [] },
   subs: [],
 };

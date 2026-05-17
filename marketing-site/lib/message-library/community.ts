@@ -5,6 +5,8 @@ export const COMMUNITY: HybridCategory = {
   name: "Community",
   tcrMapping: "ACCOUNT_NOTIFICATION",
   classification: "hybrid",
+  variables: [],
+  compliance: { rules: [] },
   stages: [],
   subs: [],
 };

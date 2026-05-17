@@ -5,6 +5,8 @@ export const TEAM_ALERTS: HybridCategory = {
   name: "Team alerts",
   tcrMapping: "ACCOUNT_NOTIFICATION",
   classification: "hybrid",
+  variables: [],
+  compliance: { rules: [] },
   stages: [],
   subs: [],
 };
