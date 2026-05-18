@@ -1,12 +1,11 @@
 /**
- * Marketing-side parity copy of `prototype/lib/editor/template-serde.ts`.
- * `categoryId` renamed to `verticalId` to match marketing-side naming.
- * Template syntax is `{var_key}`. Diverge only intentionally.
+ * Serialization between the message-library `{{double-brace}}` body format and
+ * the Tiptap document model. Variables become atomic `variable` nodes; known
+ * tokens are resolved against the message's category variable catalog.
  */
 
 import type { Node as PMNode } from "@tiptap/pm/model";
-import { getExampleValues } from "@/lib/configurator/example-values";
-import type { VerticalId } from "@/lib/configurator/types";
+import type { Variable } from "@/lib/message-library/types";
 
 export interface DocContent {
   type: "doc";
@@ -19,13 +18,14 @@ export interface DocContent {
   }>;
 }
 
-export function templateToContent(template: string, verticalId: VerticalId): DocContent {
-  const validKeys = new Set<string>([...getExampleValues(verticalId).keys()]);
+/** Parse a `{{token}}` body into Tiptap doc content. */
+export function bodyToContent(body: string, variables: Variable[]): DocContent {
+  const validKeys = new Set(variables.map((v) => v.name));
   const children: DocContent["content"][number]["content"] = [];
 
-  for (const part of template.split(/(\{[^}]+\})/g)) {
+  for (const part of body.split(/(\{\{[^}]+\}\})/g)) {
     if (!part) continue;
-    const m = part.match(/^\{(\w+)\}$/);
+    const m = part.match(/^\{\{(\w+)\}\}$/);
     if (m && validKeys.has(m[1])) {
       children.push({ type: "variable", attrs: { key: m[1] } });
     } else {
@@ -39,12 +39,13 @@ export function templateToContent(template: string, verticalId: VerticalId): Doc
   };
 }
 
-export function docToTemplate(doc: PMNode): string {
+/** Serialize a Tiptap document back to a `{{token}}` body string. */
+export function docToBody(doc: PMNode): string {
   let out = "";
   doc.descendants((node) => {
     if (node.type.name === "variable") {
       const key = node.attrs.key as string | null;
-      if (key) out += `{${key}}`;
+      if (key) out += `{{${key}}}`;
       return false;
     }
     if (node.isText) {
