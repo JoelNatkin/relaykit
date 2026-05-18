@@ -32,7 +32,7 @@ export function TopNav() {
             onClick={toggle}
             aria-label={actionLabel}
             title={actionLabel}
-            className="flex size-9 cursor-pointer items-center justify-center rounded-lg text-text-tertiary transition-colors duration-100 ease-linear hover:bg-bg-primary_hover hover:text-text-primary"
+            className="flex size-9 cursor-pointer items-center justify-center text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
           >
             {theme === null ? (
               <span className="size-5" aria-hidden />
