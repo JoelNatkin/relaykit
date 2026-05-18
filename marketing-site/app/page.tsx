@@ -124,11 +124,11 @@ export default function MarketingHome() {
         <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           <div className="flex flex-col gap-5">
             <p className="text-base leading-relaxed text-text-secondary">
-              Starting fresh. RelayKit slots into the starter kits you use — ShipFast,
+              <strong className="font-semibold">Starting fresh.</strong> RelayKit slots into the starter kits you use — ShipFast,
               Supastarter, MakerKit, Vercel + Supabase.
             </p>
             <p className="text-base leading-relaxed text-text-secondary">
-              Already built. Hand the build spec to your AI tool, point it at where you handle
+              <strong className="font-semibold">Already built.</strong> Hand the build spec to your AI tool, point it at where you handle
               auth, and let it wire up the rest.
             </p>
           </div>

@@ -372,7 +372,7 @@ export function ConfiguratorSection() {
                           checked={checked}
                           readOnly
                           tabIndex={-1}
-                          className="mt-0.5 size-4 shrink-0 rounded border-border-secondary accent-bg-brand-solid"
+                          className="mt-0.5 size-4 shrink-0 rounded border-border-primary accent-bg-brand-solid"
                         />
                         <div className="flex-1">
                           <span className="text-sm font-medium text-text-primary">
@@ -428,7 +428,7 @@ export function ConfiguratorSection() {
                                   checked={subChecked}
                                   readOnly
                                   tabIndex={-1}
-                                  className="mt-0.5 size-4 shrink-0 rounded border-border-secondary accent-bg-brand-solid"
+                                  className="mt-0.5 size-4 shrink-0 rounded border-border-primary accent-bg-brand-solid"
                                 />
                                 <span className="text-sm text-text-secondary">
                                   {sub.name}

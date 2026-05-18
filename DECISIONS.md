@@ -1805,14 +1805,14 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 
 **Supersedes:** none
 
-## D-405 — Brand pivots from purple accent to monochromatic warm
+## D-405 — Brand system adopts the Untitled UI Gray Warm scale
 
 **Decided:** 2026-05-18 (Session 96)
 
-**Decision:** RelayKit's brand color system moves from a purple accent to a monochromatic warm palette in the hue family of the dark-mode page background (#13120E). Both the neutral structural scale and the brand accent scale share one warm hue; value (lightness), not hue, separates accent from neutral. Light mode inverts the logic — a warm off-white page with warm-dark accents. Semantic colors (error / warning / success) are deliberately not warm-shifted — they must read as meaning, not aesthetic. Implemented as a token-map rewrite in `marketing-site/app/globals.css`.
+**Decision:** RelayKit retires the purple accent system entirely and adopts Untitled UI's "Gray Warm" scale as a single canonical neutral palette. The brand is monochromatic — one warm-neutral scale where value (lightness), not hue, carries the whole system: surfaces, text, borders, and the lifted/actionable elements (CTA, selected pills, checked checkboxes). There is no chromatic accent. Lifted elements use brand-800 in both light and dark modes — deliberately not pure black in light mode (too stark) and not lifted too far from the page in dark mode. Semantic colors (error / warning / success) are untouched — they read as meaning, not brand. Implemented as a token-map rewrite in `marketing-site/app/globals.css`.
 
-**Why:** The purple was an ad-hoc choice made early in development, never itself a recorded decision. The monochromatic warm direction reads as intentional, editorial, and composed — accents support the configurator's message content rather than competing with it.
+**Why:** The purple was an ad-hoc choice made early in development, never itself a recorded decision. A monochromatic warm-neutral palette reads as intentional, editorial, and composed — accents support the configurator's message content rather than competing with it. Adopting Untitled UI Gray Warm wholesale gives a vetted, internally consistent scale instead of hand-tuned values.
 
-**Rejected alternative:** Keeping the purple accent, or any hue-driven brand — rejected as "branded-and-shouty," pulling attention away from the product's actual content.
+**Rejected alternative:** Keeping the purple accent, or any hue-driven brand — rejected as "branded-and-shouty," pulling attention from the product's content. Earlier in-branch iterations (a hand-tuned warm scale; a brighter distinct CTA tier) were also discarded in favor of the wholesale Gray Warm adoption.
 
 **Supersedes:** none — no prior decision specified brand-purple as the accent; it was an unrecorded default. (D-378's parenthetical dark-mode brand-shift example, "brand-600 → brand-500," is now stale and may want a light amendment.)
