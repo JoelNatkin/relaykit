@@ -1,10 +1,9 @@
 "use client";
 
 /**
- * Marketing-side parity copy of `prototype/lib/editor/message-editor.tsx`.
- * Thin Tiptap wrapper. External interface is the `{var_key}` template
- * string format used everywhere else. Enter is suppressed (SMS messages
- * are single-line). Diverge only intentionally.
+ * Thin Tiptap wrapper for editing a single SMS message body. The external
+ * interface is the message-library `{{double-brace}}` body format. Enter is
+ * suppressed (SMS messages are single-line).
  */
 
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
@@ -12,37 +11,39 @@ import { useEffect, useRef } from "react";
 import Document from "@tiptap/extension-document";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
-import type { VerticalId } from "@/lib/configurator/types";
+import type { Variable } from "@/lib/message-library/types";
 import { VariableNode } from "./variable-node";
-import { templateToContent, docToTemplate } from "./template-serde";
+import { bodyToContent, docToBody } from "./template-serde";
 
 interface MessageEditorProps {
-  template: string;
-  verticalId: VerticalId;
+  /** Message body in `{{double-brace}}` format. */
+  body: string;
+  /** The message's category variable catalog — drives token recognition + previews. */
+  variables: Variable[];
   disabled?: boolean;
   className?: string;
-  onChange: (template: string) => void;
+  onChange: (body: string) => void;
   onReady?: (editor: Editor) => void;
 }
 
 export function MessageEditor({
-  template,
-  verticalId,
+  body,
+  variables,
   disabled = false,
   className,
   onChange,
   onReady,
 }: MessageEditorProps) {
-  const lastEmittedRef = useRef<string>(template);
+  const lastEmittedRef = useRef<string>(body);
 
   const editor = useEditor({
     extensions: [
       Document,
       Paragraph,
       Text,
-      VariableNode.configure({ verticalId }),
+      VariableNode.configure({ variables }),
     ],
-    content: templateToContent(template, verticalId),
+    content: bodyToContent(body, variables),
     editable: !disabled,
     editorProps: {
       attributes: {
@@ -67,7 +68,7 @@ export function MessageEditor({
       },
     },
     onUpdate({ editor }) {
-      const next = docToTemplate(editor.state.doc);
+      const next = docToBody(editor.state.doc);
       lastEmittedRef.current = next;
       onChange(next);
     },
@@ -76,15 +77,15 @@ export function MessageEditor({
 
   useEffect(() => {
     if (!editor) return;
-    if (template === lastEmittedRef.current) return;
+    if (body === lastEmittedRef.current) return;
     queueMicrotask(() => {
       if (!editor || editor.isDestroyed) return;
-      editor.commands.setContent(templateToContent(template, verticalId), {
+      editor.commands.setContent(bodyToContent(body, variables), {
         emitUpdate: false,
       });
-      lastEmittedRef.current = template;
+      lastEmittedRef.current = body;
     });
-  }, [editor, template, verticalId]);
+  }, [editor, body, variables]);
 
   useEffect(() => {
     if (editor) editor.setEditable(!disabled, false);

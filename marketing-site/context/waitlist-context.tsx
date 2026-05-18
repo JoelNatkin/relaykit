@@ -19,30 +19,37 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
-import type { ToneId } from "@/lib/configurator/types";
+import { usePostHog } from "posthog-js/react";
 
 export type CtaSource = "top-nav" | "mid-page" | "bottom";
 
 export interface WaitlistSummary {
   /** Human-readable category titles, e.g. ["Verification", "Appointments"]. */
   categoryTitles: string[];
-  tone: ToneId;
+  tone: string;
   businessName: string;
   configuratorTouched: boolean;
+  /** Extended configurator snapshot — additive, populated only when a
+   *  configurator is mounted. Consumed by the `early_access_clicked` event. */
+  categoriesSelected?: string[];
+  subsSelected?: string[];
+  toneDefault?: string;
+  hasOverrides?: boolean;
 }
 
 /**
- * Reproduces the configurator's untouched defaults (pack `verification-only`
- * → selected `{verification}`, tone `standard`, no business name). Used on
- * every page that has no configurator mounted, so the modal still shows a
- * correct "You're interested in: Verification".
+ * Reproduces the configurator's untouched defaults (Verification + its primary
+ * sub selected, tone Standard, no business name). Used on every page that has
+ * no configurator mounted, so the modal still shows a correct
+ * "Live at launch: Verification".
  */
 export const DEFAULT_WAITLIST_SUMMARY: WaitlistSummary = {
   categoryTitles: ["Verification"],
-  tone: "standard",
+  tone: "Standard",
   businessName: "",
   configuratorTouched: false,
 };
@@ -59,16 +66,33 @@ interface WaitlistContextValue {
 const WaitlistContext = createContext<WaitlistContextValue | null>(null);
 
 export function WaitlistProvider({ children }: { children: ReactNode }) {
+  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const [ctaSource, setCtaSource] = useState<CtaSource | null>(null);
   const [summary, setSummaryState] = useState<WaitlistSummary>(
     DEFAULT_WAITLIST_SUMMARY,
   );
 
-  const openModal = useCallback((source: CtaSource) => {
-    setCtaSource(source);
-    setIsOpen(true);
-  }, []);
+  // Mirror the latest summary into a ref so the stable `openModal` callback
+  // can read a fresh configurator snapshot without re-creating itself.
+  const summaryRef = useRef(summary);
+  summaryRef.current = summary;
+
+  const openModal = useCallback(
+    (source: CtaSource) => {
+      const s = summaryRef.current;
+      posthog?.capture("early_access_clicked", {
+        categories_selected: s.categoriesSelected ?? [],
+        subs_selected: s.subsSelected ?? [],
+        tone_default: s.toneDefault ?? s.tone,
+        has_overrides: s.hasOverrides ?? false,
+        source,
+      });
+      setCtaSource(source);
+      setIsOpen(true);
+    },
+    [posthog],
+  );
 
   const closeModal = useCallback(() => {
     setIsOpen(false);

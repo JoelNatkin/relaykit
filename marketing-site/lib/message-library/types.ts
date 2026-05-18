@@ -63,6 +63,8 @@ export interface Message {
   /** Variable names (referencing the category catalog) used across this message's variants. */
   variables: string[];
   variants: MessageVariant[];
+  /** Short hover-tooltip copy surfaced on the configurator message card title. */
+  tooltip?: string;
 }
 
 /** Category-level authoring rules surfaced to authors and the future editor compliance gate. */
@@ -75,6 +77,8 @@ export interface Sub {
   id: string;
   name: string;
   description: string;
+  /** Short hover-tooltip copy surfaced on the configurator sub-checkbox row. */
+  tooltip?: string;
   messages: Message[];
 }
 
@@ -90,6 +94,8 @@ export interface Stage {
 export interface DiscreteCategory {
   id: string;
   name: string;
+  /** One-sentence collapsed-state summary shown under the category name in the configurator. */
+  description: string;
   tcrMapping: TCRMapping;
   classification: "discrete";
   variables: Variable[];
@@ -100,6 +106,8 @@ export interface DiscreteCategory {
 export interface WorkflowCategory {
   id: string;
   name: string;
+  /** One-sentence collapsed-state summary shown under the category name in the configurator. */
+  description: string;
   tcrMapping: TCRMapping;
   classification: "workflow";
   variables: Variable[];
@@ -110,6 +118,8 @@ export interface WorkflowCategory {
 export interface HybridCategory {
   id: string;
   name: string;
+  /** One-sentence collapsed-state summary shown under the category name in the configurator. */
+  description: string;
   tcrMapping: TCRMapping;
   classification: "hybrid";
   variables: Variable[];

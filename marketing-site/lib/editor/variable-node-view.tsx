@@ -1,29 +1,29 @@
 "use client";
 
 /**
- * Marketing-side parity copy of `prototype/lib/editor/variable-node-view.tsx`.
- * Renders an atomic, color-only token inside the Tiptap editor whose preview
- * value resolves from the configurator's SessionState. Diverge only
- * intentionally.
+ * Renders an atomic, color-only variable token inside the Tiptap editor. The
+ * preview value resolves from the message's category variable catalog, with
+ * `business_name` reflecting the live configurator input.
  */
 
 import { NodeViewWrapper, type ReactNodeViewProps } from "@tiptap/react";
 import { useSession } from "@/lib/configurator/session-context";
-import { getExampleValues } from "@/lib/configurator/example-values";
-import type { VerticalId } from "@/lib/configurator/types";
+import { resolveVariableExample } from "@/lib/message-library/render";
 import { VARIABLE_TOKEN_CLASSES } from "./variable-token";
 import type { VariableNodeOptions } from "./variable-node";
 
 export function VariableNodeView(props: ReactNodeViewProps) {
   const { state } = useSession();
   const key: string | null = props.node.attrs.key;
-  const verticalId = (props.extension.options as VariableNodeOptions).verticalId as VerticalId;
+  const { variables } = props.extension.options as VariableNodeOptions;
   const selected = props.selected;
 
   const preview = (() => {
     if (!key) return "";
-    const example = getExampleValues(verticalId).get(key);
-    return example ? example.preview(state) : `{${key}}`;
+    const variable = variables.find((v) => v.name === key);
+    return variable
+      ? resolveVariableExample(variable, state.businessName)
+      : `{{${key}}}`;
   })();
 
   const padded = "pt-[3px] pb-[3px] -mt-[3px] -mb-[3px]";

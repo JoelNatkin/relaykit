@@ -1,16 +1,16 @@
 /**
- * Marketing-side parity copy of `prototype/lib/editor/variable-node.ts`.
- * Variables render as atomic, indivisibly-selectable tokens (D-350). The
- * `verticalId` option flows through to the NodeView so it can resolve
- * preview values via getExampleValues. Diverge only intentionally.
+ * Tiptap node for message variables. Variables render as atomic,
+ * indivisibly-selectable tokens (D-350). The category `variables` catalog
+ * flows through to the NodeView so it can resolve preview values.
  */
 
 import { Node, mergeAttributes } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
+import type { Variable } from "@/lib/message-library/types";
 import { VariableNodeView } from "./variable-node-view";
 
 export interface VariableNodeOptions {
-  verticalId: string;
+  variables: Variable[];
 }
 
 declare module "@tiptap/core" {
@@ -25,7 +25,7 @@ export const VariableNode = Node.create<VariableNodeOptions>({
   name: "variable",
 
   addOptions() {
-    return { verticalId: "" };
+    return { variables: [] };
   },
 
   group: "inline",

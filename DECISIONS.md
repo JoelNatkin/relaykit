@@ -1782,3 +1782,25 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Why:** Margin discipline (multi-segment UCS-2 messages cost ~2x at the carrier; we've priced flat per-message); delivery reliability (multi-segment messages drop or arrive out of order more often); developer ergonomics (curly-quote auto-insertion from macOS/editors is the most common unintentional bite — silent paste normalization eliminates it). Variables passed via SDK (codes, phone numbers, timestamps) are type-constrained and exempt — the type contract enforces shape, no character rule needed.
 
 **Supersedes:** none
+
+## D-403 — Home-page configurator custom messages carry forward into workspace at signup
+
+**Decided:** 2026-05-18 (Session 95)
+
+**Decision:** Visitor-authored custom messages on the marketing-site home-page configurator persist via localStorage and become real workspace messages at signup — they are first-touch authoring, not a throwaway preview. This is why the home-page custom-message editor requires a Name field matching the workspace authoring shape.
+
+**Rejected alternative:** Custom messages as a throwaway home-page sandbox preview, discarded at signup.
+
+**Supersedes:** none
+
+## D-404 — Configurator Copy button outputs combined per-message blocks
+
+**Decided:** 2026-05-18 (Session 96)
+
+**Decision:** The marketing-site home-page configurator's Copy button outputs, for each visible message in the active tone (respecting per-card overrides), a block of four fields: title, description, a personalized example, and the raw template. The template preserves `{{double_brace}}` variable tokens; the example substitutes the visitor's typed business name (falling back to "Acme"). Visitor-authored custom messages are included (title from the Name field; no description line). Blocks are plain-text and markdown-friendly, separated by `---`. One copy reflects one tone — switching the tone toggle and re-copying is the path to all three.
+
+**Why:** The copied output is a first-touch authoring artifact, not a throwaway preview — it carries the template+example pairing a developer needs to wire messages with any provider, and aligns with D-403 (configurator custom messages carry forward into the workspace). Title + description preserve each message's identity so the paste is self-describing.
+
+**Rejected alternative:** Copy outputs only the rendered message bodies with values substituted (the pre-rewrite behavior) — loses the reusable template and the message's identity.
+
+**Supersedes:** none

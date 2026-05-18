@@ -1,100 +1,72 @@
 /**
- * Compliance check ported from `prototype/components/catalog/catalog-card.tsx`
- * lines 123–164. Two rules:
+ * Best-effort compliance check for configurator message editing.
  *
- *   1. Required variables — every variable in the message's `variables` list
- *      whose interpolated preview value is missing from the rendered text
- *      surfaces as "Needs <Label>".
- *   2. Opt-out language — if requiresStop is true, the rendered text must
- *      contain both /stop/i and /opt[- ]?out|unsubscribe/i. Otherwise emits
- *      "Needs opt-out language".
+ * Corpus-authored message variants are pre-vetted; this check guards
+ * hand-edited corpus bodies and visitor-authored custom messages. Three rules,
+ * all derived from D-402 + TCR category shape:
  *
- * Parity expectation: copy the rule shape, not the literal labels. If the
- * dashboard's rule set diverges, this file should be re-synced.
+ *   1. Single segment — the resolved body must fit one GSM-7 SMS segment.
+ *   2. GSM-7 character set — author-controlled literal text must be SMS-safe.
+ *      Variables are type-constrained / exempt (D-402).
+ *   3. Opt-out language — Marketing-shaped categories must carry STOP + an
+ *      exit word. Verification (2FA carve-out) does not.
  */
 
-import {
-  extractVariables,
-  getExampleValues,
-  interpolateTemplate,
-  type InterpolatedSegment,
-} from "./example-values";
-import type { SessionState } from "./session-context";
-import type { VerticalId } from "./types";
+import { interpolateBody } from "@/lib/message-library/render";
+import type { Variable } from "@/lib/message-library/types";
 
 export interface ComplianceResult {
   isCompliant: boolean;
   issues: string[];
 }
 
-function joinLabels(labels: string[]): string {
-  if (labels.length === 0) return "";
-  if (labels.length === 1) return labels[0];
-  if (labels.length === 2) return `${labels[0]} and ${labels[1]}`;
-  return `${labels.slice(0, -1).join(", ")}, and ${labels[labels.length - 1]}`;
-}
+/** GSM 03.38 basic set + basic-extension characters — the SMS-safe character set. */
+const GSM7_CHARS = new Set<string>([
+  ...'@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞ ÆæßÉ !"#¤%&\'()*+,-./0123456789:;<=>?',
+  ...'¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà',
+  ...'€[\\]^{|}~\n',
+]);
 
-function resolveTemplate(
-  template: string,
-  verticalId: VerticalId,
-  state: SessionState,
-): string {
-  return interpolateTemplate(template, verticalId, state)
-    .map((s: InterpolatedSegment) => s.text)
-    .join("");
-}
+const SINGLE_SEGMENT_GSM7 = 160;
 
 export interface ComplianceInput {
-  template: string;
-  verticalId: VerticalId;
-  variables: string[];
+  /** Message body in `{{token}}` format. */
+  body: string;
+  /** The message's category variable catalog. */
+  variables: Variable[];
+  /** True for Marketing-shaped categories — opt-out language is then required. */
   requiresStop: boolean;
-  state: SessionState;
 }
 
 export function checkCompliance({
-  template,
-  verticalId,
+  body,
   variables,
   requiresStop,
-  state,
 }: ComplianceInput): ComplianceResult {
-  const text = resolveTemplate(template, verticalId, state);
   const issues: string[] = [];
+  const segments = interpolateBody(body, variables);
+  const resolved = segments.map((s) => s.text).join("");
 
-  const hasStop = /stop/i.test(text);
-  const hasExitWord = /opt[- ]?out|unsubscribe/i.test(text);
-  if (requiresStop && !(hasStop && hasExitWord)) {
-    issues.push("Needs opt-out language");
+  if (resolved.length > SINGLE_SEGMENT_GSM7) {
+    issues.push("Too long for a single SMS segment");
   }
 
-  // Required variables: each declared {key} must still resolve in-text via
-  // its interpolated preview value.
-  const presentKeys = new Set(extractVariables(template));
-  const valueMap = getExampleValues(verticalId);
-  const missingLabels: string[] = [];
-  const seen = new Set<string>();
-  const lowered = text.toLowerCase();
-  for (const key of variables) {
-    const example = valueMap.get(key);
-    if (!example) continue;
-    if (!presentKeys.has(key)) {
-      // Variable removed from template entirely — its preview won't appear
-      if (!seen.has(example.label)) {
-        seen.add(example.label);
-        missingLabels.push(example.label);
-      }
-      continue;
-    }
-    const value = example.preview(state);
-    if (!value) continue;
-    if (!lowered.includes(value.toLowerCase()) && !seen.has(example.label)) {
-      seen.add(example.label);
-      missingLabels.push(example.label);
-    }
+  // GSM-7 applies only to author-controlled literal text — variable values are
+  // type-constrained at the SDK boundary and exempt (D-402).
+  const literal = segments
+    .filter((s) => !s.isVariable)
+    .map((s) => s.text)
+    .join("");
+  if ([...literal].some((ch) => !GSM7_CHARS.has(ch))) {
+    issues.push("Contains characters that aren't SMS-safe");
   }
-  if (missingLabels.length > 0) {
-    issues.push(`Needs ${joinLabels(missingLabels)}`);
+
+  if (requiresStop) {
+    const hasStop = /stop/i.test(resolved);
+    const hasExitWord = /opt[- ]?out|unsubscribe/i.test(resolved);
+    if (!(hasStop && hasExitWord)) {
+      issues.push("Needs opt-out language");
+    }
   }
 
   return { isCompliant: issues.length === 0, issues };

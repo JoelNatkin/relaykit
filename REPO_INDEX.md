@@ -6,10 +6,10 @@
 
 ## Meta
 
-- Last updated: 2026-05-17
+- Last updated: 2026-05-18
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 317 active, latest D-402; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: main; no unmerged feature branches (`feat/verification-message-authoring` merged + deleted this session)
+- Decision count: 319 active, latest D-404; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Branch state: `feat/configurator-one-corpus` — unmerged feature branch, 11 commits (Session 95 one-corpus wave + Session 96 four-fixes commit); pushed to origin, awaiting Joel's merge decision after a Vercel preview check. `main` otherwise clean.
 - Active explorations: None
 
 ## Active explorations
@@ -23,20 +23,20 @@ _No active explorations._
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-17 | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-18 | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-15 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-16 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
-| `DECISIONS.md` | 2026-05-17 | Active product decisions D-84+. |
+| `DECISIONS.md` | 2026-05-18 | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
 | `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` | 2026-04-27 | Archived REPO_INDEX change-log entries (Sessions 1–49 era). |
-| `PROTOTYPE_SPEC.md` | 2026-05-17 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
+| `PROTOTYPE_SPEC.md` | 2026-05-18 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-05-13 | Post-signup workspace architecture (state machine, layout systems). |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-17 (Session 94) | Previous CC session state (transient, overwritten each close-out). |
-| `BACKLOG.md` | 2026-05-17 | Parked ideas; never build without explicit promotion. |
+| `CC_HANDOFF.md` | 2026-05-18 (Session 96) | Previous CC session state (transient, overwritten each close-out). |
+| `BACKLOG.md` | 2026-05-18 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
 
@@ -48,7 +48,7 @@ _No active explorations._
 | `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Tier 1 project knowledge). |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-17 | AGENTS.md / cursor-rules research informing Phase 8; retires when Phase 8 closes. |
 | `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-04-30 | Sinch/TCR brand registration field reference (Experiment 3a capture). |
-| `PRODUCT_SUMMARY.md` | 2026-05-16 | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
+| `PRODUCT_SUMMARY.md` | 2026-05-18 | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
 | `LEGAL_DOC_DEFERRED_CLAIMS.md` | 2026-04-28 | Tracking doc for claims removed from `/marketing-site` legal docs pending feature ship, with restoration triggers. |
 | `PRE_LAUNCH_DEVIATIONS.md` | 2026-05-16 | Tracking doc for marketing-site pre-launch-posture copy/UI deviations, with per-entry pre-launch-only vs permanent classification and restoration triggers. |
 | `VERIFICATION_SPEC.md` | 2026-05-13 | Canonical OTP/verification feature surface (server, SDK, dashboard, onboarding); drives D-369/D-370/D-371. |
@@ -146,9 +146,9 @@ Early-access waitlist per MD-20 (DIY on Supabase + Resend over a hosted vendor),
 
 Modified: `app/layout.tsx` (WaitlistProvider + modal mount); `app/page.tsx`, `components/top-nav.tsx`, `components/configurator-section.tsx` (CTAs rewired to the modal; configurator publishes its selection summary up); `package.json` (`resend` dep); `.env.example` (`RESEND_API_KEY`). Pre-launch posture deviations tracked in `docs/PRE_LAUNCH_DEVIATIONS.md`. The modal was design-polished Session 91 (`feat/waitlist-modal-design`) — founder voice, category pills, simplified success state.
 
-## message-library (Session 91 scaffold; Session 94 Verification authoring)
+## message-library (Session 91 scaffold; Session 94 Verification authoring; Session 95 configurator integration)
 
-Wave 2 message-library — a typed corpus of SMS message templates organized by category. Scaffolded Session 91 on `feat/message-library-scaffold`; Session 94 extended the schema corpus-wide (tone variants, per-category variable catalogs, compliance blocks) and authored the first category, Verification, on `feat/verification-message-authoring` (merged to main). The other 8 categories remain empty stubs pending later authoring passes.
+Wave 2 message-library — a typed corpus of SMS message templates organized by category. Scaffolded Session 91 on `feat/message-library-scaffold`; Session 94 extended the schema corpus-wide (tone variants, per-category variable catalogs, compliance blocks) and authored the first category, Verification, on `feat/verification-message-authoring` (merged to main). The other 8 categories remain empty stubs pending later authoring passes. Session 95 (`feat/configurator-one-corpus`) added a category `description` field + a `Sub.tooltip` field, and made the home-page configurator consume the corpus directly (see "configurator" section below).
 
 | Path | Purpose |
 |------|---------|
@@ -156,8 +156,22 @@ Wave 2 message-library — a typed corpus of SMS message templates organized by 
 | `marketing-site/lib/message-library/shared-variables.ts` | Cross-corpus variable catalog (`SHARED_VARIABLES` — business_name, workspace_name, customer_name, first_name); categories import the entries they use. |
 | `marketing-site/lib/message-library/verification.ts` | Verification category — **populated** (Session 94): 4 subs / 4 messages / 12 tone variants, 3-variable catalog, 5-rule compliance block. |
 | `marketing-site/lib/message-library/[category].ts` | 8 remaining per-category typed stubs (appointments, order-updates, customer-support, marketing, team-alerts, community, waitlist, account-events) — empty subs/stages, empty `variables`/`compliance`. |
-| `marketing-site/lib/message-library/index.ts` | Barrel — re-exports the type system, `SHARED_VARIABLES`, and the 9 category consts. |
+| `marketing-site/lib/message-library/index.ts` | Barrel — re-exports the type system, `SHARED_VARIABLES`, render helpers, the 9 category consts, the ordered `CATEGORIES` list, and `categorySubs`/`isAuthored`. |
+| `marketing-site/lib/message-library/render.ts` | Corpus-native `{{token}}` rendering — `interpolateBody`, `extractTokens`, `flattenBody`, `resolveVariableExample`. |
 | `audits/research/2026-05-16/[category].md` | 9 per-category lead-magnet research files (PM-authored; §6-resolved Session 93). |
+
+## configurator one-corpus rewrite (Session 95)
+
+The home-page configurator (`marketing-site/components/configurator-section.tsx`) rewritten on `feat/configurator-one-corpus` to consume the message-library corpus directly — the inline `VERTICALS` array retired. Verification renders live with expandable sub-checkboxes; the 8 unauthored categories render disabled "Coming soon"; visitor selections persist in `localStorage` (`relaykit_configurator`); 6 PostHog conversion events instrumented. The card editor stack (`marketing-site/lib/editor/`) was migrated from single-brace `{key}` to the corpus `{{double-brace}}` syntax. PM decision in planning: visitor "+ Add message" custom messages kept (with a required Name field, matching the workspace authoring shape).
+
+| Path | Purpose |
+|------|---------|
+| `marketing-site/lib/configurator/use-configurator-state.ts` | `ConfiguratorState` + actions + `localStorage` persistence (key `relaykit_configurator`, version-gated, debounced). |
+| `marketing-site/lib/configurator/compliance.ts` | Corpus-aware best-effort compliance (single-segment length, GSM-7 charset, Marketing opt-out). |
+| `marketing-site/lib/configurator/session-context.tsx` | Holds the live `businessName` for variable previews. |
+| `marketing-site/components/configurator/message-edit-card.tsx` | Corpus message edit card — tone pills, "+ Variable", produces a sticky `MessageOverride`. |
+| `marketing-site/components/configurator/custom-message-card.tsx` | Visitor custom-message authoring card (Name + body + Variable picker). |
+| `marketing-site/components/configurator/{tooltip,coming-soon-badge,preset-dropdown}.tsx` | Leaf UI — 1.5s hover tooltip, "Coming soon" badge, reflective preset dropdown. |
 
 ## Subdirectories
 
