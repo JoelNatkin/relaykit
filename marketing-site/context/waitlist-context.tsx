@@ -19,9 +19,11 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
+import { usePostHog } from "posthog-js/react";
 
 export type CtaSource = "top-nav" | "mid-page" | "bottom";
 
@@ -64,16 +66,33 @@ interface WaitlistContextValue {
 const WaitlistContext = createContext<WaitlistContextValue | null>(null);
 
 export function WaitlistProvider({ children }: { children: ReactNode }) {
+  const posthog = usePostHog();
   const [isOpen, setIsOpen] = useState(false);
   const [ctaSource, setCtaSource] = useState<CtaSource | null>(null);
   const [summary, setSummaryState] = useState<WaitlistSummary>(
     DEFAULT_WAITLIST_SUMMARY,
   );
 
-  const openModal = useCallback((source: CtaSource) => {
-    setCtaSource(source);
-    setIsOpen(true);
-  }, []);
+  // Mirror the latest summary into a ref so the stable `openModal` callback
+  // can read a fresh configurator snapshot without re-creating itself.
+  const summaryRef = useRef(summary);
+  summaryRef.current = summary;
+
+  const openModal = useCallback(
+    (source: CtaSource) => {
+      const s = summaryRef.current;
+      posthog?.capture("early_access_clicked", {
+        categories_selected: s.categoriesSelected ?? [],
+        subs_selected: s.subsSelected ?? [],
+        tone_default: s.toneDefault ?? s.tone,
+        has_overrides: s.hasOverrides ?? false,
+        source,
+      });
+      setCtaSource(source);
+      setIsOpen(true);
+    },
+    [posthog],
+  );
 
   const closeModal = useCallback(() => {
     setIsOpen(false);

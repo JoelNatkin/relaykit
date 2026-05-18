@@ -1,7 +1,8 @@
 "use client";
 
 import { Copy01, Edit01, Plus } from "@untitledui/icons";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { usePostHog } from "posthog-js/react";
 import { MessageEditCard } from "@/components/configurator/message-edit-card";
 import { CustomMessageCard } from "@/components/configurator/custom-message-card";
 import { Tooltip } from "@/components/configurator/tooltip";
@@ -151,6 +152,29 @@ export function ConfiguratorSection() {
   const [copyToastVisible, setCopyToastVisible] = useState(false);
 
   const { openModal, setSummary } = useWaitlist();
+  const posthog = usePostHog();
+  // Message ids that have already fired `configurator_message_customized` —
+  // the event fires once per message per session, on first override.
+  const customizedFiredRef = useRef<Set<string>>(new Set());
+
+  function handleCategoryToggle(categoryId: string) {
+    const wasChecked = !!state.categories[categoryId]?.checked;
+    toggleCategory(categoryId);
+    posthog?.capture("configurator_category_toggled", {
+      category_id: categoryId,
+      action: wasChecked ? "unchecked" : "checked",
+    });
+  }
+
+  function handleSubToggle(categoryId: string, subId: string) {
+    const wasChecked = !!state.categories[categoryId]?.subs[subId]?.checked;
+    toggleSub(categoryId, subId);
+    posthog?.capture("configurator_sub_toggled", {
+      category_id: categoryId,
+      sub_id: subId,
+      action: wasChecked ? "unchecked" : "checked",
+    });
+  }
 
   const checkedCategories = useMemo(
     () => CATEGORIES.filter((c) => state.categories[c.id]?.checked),
@@ -257,6 +281,12 @@ export function ConfiguratorSection() {
       return;
     }
     setCopyToastVisible(true);
+    posthog?.capture("configurator_copy_clicked", {
+      categories_selected: waitlistSummary.categoriesSelected ?? [],
+      subs_selected: waitlistSummary.subsSelected ?? [],
+      tone_default: state.pageTone,
+      has_overrides: anyOverride,
+    });
   }
 
   return (
@@ -305,7 +335,7 @@ export function ConfiguratorSection() {
                     {authored ? (
                       <button
                         type="button"
-                        onClick={() => toggleCategory(category.id)}
+                        onClick={() => handleCategoryToggle(category.id)}
                         className="flex w-full items-start gap-3 text-left"
                       >
                         <input
@@ -361,7 +391,7 @@ export function ConfiguratorSection() {
                             >
                               <button
                                 type="button"
-                                onClick={() => toggleSub(category.id, sub.id)}
+                                onClick={() => handleSubToggle(category.id, sub.id)}
                                 className="flex w-full items-start gap-2.5 text-left"
                               >
                                 <input
@@ -468,6 +498,22 @@ export function ConfiguratorSection() {
                                       message.id,
                                       ov,
                                     );
+                                    const key = `${category.id}/${sub.id}/${message.id}`;
+                                    if (!customizedFiredRef.current.has(key)) {
+                                      customizedFiredRef.current.add(key);
+                                      posthog?.capture(
+                                        "configurator_message_customized",
+                                        {
+                                          category_id: category.id,
+                                          sub_id: sub.id,
+                                          message_id: message.id,
+                                          customization_type:
+                                            ov.tone === "Custom"
+                                              ? "custom_text"
+                                              : "variant_change",
+                                        },
+                                      );
+                                    }
                                     setEditTarget(null);
                                   }}
                                   onCancel={() => setEditTarget(null)}
@@ -548,6 +594,14 @@ export function ConfiguratorSection() {
                             onEditRequest={() => {}}
                             onSave={(next) => {
                               addCustomMessage(category.id, next);
+                              posthog?.capture(
+                                "configurator_custom_message_added",
+                                {
+                                  category_id: category.id,
+                                  body_length: next.body.length,
+                                  has_name: next.name.trim() !== "",
+                                },
+                              );
                               setEditTarget(null);
                             }}
                             onCancel={() => setEditTarget(null)}
