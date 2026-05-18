@@ -164,23 +164,27 @@
    mappings flip. The .dark block matches @theme specificity and wins by
    source order. */
 .dark {
-  /* TEXT */
+  /* TEXT — every non-headline tier (secondary/tertiary/quaternary,
+     placeholder, brand-secondary/tertiary, variable) sits one Gray Warm
+     step lighter than its naive mirror, for dark-mode readability.
+     text-primary / text-brand-primary (headlines) and text-disabled are
+     left as-is. */
   --color-text-primary: var(--color-brand-50);
-  --color-text-secondary: var(--color-brand-400);
-  --color-text-secondary_hover: var(--color-brand-300);
-  --color-text-tertiary: var(--color-brand-500);
-  --color-text-tertiary_hover: var(--color-brand-400);
-  --color-text-quaternary: var(--color-brand-500);
+  --color-text-secondary: var(--color-brand-300);
+  --color-text-secondary_hover: var(--color-brand-200);
+  --color-text-tertiary: var(--color-brand-400);
+  --color-text-tertiary_hover: var(--color-brand-300);
+  --color-text-quaternary: var(--color-brand-400);
   --color-text-disabled: var(--color-brand-600);
-  --color-text-placeholder: var(--color-brand-500);
-  --color-text-placeholder_subtle: var(--color-brand-700);
+  --color-text-placeholder: var(--color-brand-400);
+  --color-text-placeholder_subtle: var(--color-brand-600);
   --color-text-brand-primary: var(--color-brand-50);
-  --color-text-brand-secondary: var(--color-brand-400);
-  --color-text-brand-tertiary: var(--color-brand-400);
+  --color-text-brand-secondary: var(--color-brand-300);
+  --color-text-brand-tertiary: var(--color-brand-300);
   --color-text-error-primary: var(--color-error-300);
   --color-text-warning-primary: var(--color-warning-500);
   --color-text-success-primary: var(--color-success-500);
-  --color-text-variable: var(--color-brand-300);
+  --color-text-variable: var(--color-brand-200);
 
   /* BORDER */
   --color-border-primary: var(--color-brand-700);
