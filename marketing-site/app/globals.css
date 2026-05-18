@@ -142,7 +142,7 @@
 
   /* Code-block surface — distinct from bg-primary-solid so the home-page
      CodeSample stays inverted (dark surface, light text) in both themes. */
-  --color-bg-code-surface: var(--color-brand-950);
+  --color-bg-code-surface: var(--color-brand-900);
 
   /* FEATURED ICON COLORS */
   --color-featured-icon-light-fg-brand: var(--color-gray-600);
@@ -218,12 +218,14 @@
   --color-bg-secondary-solid: var(--color-brand-300);
   --color-bg-brand-primary: var(--color-brand-950);
   --color-bg-brand-secondary: var(--color-brand-900);
-  /* Lifted/actionable surface — one value step above bg-primary
-     (#13120E), same warm family. Hover lifts one step further. */
-  --color-bg-brand-solid: rgb(31 29 23);
-  --color-bg-brand-solid_hover: rgb(38 35 28);
-  --color-bg-brand-cta: rgb(31 29 23);
-  --color-bg-brand-cta_hover: rgb(38 35 28);
+  /* Lifted/actionable surface — solid buttons, the CTA, selected pills,
+     checked checkboxes. A barely-perceptible value lift from bg-primary
+     (#13120E): brand-900 is the bg-secondary panel tone. Hover lifts one
+     gentle step further. Identified by the lift, never by hue. */
+  --color-bg-brand-solid: var(--color-brand-900);
+  --color-bg-brand-solid_hover: rgb(31 29 23);
+  --color-bg-brand-cta: var(--color-brand-900);
+  --color-bg-brand-cta_hover: rgb(31 29 23);
   --color-bg-error-primary: var(--color-error-700);
   --color-bg-error-secondary: var(--color-error-700);
   --color-bg-error-solid: var(--color-error-500);
@@ -235,7 +237,7 @@
   --color-bg-success-solid: var(--color-success-500);
 
   /* Code-block surface stays the warm near-black in dark mode too. */
-  --color-bg-code-surface: var(--color-brand-950);
+  --color-bg-code-surface: var(--color-brand-900);
 
   /* FEATURED ICON */
   --color-featured-icon-light-fg-brand: var(--color-gray-400);
