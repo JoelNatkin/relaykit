@@ -22,7 +22,8 @@
   --color-brand-700: rgb(68 64 60);
   --color-brand-800: rgb(41 37 36);
   --color-brand-900: rgb(28 25 23);
-  --color-brand-950: rgb(23 20 18);
+  /* brand-950 customized from Untitled UI Gray Warm #171412 to #13120E for a slightly deeper page bg */
+  --color-brand-950: rgb(19 18 14);
 
   /* GRAY — mirrors brand-*. Both names resolve to the same canonical
      Gray Warm scale, so any utility (brand-* or gray-*) stays consistent.
