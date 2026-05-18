@@ -1,5 +1,5 @@
 ---
-title: "Adding text messages to your app shouldn't take a month"
+title: "Adding texts to your app is a month-long trap"
 slug: "adding-text-messages-to-your-app-shouldnt-take-a-month"
 date: "2026-05-15"
 cluster: "compliance-registration"
@@ -8,22 +8,20 @@ status: "published"
 description: "What sending a text from your app actually requires — and why most providers leave indie builders to figure it out alone."
 ---
 
-If you've ever tried to add text messages to your app -- verification codes, appointment reminders, anything -- you've probably hit the same wall: weeks of waiting before you can send a single one. Vague rejections. A monthly bill running before anything ships.
+If you've tried to add text messages to your app, you've hit this wall. There's a registration system. Page after page of confusing forms. Weeks of waiting, vague rejections, a subscription running.
 
-The real cost is 3-6 weeks of wall-clock time. For an indie founder whose paying users need verification codes to log in or reminders before appointments, that's the difference between shipping a feature and watching customers cancel while you wait for paperwork to clear.
+Worse than the bill is the not-knowing — a rejection comes back with one line that doesn't say what to fix, you guess, you resubmit, you wait another week. For an indie founder shipping to paying users, three to six weeks of that is the difference between a feature launching and customers canceling.
 
-You'd think the providers would handle this -- Twilio is the biggest, with Plivo, Sinch, and Vonage as the major alternatives. They're the companies that sit between your code and the phone network. Their whole job is to make sending text messages from an app possible: they give you an API, they handle the delivery, they bill you per message.
+You'd think the providers would help you with this but they don't. Twilio is the biggest; Plivo, Sinch, and Vonage are the alternatives. They sit between your code and the phone network — API, delivery, per-message billing.
 
-What they don't do is shield you from what's underneath them.
+Underneath them are the US mobile carriers — AT&T, Verizon, T-Mobile — who read your forms and decide whether you get to send texts or not. Rejections come back through your provider with a one-line reason that doesn't say what to fix, and that's where things spiral out.
 
-What's underneath them is the US mobile phone carriers (AT&T, Verizon, T-Mobile), who decide which businesses get to send text messages to their customers and which don't. There's a whole registration system. Forms long enough to make a tax return look friendly. Rejections that come back with a one-line reason that doesn't say what to fix.
+The providers know this. They build for enterprise customers — Uber, Doordash, Stripe — who have compliance teams and legal departments. Indie builders showing up to Twilio get handed the same forms Uber's compliance team gets. They struggle alone and many give up.
 
-The providers know this. They built their products for enterprise customers -- Uber, Doordash, Stripe -- who have their own compliance teams and legal departments to navigate the bureaucracy. Indie builders showing up to Twilio are stepping into a product not designed for them. They get handed the same forms Uber's compliance team gets handed. They struggle alone. Most give up.
+The difference between weeks and days isn't which provider you pick. It's whether the path through registration is mapped — what carriers approve, what they reject, which campaign type to file, what each form field really wants.
 
-The difference between weeks and days isn't which provider you picked. It's whether someone has done the work of figuring out what the carriers actually want. Most providers don't. They hand you the forms and let you find out the hard way.
+That's RelayKit. You sign up, start building against a test environment that sends real texts to your phone, and we get you registered in 3-5 days while you're already shipping. No month-long wait before the first line of code.
 
-You shouldn't have to know any of this. You shouldn't have to learn what a "campaign tier" is or why one carrier rejects what another approves. You should be able to describe your app, click a button, and send a text.
+If you don't want a month of your life disappearing into carrier paperwork — relaykit.ai.
 
-The reason that hasn't existed is nobody's done the work of mapping the bureaucracy for indie builders. That's what I'm building. If you're adding messages to your app and don't want a month of your life disappearing into carrier paperwork -- relaykit.ai.
-
--- Joel
+— Joel
