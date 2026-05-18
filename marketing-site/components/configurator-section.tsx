@@ -657,7 +657,7 @@ export function ConfiguratorSection() {
                 })}
               </div>
 
-              <div className="mt-auto pt-8">
+              <div className="mt-10">
                 {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
                 <p className="text-sm text-text-secondary">
                   Pre-launch. The messages above are yours — copy them and use them

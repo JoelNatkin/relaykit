@@ -1,5 +1,6 @@
 "use client";
 
+import { Moon01, Sun } from "@untitledui/icons";
 import Link from "next/link";
 import { useWaitlist } from "@/context/waitlist-context";
 import { useTheme } from "@/lib/use-theme";
@@ -7,11 +8,9 @@ import { useTheme } from "@/lib/use-theme";
 export function TopNav() {
   const { theme, toggle } = useTheme();
   const { openModal } = useWaitlist();
-  // Label names the target state (what the click will switch to). Until
-  // the hook reports a real theme post-mount, render a non-breaking
-  // space to reserve layout width without flashing wrong copy.
-  const targetLabel = theme === null ? " " : theme === "dark" ? "Light mode" : "Dark mode";
-  const ariaLabel =
+  // Names the action the click performs (the target state), not the current
+  // state. Pre-mount the theme is unknown, so use a neutral label.
+  const actionLabel =
     theme === null
       ? "Toggle color theme"
       : theme === "dark"
@@ -31,10 +30,17 @@ export function TopNav() {
           <button
             type="button"
             onClick={toggle}
-            aria-label={ariaLabel}
-            className="cursor-pointer text-sm font-medium text-text-tertiary transition-colors duration-100 ease-linear hover:text-text-primary"
+            aria-label={actionLabel}
+            title={actionLabel}
+            className="flex size-9 cursor-pointer items-center justify-center rounded-lg text-text-tertiary transition-colors duration-100 ease-linear hover:bg-bg-primary_hover hover:text-text-primary"
           >
-            {targetLabel}
+            {theme === null ? (
+              <span className="size-5" aria-hidden />
+            ) : theme === "dark" ? (
+              <Moon01 className="size-5" />
+            ) : (
+              <Sun className="size-5" />
+            )}
           </button>
           <button
             type="button"

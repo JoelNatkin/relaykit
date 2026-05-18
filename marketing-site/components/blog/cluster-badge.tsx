@@ -11,7 +11,7 @@ export function ClusterBadge({ slug }: { slug: ClusterSlug }) {
   return (
     <Link
       href={`/blog/cluster/${slug}`}
-      className="inline-flex items-center rounded-full bg-bg-brand-secondary px-2.5 py-0.5 text-xs font-medium text-text-brand-secondary transition duration-100 ease-linear hover:bg-bg-brand-primary"
+      className="inline-flex items-center rounded-full bg-bg-brand-secondary px-3.5 py-1.5 text-xs font-medium text-text-brand-secondary transition duration-100 ease-linear hover:bg-bg-brand-primary"
     >
       {cluster.name}
     </Link>
