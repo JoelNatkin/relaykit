@@ -8,8 +8,8 @@
 
 - Last updated: 2026-05-18
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 318 active, latest D-403; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: `feat/configurator-one-corpus` — unmerged feature branch, 10 commits (9-commit configurator one-corpus wave + close-out); pushed to origin, awaiting Joel's merge decision after a Vercel preview check. `main` otherwise clean.
+- Decision count: 319 active, latest D-404; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Branch state: `feat/configurator-one-corpus` — unmerged feature branch, 11 commits (Session 95 one-corpus wave + Session 96 four-fixes commit); pushed to origin, awaiting Joel's merge decision after a Vercel preview check. `main` otherwise clean.
 - Active explorations: None
 
 ## Active explorations
@@ -35,7 +35,7 @@ _No active explorations._
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-18 (Session 95) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-18 (Session 96) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-18 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)

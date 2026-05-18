@@ -63,6 +63,8 @@ export interface Message {
   /** Variable names (referencing the category catalog) used across this message's variants. */
   variables: string[];
   variants: MessageVariant[];
+  /** Short hover-tooltip copy surfaced on the configurator message card title. */
+  tooltip?: string;
 }
 
 /** Category-level authoring rules surfaced to authors and the future editor compliance gate. */

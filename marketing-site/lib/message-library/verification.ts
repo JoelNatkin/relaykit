@@ -57,6 +57,7 @@ export const VERIFICATION: DiscreteCategory = {
         {
           id: "verification-code",
           name: "Verification code",
+          tooltip: "Sent when a user verifies their phone at signup.",
           variables: ["business_name", "code", "expiry_minutes"],
           variants: [
             {
@@ -89,6 +90,8 @@ export const VERIFICATION: DiscreteCategory = {
         {
           id: "confirmation-code",
           name: "Confirmation code",
+          tooltip:
+            "Sent before a sensitive action — withdrawal, payment change, ownership transfer.",
           variables: ["business_name", "code", "expiry_minutes"],
           variants: [
             {
@@ -120,6 +123,7 @@ export const VERIFICATION: DiscreteCategory = {
         {
           id: "recovery-code",
           name: "Recovery code",
+          tooltip: "Sent when a user recovers an account they're locked out of.",
           variables: ["business_name", "code", "expiry_minutes"],
           variants: [
             {
@@ -152,6 +156,7 @@ export const VERIFICATION: DiscreteCategory = {
         {
           id: "login-code",
           name: "Login code",
+          tooltip: "Sent when a user logs in with SMS as a second factor.",
           variables: ["business_name", "code", "expiry_minutes"],
           variants: [
             {

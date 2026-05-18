@@ -1792,3 +1792,15 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Rejected alternative:** Custom messages as a throwaway home-page sandbox preview, discarded at signup.
 
 **Supersedes:** none
+
+## D-404 — Configurator Copy button outputs combined per-message blocks
+
+**Decided:** 2026-05-18 (Session 96)
+
+**Decision:** The marketing-site home-page configurator's Copy button outputs, for each visible message in the active tone (respecting per-card overrides), a block of four fields: title, description, a personalized example, and the raw template. The template preserves `{{double_brace}}` variable tokens; the example substitutes the visitor's typed business name (falling back to "Acme"). Visitor-authored custom messages are included (title from the Name field; no description line). Blocks are plain-text and markdown-friendly, separated by `---`. One copy reflects one tone — switching the tone toggle and re-copying is the path to all three.
+
+**Why:** The copied output is a first-touch authoring artifact, not a throwaway preview — it carries the template+example pairing a developer needs to wire messages with any provider, and aligns with D-403 (configurator custom messages carry forward into the workspace). Title + description preserve each message's identity so the paste is self-describing.
+
+**Rejected alternative:** Copy outputs only the rendered message bodies with values substituted (the pre-rewrite behavior) — loses the reusable template and the message's identity.
+
+**Supersedes:** none

@@ -6,11 +6,12 @@
  * is overridden, the page-level tone toggle no longer drives it.
  */
 
-import { Plus } from "@untitledui/icons";
+import { HelpCircle, Plus } from "@untitledui/icons";
 import type { Editor } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import { MessageEditor } from "@/lib/editor/message-editor";
 import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
+import { Tooltip } from "@/components/configurator/tooltip";
 import { useSession } from "@/lib/configurator/session-context";
 import { checkCompliance } from "@/lib/configurator/compliance";
 import type { MessageOverride, OverrideTone } from "@/lib/configurator/use-configurator-state";
@@ -144,9 +145,16 @@ export function MessageEditCard({
   return (
     <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
       <div className="flex items-center gap-3">
-        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">
-          {message.name}
-        </span>
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          <span className="min-w-0 truncate text-sm font-semibold text-text-primary">
+            {message.name}
+          </span>
+          {message.tooltip ? (
+            <Tooltip content={message.tooltip}>
+              <HelpCircle className="size-3.5 shrink-0 text-fg-quaternary" />
+            </Tooltip>
+          ) : null}
+        </div>
         <span className="flex flex-shrink-0 items-center gap-1.5 p-1 text-fg-quaternary">
           <PencilIcon />
           <span className="text-sm">Edit</span>

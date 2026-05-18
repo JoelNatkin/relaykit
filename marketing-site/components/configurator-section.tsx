@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy01, Edit01, Plus } from "@untitledui/icons";
+import { Copy01, Edit01, HelpCircle, Plus } from "@untitledui/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePostHog } from "posthog-js/react";
 import { MessageEditCard } from "@/components/configurator/message-edit-card";
@@ -72,8 +72,23 @@ function effectiveBody(
   return v?.body ?? "";
 }
 
+/**
+ * One Copy-output block for a message: title, optional description, the
+ * personalized example, and the raw {{token}} template. Joined by `---`.
+ */
+function buildCopyBlock(
+  title: string,
+  description: string | undefined,
+  example: string,
+  template: string,
+): string {
+  const head = description ? `${title}\n${description}` : title;
+  return `${head}\n\nExample\n${example}\n\nTemplate\n${template}`;
+}
+
 interface MessageReadCardProps {
   name: string;
+  tooltip?: string;
   body: string;
   variables: Category["variables"];
   businessName: string;
@@ -82,6 +97,7 @@ interface MessageReadCardProps {
 
 function MessageReadCard({
   name,
+  tooltip,
   body,
   variables,
   businessName,
@@ -91,9 +107,16 @@ function MessageReadCard({
   return (
     <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
       <div className="flex items-center gap-3">
-        <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">
-          {name}
-        </span>
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          <span className="min-w-0 truncate text-sm font-semibold text-text-primary">
+            {name}
+          </span>
+          {tooltip ? (
+            <Tooltip content={tooltip}>
+              <HelpCircle className="size-3.5 shrink-0 text-fg-quaternary" />
+            </Tooltip>
+          ) : null}
+        </div>
         <button
           type="button"
           onClick={onEdit}
@@ -257,24 +280,33 @@ export function ConfiguratorSection() {
   }, [copyToastVisible]);
 
   async function handleCopy() {
-    const lines: string[] = [];
+    // Each visible message becomes a block: title, description, the
+    // personalized example, and the raw {{token}} template — in the active
+    // tone, respecting per-card overrides. Custom messages are included.
+    const blocks: string[] = [];
     for (const cat of checkedCategories) {
       const catState = state.categories[cat.id];
-      lines.push(cat.name);
       for (const sub of categorySubs(cat)) {
         if (!catState.subs[sub.id]?.checked) continue;
         for (const message of sub.messages) {
           const override = catState.subs[sub.id].messages[message.id]?.override;
-          const body = effectiveBody(message, override, state.pageTone);
-          lines.push(flattenBody(body, cat.variables, state.businessName));
+          const template = effectiveBody(message, override, state.pageTone);
+          const example = flattenBody(
+            template,
+            cat.variables,
+            state.businessName,
+          );
+          blocks.push(
+            buildCopyBlock(message.name, message.tooltip, example, template),
+          );
         }
       }
       for (const cm of catState.customMessages) {
-        lines.push(flattenBody(cm.body, cat.variables, state.businessName));
+        const example = flattenBody(cm.body, cat.variables, state.businessName);
+        blocks.push(buildCopyBlock(cm.name, undefined, example, cm.body));
       }
-      lines.push("");
     }
-    const text = lines.join("\n").trim();
+    const text = blocks.join("\n\n---\n\n");
     try {
       await navigator.clipboard.writeText(text);
     } catch {
@@ -305,12 +337,9 @@ export function ConfiguratorSection() {
 
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[3fr_7fr]">
             {/* Categories panel */}
-            <div className="overflow-hidden rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
+            <div className="rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
               <div className="px-4 pt-5 pb-3">
                 <h3 className="text-base font-semibold text-text-primary">Categories</h3>
-                <p className="mt-2 text-xs text-text-tertiary">
-                  All categories included in $19/mo. Marketing adds $10/mo when you go live.
-                </p>
                 <div className="mt-4">
                   <p className="mb-1.5 text-sm font-medium text-text-secondary">
                     Recommended combinations
@@ -524,6 +553,7 @@ export function ConfiguratorSection() {
                               <MessageReadCard
                                 key={`${sub.id}-${message.id}`}
                                 name={message.name}
+                                tooltip={message.tooltip}
                                 body={effectiveBody(
                                   message,
                                   override,
