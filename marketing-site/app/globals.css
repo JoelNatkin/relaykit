@@ -3,39 +3,45 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* BASE COLORS */
+  /* BASE COLORS — kept pure. `white` backs `text-white`, which must stay
+     crisp; warm-tinting near-white text reads as murky. */
   --color-white: rgb(255 255 255);
   --color-black: rgb(0 0 0);
 
-  /* BRAND */
-  --color-brand-25: rgb(252 250 255);
-  --color-brand-50: rgb(249 245 255);
-  --color-brand-100: rgb(244 235 255);
-  --color-brand-200: rgb(233 215 254);
-  --color-brand-300: rgb(214 187 251);
-  --color-brand-400: rgb(182 146 246);
-  --color-brand-500: rgb(158 119 237);
-  --color-brand-600: rgb(127 86 217);
-  --color-brand-700: rgb(105 65 198);
-  --color-brand-800: rgb(83 56 158);
-  --color-brand-900: rgb(66 48 125);
-  --color-brand-950: rgb(44 28 95);
+  /* BRAND — warm monochrome accent scale (hue family of #13120E, the dark
+     page background). A mid-chroma warm tan: enough chroma to read as an
+     accent, same hue as the neutral scale. Replaces the prior purple scale
+     (D-404-era pivot). Value, not hue, separates accent from neutral. */
+  --color-brand-25: rgb(250 246 237);
+  --color-brand-50: rgb(243 236 219);
+  --color-brand-100: rgb(232 222 198);
+  --color-brand-200: rgb(216 201 165);
+  --color-brand-300: rgb(201 184 149);
+  --color-brand-400: rgb(181 164 138);
+  --color-brand-500: rgb(168 152 118);
+  --color-brand-600: rgb(140 125 92);
+  --color-brand-700: rgb(107 93 66);
+  --color-brand-800: rgb(90 79 56);
+  --color-brand-900: rgb(61 53 40);
+  --color-brand-950: rgb(42 36 25);
 
-  /* GRAY */
-  --color-gray-25: rgb(253 253 253);
-  --color-gray-50: rgb(250 250 250);
-  --color-gray-100: rgb(245 245 245);
-  --color-gray-200: rgb(233 234 235);
-  --color-gray-300: rgb(213 215 218);
-  --color-gray-400: rgb(164 167 174);
-  --color-gray-500: rgb(113 118 128);
-  --color-gray-600: rgb(83 88 98);
-  --color-gray-700: rgb(65 70 81);
-  --color-gray-800: rgb(37 43 55);
-  --color-gray-900: rgb(24 29 39);
-  --color-gray-950: rgb(10 13 18);
+  /* GRAY — warm-neutral structural scale (same hue as brand, minimal
+     chroma). Backs every background, border, and text token. gray-950 is
+     #13120E, the warm near-black anchor; gray-25 is the warm off-white. */
+  --color-gray-25: rgb(250 248 243);
+  --color-gray-50: rgb(246 243 236);
+  --color-gray-100: rgb(239 235 225);
+  --color-gray-200: rgb(228 222 208);
+  --color-gray-300: rgb(211 203 184);
+  --color-gray-400: rgb(173 163 142);
+  --color-gray-500: rgb(125 116 97);
+  --color-gray-600: rgb(94 87 71);
+  --color-gray-700: rgb(70 64 51);
+  --color-gray-800: rgb(37 34 24);
+  --color-gray-900: rgb(27 25 20);
+  --color-gray-950: rgb(19 18 14);
 
-  /* ERROR */
+  /* ERROR — semantic, NOT warm-shifted (reads as meaning, not aesthetic) */
   --color-error-50: rgb(254 243 242);
   --color-error-100: rgb(254 228 226);
   --color-error-300: rgb(253 162 155);
@@ -43,14 +49,14 @@
   --color-error-600: rgb(217 45 32);
   --color-error-700: rgb(180 35 24);
 
-  /* WARNING */
+  /* WARNING — semantic, NOT warm-shifted */
   --color-warning-50: rgb(255 250 235);
   --color-warning-100: rgb(254 240 199);
   --color-warning-500: rgb(247 144 9);
   --color-warning-600: rgb(220 104 3);
   --color-warning-700: rgb(181 71 8);
 
-  /* SUCCESS */
+  /* SUCCESS — semantic, NOT warm-shifted */
   --color-success-50: rgb(236 253 243);
   --color-success-100: rgb(220 250 230);
   --color-success-500: rgb(23 178 106);
@@ -74,6 +80,11 @@
   --color-text-warning-primary: var(--color-warning-600);
   --color-text-success-primary: var(--color-success-600);
   --color-text-white: var(--color-white);
+  /* Text on a solid brand surface (brand-solid buttons, the CTA). The warm
+     accents are light enough that they need a dark warm foreground in dark
+     mode and a warm-light one in light mode — pure white would be too low
+     contrast on the dark-mode tan. */
+  --color-text-on-brand: var(--color-gray-25);
 
   /* SEMANTIC BORDER COLORS */
   --color-border-primary: var(--color-gray-300);
@@ -100,7 +111,7 @@
   --color-fg-success-secondary: var(--color-success-500);
 
   /* SEMANTIC BACKGROUND COLORS */
-  --color-bg-primary: var(--color-white);
+  --color-bg-primary: var(--color-gray-25);
   --color-bg-primary_hover: var(--color-gray-50);
   --color-bg-secondary: var(--color-gray-50);
   --color-bg-secondary_hover: var(--color-gray-100);
@@ -114,8 +125,12 @@
   --color-bg-secondary-solid: var(--color-gray-700);
   --color-bg-brand-primary: var(--color-brand-50);
   --color-bg-brand-secondary: var(--color-brand-100);
-  --color-bg-brand-solid: var(--color-brand-600);
-  --color-bg-brand-solid_hover: var(--color-brand-700);
+  --color-bg-brand-solid: var(--color-brand-900);
+  --color-bg-brand-solid_hover: var(--color-brand-800);
+  /* Primary conversion CTA ("Get early access"). Distinct from
+     brand-solid: brighter in dark mode so the call to action carries. */
+  --color-bg-brand-cta: var(--color-brand-900);
+  --color-bg-brand-cta_hover: var(--color-brand-800);
   --color-bg-error-primary: var(--color-error-50);
   --color-bg-error-secondary: var(--color-error-100);
   --color-bg-error-solid: var(--color-error-600);
@@ -144,8 +159,8 @@
 
 /* ── Dark mode token overrides ──
    Re-points semantic tokens to dark-appropriate values from the same
-   gray/brand palette. Base palette (--color-gray-*, --color-brand-*) is
-   not redeclared — only the semantic mappings flip. Tailwind v4 emits
+   warm gray/brand palette. Base palette (--color-gray-*, --color-brand-*)
+   is not redeclared — only the semantic mappings flip. Tailwind v4 emits
    --color-* custom properties at :root via @theme; this .dark block has
    matching specificity and wins by source order. */
 .dark {
@@ -165,6 +180,7 @@
   --color-text-error-primary: var(--color-error-300);
   --color-text-warning-primary: var(--color-warning-500);
   --color-text-success-primary: var(--color-success-500);
+  --color-text-on-brand: var(--color-gray-950);
 
   /* BORDER */
   --color-border-primary: var(--color-gray-700);
@@ -207,6 +223,8 @@
   --color-bg-brand-secondary: var(--color-brand-900);
   --color-bg-brand-solid: var(--color-brand-500);
   --color-bg-brand-solid_hover: var(--color-brand-400);
+  --color-bg-brand-cta: var(--color-brand-300);
+  --color-bg-brand-cta_hover: var(--color-brand-200);
   --color-bg-error-primary: var(--color-error-700);
   --color-bg-error-secondary: var(--color-error-700);
   --color-bg-error-solid: var(--color-error-500);
@@ -217,8 +235,9 @@
   --color-bg-success-secondary: var(--color-success-700);
   --color-bg-success-solid: var(--color-success-500);
 
-  /* Code-block surface stays gray-950 in dark mode too — intentional
-     theme-invariant value (see light-mode block for rationale). */
+  /* Code-block surface stays the warm near-black in dark mode too —
+     intentional theme-invariant value (see light-mode block for
+     rationale). */
   --color-bg-code-surface: var(--color-gray-950);
 
   /* FEATURED ICON */
