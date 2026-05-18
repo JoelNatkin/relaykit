@@ -41,7 +41,7 @@ export function VerifyForm() {
       <button
         type="submit"
         disabled={pending}
-        className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:opacity-60"
+        className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:opacity-60"
       >
         {pending ? "Submitting…" : "Send verification code"}
       </button>

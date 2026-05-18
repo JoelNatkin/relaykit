@@ -671,7 +671,7 @@ export function ConfiguratorSection() {
                 <button
                   type="button"
                   onClick={() => openModal("mid-page")}
-                  className="mt-4 flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                  className="mt-4 flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
                 >
                   Get early access
                 </button>
