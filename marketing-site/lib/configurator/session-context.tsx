@@ -1,22 +1,16 @@
 "use client";
 
 /**
- * Marketing-side equivalent of the prototype's session context. Holds the
- * configurator's user-input state ({businessName, website}) so variable
- * tokens can resolve their preview values during render. Mirrors the
- * shape of `prototype/context/session-context.tsx` for the subset
- * relevant to the message editor.
- *
- * Parity expectation: the configurator section feeds this context with
- * the trimmed, defaulted user-input values; variable-node-view consumes
- * it identically to the prototype.
+ * Holds the configurator's live `businessName` input so variable tokens can
+ * resolve their preview value during render (the Tiptap `business_name` chip
+ * in particular). Kept as context rather than prop-drilled so the editor's
+ * nested NodeView can reach it.
  */
 
 import { createContext, useContext, type ReactNode } from "react";
 
 export interface SessionState {
   businessName: string;
-  website: string;
 }
 
 const SessionContext = createContext<SessionState | null>(null);

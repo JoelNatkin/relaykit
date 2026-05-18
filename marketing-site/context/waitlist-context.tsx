@@ -22,27 +22,32 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { ToneId } from "@/lib/configurator/types";
 
 export type CtaSource = "top-nav" | "mid-page" | "bottom";
 
 export interface WaitlistSummary {
   /** Human-readable category titles, e.g. ["Verification", "Appointments"]. */
   categoryTitles: string[];
-  tone: ToneId;
+  tone: string;
   businessName: string;
   configuratorTouched: boolean;
+  /** Extended configurator snapshot — additive, populated only when a
+   *  configurator is mounted. Consumed by the `early_access_clicked` event. */
+  categoriesSelected?: string[];
+  subsSelected?: string[];
+  toneDefault?: string;
+  hasOverrides?: boolean;
 }
 
 /**
- * Reproduces the configurator's untouched defaults (pack `verification-only`
- * → selected `{verification}`, tone `standard`, no business name). Used on
- * every page that has no configurator mounted, so the modal still shows a
- * correct "You're interested in: Verification".
+ * Reproduces the configurator's untouched defaults (Verification + its primary
+ * sub selected, tone Standard, no business name). Used on every page that has
+ * no configurator mounted, so the modal still shows a correct
+ * "Live at launch: Verification".
  */
 export const DEFAULT_WAITLIST_SUMMARY: WaitlistSummary = {
   categoryTitles: ["Verification"],
-  tone: "standard",
+  tone: "Standard",
   businessName: "",
   configuratorTouched: false,
 };
