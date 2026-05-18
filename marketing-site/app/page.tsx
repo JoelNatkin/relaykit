@@ -64,7 +64,7 @@ export default function MarketingHome() {
       <div className="pt-16">
         <div className="mx-auto max-w-5xl px-6">
           {/* PRE-LAUNCH (2026-05-15): temporary pre-launch tag — remove this element when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-brand-secondary">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-quaternary">
             PRE-LAUNCH · SHIPPING SUMMER 2026
           </p>
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">

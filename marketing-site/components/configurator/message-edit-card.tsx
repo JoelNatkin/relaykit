@@ -194,7 +194,7 @@ export function MessageEditCard({
                 onClick={() => selectTone(tone)}
                 className={`cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear ${
                   activeTone === tone
-                    ? "bg-bg-brand-secondary text-text-brand-secondary"
+                    ? "bg-bg-brand-solid text-text-on-brand"
                     : "border border-border-secondary text-text-tertiary hover:border-border-primary hover:text-text-secondary"
                 }`}
               >
@@ -209,7 +209,7 @@ export function MessageEditCard({
                 onClick={selectCustom}
                 className={`cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-medium whitespace-nowrap transition duration-100 ease-linear ${
                   activeTone === "Custom"
-                    ? "bg-bg-brand-secondary text-text-brand-secondary"
+                    ? "bg-bg-brand-solid text-text-on-brand"
                     : "border border-dashed border-border-secondary text-text-tertiary hover:border-border-primary hover:text-text-secondary"
                 }`}
               >

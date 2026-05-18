@@ -45,7 +45,7 @@ function tonePillClasses(active: boolean): string {
   const base =
     "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
   return active
-    ? `${base} bg-bg-brand-secondary text-text-brand-secondary border border-bg-brand-secondary`
+    ? `${base} bg-bg-brand-solid text-text-on-brand border border-bg-brand-solid`
     : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
 }
 
