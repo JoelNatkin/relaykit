@@ -1804,3 +1804,15 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Rejected alternative:** Copy outputs only the rendered message bodies with values substituted (the pre-rewrite behavior) — loses the reusable template and the message's identity.
 
 **Supersedes:** none
+
+## D-405 — Brand pivots from purple accent to monochromatic warm
+
+**Decided:** 2026-05-18 (Session 96)
+
+**Decision:** RelayKit's brand color system moves from a purple accent to a monochromatic warm palette in the hue family of the dark-mode page background (#13120E). Both the neutral structural scale and the brand accent scale share one warm hue; value (lightness), not hue, separates accent from neutral. Light mode inverts the logic — a warm off-white page with warm-dark accents. Semantic colors (error / warning / success) are deliberately not warm-shifted — they must read as meaning, not aesthetic. Implemented as a token-map rewrite in `marketing-site/app/globals.css`.
+
+**Why:** The purple was an ad-hoc choice made early in development, never itself a recorded decision. The monochromatic warm direction reads as intentional, editorial, and composed — accents support the configurator's message content rather than competing with it.
+
+**Rejected alternative:** Keeping the purple accent, or any hue-driven brand — rejected as "branded-and-shouty," pulling attention away from the product's actual content.
+
+**Supersedes:** none — no prior decision specified brand-purple as the accent; it was an unrecorded default. (D-378's parenthetical dark-mode brand-shift example, "brand-600 → brand-500," is now stale and may want a light amendment.)
