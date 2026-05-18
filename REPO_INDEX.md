@@ -8,7 +8,7 @@
 
 - Last updated: 2026-05-18
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 317 active, latest D-402; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Decision count: 318 active, latest D-403; D-01–D-83 archived. Marketing decisions: latest MD-20.
 - Branch state: `feat/configurator-one-corpus` — unmerged feature branch (configurator one-corpus rewrite, 8 commits, awaiting PM review + Vercel preview). `main` otherwise clean.
 - Active explorations: None
 

@@ -1782,3 +1782,13 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Why:** Margin discipline (multi-segment UCS-2 messages cost ~2x at the carrier; we've priced flat per-message); delivery reliability (multi-segment messages drop or arrive out of order more often); developer ergonomics (curly-quote auto-insertion from macOS/editors is the most common unintentional bite — silent paste normalization eliminates it). Variables passed via SDK (codes, phone numbers, timestamps) are type-constrained and exempt — the type contract enforces shape, no character rule needed.
 
 **Supersedes:** none
+
+## D-403 — Home-page configurator custom messages carry forward into workspace at signup
+
+**Decided:** 2026-05-18 (Session 95)
+
+**Decision:** Visitor-authored custom messages on the marketing-site home-page configurator persist via localStorage and become real workspace messages at signup — they are first-touch authoring, not a throwaway preview. This is why the home-page custom-message editor requires a Name field matching the workspace authoring shape.
+
+**Rejected alternative:** Custom messages as a throwaway home-page sandbox preview, discarded at signup.
+
+**Supersedes:** none
