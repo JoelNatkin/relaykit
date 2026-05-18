@@ -20,7 +20,7 @@ interface TooltipProps {
   className?: string;
 }
 
-export function Tooltip({ content, children, delayMs = 1500, className }: TooltipProps) {
+export function Tooltip({ content, children, delayMs = 750, className }: TooltipProps) {
   const [visible, setVisible] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
