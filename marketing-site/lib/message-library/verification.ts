@@ -31,6 +31,8 @@ const VERIFICATION_VARIABLES: Variable[] = [
 export const VERIFICATION: DiscreteCategory = {
   id: "verification",
   name: "Verification",
+  description:
+    "Phone-ownership proof at signup, step-up confirmations, account recovery, and 2FA.",
   tcrMapping: "2FA",
   classification: "discrete",
   variables: VERIFICATION_VARIABLES,
@@ -49,6 +51,8 @@ export const VERIFICATION: DiscreteCategory = {
       name: "Signup phone verification",
       description:
         "One-time phone-ownership proof at account creation — the most-shipped SMS-verification use case in indie SaaS.",
+      tooltip:
+        "One-time phone-ownership proof when a user creates an account. The SMS-verification use case that survives the passkeys transition.",
       messages: [
         {
           id: "verification-code",
@@ -75,40 +79,12 @@ export const VERIFICATION: DiscreteCategory = {
       ],
     },
     {
-      id: "login-2fa",
-      name: "Login 2FA",
-      description:
-        "SMS as a second factor at login. Advisory framing (SMS is the least-secure second factor) surfaces in the configurator, never in the message body.",
-      messages: [
-        {
-          id: "login-code",
-          name: "Login code",
-          variables: ["business_name", "code", "expiry_minutes"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{business_name}}: Your login code is {{code}}. Expires in {{expiry_minutes}} minutes.",
-              charCount: 76,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{business_name}} sign-in code is {{code}}, good for {{expiry_minutes}} minutes.",
-              charCount: 75,
-            },
-            {
-              tone: "Brief",
-              body: "{{business_name}}: Sign-in code {{code}}",
-              charCount: 46,
-            },
-          ],
-        },
-      ],
-    },
-    {
       id: "sensitive-action-step-up",
       name: "Sensitive-action step-up",
       description:
         "Explicit phone-channel confirmation before a high-stakes action (withdrawal, payment-detail change, ownership transfer, account deletion).",
+      tooltip:
+        "Confirm a high-stakes action in-session — withdrawal, payment change, ownership transfer.",
       messages: [
         {
           id: "confirmation-code",
@@ -139,6 +115,7 @@ export const VERIFICATION: DiscreteCategory = {
       name: "Account recovery",
       description:
         "Out-of-band recovery channel when the end-user has lost access to their primary auth method. SMS as lockout fallback, not primary auth.",
+      tooltip: "Out-of-band channel when other auth fails.",
       messages: [
         {
           id: "recovery-code",
@@ -159,6 +136,38 @@ export const VERIFICATION: DiscreteCategory = {
               tone: "Brief",
               body: "{{business_name}}: Recovery code {{code}}",
               charCount: 47,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: "login-2fa",
+      name: "Login 2FA",
+      description:
+        "SMS as a second factor at login. Advisory framing (SMS is the least-secure second factor) surfaces in the configurator, never in the message body.",
+      tooltip:
+        "Second-factor at sign-in. SMS is the most common factor but the least secure — consider TOTP or passkeys for primary 2FA.",
+      messages: [
+        {
+          id: "login-code",
+          name: "Login code",
+          variables: ["business_name", "code", "expiry_minutes"],
+          variants: [
+            {
+              tone: "Standard",
+              body: "{{business_name}}: Your login code is {{code}}. Expires in {{expiry_minutes}} minutes.",
+              charCount: 76,
+            },
+            {
+              tone: "Friendly",
+              body: "Your {{business_name}} sign-in code is {{code}}, good for {{expiry_minutes}} minutes.",
+              charCount: 75,
+            },
+            {
+              tone: "Brief",
+              body: "{{business_name}}: Sign-in code {{code}}",
+              charCount: 46,
             },
           ],
         },
