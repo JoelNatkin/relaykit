@@ -11,6 +11,7 @@
 
 import { XClose } from "@untitledui/icons";
 import { useEffect, useState } from "react";
+import { usePostHog } from "posthog-js/react";
 import { useWaitlist } from "@/context/waitlist-context";
 
 type Status = "idle" | "loading" | "success" | "error";
@@ -67,6 +68,7 @@ function FounderSignoff() {
 
 export function WaitlistModal() {
   const { isOpen, closeModal, ctaSource, summary } = useWaitlist();
+  const posthog = usePostHog();
   const [status, setStatus] = useState<Status>("idle");
   const [email, setEmail] = useState("");
 
@@ -130,9 +132,36 @@ export function WaitlistModal() {
       const data = (await res.json().catch(() => null)) as
         | { ok?: boolean }
         | null;
-      setStatus(data?.ok === true ? "success" : "error");
+      const ok = data?.ok === true;
+      setStatus(ok ? "success" : "error");
+      if (ok) {
+        // Bottom-of-funnel conversion — same payload shape as
+        // `early_access_clicked` so opened→submitted matches on `source`.
+        posthog?.capture("early_access_submitted", {
+          source: ctaSource,
+          categories_selected: summary.categoriesSelected ?? [],
+          subs_selected: summary.subsSelected ?? [],
+          tone_default: summary.toneDefault ?? summary.tone,
+          has_overrides: summary.hasOverrides ?? false,
+        });
+      } else {
+        posthog?.capture("early_access_submission_failed", {
+          source: ctaSource,
+          failure_reason:
+            res.status >= 500
+              ? "server"
+              : res.status >= 400
+                ? "validation"
+                : "unknown",
+        });
+      }
     } catch {
+      // fetch() threw — no response reached us.
       setStatus("error");
+      posthog?.capture("early_access_submission_failed", {
+        source: ctaSource,
+        failure_reason: "network",
+      });
     }
   }
 
