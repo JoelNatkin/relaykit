@@ -49,6 +49,43 @@ function tonePillClasses(active: boolean): string {
     : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
 }
 
+/**
+ * Configurator checkbox — a custom appearance-none box matching the
+ * "Recommended combinations" dropdown trigger's fill + border in both
+ * modes (bg-bg-primary / dark:bg-bg-secondary, border-border-primary).
+ * The check glyph renders on top of the same fill; the 1px stroke is
+ * kept for the checked state — a 10px glyph in a 16px box has room.
+ */
+function ConfiguratorCheckbox({ checked }: { checked: boolean }) {
+  return (
+    <span className="relative mt-0.5 inline-flex size-4 shrink-0">
+      <input
+        type="checkbox"
+        checked={checked}
+        readOnly
+        tabIndex={-1}
+        className="size-4 appearance-none rounded border border-border-primary bg-bg-primary dark:bg-bg-secondary"
+      />
+      {checked ? (
+        <svg
+          viewBox="0 0 10 10"
+          fill="none"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 m-auto size-2.5 text-text-primary"
+        >
+          <path
+            d="M1.75 5.25 4 7.25 8.25 2.75"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : null}
+    </span>
+  );
+}
+
 /** Marketing-shaped categories require opt-out language; Verification does not. */
 function categoryRequiresStop(category: Category): boolean {
   return category.tcrMapping === "MARKETING";
@@ -367,13 +404,7 @@ export function ConfiguratorSection() {
                         onClick={() => handleCategoryToggle(category.id)}
                         className="flex w-full items-start gap-3 text-left"
                       >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          readOnly
-                          tabIndex={-1}
-                          className="mt-0.5 size-4 shrink-0 rounded border-border-primary accent-bg-brand-solid"
-                        />
+                        <ConfiguratorCheckbox checked={checked} />
                         <div className="flex-1">
                           <span className="text-sm font-medium text-text-primary">
                             {category.name}
@@ -423,13 +454,7 @@ export function ConfiguratorSection() {
                                 onClick={() => handleSubToggle(category.id, sub.id)}
                                 className="flex w-full items-start gap-2.5 text-left"
                               >
-                                <input
-                                  type="checkbox"
-                                  checked={subChecked}
-                                  readOnly
-                                  tabIndex={-1}
-                                  className="mt-0.5 size-4 shrink-0 rounded border-border-primary accent-bg-brand-solid"
-                                />
+                                <ConfiguratorCheckbox checked={subChecked} />
                                 <span className="text-sm text-text-secondary">
                                   {sub.name}
                                 </span>
