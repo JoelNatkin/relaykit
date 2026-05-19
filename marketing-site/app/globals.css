@@ -84,13 +84,9 @@
   /* Text on a solid (lifted) brand surface — buttons, CTA, selected
      pills. The lift is dark in both modes, so this is plain white. */
   --color-text-on-brand: var(--color-white);
-  /* Variable highlights — two treatments. text-variable is the quiet
-     edit-state chip color. The -strong text + bg-variable backdrop are
-     the read-state highlight: a strong value on a lifted backdrop so a
-     token reads clearly as a substitutable slot at a glance. */
+  /* Variable highlights inside message previews — one step quieter than
+     body text, reads as content not as a chromatic highlight. */
   --color-text-variable: var(--color-brand-700);
-  --color-text-variable-strong: var(--color-brand-950);
-  --color-bg-variable: var(--color-brand-200);
 
   /* SEMANTIC BORDER COLORS */
   --color-border-primary: var(--color-brand-300);
@@ -189,8 +185,6 @@
   --color-text-warning-primary: var(--color-warning-500);
   --color-text-success-primary: var(--color-success-500);
   --color-text-variable: var(--color-brand-200);
-  --color-text-variable-strong: var(--color-brand-25);
-  --color-bg-variable: var(--color-brand-700);
 
   /* BORDER */
   --color-border-primary: var(--color-brand-700);
