@@ -89,7 +89,7 @@
      token (not the shared bg-brand-secondary) so tuning it stays scoped
      to the editor and reads as content, not a chromatic highlight. */
   --color-text-variable: var(--color-brand-950);
-  --color-bg-variable-highlight: var(--color-brand-200);
+  --color-bg-variable-highlight: var(--color-brand-100);
 
   /* SEMANTIC BORDER COLORS */
   --color-border-primary: var(--color-brand-300);
