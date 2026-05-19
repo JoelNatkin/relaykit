@@ -1,71 +1,70 @@
-# CC_HANDOFF — Session 96 (configurator four-fixes)
+# CC_HANDOFF — Session 96 (final) — warm-monochrome brand pivot + Session 96 wrap
 
-> **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out. Includes commits, completed work, in-progress, gotchas, files modified, unmerged branches, suggested next tasks.
+> **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
-> Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader, not as a session memoir.
+> Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Date:** 2026-05-18
-**Branch:** `feat/configurator-one-corpus` — 11 commits (Session 95 one-corpus wave + this Session 96 four-fixes commit), **pushed to origin**, **not merged**. Awaiting Joel's merge decision after a Vercel preview check.
+**Date:** 2026-05-19
+**Branches:** `main` — current, carries all merged Session 96 work. `feat/warm-monochrome-brand` — 11 commits, **pushed, not merged**, awaiting Joel's Vercel preview (both modes).
 
-`Commits: 1 | Files modified: 8 | Decisions added: 1 (D-404) | External actions: 1 (git push)`
+`Commits: 18 | Decisions added: 2 (D-404, D-405) | Branches: feat/configurator-one-corpus merged+deleted, feat/warm-monochrome-brand pushed/unmerged | External actions: ~13 git pushes + 1 remote branch delete`
 
 ---
 
 ## Session character
 
-A single bundled commit landing four polish fixes on top of the Session 95 configurator rewrite, before Joel's Vercel preview check. Plan-mode-gated. Branch is `tsc` + `eslint` + `next build` clean.
+A long multi-wave session. Three waves landed on `main`; a fourth — the brand pivot — is on an unmerged branch and was heavily iterated.
 
-## The four fixes
+## Wave 1 — configurator polish (merged to main)
 
-1. **Pricing fine-print removed** — the redundant "All categories included in $19/mo…" line is gone from the Categories panel; the section subhead already carries the inclusion message.
-2. **Message-card title tooltips restored** (regression from the rewrite). New **optional `Message.tooltip`** field on the corpus schema (`types.ts`); the 4 Verification messages populated with PM-provided copy; a `HelpCircle` info icon + `Tooltip` renders beside the title on corpus read- and edit-cards. The 8 unauthored stubs needed no edits (field is optional).
-3. **Sub-checkbox tooltip clipping fixed** — removed `overflow-hidden` from the Categories panel `<div>`; the tooltip (`z-100`, `pointer-events-none`) now floats freely instead of being clipped by the narrow panel.
-4. **Copy button → combined output** — `handleCopy()` now emits, per visible message in the active tone, a block of title / description / `Example` / `Template`; the Template preserves `{{double_brace}}` tokens, the Example substitutes the typed business name (falls back to "Acme"); custom messages included; blocks separated by `---`. → **D-404**.
+`feat/configurator-one-corpus` (carried from Session 95) took two more commits — four polish fixes (`2aa72ed`: removed pricing fine-print, restored message-card tooltips, fixed sub-tooltip clipping, combined Copy output) and a tooltip-delay halving (`ddebd20`). **D-404** recorded (Copy button combined output). Branch merged to `main` (`1f54684`, `--no-ff`) and deleted local + remote.
 
-## Completed work / In progress
+## Wave 2 — blog edit (merged to main)
 
-All four fixes complete and verified. Nothing open.
+`7b6e82a` rewrote the published post body and retitled it **"Adding texts to your app is a month-long trap"**; `8cdea1f` tightened its description. Direct to `main` (copy-only edits).
+
+## Wave 3 — UI polish (merged to main)
+
+`17ab32a` — tighter pill padding, configurator 40px gap rule, sun/moon dark-mode toggle. `dcd6dfc` — 300px categories column, icon-only hover on the dark-mode toggle. Direct to `main`.
+
+## Wave 4 — warm-monochrome brand pivot (`feat/warm-monochrome-brand`, UNMERGED)
+
+10 commits + this close-out. Pivots the brand from a purple accent to a monochromatic warm-neutral system — **D-405**. Final state: Untitled UI "Gray Warm" scale (`brand-950` overridden to `#13120E`), one scale carries surfaces/text/borders/lifted elements, no chromatic accent; lifted elements (CTA, selected pills, checked checkboxes) use `brand-800` in both modes.
+
+Commit arc: token map → CTA/on-brand wiring → D-405 → chroma-pull (warm bg / neutral fg) → neutral checkboxes + subtler CTA + code surface → Gray Warm scale adoption → `brand-950` override → dark-mode text lighten → variable-contrast boost → **revert of the variable-contrast boost** (`d8babc6`, latest). The branch is `tsc`/`eslint`/`next build` clean.
 
 ## Quality gates
 
-`tsc --noEmit`, `eslint .`, and `next build` all clean on `marketing-site/`. No vitest in `marketing-site`; functional verification is the Vercel preview (checklist in the plan file).
+`tsc --noEmit`, `eslint .`, `next build` all clean on `marketing-site/` at branch HEAD (this close-out).
 
 ## Decisions
 
-**D-404 added** (active count now 319, latest D-404). Seven gate tests applied — all pass (rejected alternative: "Copy outputs only rendered bodies"). Grep surfaced archived **D-76** ("Copy format includes preview and template") as a plausible relative — judged **not a supersession**: D-76 governs the prototype catalog copy (a different surface, archived-era); D-404 governs the marketing-site configurator. `Supersedes: none`.
-
-Next-session ledger scan: D-404 is the only new decision since Session 95.
-
-## Retirement sweep + drift watch
-
-Skipped — mid-phase, no phase boundary crossed. Phase 1 (Sinch Proving Ground) still active.
+- **D-404** — added Wave 1, on `main` (configurator Copy output).
+- **D-405** — added + iterated Wave 4, on the branch (brand pivot to Untitled UI Gray Warm). **Amended this close-out** to record the `brand-950 → #13120E` override. `Supersedes: none` — grep-confirmed; purple was never a recorded decision. Seven gate tests pass.
+- Active count **320**, latest **D-405**.
 
 ## Gotchas for next session
 
-1. **Branch pushed, not merged.** `feat/configurator-one-corpus` (11 commits) is on origin. Next: Joel checks the Vercel preview, then merges to `main` + deletes the branch.
-2. **Verify the tooltip-overflow fix visually.** Removing `overflow-hidden` from the Categories panel is correct, but confirm on the preview that the panel's `rounded-xl` corners still look clean and all four Verification sub tooltips render fully (incl. "Sensitive-action step-up").
-3. **D-380 drift still unresolved** (carry-over from Session 95) — D-380 canonicalizes `website`/`business_type`/`service_type` as configurator placeholder fields; the rewrite dropped the `website` input. PM to decide an amendment/supersession note.
+1. **`feat/warm-monochrome-brand` unmerged** — 11 commits, pushed. Joel previews both modes on Vercel, then merge + delete.
+2. **Variable-token read-state contrast is unresolved.** Two treatments rejected: plain neutral text (undershoots — "whispers") and a strong value + backdrop (`673e487`, overshot — reverted by `d8babc6`). The branch currently sits on the plain-text version, which undershoots. **Next likely direction: if further non-chromatic tweaks keep undershooting, reintroduce a single restrained chromatic treatment for variable tokens specifically** — a deliberate, scoped exception to D-405's no-chromatic-accent rule. PM call; flag before implementing.
+3. **Marketing-site cards / Categories panel / inputs are `bg-bg-primary`** (flush with the page — bordered, not lifted). The token system now formally defines lifted surfaces (`bg-secondary`/`bg-tertiary`); moving those components is a clean follow-up if Joel wants real surface lift. Flagged across several turns.
+4. **D-378's purple-scale dark-shift parenthetical** — PROTOTYPE_SPEC now points it at D-405; D-378's own text still carries the stale note. Optional formal amendment.
+5. **Favicon + OG image still brand-purple** — separate asset task, out of scope for token work.
+6. **Trust-strip tool logos** — baked-color SVG files; they don't follow the token system.
+7. Carry-overs from Wave 1: **D-380 drift** (PM to reconcile the dropped `website` configurator field); **waitlist operator steps** (verify Resend domain, set env vars, apply migration `007`); **`docs/POST_TOPICS.md` still untracked**.
 
 ## Files modified this session
 
-8 unique paths: `marketing-site/lib/message-library/types.ts`, `verification.ts`; `marketing-site/components/configurator/message-edit-card.tsx`; `marketing-site/components/configurator-section.tsx`; `DECISIONS.md`, `PROTOTYPE_SPEC.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`.
-
-`PRODUCT_SUMMARY.md` checked — **not updated**: it describes the configurator at journey level but not the Copy button; the four fixes are polish / copy / regression-restore, none substantive per the maintenance criteria.
+Wave 4 (branch): `marketing-site/app/globals.css` (token map, rewritten repeatedly), `lib/editor/variable-token.ts`, `components/configurator-section.tsx`, `components/configurator/{message-edit-card,custom-message-card}.tsx`, `components/top-nav.tsx`, `components/waitlist-modal.tsx`, `app/page.tsx`, `app/signup/page.tsx`, `app/start/verify/verify-form.tsx`, `app/start/get-started/get-started-form.tsx`. Close-out docs: `DECISIONS.md`, `PROTOTYPE_SPEC.md`, `docs/PRODUCT_SUMMARY.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`. (Waves 1–3 file lists are in git history on `main`.)
 
 ## Unmerged branches
 
-**`feat/configurator-one-corpus`** — 11 commits, build-green, pushed to origin, **not merged**. Waiting on: Joel's Vercel preview check, then merge to `main` + delete.
+**`feat/warm-monochrome-brand`** — 11 commits, build-green, pushed to origin, not merged. Waiting on Joel's Vercel preview.
 
-## Carry-forward queue
+## Retirement sweep / drift watch
 
-- **Merge `feat/configurator-one-corpus`** when Joel approves the Vercel preview.
-- **D-380 amendment** — PM to reconcile D-380 with the configurator rewrite (`website` field dropped).
-- **Four BACKLOG entries from Session 95** (configurator conditional input rendering; variable identity-vs-default schema distinction; variable grammar mechanics; placeholder values for non-name fields) — several tied to Marketing category authoring.
-- **Message authoring — remaining 8 categories.** Verification done; Marketing next (`marketing-site/lib/message-library/marketing.ts` from `audits/research/2026-05-16/marketing.md`). The configurator picks up each category automatically once authored.
-- **Waitlist operator steps** (carry-over) — verify `relaykit.ai` as a Resend sending domain; set `RESEND_API_KEY` + Supabase env vars; apply migration `007`.
-- `docs/POST_TOPICS.md` still untracked — PM decision pending.
-- `PM_PROJECT_INSTRUCTIONS.md` / `CLAUDE.md` over their line ceilings — separate PM-gated trim audits.
+Skipped — mid-phase, Phase 1 (Sinch Proving Ground) still active.
 
 ## Suggested next session
 
-Either (a) review-and-merge `feat/configurator-one-corpus` once the Vercel preview is checked, or (b) open the next message-authoring category, **Marketing**.
+Either (a) iterate the variable-token contrast once more on the branch (Gotcha 2), then shepherd `feat/warm-monochrome-brand` to merge after Joel's preview; or (b) open the next message-authoring category, **Marketing** (`marketing-site/lib/message-library/marketing.ts`).

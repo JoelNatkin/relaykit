@@ -8,7 +8,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-05-18
+> **Last reviewed:** 2026-05-19
 
 ---
 
@@ -43,7 +43,7 @@ The only prototype-side route reachable without an authenticated session (beside
 
 ### 3.3 Blog — `/blog/*`
 
-RelayKit's blog lives on the marketing site at `relaykit.ai/blog` (in-repo MDX per D-387 — not an external platform, not a subdomain). What a visitor sees: a chronological index of posts, individual post pages in a long-form reading layout, and per-topic cluster index pages (`/blog/cluster/[name]`) that group posts by subject. Posts are organized primarily by topical cluster — 11 clusters covering everything from verification codes to pricing to compliance; a secondary "lane" tag shows on each post but is not something the reader filters by. Each post carries SEO metadata, social-share cards, and there's an RSS feed at `/blog/feed.xml`. The blog is reachable from the marketing-site footer. V1 shipped Session 89 with one published post ("Adding text messages to your app shouldn't take a month"); the broader content corpus is planned in `docs/POST_TOPICS.md`. Customer-facing role: it is the SEO and credibility surface that brings indie developers to RelayKit before they ever reach the configurator.
+RelayKit's blog lives on the marketing site at `relaykit.ai/blog` (in-repo MDX per D-387 — not an external platform, not a subdomain). What a visitor sees: a chronological index of posts, individual post pages in a long-form reading layout, and per-topic cluster index pages (`/blog/cluster/[name]`) that group posts by subject. Posts are organized primarily by topical cluster — 11 clusters covering everything from verification codes to pricing to compliance; a secondary "lane" tag shows on each post but is not something the reader filters by. Each post carries SEO metadata, social-share cards, and there's an RSS feed at `/blog/feed.xml`. The blog is reachable from the marketing-site footer. V1 shipped Session 89 with one published post ("Adding texts to your app is a month-long trap"); the broader content corpus is planned in `docs/POST_TOPICS.md`. Customer-facing role: it is the SEO and credibility surface that brings indie developers to RelayKit before they ever reach the configurator.
 
 ### 3.4 Early-access waitlist modal
 
