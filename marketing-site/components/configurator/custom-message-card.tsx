@@ -23,6 +23,8 @@ interface CustomMessageCardProps {
   body: string;
   variables: Variable[];
   businessName: string;
+  /** Category-aware placeholder for the Name field. */
+  placeholder: string;
   /** True for Marketing-shaped categories — drives the opt-out compliance rule. */
   requiresStop: boolean;
   isEditing: boolean;
@@ -58,6 +60,7 @@ export function CustomMessageCard({
   body,
   variables,
   businessName,
+  placeholder,
   requiresStop,
   isEditing,
   isNew = false,
@@ -181,7 +184,7 @@ export function CustomMessageCard({
           type="text"
           value={editName}
           onChange={(e) => setEditName(e.target.value)}
-          placeholder="e.g. Holiday hours"
+          placeholder={placeholder}
           className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs transition duration-100 ease-linear focus:border-border-brand focus:outline-none dark:bg-bg-secondary"
         />
       </div>

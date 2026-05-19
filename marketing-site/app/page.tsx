@@ -64,7 +64,7 @@ export default function MarketingHome() {
       <div className="pt-16">
         <div className="mx-auto max-w-5xl px-6">
           {/* PRE-LAUNCH (2026-05-15): temporary pre-launch tag — remove this element when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-quaternary">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-tertiary">
             PRE-LAUNCH · SHIPPING SUMMER 2026
           </p>
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
@@ -124,11 +124,11 @@ export default function MarketingHome() {
         <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           <div className="flex flex-col gap-5">
             <p className="text-base leading-relaxed text-text-secondary">
-              <strong className="font-semibold">Starting fresh.</strong> RelayKit slots into the starter kits you use — ShipFast,
+              <strong className="font-bold text-text-primary">Starting fresh.</strong> RelayKit slots into the starter kits you use — ShipFast,
               Supastarter, MakerKit, Vercel + Supabase.
             </p>
             <p className="text-base leading-relaxed text-text-secondary">
-              <strong className="font-semibold">Already built.</strong> Hand the build spec to your AI tool, point it at where you handle
+              <strong className="font-bold text-text-primary">Already built.</strong> Hand the build spec to your AI tool, point it at where you handle
               auth, and let it wire up the rest.
             </p>
           </div>

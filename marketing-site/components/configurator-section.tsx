@@ -41,6 +41,19 @@ const PRESETS: Preset[] = [
 
 const PRESET_VERIFICATION_ONLY = "Verification only";
 
+/** Name-field placeholder for the custom-message editor, keyed by category id. */
+const CUSTOM_NAME_PLACEHOLDERS: Record<string, string> = {
+  verification: "e.g. Login alert",
+  marketing: "e.g. Holiday hours",
+  appointments: "e.g. Reschedule notice",
+  "order-updates": "e.g. Backorder notice",
+  "customer-support": "e.g. After-hours auto-reply",
+  "team-alerts": "e.g. Deploy started",
+  community: "e.g. Event reminder",
+  waitlist: "e.g. Position update",
+  "account-events": "e.g. Password changed",
+};
+
 function tonePillClasses(active: boolean): string {
   const base =
     "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
@@ -621,6 +634,10 @@ export function ConfiguratorSection() {
                               body={cm.body}
                               variables={category.variables}
                               businessName={state.businessName}
+                              placeholder={
+                                CUSTOM_NAME_PLACEHOLDERS[category.id] ??
+                                "e.g. Holiday hours"
+                              }
                               requiresStop={requiresStop}
                               isEditing={isEditing}
                               onEditRequest={() =>
@@ -653,6 +670,10 @@ export function ConfiguratorSection() {
                             body=""
                             variables={category.variables}
                             businessName={state.businessName}
+                            placeholder={
+                              CUSTOM_NAME_PLACEHOLDERS[category.id] ??
+                              "e.g. Holiday hours"
+                            }
                             requiresStop={requiresStop}
                             isEditing
                             isNew
@@ -696,9 +717,7 @@ export function ConfiguratorSection() {
                 {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
                 <p className="text-sm text-text-secondary">
                   Pre-launch. The messages above are yours — copy them and use them
-                  with any provider today. The full product, with onboarding and
-                  delivery, ships summer 2026. Get on the list and we&apos;ll tell
-                  you when.
+                  with any provider today. The full product ships summer 2026.
                 </p>
                 {/* PRE-LAUNCH (2026-05-16): opens the waitlist modal. Revert to
                     a <Link> "Start building with SMS →" (href "/signup") when
