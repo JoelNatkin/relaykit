@@ -84,9 +84,12 @@
   /* Text on a solid (lifted) brand surface — buttons, CTA, selected
      pills. The lift is dark in both modes, so this is plain white. */
   --color-text-on-brand: var(--color-white);
-  /* Variable highlights inside message previews — one step quieter than
-     body text, reads as content not as a chromatic highlight. */
-  --color-text-variable: var(--color-brand-700);
+  /* Variable token text + edit-state highlight inside message previews.
+     Variable text is the darkest neutral; the highlight is a dedicated
+     token (not the shared bg-brand-secondary) so tuning it stays scoped
+     to the editor and reads as content, not a chromatic highlight. */
+  --color-text-variable: var(--color-brand-950);
+  --color-bg-variable-highlight: var(--color-brand-200);
 
   /* SEMANTIC BORDER COLORS */
   --color-border-primary: var(--color-brand-300);
@@ -184,7 +187,8 @@
   --color-text-error-primary: var(--color-error-300);
   --color-text-warning-primary: var(--color-warning-500);
   --color-text-success-primary: var(--color-success-500);
-  --color-text-variable: var(--color-brand-200);
+  --color-text-variable: var(--color-white);
+  --color-bg-variable-highlight: var(--color-brand-700);
 
   /* BORDER */
   --color-border-primary: var(--color-brand-700);

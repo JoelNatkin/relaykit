@@ -28,7 +28,7 @@ export function VariableNodeView(props: ReactNodeViewProps) {
 
   const padded = "pt-[3px] pb-[3px] -mt-[3px] -mb-[3px]";
   const stateClasses = selected
-    ? `bg-bg-brand-secondary ${padded}`
+    ? `bg-bg-variable-highlight ${padded}`
     : "hover:bg-bg-brand-primary hover:pt-[3px] hover:pb-[3px] hover:-mt-[3px] hover:-mb-[3px]";
 
   return (
