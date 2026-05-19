@@ -57,7 +57,7 @@ export function PresetDropdown({ presets, value, onSelect, className }: PresetDr
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm shadow-xs transition duration-100 ease-linear hover:border-border-secondary_hover focus:border-border-brand focus:outline-none"
+        className="flex w-full items-center justify-between gap-2 rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm shadow-xs transition duration-100 ease-linear hover:border-border-secondary_hover focus:border-border-brand focus:outline-none dark:bg-bg-secondary"
       >
         <span className={value ? "text-text-primary" : "text-text-placeholder"}>
           {value}

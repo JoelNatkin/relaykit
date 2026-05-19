@@ -175,7 +175,7 @@ export function WaitlistModal() {
               <button
                 type="button"
                 onClick={requestClose}
-                className="mt-10 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                className="mt-10 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
               >
                 Close
               </button>
@@ -227,10 +227,10 @@ export function WaitlistModal() {
               <button
                 type="submit"
                 disabled={status === "loading" || email.trim() === ""}
-                className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-text-white transition duration-100 ease-linear ${
+                className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-text-on-brand transition duration-100 ease-linear ${
                   status === "loading" || email.trim() === ""
-                    ? "cursor-not-allowed bg-bg-brand-solid/70"
-                    : "cursor-pointer bg-bg-brand-solid hover:bg-bg-brand-solid_hover"
+                    ? "cursor-not-allowed bg-bg-brand-cta/70"
+                    : "cursor-pointer bg-bg-brand-cta hover:bg-bg-brand-cta_hover"
                 }`}
               >
                 {status === "loading" ? <Spinner /> : null}

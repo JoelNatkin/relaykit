@@ -41,12 +41,77 @@ const PRESETS: Preset[] = [
 
 const PRESET_VERIFICATION_ONLY = "Verification only";
 
+/** Name-field placeholder for the custom-message editor, keyed by category id. */
+const CUSTOM_NAME_PLACEHOLDERS: Record<string, string> = {
+  verification: "e.g. Login alert",
+  marketing: "e.g. Holiday hours",
+  appointments: "e.g. Reschedule notice",
+  "order-updates": "e.g. Backorder notice",
+  "customer-support": "e.g. After-hours auto-reply",
+  "team-alerts": "e.g. Deploy started",
+  community: "e.g. Event reminder",
+  waitlist: "e.g. Position update",
+  "account-events": "e.g. Password changed",
+};
+
 function tonePillClasses(active: boolean): string {
   const base =
     "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
   return active
-    ? `${base} bg-bg-brand-secondary text-text-brand-secondary border border-bg-brand-secondary`
+    ? `${base} bg-bg-brand-solid text-text-on-brand border border-bg-brand-solid`
     : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
+}
+
+/**
+ * Configurator checkbox — a custom appearance-none box matching the
+ * "Recommended combinations" dropdown trigger's fill + border in both
+ * modes (bg-bg-primary / dark:bg-bg-secondary, border-border-primary).
+ * The check glyph renders on top of the same fill; the 1px stroke is
+ * kept for the checked state. Category rows use the larger size-5 box,
+ * sub rows the size-4 box; `disabled` (Coming-soon categories) softens
+ * the border. The box className is identical across checked/unchecked,
+ * so the box never changes size on toggle.
+ */
+function ConfiguratorCheckbox({
+  checked,
+  size = "sub",
+  disabled = false,
+}: {
+  checked: boolean;
+  size?: "sub" | "category";
+  disabled?: boolean;
+}) {
+  const boxSize = size === "category" ? "size-5" : "size-4";
+  const glyphSize = size === "category" ? "size-3" : "size-2.5";
+  const borderColor = disabled ? "border-border-secondary" : "border-border-primary";
+  return (
+    <span className={`relative mt-0.5 inline-flex ${boxSize} shrink-0`}>
+      <input
+        type="checkbox"
+        checked={checked}
+        readOnly
+        tabIndex={-1}
+        disabled={disabled}
+        className={`${boxSize} appearance-none rounded border ${borderColor} bg-bg-primary dark:bg-bg-secondary`}
+      />
+      {checked ? (
+        <svg
+          viewBox="0 0 10 10"
+          fill="none"
+          aria-hidden
+          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} text-text-primary`}
+        >
+          <path
+            d="M1.75 5.25 4 7.25 8.25 2.75"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : null}
+    </span>
+  );
 }
 
 /** Marketing-shaped categories require opt-out language; Verification does not. */
@@ -105,7 +170,7 @@ function MessageReadCard({
 }: MessageReadCardProps) {
   const segments = interpolateBody(body, variables, businessName);
   return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
           <span className="min-w-0 truncate text-sm font-semibold text-text-primary">
@@ -367,13 +432,7 @@ export function ConfiguratorSection() {
                         onClick={() => handleCategoryToggle(category.id)}
                         className="flex w-full items-start gap-3 text-left"
                       >
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          readOnly
-                          tabIndex={-1}
-                          className="mt-0.5 size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
-                        />
+                        <ConfiguratorCheckbox checked={checked} size="category" />
                         <div className="flex-1">
                           <span className="text-sm font-medium text-text-primary">
                             {category.name}
@@ -387,12 +446,7 @@ export function ConfiguratorSection() {
                       </button>
                     ) : (
                       <div className="flex w-full items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={false}
-                          disabled
-                          className="mt-0.5 size-4 shrink-0 rounded border-border-secondary"
-                        />
+                        <ConfiguratorCheckbox checked={false} size="category" disabled />
                         <div className="flex-1">
                           <span className="flex items-center gap-2">
                             <span className="text-sm font-medium text-text-primary">
@@ -423,13 +477,7 @@ export function ConfiguratorSection() {
                                 onClick={() => handleSubToggle(category.id, sub.id)}
                                 className="flex w-full items-start gap-2.5 text-left"
                               >
-                                <input
-                                  type="checkbox"
-                                  checked={subChecked}
-                                  readOnly
-                                  tabIndex={-1}
-                                  className="mt-0.5 size-4 shrink-0 rounded border-border-secondary text-bg-brand-solid"
-                                />
+                                <ConfiguratorCheckbox checked={subChecked} />
                                 <span className="text-sm text-text-secondary">
                                   {sub.name}
                                 </span>
@@ -586,6 +634,10 @@ export function ConfiguratorSection() {
                               body={cm.body}
                               variables={category.variables}
                               businessName={state.businessName}
+                              placeholder={
+                                CUSTOM_NAME_PLACEHOLDERS[category.id] ??
+                                "e.g. Holiday hours"
+                              }
                               requiresStop={requiresStop}
                               isEditing={isEditing}
                               onEditRequest={() =>
@@ -618,6 +670,10 @@ export function ConfiguratorSection() {
                             body=""
                             variables={category.variables}
                             businessName={state.businessName}
+                            placeholder={
+                              CUSTOM_NAME_PLACEHOLDERS[category.id] ??
+                              "e.g. Holiday hours"
+                            }
                             requiresStop={requiresStop}
                             isEditing
                             isNew
@@ -661,9 +717,7 @@ export function ConfiguratorSection() {
                 {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
                 <p className="text-sm text-text-secondary">
                   Pre-launch. The messages above are yours — copy them and use them
-                  with any provider today. The full product, with onboarding and
-                  delivery, ships summer 2026. Get on the list and we&apos;ll tell
-                  you when.
+                  with any provider today. The full product ships summer 2026.
                 </p>
                 {/* PRE-LAUNCH (2026-05-16): opens the waitlist modal. Revert to
                     a <Link> "Start building with SMS →" (href "/signup") when
@@ -671,7 +725,7 @@ export function ConfiguratorSection() {
                 <button
                   type="button"
                   onClick={() => openModal("mid-page")}
-                  className="mt-4 flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-solid text-base font-semibold text-text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                  className="mt-4 flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
                 >
                   Get early access
                 </button>

@@ -1804,3 +1804,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Rejected alternative:** Copy outputs only the rendered message bodies with values substituted (the pre-rewrite behavior) — loses the reusable template and the message's identity.
 
 **Supersedes:** none
+
+## D-405 — Brand system adopts the Untitled UI Gray Warm scale
+
+**Decided:** 2026-05-18 (Session 96)
+
+**Decision:** RelayKit retires the purple accent system entirely and adopts Untitled UI's "Gray Warm" scale as a single canonical neutral palette. The brand is monochromatic — one warm-neutral scale where value (lightness), not hue, carries the whole system: surfaces, text, borders, and the lifted/actionable elements (CTA, selected pills). There is no chromatic accent — the RelayKit wordmark and every other surface stay on the neutral scale. Lifted elements use brand-800 in both light and dark modes — deliberately not pure black in light mode (too stark) and not lifted too far from the page in dark mode. One value is customized from the Untitled UI scale: brand-950 overrides #171412 to #13120E for a deeper dark-mode page background. Semantic colors (error / warning / success) are untouched — they read as meaning, not brand. Implemented as a token-map rewrite in `marketing-site/app/globals.css`.
+
+**Why:** The purple was an ad-hoc choice made early in development, never itself a recorded decision. A monochromatic warm-neutral palette reads as intentional, editorial, and composed — accents support the configurator's message content rather than competing with it. Adopting Untitled UI Gray Warm wholesale gives a vetted, internally consistent scale instead of hand-tuned values.
+
+**Rejected alternative:** Keeping the purple accent, or any hue-driven brand — rejected as "branded-and-shouty," pulling attention from the product's content. Earlier in-branch iterations (a hand-tuned warm scale; a brighter distinct CTA tier) were also discarded in favor of the wholesale Gray Warm adoption.
+
+**Supersedes:** none — no prior decision specified brand-purple as the accent; it was an unrecorded default. (D-378's parenthetical dark-mode brand-shift example, "brand-600 → brand-500," is now stale and may want a light amendment.)
+
+**Amended:** 2026-05-19 — "Checked checkboxes" removed from the lifted-element list above; the brand-800 lifted treatment now applies to CTA and selected pills only. Checkbox checked state uses the form-control treatment — matches the dropdown trigger's fill + border, with a hand-rendered check glyph on top; the 1px stroke is retained (the glyph has comfortable spacing in the box).

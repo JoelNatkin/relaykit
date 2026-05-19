@@ -3,39 +3,45 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  /* BASE COLORS */
+  /* BASE COLORS — kept pure. */
   --color-white: rgb(255 255 255);
   --color-black: rgb(0 0 0);
 
-  /* BRAND */
-  --color-brand-25: rgb(252 250 255);
-  --color-brand-50: rgb(249 245 255);
-  --color-brand-100: rgb(244 235 255);
-  --color-brand-200: rgb(233 215 254);
-  --color-brand-300: rgb(214 187 251);
-  --color-brand-400: rgb(182 146 246);
-  --color-brand-500: rgb(158 119 237);
-  --color-brand-600: rgb(127 86 217);
-  --color-brand-700: rgb(105 65 198);
-  --color-brand-800: rgb(83 56 158);
-  --color-brand-900: rgb(66 48 125);
-  --color-brand-950: rgb(44 28 95);
+  /* BRAND — Untitled UI "Gray Warm" scale (D-405). After the monochrome
+     pivot the brand is not a hue: it is one warm-neutral scale, and value
+     (lightness) carries the whole system — surfaces, text, borders, the
+     lifted/actionable elements. There is no chromatic accent. */
+  --color-brand-25: rgb(253 253 252);
+  --color-brand-50: rgb(250 250 249);
+  --color-brand-100: rgb(245 245 244);
+  --color-brand-200: rgb(231 229 228);
+  --color-brand-300: rgb(215 211 208);
+  --color-brand-400: rgb(169 162 157);
+  --color-brand-500: rgb(121 113 107);
+  --color-brand-600: rgb(87 83 78);
+  --color-brand-700: rgb(68 64 60);
+  --color-brand-800: rgb(41 37 36);
+  --color-brand-900: rgb(28 25 23);
+  /* brand-950 customized from Untitled UI Gray Warm #171412 to #13120E for a slightly deeper page bg */
+  --color-brand-950: rgb(19 18 14);
 
-  /* GRAY */
-  --color-gray-25: rgb(253 253 253);
-  --color-gray-50: rgb(250 250 250);
-  --color-gray-100: rgb(245 245 245);
-  --color-gray-200: rgb(233 234 235);
-  --color-gray-300: rgb(213 215 218);
-  --color-gray-400: rgb(164 167 174);
-  --color-gray-500: rgb(113 118 128);
-  --color-gray-600: rgb(83 88 98);
-  --color-gray-700: rgb(65 70 81);
-  --color-gray-800: rgb(37 43 55);
-  --color-gray-900: rgb(24 29 39);
-  --color-gray-950: rgb(10 13 18);
+  /* GRAY — mirrors brand-*. Both names resolve to the same canonical
+     Gray Warm scale, so any utility (brand-* or gray-*) stays consistent.
+     Semantic tokens below route through brand-*. */
+  --color-gray-25: var(--color-brand-25);
+  --color-gray-50: var(--color-brand-50);
+  --color-gray-100: var(--color-brand-100);
+  --color-gray-200: var(--color-brand-200);
+  --color-gray-300: var(--color-brand-300);
+  --color-gray-400: var(--color-brand-400);
+  --color-gray-500: var(--color-brand-500);
+  --color-gray-600: var(--color-brand-600);
+  --color-gray-700: var(--color-brand-700);
+  --color-gray-800: var(--color-brand-800);
+  --color-gray-900: var(--color-brand-900);
+  --color-gray-950: var(--color-brand-950);
 
-  /* ERROR */
+  /* ERROR — semantic, NOT shifted */
   --color-error-50: rgb(254 243 242);
   --color-error-100: rgb(254 228 226);
   --color-error-300: rgb(253 162 155);
@@ -43,54 +49,64 @@
   --color-error-600: rgb(217 45 32);
   --color-error-700: rgb(180 35 24);
 
-  /* WARNING */
+  /* WARNING — semantic, NOT shifted */
   --color-warning-50: rgb(255 250 235);
   --color-warning-100: rgb(254 240 199);
   --color-warning-500: rgb(247 144 9);
   --color-warning-600: rgb(220 104 3);
   --color-warning-700: rgb(181 71 8);
 
-  /* SUCCESS */
+  /* SUCCESS — semantic, NOT shifted */
   --color-success-50: rgb(236 253 243);
   --color-success-100: rgb(220 250 230);
   --color-success-500: rgb(23 178 106);
   --color-success-600: rgb(7 148 85);
   --color-success-700: rgb(6 118 71);
 
-  /* SEMANTIC TEXT COLORS */
-  --color-text-primary: var(--color-gray-900);
-  --color-text-secondary: var(--color-gray-700);
-  --color-text-secondary_hover: var(--color-gray-800);
-  --color-text-tertiary: var(--color-gray-600);
-  --color-text-tertiary_hover: var(--color-gray-700);
-  --color-text-quaternary: var(--color-gray-500);
-  --color-text-disabled: var(--color-gray-500);
-  --color-text-placeholder: var(--color-gray-500);
-  --color-text-placeholder_subtle: var(--color-gray-300);
+  /* SEMANTIC TEXT COLORS — brand-* (Gray Warm). The brand-* text tokens
+     are kept for API compatibility and resolve to the same neutrals. */
+  --color-text-primary: var(--color-brand-900);
+  --color-text-secondary: var(--color-brand-500);
+  --color-text-secondary_hover: var(--color-brand-600);
+  --color-text-tertiary: var(--color-brand-500);
+  --color-text-tertiary_hover: var(--color-brand-600);
+  --color-text-quaternary: var(--color-brand-400);
+  --color-text-disabled: var(--color-brand-400);
+  --color-text-placeholder: var(--color-brand-500);
+  --color-text-placeholder_subtle: var(--color-brand-300);
   --color-text-brand-primary: var(--color-brand-900);
-  --color-text-brand-secondary: var(--color-brand-700);
-  --color-text-brand-tertiary: var(--color-brand-600);
+  --color-text-brand-secondary: var(--color-brand-500);
+  --color-text-brand-tertiary: var(--color-brand-500);
   --color-text-error-primary: var(--color-error-600);
   --color-text-warning-primary: var(--color-warning-600);
   --color-text-success-primary: var(--color-success-600);
   --color-text-white: var(--color-white);
+  /* Text on a solid (lifted) brand surface — buttons, CTA, selected
+     pills. The lift is dark in both modes, so this is plain white. */
+  --color-text-on-brand: var(--color-white);
+  /* Variable token text + edit-state highlight inside message previews.
+     Variable text is the darkest neutral; the highlight is a dedicated
+     token (not the shared bg-brand-secondary) so tuning it stays scoped
+     to the editor and reads as content, not a chromatic highlight. */
+  --color-text-variable: var(--color-brand-950);
+  --color-bg-variable-highlight: var(--color-brand-100);
 
   /* SEMANTIC BORDER COLORS */
-  --color-border-primary: var(--color-gray-300);
-  --color-border-secondary: var(--color-gray-200);
-  --color-border-tertiary: var(--color-gray-100);
+  --color-border-primary: var(--color-brand-300);
+  --color-border-secondary: var(--color-brand-200);
+  --color-border-tertiary: var(--color-brand-100);
   --color-border-brand: var(--color-brand-500);
   --color-border-error: var(--color-error-500);
-  --color-border-disabled: var(--color-gray-300);
+  --color-border-disabled: var(--color-brand-300);
 
   /* SEMANTIC FOREGROUND COLORS */
-  --color-fg-primary: var(--color-gray-900);
-  --color-fg-secondary: var(--color-gray-700);
-  --color-fg-tertiary: var(--color-gray-600);
-  --color-fg-quaternary: var(--color-gray-400);
-  --color-fg-quaternary_hover: var(--color-gray-500);
-  --color-fg-disabled: var(--color-gray-400);
-  --color-fg-brand-primary: var(--color-brand-600);
+  --color-fg-primary: var(--color-brand-900);
+  --color-fg-secondary: var(--color-brand-500);
+  --color-fg-tertiary: var(--color-brand-400);
+  --color-fg-quaternary: var(--color-brand-400);
+  --color-fg-quaternary_hover: var(--color-brand-500);
+  --color-fg-disabled: var(--color-brand-300);
+  --color-fg-brand-primary: var(--color-brand-500);
   --color-fg-brand-secondary: var(--color-brand-500);
   --color-fg-error-primary: var(--color-error-600);
   --color-fg-error-secondary: var(--color-error-500);
@@ -100,22 +116,26 @@
   --color-fg-success-secondary: var(--color-success-500);
 
   /* SEMANTIC BACKGROUND COLORS */
-  --color-bg-primary: var(--color-white);
-  --color-bg-primary_hover: var(--color-gray-50);
-  --color-bg-secondary: var(--color-gray-50);
-  --color-bg-secondary_hover: var(--color-gray-100);
-  --color-bg-tertiary: var(--color-gray-100);
-  --color-bg-quaternary: var(--color-gray-200);
-  --color-bg-disabled: var(--color-gray-100);
-  --color-bg-disabled_subtle: var(--color-gray-50);
-  --color-bg-active: var(--color-gray-50);
-  --color-bg-overlay: var(--color-gray-950);
-  --color-bg-primary-solid: var(--color-gray-950);
-  --color-bg-secondary-solid: var(--color-gray-700);
+  --color-bg-primary: var(--color-brand-25);
+  --color-bg-primary_hover: var(--color-brand-50);
+  --color-bg-secondary: var(--color-brand-50);
+  --color-bg-secondary_hover: var(--color-brand-100);
+  --color-bg-tertiary: var(--color-brand-100);
+  --color-bg-quaternary: var(--color-brand-200);
+  --color-bg-disabled: var(--color-brand-100);
+  --color-bg-disabled_subtle: var(--color-brand-50);
+  --color-bg-active: var(--color-brand-50);
+  --color-bg-overlay: var(--color-brand-950);
+  --color-bg-primary-solid: var(--color-brand-950);
+  --color-bg-secondary-solid: var(--color-brand-700);
   --color-bg-brand-primary: var(--color-brand-50);
   --color-bg-brand-secondary: var(--color-brand-100);
-  --color-bg-brand-solid: var(--color-brand-600);
-  --color-bg-brand-solid_hover: var(--color-brand-700);
+  /* Lifted/actionable surface — solid buttons, the CTA, selected pills,
+     checked checkboxes. brand-800 in both modes; hover lifts one step. */
+  --color-bg-brand-solid: var(--color-brand-800);
+  --color-bg-brand-solid_hover: var(--color-brand-900);
+  --color-bg-brand-cta: var(--color-brand-800);
+  --color-bg-brand-cta_hover: var(--color-brand-900);
   --color-bg-error-primary: var(--color-error-50);
   --color-bg-error-secondary: var(--color-error-100);
   --color-bg-error-solid: var(--color-error-600);
@@ -126,61 +146,65 @@
   --color-bg-success-secondary: var(--color-success-100);
   --color-bg-success-solid: var(--color-success-600);
 
-  /* Code-block surface — distinct from bg-primary-solid so the home-page
-     CodeSample stays inverted (dark surface, light text) in both themes,
-     while bg-primary-solid is free to flip with theme tokens. */
-  --color-bg-code-surface: var(--color-gray-950);
+  /* Code-block surface — one step lighter than bg-primary so the
+     home-page CodeSample reads as a contained, inverted surface. */
+  --color-bg-code-surface: var(--color-brand-900);
 
   /* FEATURED ICON COLORS */
   --color-featured-icon-light-fg-brand: var(--color-brand-600);
-  --color-featured-icon-light-fg-gray: var(--color-gray-500);
+  --color-featured-icon-light-fg-gray: var(--color-brand-500);
   --color-featured-icon-light-fg-error: var(--color-error-600);
   --color-featured-icon-light-fg-warning: var(--color-warning-600);
   --color-featured-icon-light-fg-success: var(--color-success-600);
 
-  /* FOCUS RING */
+  /* FOCUS RING — neutral */
   --color-focus-ring: var(--color-brand-500);
 }
 
 /* ── Dark mode token overrides ──
-   Re-points semantic tokens to dark-appropriate values from the same
-   gray/brand palette. Base palette (--color-gray-*, --color-brand-*) is
-   not redeclared — only the semantic mappings flip. Tailwind v4 emits
-   --color-* custom properties at :root via @theme; this .dark block has
-   matching specificity and wins by source order. */
+   Re-points semantic tokens to dark-appropriate steps of the same Gray
+   Warm scale. Base palette is not redeclared — only the semantic
+   mappings flip. The .dark block matches @theme specificity and wins by
+   source order. */
 .dark {
-  /* TEXT */
-  --color-text-primary: var(--color-gray-50);
-  --color-text-secondary: var(--color-gray-200);
-  --color-text-secondary_hover: var(--color-gray-100);
-  --color-text-tertiary: var(--color-gray-300);
-  --color-text-tertiary_hover: var(--color-gray-200);
-  --color-text-quaternary: var(--color-gray-400);
-  --color-text-disabled: var(--color-gray-500);
-  --color-text-placeholder: var(--color-gray-400);
-  --color-text-placeholder_subtle: var(--color-gray-700);
-  --color-text-brand-primary: var(--color-brand-200);
+  /* TEXT — every non-headline tier (secondary/tertiary/quaternary,
+     placeholder, brand-secondary/tertiary, variable) sits one Gray Warm
+     step lighter than its naive mirror, for dark-mode readability.
+     text-primary / text-brand-primary (headlines) and text-disabled are
+     left as-is. */
+  --color-text-primary: var(--color-brand-50);
+  --color-text-secondary: var(--color-brand-300);
+  --color-text-secondary_hover: var(--color-brand-200);
+  --color-text-tertiary: var(--color-brand-400);
+  --color-text-tertiary_hover: var(--color-brand-300);
+  --color-text-quaternary: var(--color-brand-400);
+  --color-text-disabled: var(--color-brand-600);
+  --color-text-placeholder: var(--color-brand-400);
+  --color-text-placeholder_subtle: var(--color-brand-600);
+  --color-text-brand-primary: var(--color-brand-50);
   --color-text-brand-secondary: var(--color-brand-300);
-  --color-text-brand-tertiary: var(--color-brand-400);
+  --color-text-brand-tertiary: var(--color-brand-300);
   --color-text-error-primary: var(--color-error-300);
   --color-text-warning-primary: var(--color-warning-500);
   --color-text-success-primary: var(--color-success-500);
+  --color-text-variable: var(--color-white);
+  --color-bg-variable-highlight: var(--color-brand-700);
 
   /* BORDER */
-  --color-border-primary: var(--color-gray-700);
-  --color-border-secondary: var(--color-gray-800);
-  --color-border-tertiary: var(--color-gray-900);
-  --color-border-brand: var(--color-brand-400);
+  --color-border-primary: var(--color-brand-700);
+  --color-border-secondary: var(--color-brand-800);
+  --color-border-tertiary: var(--color-brand-900);
+  --color-border-brand: var(--color-brand-500);
   --color-border-error: var(--color-error-500);
-  --color-border-disabled: var(--color-gray-700);
+  --color-border-disabled: var(--color-brand-700);
 
   /* FOREGROUND */
-  --color-fg-primary: var(--color-gray-50);
-  --color-fg-secondary: var(--color-gray-300);
-  --color-fg-tertiary: var(--color-gray-400);
-  --color-fg-quaternary: var(--color-gray-500);
-  --color-fg-quaternary_hover: var(--color-gray-400);
-  --color-fg-disabled: var(--color-gray-600);
+  --color-fg-primary: var(--color-brand-50);
+  --color-fg-secondary: var(--color-brand-400);
+  --color-fg-tertiary: var(--color-brand-400);
+  --color-fg-quaternary: var(--color-brand-500);
+  --color-fg-quaternary_hover: var(--color-brand-400);
+  --color-fg-disabled: var(--color-brand-600);
   --color-fg-brand-primary: var(--color-brand-400);
   --color-fg-brand-secondary: var(--color-brand-400);
   --color-fg-error-primary: var(--color-error-500);
@@ -191,22 +215,24 @@
   --color-fg-success-secondary: var(--color-success-500);
 
   /* BACKGROUND */
-  --color-bg-primary: var(--color-gray-950);
-  --color-bg-primary_hover: var(--color-gray-900);
-  --color-bg-secondary: var(--color-gray-900);
-  --color-bg-secondary_hover: var(--color-gray-800);
-  --color-bg-tertiary: var(--color-gray-800);
-  --color-bg-quaternary: var(--color-gray-700);
-  --color-bg-disabled: var(--color-gray-800);
-  --color-bg-disabled_subtle: var(--color-gray-900);
-  --color-bg-active: var(--color-gray-900);
-  --color-bg-overlay: var(--color-gray-50);
-  --color-bg-primary-solid: var(--color-gray-900);
-  --color-bg-secondary-solid: var(--color-gray-300);
+  --color-bg-primary: var(--color-brand-950);
+  --color-bg-primary_hover: var(--color-brand-900);
+  --color-bg-secondary: var(--color-brand-900);
+  --color-bg-secondary_hover: var(--color-brand-800);
+  --color-bg-tertiary: var(--color-brand-800);
+  --color-bg-quaternary: var(--color-brand-700);
+  --color-bg-disabled: var(--color-brand-800);
+  --color-bg-disabled_subtle: var(--color-brand-900);
+  --color-bg-active: var(--color-brand-900);
+  --color-bg-overlay: var(--color-brand-50);
+  --color-bg-primary-solid: var(--color-brand-900);
+  --color-bg-secondary-solid: var(--color-brand-300);
   --color-bg-brand-primary: var(--color-brand-950);
   --color-bg-brand-secondary: var(--color-brand-900);
-  --color-bg-brand-solid: var(--color-brand-500);
-  --color-bg-brand-solid_hover: var(--color-brand-400);
+  --color-bg-brand-solid: var(--color-brand-800);
+  --color-bg-brand-solid_hover: var(--color-brand-700);
+  --color-bg-brand-cta: var(--color-brand-800);
+  --color-bg-brand-cta_hover: var(--color-brand-700);
   --color-bg-error-primary: var(--color-error-700);
   --color-bg-error-secondary: var(--color-error-700);
   --color-bg-error-solid: var(--color-error-500);
@@ -217,19 +243,18 @@
   --color-bg-success-secondary: var(--color-success-700);
   --color-bg-success-solid: var(--color-success-500);
 
-  /* Code-block surface stays gray-950 in dark mode too — intentional
-     theme-invariant value (see light-mode block for rationale). */
-  --color-bg-code-surface: var(--color-gray-950);
+  /* Code-block surface stays a lifted dark surface in dark mode too. */
+  --color-bg-code-surface: var(--color-brand-900);
 
   /* FEATURED ICON */
   --color-featured-icon-light-fg-brand: var(--color-brand-400);
-  --color-featured-icon-light-fg-gray: var(--color-gray-400);
+  --color-featured-icon-light-fg-gray: var(--color-brand-400);
   --color-featured-icon-light-fg-error: var(--color-error-500);
   --color-featured-icon-light-fg-warning: var(--color-warning-500);
   --color-featured-icon-light-fg-success: var(--color-success-500);
 
   /* FOCUS RING */
-  --color-focus-ring: var(--color-brand-400);
+  --color-focus-ring: var(--color-brand-500);
 
   /* Browser-native form controls / scrollbars match the active theme */
   color-scheme: dark;

@@ -34,7 +34,7 @@ const AI_TOOLS = [
 // Default text on the dark bg uses text-text-white.
 function CodeSample() {
   return (
-    <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-code-surface px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
+    <pre className="overflow-x-auto whitespace-pre rounded-xl border border-border-secondary bg-bg-code-surface px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
       <span className="text-fg-brand-secondary">import</span>
       {" { relaykit } "}
       <span className="text-fg-brand-secondary">from</span>
@@ -64,7 +64,7 @@ export default function MarketingHome() {
       <div className="pt-16">
         <div className="mx-auto max-w-5xl px-6">
           {/* PRE-LAUNCH (2026-05-15): temporary pre-launch tag — remove this element when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-brand-secondary">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-tertiary">
             PRE-LAUNCH · SHIPPING SUMMER 2026
           </p>
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
@@ -124,11 +124,11 @@ export default function MarketingHome() {
         <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           <div className="flex flex-col gap-5">
             <p className="text-base leading-relaxed text-text-secondary">
-              Starting fresh. RelayKit slots into the starter kits you use — ShipFast,
+              <strong className="font-bold text-text-primary">Starting fresh.</strong> RelayKit slots into the starter kits you use — ShipFast,
               Supastarter, MakerKit, Vercel + Supabase.
             </p>
             <p className="text-base leading-relaxed text-text-secondary">
-              Already built. Hand the build spec to your AI tool, point it at where you handle
+              <strong className="font-bold text-text-primary">Already built.</strong> Hand the build spec to your AI tool, point it at where you handle
               auth, and let it wire up the rest.
             </p>
           </div>
@@ -180,7 +180,7 @@ export default function MarketingHome() {
           <div>
             <h2 className="text-2xl font-bold text-text-primary">Simple pricing.</h2>
 
-            <div className="mt-6 rounded-xl border border-border-primary p-8">
+            <div className="mt-6 rounded-xl border border-border-secondary p-8 dark:bg-bg-secondary">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
                   Stage 1

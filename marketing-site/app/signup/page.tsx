@@ -12,7 +12,7 @@ export default function SignupPage() {
       <div className="mt-6 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-4">
         <Link
           href="/start/verify"
-          className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-white transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+          className="rounded-lg bg-bg-brand-solid px-5 py-2.5 text-sm font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
         >
           Get early access
         </Link>
