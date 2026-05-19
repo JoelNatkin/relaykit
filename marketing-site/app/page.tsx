@@ -180,7 +180,7 @@ export default function MarketingHome() {
           <div>
             <h2 className="text-2xl font-bold text-text-primary">Simple pricing.</h2>
 
-            <div className="mt-6 rounded-xl border border-border-primary p-8">
+            <div className="mt-6 rounded-xl border border-border-primary p-8 dark:bg-bg-secondary">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
                   Stage 1

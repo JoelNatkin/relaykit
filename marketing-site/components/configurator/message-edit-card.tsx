@@ -143,7 +143,7 @@ export function MessageEditCard({
   }
 
   return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
       <div className="flex items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
           <span className="min-w-0 truncate text-sm font-semibold text-text-primary">
@@ -162,7 +162,7 @@ export function MessageEditCard({
       </div>
 
       <div className="mt-4">
-        <div className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs transition duration-100 ease-linear focus-within:border-border-brand">
+        <div className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs transition duration-100 ease-linear focus-within:border-border-brand dark:bg-bg-secondary">
           <MessageEditor
             body={editBody}
             variables={variables}

@@ -127,7 +127,7 @@ export function CustomMessageCard({
   if (!isEditing) {
     const segments = interpolateBody(body, variables, businessName);
     return (
-      <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+      <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
         <div className="flex items-center gap-3">
           <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">
             {name || "Untitled message"}
@@ -167,7 +167,7 @@ export function CustomMessageCard({
   }
 
   return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs">
+    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
       <div>
         <label
           htmlFor="custom-message-name"
@@ -182,7 +182,7 @@ export function CustomMessageCard({
           value={editName}
           onChange={(e) => setEditName(e.target.value)}
           placeholder="e.g. Holiday hours"
-          className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs transition duration-100 ease-linear focus:border-border-brand focus:outline-none"
+          className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder shadow-xs transition duration-100 ease-linear focus:border-border-brand focus:outline-none dark:bg-bg-secondary"
         />
       </div>
 
@@ -195,7 +195,7 @@ export function CustomMessageCard({
         </label>
         <div
           id="custom-message-body"
-          className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs transition duration-100 ease-linear focus-within:border-border-brand"
+          className="w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 shadow-xs transition duration-100 ease-linear focus-within:border-border-brand dark:bg-bg-secondary"
         >
           <MessageEditor
             body={editBody}
