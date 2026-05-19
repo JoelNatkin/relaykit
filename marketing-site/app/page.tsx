@@ -34,7 +34,7 @@ const AI_TOOLS = [
 // Default text on the dark bg uses text-text-white.
 function CodeSample() {
   return (
-    <pre className="overflow-x-auto whitespace-pre rounded-xl bg-bg-code-surface px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
+    <pre className="overflow-x-auto whitespace-pre rounded-xl border border-border-secondary bg-bg-code-surface px-6 py-6 text-sm font-mono leading-relaxed text-text-white">
       <span className="text-fg-brand-secondary">import</span>
       {" { relaykit } "}
       <span className="text-fg-brand-secondary">from</span>
@@ -180,7 +180,7 @@ export default function MarketingHome() {
           <div>
             <h2 className="text-2xl font-bold text-text-primary">Simple pricing.</h2>
 
-            <div className="mt-6 rounded-xl border border-border-primary p-8 dark:bg-bg-secondary">
+            <div className="mt-6 rounded-xl border border-border-secondary p-8 dark:bg-bg-secondary">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-text-tertiary">
                   Stage 1

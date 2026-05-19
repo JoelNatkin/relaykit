@@ -337,7 +337,7 @@ export function ConfiguratorSection() {
 
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
             {/* Categories panel */}
-            <div className="rounded-xl border border-border-secondary bg-bg-primary md:min-w-60 dark:bg-bg-secondary">
+            <div className="rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
               <div className="px-4 pt-5 pb-3">
                 <h3 className="text-base font-semibold text-text-primary">Categories</h3>
                 <div className="mt-4">
