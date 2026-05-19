@@ -1818,3 +1818,13 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none — no prior decision specified brand-purple as the accent; it was an unrecorded default. (D-378's parenthetical dark-mode brand-shift example, "brand-600 → brand-500," is now stale and may want a light amendment.)
 
 **Amended:** 2026-05-19 — "Checked checkboxes" removed from the lifted-element list above; the brand-800 lifted treatment now applies to CTA and selected pills only. Checkbox checked state uses the form-control treatment — matches the dropdown trigger's fill + border, with a hand-rendered check glyph on top; the 1px stroke is retained (the glyph has comfortable spacing in the box).
+
+## D-406 — `early_access_subscribers` is RLS-locked; the rest of the schema is not
+
+**Decided:** 2026-05-19 (Session 98)
+
+**Decision:** Row-level security is enabled on the `early_access_subscribers` table with an explicit restrictive deny-all policy for the `anon` and `authenticated` roles; service-role calls bypass RLS and are unaffected. No other table in the schema gets RLS in this pass. Migration `008_early_access_subscribers_rls.sql`.
+
+**Why:** It is the only table reached from a public, unauthenticated endpoint (`POST /api/early-access`), and the Supabase URL + anon key ship to the browser — so without RLS the subscriber list is readable and writable by anyone holding the public anon key. A schema-wide RLS pass is separate, out-of-scope work.
+
+**Supersedes:** none
