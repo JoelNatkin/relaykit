@@ -9,7 +9,7 @@
 - Last updated: 2026-05-19
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
 - Decision count: 320 active, latest D-405; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: `feat/warm-monochrome-brand` — unmerged feature branch, 11 commits (warm-monochrome brand pivot wave; latest commit reverts an overshooting variable-token contrast change); pushed to origin, awaiting Joel's Vercel preview before merge. `main` carries the merged `feat/configurator-one-corpus` work plus direct-to-main blog and UI-polish commits.
+- Branch state: `main` only — no unmerged feature branches. `feat/warm-monochrome-brand` merged to `main` Session 97 (`--no-ff`, merge commit `2e660bf`) then deleted local + remote; `main` now carries the monochromatic warm-neutral brand pivot (D-405) plus the waitlist-submission analytics events.
 - Active explorations: None
 
 ## Active explorations
@@ -35,7 +35,7 @@ _No active explorations._
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-19 (Session 96) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-19 (Session 97) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-18 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)

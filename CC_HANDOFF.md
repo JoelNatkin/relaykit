@@ -1,70 +1,65 @@
-# CC_HANDOFF — Session 96 (final) — warm-monochrome brand pivot + Session 96 wrap
+# CC_HANDOFF — Session 97 — warm-monochrome brand pivot merged + waitlist analytics
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
 **Date:** 2026-05-19
-**Branches:** `main` — current, carries all merged Session 96 work. `feat/warm-monochrome-brand` — 11 commits, **pushed, not merged**, awaiting Joel's Vercel preview (both modes).
+**Branches:** `main` only — current, carries all session work. No unmerged feature branches.
 
-`Commits: 18 | Decisions added: 2 (D-404, D-405) | Branches: feat/configurator-one-corpus merged+deleted, feat/warm-monochrome-brand pushed/unmerged | External actions: ~13 git pushes + 1 remote branch delete`
+`Commits: 10 | Files modified: 14 | Decisions added: 0 (D-405 amended) | External actions: ~13 (git pushes + 1 remote branch delete + 2 deploy-verification web fetches)`
 
 ---
 
 ## Session character
 
-A long multi-wave session. Three waves landed on `main`; a fourth — the brand pivot — is on an unmerged branch and was heavily iterated.
+Continuation and completion of the warm-monochrome brand pivot. The `feat/warm-monochrome-brand` branch took 6 more commits this session, was merged to `main` (`--no-ff`, `2e660bf`) and deleted, the Vercel production deploy was verified live on `relaykit.ai`, then one analytics commit landed direct to `main`. Closed with this doc sweep.
 
-## Wave 1 — configurator polish (merged to main)
+## Completed work
 
-`feat/configurator-one-corpus` (carried from Session 95) took two more commits — four polish fixes (`2aa72ed`: removed pricing fine-print, restored message-card tooltips, fixed sub-tooltip clipping, combined Copy output) and a tooltip-delay halving (`ddebd20`). **D-404** recorded (Copy button combined output). Branch merged to `main` (`1f54684`, `--no-ff`) and deleted local + remote.
+- **Variable-token contrast** (`11c0830`, `db5d88c`) — light variable text → `brand-950`, dark → `#FFFFFF`; new dedicated `--color-bg-variable-highlight` token (scoped, not the shared `bg-brand-secondary`).
+- **Dark-mode card-surface separation** (`ebdbb6c`, `f9d7cf4`) — content containers lift to `bg-secondary` in dark mode; Categories panel reverted to flush; pricing + code-block borders matched to the Preview-list card.
+- **Checkbox conversion** (`38e6723`, `6eadea9`) — native `<input>` checkboxes → custom `appearance-none` boxes matching the preset-dropdown trigger; category-row `size-5`, sub-row `size-4`. Recorded the **D-405 amendment** (checked checkboxes leave the brand-800 lifted-element group) in the same commit.
+- **Text polish** (`61b1b08`) — per-category Name placeholders, tightened pre-launch copy, hero eyebrow + inline-label color matches, Marketing reordered to second category position.
+- **Brand pivot merged** (`2e660bf`) — `feat/warm-monochrome-brand` → `main`, no conflicts, branch deleted local + remote. Vercel production deploy verified serving the merged state on `relaykit.ai`.
+- **Waitlist analytics** (`e562cb4`) — added `early_access_submitted` and `early_access_submission_failed` PostHog events to the waitlist modal submission handler. Total client events now 8.
 
-## Wave 2 — blog edit (merged to main)
+## In-progress work
 
-`7b6e82a` rewrote the published post body and retitled it **"Adding texts to your app is a month-long trap"**; `8cdea1f` tightened its description. Direct to `main` (copy-only edits).
+None. Clean state — no unmerged branches, no open WIP.
 
-## Wave 3 — UI polish (merged to main)
+## Quality checks
 
-`17ab32a` — tighter pill padding, configurator 40px gap rule, sun/moon dark-mode toggle. `dcd6dfc` — 300px categories column, icon-only hover on the dark-mode toggle. Direct to `main`.
-
-## Wave 4 — warm-monochrome brand pivot (`feat/warm-monochrome-brand`, UNMERGED)
-
-10 commits + this close-out. Pivots the brand from a purple accent to a monochromatic warm-neutral system — **D-405**. Final state: Untitled UI "Gray Warm" scale (`brand-950` overridden to `#13120E`), one scale carries surfaces/text/borders/lifted elements, no chromatic accent; lifted elements (CTA, selected pills, checked checkboxes) use `brand-800` in both modes.
-
-Commit arc: token map → CTA/on-brand wiring → D-405 → chroma-pull (warm bg / neutral fg) → neutral checkboxes + subtler CTA + code surface → Gray Warm scale adoption → `brand-950` override → dark-mode text lighten → variable-contrast boost → **revert of the variable-contrast boost** (`d8babc6`, latest). The branch is `tsc`/`eslint`/`next build` clean.
-
-## Quality gates
-
-`tsc --noEmit`, `eslint .`, `next build` all clean on `marketing-site/` at branch HEAD (this close-out).
+`tsc --noEmit` and `eslint .` clean on `marketing-site/` at every commit and at this close-out HEAD. Production build verified via the Vercel deploy (`relaykit.ai` confirmed serving the merged state).
 
 ## Decisions
 
-- **D-404** — added Wave 1, on `main` (configurator Copy output).
-- **D-405** — added + iterated Wave 4, on the branch (brand pivot to Untitled UI Gray Warm). **Amended this close-out** to record the `brand-950 → #13120E` override. `Supersedes: none` — grep-confirmed; purple was never a recorded decision. Seven gate tests pass.
-- Active count **320**, latest **D-405**.
+- **No decisions added.** Count stays **320**, latest **D-405**.
+- **D-405 amended** this session (commit `38e6723`): "checked checkboxes" removed from the brand-800 lifted-element list; checkbox checked state now uses the form-control treatment. Next pre-flight ledger scan should treat this amendment as PM-ratified (PM directed it via the override decision this session).
+- **PostHog instrumentation — D-number considered and skipped.** PM directed applying the seven gate tests. Skipped because the PostHog-vs-Plausible/Fathom choice is *not actually resolved* — it is an open reconciliation item (see Gotcha 1), so a D-number would assert a decision that hasn't been made. Per the product/marketing seam rule, analytics-tooling-for-the-marketing-funnel is mostly-marketing → if/when decided it belongs in `MARKETING_STRATEGY` as an MD-number, not `DECISIONS`.
 
 ## Gotchas for next session
 
-1. **`feat/warm-monochrome-brand` unmerged** — 11 commits, pushed. Joel previews both modes on Vercel, then merge + delete.
-2. **Variable-token read-state contrast is unresolved.** Two treatments rejected: plain neutral text (undershoots — "whispers") and a strong value + backdrop (`673e487`, overshot — reverted by `d8babc6`). The branch currently sits on the plain-text version, which undershoots. **Next likely direction: if further non-chromatic tweaks keep undershooting, reintroduce a single restrained chromatic treatment for variable tokens specifically** — a deliberate, scoped exception to D-405's no-chromatic-accent rule. PM call; flag before implementing.
-3. **Marketing-site cards / Categories panel / inputs are `bg-bg-primary`** (flush with the page — bordered, not lifted). The token system now formally defines lifted surfaces (`bg-secondary`/`bg-tertiary`); moving those components is a clean follow-up if Joel wants real surface lift. Flagged across several turns.
-4. **D-378's purple-scale dark-shift parenthetical** — PROTOTYPE_SPEC now points it at D-405; D-378's own text still carries the stale note. Optional formal amendment.
-5. **Favicon + OG image still brand-purple** — separate asset task, out of scope for token work.
-6. **Trust-strip tool logos** — baked-color SVG files; they don't follow the token system.
-7. Carry-overs from Wave 1: **D-380 drift** (PM to reconcile the dropped `website` configurator field); **waitlist operator steps** (verify Resend domain, set env vars, apply migration `007`); **`docs/POST_TOPICS.md` still untracked**.
+1. **`MARKETING_STRATEGY.md` says Plausible/Fathom for site analytics + PostHog "post-customer-acquisition"** (lines 217, 219) — but PostHog is the live tool now, capturing 8 site/funnel events pre-acquisition. **Flag for the next MARKETING_STRATEGY session** to reconcile (likely an MD-number adopting PostHog; retire or rescope the Plausible/Fathom line).
+2. **PostHog env var fails silently.** The var is `NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN` (not `…_KEY`); `posthog-provider.tsx:11` no-ops silently if it or `NEXT_PUBLIC_POSTHOG_HOST` is missing. Confirm both are set in Vercel production or all 8 events are dark with no error.
+3. **PRODUCT_SUMMARY not updated** — the brand pivot is a visual restyle, not a customer-journey / screen / flow change; per the maintenance criteria that is a PROTOTYPE_SPEC concern. "Last reviewed" already reads 2026-05-19. No edit made — intentional.
+4. **`size-5` category checkbox alignment** — the wrapper keeps `mt-0.5` for both sizes; a 20px box against `text-sm` title text may sit ~2px low. Eyeball on the live site; trivial `mt` tweak if it reads off.
+5. **Brand-purple still in assets** — favicon + OG image are still the old purple; trust-strip tool-logo SVGs carry baked colors. Separate asset task, out of scope for the token pivot.
+6. **D-378's parenthetical dark-mode brand-shift example** ("brand-600 → brand-500") is still stale; PROTOTYPE_SPEC already points dark-mode brand tokens at D-405. Optional formal amendment.
+7. **`docs/POST_TOPICS.md` still untracked** (carry-over) — PM to decide commit or remove.
 
 ## Files modified this session
 
-Wave 4 (branch): `marketing-site/app/globals.css` (token map, rewritten repeatedly), `lib/editor/variable-token.ts`, `components/configurator-section.tsx`, `components/configurator/{message-edit-card,custom-message-card}.tsx`, `components/top-nav.tsx`, `components/waitlist-modal.tsx`, `app/page.tsx`, `app/signup/page.tsx`, `app/start/verify/verify-form.tsx`, `app/start/get-started/get-started-form.tsx`. Close-out docs: `DECISIONS.md`, `PROTOTYPE_SPEC.md`, `docs/PRODUCT_SUMMARY.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`. (Waves 1–3 file lists are in git history on `main`.)
+Code: `marketing-site/app/globals.css`, `app/page.tsx`, `lib/editor/variable-node-view.tsx`, `lib/message-library/index.ts`, `components/configurator-section.tsx`, `components/configurator/{message-edit-card,custom-message-card,preset-dropdown}.tsx`, `components/preview-list-mock.tsx`, `components/waitlist-modal.tsx`. Ledger: `DECISIONS.md` (D-405 amendment). Close-out docs: `PROTOTYPE_SPEC.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`.
 
 ## Unmerged branches
 
-**`feat/warm-monochrome-brand`** — 11 commits, build-green, pushed to origin, not merged. Waiting on Joel's Vercel preview.
+None.
 
 ## Retirement sweep / drift watch
 
-Skipped — mid-phase, Phase 1 (Sinch Proving Ground) still active.
+Skipped — mid-phase, Phase 1 (Sinch Proving Ground) still active, no phase boundary crossed.
 
 ## Suggested next session
 
-Either (a) iterate the variable-token contrast once more on the branch (Gotcha 2), then shepherd `feat/warm-monochrome-brand` to merge after Joel's preview; or (b) open the next message-authoring category, **Marketing** (`marketing-site/lib/message-library/marketing.ts`).
+**First Indie Hackers post.** The `relaykit-writing` skill auto-primes. Read both draft versions before deciding the approach — go-as-is vs. tighten vs. reframe.
