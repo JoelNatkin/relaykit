@@ -25,7 +25,7 @@ import {
   flattenBody,
 } from "@/lib/message-library";
 import type { Category, Message, VariantTone } from "@/lib/message-library";
-import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
+import { VARIABLE_TOKEN_READ_CLASSES } from "@/lib/editor/variable-token";
 
 const PAGE_TONES: VariantTone[] = ["Standard", "Friendly", "Brief"];
 
@@ -138,7 +138,7 @@ function MessageReadCard({
         <p className="text-sm leading-relaxed text-text-secondary">
           {segments.map((seg, i) =>
             seg.isVariable ? (
-              <span key={i} className={VARIABLE_TOKEN_CLASSES}>
+              <span key={i} className={VARIABLE_TOKEN_READ_CLASSES}>
                 {seg.text}
               </span>
             ) : (

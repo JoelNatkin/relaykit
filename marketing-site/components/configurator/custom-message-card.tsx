@@ -13,7 +13,10 @@ import { Plus } from "@untitledui/icons";
 import type { Editor } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import { MessageEditor } from "@/lib/editor/message-editor";
-import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
+import {
+  VARIABLE_TOKEN_CLASSES,
+  VARIABLE_TOKEN_READ_CLASSES,
+} from "@/lib/editor/variable-token";
 import { checkCompliance } from "@/lib/configurator/compliance";
 import { interpolateBody, resolveVariableExample } from "@/lib/message-library/render";
 import type { Variable } from "@/lib/message-library";
@@ -153,7 +156,7 @@ export function CustomMessageCard({
           <p className="text-sm leading-relaxed text-text-secondary">
             {segments.map((seg, i) =>
               seg.isVariable ? (
-                <span key={i} className={VARIABLE_TOKEN_CLASSES}>
+                <span key={i} className={VARIABLE_TOKEN_READ_CLASSES}>
                   {seg.text}
                 </span>
               ) : (
