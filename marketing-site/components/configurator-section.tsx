@@ -54,24 +54,39 @@ function tonePillClasses(active: boolean): string {
  * "Recommended combinations" dropdown trigger's fill + border in both
  * modes (bg-bg-primary / dark:bg-bg-secondary, border-border-primary).
  * The check glyph renders on top of the same fill; the 1px stroke is
- * kept for the checked state — a 10px glyph in a 16px box has room.
+ * kept for the checked state. Category rows use the larger size-5 box,
+ * sub rows the size-4 box; `disabled` (Coming-soon categories) softens
+ * the border. The box className is identical across checked/unchecked,
+ * so the box never changes size on toggle.
  */
-function ConfiguratorCheckbox({ checked }: { checked: boolean }) {
+function ConfiguratorCheckbox({
+  checked,
+  size = "sub",
+  disabled = false,
+}: {
+  checked: boolean;
+  size?: "sub" | "category";
+  disabled?: boolean;
+}) {
+  const boxSize = size === "category" ? "size-5" : "size-4";
+  const glyphSize = size === "category" ? "size-3" : "size-2.5";
+  const borderColor = disabled ? "border-border-secondary" : "border-border-primary";
   return (
-    <span className="relative mt-0.5 inline-flex size-4 shrink-0">
+    <span className={`relative mt-0.5 inline-flex ${boxSize} shrink-0`}>
       <input
         type="checkbox"
         checked={checked}
         readOnly
         tabIndex={-1}
-        className="size-4 appearance-none rounded border border-border-primary bg-bg-primary dark:bg-bg-secondary"
+        disabled={disabled}
+        className={`${boxSize} appearance-none rounded border ${borderColor} bg-bg-primary dark:bg-bg-secondary`}
       />
       {checked ? (
         <svg
           viewBox="0 0 10 10"
           fill="none"
           aria-hidden
-          className="pointer-events-none absolute inset-0 m-auto size-2.5 text-text-primary"
+          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} text-text-primary`}
         >
           <path
             d="M1.75 5.25 4 7.25 8.25 2.75"
@@ -404,7 +419,7 @@ export function ConfiguratorSection() {
                         onClick={() => handleCategoryToggle(category.id)}
                         className="flex w-full items-start gap-3 text-left"
                       >
-                        <ConfiguratorCheckbox checked={checked} />
+                        <ConfiguratorCheckbox checked={checked} size="category" />
                         <div className="flex-1">
                           <span className="text-sm font-medium text-text-primary">
                             {category.name}
@@ -418,12 +433,7 @@ export function ConfiguratorSection() {
                       </button>
                     ) : (
                       <div className="flex w-full items-start gap-3">
-                        <input
-                          type="checkbox"
-                          checked={false}
-                          disabled
-                          className="mt-0.5 size-4 shrink-0 rounded border-border-secondary"
-                        />
+                        <ConfiguratorCheckbox checked={false} size="category" disabled />
                         <div className="flex-1">
                           <span className="flex items-center gap-2">
                             <span className="text-sm font-medium text-text-primary">
