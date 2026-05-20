@@ -9,7 +9,7 @@
 - Last updated: 2026-05-20
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
 - Decision count: 322 active, latest D-407; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: `main` only — no unmerged feature branches. Session 98 landed six merges on main: `feat/early-access-rls` (D-406), `feat/section-rhythm-80px`, `feat/waitlist-modal-mobile` (mobile full-screen + copy tighten), `feat/waitlist-modal-fix-ios-zoom`, `feat/mobile-categories-modal` (D-407), `feat/configurator-cta-reorder`, and the three-branch tooltip series (`feat/tooltip-fixes` + `feat/tooltip-followups` + `feat/tooltip-position-refinements`). All deleted local + remote after merge.
+- Branch state: `main` only — no unmerged feature branches. Session 99 landed `feat/account-events-authoring` (Account events corpus authoring) via `--no-ff` merge, plus two direct-to-main fixup commits (`fix: account_link example uses developer's own domain, not a shortener` and `docs: remove stale link-shortening backlog entry`). Branch deleted local + remote post-merge.
 - Active explorations: None
 
 ## Active explorations
@@ -30,13 +30,13 @@ _No active explorations._
 | `DECISIONS.md` | 2026-05-20 | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
 | `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` | 2026-04-27 | Archived REPO_INDEX change-log entries (Sessions 1–49 era). |
-| `PROTOTYPE_SPEC.md` | 2026-05-20 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
+| `PROTOTYPE_SPEC.md` | 2026-05-20 (Session 99 — Account events live note) | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-05-13 | Post-signup workspace architecture (state machine, layout systems). |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-20 (Session 98) | Previous CC session state (transient, overwritten each close-out). |
-| `BACKLOG.md` | 2026-05-18 | Parked ideas; never build without explicit promotion. |
+| `CC_HANDOFF.md` | 2026-05-20 (Session 99) | Previous CC session state (transient, overwritten each close-out). |
+| `BACKLOG.md` | 2026-05-20 (Session 99 — Pri 3 configurator-derive-account_link entry; stale link-shortening entry removed) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
 
@@ -48,7 +48,7 @@ _No active explorations._
 | `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Tier 1 project knowledge). |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-17 | AGENTS.md / cursor-rules research informing Phase 8; retires when Phase 8 closes. |
 | `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-04-30 | Sinch/TCR brand registration field reference (Experiment 3a capture). |
-| `PRODUCT_SUMMARY.md` | 2026-05-20 | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
+| `PRODUCT_SUMMARY.md` | 2026-05-20 (Session 99 — configurator now 2 live categories) | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
 | `LEGAL_DOC_DEFERRED_CLAIMS.md` | 2026-04-28 | Tracking doc for claims removed from `/marketing-site` legal docs pending feature ship, with restoration triggers. |
 | `PRE_LAUNCH_DEVIATIONS.md` | 2026-05-16 | Tracking doc for marketing-site pre-launch-posture copy/UI deviations, with per-entry pre-launch-only vs permanent classification and restoration triggers. |
 | `VERIFICATION_SPEC.md` | 2026-05-13 | Canonical OTP/verification feature surface (server, SDK, dashboard, onboarding); drives D-369/D-370/D-371. |
@@ -146,16 +146,17 @@ Early-access waitlist per MD-20 (DIY on Supabase + Resend over a hosted vendor),
 
 Modified: `app/layout.tsx` (WaitlistProvider + modal mount); `app/page.tsx`, `components/top-nav.tsx`, `components/configurator-section.tsx` (CTAs rewired to the modal; configurator publishes its selection summary up); `package.json` (`resend` dep); `.env.example` (`RESEND_API_KEY`). Pre-launch posture deviations tracked in `docs/PRE_LAUNCH_DEVIATIONS.md`. The modal was design-polished Session 91 (`feat/waitlist-modal-design`) — founder voice, category pills, simplified success state.
 
-## message-library (Session 91 scaffold; Session 94 Verification authoring; Session 95 configurator integration)
+## message-library (Session 91 scaffold; Session 94 Verification authoring; Session 95 configurator integration; Session 99 Account events authoring)
 
-Wave 2 message-library — a typed corpus of SMS message templates organized by category. Scaffolded Session 91 on `feat/message-library-scaffold`; Session 94 extended the schema corpus-wide (tone variants, per-category variable catalogs, compliance blocks) and authored the first category, Verification, on `feat/verification-message-authoring` (merged to main). The other 8 categories remain empty stubs pending later authoring passes. Session 95 (`feat/configurator-one-corpus`) added a category `description` field + a `Sub.tooltip` field, and made the home-page configurator consume the corpus directly (see "configurator" section below).
+Wave 2 message-library — a typed corpus of SMS message templates organized by category. Scaffolded Session 91 on `feat/message-library-scaffold`; Session 94 extended the schema corpus-wide (tone variants, per-category variable catalogs, compliance blocks) and authored the first category, Verification, on `feat/verification-message-authoring` (merged to main). Session 95 (`feat/configurator-one-corpus`) added a category `description` field + a `Sub.tooltip` field, and made the home-page configurator consume the corpus directly (see "configurator" section below). Session 99 (`feat/account-events-authoring`) authored the second category, Account events, and added the `account_link` variable (workspace-settings-sourced, developer's own domain). The other 7 categories remain empty stubs pending later authoring passes.
 
 | Path | Purpose |
 |------|---------|
 | `marketing-site/lib/message-library/types.ts` | Type system — `Classification`/`TCRMapping`/`VariantTone`/`VariableSource` unions; `Variable`, `MessageVariant`, `Message`, `CategoryCompliance`, `Sub`/`Stage` interfaces; `Discrete`/`Workflow`/`Hybrid` `Category` interfaces (each carrying `variables` + `compliance`) discriminated by `classification`. |
 | `marketing-site/lib/message-library/shared-variables.ts` | Cross-corpus variable catalog (`SHARED_VARIABLES` — business_name, workspace_name, customer_name, first_name); categories import the entries they use. |
 | `marketing-site/lib/message-library/verification.ts` | Verification category — **populated** (Session 94): 4 subs / 4 messages / 12 tone variants, 3-variable catalog, 5-rule compliance block. |
-| `marketing-site/lib/message-library/[category].ts` | 8 remaining per-category typed stubs (appointments, order-updates, customer-support, marketing, team-alerts, community, waitlist, account-events) — empty subs/stages, empty `variables`/`compliance`. |
+| `marketing-site/lib/message-library/account-events.ts` | Account events category — **populated** (Session 99): 5 subs / 5 messages / 15 tone variants, 5-variable catalog (workspace_name + account_link + card_last4 + days_remaining + device_context), 6-rule compliance block. account_link is the developer's own account/billing URL on their own domain (RelayKit does not shorten or host it); budgetChars 19, example "yourapp.com/billing" — static developer-domain placeholder. |
+| `marketing-site/lib/message-library/[category].ts` | 7 remaining per-category typed stubs (appointments, order-updates, customer-support, marketing, team-alerts, community, waitlist) — empty subs/stages, empty `variables`/`compliance`. |
 | `marketing-site/lib/message-library/index.ts` | Barrel — re-exports the type system, `SHARED_VARIABLES`, render helpers, the 9 category consts, the ordered `CATEGORIES` list, and `categorySubs`/`isAuthored`. |
 | `marketing-site/lib/message-library/render.ts` | Corpus-native `{{token}}` rendering — `interpolateBody`, `extractTokens`, `flattenBody`, `resolveVariableExample`. |
 | `audits/research/2026-05-16/[category].md` | 9 per-category lead-magnet research files (PM-authored; §6-resolved Session 93). |
