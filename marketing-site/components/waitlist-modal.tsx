@@ -42,24 +42,6 @@ function Spinner() {
   );
 }
 
-function CategoryPills({ titles }: { titles: string[] }) {
-  return (
-    <div>
-      <p className="mb-2 text-base text-text-tertiary">Live at launch:</p>
-      <div className="flex flex-wrap gap-1.5">
-        {titles.map((title) => (
-          <span
-            key={title}
-            className="inline-flex items-center rounded-full border border-bg-brand-secondary bg-bg-brand-secondary px-3 py-1.5 text-sm font-medium text-text-brand-secondary"
-          >
-            {title}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 function FounderSignoff() {
   return (
     <p className="mt-2 text-base text-text-tertiary">— Joel, solo founder</p>
@@ -71,11 +53,6 @@ export function WaitlistModal() {
   const posthog = usePostHog();
   const [status, setStatus] = useState<Status>("idle");
   const [email, setEmail] = useState("");
-
-  const categoryTitles =
-    summary.categoryTitles.length > 0
-      ? summary.categoryTitles
-      : ["Verification"];
 
   // Reset to a clean form each time the modal opens.
   useEffect(() => {
@@ -199,7 +176,7 @@ export function WaitlistModal() {
                 You&apos;re in.
               </h2>
               <p className="mt-3 text-base leading-relaxed text-text-secondary">
-                I&apos;ll send you an email when it ships.
+                Check your inbox — I sent a note.
               </p>
               <button
                 type="button"
@@ -217,16 +194,15 @@ export function WaitlistModal() {
             >
               <div>
                 <h2 className="text-2xl font-bold text-text-primary">
-                  Get on the list
+                  Join the list
                 </h2>
                 <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-                  Summer 2026 is the target. I&apos;ll send one email when
-                  it&apos;s live — no drip, no marketing churn.
+                  Summer 2026 is the target. We&apos;re launching with
+                  verification and marketing, the rest as they&apos;re ready.
+                  I&apos;ll send you an email when we&apos;re live.
                 </p>
                 <FounderSignoff />
               </div>
-
-              <CategoryPills titles={categoryTitles} />
 
               <div className="mt-4">
                 <label
