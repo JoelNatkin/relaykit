@@ -42,8 +42,6 @@
 
 - **Placeholder values for non-name configurator fields** — "Acme" works as the example for `business_name`; `acme.com` for `website`. What's the example for `business_type`? `service_type`? Strategy options: (a) generic single-category placeholders ("studio" / "haircut" / "delivery"), (b) per-category placeholder sets matched to the category's vertical context, (c) context-bound demo personas (Marketing's "Acme Apparel, boutique, clothing"). Decide alongside `Variable.example` design for these tokens. (Origin: Session 95 D-380 follow-up review)
 
-- **Link-shortening + D-402 segment math** — Pri 3. `account_link` budgetChars:18 is provisional, tied to RelayKit issuing a deterministic fixed-length short-URL form. If that form's length changes, every link-bearing variant's worst-case headroom shifts. (Origin: Session 99 Account events authoring)
-
 - **Configurator — derive `account_link` example from the business-name input** the way `workspace_name` does (acme → acme.com/billing), instead of a static placeholder. Pri 3. Render-layer work in session-context + render. (Origin: Session 99 Account events catalog fix)
 
 - **Rejected state registration data display** — Expand "What was submitted" fields based on carrier error code mapping. Currently shows business name, EIN (masked), address, use case. May need website URL, business description, etc. (Origin: Settings PRD session, March 22–23)
