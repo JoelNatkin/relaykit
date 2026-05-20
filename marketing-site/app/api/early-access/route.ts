@@ -97,7 +97,7 @@ export async function POST(req: Request): Promise<Response> {
     "",
   );
   const unsubscribeUrl = `${origin}/api/unsubscribe?token=${token}`;
-  const welcome = buildWelcomeEmail({ categories, unsubscribeUrl });
+  const welcome = buildWelcomeEmail({ unsubscribeUrl });
   const sent = await sendWelcomeEmail(email, welcome);
   if (!sent.ok) {
     console.error("[early-access] welcome email not delivered for", email);
