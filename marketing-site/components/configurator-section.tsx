@@ -590,21 +590,21 @@ export function ConfiguratorSection() {
               </div>
 
               <div className="mt-10">
-                {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-                <p className="text-sm text-text-secondary">
-                  Pre-launch. The messages above are yours — copy them and use them
-                  with any provider today. The full product ships summer 2026.
-                </p>
                 {/* PRE-LAUNCH (2026-05-16): opens the waitlist modal. Revert to
                     a <Link> "Start building with SMS →" (href "/signup") when
                     onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
                 <button
                   type="button"
                   onClick={() => openModal("mid-page")}
-                  className="mt-4 flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
+                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
                 >
                   Get early access
                 </button>
+                {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
+                <p className="mt-4 text-sm text-text-secondary">
+                  Pre-launch. The messages above are yours — copy them and use them
+                  with any provider today. The full product ships summer 2026.
+                </p>
               </div>
             </div>
           </div>
