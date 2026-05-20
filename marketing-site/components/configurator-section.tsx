@@ -6,11 +6,9 @@ import { usePostHog } from "posthog-js/react";
 import { MessageEditCard } from "@/components/configurator/message-edit-card";
 import { CustomMessageCard } from "@/components/configurator/custom-message-card";
 import { Tooltip } from "@/components/configurator/tooltip";
-import { ComingSoonBadge } from "@/components/configurator/coming-soon-badge";
-import {
-  PresetDropdown,
-  type Preset,
-} from "@/components/configurator/preset-dropdown";
+import { CategoryList } from "@/components/configurator/category-list";
+import { MobileCategoriesSummary } from "@/components/configurator/mobile-categories-summary";
+import { MobileCategoriesModal } from "@/components/configurator/mobile-categories-modal";
 import { useWaitlist, type WaitlistSummary } from "@/context/waitlist-context";
 import { SessionProvider } from "@/lib/configurator/session-context";
 import {
@@ -20,7 +18,6 @@ import {
 import {
   CATEGORIES,
   categorySubs,
-  isAuthored,
   interpolateBody,
   flattenBody,
 } from "@/lib/message-library";
@@ -28,16 +25,6 @@ import type { Category, Message, VariantTone } from "@/lib/message-library";
 import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
 
 const PAGE_TONES: VariantTone[] = ["Standard", "Friendly", "Brief"];
-
-/** Dropdown presets. Only "Verification only" is reachable at launch. */
-const PRESETS: Preset[] = [
-  { id: "verification-only", label: "Verification only", disabled: false },
-  { id: "saas", label: "SaaS", disabled: true },
-  { id: "personal-services", label: "Personal services", disabled: true },
-  { id: "real-estate", label: "Real estate", disabled: true },
-  { id: "fitness", label: "Fitness", disabled: true },
-  { id: "ecommerce", label: "E-commerce", disabled: true },
-];
 
 const PRESET_VERIFICATION_ONLY = "Verification only";
 
@@ -60,58 +47,6 @@ function tonePillClasses(active: boolean): string {
   return active
     ? `${base} bg-bg-brand-solid text-text-on-brand border border-bg-brand-solid`
     : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
-}
-
-/**
- * Configurator checkbox — a custom appearance-none box matching the
- * "Recommended combinations" dropdown trigger's fill + border in both
- * modes (bg-bg-primary / dark:bg-bg-secondary, border-border-primary).
- * The check glyph renders on top of the same fill; the 1px stroke is
- * kept for the checked state. Category rows use the larger size-5 box,
- * sub rows the size-4 box; `disabled` (Coming-soon categories) softens
- * the border. The box className is identical across checked/unchecked,
- * so the box never changes size on toggle.
- */
-function ConfiguratorCheckbox({
-  checked,
-  size = "sub",
-  disabled = false,
-}: {
-  checked: boolean;
-  size?: "sub" | "category";
-  disabled?: boolean;
-}) {
-  const boxSize = size === "category" ? "size-5" : "size-4";
-  const glyphSize = size === "category" ? "size-3" : "size-2.5";
-  const borderColor = disabled ? "border-border-secondary" : "border-border-primary";
-  return (
-    <span className={`relative mt-0.5 inline-flex ${boxSize} shrink-0`}>
-      <input
-        type="checkbox"
-        checked={checked}
-        readOnly
-        tabIndex={-1}
-        disabled={disabled}
-        className={`${boxSize} appearance-none rounded border ${borderColor} bg-bg-primary dark:bg-bg-secondary`}
-      />
-      {checked ? (
-        <svg
-          viewBox="0 0 10 10"
-          fill="none"
-          aria-hidden
-          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} text-text-primary`}
-        >
-          <path
-            d="M1.75 5.25 4 7.25 8.25 2.75"
-            stroke="currentColor"
-            strokeWidth="1.75"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      ) : null}
-    </span>
-  );
 }
 
 /** Marketing-shaped categories require opt-out language; Verification does not. */
@@ -238,6 +173,7 @@ export function ConfiguratorSection() {
 
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
 
   const { openModal, setSummary } = useWaitlist();
   const posthog = usePostHog();
@@ -401,95 +337,35 @@ export function ConfiguratorSection() {
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
-            {/* Categories panel */}
-            <div className="rounded-xl border border-border-secondary bg-bg-primary md:min-w-60">
-              <div className="px-4 pt-5 pb-3">
-                <h3 className="text-base font-semibold text-text-primary">Categories</h3>
-                <div className="mt-4">
-                  <p className="mb-1.5 text-sm font-medium text-text-secondary">
-                    Recommended combinations
-                  </p>
-                  <PresetDropdown
-                    presets={PRESETS}
-                    value={presetValue}
-                    onSelect={selectPreset}
-                  />
-                </div>
-              </div>
+            {/* Mobile-only categories: collapsed summary row + full-page
+                modal. Both are display:none at md: and above — the desktop
+                panel below takes over the left grid cell there. */}
+            <div className="md:hidden">
+              <MobileCategoriesSummary
+                selected={checkedCategories}
+                onOpen={() => setMobileCategoriesOpen(true)}
+              />
+              <MobileCategoriesModal
+                isOpen={mobileCategoriesOpen}
+                onClose={() => setMobileCategoriesOpen(false)}
+                state={state}
+                presetValue={presetValue}
+                onCategoryToggle={handleCategoryToggle}
+                onSubToggle={handleSubToggle}
+                onSelectPreset={selectPreset}
+              />
+            </div>
 
-              {CATEGORIES.map((category) => {
-                const catState = state.categories[category.id];
-                const authored = isAuthored(category);
-                const checked = !!catState?.checked;
-                return (
-                  <div
-                    key={category.id}
-                    className="border-b border-border-secondary px-4 py-5 last:border-b-0"
-                  >
-                    {authored ? (
-                      <button
-                        type="button"
-                        onClick={() => handleCategoryToggle(category.id)}
-                        className="flex w-full items-start gap-3 text-left"
-                      >
-                        <ConfiguratorCheckbox checked={checked} size="category" />
-                        <div className="flex-1">
-                          <span className="text-sm font-medium text-text-primary">
-                            {category.name}
-                          </span>
-                          {!checked ? (
-                            <p className="mt-1 text-xs text-text-tertiary">
-                              {category.description}
-                            </p>
-                          ) : null}
-                        </div>
-                      </button>
-                    ) : (
-                      <div className="flex w-full items-start gap-3">
-                        <ConfiguratorCheckbox checked={false} size="category" disabled />
-                        <div className="flex-1">
-                          <span className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-text-primary">
-                              {category.name}
-                            </span>
-                            <ComingSoonBadge />
-                          </span>
-                          <p className="mt-1 text-xs text-text-tertiary">
-                            {category.description}
-                          </p>
-                        </div>
-                      </div>
-                    )}
-
-                    {authored && checked ? (
-                      <div className="mt-3 space-y-2 pl-7">
-                        {categorySubs(category).map((sub) => {
-                          const subChecked =
-                            !!catState?.subs[sub.id]?.checked;
-                          return (
-                            <Tooltip
-                              key={sub.id}
-                              content={sub.tooltip}
-                              className="w-full"
-                            >
-                              <button
-                                type="button"
-                                onClick={() => handleSubToggle(category.id, sub.id)}
-                                className="flex w-full items-start gap-2.5 text-left"
-                              >
-                                <ConfiguratorCheckbox checked={subChecked} />
-                                <span className="text-sm text-text-secondary">
-                                  {sub.name}
-                                </span>
-                              </button>
-                            </Tooltip>
-                          );
-                        })}
-                      </div>
-                    ) : null}
-                  </div>
-                );
-              })}
+            {/* Desktop categories panel (≥md:). Same content as the modal
+                via the shared CategoryList component. */}
+            <div className="hidden rounded-xl border border-border-secondary bg-bg-primary md:block md:min-w-60">
+              <CategoryList
+                state={state}
+                presetValue={presetValue}
+                onCategoryToggle={handleCategoryToggle}
+                onSubToggle={handleSubToggle}
+                onSelectPreset={selectPreset}
+              />
             </div>
 
             {/* Messages column */}
