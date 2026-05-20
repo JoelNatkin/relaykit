@@ -177,17 +177,17 @@ export function WaitlistModal() {
 
       {/* Modal */}
       <div
-        className="fixed inset-0 z-[101] flex items-center justify-center px-6"
+        className="fixed inset-0 z-[101] flex items-center justify-center sm:px-6"
         onClick={requestClose}
       >
         <div
-          className="relative w-full max-w-[400px] rounded-2xl bg-bg-primary p-8 shadow-xl"
+          className="relative h-full w-full overflow-y-auto rounded-none bg-bg-primary p-8 shadow-xl sm:h-auto sm:max-w-[400px] sm:overflow-visible sm:rounded-2xl"
           onClick={(e) => e.stopPropagation()}
         >
           <button
             type="button"
             onClick={requestClose}
-            className="absolute top-4 right-4 cursor-pointer p-1 text-text-quaternary transition duration-100 ease-linear hover:text-text-secondary"
+            className="absolute top-2 right-2 inline-flex size-11 cursor-pointer items-center justify-center text-text-quaternary transition duration-100 ease-linear hover:text-text-secondary"
             aria-label="Close"
           >
             <XClose className="size-5" />
@@ -241,7 +241,6 @@ export function WaitlistModal() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@yourapp.com"
-                  autoFocus
                   className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:ring-1 focus:ring-border-brand focus:outline-none"
                 />
               </div>
