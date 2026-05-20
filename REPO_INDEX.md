@@ -6,10 +6,10 @@
 
 ## Meta
 
-- Last updated: 2026-05-19
+- Last updated: 2026-05-20
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 320 active, latest D-405; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: `main` only — no unmerged feature branches. `feat/warm-monochrome-brand` merged to `main` Session 97 (`--no-ff`, merge commit `2e660bf`) then deleted local + remote; `main` now carries the monochromatic warm-neutral brand pivot (D-405) plus the waitlist-submission analytics events.
+- Decision count: 322 active, latest D-407; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Branch state: `main` only — no unmerged feature branches. Session 98 landed six merges on main: `feat/early-access-rls` (D-406), `feat/section-rhythm-80px`, `feat/waitlist-modal-mobile` (mobile full-screen + copy tighten), `feat/waitlist-modal-fix-ios-zoom`, `feat/mobile-categories-modal` (D-407), `feat/configurator-cta-reorder`, and the three-branch tooltip series (`feat/tooltip-fixes` + `feat/tooltip-followups` + `feat/tooltip-position-refinements`). All deleted local + remote after merge.
 - Active explorations: None
 
 ## Active explorations
@@ -23,19 +23,19 @@ _No active explorations._
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-19 | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-20 | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-15 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-16 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
-| `DECISIONS.md` | 2026-05-19 | Active product decisions D-84+. |
+| `DECISIONS.md` | 2026-05-20 | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
 | `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` | 2026-04-27 | Archived REPO_INDEX change-log entries (Sessions 1–49 era). |
-| `PROTOTYPE_SPEC.md` | 2026-05-19 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
+| `PROTOTYPE_SPEC.md` | 2026-05-20 | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-05-13 | Post-signup workspace architecture (state machine, layout systems). |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-19 (Session 97) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-20 (Session 98) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-18 | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -48,7 +48,7 @@ _No active explorations._
 | `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Tier 1 project knowledge). |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-17 | AGENTS.md / cursor-rules research informing Phase 8; retires when Phase 8 closes. |
 | `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-04-30 | Sinch/TCR brand registration field reference (Experiment 3a capture). |
-| `PRODUCT_SUMMARY.md` | 2026-05-19 | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
+| `PRODUCT_SUMMARY.md` | 2026-05-20 | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
 | `LEGAL_DOC_DEFERRED_CLAIMS.md` | 2026-04-28 | Tracking doc for claims removed from `/marketing-site` legal docs pending feature ship, with restoration triggers. |
 | `PRE_LAUNCH_DEVIATIONS.md` | 2026-05-16 | Tracking doc for marketing-site pre-launch-posture copy/UI deviations, with per-entry pre-launch-only vs permanent classification and restoration triggers. |
 | `VERIFICATION_SPEC.md` | 2026-05-13 | Canonical OTP/verification feature surface (server, SDK, dashboard, onboarding); drives D-369/D-370/D-371. |
@@ -171,7 +171,17 @@ The home-page configurator (`marketing-site/components/configurator-section.tsx`
 | `marketing-site/lib/configurator/session-context.tsx` | Holds the live `businessName` for variable previews. |
 | `marketing-site/components/configurator/message-edit-card.tsx` | Corpus message edit card — tone pills, "+ Variable", produces a sticky `MessageOverride`. |
 | `marketing-site/components/configurator/custom-message-card.tsx` | Visitor custom-message authoring card (Name + body + Variable picker). |
-| `marketing-site/components/configurator/{tooltip,coming-soon-badge,preset-dropdown}.tsx` | Leaf UI — 1.5s hover tooltip, "Coming soon" badge, reflective preset dropdown. |
+| `marketing-site/components/configurator/{tooltip,coming-soon-badge,preset-dropdown}.tsx` | Leaf UI — `Tooltip` (instant hover open as of Session 98; `?` icon triggers + centered body), "Coming soon" badge, reflective preset dropdown. |
+
+## configurator mobile categories pattern (Session 98 — D-407)
+
+Below `md:` (768px) the home configurator's categories panel collapses to a tappable summary row that opens a full-page mobile modal containing the full panel UI. Desktop unchanged via a shared `CategoryList` component. Built on branch `feat/mobile-categories-modal` (merged to main).
+
+| Path | Purpose |
+|------|---------|
+| `marketing-site/components/configurator/category-list.tsx` | Shared presentational panel content (preset dropdown + 9 category cards). Consumed by both the desktop categories card and the mobile full-page modal so the surfaces stay byte-identical. Carries the `ConfiguratorCheckbox` helper and `PRESETS` constant lifted from `configurator-section.tsx`. |
+| `marketing-site/components/configurator/mobile-categories-summary.tsx` | Collapsed-state summary row (mobile only, `md:hidden`). "Categories" label + count-based summary text ("Select categories" / one name / two names / "Name1, Name2 +N more") + "Edit ›" affordance. Whole row is a 64px+ button that opens the modal. |
+| `marketing-site/components/configurator/mobile-categories-modal.tsx` | Full-page mobile modal (`md:hidden`). Sticky header (44px X close, ESC support, body-scroll lock) + scrollable body rendering `<CategoryList>`. Body-scrolls (not shell-scrolls) layout pattern so the sticky header pins. Instant-apply — every toggle calls the same setter the desktop panel uses; modal stays open across selections. |
 
 ## Subdirectories
 

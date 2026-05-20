@@ -1828,3 +1828,15 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Why:** It is the only table reached from a public, unauthenticated endpoint (`POST /api/early-access`), and the Supabase URL + anon key ship to the browser — so without RLS the subscriber list is readable and writable by anyone holding the public anon key. A schema-wide RLS pass is separate, out-of-scope work.
 
 **Supersedes:** none
+
+## D-407 — Configurator categories panel collapses to a summary row + full-page modal below `md:`
+
+**Decided:** 2026-05-20 (Session 98)
+
+**Decision:** Below the `md:` (768px) breakpoint, the home configurator's categories panel renders as a single tappable summary row that opens a full-page modal containing the full panel UI. Above `md:`, the existing side-by-side two-column layout is unchanged. Implemented via three new components under `marketing-site/components/configurator/`: `category-list` (shared panel content), `mobile-categories-summary` (collapsed row), `mobile-categories-modal` (sticky-header full-page modal). Mobile and desktop swap via Tailwind class-based visibility (`md:hidden` / `hidden md:block`); no `useMediaQuery`.
+
+**Why:** On phones the 9-card categories panel scrolled ~3 screens, breaking the cognitive thread between "I picked X" and the message preview below. A collapsed summary row preserves the inline cue ("you picked Verification") while keeping full configurability one tap away. The desktop two-column layout already works; only the mobile presentation needed redesign.
+
+**Rejected alternative:** Keep the panel inline on mobile (no modal). Rejected because vertical scroll length disconnected categories selection from message preview.
+
+**Supersedes:** none

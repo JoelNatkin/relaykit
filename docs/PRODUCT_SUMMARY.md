@@ -8,7 +8,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-05-19
+> **Last reviewed:** 2026-05-20
 
 ---
 
@@ -47,7 +47,7 @@ RelayKit's blog lives on the marketing site at `relaykit.ai/blog` (in-repo MDX p
 
 ### 3.4 Early-access waitlist modal
 
-While RelayKit is pre-launch, the three "Get early access" buttons on the marketing site — top nav, below the configurator, and the closing call-to-action — open an in-page modal rather than navigating away. The modal shows the visitor the categories they picked in the configurator ("You're interested in: …", defaulting to Verification), takes their email, and adds them to the early-access list. New signups get a short welcome email from Joel: it confirms they're on the list, notes the categories they're interested in, says RelayKit ships summer 2026, and carries a working unsubscribe link. Submitting the same email twice is harmless — no duplicate row, no second email. This is pre-launch behavior; once onboarding ships, the CTAs return to the real product-entry flow. The waitlist runs on RelayKit's own stack (Supabase + Resend) per MD-20, so subscribers are ready for a launch-day announcement with no migration.
+While RelayKit is pre-launch, the three "Get early access" buttons on the marketing site — top nav, below the configurator, and the closing call-to-action — open an in-page modal rather than navigating away. The modal headline reads "Join the list," followed by a short three-sentence note naming the launch shape (verification and marketing first, the rest as they're ready), then a single email field. On phones the modal expands to fill the entire viewport with an explicit X close button and a 44px tap target; on desktop it stays a centered floating card. The email input no longer auto-focuses, so the on-screen keyboard doesn't pop up the moment the modal appears. On success the modal switches to a quiet "You're in. / Check your inbox — I sent a note." confirmation. New signups get a short welcome email from Joel: it says they're on the list, notes that RelayKit ships summer 2026 with a heads-up a week or two ahead and another when they can actually sign up, and carries a working unsubscribe link. The categories the visitor picked in the configurator are still captured in the early-access record (operational data for prioritization) but no longer rendered into the modal's body or the welcome email. Submitting the same email twice is harmless — no duplicate row, no second email. This is pre-launch behavior; once onboarding ships, the CTAs return to the real product-entry flow. The waitlist runs on RelayKit's own stack (Supabase + Resend) per MD-20, so subscribers are ready for a launch-day announcement with no migration.
 
 ---
 
