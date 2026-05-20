@@ -189,26 +189,35 @@ export function CategoryList({
                       className="flex w-full cursor-pointer items-start gap-2.5 text-left"
                     >
                       <ConfiguratorCheckbox checked={subChecked} />
-                      <span className="text-sm text-text-secondary">
-                        {sub.name}
-                      </span>
-                      {sub.tooltip ? (
-                        <Tooltip content={sub.tooltip}>
-                          {/* 44px hit area wrapper with negative margins to
-                              preserve the icon's 14px layout footprint —
-                              keeps the row layout unchanged while extending
-                              the tap target. stopPropagation on click so a
-                              tap on the ? doesn't bubble to the row's
-                              toggle (matters on iOS where one tap
-                              synthesizes both mouseenter and click). */}
-                          <span
-                            className="-m-[15px] inline-flex size-11 items-center justify-center"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <HelpCircle className="size-3.5 shrink-0 text-fg-quaternary" />
-                          </span>
-                        </Tooltip>
-                      ) : null}
+                      {/* Inner wrapper centers the label + ? icon on the
+                          label's optical midline (items-center) and gives
+                          them the same 6px gap the message-card uses, so
+                          the two ? icon contexts look consistent. The
+                          outer items-start preserves the existing
+                          checkbox alignment via its mt-0.5 nudge. */}
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm text-text-secondary">
+                          {sub.name}
+                        </span>
+                        {sub.tooltip ? (
+                          <Tooltip content={sub.tooltip}>
+                            {/* 44px hit area wrapper with negative margins
+                                to preserve the icon's 14px layout footprint
+                                — keeps the row layout unchanged while
+                                extending the tap target. stopPropagation
+                                on click so a tap on the ? doesn't bubble
+                                to the row's toggle (matters on iOS where
+                                one tap synthesizes both mouseenter and
+                                click). */}
+                            <span
+                              className="-m-[15px] inline-flex size-11 items-center justify-center"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <HelpCircle className="size-3.5 shrink-0 text-fg-quaternary" />
+                            </span>
+                          </Tooltip>
+                        ) : null}
+                      </div>
                     </div>
                   );
                 })}

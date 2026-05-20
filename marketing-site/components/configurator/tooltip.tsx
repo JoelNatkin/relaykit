@@ -55,7 +55,7 @@ export function Tooltip({ content, children, delayMs = 0, className }: TooltipPr
       {visible && content ? (
         <span
           role="tooltip"
-          className="pointer-events-none absolute bottom-full left-0 z-[100] mb-1.5 w-64 rounded-lg bg-bg-primary-solid px-3 py-2 text-xs leading-relaxed whitespace-normal text-text-white shadow-lg"
+          className="pointer-events-none absolute bottom-full left-1/2 z-[100] mb-1.5 w-64 -translate-x-1/2 rounded-lg bg-bg-primary-solid px-3 py-2 text-xs leading-relaxed whitespace-normal text-text-white shadow-lg"
         >
           {content}
         </span>
