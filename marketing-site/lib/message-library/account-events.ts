@@ -4,22 +4,23 @@ import { SHARED_VARIABLES } from "./shared-variables";
 /**
  * Account events variable catalog: `workspace_name` from the shared set (the
  * D-398 default sender frame for this category), plus account-context tokens
- * and the new `account_link`.
+ * and `account_link`.
  *
- * `account_link` is workspace-settings-sourced (the developer sets their
- * account/billing URL once, like business_name) — not a per-send free-text
- * token, so it has a clean lifecycle. budgetChars assumes the short-URL form
- * RelayKit issues; see BACKLOG note on link-shortening + D-402 segment math.
+ * `account_link` is the developer's own account/billing URL on their own
+ * domain, set once in workspace settings — workspace-settings-sourced like
+ * `business_name`, not a per-send free-text token. RelayKit does not shorten
+ * or host it. budgetChars:19 fits a `yourapp.com/billing`-shape default; see
+ * BACKLOG notes on configurator-derived examples and D-402 segment math.
  */
 const ACCOUNT_EVENTS_VARIABLES: Variable[] = [
   SHARED_VARIABLES.workspace_name,
   {
     name: "account_link",
     description:
-      "Link to the developer's authenticated account UI (billing, security, account settings). Set once in workspace settings. RelayKit issues a fixed-length short URL.",
-    budgetChars: 18,
+      "Link to the developer's own account/billing UI on their own domain (billing, security, account settings). Set once in workspace settings. RelayKit does not shorten or host this URL.",
+    budgetChars: 19,
     source: "workspace settings",
-    example: "relaykit.to/a/x7k2",
+    example: "yourapp.com/billing",
   },
   {
     name: "card_last4",
@@ -62,7 +63,7 @@ export const ACCOUNT_EVENTS: DiscreteCategory = {
       "No promotional content — no offers, no discount codes, no upgrade pitches (D-399, corpus-wide). The trigger speaks for itself.",
       "No credentials in the body (D-393, corpus-wide).",
       "Honors STOP/HELP — standard transactional opt-out applies (no 2FA carve-out here).",
-      "Single GSM-7 segment after worst-case-realistic variable substitution (D-402). {{account_link}} budgetChars assumes RelayKit's short-URL form.",
+      "Single GSM-7 segment after worst-case-realistic variable substitution (D-402). {{account_link}} budgetChars assumes a short developer-domain shape (e.g. yourapp.com/billing).",
       "Security messages link only to the developer's authenticated UI, never to inline credential entry — phishing SMS mimics this shape.",
     ],
   },
@@ -84,17 +85,17 @@ export const ACCOUNT_EVENTS: DiscreteCategory = {
             {
               tone: "Standard",
               body: "{{workspace_name}}: Card ending {{card_last4}} was declined. Update payment to keep your account active: {{account_link}}",
-              charCount: 135,
+              charCount: 136,
             },
             {
               tone: "Friendly",
               body: "Your {{workspace_name}} payment didn't go through (card ending {{card_last4}}). Update it here to stay active: {{account_link}}",
-              charCount: 141,
+              charCount: 142,
             },
             {
               tone: "Brief",
               body: "{{workspace_name}}: Card {{card_last4}} declined. Update payment: {{account_link}}",
-              charCount: 96,
+              charCount: 97,
             },
           ],
         },
@@ -117,17 +118,17 @@ export const ACCOUNT_EVENTS: DiscreteCategory = {
             {
               tone: "Standard",
               body: "{{workspace_name}}: Your trial ends in {{days_remaining}} days. Choose a plan to keep your account: {{account_link}}",
-              charCount: 114,
+              charCount: 115,
             },
             {
               tone: "Friendly",
               body: "Your {{workspace_name}} trial ends in {{days_remaining}} days. Pick a plan here to keep going: {{account_link}}",
-              charCount: 109,
+              charCount: 110,
             },
             {
               tone: "Brief",
               body: "{{workspace_name}}: Trial ends in {{days_remaining}} days. Choose a plan: {{account_link}}",
-              charCount: 88,
+              charCount: 89,
             },
           ],
         },
@@ -151,17 +152,17 @@ export const ACCOUNT_EVENTS: DiscreteCategory = {
             {
               tone: "Standard",
               body: "{{workspace_name}}: Your subscription change is confirmed. View the details in your account: {{account_link}}",
-              charCount: 123,
+              charCount: 124,
             },
             {
               tone: "Friendly",
               body: "Your {{workspace_name}} subscription is all set. See the details here whenever you like: {{account_link}}",
-              charCount: 119,
+              charCount: 120,
             },
             {
               tone: "Brief",
               body: "{{workspace_name}}: Subscription updated. Details: {{account_link}}",
-              charCount: 81,
+              charCount: 82,
             },
           ],
         },
@@ -184,17 +185,17 @@ export const ACCOUNT_EVENTS: DiscreteCategory = {
             {
               tone: "Standard",
               body: "{{workspace_name}}: New sign-in from {{device_context}}. Not you? Secure your account: {{account_link}}",
-              charCount: 123,
+              charCount: 124,
             },
             {
               tone: "Friendly",
               body: "Heads up: your {{workspace_name}} account was just accessed from {{device_context}}. Not you? Secure it here: {{account_link}}",
-              charCount: 146,
+              charCount: 147,
             },
             {
               tone: "Brief",
               body: "{{workspace_name}}: New sign-in, {{device_context}}. Not you? {{account_link}}",
-              charCount: 98,
+              charCount: 99,
             },
           ],
         },
@@ -217,17 +218,17 @@ export const ACCOUNT_EVENTS: DiscreteCategory = {
             {
               tone: "Standard",
               body: "{{workspace_name}}: Your account has been suspended. Review the details and next steps here: {{account_link}}",
-              charCount: 123,
+              charCount: 124,
             },
             {
               tone: "Friendly",
               body: "Your {{workspace_name}} account has been suspended. Here's what happened and what to do next: {{account_link}}",
-              charCount: 124,
+              charCount: 125,
             },
             {
               tone: "Brief",
               body: "{{workspace_name}}: Account suspended. Details and next steps: {{account_link}}",
-              charCount: 93,
+              charCount: 94,
             },
           ],
         },
