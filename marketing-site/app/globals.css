@@ -126,7 +126,7 @@
   --color-bg-disabled_subtle: var(--color-brand-50);
   --color-bg-active: var(--color-brand-50);
   --color-bg-overlay: var(--color-brand-950);
-  --color-bg-primary-solid: var(--color-brand-950);
+  --color-bg-primary-solid: var(--color-brand-900);
   --color-bg-secondary-solid: var(--color-brand-700);
   --color-bg-brand-primary: var(--color-brand-50);
   --color-bg-brand-secondary: var(--color-brand-100);
@@ -225,7 +225,7 @@
   --color-bg-disabled_subtle: var(--color-brand-900);
   --color-bg-active: var(--color-brand-900);
   --color-bg-overlay: var(--color-brand-50);
-  --color-bg-primary-solid: var(--color-brand-900);
+  --color-bg-primary-solid: var(--color-brand-800);
   --color-bg-secondary-solid: var(--color-brand-300);
   --color-bg-brand-primary: var(--color-brand-950);
   --color-bg-brand-secondary: var(--color-brand-900);
