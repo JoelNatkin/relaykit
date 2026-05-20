@@ -5,7 +5,7 @@
 > Not for: active workstream items (MASTER_PLAN phase scope), recorded decisions (DECISIONS), active prototypes (`/explorations/`).
 
 ## Ideas, Deferred Work, and Future Features
-### Last updated: May 18, 2026
+### Last updated: May 20, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -41,6 +41,8 @@
 - **Variable capitalization, possessive, and grammar mechanics** — Tokens like `{{business_type}}`, `{{service_type}}`, `{{customer_name}}` may need to be capitalized at sentence start, possessive when followed by `'s`, pluralized, or grammatically inflected. The corpus doesn't currently encode inflection hints; the render layer doesn't apply transforms. Touches: corpus schema (do tokens carry inflection metadata?), render layer (auto-capitalize at sentence start? auto-possessive?), authoring (do authors write `{{business_type|capitalize}}` or does the system infer from position?). Affects everywhere — configurator preview, workspace editing, message delivery. Likely needed before Marketing ships. (Origin: Session 95 D-380 follow-up review)
 
 - **Placeholder values for non-name configurator fields** — "Acme" works as the example for `business_name`; `acme.com` for `website`. What's the example for `business_type`? `service_type`? Strategy options: (a) generic single-category placeholders ("studio" / "haircut" / "delivery"), (b) per-category placeholder sets matched to the category's vertical context, (c) context-bound demo personas (Marketing's "Acme Apparel, boutique, clothing"). Decide alongside `Variable.example` design for these tokens. (Origin: Session 95 D-380 follow-up review)
+
+- **Link-shortening + D-402 segment math** — Pri 3. `account_link` budgetChars:18 is provisional, tied to RelayKit issuing a deterministic fixed-length short-URL form. If that form's length changes, every link-bearing variant's worst-case headroom shifts. (Origin: Session 99 Account events authoring)
 
 - **Rejected state registration data display** — Expand "What was submitted" fields based on carrier error code mapping. Currently shows business name, EIN (masked), address, use case. May need website URL, business description, etc. (Origin: Settings PRD session, March 22–23)
 
