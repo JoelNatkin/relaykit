@@ -115,7 +115,7 @@ export default function MarketingHome() {
       <ConfiguratorSection />
 
       {/* Section 3 — Build it */}
-      <section className="mx-auto mt-20 max-w-5xl px-6">
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
           Configure &gt; Build
         </p>
@@ -141,7 +141,7 @@ export default function MarketingHome() {
       </section>
 
       {/* Section 4 — Test it for real */}
-      <section className="mx-auto mt-20 max-w-5xl px-6">
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
           Build &gt; Test
         </p>
@@ -171,7 +171,7 @@ export default function MarketingHome() {
       </section>
 
       {/* Section 5 — Pricing + Paperwork (two-col merge) */}
-      <section className="mx-auto mt-20 max-w-5xl px-6">
+      <section className="mx-auto mt-[100px] max-w-5xl px-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
           Test &gt; Go live
         </p>
@@ -232,7 +232,7 @@ export default function MarketingHome() {
       </section>
 
       {/* Section 6 — Closing CTA */}
-      <section className="mx-auto mt-20 mb-20 max-w-5xl px-6">
+      <section className="mx-auto mt-[100px] mb-[100px] max-w-5xl px-6">
         <h2 className="text-2xl font-bold text-text-primary">Ready when you are.</h2>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-text-tertiary">
           Configure today. Live in three days. Refund if not approved.
