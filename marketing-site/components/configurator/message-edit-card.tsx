@@ -151,7 +151,12 @@ export function MessageEditCard({
           </span>
           {message.tooltip ? (
             <Tooltip content={message.tooltip}>
-              <HelpCircle className="size-3.5 shrink-0 text-fg-quaternary" />
+              {/* 44px hit area wrapper with negative margins to preserve
+                  the icon's 14px layout footprint — keeps the row layout
+                  unchanged while extending the tap target. */}
+              <span className="-m-[15px] inline-flex size-11 items-center justify-center">
+                <HelpCircle className="size-3.5 shrink-0 text-fg-quaternary" />
+              </span>
             </Tooltip>
           ) : null}
         </div>
