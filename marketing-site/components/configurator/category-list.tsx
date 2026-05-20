@@ -12,6 +12,7 @@
  * component; this component renders only the inside.
  */
 
+import { HelpCircle } from "@untitledui/icons";
 import { Tooltip } from "@/components/configurator/tooltip";
 import { ComingSoonBadge } from "@/components/configurator/coming-soon-badge";
 import {
@@ -168,22 +169,47 @@ export function CategoryList({
                   const subChecked =
                     !!catState?.subs[sub.id]?.checked;
                   return (
-                    <Tooltip
+                    // role="button" instead of <button> because the row
+                    // contains a nested interactive element (the ? icon's
+                    // Tooltip span), which a real <button> can't legally
+                    // wrap. Same pattern MessageReadCard uses for its
+                    // click-to-edit body. Keyboard nav handled via tabIndex
+                    // + onKeyDown for Enter and Space.
+                    <div
                       key={sub.id}
-                      content={sub.tooltip}
-                      className="w-full"
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => onSubToggle(category.id, sub.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          onSubToggle(category.id, sub.id);
+                        }
+                      }}
+                      className="flex w-full cursor-pointer items-start gap-2.5 text-left"
                     >
-                      <button
-                        type="button"
-                        onClick={() => onSubToggle(category.id, sub.id)}
-                        className="flex w-full items-start gap-2.5 text-left"
-                      >
-                        <ConfiguratorCheckbox checked={subChecked} />
-                        <span className="text-sm text-text-secondary">
-                          {sub.name}
-                        </span>
-                      </button>
-                    </Tooltip>
+                      <ConfiguratorCheckbox checked={subChecked} />
+                      <span className="text-sm text-text-secondary">
+                        {sub.name}
+                      </span>
+                      {sub.tooltip ? (
+                        <Tooltip content={sub.tooltip}>
+                          {/* 44px hit area wrapper with negative margins to
+                              preserve the icon's 14px layout footprint —
+                              keeps the row layout unchanged while extending
+                              the tap target. stopPropagation on click so a
+                              tap on the ? doesn't bubble to the row's
+                              toggle (matters on iOS where one tap
+                              synthesizes both mouseenter and click). */}
+                          <span
+                            className="-m-[15px] inline-flex size-11 items-center justify-center"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <HelpCircle className="size-3.5 shrink-0 text-fg-quaternary" />
+                          </span>
+                        </Tooltip>
+                      ) : null}
+                    </div>
                   );
                 })}
               </div>

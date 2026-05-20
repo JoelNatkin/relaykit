@@ -1,9 +1,10 @@
 "use client";
 
 /**
- * Hover tooltip with a deliberate open delay. The cursor must rest on the
- * trigger for `delayMs` before the tooltip appears; it closes immediately on
- * leave. No icon or underline affordance — pure hover.
+ * Hover tooltip. Opens immediately on hover (default `delayMs = 0`) and
+ * closes immediately on leave. Triggers are explicit ? icons today, so an
+ * open delay would just be friction; callers can still pass `delayMs` to
+ * reintroduce a gate if they have a softer trigger.
  *
  * Placed above the trigger (codebase convention; clip-safe at every viewport
  * width).
@@ -20,7 +21,7 @@ interface TooltipProps {
   className?: string;
 }
 
-export function Tooltip({ content, children, delayMs = 750, className }: TooltipProps) {
+export function Tooltip({ content, children, delayMs = 0, className }: TooltipProps) {
   const [visible, setVisible] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
