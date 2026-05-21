@@ -36,7 +36,7 @@
 
 **Before:** "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text."
 
-**After:** "Pre-launch. The messages above are yours — copy them and use them with any provider today. The full product, with onboarding and delivery, ships summer 2026. Get on the list and we'll tell you when."
+**After:** "The messages above are yours — copy them and use them with any provider today. The full product ships summer 2026."
 
 **Restoration trigger:** Onboarding and delivery ship — restore the original paragraph.
 
