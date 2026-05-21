@@ -595,8 +595,8 @@ export function ConfiguratorSection() {
                 </button>
                 {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
                 <p className="mt-4 text-sm text-text-secondary">
-                  Pre-launch. The messages above are yours — copy them and use them
-                  with any provider today. The full product ships summer 2026.
+                  The messages above are yours — copy them and use them with any
+                  provider today. The full product ships summer 2026.
                 </p>
               </div>
             </div>

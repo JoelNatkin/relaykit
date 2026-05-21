@@ -124,7 +124,7 @@ export const VERIFICATION: Category = {
     {
       id: "login-code",
       name: "Login code",
-      tooltip: "Sent when a user logs in with SMS as a second factor.",
+      tooltip: "Sent when a user logs in with SMS as a second factor. SMS is still commonly used for primary 2FA, but it is less secure than authenticator apps that use temporary one time passwords (TOTP) or passkeys. Consider using one of them instead.",
       description:
         "SMS as a second factor at login. Advisory framing (SMS is the least-secure second factor) surfaces in the configurator, never in the message body.",
       variables: ["business_name", "code", "expiry_minutes"],

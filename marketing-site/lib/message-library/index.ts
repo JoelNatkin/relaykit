@@ -54,7 +54,6 @@ export {
  */
 export const CATEGORIES: Category[] = [
   VERIFICATION,
-  MARKETING,
   APPOINTMENTS,
   ORDER_UPDATES,
   CUSTOMER_SUPPORT,
@@ -62,6 +61,7 @@ export const CATEGORIES: Category[] = [
   COMMUNITY,
   WAITLIST,
   ACCOUNT_EVENTS,
+  MARKETING,
 ];
 
 /** True when a category has authored content — drives live vs. "Coming soon" rendering. */
