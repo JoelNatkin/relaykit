@@ -43,7 +43,7 @@ export function MobileCategoriesModal({
   state,
   presetValue,
   onCategoryToggle,
-  onSubToggle,
+  onMessageToggle,
   onSelectPreset,
 }: MobileCategoriesModalProps) {
   // Lock body scroll while open — same pattern as the waitlist modal.
@@ -103,7 +103,7 @@ export function MobileCategoriesModal({
             state={state}
             presetValue={presetValue}
             onCategoryToggle={onCategoryToggle}
-            onSubToggle={onSubToggle}
+            onMessageToggle={onMessageToggle}
             onSelectPreset={onSelectPreset}
           />
         </div>

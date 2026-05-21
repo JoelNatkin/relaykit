@@ -1,4 +1,4 @@
-import type { Variable, WorkflowCategory } from "./types";
+import type { Category, Variable } from "./types";
 import { SHARED_VARIABLES } from "./shared-variables";
 
 /**
@@ -23,6 +23,12 @@ import { SHARED_VARIABLES } from "./shared-variables";
  *
  * `card_type` is a human-readable card label ("Visa credit", "Mastercard"),
  * never a card number — no PII in the body per D-393.
+ *
+ * Each message carries its lifecycle position in `groupNote` (documentation-
+ * only this wave per D-408; reserved for the future workspace UX). Lifecycle
+ * ordering is the message array order: order-confirmed → order-processing →
+ * order-shipped → out-for-delivery → order-delivered → return-initiated →
+ * refund-processed.
  */
 const ORDER_UPDATES_VARIABLES: Variable[] = [
   SHARED_VARIABLES.workspace_name,
@@ -76,13 +82,12 @@ const ORDER_UPDATES_VARIABLES: Variable[] = [
   },
 ];
 
-export const ORDER_UPDATES: WorkflowCategory = {
+export const ORDER_UPDATES: Category = {
   id: "order-updates",
   name: "Order updates",
   description:
     "Confirmations, shipping, delivery, and returns — the order-status messages customers actually want.",
   tcrMapping: "DELIVERY_NOTIFICATION",
-  classification: "workflow",
   variables: ORDER_UPDATES_VARIABLES,
   compliance: {
     rules: [
@@ -94,241 +99,203 @@ export const ORDER_UPDATES: WorkflowCategory = {
       "Carrier-tracking links are acceptable and well-known to carriers; public URL shorteners are discouraged.",
     ],
   },
-  stages: [
+  messages: [
     {
       id: "order-confirmed",
-      name: "Order confirmation",
+      name: "Order confirmed",
+      tooltip: "Sent right after an order is placed and paid.",
       description:
         "Sent the moment an order is placed and payment clears — the 'your order is locked in' message.",
-      triggerCue: "Sent immediately after order is placed and payment confirmed.",
-      messages: [
+      groupNote:
+        "Order lifecycle — step 1 of 7: sent immediately after order is placed and payment confirmed.",
+      variables: ["workspace_name", "order_number", "estimated_delivery"],
+      variants: [
         {
-          id: "order-confirmed",
-          name: "Order confirmed",
-          tooltip: "Sent right after an order is placed and paid.",
-          variables: ["workspace_name", "order_number", "estimated_delivery"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}. We'll text you when it ships.",
-              charCount: 112,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{workspace_name}} order {{order_number}} is in. Arriving {{estimated_delivery}}, we'll let you know when it's on the way.",
-              charCount: 124,
-            },
-            {
-              tone: "Brief",
-              body: "{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}.",
-              charCount: 82,
-            },
-          ],
+          tone: "Standard",
+          body: "{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}. We'll text you when it ships.",
+          charCount: 112,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} order {{order_number}} is in. Arriving {{estimated_delivery}}, we'll let you know when it's on the way.",
+          charCount: 124,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}.",
+          charCount: 82,
         },
       ],
     },
     {
       id: "order-processing",
-      name: "Processing",
+      name: "Order processing",
+      tooltip: "Sent when an order moves into preparation.",
       description:
         "Sent when an order moves from received to in-preparation — used by sellers who want to set expectations during fulfillment lag.",
-      triggerCue:
-        "Sent when order moves from received to in-preparation in the developer's system.",
-      messages: [
+      groupNote:
+        "Order lifecycle — step 2 of 7: sent when order moves from received to in-preparation in the developer's system.",
+      variables: ["workspace_name", "order_number"],
+      variants: [
         {
-          id: "order-processing",
-          name: "Order processing",
-          tooltip: "Sent when an order moves into preparation.",
-          variables: ["workspace_name", "order_number"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{workspace_name}}: Order {{order_number}} is being prepared. We'll text you when it ships.",
-              charCount: 101,
-            },
-            {
-              tone: "Friendly",
-              body: "Good news, your {{workspace_name}} order {{order_number}} is being put together now. Shipping update coming soon.",
-              charCount: 123,
-            },
-            {
-              tone: "Brief",
-              body: "{{workspace_name}}: Order {{order_number}} in preparation.",
-              charCount: 68,
-            },
-          ],
+          tone: "Standard",
+          body: "{{workspace_name}}: Order {{order_number}} is being prepared. We'll text you when it ships.",
+          charCount: 101,
+        },
+        {
+          tone: "Friendly",
+          body: "Good news, your {{workspace_name}} order {{order_number}} is being put together now. Shipping update coming soon.",
+          charCount: 123,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Order {{order_number}} in preparation.",
+          charCount: 68,
         },
       ],
     },
     {
       id: "order-shipped",
-      name: "Shipping confirmation",
+      name: "Order shipped",
+      tooltip: "Sent when an order ships, with the tracking link.",
       description:
         "Sent when an order ships — the most-opened message in the order sequence. The tracking link is the message.",
-      triggerCue: "Sent when order ships from warehouse or fulfillment partner.",
-      messages: [
+      groupNote:
+        "Order lifecycle — step 3 of 7: sent when order ships from warehouse or fulfillment partner.",
+      variables: [
+        "workspace_name",
+        "order_number",
+        "tracking_link",
+        "estimated_delivery",
+      ],
+      variants: [
         {
-          id: "order-shipped",
-          name: "Order shipped",
-          tooltip: "Sent when an order ships, with the tracking link.",
-          variables: [
-            "workspace_name",
-            "order_number",
-            "tracking_link",
-            "estimated_delivery",
-          ],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{workspace_name}}: Order {{order_number}} has shipped. Track it: {{tracking_link}}. Arrives {{estimated_delivery}}.",
-              charCount: 115,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{workspace_name}} order {{order_number}} is on the way. Follow it here: {{tracking_link}}. Should arrive {{estimated_delivery}}.",
-              charCount: 133,
-            },
-            {
-              tone: "Brief",
-              body: "{{workspace_name}}: Order {{order_number}} shipped. Track: {{tracking_link}}",
-              charCount: 88,
-            },
-          ],
+          tone: "Standard",
+          body: "{{workspace_name}}: Order {{order_number}} has shipped. Track it: {{tracking_link}}. Arrives {{estimated_delivery}}.",
+          charCount: 115,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} order {{order_number}} is on the way. Follow it here: {{tracking_link}}. Should arrive {{estimated_delivery}}.",
+          charCount: 133,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Order {{order_number}} shipped. Track: {{tracking_link}}",
+          charCount: 88,
         },
       ],
     },
     {
       id: "out-for-delivery",
       name: "Out for delivery",
+      tooltip: "Sent when a package is out for delivery.",
       description:
         "Sent on delivery day when the carrier marks the package out for delivery.",
-      triggerCue:
-        "Sent when carrier marks package out-for-delivery on delivery day.",
-      messages: [
+      groupNote:
+        "Order lifecycle — step 4 of 7: sent when carrier marks package out-for-delivery on delivery day.",
+      variables: ["workspace_name", "order_number", "tracking_link"],
+      variants: [
         {
-          id: "out-for-delivery",
-          name: "Out for delivery",
-          tooltip: "Sent when a package is out for delivery.",
-          variables: ["workspace_name", "order_number", "tracking_link"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{workspace_name}}: Order {{order_number}} is out for delivery today. Track it: {{tracking_link}}",
-              charCount: 109,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{workspace_name}} order {{order_number}} is out for delivery, it should reach you today. Track: {{tracking_link}}",
-              charCount: 131,
-            },
-            {
-              tone: "Brief",
-              body: "{{workspace_name}}: Order {{order_number}} out for delivery. {{tracking_link}}",
-              charCount: 90,
-            },
-          ],
+          tone: "Standard",
+          body: "{{workspace_name}}: Order {{order_number}} is out for delivery today. Track it: {{tracking_link}}",
+          charCount: 109,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} order {{order_number}} is out for delivery, it should reach you today. Track: {{tracking_link}}",
+          charCount: 131,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Order {{order_number}} out for delivery. {{tracking_link}}",
+          charCount: 90,
         },
       ],
     },
     {
       id: "order-delivered",
-      name: "Delivered",
+      name: "Order delivered",
+      tooltip: "Sent when a package is marked delivered.",
       description:
         "Sent when the carrier marks the package delivered — closes the shipping arc. No cross-sell (D-399).",
-      triggerCue: "Sent when carrier marks package delivered.",
-      messages: [
+      groupNote:
+        "Order lifecycle — step 5 of 7: sent when carrier marks package delivered.",
+      variables: ["workspace_name", "order_number", "return_link"],
+      variants: [
         {
-          id: "order-delivered",
-          name: "Order delivered",
-          tooltip: "Sent when a package is marked delivered.",
-          variables: ["workspace_name", "order_number", "return_link"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{workspace_name}}: Order {{order_number}} was delivered. Something wrong? Start here: {{return_link}}",
-              charCount: 116,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{workspace_name}} order {{order_number}} has been delivered. If anything's off, you can sort it here: {{return_link}}",
-              charCount: 137,
-            },
-            {
-              tone: "Brief",
-              body: "{{workspace_name}}: Order {{order_number}} delivered. Issue? {{return_link}}",
-              charCount: 90,
-            },
-          ],
+          tone: "Standard",
+          body: "{{workspace_name}}: Order {{order_number}} was delivered. Something wrong? Start here: {{return_link}}",
+          charCount: 116,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} order {{order_number}} has been delivered. If anything's off, you can sort it here: {{return_link}}",
+          charCount: 137,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Order {{order_number}} delivered. Issue? {{return_link}}",
+          charCount: 90,
         },
       ],
     },
     {
       id: "return-initiated",
-      name: "Return initiated",
+      name: "Return started",
+      tooltip: "Sent when a customer starts a return.",
       description:
         "Sent when a customer starts a return — confirms the return is logged and a refund is pending.",
-      triggerCue:
-        "Sent when customer initiates a return through the developer's system.",
-      messages: [
+      groupNote:
+        "Order lifecycle — step 6 of 7: sent when customer initiates a return through the developer's system.",
+      variables: ["workspace_name", "order_number", "return_link"],
+      variants: [
         {
-          id: "return-initiated",
-          name: "Return started",
-          tooltip: "Sent when a customer starts a return.",
-          variables: ["workspace_name", "order_number", "return_link"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{workspace_name}}: Your return for order {{order_number}} is started. Track its status: {{return_link}}",
-              charCount: 118,
-            },
-            {
-              tone: "Friendly",
-              body: "We've started the return for your {{workspace_name}} order {{order_number}}. Check its status anytime: {{return_link}}",
-              charCount: 132,
-            },
-            {
-              tone: "Brief",
-              body: "{{workspace_name}}: Return started for order {{order_number}}. Status: {{return_link}}",
-              charCount: 100,
-            },
-          ],
+          tone: "Standard",
+          body: "{{workspace_name}}: Your return for order {{order_number}} is started. Track its status: {{return_link}}",
+          charCount: 118,
+        },
+        {
+          tone: "Friendly",
+          body: "We've started the return for your {{workspace_name}} order {{order_number}}. Check its status anytime: {{return_link}}",
+          charCount: 132,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Return started for order {{order_number}}. Status: {{return_link}}",
+          charCount: 100,
         },
       ],
     },
     {
       id: "refund-processed",
       name: "Refund processed",
+      tooltip: "Sent when a refund is returned to the customer's card.",
       description:
         "Sent when a refund is returned to the original payment method — closes the return arc.",
-      triggerCue: "Sent when refund is processed back to original payment method.",
-      messages: [
+      groupNote:
+        "Order lifecycle — step 7 of 7: sent when refund is processed back to original payment method.",
+      variables: [
+        "workspace_name",
+        "order_number",
+        "refund_amount",
+        "card_type",
+      ],
+      variants: [
         {
-          id: "refund-processed",
-          name: "Refund processed",
-          tooltip: "Sent when a refund is returned to the customer's card.",
-          variables: [
-            "workspace_name",
-            "order_number",
-            "refund_amount",
-            "card_type",
-          ],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{workspace_name}}: Refund of {{refund_amount}} for order {{order_number}} is processed to your {{card_type}}.",
-              charCount: 112,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{workspace_name}} refund of {{refund_amount}} for order {{order_number}} is on its way back to your {{card_type}}.",
-              charCount: 122,
-            },
-            {
-              tone: "Brief",
-              body: "{{workspace_name}}: {{refund_amount}} refunded for order {{order_number}} to your {{card_type}}.",
-              charCount: 98,
-            },
-          ],
+          tone: "Standard",
+          body: "{{workspace_name}}: Refund of {{refund_amount}} for order {{order_number}} is processed to your {{card_type}}.",
+          charCount: 112,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} refund of {{refund_amount}} for order {{order_number}} is on its way back to your {{card_type}}.",
+          charCount: 122,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{refund_amount}} refunded for order {{order_number}} to your {{card_type}}.",
+          charCount: 98,
         },
       ],
     },
