@@ -6,7 +6,7 @@
 
 ## Meta
 
-- Last updated: 2026-05-20
+- Last updated: 2026-05-21
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
 - Decision count: 323 active, latest D-408; D-01–D-83 archived. Marketing decisions: latest MD-20.
 - Branch state: `main` only — no unmerged feature branches. Session 100 landed two waves: `feat/order-updates-authoring` (Order updates corpus authoring) via `--no-ff` merge (`76b7dfb`), and `feat/flat-message-model` (D-408 — collapse message-library to flat-message model) via `--no-ff` merge. Branches deleted local + remote post-merge. An aborted fix branch (`fix/configurator-renders-workflow-categories`, `cbad0f3`) was created mid-session, never pushed, and discarded once the flat-message wave superseded the three-shape approach.
@@ -23,7 +23,7 @@ _No active explorations._
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-20 | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-21 | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-15 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-16 | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
@@ -35,7 +35,7 @@ _No active explorations._
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-20 (Session 100) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-21 (Session 100 close-out) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-20 (Session 99 — Pri 3 configurator-derive-account_link entry; stale link-shortening entry removed) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -48,7 +48,7 @@ _No active explorations._
 | `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Tier 1 project knowledge). |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-17 | AGENTS.md / cursor-rules research informing Phase 8; retires when Phase 8 closes. |
 | `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-04-30 | Sinch/TCR brand registration field reference (Experiment 3a capture). |
-| `PRODUCT_SUMMARY.md` | 2026-05-20 (Session 100 — configurator now 3 live categories) | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
+| `PRODUCT_SUMMARY.md` | 2026-05-21 (Session 100 close-out — Last reviewed bump; configurator §3 lists flat-model message names) | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
 | `LEGAL_DOC_DEFERRED_CLAIMS.md` | 2026-04-28 | Tracking doc for claims removed from `/marketing-site` legal docs pending feature ship, with restoration triggers. |
 | `PRE_LAUNCH_DEVIATIONS.md` | 2026-05-16 | Tracking doc for marketing-site pre-launch-posture copy/UI deviations, with per-entry pre-launch-only vs permanent classification and restoration triggers. |
 | `VERIFICATION_SPEC.md` | 2026-05-13 | Canonical OTP/verification feature surface (server, SDK, dashboard, onboarding); drives D-369/D-370/D-371. |

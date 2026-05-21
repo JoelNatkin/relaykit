@@ -1,29 +1,32 @@
-# CC_HANDOFF — Session 100 — Order updates authoring (first WorkflowCategory)
+# CC_HANDOFF — Session 100 — Order updates authoring + flat-message-model collapse (D-408)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Date:** 2026-05-20
+**Date:** 2026-05-21 (close-out); session work spanned 2026-05-20 → 2026-05-21
 **Branches:** `main` only — all session work merged. No unmerged feature branches local or remote.
 
-`Commits: 3 | Files modified: 5 | Decisions added: 0 | External actions: ~5 (branch push + main push + remote branch delete + Vercel auto-deploys)`
-
----
-
-## Known issues (session open, not closed)
-
-**Order updates authored but not rendering on the configurator.** The 7 stages in `order-updates.ts` ship with full bodies, charCounts, and triggerCues — `tsc` and `eslint` are clean, `isAuthored()` returns true, and the categories panel toggles the category on. But the right column shows only the "Order updates" group heading and an empty "+ Add message" button — no message cards render. The configurator's render path does not handle `WorkflowCategory` (the path that loops `categorySubs(category)` to find messages does not produce message cards for stages in the way it does for subs in `DiscreteCategory`). PROTOTYPE_SPEC and PRODUCT_SUMMARY now claim Order updates is live; the corpus data is live, the UI is not. **Bug fix is the immediate next task, same session — not a future one.**
+`Commits: 9 | Files modified: 22 | Decisions added: 1 (D-408) | External actions: ~15 (branch pushes ×2, main pushes ×4, remote branch deletes ×2, Vercel auto-deploys, an aborted local-only branch deleted without push)`
 
 ---
 
 ## Session character
 
-A focused Wave 2 message-library session — author the third corpus category, Order updates, end-to-end. First `WorkflowCategory` authored (uses ordered `stages`, not `subs`). Plan-mode planning surfaced one substantive question — three Friendly variants had em dashes, which are not in the basic GSM-7 alphabet and would force UCS-2 encoding (collapsing the single-segment limit from 160 to 70). PM ruling: replace every " — " with ", "; raise the corpus-wide ASCII-only authoring rule as a hygiene gotcha (not a D-number). charCount discipline carried over cleanly from Session 99 — pre-write verification script (`/tmp/verify-charcounts.mjs`) ran 21/21 OK on the planned bodies, then again after the file was written via regex re-extraction.
+A two-wave session. Wave 1 authored Order updates as the third message-library category and the corpus's first `WorkflowCategory` (7 stages × 1 message × 3 tone variants, 7-variable catalog, 6-rule compliance). The original Session 100 close-out shipped — and then surfaced a known issue: Order updates was authored but **rendered no message cards on the configurator**. An aborted fix branch (`fix/configurator-renders-workflow-categories`, `cbad0f3`, never pushed) patched the renderer to dispatch across all three classifications; PM judgment: the patch entrenched the wrong model. Wave 2 followed: collapse the type system to a single flat-message shape per **D-408**, dissolving the bug structurally. The flat model has every `Category` carrying a `messages: Message[]` field directly; `Sub`, `Stage`, `Classification`, `DiscreteCategory`, `WorkflowCategory`, and `HybridCategory` are deleted. Sub.description and Stage.description carry verbatim into `Message.description`; Stage.triggerCue carries into `Message.groupNote` with lifecycle position prefixed. Both new fields are documentation-only — nothing renders them this wave; future workspace UX consumes them. Visual verification confirmed all 7 Order updates cards render when checked.
 
 ## Completed work (chronological)
 
-- **Order updates authored** (`b2a756e` + merge `76b7dfb`) — `marketing-site/lib/message-library/order-updates.ts` overwritten from stub to populated category: 7 stages (Order confirmation → Processing → Shipping confirmation → Out for delivery → Delivered → Return initiated → Refund processed), 7 messages, 21 tone variants (3 tones each), 7-variable catalog (`workspace_name` from shared + six SDK-payload tokens: `order_number`, `tracking_link`, `estimated_delivery`, `return_link`, `refund_amount`, `card_type`), 6-rule compliance block. `triggerCue` strings on each Stage match `audits/research/2026-05-16/order-updates.md` §2 verbatim. All 21 bodies ASCII-only — three Friendly variants (Stages 1, 2, 4) had em dashes in PM's spec, replaced with comma-space per PM ruling so the message stays in a single GSM-7 segment. charCount max 137/160 at worst-case `budgetChars` substitution. Branched `feat/order-updates-authoring` off `main` HEAD, written, PM-reviewed via `.pm-review.md`, pushed to origin, merged `--no-ff` to main, branch deleted local + remote.
+- **Order updates authored** (`b2a756e` + merge `76b7dfb`) — `marketing-site/lib/message-library/order-updates.ts` stub → populated as `WorkflowCategory`: 7 stages (Order confirmation → Processing → Shipping confirmation → Out for delivery → Delivered → Return initiated → Refund processed), 7 messages, 21 tone variants, 7-variable catalog (`workspace_name` from shared + six SDK-payload tokens), 6-rule compliance block. triggerCues verbatim from `audits/research/2026-05-16/order-updates.md` §2. All 21 bodies ASCII-only — three Friendly variants had em dashes in PM's spec, replaced with comma-space per PM ruling. Max charCount 137/160 worst-case. Branch pushed, merged `--no-ff`, deleted local + remote.
+- **Original Session 100 close-out** (`937558a`) — PROTOTYPE_SPEC, PRODUCT_SUMMARY, REPO_INDEX, CC_HANDOFF reflect 3 authored / 6 unauthored configurator state. Pushed.
+- **Known-issue amendment to CC_HANDOFF** (`c4ed576`) — Order updates authored but not rendering on the configurator. Bug fix flagged as immediate next task, same session. Pushed direct to main per the trivial-doc convention.
+- **Aborted fix branch** (`cbad0f3`, branch `fix/configurator-renders-workflow-categories`) — patched `categorySubs` to dispatch across all three classifications, added `tooltip?` narrowing in `category-list.tsx`. tsc + eslint clean, runtime-verified via temporary debug route. PM read the diff in `.pm-review.md` and judged it entrenches the wrong model. Branch deleted local; never pushed; commit now unreachable.
+- **D-408 + D-400 supersession** (`1992ab4`) — DECISIONS.md: D-408 appended in canonical format; D-400's body gets `⚠ Superseded by D-408: …` annotation in the same commit. Five superficially impacted decisions (D-389/391/392/395/401) flagged in commit body as a future prose-cleanup; bodies left untouched per CLAUDE.md "Over-marking is as bad as under-marking."
+- **Code wave: flat-message collapse** (`585de75`) — atomic refactor across 17 files. `types.ts` deletes the three-class union + Sub/Stage; adds `Message.description` + `Message.groupNote` (both documentation-only). All 9 category files reshape from `subs`/`stages` to `messages`. `index.ts` deletes `categorySubs`; `isAuthored` simplifies. State: `SubState` deleted; `CategoryState.subs` → `CategoryState.messages`; `STATE_VERSION` 1→2; `DEFAULT_CHECKED_SUBS` → `DEFAULT_CHECKED_MESSAGES`; `toggleSub` → `toggleMessage`; `setMessageOverride` drops the `subId` parameter. Configurator components rewire to the single `category.messages` loop. PostHog event-property renames: `subs_selected` → `messages_selected`, `configurator_sub_toggled` → `configurator_message_toggled`, `sub_id` → `message_id` (also dropped from `configurator_message_customized`).
+- **Docs wave: reflect flat model** (`bfd497e`) — PROTOTYPE_SPEC Configurator Section: three live-category bullets collapse into one shape note ("Per-message checkboxes"); state-version note bumps to 2; "Authored vs Coming soon" framing rewritten. PRODUCT_SUMMARY §3 lists actual Message.names. REPO_INDEX meta + message-library section header rewrite (drop three-classification framing); types.ts row + authored-category rows updated.
+- **Wave merge** (`794f32c`) — `feat/flat-message-model` merged `--no-ff` to main, pushed, branch deleted local + remote.
+- **Visual verification** — Local-only edit to `DEFAULT_CHECKED_CATEGORY` + `DEFAULT_CHECKED_MESSAGES` pre-checked Order updates and all 7 of its messages. SSR home page returned all 7 message-card titles (each name 2× — once in panel checkbox row, once as card title) and body fragments confirmed `interpolateBody` ran on every card. Edit reverted via `git checkout` before the end-of-task dev-server restart — no extra commit.
+- **This close-out commit** — CC_HANDOFF overwrite, REPO_INDEX meta bumps to 2026-05-21, PRODUCT_SUMMARY Last reviewed → 2026-05-21.
 
 ## In-progress work
 
@@ -31,32 +34,43 @@ None. Clean state.
 
 ## Quality checks
 
-`tsc --noEmit` clean and `eslint` clean on `marketing-site/` at the authoring commit and at this close-out HEAD. `/tmp/verify-charcounts.mjs` (transient) reports all 21 variants at 0 mismatches with 0 GSM-7 alphabet violations and max 137/160. A second regex-based re-extraction parsed `(body, charCount)` pairs directly from the written `.ts` file and re-ran the same substitution math — also 0 mismatches.
+`tsc --noEmit` and `eslint .` clean on `marketing-site/` at this close-out HEAD (re-run after merge, both empty output). Runtime verified via SSR curl of the home page with Order updates pre-checked — all 7 message cards rendered correctly with interpolation.
 
 ## Decisions
 
-**No D-numbers added this session.** Order updates authoring is execution against pre-resolved decisions (D-393 no credentials in body, D-394 transactional split, D-398 workspace_name sender frame, D-399 no promotional content, D-402 single GSM-7 segment). PM explicit ruling on the corpus-wide ASCII-only authoring rule: **not a D-number** — it's a hygiene rule, not a resolved alternative. Captured below as a gotcha for next session.
+**One D-number added this session: D-408** — Message-library categories drop classification; every category is a flat list of messages. Supersedes: D-400. D-400's body annotated `⚠ Superseded by D-408: …` in the same commit per CLAUDE.md.
 
-Final D-numbers: 322 active, latest D-407. Archive unchanged (D-01–D-83).
+Final D-numbers: **323 active, latest D-408**. Archive unchanged (D-01–D-83).
 
 ## Gotchas for next session
 
-1. **Corpus-wide ASCII-only authoring rule (new, this session).** Message bodies are ASCII-only — no em dashes (`—` U+2014), no en dashes (`–` U+2013), no smart/curly quotes (`'` `'` `"` `"`), no ellipsis character (`…`), and no other non-GSM-7-basic characters. Any one of them forces UCS-2 encoding and collapses the single-segment limit from 160 to 70 chars, breaking D-402. The verify-charcounts script (`/tmp/verify-charcounts.mjs`) now reports a per-variant GSM-7 column and exits non-zero on any violation — reuse the pattern for any future category-authoring session. The character set Verification (Session 94) and Account events (Session 99) used was ASCII-only by construction; this session was the first to deliberately catch a violation before commit.
-2. **charCount worst-case discipline (carried from Session 99 gotcha #1, still load-bearing).** `MessageVariant.charCount` must be computed against `budgetChars`, not `example` length — substitute every `{{token}}` with a placeholder of `budgetChars` characters and count. A five-line node script catches drift. This session's authoring ran the verification before commit AND again after the file was written via regex re-extraction — 0/21 mismatches both passes. Reuse the pattern.
-3. **Stage `name` vs message `name` diverge in three Order updates stages — watch item for the configurator IA pass.** Three stages carry a stage-name / message-name pair that aren't byte-identical: Stage "Order confirmation" → Message "Order confirmed"; Stage "Shipping confirmation" → Message "Order shipped"; Stage "Return initiated" → Message "Return started". Not a defect — the stage is the lifecycle label (it names a moment in the order arc), the message is the artifact (it names the SMS template the visitor sees and copies). The right-column message cards render the message name; the left-column stage rows render the stage name. The configurator's right column is also a flat message column today — every message card sits in one column with no stage/category group headings, so the visitor can't see the stage→message mapping at a glance. Both observations land in the same forward-work bucket: the configurator IA reconciliation pass needs to decide whether stage rows and message cards should converge on a single label, render in a grouped layout that surfaces the relationship, or stay independent with explicit cross-referencing. No action this session.
-4. **`DEFAULT_CHECKED_SUBS` in `use-configurator-state.ts:22` only seeds Verification (carry-forward from Session 99 gotcha #3, still accurate).** Account events and now Order updates both ship authored but unchecked at the category level, and toggling either on does not auto-check any sub/stage. The line-22 comment ("the only authored category") is now more clearly stale after Order updates; a one-line update in the next configurator-touching session would resolve it.
-5. **Workflow categories render through `categorySubs(category)`.** The configurator iterates `categorySubs(category)` in `configurator-section.tsx:432` — for a `WorkflowCategory`, the barrel's `categorySubs` returns the stages array; for a `DiscreteCategory`, it returns the subs array. The categories panel UI is identical (same row-click + `?`-icon tooltip pattern); only the corpus shape differs. If a future change ever needs to render stages differently from subs (e.g., showing `triggerCue` text or rendering an ordered numbering), `categorySubs` is the seam where the distinction would land.
+1. **Session 100 Known issue: DISSOLVED.** Order updates renders all 7 message cards when checked (verified via SSR with a temporary `DEFAULT_CHECKED_MESSAGES` edit). The bug existed only because the renderer had to dispatch across three classifications; the flat-message model removes the dispatch entirely. No carry-forward required for the render bug itself — the dissolution is the intended outcome of D-408.
+2. **PostHog event-key rename — manual dashboard update needed.** Old keys retired: `subs_selected` (property), `configurator_sub_toggled` (event), `sub_id` (property on `configurator_sub_toggled` + `configurator_message_customized`). New keys: `messages_selected`, `configurator_message_toggled`, `message_id`. Funnels, insights, and dashboards built on the old keys read empty starting at `794f32c`. **This is a real operations carry-forward — needs a hand-pass in PostHog's UI; no code involved.**
+3. **Corpus-wide ASCII-only authoring rule (Session 100 Wave 1 hygiene).** Message bodies are ASCII-only — no em dashes, en dashes, smart/curly quotes, ellipsis character, or other non-GSM-7-basic characters. Any one of them forces UCS-2 encoding and collapses the segment limit from 160 to 70 chars, breaking D-402. Verification script pattern at `/tmp/verify-charcounts.mjs` (transient — recreate per session) reports a GSM-7 column and exits non-zero on violation. Reuse for any future category authoring.
+4. **charCount worst-case discipline (Session 99 carry).** `MessageVariant.charCount` must be computed against `budgetChars`, not `example` length — substitute every `{{token}}` with a placeholder of `budgetChars` characters and count. Pre-write verification + post-write regex re-extraction caught zero drift across the Order updates 21 variants.
+5. **Stale Sub-N / Stage-N / "hybrid" positional language in five decisions.** D-389 ("Sub 1 signup OTP"), D-391 ("Account events Sub 3"), D-392 ("Appointments Stage 7"), D-395 ("Waitlist Stage 6"), D-401 ("hybrid classification"). Each decision's substance survives D-408 intact; only the wrapper-shape vocabulary is stale. Per CLAUDE.md "Over-marking is as bad as under-marking" + the one-sentence conflict test, none is superseded; their bodies are not edited. **Flagged as a future prose-cleanup pass when convenient — carry-forward.**
+6. **`DEFAULT_CHECKED_MESSAGES` rename candidacy.** The constant now keys message IDs (was sub IDs). Works as-is. Tightening the name (e.g. `DEFAULT_CHECKED_MESSAGE_IDS`) is optional cleanup — carry-forward.
+7. **Order updates' `Message.groupNote` and `Message.description` text exists but renders nowhere.** Both fields are documentation-only this wave (D-408). The future workspace UX that surfaces lifecycle ordering to developers consumes them. Don't be surprised by the data being unused at runtime — that's by design.
 
 ## Files modified this session
 
-**Code:**
-- `marketing-site/lib/message-library/order-updates.ts` (stub → fully authored; 7 stages / 21 variants / 7-variable catalog / 6-rule compliance block)
+22 unique files across the full session arc:
 
-**Docs (close-out edits, this commit):**
-- `PROTOTYPE_SPEC.md` (Configurator Section: "Authored vs Coming soon" updated to 3 authored / 6 unauthored; categories list bullet updated to note stages-vs-subs UI parity; new Order updates stages bullet with the workflow-shape framing + six new variables described; "Last updated" bumped to May 20, 2026)
-- `docs/PRODUCT_SUMMARY.md` (§3 configurator description: Verification + Account events + Order updates live, 6 categories Coming soon; "Last reviewed" stays 2026-05-20)
-- `REPO_INDEX.md` (branch state rewritten for Session 100; `Last touched` columns updated on PROTOTYPE_SPEC, PRODUCT_SUMMARY, CC_HANDOFF; message-library section header bumped to include Session 100, new `order-updates.ts` row added, "remaining stubs" count 7→6)
-- `CC_HANDOFF.md` (this file)
+**Code (16):**
+- `marketing-site/lib/message-library/types.ts`, `index.ts`, `verification.ts`, `account-events.ts`, `order-updates.ts`, `appointments.ts`, `customer-support.ts`, `marketing.ts`, `team-alerts.ts`, `community.ts`, `waitlist.ts`
+- `marketing-site/lib/configurator/use-configurator-state.ts`
+- `marketing-site/components/configurator-section.tsx`
+- `marketing-site/components/configurator/category-list.tsx`
+- `marketing-site/components/configurator/mobile-categories-modal.tsx`
+- `marketing-site/components/waitlist-modal.tsx`
+- `marketing-site/context/waitlist-context.tsx`
+
+**Docs (6):**
+- `DECISIONS.md` (D-408 + D-400 annotation)
+- `PROTOTYPE_SPEC.md` (Order updates Wave 1 then flat-model rewrite)
+- `docs/PRODUCT_SUMMARY.md` (§3 configurator description, Last reviewed bumps)
+- `REPO_INDEX.md` (meta + branch state + message-library section)
+- `CC_HANDOFF.md` (overwritten three times this session)
 
 ## Unmerged branches
 
@@ -75,16 +89,14 @@ Skipped — mid-phase, Phase 1 (Sinch Proving Ground) still active per MASTER_PL
 - D-380 drift carry-over — status unverified this session.
 - PostHog vs Plausible/Fathom reconciliation in `docs/MARKETING_STRATEGY.md` (Session 97 carry-forward).
 - `docs/POST_TOPICS.md` still untracked (long-running carry-forward).
-- `use-configurator-state.ts:22` comment ("the only authored category") still stale after this session — trivial one-line fix at next configurator-touching work (Session 99 carry-forward; reinforced this session).
-- Authored-but-unchecked category-default behavior — Account events and Order updates both ship authored but with no default-checked sub/stage. Whether a category that's authored should auto-suggest a primary sub/stage when the visitor enables it is a UX call still pending (Session 99 carry-forward; reinforced this session — now affects two categories).
-- **New this session:** stage `name` vs message `name` divergence in three Order updates stages, alongside the flat-message-column concern — both are configurator IA reconciliation work (see gotcha #3 above).
+- Authored-but-unchecked category-default behavior — Account events and Order updates both ship authored but with no default-checked message. Whether an authored category should auto-suggest a primary message when toggled on is still a UX call (Session 99 carry-forward; now affects three authored categories, since Verification's `verification-code` is the only message in `DEFAULT_CHECKED_MESSAGES`).
+- **New this session:** PostHog event-key rename — manual update of existing dashboards on the old `subs_*` / `*_sub_*` keys (see gotcha #2).
+- **New this session:** Prose-cleanup of stale Sub-N / Stage-N / "hybrid" language in D-389, D-391, D-392, D-395, D-401 (see gotcha #5).
+- **New this session:** `DEFAULT_CHECKED_MESSAGES` rename candidacy (see gotcha #6).
 
-## Immediate next task (this session)
+## Suggested next session
 
-**Fix the workflow-category render path in the configurator.** Order updates renders its category heading and the "+ Add message" button but produces no message cards. The render path in `marketing-site/components/configurator-section.tsx` (around line 432, `categorySubs(category).map(...).map(sub.messages...)`) needs to handle stages as message-producing nodes the same way it handles subs in `DiscreteCategory`. Until the cards render, PROTOTYPE_SPEC's "Order updates is live" claim is not honored by the UI. Investigate the seam between `categorySubs` and the message-card render; verify on the home page (`marketing-site/` running locally or via Vercel preview) before commit.
-
-## Suggested next session (after the render bug ships)
-
-1. **Author the next message-library category.** With Verification (Session 94), Account events (Session 99), and Order updates (Session 100) shipped, the remaining 6 are Marketing, Appointments, Customer support, Team alerts, Community, Waitlist. The choice is PM's; the research files for all 6 are populated at `audits/research/2026-05-16/[category].md` with §6 resolved. Pre-authoring checklist for any pick: read the research file, confirm the category's classification (discrete vs workflow vs hybrid) in the stub, settle the variable catalog (cross-corpus + category-specific), draft the compliance rules, then author subs/stages/messages/variants honoring the budgetChars-based charCount discipline (gotcha #2) AND the new corpus-wide ASCII-only rule (gotcha #1). Marketing is the obvious next pick — it's the second campaign-registration surface MASTER_PLAN names as co-equal at launch.
-2. **First Indie Hackers post.** Still on the pre-launch checklist per MASTER_PLAN.md §"Pre-launch checklist." Carry-forward from Sessions 97 + 98 + 99.
-3. **Configurator IA reconciliation pass.** With Order updates landing, the gap between stage names and message names — alongside the flat-message-column UI (every message in one column, no group headings) — is more visible than it was with Verification and Account events alone. A focused design pass (lay out the right column with stage/sub group headings, or unify the labeling, or both) is a reasonable next surface if PM wants to address it before authoring more categories.
+1. **Author Team alerts** — next category in the authoring sequence (PM direction: not Marketing — Marketing is sequenced last because of its distinct compliance profile). PM-led authoring: PM resolves the classification-equivalent shape (now just "what messages does this category contain"), aligns the variable catalog, drafts compliance rules, and authors the bodies; CC then writes the file honoring the corpus-wide ASCII-only rule (gotcha #3) and the charCount discipline (gotcha #4). Team alerts' research file at `audits/research/2026-05-16/team-alerts.md` with §6 resolved.
+2. **First Indie Hackers post.** Still on the pre-launch checklist per MASTER_PLAN.md §"Pre-launch checklist." Carry-forward from Sessions 97 / 98 / 99 / 100.
+3. **PostHog dashboard rename pass** (gotcha #2) — a hand-pass through existing PostHog funnels and insights to update the retired event-key names. Decoupled from any code change.
+4. **Stale-prose cleanup of D-389/391/392/395/401** (gotcha #5) — a small DECISIONS.md prose-only commit reworking the positional Sub-N / Stage-N / "hybrid" language. Decoupled from any other work.

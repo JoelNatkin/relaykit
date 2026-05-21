@@ -8,7 +8,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-05-20
+> **Last reviewed:** 2026-05-21
 
 ---
 
