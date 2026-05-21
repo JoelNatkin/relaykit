@@ -1,13 +1,12 @@
-import type { DiscreteCategory } from "./types";
+import type { Category } from "./types";
 
-export const MARKETING: DiscreteCategory = {
+export const MARKETING: Category = {
   id: "marketing",
   name: "Marketing",
   description:
     "Promos, re-engagement, product launches, seasonal campaigns. (+$10/mo)",
   tcrMapping: "MARKETING",
-  classification: "discrete",
   variables: [],
   compliance: { rules: [] },
-  subs: [],
+  messages: [],
 };

@@ -17,7 +17,6 @@ import {
 } from "@/lib/configurator/use-configurator-state";
 import {
   CATEGORIES,
-  categorySubs,
   interpolateBody,
   flattenBody,
 } from "@/lib/message-library";
@@ -157,7 +156,7 @@ function MessageReadCard({
 }
 
 type EditTarget =
-  | { kind: "corpus"; categoryId: string; subId: string; messageId: string }
+  | { kind: "corpus"; categoryId: string; messageId: string }
   | { kind: "custom"; categoryId: string; localId: string }
   | { kind: "new-custom"; categoryId: string }
   | null;
@@ -166,7 +165,7 @@ export function ConfiguratorSection() {
   const {
     state,
     toggleCategory,
-    toggleSub,
+    toggleMessage,
     setPageTone,
     setBusinessName,
     setMessageOverride,
@@ -195,12 +194,13 @@ export function ConfiguratorSection() {
     });
   }
 
-  function handleSubToggle(categoryId: string, subId: string) {
-    const wasChecked = !!state.categories[categoryId]?.subs[subId]?.checked;
-    toggleSub(categoryId, subId);
-    posthog?.capture("configurator_sub_toggled", {
+  function handleMessageToggle(categoryId: string, messageId: string) {
+    const wasChecked =
+      !!state.categories[categoryId]?.messages[messageId]?.checked;
+    toggleMessage(categoryId, messageId);
+    posthog?.capture("configurator_message_toggled", {
       category_id: categoryId,
-      sub_id: subId,
+      message_id: messageId,
       action: wasChecked ? "unchecked" : "checked",
     });
   }
@@ -213,10 +213,8 @@ export function ConfiguratorSection() {
   // Whether any corpus message carries a card-level override.
   const anyOverride = useMemo(() => {
     for (const cat of Object.values(state.categories)) {
-      for (const sub of Object.values(cat.subs)) {
-        for (const msg of Object.values(sub.messages)) {
-          if (msg.override) return true;
-        }
+      for (const msg of Object.values(cat.messages)) {
+        if (msg.override) return true;
       }
     }
     return false;
@@ -242,8 +240,8 @@ export function ConfiguratorSection() {
       CATEGORIES.every(
         (c) => c.id === "verification" || !state.categories[c.id]?.checked,
       ) &&
-      Object.entries(verification.subs).every(
-        ([subId, sub]) => sub.checked === (subId === "signup-phone-verification"),
+      Object.entries(verification.messages).every(
+        ([msgId, msg]) => msg.checked === (msgId === "verification-code"),
       );
     return matchesVerificationOnly ? PRESET_VERIFICATION_ONLY : "Custom";
   }, [state, anyOverride, anyCustom]);
@@ -251,12 +249,12 @@ export function ConfiguratorSection() {
   // Publish a snapshot to the waitlist context so the modal (opened from any
   // "Get early access" CTA) reflects what the visitor configured.
   const waitlistSummary = useMemo<WaitlistSummary>(() => {
-    const subsSelected: string[] = [];
+    const messagesSelected: string[] = [];
     for (const cat of checkedCategories) {
       const catState = state.categories[cat.id];
-      for (const sub of categorySubs(cat)) {
-        if (catState.subs[sub.id]?.checked) {
-          subsSelected.push(`${cat.id}/${sub.id}`);
+      for (const message of cat.messages) {
+        if (catState.messages[message.id]?.checked) {
+          messagesSelected.push(`${cat.id}/${message.id}`);
         }
       }
     }
@@ -269,7 +267,7 @@ export function ConfiguratorSection() {
         state.pageTone !== "Standard" ||
         state.businessName.trim() !== "",
       categoriesSelected: checkedCategories.map((c) => c.id),
-      subsSelected,
+      messagesSelected,
       toneDefault: state.pageTone,
       hasOverrides: anyOverride,
     };
@@ -292,20 +290,18 @@ export function ConfiguratorSection() {
     const blocks: string[] = [];
     for (const cat of checkedCategories) {
       const catState = state.categories[cat.id];
-      for (const sub of categorySubs(cat)) {
-        if (!catState.subs[sub.id]?.checked) continue;
-        for (const message of sub.messages) {
-          const override = catState.subs[sub.id].messages[message.id]?.override;
-          const template = effectiveBody(message, override, state.pageTone);
-          const example = flattenBody(
-            template,
-            cat.variables,
-            state.businessName,
-          );
-          blocks.push(
-            buildCopyBlock(message.name, message.tooltip, example, template),
-          );
-        }
+      for (const message of cat.messages) {
+        if (!catState.messages[message.id]?.checked) continue;
+        const override = catState.messages[message.id]?.override;
+        const template = effectiveBody(message, override, state.pageTone);
+        const example = flattenBody(
+          template,
+          cat.variables,
+          state.businessName,
+        );
+        blocks.push(
+          buildCopyBlock(message.name, message.tooltip, example, template),
+        );
       }
       for (const cm of catState.customMessages) {
         const example = flattenBody(cm.body, cat.variables, state.businessName);
@@ -321,7 +317,7 @@ export function ConfiguratorSection() {
     setCopyToastVisible(true);
     posthog?.capture("configurator_copy_clicked", {
       categories_selected: waitlistSummary.categoriesSelected ?? [],
-      subs_selected: waitlistSummary.subsSelected ?? [],
+      messages_selected: waitlistSummary.messagesSelected ?? [],
       tone_default: state.pageTone,
       has_overrides: anyOverride,
     });
@@ -356,7 +352,7 @@ export function ConfiguratorSection() {
                 state={state}
                 presetValue={presetValue}
                 onCategoryToggle={handleCategoryToggle}
-                onSubToggle={handleSubToggle}
+                onMessageToggle={handleMessageToggle}
                 onSelectPreset={selectPreset}
               />
             </div>
@@ -368,7 +364,7 @@ export function ConfiguratorSection() {
                 state={state}
                 presetValue={presetValue}
                 onCategoryToggle={handleCategoryToggle}
-                onSubToggle={handleSubToggle}
+                onMessageToggle={handleMessageToggle}
                 onSelectPreset={selectPreset}
               />
             </div>
@@ -429,78 +425,72 @@ export function ConfiguratorSection() {
                         {category.name}
                       </h4>
                       <div className="space-y-3">
-                        {categorySubs(category).map((sub) => {
-                          if (!catState.subs[sub.id]?.checked) return null;
-                          return sub.messages.map((message) => {
-                            const override =
-                              catState.subs[sub.id].messages[message.id]
-                                ?.override;
-                            const isEditing =
-                              editTarget?.kind === "corpus" &&
-                              editTarget.categoryId === category.id &&
-                              editTarget.subId === sub.id &&
-                              editTarget.messageId === message.id;
-                            if (isEditing) {
-                              return (
-                                <MessageEditCard
-                                  key={`${sub.id}-${message.id}`}
-                                  message={message}
-                                  variables={category.variables}
-                                  pageTone={state.pageTone}
-                                  override={override}
-                                  requiresStop={requiresStop}
-                                  onSave={(ov) => {
-                                    setMessageOverride(
-                                      category.id,
-                                      sub.id,
-                                      message.id,
-                                      ov,
-                                    );
-                                    const key = `${category.id}/${sub.id}/${message.id}`;
-                                    if (!customizedFiredRef.current.has(key)) {
-                                      customizedFiredRef.current.add(key);
-                                      posthog?.capture(
-                                        "configurator_message_customized",
-                                        {
-                                          category_id: category.id,
-                                          sub_id: sub.id,
-                                          message_id: message.id,
-                                          customization_type:
-                                            ov.tone === "Custom"
-                                              ? "custom_text"
-                                              : "variant_change",
-                                        },
-                                      );
-                                    }
-                                    setEditTarget(null);
-                                  }}
-                                  onCancel={() => setEditTarget(null)}
-                                />
-                              );
-                            }
+                        {category.messages.map((message) => {
+                          if (!catState.messages[message.id]?.checked)
+                            return null;
+                          const override =
+                            catState.messages[message.id]?.override;
+                          const isEditing =
+                            editTarget?.kind === "corpus" &&
+                            editTarget.categoryId === category.id &&
+                            editTarget.messageId === message.id;
+                          if (isEditing) {
                             return (
-                              <MessageReadCard
-                                key={`${sub.id}-${message.id}`}
-                                name={message.name}
-                                tooltip={message.tooltip}
-                                body={effectiveBody(
-                                  message,
-                                  override,
-                                  state.pageTone,
-                                )}
+                              <MessageEditCard
+                                key={message.id}
+                                message={message}
                                 variables={category.variables}
-                                businessName={state.businessName}
-                                onEdit={() =>
-                                  setEditTarget({
-                                    kind: "corpus",
-                                    categoryId: category.id,
-                                    subId: sub.id,
-                                    messageId: message.id,
-                                  })
-                                }
+                                pageTone={state.pageTone}
+                                override={override}
+                                requiresStop={requiresStop}
+                                onSave={(ov) => {
+                                  setMessageOverride(
+                                    category.id,
+                                    message.id,
+                                    ov,
+                                  );
+                                  const key = `${category.id}/${message.id}`;
+                                  if (!customizedFiredRef.current.has(key)) {
+                                    customizedFiredRef.current.add(key);
+                                    posthog?.capture(
+                                      "configurator_message_customized",
+                                      {
+                                        category_id: category.id,
+                                        message_id: message.id,
+                                        customization_type:
+                                          ov.tone === "Custom"
+                                            ? "custom_text"
+                                            : "variant_change",
+                                      },
+                                    );
+                                  }
+                                  setEditTarget(null);
+                                }}
+                                onCancel={() => setEditTarget(null)}
                               />
                             );
-                          });
+                          }
+                          return (
+                            <MessageReadCard
+                              key={message.id}
+                              name={message.name}
+                              tooltip={message.tooltip}
+                              body={effectiveBody(
+                                message,
+                                override,
+                                state.pageTone,
+                              )}
+                              variables={category.variables}
+                              businessName={state.businessName}
+                              onEdit={() =>
+                                setEditTarget({
+                                  kind: "corpus",
+                                  categoryId: category.id,
+                                  messageId: message.id,
+                                })
+                              }
+                            />
+                          );
                         })}
 
                         {catState.customMessages.map((cm) => {

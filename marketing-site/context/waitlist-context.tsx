@@ -36,15 +36,15 @@ export interface WaitlistSummary {
   /** Extended configurator snapshot — additive, populated only when a
    *  configurator is mounted. Consumed by the `early_access_clicked` event. */
   categoriesSelected?: string[];
-  subsSelected?: string[];
+  messagesSelected?: string[];
   toneDefault?: string;
   hasOverrides?: boolean;
 }
 
 /**
  * Reproduces the configurator's untouched defaults (Verification + its primary
- * sub selected, tone Standard, no business name). Used on every page that has
- * no configurator mounted, so the modal still shows a correct
+ * message selected, tone Standard, no business name). Used on every page that
+ * has no configurator mounted, so the modal still shows a correct
  * "Live at launch: Verification".
  */
 export const DEFAULT_WAITLIST_SUMMARY: WaitlistSummary = {
@@ -83,7 +83,7 @@ export function WaitlistProvider({ children }: { children: ReactNode }) {
       const s = summaryRef.current;
       posthog?.capture("early_access_clicked", {
         categories_selected: s.categoriesSelected ?? [],
-        subs_selected: s.subsSelected ?? [],
+        messages_selected: s.messagesSelected ?? [],
         tone_default: s.toneDefault ?? s.tone,
         has_overrides: s.hasOverrides ?? false,
         source,

@@ -117,7 +117,7 @@ export function WaitlistModal() {
         posthog?.capture("early_access_submitted", {
           source: ctaSource,
           categories_selected: summary.categoriesSelected ?? [],
-          subs_selected: summary.subsSelected ?? [],
+          messages_selected: summary.messagesSelected ?? [],
           tone_default: summary.toneDefault ?? summary.tone,
           has_overrides: summary.hasOverrides ?? false,
         });

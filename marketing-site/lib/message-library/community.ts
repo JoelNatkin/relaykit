@@ -1,13 +1,11 @@
-import type { HybridCategory } from "./types";
+import type { Category } from "./types";
 
-export const COMMUNITY: HybridCategory = {
+export const COMMUNITY: Category = {
   id: "community",
   name: "Community",
   description: "Member announcements, event reminders, group updates.",
   tcrMapping: "ACCOUNT_NOTIFICATION",
-  classification: "hybrid",
   variables: [],
   compliance: { rules: [] },
-  stages: [],
-  subs: [],
+  messages: [],
 };

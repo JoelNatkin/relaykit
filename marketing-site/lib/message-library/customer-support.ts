@@ -1,13 +1,11 @@
-import type { HybridCategory } from "./types";
+import type { Category } from "./types";
 
-export const CUSTOMER_SUPPORT: HybridCategory = {
+export const CUSTOMER_SUPPORT: Category = {
   id: "customer-support",
   name: "Customer support",
   description: "Ticket updates, resolution notices, satisfaction follow-ups.",
   tcrMapping: "CUSTOMER_CARE",
-  classification: "hybrid",
   variables: [],
   compliance: { rules: [] },
-  stages: [],
-  subs: [],
+  messages: [],
 };

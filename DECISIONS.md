@@ -1755,6 +1755,8 @@ Corpus-wide authoring rule. Discount codes, offers, "upgrade now" CTAs, and prom
 
 **D-400 — Message Library categories classified as discrete, workflow, or hybrid** (Date: 2026-05-17)
 
+⚠ Superseded by D-408: the three-classification model is replaced by a single flat-message shape (`Category.messages: Message[]`); message ordering and lifecycle context survive as optional documentation-only `Message` fields (`description`, `groupNote`).
+
 Three structural classification patterns drive per-category SDK shape, configurator UX, and message library typing. Discrete = each sub is its own trigger-response (Verification, Marketing, Account events, Team alerts). Workflow = sequential stages over a lifecycle (Appointments, Order updates, Waitlist). Hybrid = both shapes within one category (Customer support, Community, Team alerts). Rejected: a flat message list (the legacy pattern in `prototype/data/messages.ts`).
 
 **Supersedes:** none
@@ -1840,3 +1842,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Rejected alternative:** Keep the panel inline on mobile (no modal). Rejected because vertical scroll length disconnected categories selection from message preview.
 
 **Supersedes:** none
+
+## D-408 — Message-library categories drop classification; every category is a flat list of messages
+
+**Decided:** 2026-05-20 (Session 100)
+
+**Decision:** The three-classification model (`discrete` / `workflow` / `hybrid`, with `Sub` and `Stage` wrappers) is replaced by a single shape. Every `Category` in `marketing-site/lib/message-library/` carries a flat `messages: Message[]` field directly — no `subs`, no `stages`, no `classification` discriminant. The renderer collapses to one path that iterates `category.messages` uniformly. Message-to-message ordering and lifecycle context survive as optional documentation-only fields on `Message`: `description` carries former `Sub.description` / `Stage.description` text verbatim; `groupNote` annotates sequence position for ordered messages (carries `Stage.triggerCue` text verbatim, prefixed with the lifecycle position). Neither field renders in the configurator today; both are reserved for the future workspace UX that surfaces sequence to developers.
+
+**Why:** The configurator is a flat list of selectable messages — for both the lead-magnet and the future product. Message-to-message relationships (order lifecycle, onboarding sequences, shift lifecycles) are real, but they belong to product-phase surfaces (workspace UX, integration docs) rather than the home-page configurator. The classification dispatch was also the root cause of the Session 100 Known issue: Order updates renders zero message cards because the `categorySubs` helper at `lib/message-library/index.ts:74` returns `[]` for any `WorkflowCategory`. An aborted fix branch (`fix/configurator-renders-workflow-categories`, commit `cbad0f3` — never pushed, now unreachable) patched the renderer to dispatch across all three shapes; PM judgment was that the patch entrenches the wrong model. Collapsing to one shape dissolves the bug structurally and simplifies every consumer (state seed, panel render, right-column render). The configurator's visible UX is preserved byte-equivalent — same panel layout, same per-message checkboxes, same card-title hover register (`?`-icon binds to the existing `Message.tooltip`, not to the new `Message.description`).
+
+**Rejected alternative:** Keep the three-classification model and patch the renderer to dispatch correctly across discrete/workflow/hybrid (the abandoned `cbad0f3` shape). Rejected because every new category authored would need its classification chosen, the renderer's branching grows, and the bug surface persists.
+
+**Supersedes:** D-400.
+
+**Affects:** `marketing-site/lib/message-library/types.ts` (Category interface flattens; `Sub`/`Stage`/`Classification`/`DiscreteCategory`/`WorkflowCategory`/`HybridCategory` deleted; `Message.description` + `Message.groupNote` added optional); all 9 per-category `.ts` files in `lib/message-library/` (3 authored reshape, 6 stubs reshape); `lib/message-library/index.ts` (`categorySubs` deleted; `isAuthored` simplifies); `lib/configurator/use-configurator-state.ts` (`SubState` deleted; `CategoryState.subs` renames to `CategoryState.messages`; `STATE_VERSION` 1→2; `DEFAULT_CHECKED_SUBS` → `DEFAULT_CHECKED_MESSAGES`); `components/configurator-section.tsx` + `components/configurator/category-list.tsx` (single render path through `category.messages`).

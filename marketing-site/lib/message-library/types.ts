@@ -1,20 +1,21 @@
 /**
- * Message-library type system (Wave 2 foundation).
+ * Message-library type system — flat-message model (D-408).
  *
- * A typed corpus of SMS message templates organized by category. Categories are
- * one of three shapes — `discrete` (a flat set of message groups), `workflow`
- * (an ordered sequence of stages), or `hybrid` (both). `classification` is the
- * discriminant of the `Category` union.
+ * Every `Category` carries a flat `messages: Message[]` field directly. The
+ * configurator renders messages from this list uniformly; message-to-message
+ * ordering and lifecycle context survive as optional documentation-only fields
+ * on `Message` (`description`, `groupNote`) that nothing renders today and
+ * that the future workspace UX consumes when it surfaces sequence to
+ * developers.
  *
- * Each category carries a `variables` catalog (the tokens its messages use,
- * drawn from the cross-corpus `shared-variables` set plus category-specific
- * additions) and a `compliance` block (the authoring rules that govern it).
+ * Per-category `Variable[]` catalogs (the tokens its messages use, drawn from
+ * the cross-corpus `shared-variables` set plus category-specific additions)
+ * and a `compliance` block (the authoring rules that govern it) are unchanged
+ * from the pre-D-408 shape.
  *
- * Scaffolding: per-category data files ship with empty `subs`/`stages` until
- * authored; research and message bodies land in per-category authoring passes.
+ * Replaces the three-classification model (discrete / workflow / hybrid with
+ * `Sub` and `Stage` wrappers) — see D-400 and D-408.
  */
-
-export type Classification = "workflow" | "discrete" | "hybrid";
 
 export type TCRMapping =
   | "2FA"
@@ -63,8 +64,29 @@ export interface Message {
   /** Variable names (referencing the category catalog) used across this message's variants. */
   variables: string[];
   variants: MessageVariant[];
-  /** Short hover-tooltip copy surfaced on the configurator message card title. */
+  /**
+   * Short hover-tooltip rendered on the message-card title and on the
+   * categories panel's `?`-icon. Operational register ("Sent when…").
+   */
   tooltip?: string;
+  /**
+   * Editorial framing — what this message is for. Carries former
+   * `Sub.description` and `Stage.description` text verbatim from the
+   * pre-D-408 corpus. Documentation-only this wave: nothing in the
+   * configurator renders it today. Reserved for the future workspace
+   * UX that surfaces editorial context to developers.
+   */
+  description?: string;
+  /**
+   * Sequence annotation marking that a message belongs to an ordered group
+   * (e.g. `"Order lifecycle — step 3 of 7: sent when carrier marks
+   * delivered."`). Carries former `Stage.triggerCue` text verbatim,
+   * prefixed with the lifecycle position. Unset for messages that were
+   * never sequenced (e.g. former `Sub`-shaped messages). Documentation-only
+   * this wave: nothing in the configurator renders it today. Reserved for
+   * the future workspace UX that surfaces sequence to developers.
+   */
+  groupNote?: string;
 }
 
 /** Category-level authoring rules surfaced to authors and the future editor compliance gate. */
@@ -72,60 +94,18 @@ export interface CategoryCompliance {
   rules: string[];
 }
 
-/** A group of related messages within a discrete category. */
-export interface Sub {
+/**
+ * A message-library category — flat list of messages (D-408). The configurator
+ * iterates `messages` directly; `variables` and `compliance` apply to every
+ * message in the category.
+ */
+export interface Category {
   id: string;
   name: string;
+  /** One-sentence collapsed-state summary shown under the category name in the configurator. */
   description: string;
-  /** Short hover-tooltip copy surfaced on the configurator sub-checkbox row. */
-  tooltip?: string;
+  tcrMapping: TCRMapping;
+  variables: Variable[];
+  compliance: CategoryCompliance;
   messages: Message[];
 }
-
-/** An ordered step within a workflow category. */
-export interface Stage {
-  id: string;
-  name: string;
-  description: string;
-  triggerCue: string;
-  messages: Message[];
-}
-
-export interface DiscreteCategory {
-  id: string;
-  name: string;
-  /** One-sentence collapsed-state summary shown under the category name in the configurator. */
-  description: string;
-  tcrMapping: TCRMapping;
-  classification: "discrete";
-  variables: Variable[];
-  compliance: CategoryCompliance;
-  subs: Sub[];
-}
-
-export interface WorkflowCategory {
-  id: string;
-  name: string;
-  /** One-sentence collapsed-state summary shown under the category name in the configurator. */
-  description: string;
-  tcrMapping: TCRMapping;
-  classification: "workflow";
-  variables: Variable[];
-  compliance: CategoryCompliance;
-  stages: Stage[];
-}
-
-export interface HybridCategory {
-  id: string;
-  name: string;
-  /** One-sentence collapsed-state summary shown under the category name in the configurator. */
-  description: string;
-  tcrMapping: TCRMapping;
-  classification: "hybrid";
-  variables: Variable[];
-  compliance: CategoryCompliance;
-  stages: Stage[];
-  subs: Sub[];
-}
-
-export type Category = DiscreteCategory | WorkflowCategory | HybridCategory;

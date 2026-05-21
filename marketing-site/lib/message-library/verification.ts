@@ -1,4 +1,4 @@
-import type { DiscreteCategory, Variable } from "./types";
+import type { Category, Variable } from "./types";
 import { SHARED_VARIABLES } from "./shared-variables";
 
 /**
@@ -28,13 +28,12 @@ const VERIFICATION_VARIABLES: Variable[] = [
   },
 ];
 
-export const VERIFICATION: DiscreteCategory = {
+export const VERIFICATION: Category = {
   id: "verification",
   name: "Verification",
   description:
     "Phone-ownership proof at signup, step-up confirmations, account recovery, and 2FA.",
   tcrMapping: "2FA",
-  classification: "discrete",
   variables: VERIFICATION_VARIABLES,
   compliance: {
     rules: [
@@ -45,136 +44,105 @@ export const VERIFICATION: DiscreteCategory = {
       "Variable {{code}} is RelayKit-generated and type-constrained.",
     ],
   },
-  subs: [
+  messages: [
     {
-      id: "signup-phone-verification",
-      name: "Signup phone verification",
+      id: "verification-code",
+      name: "Verification code",
+      tooltip: "Sent when a user verifies their phone at signup.",
       description:
         "One-time phone-ownership proof at account creation — the most-shipped SMS-verification use case in indie SaaS.",
-      tooltip:
-        "One-time phone-ownership proof when a user creates an account. The SMS-verification use case that survives the passkeys transition.",
-      messages: [
+      variables: ["business_name", "code", "expiry_minutes"],
+      variants: [
         {
-          id: "verification-code",
-          name: "Verification code",
-          tooltip: "Sent when a user verifies their phone at signup.",
-          variables: ["business_name", "code", "expiry_minutes"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{business_name}}: Verification code: {{code}}. Expires in {{expiry_minutes}} minutes.",
-              charCount: 76,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{business_name}} code is {{code}}, good for {{expiry_minutes}} minutes.",
-              charCount: 67,
-            },
-            {
-              tone: "Brief",
-              body: "{{business_name}}: {{code}}",
-              charCount: 33,
-            },
-          ],
+          tone: "Standard",
+          body: "{{business_name}}: Verification code: {{code}}. Expires in {{expiry_minutes}} minutes.",
+          charCount: 76,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{business_name}} code is {{code}}, good for {{expiry_minutes}} minutes.",
+          charCount: 67,
+        },
+        {
+          tone: "Brief",
+          body: "{{business_name}}: {{code}}",
+          charCount: 33,
         },
       ],
     },
     {
-      id: "sensitive-action-step-up",
-      name: "Sensitive-action step-up",
+      id: "confirmation-code",
+      name: "Confirmation code",
+      tooltip:
+        "Sent before a sensitive action — withdrawal, payment change, ownership transfer.",
       description:
         "Explicit phone-channel confirmation before a high-stakes action (withdrawal, payment-detail change, ownership transfer, account deletion).",
-      tooltip:
-        "Confirm a high-stakes action in-session — withdrawal, payment change, ownership transfer.",
-      messages: [
+      variables: ["business_name", "code", "expiry_minutes"],
+      variants: [
         {
-          id: "confirmation-code",
-          name: "Confirmation code",
-          tooltip:
-            "Sent before a sensitive action — withdrawal, payment change, ownership transfer.",
-          variables: ["business_name", "code", "expiry_minutes"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{business_name}}: Confirmation code: {{code}}. Expires in {{expiry_minutes}} minutes.",
-              charCount: 76,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{business_name}} confirmation code is {{code}}, good for {{expiry_minutes}} minutes.",
-              charCount: 80,
-            },
-            {
-              tone: "Brief",
-              body: "{{business_name}}: Confirmation code {{code}}",
-              charCount: 51,
-            },
-          ],
+          tone: "Standard",
+          body: "{{business_name}}: Confirmation code: {{code}}. Expires in {{expiry_minutes}} minutes.",
+          charCount: 76,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{business_name}} confirmation code is {{code}}, good for {{expiry_minutes}} minutes.",
+          charCount: 80,
+        },
+        {
+          tone: "Brief",
+          body: "{{business_name}}: Confirmation code {{code}}",
+          charCount: 51,
         },
       ],
     },
     {
-      id: "account-recovery",
-      name: "Account recovery",
+      id: "recovery-code",
+      name: "Recovery code",
+      tooltip: "Sent when a user recovers an account they're locked out of.",
       description:
         "Out-of-band recovery channel when the end-user has lost access to their primary auth method. SMS as lockout fallback, not primary auth.",
-      tooltip: "Out-of-band channel when other auth fails.",
-      messages: [
+      variables: ["business_name", "code", "expiry_minutes"],
+      variants: [
         {
-          id: "recovery-code",
-          name: "Recovery code",
-          tooltip: "Sent when a user recovers an account they're locked out of.",
-          variables: ["business_name", "code", "expiry_minutes"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{business_name}}: Recovery code: {{code}}. Expires in {{expiry_minutes}} minutes.",
-              charCount: 72,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{business_name}} recovery code is {{code}}, good for {{expiry_minutes}} minutes.",
-              charCount: 76,
-            },
-            {
-              tone: "Brief",
-              body: "{{business_name}}: Recovery code {{code}}",
-              charCount: 47,
-            },
-          ],
+          tone: "Standard",
+          body: "{{business_name}}: Recovery code: {{code}}. Expires in {{expiry_minutes}} minutes.",
+          charCount: 72,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{business_name}} recovery code is {{code}}, good for {{expiry_minutes}} minutes.",
+          charCount: 76,
+        },
+        {
+          tone: "Brief",
+          body: "{{business_name}}: Recovery code {{code}}",
+          charCount: 47,
         },
       ],
     },
     {
-      id: "login-2fa",
-      name: "Login 2FA",
+      id: "login-code",
+      name: "Login code",
+      tooltip: "Sent when a user logs in with SMS as a second factor.",
       description:
         "SMS as a second factor at login. Advisory framing (SMS is the least-secure second factor) surfaces in the configurator, never in the message body.",
-      tooltip:
-        "Second-factor at sign-in. SMS is the most common factor but the least secure — consider TOTP or passkeys for primary 2FA.",
-      messages: [
+      variables: ["business_name", "code", "expiry_minutes"],
+      variants: [
         {
-          id: "login-code",
-          name: "Login code",
-          tooltip: "Sent when a user logs in with SMS as a second factor.",
-          variables: ["business_name", "code", "expiry_minutes"],
-          variants: [
-            {
-              tone: "Standard",
-              body: "{{business_name}}: Your login code is {{code}}. Expires in {{expiry_minutes}} minutes.",
-              charCount: 76,
-            },
-            {
-              tone: "Friendly",
-              body: "Your {{business_name}} sign-in code is {{code}}, good for {{expiry_minutes}} minutes.",
-              charCount: 75,
-            },
-            {
-              tone: "Brief",
-              body: "{{business_name}}: Sign-in code {{code}}",
-              charCount: 46,
-            },
-          ],
+          tone: "Standard",
+          body: "{{business_name}}: Your login code is {{code}}. Expires in {{expiry_minutes}} minutes.",
+          charCount: 76,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{business_name}} sign-in code is {{code}}, good for {{expiry_minutes}} minutes.",
+          charCount: 75,
+        },
+        {
+          tone: "Brief",
+          body: "{{business_name}}: Sign-in code {{code}}",
+          charCount: 46,
         },
       ],
     },

@@ -1,28 +1,32 @@
 "use client";
 
 /**
- * Configurator state — selections, tone, business name, per-message overrides,
- * and visitor-authored custom messages — with cross-session localStorage
- * persistence.
+ * Configurator state — category and per-message selections, page tone,
+ * business name, per-message overrides, and visitor-authored custom messages —
+ * with cross-session localStorage persistence.
  *
  * State is seeded from the message-library corpus, so it tracks the corpus as
  * categories are authored. Persisted state is merged over a fresh seed on load
  * (ids intersected with the live corpus), so a removed/renamed corpus entry
  * never resurrects a stale selection.
+ *
+ * Flat-message model (D-408): each category carries `messages: Record<string,
+ * MessageState>` directly — no `Sub`/`Stage` wrapper. The `STATE_VERSION` bump
+ * to 2 drops pre-D-408 persisted state silently (version-gated, fail-silent).
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { CATEGORIES, categorySubs } from "@/lib/message-library";
+import { CATEGORIES } from "@/lib/message-library";
 import type { VariantTone } from "@/lib/message-library";
 
 const STORAGE_KEY = "relaykit_configurator";
-const STATE_VERSION = 1 as const;
+const STATE_VERSION = 2 as const;
 const SAVE_DEBOUNCE_MS = 200;
 
-/** Launch defaults — the only authored category and its primary sub start checked. */
+/** Launch defaults — the only authored category and its primary message start checked. */
 const DEFAULT_CHECKED_CATEGORY = "verification";
-const DEFAULT_CHECKED_SUBS: Record<string, string[]> = {
-  verification: ["signup-phone-verification"],
+const DEFAULT_CHECKED_MESSAGES: Record<string, string[]> = {
+  verification: ["verification-code"],
 };
 
 const TONES: VariantTone[] = ["Standard", "Friendly", "Brief"];
@@ -37,13 +41,9 @@ export interface MessageOverride {
 }
 
 export interface MessageState {
+  checked: boolean;
   /** Absent = follows the page-level tone. Present = sticky card-level override. */
   override?: MessageOverride;
-}
-
-export interface SubState {
-  checked: boolean;
-  messages: Record<string, MessageState>;
 }
 
 /** A visitor-authored message. Carries forward into the workspace at signup. */
@@ -55,8 +55,8 @@ export interface CustomMessage {
 
 export interface CategoryState {
   checked: boolean;
-  /** Keyed by sub id. Empty for workflow/unauthored categories. */
-  subs: Record<string, SubState>;
+  /** Keyed by message id. Empty for unauthored categories. */
+  messages: Record<string, MessageState>;
   customMessages: CustomMessage[];
 }
 
@@ -69,12 +69,11 @@ export interface ConfiguratorState {
 
 export interface ConfiguratorActions {
   toggleCategory: (categoryId: string) => void;
-  toggleSub: (categoryId: string, subId: string) => void;
+  toggleMessage: (categoryId: string, messageId: string) => void;
   setPageTone: (tone: VariantTone) => void;
   setBusinessName: (name: string) => void;
   setMessageOverride: (
     categoryId: string,
-    subId: string,
     messageId: string,
     override: MessageOverride | undefined,
   ) => void;
@@ -100,18 +99,14 @@ function newLocalId(): string {
 function seedState(): ConfiguratorState {
   const categories: Record<string, CategoryState> = {};
   for (const category of CATEGORIES) {
-    const subs: Record<string, SubState> = {};
-    for (const sub of categorySubs(category)) {
-      const messages: Record<string, MessageState> = {};
-      for (const message of sub.messages) messages[message.id] = {};
-      subs[sub.id] = {
-        checked: (DEFAULT_CHECKED_SUBS[category.id] ?? []).includes(sub.id),
-        messages,
-      };
+    const defaultChecked = DEFAULT_CHECKED_MESSAGES[category.id] ?? [];
+    const messages: Record<string, MessageState> = {};
+    for (const message of category.messages) {
+      messages[message.id] = { checked: defaultChecked.includes(message.id) };
     }
     categories[category.id] = {
       checked: category.id === DEFAULT_CHECKED_CATEGORY,
-      subs,
+      messages,
       customMessages: [],
     };
   }
@@ -160,16 +155,13 @@ function mergeStored(stored: unknown): ConfiguratorState {
     if (Array.isArray(storedCat.customMessages)) {
       catState.customMessages = storedCat.customMessages.filter(isValidCustomMessage);
     }
-    const storedSubs = (storedCat.subs ?? {}) as Record<string, Partial<SubState>>;
-    for (const [subId, subState] of Object.entries(catState.subs)) {
-      const storedSub = storedSubs[subId];
-      if (!storedSub) continue;
-      if (typeof storedSub.checked === "boolean") subState.checked = storedSub.checked;
-      const storedMsgs = (storedSub.messages ?? {}) as Record<string, unknown>;
-      for (const msgId of Object.keys(subState.messages)) {
-        const override = readOverride((storedMsgs[msgId] as Record<string, unknown>)?.override);
-        if (override) subState.messages[msgId] = { override };
-      }
+    const storedMsgs = (storedCat.messages ?? {}) as Record<string, Partial<MessageState>>;
+    for (const [msgId, msgState] of Object.entries(catState.messages)) {
+      const storedMsg = storedMsgs[msgId];
+      if (!storedMsg) continue;
+      if (typeof storedMsg.checked === "boolean") msgState.checked = storedMsg.checked;
+      const override = readOverride(storedMsg.override);
+      if (override) msgState.override = override;
     }
   }
   return seed;
@@ -221,18 +213,18 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     });
   }, []);
 
-  const toggleSub = useCallback((categoryId: string, subId: string) => {
+  const toggleMessage = useCallback((categoryId: string, messageId: string) => {
     setState((prev) => {
       const cat = prev.categories[categoryId];
-      const sub = cat?.subs[subId];
-      if (!cat || !sub) return prev;
+      const msg = cat?.messages[messageId];
+      if (!cat || !msg) return prev;
       return {
         ...prev,
         categories: {
           ...prev.categories,
           [categoryId]: {
             ...cat,
-            subs: { ...cat.subs, [subId]: { ...sub, checked: !sub.checked } },
+            messages: { ...cat.messages, [messageId]: { ...msg, checked: !msg.checked } },
           },
         },
       };
@@ -250,29 +242,24 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
   const setMessageOverride = useCallback(
     (
       categoryId: string,
-      subId: string,
       messageId: string,
       override: MessageOverride | undefined,
     ) => {
       setState((prev) => {
         const cat = prev.categories[categoryId];
-        const sub = cat?.subs[subId];
-        if (!cat || !sub || !(messageId in sub.messages)) return prev;
+        const msg = cat?.messages[messageId];
+        if (!cat || !msg) return prev;
         return {
           ...prev,
           categories: {
             ...prev.categories,
             [categoryId]: {
               ...cat,
-              subs: {
-                ...cat.subs,
-                [subId]: {
-                  ...sub,
-                  messages: {
-                    ...sub.messages,
-                    [messageId]: override ? { override } : {},
-                  },
-                },
+              messages: {
+                ...cat.messages,
+                [messageId]: override
+                  ? { ...msg, override }
+                  : { checked: msg.checked },
               },
             },
           },
@@ -350,17 +337,15 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     setState((prev) => {
       const categories: Record<string, CategoryState> = {};
       for (const [catId, cat] of Object.entries(prev.categories)) {
-        const subs: Record<string, SubState> = {};
-        for (const [subId, sub] of Object.entries(cat.subs)) {
-          subs[subId] = {
-            ...sub,
-            checked: (DEFAULT_CHECKED_SUBS[catId] ?? []).includes(subId),
-          };
+        const defaultChecked = DEFAULT_CHECKED_MESSAGES[catId] ?? [];
+        const messages: Record<string, MessageState> = {};
+        for (const [msgId, msg] of Object.entries(cat.messages)) {
+          messages[msgId] = { ...msg, checked: defaultChecked.includes(msgId) };
         }
         categories[catId] = {
           ...cat,
           checked: catId === DEFAULT_CHECKED_CATEGORY,
-          subs,
+          messages,
         };
       }
       return { ...prev, categories };
@@ -370,7 +355,7 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
   return {
     state,
     toggleCategory,
-    toggleSub,
+    toggleMessage,
     setPageTone,
     setBusinessName,
     setMessageOverride,

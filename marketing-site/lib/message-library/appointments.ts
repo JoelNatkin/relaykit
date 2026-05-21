@@ -1,13 +1,12 @@
-import type { WorkflowCategory } from "./types";
+import type { Category } from "./types";
 
-export const APPOINTMENTS: WorkflowCategory = {
+export const APPOINTMENTS: Category = {
   id: "appointments",
   name: "Appointments",
   description:
     "Confirmations, reminders, reschedules, cancellations, no-show follow-ups.",
   tcrMapping: "ACCOUNT_NOTIFICATION",
-  classification: "workflow",
   variables: [],
   compliance: { rules: [] },
-  stages: [],
+  messages: [],
 };

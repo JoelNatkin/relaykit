@@ -19,11 +19,7 @@ import {
   PresetDropdown,
   type Preset,
 } from "@/components/configurator/preset-dropdown";
-import {
-  CATEGORIES,
-  categorySubs,
-  isAuthored,
-} from "@/lib/message-library";
+import { CATEGORIES, isAuthored } from "@/lib/message-library";
 import type { ConfiguratorState } from "@/lib/configurator/use-configurator-state";
 
 /** Dropdown presets. Only "Verification only" is reachable at launch. */
@@ -92,7 +88,7 @@ export interface CategoryListProps {
   state: ConfiguratorState;
   presetValue: string;
   onCategoryToggle: (categoryId: string) => void;
-  onSubToggle: (categoryId: string, subId: string) => void;
+  onMessageToggle: (categoryId: string, messageId: string) => void;
   onSelectPreset: (presetId: string) => void;
 }
 
@@ -100,7 +96,7 @@ export function CategoryList({
   state,
   presetValue,
   onCategoryToggle,
-  onSubToggle,
+  onMessageToggle,
   onSelectPreset,
 }: CategoryListProps) {
   return (
@@ -165,9 +161,9 @@ export function CategoryList({
 
             {authored && checked ? (
               <div className="mt-3 space-y-2 pl-7">
-                {categorySubs(category).map((sub) => {
-                  const subChecked =
-                    !!catState?.subs[sub.id]?.checked;
+                {category.messages.map((message) => {
+                  const messageChecked =
+                    !!catState?.messages[message.id]?.checked;
                   return (
                     // role="button" instead of <button> because the row
                     // contains a nested interactive element (the ? icon's
@@ -176,19 +172,19 @@ export function CategoryList({
                     // click-to-edit body. Keyboard nav handled via tabIndex
                     // + onKeyDown for Enter and Space.
                     <div
-                      key={sub.id}
+                      key={message.id}
                       role="button"
                       tabIndex={0}
-                      onClick={() => onSubToggle(category.id, sub.id)}
+                      onClick={() => onMessageToggle(category.id, message.id)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          onSubToggle(category.id, sub.id);
+                          onMessageToggle(category.id, message.id);
                         }
                       }}
                       className="flex w-full cursor-pointer items-start gap-2.5 text-left"
                     >
-                      <ConfiguratorCheckbox checked={subChecked} />
+                      <ConfiguratorCheckbox checked={messageChecked} />
                       {/* Inner wrapper centers the label + ? icon on the
                           label's optical midline (items-center) and gives
                           them the same 6px gap the message-card uses, so
@@ -197,10 +193,10 @@ export function CategoryList({
                           checkbox alignment via its mt-0.5 nudge. */}
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm text-text-secondary">
-                          {sub.name}
+                          {message.name}
                         </span>
-                        {sub.tooltip ? (
-                          <Tooltip content={sub.tooltip}>
+                        {message.tooltip ? (
+                          <Tooltip content={message.tooltip}>
                             {/* 44px hit area wrapper with negative margins
                                 to preserve the icon's 14px layout footprint
                                 — keeps the row layout unchanged while
