@@ -11,8 +11,12 @@
  * never resurrects a stale selection.
  *
  * Flat-message model (D-408): each category carries `messages: Record<string,
- * MessageState>` directly — no `Sub`/`Stage` wrapper. The `STATE_VERSION` bump
- * to 2 drops pre-D-408 persisted state silently (version-gated, fail-silent).
+ * MessageState>` directly — no `Sub`/`Stage` wrapper. STATE_VERSION 2 dropped
+ * pre-D-408 persisted state; STATE_VERSION 3 drops pre-launch-prep state to
+ * pick up the new default ("all messages of the default category start
+ * checked"), and to align with the new `toggleCategory` cascade (a category
+ * toggle ON/OFF now sets every message's `checked` to match). Bumps are
+ * version-gated and fail-silent — no migration code.
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -20,14 +24,18 @@ import { CATEGORIES } from "@/lib/message-library";
 import type { VariantTone } from "@/lib/message-library";
 
 const STORAGE_KEY = "relaykit_configurator";
-const STATE_VERSION = 2 as const;
+const STATE_VERSION = 3 as const;
 const SAVE_DEBOUNCE_MS = 200;
 
-/** Launch defaults — the only authored category and its primary message start checked. */
+/**
+ * Launch default — the default category starts checked, and all of its messages
+ * start checked along with it. Per-message granular defaults are intentionally
+ * absent: the new `toggleCategory` cascade makes "category on ⇒ every message
+ * on" the consistent semantic, so the seed and the preset both derive from
+ * `DEFAULT_CHECKED_CATEGORY` alone — adding a new Verification message later
+ * is automatically picked up at launch without an extra bookkeeping list.
+ */
 const DEFAULT_CHECKED_CATEGORY = "verification";
-const DEFAULT_CHECKED_MESSAGES: Record<string, string[]> = {
-  verification: ["verification-code"],
-};
 
 const TONES: VariantTone[] = ["Standard", "Friendly", "Brief"];
 
@@ -95,17 +103,17 @@ function newLocalId(): string {
   return `cm-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
-/** Fresh state seeded from the corpus, with launch defaults applied. */
+/** Fresh state seeded from the corpus, with the launch default applied. */
 function seedState(): ConfiguratorState {
   const categories: Record<string, CategoryState> = {};
   for (const category of CATEGORIES) {
-    const defaultChecked = DEFAULT_CHECKED_MESSAGES[category.id] ?? [];
+    const isDefaultCategory = category.id === DEFAULT_CHECKED_CATEGORY;
     const messages: Record<string, MessageState> = {};
     for (const message of category.messages) {
-      messages[message.id] = { checked: defaultChecked.includes(message.id) };
+      messages[message.id] = { checked: isDefaultCategory };
     }
     categories[category.id] = {
-      checked: category.id === DEFAULT_CHECKED_CATEGORY,
+      checked: isDefaultCategory,
       messages,
       customMessages: [],
     };
@@ -199,15 +207,22 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     };
   }, [state]);
 
+  // Cascades to every message in the category — ON sets all messages checked,
+  // OFF sets all unchecked. Tone overrides and custom messages are preserved.
   const toggleCategory = useCallback((categoryId: string) => {
     setState((prev) => {
       const cat = prev.categories[categoryId];
       if (!cat) return prev;
+      const nextChecked = !cat.checked;
+      const messages: Record<string, MessageState> = {};
+      for (const [msgId, msg] of Object.entries(cat.messages)) {
+        messages[msgId] = { ...msg, checked: nextChecked };
+      }
       return {
         ...prev,
         categories: {
           ...prev.categories,
-          [categoryId]: { ...cat, checked: !cat.checked },
+          [categoryId]: { ...cat, checked: nextChecked, messages },
         },
       };
     });
@@ -331,20 +346,22 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
   }, []);
 
   // Resets checkbox selections to the launch default. Per spec §8.3 it leaves
-  // message overrides and custom messages untouched.
+  // message overrides and custom messages untouched. Mirrors the toggleCategory
+  // cascade: the default category gets every message checked; every other
+  // category gets every message unchecked.
   const selectPreset = useCallback((presetId: string) => {
     if (presetId !== "verification-only") return;
     setState((prev) => {
       const categories: Record<string, CategoryState> = {};
       for (const [catId, cat] of Object.entries(prev.categories)) {
-        const defaultChecked = DEFAULT_CHECKED_MESSAGES[catId] ?? [];
+        const isDefaultCategory = catId === DEFAULT_CHECKED_CATEGORY;
         const messages: Record<string, MessageState> = {};
         for (const [msgId, msg] of Object.entries(cat.messages)) {
-          messages[msgId] = { ...msg, checked: defaultChecked.includes(msgId) };
+          messages[msgId] = { ...msg, checked: isDefaultCategory };
         }
         categories[catId] = {
           ...cat,
-          checked: catId === DEFAULT_CHECKED_CATEGORY,
+          checked: isDefaultCategory,
           messages,
         };
       }

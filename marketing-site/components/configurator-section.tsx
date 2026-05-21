@@ -240,9 +240,7 @@ export function ConfiguratorSection() {
       CATEGORIES.every(
         (c) => c.id === "verification" || !state.categories[c.id]?.checked,
       ) &&
-      Object.entries(verification.messages).every(
-        ([msgId, msg]) => msg.checked === (msgId === "verification-code"),
-      );
+      Object.values(verification.messages).every((msg) => msg.checked);
     return matchesVerificationOnly ? PRESET_VERIFICATION_ONLY : "Custom";
   }, [state, anyOverride, anyCustom]);
 
