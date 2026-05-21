@@ -217,6 +217,7 @@ For verification of *added* content in commit specs (rather than *removed* terms
 - `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` — mandatory before user-facing copy
 - `docs/UNTITLED_UI_REFERENCE.md` — full design system reference
 - `docs/WORKSPACE_DESIGN_SPEC.md` — target architecture for the post-signup workspace
+- `docs/MESSAGE_AUTHORING_GUIDE.md` — canonical procedure for authoring a message-library category; CC reads before any category-authoring task
 - `BACKLOG.md` — parked ideas, never build from without explicit promotion
 
 ## BACKLOG protocol
