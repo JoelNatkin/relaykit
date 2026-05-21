@@ -11,6 +11,12 @@
 
 ---
 
+## Known issues (session open, not closed)
+
+**Order updates authored but not rendering on the configurator.** The 7 stages in `order-updates.ts` ship with full bodies, charCounts, and triggerCues — `tsc` and `eslint` are clean, `isAuthored()` returns true, and the categories panel toggles the category on. But the right column shows only the "Order updates" group heading and an empty "+ Add message" button — no message cards render. The configurator's render path does not handle `WorkflowCategory` (the path that loops `categorySubs(category)` to find messages does not produce message cards for stages in the way it does for subs in `DiscreteCategory`). PROTOTYPE_SPEC and PRODUCT_SUMMARY now claim Order updates is live; the corpus data is live, the UI is not. **Bug fix is the immediate next task, same session — not a future one.**
+
+---
+
 ## Session character
 
 A focused Wave 2 message-library session — author the third corpus category, Order updates, end-to-end. First `WorkflowCategory` authored (uses ordered `stages`, not `subs`). Plan-mode planning surfaced one substantive question — three Friendly variants had em dashes, which are not in the basic GSM-7 alphabet and would force UCS-2 encoding (collapsing the single-segment limit from 160 to 70). PM ruling: replace every " — " with ", "; raise the corpus-wide ASCII-only authoring rule as a hygiene gotcha (not a D-number). charCount discipline carried over cleanly from Session 99 — pre-write verification script (`/tmp/verify-charcounts.mjs`) ran 21/21 OK on the planned bodies, then again after the file was written via regex re-extraction.
@@ -73,7 +79,11 @@ Skipped — mid-phase, Phase 1 (Sinch Proving Ground) still active per MASTER_PL
 - Authored-but-unchecked category-default behavior — Account events and Order updates both ship authored but with no default-checked sub/stage. Whether a category that's authored should auto-suggest a primary sub/stage when the visitor enables it is a UX call still pending (Session 99 carry-forward; reinforced this session — now affects two categories).
 - **New this session:** stage `name` vs message `name` divergence in three Order updates stages, alongside the flat-message-column concern — both are configurator IA reconciliation work (see gotcha #3 above).
 
-## Suggested next session
+## Immediate next task (this session)
+
+**Fix the workflow-category render path in the configurator.** Order updates renders its category heading and the "+ Add message" button but produces no message cards. The render path in `marketing-site/components/configurator-section.tsx` (around line 432, `categorySubs(category).map(...).map(sub.messages...)`) needs to handle stages as message-producing nodes the same way it handles subs in `DiscreteCategory`. Until the cards render, PROTOTYPE_SPEC's "Order updates is live" claim is not honored by the UI. Investigate the seam between `categorySubs` and the message-card render; verify on the home page (`marketing-site/` running locally or via Vercel preview) before commit.
+
+## Suggested next session (after the render bug ships)
 
 1. **Author the next message-library category.** With Verification (Session 94), Account events (Session 99), and Order updates (Session 100) shipped, the remaining 6 are Marketing, Appointments, Customer support, Team alerts, Community, Waitlist. The choice is PM's; the research files for all 6 are populated at `audits/research/2026-05-16/[category].md` with §6 resolved. Pre-authoring checklist for any pick: read the research file, confirm the category's classification (discrete vs workflow vs hybrid) in the stub, settle the variable catalog (cross-corpus + category-specific), draft the compliance rules, then author subs/stages/messages/variants honoring the budgetChars-based charCount discipline (gotcha #2) AND the new corpus-wide ASCII-only rule (gotcha #1). Marketing is the obvious next pick — it's the second campaign-registration surface MASTER_PLAN names as co-equal at launch.
 2. **First Indie Hackers post.** Still on the pre-launch checklist per MASTER_PLAN.md §"Pre-launch checklist." Carry-forward from Sessions 97 + 98 + 99.
