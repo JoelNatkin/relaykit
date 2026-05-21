@@ -71,7 +71,7 @@ export default function MarketingHome() {
             SMS for builders
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-            Two files. Your AI tool. A working SMS feature.
+            Compliant SMS that drops into your stack, wired in by your AI tool.
           </p>
           <p className="mt-4 text-sm font-medium text-text-primary">
             Free to build. $49 + $19/mo to go live.
@@ -119,7 +119,7 @@ export default function MarketingHome() {
         <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
           Configure &gt; Build
         </p>
-        <h2 className="mt-2 text-2xl font-bold text-text-primary">Two files. Your AI tool.</h2>
+        <h2 className="mt-2 text-2xl font-bold text-text-primary">Hand it to your AI tool.</h2>
 
         <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           <div className="flex flex-col gap-5">
