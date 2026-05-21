@@ -71,7 +71,7 @@ export default function MarketingHome() {
             SMS for builders
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-            Compliant SMS that drops into your stack, wired in by your AI tool.
+            Compliant SMS that drops into your stack, wired by your AI tool.
           </p>
           <p className="mt-4 text-sm font-medium text-text-primary">
             Free to build. $49 + $19/mo to go live.
