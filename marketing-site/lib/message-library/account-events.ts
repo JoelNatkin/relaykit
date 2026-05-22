@@ -77,18 +77,18 @@ export const ACCOUNT_EVENTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Card ending {{card_last4}} was declined. Update payment to keep your account active: {{account_link}}",
-          charCount: 136,
+          body: "{{workspace_name}}: Card ending {{card_last4}} was declined. Update payment to keep your account active: {{account_link}} Reply STOP to opt out.",
+          charCount: 149,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} payment didn't go through (card ending {{card_last4}}). Update it here to stay active: {{account_link}}",
-          charCount: 142,
+          body: "Your {{workspace_name}} payment didn't go through (card ending {{card_last4}}). Update it here to stay active: {{account_link}} Reply STOP to opt out.",
+          charCount: 155,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Card {{card_last4}} declined. Update payment: {{account_link}}",
-          charCount: 97,
+          body: "{{workspace_name}}: Card {{card_last4}} declined. Update payment: {{account_link}} STOP to opt out.",
+          charCount: 104,
         },
       ],
     },
@@ -102,18 +102,18 @@ export const ACCOUNT_EVENTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Your trial ends in {{days_remaining}} days. Choose a plan to keep your account: {{account_link}}",
-          charCount: 115,
+          body: "{{workspace_name}}: Your trial ends in {{days_remaining}} days. Choose a plan to keep your account: {{account_link}} Reply STOP to opt out.",
+          charCount: 138,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} trial ends in {{days_remaining}} days. Pick a plan here to keep going: {{account_link}}",
-          charCount: 110,
+          body: "Your {{workspace_name}} trial ends in {{days_remaining}} days. Pick a plan here to keep going: {{account_link}} Reply STOP to opt out.",
+          charCount: 133,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Trial ends in {{days_remaining}} days. Choose a plan: {{account_link}}",
-          charCount: 89,
+          body: "{{workspace_name}}: Trial ends in {{days_remaining}} days. Choose a plan: {{account_link}} STOP to opt out.",
+          charCount: 106,
         },
       ],
     },
@@ -127,18 +127,18 @@ export const ACCOUNT_EVENTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Your subscription change is confirmed. View the details in your account: {{account_link}}",
-          charCount: 124,
+          body: "{{workspace_name}}: Your subscription change is confirmed. View the details in your account: {{account_link}} Reply STOP to opt out.",
+          charCount: 147,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} subscription is all set. See the details here whenever you like: {{account_link}}",
-          charCount: 120,
+          body: "Your {{workspace_name}} subscription is all set. See the details here whenever you like: {{account_link}} Reply STOP to opt out.",
+          charCount: 143,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Subscription updated. Details: {{account_link}}",
-          charCount: 82,
+          body: "{{workspace_name}}: Subscription updated. Details: {{account_link}} STOP to opt out.",
+          charCount: 99,
         },
       ],
     },
@@ -152,18 +152,18 @@ export const ACCOUNT_EVENTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: New sign-in from {{device_context}}. Not you? Secure your account: {{account_link}}",
-          charCount: 124,
-        },
-        {
-          tone: "Friendly",
-          body: "Heads up: your {{workspace_name}} account was just accessed from {{device_context}}. Not you? Secure it here: {{account_link}}",
+          body: "{{workspace_name}}: New sign-in from {{device_context}}. Not you? Secure your account: {{account_link}} Reply STOP to opt out.",
           charCount: 147,
         },
         {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} account was just accessed from {{device_context}}. Not you? Secure it: {{account_link}} Reply STOP to opt out.",
+          charCount: 155,
+        },
+        {
           tone: "Brief",
-          body: "{{workspace_name}}: New sign-in, {{device_context}}. Not you? {{account_link}}",
-          charCount: 99,
+          body: "{{workspace_name}}: New sign-in, {{device_context}}. Not you? {{account_link}} STOP to opt out.",
+          charCount: 116,
         },
       ],
     },
@@ -177,18 +177,18 @@ export const ACCOUNT_EVENTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Your account has been suspended. Review the details and next steps here: {{account_link}}",
-          charCount: 124,
+          body: "{{workspace_name}}: Your account has been suspended. Review the details and next steps here: {{account_link}} Reply STOP to opt out.",
+          charCount: 147,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} account has been suspended. Here's what happened and what to do next: {{account_link}}",
-          charCount: 125,
+          body: "Your {{workspace_name}} account has been suspended. Here's what happened and what to do next: {{account_link}} Reply STOP to opt out.",
+          charCount: 148,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Account suspended. Details and next steps: {{account_link}}",
-          charCount: 94,
+          body: "{{workspace_name}}: Account suspended. Details and next steps: {{account_link}} STOP to opt out.",
+          charCount: 111,
         },
       ],
     },

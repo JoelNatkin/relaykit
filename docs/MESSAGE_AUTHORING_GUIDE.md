@@ -65,7 +65,7 @@ Every category's `compliance.rules` block states the rules that govern its messa
 - **Single GSM-7 segment** (D-402) — see §6.
 - **Sender frame** — every message body identifies the sender so the recipient knows who is texting. D-398 establishes `workspace_name` as the sender frame for Account events, Customer support, and Team alerts. Verification uses `business_name` — that's Verification's own rule, visible in `verification.ts`, not part of D-398. Take a category's sender-frame token from its research file and existing authored precedent; don't assume D-398 covers it.
 
-Category-specific compliance comes from the research file's §5. STOP/HELP handling varies by category: Verification carries a 2FA carve-out (no STOP/HELP in body); most transactional categories follow standard opt-out; Marketing carries STOP opt-out language in the body (STOP-only, per D-410), while HELP functions as a keyword without in-body text. Always take the category's STOP/HELP posture from its research file, never by analogy to another category.
+Category-specific compliance comes from the research file's §5. STOP/HELP handling varies by category: Verification carries a 2FA carve-out (no STOP/HELP in body); transactional categories carry STOP opt-out language in the body - 'Reply STOP to opt out.' in Standard and Friendly variants, 'STOP to opt out.' in Brief (per D-412); Marketing carries STOP opt-out language in the body (STOP-only, per D-410), while HELP functions as a keyword without in-body text. Always take the category's STOP/HELP posture from its research file, never by analogy to another category.
 
 ## 8. Variables
 
