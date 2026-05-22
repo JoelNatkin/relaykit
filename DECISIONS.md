@@ -1541,6 +1541,8 @@ The configurator's Verification category is toggleable like other categories, no
 
 **Affects:** marketing-site configurator (this commit); prototype configurator (follow-up; same behavior expected for consistency).
 
+**Note:** the "Recommended combinations" dropdown referenced here was removed in D-411; the Verification page-load default survives via `seedState`/`DEFAULT_CHECKED_CATEGORY`.
+
 **D-378 — Dark mode mechanism, code-surface token, brand shift conventions** (Date: 2026-05-09)
 
 Dark mode on `/marketing-site` ships as vanilla React + CSS — no `next-themes` dependency. Mechanism: `.dark` class on `<html>`, theme persisted to `localStorage` under key `relaykit-theme`, first-visit default derived from `prefers-color-scheme`, FOUC prevented by an inline pre-hydration script in `app/layout.tsx` paired with `suppressHydrationWarning`. Storage key is per-origin; future surfaces under `app.relaykit.ai` manage their own theme persistence and may diverge. A new semantic token `--color-bg-code-surface` is introduced as distinct from `--color-bg-primary-solid` — both resolve to `gray-950` in light mode but only `bg-primary-solid` flips with theme; `bg-code-surface` stays `gray-950` in both modes so code samples remain inverted regardless of page theme. Brand-color shift convention in dark: `bg-brand-solid` flips `brand-600 → brand-500`, brand text tokens shift from `brand-700` family up to `brand-300/400` family for adequate contrast on dark surfaces.
@@ -1873,6 +1875,8 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 
 **Affects:** `marketing-site/lib/configurator/use-configurator-state.ts` (`DEFAULT_CHECKED_MESSAGES` deleted; `seedState`/`toggleCategory`/`selectPreset` derive from `DEFAULT_CHECKED_CATEGORY`; `STATE_VERSION` 2→3 with the JSDoc explanation block updated); `marketing-site/components/configurator-section.tsx` (`presetValue` useMemo's "Verification only" label match updated to "every Verification message checked"); BACKLOG "Opt-out risk tagging for message templates" entry (the path forward if per-message default-off returns as a real need); Community research file §6 (the milestone-default-off resolution recorded there becomes inert until D-397's protective intent is revisited under a new mechanism).
 
+**Note:** the `selectPreset` preset reset referenced in this entry was removed with the "Recommended combinations" dropdown in D-411; the `seedState` page-load cascade and the per-message-default removal recorded here are unaffected.
+
 ## D-410 — Marketing message bodies carry STOP-only opt-out language, not STOP/HELP
 
 **Decided:** 2026-05-22 (Session 103)
@@ -1886,3 +1890,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none
 
 **Affects:** `marketing-site/lib/message-library/marketing.ts` (all 4 messages / 12 variants carry STOP-only; compliance rule 8 records the posture); `docs/MESSAGE_AUTHORING_GUIDE.md` §7 (the "Marketing requires STOP/HELP in the body" clause rewritten to STOP-only).
+
+## D-411 — "Recommended combinations" dropdown removed from the configurator UI
+
+**Decided:** 2026-05-22 (Session 103)
+
+**Decision:** The "Recommended combinations" preset dropdown is removed from the home-page configurator's categories panel. The panel is the shared `category-list.tsx` component rendered by both the desktop card and the D-407 mobile full-page modal, so a single removal covers both surfaces. The `preset-dropdown.tsx` component, the `PRESETS` constant, and the `selectPreset` action are deleted as orphaned code. The category checkboxes and the page-load default — Verification pre-selected via `seedState` deriving from `DEFAULT_CHECKED_CATEGORY` (D-409) — are unchanged; behavior after removal is byte-identical except that the dropdown no longer renders. `STATE_VERSION` is not bumped (the persisted state shape is unchanged).
+
+**Why:** D-385 found the "combinations" concept carried no meaningful product behavior — the dropdown is "a checkbox preset with no effect on message content, no audience-specific template variation, and no architectural distinction between the audiences it presets" — and excised the audience-pack layer from canon. Five of the dropdown's six items (SaaS, Personal services, Real estate, Fitness, E-commerce) have been disabled and inert ever since; only "Verification only" did anything, and what it did duplicates the page-load default `seedState` already produces. A control that is five-sixths disabled and one-sixth redundant is clutter on the launch surface. Removing it carries D-385's concept excision through to the product surface. A future version where selecting a combination checks a curated cross-category subset of individual messages — combinations that would do real work — is recorded in BACKLOG as a post-launch candidate.
+
+**Rejected alternative:** Keep the dropdown with only "Verification only" enabled and the five vertical presets disabled (the status quo). Rejected because a dropdown offering one redundant choice and five disabled ones advertises capability that does not exist and adds nothing the category checkboxes do not.
+
+**Supersedes:** none
+
+**Affects:** `marketing-site/components/configurator/preset-dropdown.tsx` (deleted); `marketing-site/components/configurator/category-list.tsx` (`PRESETS` + dropdown JSX + `presetValue`/`onSelectPreset` props removed); `marketing-site/components/configurator/mobile-categories-modal.tsx` (`presetValue`/`onSelectPreset` pass-through removed); `marketing-site/components/configurator-section.tsx` (`selectPreset` + the two preset prop-passes removed; `presetValue` useMemo retained — still feeds `waitlistSummary`); `marketing-site/lib/configurator/use-configurator-state.ts` (`selectPreset` action deleted); D-377 and D-409 (clarifying `Note:` lines added in this commit); BACKLOG.md ("Recommended combinations as curated message subsets" post-launch entry).

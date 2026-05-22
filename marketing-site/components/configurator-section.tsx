@@ -172,7 +172,6 @@ export function ConfiguratorSection() {
     addCustomMessage,
     updateCustomMessage,
     removeCustomMessage,
-    selectPreset,
   } = useConfiguratorState();
 
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
@@ -348,10 +347,8 @@ export function ConfiguratorSection() {
                 isOpen={mobileCategoriesOpen}
                 onClose={() => setMobileCategoriesOpen(false)}
                 state={state}
-                presetValue={presetValue}
                 onCategoryToggle={handleCategoryToggle}
                 onMessageToggle={handleMessageToggle}
-                onSelectPreset={selectPreset}
               />
             </div>
 
@@ -360,10 +357,8 @@ export function ConfiguratorSection() {
             <div className="hidden rounded-xl border border-border-secondary bg-bg-primary md:block md:min-w-60">
               <CategoryList
                 state={state}
-                presetValue={presetValue}
                 onCategoryToggle={handleCategoryToggle}
                 onMessageToggle={handleMessageToggle}
-                onSelectPreset={selectPreset}
               />
             </div>
 

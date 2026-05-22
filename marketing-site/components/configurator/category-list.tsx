@@ -1,10 +1,10 @@
 "use client";
 
 /**
- * The categories panel content — preset dropdown header + the 9 category
- * cards (Verification authored, the other 8 rendered as disabled "Coming
- * soon"). Pure presentational: receives state + setters from the parent,
- * never reads from any hook directly.
+ * The categories panel content — the 9 category cards (Verification
+ * authored, the other 8 rendered as disabled "Coming soon"). Pure
+ * presentational: receives state + setters from the parent, never reads
+ * from any hook directly.
  *
  * Rendered by BOTH the desktop categories card (configurator-section.tsx)
  * AND the mobile full-page modal (mobile-categories-modal.tsx) so the two
@@ -15,32 +15,17 @@
 import { HelpCircle } from "@untitledui/icons";
 import { Tooltip } from "@/components/configurator/tooltip";
 import { ComingSoonBadge } from "@/components/configurator/coming-soon-badge";
-import {
-  PresetDropdown,
-  type Preset,
-} from "@/components/configurator/preset-dropdown";
 import { CATEGORIES, isAuthored } from "@/lib/message-library";
 import type { ConfiguratorState } from "@/lib/configurator/use-configurator-state";
 
-/** Dropdown presets. Only "Verification only" is reachable at launch. */
-const PRESETS: Preset[] = [
-  { id: "verification-only", label: "Verification only", disabled: false },
-  { id: "saas", label: "SaaS", disabled: true },
-  { id: "personal-services", label: "Personal services", disabled: true },
-  { id: "real-estate", label: "Real estate", disabled: true },
-  { id: "fitness", label: "Fitness", disabled: true },
-  { id: "ecommerce", label: "E-commerce", disabled: true },
-];
-
 /**
- * Configurator checkbox — a custom appearance-none box matching the
- * "Recommended combinations" dropdown trigger's fill + border in both
- * modes (bg-bg-primary / dark:bg-bg-secondary, border-border-primary).
- * The check glyph renders on top of the same fill; the 1px stroke is
- * kept for the checked state. Category rows use the larger size-5 box,
- * sub rows the size-4 box; `disabled` (Coming-soon categories) softens
- * the border. The box className is identical across checked/unchecked,
- * so the box never changes size on toggle.
+ * Configurator checkbox — a custom appearance-none box with a fill and
+ * border that hold in both modes (bg-bg-primary / dark:bg-bg-secondary,
+ * border-border-primary). The check glyph renders on top of the same
+ * fill; the 1px stroke is kept for the checked state. Category rows use
+ * the larger size-5 box, sub rows the size-4 box; `disabled` (Coming-soon
+ * categories) softens the border. The box className is identical across
+ * checked/unchecked, so the box never changes size on toggle.
  */
 function ConfiguratorCheckbox({
   checked,
@@ -86,33 +71,19 @@ function ConfiguratorCheckbox({
 
 export interface CategoryListProps {
   state: ConfiguratorState;
-  presetValue: string;
   onCategoryToggle: (categoryId: string) => void;
   onMessageToggle: (categoryId: string, messageId: string) => void;
-  onSelectPreset: (presetId: string) => void;
 }
 
 export function CategoryList({
   state,
-  presetValue,
   onCategoryToggle,
   onMessageToggle,
-  onSelectPreset,
 }: CategoryListProps) {
   return (
     <>
-      <div className="px-4 pt-5 pb-3">
+      <div className="px-4 pt-5">
         <h3 className="text-base font-semibold text-text-primary">Categories</h3>
-        <div className="mt-4">
-          <p className="mb-1.5 text-sm font-medium text-text-secondary">
-            Recommended combinations
-          </p>
-          <PresetDropdown
-            presets={PRESETS}
-            value={presetValue}
-            onSelect={onSelectPreset}
-          />
-        </div>
       </div>
 
       {CATEGORIES.map((category) => {

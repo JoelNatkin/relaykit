@@ -31,7 +31,7 @@ const SAVE_DEBOUNCE_MS = 200;
  * Launch default — the default category starts checked, and all of its messages
  * start checked along with it. Per-message granular defaults are intentionally
  * absent: the new `toggleCategory` cascade makes "category on ⇒ every message
- * on" the consistent semantic, so the seed and the preset both derive from
+ * on" the consistent semantic, so the seed derives from
  * `DEFAULT_CHECKED_CATEGORY` alone — adding a new Verification message later
  * is automatically picked up at launch without an extra bookkeeping list.
  */
@@ -95,7 +95,6 @@ export interface ConfiguratorActions {
     patch: Partial<Pick<CustomMessage, "name" | "body">>,
   ) => void;
   removeCustomMessage: (categoryId: string, localId: string) => void;
-  selectPreset: (presetId: string) => void;
 }
 
 function newLocalId(): string {
@@ -345,30 +344,6 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     });
   }, []);
 
-  // Resets checkbox selections to the launch default. Per spec §8.3 it leaves
-  // message overrides and custom messages untouched. Mirrors the toggleCategory
-  // cascade: the default category gets every message checked; every other
-  // category gets every message unchecked.
-  const selectPreset = useCallback((presetId: string) => {
-    if (presetId !== "verification-only") return;
-    setState((prev) => {
-      const categories: Record<string, CategoryState> = {};
-      for (const [catId, cat] of Object.entries(prev.categories)) {
-        const isDefaultCategory = catId === DEFAULT_CHECKED_CATEGORY;
-        const messages: Record<string, MessageState> = {};
-        for (const [msgId, msg] of Object.entries(cat.messages)) {
-          messages[msgId] = { ...msg, checked: isDefaultCategory };
-        }
-        categories[catId] = {
-          ...cat,
-          checked: isDefaultCategory,
-          messages,
-        };
-      }
-      return { ...prev, categories };
-    });
-  }, []);
-
   return {
     state,
     toggleCategory,
@@ -379,6 +354,5 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     addCustomMessage,
     updateCustomMessage,
     removeCustomMessage,
-    selectPreset,
   };
 }
