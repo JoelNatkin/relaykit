@@ -7,9 +7,9 @@
  * modal panel covers the entire viewport so there's no "outside" to tap,
  * but the handler is preserved for code symmetry with the waitlist modal).
  *
- * Instant-apply: toggling a category, sub, or preset inside the modal
- * calls the same setters the desktop panel uses. The modal stays open so
- * the visitor can adjust multiple selections in one open/close cycle.
+ * Instant-apply: toggling a category or message inside the modal calls
+ * the same setters the desktop panel uses. The modal stays open so the
+ * visitor can adjust multiple selections in one open/close cycle.
  *
  * Sticky-header layout pattern: this modal deliberately diverges from the
  * waitlist modal's `overflow-y-auto` on the outer panel. For
@@ -41,10 +41,8 @@ export function MobileCategoriesModal({
   isOpen,
   onClose,
   state,
-  presetValue,
   onCategoryToggle,
   onMessageToggle,
-  onSelectPreset,
 }: MobileCategoriesModalProps) {
   // Lock body scroll while open — same pattern as the waitlist modal.
   useEffect(() => {
@@ -101,10 +99,8 @@ export function MobileCategoriesModal({
         <div className="flex-1 overflow-y-auto">
           <CategoryList
             state={state}
-            presetValue={presetValue}
             onCategoryToggle={onCategoryToggle}
             onMessageToggle={onMessageToggle}
-            onSelectPreset={onSelectPreset}
           />
         </div>
       </div>
