@@ -1872,3 +1872,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** D-397 (Community member milestone sub default-off in configurator) — the cascade rule checks every message when Community is toggled on, including milestone; D-397's "default-off when Community is selected" is no longer operative. Extends (does not supersede) D-377 (Verification toggleable + "Verification only" preset is page-load default) — D-377's substance survives intact; D-409 adds the message-level granularity (all messages of the default category start checked) that D-377 did not specify.
 
 **Affects:** `marketing-site/lib/configurator/use-configurator-state.ts` (`DEFAULT_CHECKED_MESSAGES` deleted; `seedState`/`toggleCategory`/`selectPreset` derive from `DEFAULT_CHECKED_CATEGORY`; `STATE_VERSION` 2→3 with the JSDoc explanation block updated); `marketing-site/components/configurator-section.tsx` (`presetValue` useMemo's "Verification only" label match updated to "every Verification message checked"); BACKLOG "Opt-out risk tagging for message templates" entry (the path forward if per-message default-off returns as a real need); Community research file §6 (the milestone-default-off resolution recorded there becomes inert until D-397's protective intent is revisited under a new mechanism).
+
+## D-410 — Marketing message bodies carry STOP-only opt-out language, not STOP/HELP
+
+**Decided:** 2026-05-22 (Session 103)
+
+**Decision:** Every Marketing-category message body in `marketing-site/lib/message-library/marketing.ts` carries STOP opt-out language only — "Reply STOP to opt out." in Standard and Friendly variants, "STOP to opt out." in Brief variants — and never advertises the HELP keyword in the body. HELP continues to function as a carrier-honored keyword regardless of whether any message body mentions it.
+
+**Why:** HELP works as a keyword whether or not a body mentions it; advertising it in-body promises the recipient a HELP-response path. That path's rich destination — the per-customer `msgverified` compliance site a HELP reply resolves to — is a Phase 10 deliverable, not built pre-launch, so advertising HELP-in-body now promises a half-built path. STOP-only also keeps Marketing consistent with the eight other authored categories, all of which carry STOP-only in-body opt-out language and rely on carrier-level keyword handling for HELP.
+
+**Rejected alternative:** Carry "Reply STOP to opt out, HELP for help" (or equivalent STOP/HELP language) in every Marketing body, as the message-library research file §5 and the pre-existing MESSAGE_AUTHORING_GUIDE §7 instruction implied. Rejected because it advertises a HELP destination not built until Phase 10, and because it would make Marketing the lone category with STOP/HELP in-body — an inconsistency with no compliance benefit, since HELP is honored as a keyword either way.
+
+**Supersedes:** none
+
+**Affects:** `marketing-site/lib/message-library/marketing.ts` (all 4 messages / 12 variants carry STOP-only; compliance rule 8 records the posture); `docs/MESSAGE_AUTHORING_GUIDE.md` §7 (the "Marketing requires STOP/HELP in the body" clause rewritten to STOP-only).
