@@ -1883,7 +1883,7 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 
 **Decision:** Every Marketing-category message body in `marketing-site/lib/message-library/marketing.ts` carries STOP opt-out language only — "Reply STOP to opt out." in Standard and Friendly variants, "STOP to opt out." in Brief variants — and never advertises the HELP keyword in the body. HELP continues to function as a carrier-honored keyword regardless of whether any message body mentions it.
 
-**Why:** HELP works as a keyword whether or not a body mentions it; advertising it in-body promises the recipient a HELP-response path. That path's rich destination — the per-customer `msgverified` compliance site a HELP reply resolves to — is a Phase 10 deliverable, not built pre-launch, so advertising HELP-in-body now promises a half-built path. STOP-only also keeps Marketing consistent with the eight other authored categories, all of which carry STOP-only in-body opt-out language and rely on carrier-level keyword handling for HELP.
+**Why:** HELP works as a keyword whether or not a body mentions it; advertising it in-body promises the recipient a HELP-response path. That path's rich destination — the per-customer `msgverified` compliance site a HELP reply resolves to — is a Phase 10 deliverable, not built pre-launch, so advertising HELP-in-body now promises a half-built path. STOP-only also keeps Marketing consistent with the corpus: seven of the eight other authored categories carry STOP opt-out language in the body (the convention recorded in D-412), and Verification is the sole exception (the 2FA carve-out).
 
 **Rejected alternative:** Carry "Reply STOP to opt out, HELP for help" (or equivalent STOP/HELP language) in every Marketing body, as the message-library research file §5 and the pre-existing MESSAGE_AUTHORING_GUIDE §7 instruction implied. Rejected because it advertises a HELP destination not built until Phase 10, and because it would make Marketing the lone category with STOP/HELP in-body — an inconsistency with no compliance benefit, since HELP is honored as a keyword either way.
 
@@ -1904,3 +1904,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none
 
 **Affects:** `marketing-site/components/configurator/preset-dropdown.tsx` (deleted); `marketing-site/components/configurator/category-list.tsx` (`PRESETS` + dropdown JSX + `presetValue`/`onSelectPreset` props removed); `marketing-site/components/configurator/mobile-categories-modal.tsx` (`presetValue`/`onSelectPreset` pass-through removed); `marketing-site/components/configurator-section.tsx` (`selectPreset` + the two preset prop-passes removed; `presetValue` useMemo retained — still feeds `waitlistSummary`); `marketing-site/lib/configurator/use-configurator-state.ts` (`selectPreset` action deleted); D-377 and D-409 (clarifying `Note:` lines added in this commit); BACKLOG.md ("Recommended combinations as curated message subsets" post-launch entry).
+
+## D-412 — Transactional message-library categories carry STOP opt-out language in the message body
+
+**Decided:** 2026-05-22 (Session 103)
+
+**Decision:** Every message body in a transactional message-library category carries the standard STOP opt-out language in the body — "Reply STOP to opt out." in Standard and Friendly variants, "STOP to opt out." in Brief variants. This covers account-events, appointments, customer-support, order-updates, team-alerts, waitlist, and community. Two recorded exceptions: Verification omits in-body STOP under the 2FA carve-out; Marketing carries STOP-only and never HELP per D-410. Each category's compliance.rules block states its STOP posture explicitly.
+
+**Why:** STOP is honored as a carrier keyword regardless of body text, but in-body STOP language is the established convention for transactional A2P messages and had already shipped in five categories. The convention was never recorded, so three categories drifted — account-events, order-updates, and team-alerts shipped with no in-body STOP, and account-events and team-alerts carried compliance rules asserting an opt-out posture their bodies did not deliver. Recording the convention makes it enforceable and removes the ambiguity that caused the drift.
+
+**Rejected alternative:** Treat in-body STOP as optional per category and rely on carrier-keyword handling alone — the de facto state that let three categories ship without it. Rejected because it produced silent drift and rule/body contradictions, and the five-category precedent had already set the convention.
+
+**Supersedes:** none. Verification's 2FA carve-out and D-410's Marketing STOP-only posture are named exceptions, not entries this supersedes.
+
+**Affects:** marketing-site/lib/message-library/account-events.ts, order-updates.ts, team-alerts.ts (bodies gain in-body STOP; order-updates gains a STOP compliance rule); docs/MESSAGE_AUTHORING_GUIDE.md §7 (STOP posture wording sharpened); DECISIONS.md D-410 (the "eight other categories" prose corrected).

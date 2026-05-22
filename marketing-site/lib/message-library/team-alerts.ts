@@ -148,18 +148,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: You're scheduled {{shift_date}} {{shift_time}} at {{location}} as {{role}}.",
-          charCount: 110,
+          body: "{{workspace_name}}: You're scheduled {{shift_date}} {{shift_time}} at {{location}} as {{role}}. Reply STOP to opt out.",
+          charCount: 133,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} schedule: {{shift_date}}, {{shift_time}} at {{location}}, {{role}}. See you then.",
-          charCount: 120,
+          body: "Your {{workspace_name}} schedule: {{shift_date}}, {{shift_time}} at {{location}}, {{role}}. See you then. Reply STOP to opt out.",
+          charCount: 143,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: {{shift_date}} {{shift_time}}, {{location}}, {{role}}.",
-          charCount: 89,
+          body: "{{workspace_name}}: {{shift_date}} {{shift_time}}, {{location}}, {{role}}. STOP to opt out.",
+          charCount: 106,
         },
       ],
     },
@@ -175,18 +175,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Reminder, you're on {{shift_date}} {{shift_time}} at {{location}}.",
-          charCount: 95,
+          body: "{{workspace_name}}: Reminder, you're on {{shift_date}} {{shift_time}} at {{location}}. Reply STOP to opt out.",
+          charCount: 118,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} shift is coming up: {{shift_date}}, {{shift_time}} at {{location}}.",
-          charCount: 100,
+          body: "Your {{workspace_name}} shift is coming up: {{shift_date}}, {{shift_time}} at {{location}}. Reply STOP to opt out.",
+          charCount: 123,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Shift {{shift_date}} {{shift_time}}, {{location}}.",
-          charCount: 79,
+          body: "{{workspace_name}}: Shift {{shift_date}} {{shift_time}}, {{location}}. STOP to opt out.",
+          charCount: 96,
         },
       ],
     },
@@ -202,18 +202,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Your shift changed. New: {{shift_date}} {{shift_time}} at {{location}}.",
-          charCount: 100,
+          body: "{{workspace_name}}: Your shift changed. New: {{shift_date}} {{shift_time}} at {{location}}. Reply STOP to opt out.",
+          charCount: 123,
         },
         {
           tone: "Friendly",
-          body: "Heads up, your {{workspace_name}} shift moved to {{shift_date}}, {{shift_time}} at {{location}}.",
-          charCount: 105,
+          body: "Heads up, your {{workspace_name}} shift moved to {{shift_date}}, {{shift_time}} at {{location}}. Reply STOP to opt out.",
+          charCount: 128,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Shift now {{shift_date}} {{shift_time}}, {{location}}.",
-          charCount: 83,
+          body: "{{workspace_name}}: Shift now {{shift_date}} {{shift_time}}, {{location}}. STOP to opt out.",
+          charCount: 100,
         },
       ],
     },
@@ -229,18 +229,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Your {{shift_date}} {{shift_time}} shift at {{location}} is cancelled.",
-          charCount: 99,
+          body: "{{workspace_name}}: Your {{shift_date}} {{shift_time}} shift at {{location}} is cancelled. Reply STOP to opt out.",
+          charCount: 122,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} shift on {{shift_date}} at {{location}} has been cancelled.",
-          charCount: 93,
+          body: "Your {{workspace_name}} shift on {{shift_date}} at {{location}} has been cancelled. Reply STOP to opt out.",
+          charCount: 116,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: {{shift_date}} {{shift_time}} shift cancelled.",
-          charCount: 71,
+          body: "{{workspace_name}}: {{shift_date}} {{shift_time}} shift cancelled. STOP to opt out.",
+          charCount: 88,
         },
       ],
     },
@@ -256,18 +256,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Your shift at {{location}} starts now. Check in: {{action_link}}",
-          charCount: 109,
+          body: "{{workspace_name}}: Your shift at {{location}} starts now. Check in: {{action_link}} Reply STOP to opt out.",
+          charCount: 132,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} shift at {{location}} is starting. Check in here: {{action_link}}",
-          charCount: 114,
+          body: "Your {{workspace_name}} shift at {{location}} is starting. Check in here: {{action_link}} Reply STOP to opt out.",
+          charCount: 137,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Shift started. Check in: {{action_link}}",
-          charCount: 81,
+          body: "{{workspace_name}}: Shift started. Check in: {{action_link}} STOP to opt out.",
+          charCount: 98,
         },
       ],
     },
@@ -283,18 +283,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}} {{severity}}: {{alert_type}} on {{system_name}}. Details: {{action_link}}",
-          charCount: 120,
+          body: "{{workspace_name}} {{severity}}: {{alert_type}} on {{system_name}}. Details: {{action_link}} Reply STOP to opt out.",
+          charCount: 143,
         },
         {
           tone: "Friendly",
-          body: "{{workspace_name}} heads up, {{severity}}: {{alert_type}} on {{system_name}}. {{action_link}}",
-          charCount: 121,
+          body: "{{workspace_name}} heads up, {{severity}}: {{alert_type}} on {{system_name}}. {{action_link}} Reply STOP to opt out.",
+          charCount: 144,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}} {{severity}}: {{alert_type}}, {{system_name}}. {{action_link}}",
-          charCount: 109,
+          body: "{{workspace_name}} {{severity}}: {{alert_type}}, {{system_name}}. {{action_link}} STOP to opt out.",
+          charCount: 126,
         },
       ],
     },
@@ -310,18 +310,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}} {{severity}}: {{system_name}} needs attention. Reply ACK or it goes to {{escalation_to}}.",
-          charCount: 114,
+          body: "{{workspace_name}} {{severity}}: {{system_name}} needs attention. Reply ACK or it goes to {{escalation_to}}. Reply STOP to opt out.",
+          charCount: 137,
         },
         {
           tone: "Friendly",
-          body: "{{workspace_name}}: {{severity}} on {{system_name}}, can you take it? Reply ACK to claim.",
-          charCount: 98,
+          body: "{{workspace_name}}: {{severity}} on {{system_name}}, can you take it? Reply ACK to claim. Reply STOP to opt out.",
+          charCount: 121,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}} {{severity}}: {{system_name}}. Reply ACK. {{action_link}}",
-          charCount: 94,
+          body: "{{workspace_name}} {{severity}}: {{system_name}}. Reply ACK. {{action_link}} STOP to opt out.",
+          charCount: 111,
         },
       ],
     },
@@ -337,18 +337,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}} {{severity}}: {{system_name}} down. {{action_link}}",
-          charCount: 88,
+          body: "{{workspace_name}} {{severity}}: {{system_name}} down. {{action_link}} Reply STOP to opt out.",
+          charCount: 111,
         },
         {
           tone: "Friendly",
-          body: "{{workspace_name}} {{severity}}: {{system_name}} needs you now. {{action_link}}",
-          charCount: 97,
+          body: "{{workspace_name}} {{severity}}: {{system_name}} needs you now. {{action_link}} Reply STOP to opt out.",
+          charCount: 120,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}} {{severity}}: {{system_name}}. {{action_link}}",
-          charCount: 83,
+          body: "{{workspace_name}} {{severity}}: {{system_name}}. {{action_link}} STOP to opt out.",
+          charCount: 100,
         },
       ],
     },
@@ -364,18 +364,18 @@ export const TEAM_ALERTS: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: {{system_name}} SLA breach, incident {{incident_id}}. {{action_link}}",
-          charCount: 106,
+          body: "{{workspace_name}}: {{system_name}} SLA breach, incident {{incident_id}}. {{action_link}} Reply STOP to opt out.",
+          charCount: 129,
         },
         {
           tone: "Friendly",
-          body: "{{workspace_name}} notice: {{system_name}} is below its service level. {{action_link}}",
-          charCount: 108,
+          body: "{{workspace_name}} notice: {{system_name}} is below its service level. {{action_link}} Reply STOP to opt out.",
+          charCount: 131,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: {{system_name}} SLA breach. {{action_link}}",
-          charCount: 85,
+          body: "{{workspace_name}}: {{system_name}} SLA breach. {{action_link}} STOP to opt out.",
+          charCount: 102,
         },
       ],
     },

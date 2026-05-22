@@ -95,6 +95,7 @@ export const ORDER_UPDATES: Category = {
       "No promotional content — no offers, no discount codes, no cross-sell (D-399, corpus-wide). The order status speaks for itself.",
       "The Delivered stage carries no cross-sell or upsell CTA (D-399). An exception-capture prompt ('issue with your order?') is allowed; a promotional CTA is not.",
       "No credentials in the body (D-393, corpus-wide). Digital-product confirmations link to authenticated retrieval — license keys and API keys never appear in the body.",
+      "Standard opt-out - every body carries the standard STOP opt-out language ('Reply STOP to opt out.', shortened to 'STOP to opt out.' in Brief variants), matching the transactional-category corpus precedent (D-412).",
       "Single GSM-7 segment after worst-case-realistic variable substitution (D-402).",
       "Carrier-tracking links are acceptable and well-known to carriers; public URL shorteners are discouraged.",
     ],
@@ -112,18 +113,18 @@ export const ORDER_UPDATES: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}. We'll text you when it ships.",
-          charCount: 112,
+          body: "{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}. We'll text you when it ships. Reply STOP to opt out.",
+          charCount: 135,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} order {{order_number}} is in. Arriving {{estimated_delivery}}, we'll let you know when it's on the way.",
-          charCount: 124,
+          body: "Your {{workspace_name}} order {{order_number}} is in. Arriving {{estimated_delivery}}, we'll let you know when it's on the way. Reply STOP to opt out.",
+          charCount: 147,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}.",
-          charCount: 82,
+          body: "{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}. STOP to opt out.",
+          charCount: 99,
         },
       ],
     },
@@ -139,18 +140,18 @@ export const ORDER_UPDATES: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Order {{order_number}} is being prepared. We'll text you when it ships.",
-          charCount: 101,
+          body: "{{workspace_name}}: Order {{order_number}} is being prepared. We'll text you when it ships. Reply STOP to opt out.",
+          charCount: 124,
         },
         {
           tone: "Friendly",
-          body: "Good news, your {{workspace_name}} order {{order_number}} is being put together now. Shipping update coming soon.",
-          charCount: 123,
+          body: "Good news, your {{workspace_name}} order {{order_number}} is being put together now. Shipping update coming soon. Reply STOP to opt out.",
+          charCount: 146,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Order {{order_number}} in preparation.",
-          charCount: 68,
+          body: "{{workspace_name}}: Order {{order_number}} in preparation. STOP to opt out.",
+          charCount: 85,
         },
       ],
     },
@@ -171,18 +172,18 @@ export const ORDER_UPDATES: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Order {{order_number}} has shipped. Track it: {{tracking_link}}. Arrives {{estimated_delivery}}.",
-          charCount: 115,
+          body: "{{workspace_name}}: Order {{order_number}} has shipped. Track it: {{tracking_link}}. Arrives {{estimated_delivery}}. Reply STOP to opt out.",
+          charCount: 138,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} order {{order_number}} is on the way. Follow it here: {{tracking_link}}. Should arrive {{estimated_delivery}}.",
-          charCount: 133,
+          body: "Your {{workspace_name}} order {{order_number}} is on the way. Follow it here: {{tracking_link}}. Should arrive {{estimated_delivery}}. Reply STOP to opt out.",
+          charCount: 156,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Order {{order_number}} shipped. Track: {{tracking_link}}",
-          charCount: 88,
+          body: "{{workspace_name}}: Order {{order_number}} shipped. Track: {{tracking_link}} STOP to opt out.",
+          charCount: 105,
         },
       ],
     },
@@ -198,18 +199,18 @@ export const ORDER_UPDATES: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Order {{order_number}} is out for delivery today. Track it: {{tracking_link}}",
-          charCount: 109,
+          body: "{{workspace_name}}: Order {{order_number}} is out for delivery today. Track it: {{tracking_link}} Reply STOP to opt out.",
+          charCount: 132,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} order {{order_number}} is out for delivery, it should reach you today. Track: {{tracking_link}}",
-          charCount: 131,
+          body: "Your {{workspace_name}} order {{order_number}} is out for delivery, it should reach you today. Track: {{tracking_link}} Reply STOP to opt out.",
+          charCount: 154,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Order {{order_number}} out for delivery. {{tracking_link}}",
-          charCount: 90,
+          body: "{{workspace_name}}: Order {{order_number}} out for delivery. {{tracking_link}} STOP to opt out.",
+          charCount: 107,
         },
       ],
     },
@@ -225,18 +226,18 @@ export const ORDER_UPDATES: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Order {{order_number}} was delivered. Something wrong? Start here: {{return_link}}",
-          charCount: 116,
+          body: "{{workspace_name}}: Order {{order_number}} was delivered. Something wrong? Start here: {{return_link}} Reply STOP to opt out.",
+          charCount: 139,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} order {{order_number}} has been delivered. If anything's off, you can sort it here: {{return_link}}",
-          charCount: 137,
+          body: "Your {{workspace_name}} order {{order_number}} has been delivered. If anything's off, you can sort it here: {{return_link}} Reply STOP to opt out.",
+          charCount: 160,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Order {{order_number}} delivered. Issue? {{return_link}}",
-          charCount: 90,
+          body: "{{workspace_name}}: Order {{order_number}} delivered. Issue? {{return_link}} STOP to opt out.",
+          charCount: 107,
         },
       ],
     },
@@ -252,18 +253,18 @@ export const ORDER_UPDATES: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Your return for order {{order_number}} is started. Track its status: {{return_link}}",
-          charCount: 118,
+          body: "{{workspace_name}}: Your return for order {{order_number}} is started. Track its status: {{return_link}} Reply STOP to opt out.",
+          charCount: 141,
         },
         {
           tone: "Friendly",
-          body: "We've started the return for your {{workspace_name}} order {{order_number}}. Check its status anytime: {{return_link}}",
-          charCount: 132,
+          body: "We've started the return for your {{workspace_name}} order {{order_number}}. Check its status anytime: {{return_link}} Reply STOP to opt out.",
+          charCount: 155,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: Return started for order {{order_number}}. Status: {{return_link}}",
-          charCount: 100,
+          body: "{{workspace_name}}: Return started for order {{order_number}}. Status: {{return_link}} STOP to opt out.",
+          charCount: 117,
         },
       ],
     },
@@ -284,18 +285,18 @@ export const ORDER_UPDATES: Category = {
       variants: [
         {
           tone: "Standard",
-          body: "{{workspace_name}}: Refund of {{refund_amount}} for order {{order_number}} is processed to your {{card_type}}.",
-          charCount: 112,
+          body: "{{workspace_name}}: Refund of {{refund_amount}} for order {{order_number}} is processed to your {{card_type}}. Reply STOP to opt out.",
+          charCount: 135,
         },
         {
           tone: "Friendly",
-          body: "Your {{workspace_name}} refund of {{refund_amount}} for order {{order_number}} is on its way back to your {{card_type}}.",
-          charCount: 122,
+          body: "Your {{workspace_name}} refund of {{refund_amount}} for order {{order_number}} is on its way back to your {{card_type}}. Reply STOP to opt out.",
+          charCount: 145,
         },
         {
           tone: "Brief",
-          body: "{{workspace_name}}: {{refund_amount}} refunded for order {{order_number}} to your {{card_type}}.",
-          charCount: 98,
+          body: "{{workspace_name}}: {{refund_amount}} refunded for order {{order_number}} to your {{card_type}}. STOP to opt out.",
+          charCount: 115,
         },
       ],
     },
