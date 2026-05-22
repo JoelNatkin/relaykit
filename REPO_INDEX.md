@@ -10,13 +10,15 @@
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
 - Decision count: 324 active, latest D-409; D-01–D-83 archived. Marketing decisions: latest MD-20.
 - Branch state: `main` only — no unmerged feature branches. Session 101 landed three feature merges plus two direct-to-main copy commits: `feat/message-authoring-guide` (new `docs/MESSAGE_AUTHORING_GUIDE.md` + cross-references) via `--no-ff` merge `9c1cd8f`; `feat/team-alerts-authoring` (Team alerts authored — 9 messages / 27 variants / 10-variable catalog) via `--no-ff` merge `55760e5`; `feat/configurator-launch-prep` (D-409 default-state cascade + STATE_VERSION 3 + Marketing-last + login-code tooltip advisory + strip "Pre-launch." prefix) via `--no-ff` merge `757ac8d`; plus homepage copy commits `4d78630` and `85d2ed2` direct to main per the trivial-copy-edit convention. All feature branches deleted local + remote post-merge.
-- Active explorations: None
+- Active explorations: 1 — sla-led-gtm (strategy sketch; exploring)
 
 ## Active explorations
 
 Sandbox space for product, strategy, and design ideas being prototyped before canonical commitment. See `/explorations/README.md` and `PM_PROJECT_INSTRUCTIONS.md` "Explorations (sandbox before canon)" for the workflow.
 
-_No active explorations._
+| Name | Status | Path | Description |
+|------|--------|------|-------------|
+| sla-led-gtm | exploring | `/explorations/sla-led-gtm.md` | Four-move strategy sketch: all-categories-live launch, SLA tiering as GTM spine, Verification demoted, Marketing-not-identity. Not canon. |
 
 ## Canonical docs (root)
 
