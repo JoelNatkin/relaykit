@@ -1,4 +1,4 @@
-# CC_HANDOFF — Session 101 — IH launch day: MESSAGE_AUTHORING_GUIDE + Team alerts + configurator default-state cascade (D-409) + launch-prep copy
+# CC_HANDOFF — Session 102 — Customer support + Appointments categories authored; PM brevity guidance; sla-led-gtm exploration scaffold
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
@@ -7,29 +7,26 @@
 **Date:** 2026-05-21
 **Branches:** `main` only — all session work merged. No unmerged feature branches local or remote.
 
-`Commits: 8 | Files modified: 14 | Decisions added: 1 (D-409) | External actions: ~12 (branch pushes ×3, main pushes ×5, remote branch deletes ×3, Vercel auto-deploys, one gh CLI install in ~/.local/bin)`
+`Commits: 7 | Files modified: 8 | Decisions added: 0 | External actions: ~10 (branch pushes ×2, main pushes ×4, remote branch deletes ×2, Vercel production deploys ×2 monitored via gh-api status polling)`
 
 ---
 
 ## Session character
 
-Indie Hackers launch day. Three feature waves on branches plus two direct-to-main copy commits, then this close-out. The thread:
+A category-authoring session: two of the three remaining message-library categories populated and shipped live to production, plus a governance-doc edit and an exploration scaffold. All three workstreams were PM-directed and discrete; no shared state between them.
 
-1. **MESSAGE_AUTHORING_GUIDE** — new canonical doc at `docs/MESSAGE_AUTHORING_GUIDE.md` consolidating the scattered authoring procedure (ASCII-only rule, charCount-against-budgetChars discipline, tone variants, compliance baseline). PM-authored prose; CC verified each claim against the repo and resolved one discrepancy (§7 sender-frame bullet retargeted — D-398 only covers workspace_name in three categories, Verification uses business_name as its own rule).
-2. **Team alerts authoring** — the 4th of 9 message-library categories. 9 messages (5 shift-lifecycle + 4 alert-event), 27 tone variants, 10-variable catalog, 6-rule compliance block, TCR ACCOUNT_NOTIFICATION. Max charCount 121/160 worst-case. All bodies ASCII-clean. Configurator picks Team alerts up automatically via `isAuthored()` — no separate wiring.
-3. **Configurator launch-prep** — three coupled changes: (a) `toggleCategory` now cascades check-state to all messages; (b) page-load checks every message of the default category (Verification); (c) selectPreset mirrors the cascade. Plus three independent surface edits: Marketing moved to last in CATEGORIES order; login-code tooltip got an SMS-2FA security advisory appended; the "Pre-launch." prefix stripped from the line-600 paragraph. STATE_VERSION 2 → 3 to re-seed returning visitors. New decision **D-409** records the cascade rule and supersedes D-397 (Community milestone default-off).
-4. **Homepage hero + section-3 copy** — two direct-to-main commits. Hero subhead "Two files. Your AI tool. A working SMS feature." → "Compliant SMS that drops into your stack, wired by your AI tool." Then a follow-up single-word strip ("wired in by" → "wired by"). Section-3 H2 "Two files. Your AI tool." → "Hand it to your AI tool."
-
-The Indie Hackers launch landed mid-session against this configurator state: visitors hitting `relaykit.ai` see the new hero copy + 4 Verification message cards rendered in the preview pane by default.
+1. **PM response-brevity guidance** — replaced the "Response brevity" entry in `PM_PROJECT_INSTRUCTIONS.md` "Standing Reminders → PM behavior" with a stronger default-posture version (relevance test, default response shape, no walls of text). Direct to main per the trivial-doc-edit convention.
+2. **Customer support category** — 5th live category. 8 messages (5-step ticket lifecycle + 3 discrete), 24 tone variants, 7-token catalog, 6-rule compliance block, TCR CUSTOMER_CARE. Authoring took three charCount rounds — round 1 flagged 4 over-160 variants, round 2 flagged 3, round 3 cleared all 24. Author-of-record PM throughout.
+3. **Appointments category** — 6th live category. 7 messages (7-step appointment lifecycle), 21 tone variants, 7-token catalog, 6-rule compliance block, TCR ACCOUNT_NOTIFICATION. Hand-analysis at plan time flagged 2 over-160 variants; PM re-authored before execution, so the file was written in one pass.
+4. **sla-led-gtm exploration scaffold** — new `/explorations/sla-led-gtm.md`, a four-move GTM strategy sketch. Status `exploring`, explicitly NOT canon. Kept as its own commit, deliberately uncommitted through the category work until close-out.
 
 ## Completed work (chronological)
 
-- **`9c1cd8f`** (`--no-ff` merge of `feat/message-authoring-guide`) — new `docs/MESSAGE_AUTHORING_GUIDE.md` + REPO_INDEX cross-references (file table + canonical-sources-by-topic) + CLAUDE.md key-docs pointer. §7 sender-frame bullet retargeted per A2 verification discrepancy.
-- **`55760e5`** (`--no-ff` merge of `feat/team-alerts-authoring`) — `team-alerts.ts` populated (9 messages, 27 variants, 10-variable catalog, 6-rule compliance). charCount verification script at `/tmp/verify-team-alerts-charcounts.mjs` (transient).
-- **`757ac8d`** (`--no-ff` merge of `feat/configurator-launch-prep`) — two atomic commits under the merge: `6cd7b54` (cascade + STATE_VERSION 3 + presetValue ripple) and `0afa0b0` (CATEGORIES reorder + login-code tooltip + Pre-launch prefix strip + PRE_LAUNCH_DEVIATIONS entry #3 update).
-- **`4d78630`** (direct to main) — hero subhead + section-3 H2 copy edits.
-- **`85d2ed2`** (direct to main) — hero subhead single-word strip ("wired in by" → "wired by").
-- **This close-out commit(s)** — DECISIONS.md (D-409 + D-397 annotation) and the doc bundle (PROTOTYPE_SPEC + PRODUCT_SUMMARY + REPO_INDEX + this CC_HANDOFF).
+- **`21549ff`** (direct to main) — `PM_PROJECT_INSTRUCTIONS.md` response-brevity entry rewritten; in-file `Updated:` header bumped to May 21, 2026.
+- **`d58ff58`** (`--no-ff` merge of `feat/customer-support-authoring`, feature commit `ca68a1e`) — `customer-support.ts` populated. Production-deployed (Vercel `success`).
+- **`d809934`** (`--no-ff` merge of `feat/appointments-authoring`, feature commit `0d0de86`) — `appointments.ts` populated. Production-deployed (Vercel `success`).
+- **`18c5478`** (direct to main) — `explorations/sla-led-gtm.md` scaffold + REPO_INDEX Active explorations row.
+- **This close-out commit** — REPO_INDEX (branch state, message-library section, docs-table dates) + PROTOTYPE_SPEC (authored-category entries) + PRODUCT_SUMMARY (§3 live-category list) + this CC_HANDOFF.
 
 ## In-progress work
 
@@ -37,86 +34,60 @@ None. Clean state.
 
 ## Quality checks
 
-`tsc --noEmit` and `eslint .` clean on `marketing-site/` at this close-out HEAD (re-run after each merge, all empty output). Runtime verified via SSR curl of the home page across the configurator-launch-prep commits:
-- All 4 Verification messages render checked (3 matches each in SSR for `Verification code` / `Confirmation code` / `Recovery code`, 2 for `Login code` — body uses "Your login code is" not "Login code" literally).
-- Marketing renders last in the category panel.
-- Hero subhead reads "Compliant SMS that drops into your stack, wired by your AI tool."
-- Section-3 H2 reads "Hand it to your AI tool."
-- Line-600 paragraph no longer starts with "Pre-launch."
+`tsc --noEmit` and `eslint lib/message-library/` clean on `marketing-site/` — re-run at this close-out HEAD, both exit 0. Both production categories verified live via Vercel production deploys (`success` / "Deployment has completed" on `d58ff58` and `d809934`). charCount discipline (§6) held: every authored variant ≤ 160 worst-case GSM-7, all bodies ASCII-clean — Customer support max 141, Appointments max 156. Both categories surface in the configurator automatically via `isAuthored()` — no wiring.
 
 ## Decisions
 
-**One D-number added this session: D-409** — Configurator category toggle cascades to all messages; per-message defaults removed. Supersedes: D-397 (Community member milestone sub default-off — milestone now auto-checks alongside Community under the cascade rule). Extends D-377 (without superseding).
+None added. Category authoring is implementation of existing decisions (D-408 flat model, D-398 sender frame, D-392/D-393/D-399/D-402 compliance) — no new conceptual choice, no D-number per the gate tests. The sla-led-gtm exploration is explicitly not-canon. The PM brevity edit is a governance-doc change, not a product decision. Final D-numbers unchanged: **324 active, latest D-409**; archive D-01–D-83.
 
-Final D-numbers: **324 active, latest D-409**. Archive unchanged (D-01–D-83).
+## Retirement sweep / drift watch
+
+Skipped — mid-phase, Phase 1 (Sinch Proving Ground) still active per MASTER_PLAN "Active focus", no phase boundary crossed. One drift item surfaced anyway — see gotcha 1.
 
 ## Gotchas for next session
 
-1. **D-397's protective intent (milestone shouldn't auto-send to early-stage communities) is now inert** until Community is authored AND a per-message default mechanism returns. The BACKLOG Pri 1 entry "Opt-out risk tagging for message templates" is the named path forward. If/when Community authoring lands, PM should decide whether milestone needs a separate per-message default-off mechanism or whether the cascade-on-toggle behavior is acceptable.
-2. **STATE_VERSION 3 drops V2 persisted state silently.** Returning visitors with persisted state from before this session re-seed under the new "all messages of default category checked" default on next load. No migration code; version-gated drop.
-3. **The Tooltip component renders body content only on hover (client-side), not in SSR.** Visual verification of tooltip text via SSR HTML returns 0 matches — that's expected. Verify tooltip changes against the source file or via in-browser hover.
-4. **Two atomic commits inside `feat/configurator-launch-prep`** preserved under the `--no-ff` merge: `6cd7b54` (state behavior) + `0afa0b0` (copy/reorder). The state-behavior commit is the one that earned D-409; the copy/reorder commit is three independent surface edits bundled.
-5. **Homepage hero copy went through two iterations.** First commit `4d78630` introduced "Compliant SMS that drops into your stack, wired in by your AI tool." Second commit `85d2ed2` stripped the word "in" to "Compliant SMS that drops into your stack, wired by your AI tool." Current canonical text is the second.
-6. **The "Recommended combinations" dropdown's five non-Verification presets remain inert** per D-385. Reconnaissance pass at session midpoint confirmed: no category mappings defined in code; the handler early-returns on every non-`verification-only` ID; `disabled: true` is hardcoded in the PRESETS const at `category-list.tsx:25–33`. Building these into functioning presets is a legitimate post-launch task once remaining categories are authored — see carry-forwards.
+1. **MASTER_PLAN "Launch focus" paragraph is drifting.** It names appointment reminders and customer support among flow-shaped categories "fair game for 'coming soon' labeling at launch." Both are now authored and live in production; 6 of 9 categories are authored, only 3 are coming-soon. The language is permissive ("fair game for"), so authoring them is **not** a contradiction — but the paragraph now reads as stale. Not edited (step 6 only edits MASTER_PLAN on a PM-flagged plan change; none was flagged). PM should decide whether to refresh that paragraph.
+2. **sla-led-gtm exploration intersects gotcha 1.** The exploration's move 1 is "launch with all nine categories live." If PM refreshes the launch-focus paragraph, that decision should run through the exploration's planned post-launch pressure-test rather than being made ad hoc. Exploration stays `exploring` / not canon until then.
+3. **`customer_name` is catalogued but used by no body** in both `customer-support.ts` and `appointments.ts` — intentional, per the §8 shared-reference convention. Not a bug; do not "clean it up."
+4. **Customer support `agent_name` appears in message 2 only**, not messages 2 and 3 as the task prompt stated. The authored `agent-response` (msg 3) bodies use neutral attribution ("got a reply from {{workspace_name}} support"), a valid §5 pattern; CC flagged this and PM approved. Message 3's `variables` array correctly omits `agent_name`.
+5. **gh CLI worked this session** for Vercel deploy polling (`gh api .../commits/<sha>/status`) — the Session 101 "gh CLI propagation gap" gotcha did not reproduce; `gh auth status` shows an active token reaching the Bash tool. Treat the S101 gap as resolved unless it recurs.
 
 ## Files modified this session
 
-14 unique files across the full session arc:
+8 unique files:
 
-**Code (5):**
-- `marketing-site/lib/message-library/team-alerts.ts` (stub → populated)
-- `marketing-site/lib/message-library/verification.ts` (login-code tooltip append)
-- `marketing-site/lib/message-library/index.ts` (CATEGORIES order — Marketing to last)
-- `marketing-site/lib/configurator/use-configurator-state.ts` (cascade + STATE_VERSION 3 + DEFAULT_CHECKED_MESSAGES removal)
-- `marketing-site/components/configurator-section.tsx` (presetValue ripple + Pre-launch strip + hero/section-3 copy via app/page.tsx — actually app/page.tsx is the separate file)
+**Code (2):**
+- `marketing-site/lib/message-library/customer-support.ts` (stub → populated)
+- `marketing-site/lib/message-library/appointments.ts` (stub → populated)
 
-**Code (additional, hero/section-3):**
-- `marketing-site/app/page.tsx` (hero subhead + section-3 H2 — two commits)
-
-**Docs (8):**
-- `docs/MESSAGE_AUTHORING_GUIDE.md` (new canonical doc)
-- `REPO_INDEX.md` (cross-references for the new guide + this close-out meta/table updates)
-- `CLAUDE.md` (key-docs pointer to the new guide)
-- `docs/PRE_LAUNCH_DEVIATIONS.md` (entry #3 After: aligned to post-strip live string)
-- `DECISIONS.md` (D-409 + D-397 supersession annotation)
-- `PROTOTYPE_SPEC.md` (Last updated bump + configurator default-state + Team alerts notes + Marketing-last + hero/section-3 copy + STATE_VERSION reference + authored-count update)
-- `docs/PRODUCT_SUMMARY.md` (§3 Team alerts + new populated default + cascade behavior)
+**Docs (6):**
+- `PM_PROJECT_INSTRUCTIONS.md` (response-brevity entry + Updated header)
+- `explorations/sla-led-gtm.md` (new — exploration scaffold)
+- `REPO_INDEX.md` (Active explorations row + close-out: branch state, message-library section, docs-table dates)
+- `PROTOTYPE_SPEC.md` (Customer support + Appointments authored-category entries; authored/coming-soon counts)
+- `docs/PRODUCT_SUMMARY.md` (§3 live-category list — 6 authored, 3 coming-soon)
 - `CC_HANDOFF.md` (this file — overwritten)
 
 ## Unmerged branches
 
 None.
 
-## Retirement sweep / drift watch
-
-Skipped — mid-phase, Phase 1 (Sinch Proving Ground) still active per MASTER_PLAN.md §"Active focus", no phase boundary crossed this session.
-
 ## Carry-forward open items
 
 Surviving from prior sessions:
-- Tooltip touch-event handling (Session 98 carry-forward).
-- Tooltip `aria-describedby` wiring (Session 98 carry-forward).
-- Tooltip viewport-edge positioning at extreme breakpoints (Session 98 carry-forward).
+- Tooltip touch-event handling / `aria-describedby` wiring / viewport-edge positioning at extreme breakpoints (Session 98 carry-forward).
 - D-378's stale parenthetical (Session 98 carry-forward).
 - D-380 drift carry-over — status unverified this session.
 - PostHog vs Plausible/Fathom reconciliation in `docs/MARKETING_STRATEGY.md` (Session 97 carry-forward).
 - `docs/POST_TOPICS.md` still untracked (long-running carry-forward).
-- PostHog event-key rename — manual update of existing dashboards on the old `subs_*` / `*_sub_*` keys (Session 100 carry-forward).
-- Prose-cleanup of stale Sub-N / Stage-N / "hybrid" language in D-389, D-391, D-392, D-395, D-401 (Session 100 carry-forward).
-
-Resolved this session (no longer carry-forward):
-- **Authored-but-unchecked category-default behavior** (S99/S100 carry-forward) — resolved by D-409 with the cascade rule.
-- **`DEFAULT_CHECKED_MESSAGES` rename candidacy** (S100 carry-forward) — resolved by deletion entirely under D-409.
-
-New this session:
-- **gh CLI propagation gap.** gh CLI installed (`~/.local/bin/gh`, v2.92.0) and authenticated in the interactive shell, but credentials do not reach the Bash tool's non-interactive subshells. Resolution deferred — run `gh auth login` interactively outside a session to write `~/.config/gh/hosts.yml`. Until then, Vercel/check-run polling stays manual.
-- **Recommended-combinations presets remain inert.** The five non-Verification presets (SaaS, Personal services, Real estate, Fitness, E-commerce) remain inert disabled labels with no category mappings per D-385. Building them into functioning presets — defining each preset's category set + wiring the handler — is a legitimate post-launch task once remaining categories are authored. Not started.
-- **order-updates.ts em-dash alignment.** `order-updates.ts` `Message.groupNote`/`Message.description` fields use em-dashes; Team alerts uses straight hyphens per the MESSAGE_AUTHORING_GUIDE §6 "ASCII-clean too" rule + PM ruling. Optional prose-cleanup to align `order-updates.ts` to ASCII-clean — bundles naturally with the D-389/391/392/395/401 stale-language cleanup carry-forward.
-- **Git commit author email shows literal curly quotes.** Stale git config artifact (`"joelnatkin@mac.com"` with smart quotes). Cosmetic; surfaced in commit metadata visible in `git log`. Fix with `git config user.email <straight-quotes>` when convenient.
+- PostHog dashboard rename pass — manual update of existing dashboards on the old `subs_*` / `*_sub_*` keys (Session 100 carry-forward).
+- Stale-prose cleanup of positional Sub-N / Stage-N / "hybrid" language in D-389, D-391, D-392, D-395, D-401, bundled with the `order-updates.ts` em-dash → ASCII-hyphen alignment (Session 100/101 carry-forward).
+- Recommended-combinations dropdown's five non-Verification presets remain inert per D-385 — wiring them is a post-launch task once remaining categories are authored (Session 101 carry-forward).
+- D-397's protective intent (Community milestone shouldn't auto-send) inert until Community is authored AND a per-message default mechanism returns (Session 101 carry-forward).
+- Git commit author email shows literal curly quotes — stale git config artifact, cosmetic (Session 101 carry-forward).
 
 ## Suggested next session
 
-1. **Author Customer support** — next category in the authoring sequence (or another remaining: Appointments, Community, Waitlist, Marketing). Marketing is sequenced last because of its distinct compliance profile (D-399 + STOP/HELP in body). The five `Coming soon` categories all have research files at `audits/research/2026-05-16/[name].md` with §6 resolved. Follow the MESSAGE_AUTHORING_GUIDE procedure (§3 authoring method, §6 technical disciplines).
-2. **Post-launch monitoring.** First Indie Hackers post is launch-adjacent — track signups in PostHog and Supabase `early_access_subscribers`, watch the configurator's PostHog conversion events for the new "all 4 Verification messages checked by default" baseline.
-3. **PostHog dashboard rename pass** (S100 carry-forward) — a hand-pass through existing PostHog funnels and insights to update the retired event-key names (`subs_*` / `*_sub_*` → `messages_*` / `*_message_*`). Decoupled from any code change.
-4. **Stale-prose cleanup of D-389/391/392/395/401** (S100 carry-forward), now bundled with the **order-updates.ts em-dash alignment** (new this session) — single prose-only commit reworking positional Sub-N / Stage-N / "hybrid" language across those five decisions plus aligning order-updates.ts groupNote/description punctuation to ASCII-clean per MESSAGE_AUTHORING_GUIDE §6.
+1. **Author another category.** 3 remain: Community, Waitlist, Marketing. Marketing is sequenced last (distinct compliance profile — D-399 + STOP/HELP in body). Community or Waitlist next. Research files at `audits/research/2026-05-16/[name].md` with §6 resolved. Follow MESSAGE_AUTHORING_GUIDE §3 / §6. Note for Community authoring: D-397's milestone-default question (gotcha, prior session) comes due then.
+2. **PM: decide the launch-focus / all-categories question.** Gotchas 1–2 — refresh the MASTER_PLAN "Launch focus" paragraph to match the 6-authored reality, ideally via the sla-led-gtm exploration's post-launch pressure-test rather than ad hoc.
+3. **Carry-forward cleanups** — PostHog dashboard rename pass, and the D-389/391/392/395/401 stale-prose cleanup bundled with `order-updates.ts` em-dash alignment. Both are decoupled prose-only passes.
