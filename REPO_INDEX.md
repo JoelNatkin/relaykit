@@ -10,7 +10,7 @@
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
 - Decision count: 327 active, latest D-412; D-01–D-83 archived. Marketing decisions: latest MD-20.
 - Branch state: `main` only — no unmerged feature branches. Session 103 landed five `--no-ff` feature merges — Waitlist `aced459`, Community `59c8600`, Marketing `3dd6033`, remove-combinations-dropdown `a8c1388`, transactional-stop-language `6c59820` — plus the close-out; all feature branches deleted post-merge.
-- Active explorations: 1 — sla-led-gtm (strategy sketch; exploring)
+- Active explorations: 1 — golden-path-gtm (strategy sketch; exploring)
 
 ## Active explorations
 
@@ -18,7 +18,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 
 | Name | Status | Path | Description |
 |------|--------|------|-------------|
-| sla-led-gtm | exploring | `/explorations/sla-led-gtm.md` | Four-move strategy sketch: all-categories-live launch, SLA tiering as GTM spine, Verification demoted, Marketing-not-identity. Not canon. |
+| golden-path-gtm | exploring | `/explorations/golden-path-gtm.md` | Golden-path-led GTM strategy sketch — starter kits as the on-ramp — recast as one bet + three positioning calls (launch redefinition, verification posture, marketing posture). Supersedes the prior sla-led-gtm sketch. Not canon. |
 
 ## Canonical docs (root)
 
