@@ -18,6 +18,13 @@ import type { Variable } from "@/lib/message-library/types";
 export interface ComplianceResult {
   isCompliant: boolean;
   issues: string[];
+  /**
+   * True when the resolved body exceeds a single SMS segment (D-414 /
+   * configurator-authoring §4). Surfaced separately from `issues` so the
+   * read-card char-warning can gate on length alone without string-matching
+   * issue text.
+   */
+  isOverSegmentLength: boolean;
 }
 
 /** GSM 03.38 basic set + basic-extension characters — the SMS-safe character set. */
@@ -54,7 +61,8 @@ export function checkCompliance({
   const segments = interpolateBody(body, variables, { categoryVariables });
   const resolved = segments.map((s) => s.text).join("");
 
-  if (resolved.length > SINGLE_SEGMENT_GSM7) {
+  const isOverSegmentLength = resolved.length > SINGLE_SEGMENT_GSM7;
+  if (isOverSegmentLength) {
     issues.push("Too long for a single SMS segment");
   }
 
@@ -76,5 +84,5 @@ export function checkCompliance({
     }
   }
 
-  return { isCompliant: issues.length === 0, issues };
+  return { isCompliant: issues.length === 0, issues, isOverSegmentLength };
 }

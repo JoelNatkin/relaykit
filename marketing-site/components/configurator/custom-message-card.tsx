@@ -14,6 +14,7 @@ import type { Editor } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import { MessageEditor } from "@/lib/editor/message-editor";
 import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
+import { CharWarningIcon } from "@/components/configurator/char-warning-icon";
 import { checkCompliance } from "@/lib/configurator/compliance";
 import { interpolateBody, resolveVariableExample } from "@/lib/message-library/render";
 import type { Variable } from "@/lib/message-library";
@@ -140,12 +141,22 @@ export function CustomMessageCard({
       businessName,
       categoryVariables,
     });
+    // Same post-render length warning as MessageReadCard. Read-mode is
+    // non-blocking — only the segment-length issue surfaces here; the
+    // edit card carries the full compliance issue list.
+    const readCompliance = checkCompliance({
+      body,
+      variables,
+      requiresStop,
+      categoryVariables,
+    });
     return (
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
         <div className="flex items-center gap-3">
           <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">
             {name || "Untitled message"}
           </span>
+          {readCompliance.isOverSegmentLength ? <CharWarningIcon /> : null}
           <button
             type="button"
             onClick={onEditRequest}

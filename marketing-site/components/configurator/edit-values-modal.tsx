@@ -17,7 +17,7 @@
  * viewport resize from mobile to desktop while the modal is open.
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { XClose } from "@untitledui/icons";
 import type { Category } from "@/lib/message-library";
 import {
@@ -38,7 +38,24 @@ export function EditValuesModal({
   onChange,
   onClose,
 }: EditValuesModalProps) {
-  const isOpen = category !== null;
+  // Viewport gating — the modal is mobile-only (md:hidden in CSS), but
+  // `display: none` does NOT prevent React effects from firing. Without
+  // a JS-level viewport check, the scroll-lock effect below would also
+  // fire when the desktop inline expander opens (same
+  // `editValuesCategoryId` state drives both surfaces), silently
+  // locking page scroll behind a CSS-hidden modal. matchMedia keeps
+  // the breakpoint in sync with Tailwind's md: (768px). Initial state
+  // is `false` so SSR matches first-paint client render (modal absent).
+  const [isMobileViewport, setIsMobileViewport] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 767.98px)");
+    setIsMobileViewport(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobileViewport(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
+  const isOpen = isMobileViewport && category !== null;
 
   // Lock body scroll while open — same pattern as MobileCategoriesModal.
   useEffect(() => {
@@ -62,7 +79,7 @@ export function EditValuesModal({
     return () => document.removeEventListener("keydown", handleKey);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !category) return null;
 
   return (
     <>

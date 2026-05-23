@@ -11,6 +11,9 @@ import { MobileCategoriesSummary } from "@/components/configurator/mobile-catego
 import { MobileCategoriesModal } from "@/components/configurator/mobile-categories-modal";
 import { EditValuesForm } from "@/components/configurator/edit-values-form";
 import { EditValuesModal } from "@/components/configurator/edit-values-modal";
+import { CharWarningIcon } from "@/components/configurator/char-warning-icon";
+import { KebabMenu } from "@/components/configurator/kebab-menu";
+import { checkCompliance } from "@/lib/configurator/compliance";
 import { useWaitlist, type WaitlistSummary } from "@/context/waitlist-context";
 import { SessionProvider } from "@/lib/configurator/session-context";
 import { useConfiguratorState } from "@/lib/configurator/use-configurator-state";
@@ -89,6 +92,8 @@ interface MessageReadCardProps {
   variables: Category["variables"];
   categoryVariables: Record<string, string>;
   businessName: string;
+  /** True for Marketing-shaped categories — affects compliance issues, not the length warning. */
+  requiresStop: boolean;
   onEdit: () => void;
 }
 
@@ -99,10 +104,20 @@ function MessageReadCard({
   variables,
   categoryVariables,
   businessName,
+  requiresStop,
   onEdit,
 }: MessageReadCardProps) {
   const segments = interpolateBody(body, variables, {
     businessName,
+    categoryVariables,
+  });
+  // Post-render length check (D-414 / configurator-authoring §4). Read-mode
+  // warning is non-blocking and fires only on segment length — other
+  // compliance issues stay in the edit card where they can be fixed.
+  const compliance = checkCompliance({
+    body,
+    variables,
+    requiresStop,
     categoryVariables,
   });
   return (
@@ -123,6 +138,7 @@ function MessageReadCard({
             </Tooltip>
           ) : null}
         </div>
+        {compliance.isOverSegmentLength ? <CharWarningIcon /> : null}
         <button
           type="button"
           onClick={onEdit}
@@ -172,6 +188,8 @@ export function ConfiguratorSection() {
     setBusinessName,
     setMessageEdit,
     setCategoryVariable,
+    clearCategory,
+    clearAll,
     addCustomMessage,
     updateCustomMessage,
     removeCustomMessage,
@@ -417,14 +435,26 @@ export function ConfiguratorSection() {
                     </button>
                   ))}
                 </div>
-                <button
-                  type="button"
-                  onClick={handleCopy}
-                  className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-                >
-                  <Copy01 className="size-4" />
-                  {copyToastVisible ? "Copied" : "Copy"}
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                  >
+                    <Copy01 className="size-4" />
+                    {copyToastVisible ? "Copied" : "Copy"}
+                  </button>
+                  <KebabMenu
+                    ariaLabel="Configurator options"
+                    items={[
+                      {
+                        label: "Clear all",
+                        onClick: clearAll,
+                        destructive: true,
+                      },
+                    ]}
+                  />
+                </div>
               </div>
 
               <div className="mt-4">
@@ -460,23 +490,35 @@ export function ConfiguratorSection() {
                         <h4 className="text-base font-semibold text-text-primary">
                           {category.name}
                         </h4>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setEditValuesCategoryId(
-                              editValuesOpen ? null : category.id,
-                            )
-                          }
-                          aria-expanded={editValuesOpen}
-                          className="inline-flex shrink-0 cursor-pointer items-center gap-1 px-1 py-0.5 text-xs font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-                        >
-                          Edit values
-                          {editValuesOpen ? (
-                            <ChevronUp className="size-3.5" />
-                          ) : (
-                            <ChevronDown className="size-3.5" />
-                          )}
-                        </button>
+                        <div className="flex shrink-0 items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setEditValuesCategoryId(
+                                editValuesOpen ? null : category.id,
+                              )
+                            }
+                            aria-expanded={editValuesOpen}
+                            className="inline-flex cursor-pointer items-center gap-1 px-1 py-0.5 text-xs font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                          >
+                            Edit values
+                            {editValuesOpen ? (
+                              <ChevronUp className="size-3.5" />
+                            ) : (
+                              <ChevronDown className="size-3.5" />
+                            )}
+                          </button>
+                          <KebabMenu
+                            ariaLabel={`${category.name} options`}
+                            items={[
+                              {
+                                label: "Clear",
+                                onClick: () => clearCategory(category.id),
+                                destructive: true,
+                              },
+                            ]}
+                          />
+                        </div>
                       </div>
                       {/* Desktop expander — sits above the messages so
                           previews stay visible while editing. Mobile uses
@@ -554,6 +596,7 @@ export function ConfiguratorSection() {
                               variables={category.variables}
                               categoryVariables={cv.variables}
                               businessName={state.businessName}
+                              requiresStop={requiresStop}
                               onEdit={() =>
                                 setEditTarget({
                                   kind: "corpus",

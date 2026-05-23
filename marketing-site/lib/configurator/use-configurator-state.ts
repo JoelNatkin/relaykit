@@ -105,6 +105,19 @@ export interface ConfiguratorActions {
     variableName: string,
     value: string,
   ) => void;
+  /**
+   * Reset one category's authored content to empty — wipes all four
+   * `categoryValues` buckets (variables, customBodies, addedMessages,
+   * messageTones). Category-checked state and message selections are
+   * preserved (scoping is not authoring).
+   */
+  clearCategory: (categoryId: string) => void;
+  /**
+   * Reset all authored content across every category, and clear the
+   * top-of-page businessName input. `pageTone` (preview filter) and
+   * category-checked state (scoping) are preserved.
+   */
+  clearAll: () => void;
   addCustomMessage: (
     categoryId: string,
     message: { name: string; body: string },
@@ -369,6 +382,29 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     [],
   );
 
+  const clearCategory = useCallback((categoryId: string) => {
+    setState((prev) => {
+      if (!prev.categoryValues[categoryId]) return prev;
+      return {
+        ...prev,
+        categoryValues: {
+          ...prev.categoryValues,
+          [categoryId]: emptyCategoryValues(),
+        },
+      };
+    });
+  }, []);
+
+  const clearAll = useCallback(() => {
+    setState((prev) => {
+      const categoryValues: Record<string, CategoryValues> = {};
+      for (const catId of Object.keys(prev.categoryValues)) {
+        categoryValues[catId] = emptyCategoryValues();
+      }
+      return { ...prev, categoryValues, businessName: "" };
+    });
+  }, []);
+
   const addCustomMessage = useCallback(
     (categoryId: string, message: { name: string; body: string }) => {
       setState((prev) => {
@@ -438,6 +474,8 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     setBusinessName,
     setMessageEdit,
     setCategoryVariable,
+    clearCategory,
+    clearAll,
     addCustomMessage,
     updateCustomMessage,
     removeCustomMessage,
