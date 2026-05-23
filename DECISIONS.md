@@ -1747,6 +1747,8 @@ All templates in Account events, Customer support, and Team alerts include a `{{
 
 **Affects:** Account events / Customer support / Team alerts message library (every template includes `{{workspace_name}}`); SDK contract (event payloads carry `workspace_name`); configurator UX (variable surfaces consistently across the three categories); future cross-category audits (workspace-token presence is a coverage check).
 
+**Note:** per D-413, the marketing-site configurator preview's resolver treats `workspace_name` (and `community_name`) as synonyms for `business_name` when filling from the visitor's single businessName input. D-398's corpus authoring rule, SDK contract, and multi-workspace runtime behavior are unaffected.
+
 **D-399 — Transactional templates carry zero promotional content; promotional touches ship as Marketing templates** (Date: 2026-05-17)
 
 Corpus-wide authoring rule. Discount codes, offers, "upgrade now" CTAs, and promotional pivots never bolt onto transactional templates regardless of category. System-enforced: when developers attempt to author or edit promotional content into a transactional template, the editor surfaces an error and points them to the Marketing campaign (or to enabling it if not yet active). Voice rule + TCR-mapping rule + UX enforcement combined.
@@ -1918,3 +1920,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none. Verification's 2FA carve-out and D-410's Marketing STOP-only posture are named exceptions, not entries this supersedes.
 
 **Affects:** marketing-site/lib/message-library/account-events.ts, order-updates.ts, team-alerts.ts (bodies gain in-body STOP; order-updates gains a STOP compliance rule); docs/MESSAGE_AUTHORING_GUIDE.md §7 (STOP posture wording sharpened); DECISIONS.md D-410 (the "eight other categories" prose corrected).
+
+## D-413 — Configurator preview resolver maps identity tokens to a single businessName input
+
+**Decided:** 2026-05-23 (Session 105)
+
+**Decision:** In the marketing-site configurator's preview rendering, `resolveVariableExample` (`marketing-site/lib/message-library/render.ts`) treats `business_name`, `workspace_name`, and `community_name` as a single set of identity tokens, all filled from the visitor's `businessName` input. Corpus bodies remain authored against their existing tokens — `workspace_name` in the D-398 categories, `community_name` in `community.ts`. The collapse is preview-layer only; the SDK contract, the multi-workspace runtime behavior governed by D-398, and the corpus authoring decisions are unchanged.
+
+**Why:** The configurator surfaces a single "Your business name" input — by construction, a single-workspace identity. D-398 already names this case ("Single-workspace apps pass the business name"); the resolver fix operationalizes that branch for the configurator preview. Without the collapse, seven categories (Account events, Appointments, Order updates, Customer support, Team alerts, Waitlist, Community) render corpus example values ("Acme Engineering", "The Founder Circle") regardless of input — a bug, not a separation of concerns.
+
+**Rejected alternative:** Rewrite the seven affected categories to use `{{business_name}}` in bodies (corpus-level rebind). Rejected because it undoes D-398's deliberate `workspace_name` distinction, forecloses the future workspace UX's ability to separate workspace identity from business identity, and is invasive relative to the single-function fix that achieves the same visible behavior.
+
+**Supersedes:** none. D-398 carries a Note: annotation in the same commit naming the preview-layer collapse.
+
+**Affects:** `marketing-site/lib/message-library/render.ts` (`IDENTITY_TOKENS` set + updated doc-block); D-398 (Note: annotation); `community.ts:7` inline comment remains accurate (the corpus-authoring claim still stands — only the resolver preview behavior changed).

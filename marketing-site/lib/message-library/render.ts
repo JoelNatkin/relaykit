@@ -19,15 +19,30 @@ export interface InterpolatedSegment {
 }
 
 /**
- * Resolve a variable's preview value. `business_name` reflects the live
- * configurator input when the visitor has typed one; everything else uses the
- * variable's catalogued `example`.
+ * The configurator surfaces a single "Your business name" input but the corpus
+ * uses three distinct identity-token names by historical authoring choice
+ * (`business_name`, `workspace_name`, and Community's locally-defined
+ * `community_name`). At preview time they all resolve from the same input so
+ * one input drives every category's sender frame. Corpus bodies are unchanged;
+ * the SDK contract and D-398's multi-workspace runtime semantics are
+ * unaffected. See D-413.
+ */
+const IDENTITY_TOKENS = new Set([
+  "business_name",
+  "workspace_name",
+  "community_name",
+]);
+
+/**
+ * Resolve a variable's preview value. Identity tokens (see `IDENTITY_TOKENS`)
+ * reflect the live configurator businessName input when the visitor has typed
+ * one; everything else uses the variable's catalogued `example`.
  */
 export function resolveVariableExample(
   variable: Variable,
   businessName?: string,
 ): string {
-  if (variable.name === "business_name" && businessName && businessName.trim()) {
+  if (IDENTITY_TOKENS.has(variable.name) && businessName && businessName.trim()) {
     return businessName.trim();
   }
   return variable.example;
