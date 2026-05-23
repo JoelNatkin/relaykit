@@ -38,7 +38,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-23 (Session 105 close-out) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-23 (Session 106 close-out) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-23 (Session 105 — configurator conditional-rendering + identity-vs-default schema entries retired to `/explorations/configurator-authoring.md`) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
