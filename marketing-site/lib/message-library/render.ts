@@ -33,6 +33,17 @@ const IDENTITY_TOKENS = new Set([
   "community_name",
 ]);
 
+/**
+ * True when a variable name is one of the corpus's identity tokens — i.e.,
+ * a token that resolves from the top-of-page "Your business name" input
+ * (D-413) rather than from per-category authored values. The configurator's
+ * Edit-values form filters these out so they aren't duplicated alongside
+ * the global input.
+ */
+export function isIdentityToken(variableName: string): boolean {
+  return IDENTITY_TOKENS.has(variableName);
+}
+
 /** Options for resolving a variable's preview value. */
 export interface ResolveOptions {
   /** Live "Your business name" input — resolves identity tokens (D-413). */

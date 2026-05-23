@@ -95,6 +95,16 @@ export interface ConfiguratorActions {
     messageId: string,
     decision: MessageEditDecision | undefined,
   ) => void;
+  /**
+   * Write a per-category variable value. Empty-string `value` removes the
+   * entry — equivalent to "use the corpus default", and matches the
+   * resolver's empty-string fall-through so persisted state stays minimal.
+   */
+  setCategoryVariable: (
+    categoryId: string,
+    variableName: string,
+    value: string,
+  ) => void;
   addCustomMessage: (
     categoryId: string,
     message: { name: string; body: string },
@@ -338,6 +348,27 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     [],
   );
 
+  const setCategoryVariable = useCallback(
+    (categoryId: string, variableName: string, value: string) => {
+      setState((prev) => {
+        const cv = prev.categoryValues[categoryId];
+        if (!cv) return prev;
+        const variables =
+          value === ""
+            ? omit(cv.variables, variableName)
+            : { ...cv.variables, [variableName]: value };
+        return {
+          ...prev,
+          categoryValues: {
+            ...prev.categoryValues,
+            [categoryId]: { ...cv, variables },
+          },
+        };
+      });
+    },
+    [],
+  );
+
   const addCustomMessage = useCallback(
     (categoryId: string, message: { name: string; body: string }) => {
       setState((prev) => {
@@ -406,6 +437,7 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     setPageTone,
     setBusinessName,
     setMessageEdit,
+    setCategoryVariable,
     addCustomMessage,
     updateCustomMessage,
     removeCustomMessage,

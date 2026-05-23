@@ -32,8 +32,9 @@ export {
   extractTokens,
   flattenBody,
   resolveVariableExample,
+  isIdentityToken,
 } from "./render";
-export type { InterpolatedSegment } from "./render";
+export type { InterpolatedSegment, ResolveOptions } from "./render";
 
 export {
   VERIFICATION,

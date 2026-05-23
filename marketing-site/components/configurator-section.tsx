@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy01, Edit01, HelpCircle, Plus } from "@untitledui/icons";
+import { ChevronDown, ChevronUp, Copy01, Edit01, HelpCircle, Plus } from "@untitledui/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { usePostHog } from "posthog-js/react";
 import { MessageEditCard } from "@/components/configurator/message-edit-card";
@@ -9,6 +9,8 @@ import { Tooltip } from "@/components/configurator/tooltip";
 import { CategoryList } from "@/components/configurator/category-list";
 import { MobileCategoriesSummary } from "@/components/configurator/mobile-categories-summary";
 import { MobileCategoriesModal } from "@/components/configurator/mobile-categories-modal";
+import { EditValuesForm } from "@/components/configurator/edit-values-form";
+import { EditValuesModal } from "@/components/configurator/edit-values-modal";
 import { useWaitlist, type WaitlistSummary } from "@/context/waitlist-context";
 import { SessionProvider } from "@/lib/configurator/session-context";
 import { useConfiguratorState } from "@/lib/configurator/use-configurator-state";
@@ -169,6 +171,7 @@ export function ConfiguratorSection() {
     setPageTone,
     setBusinessName,
     setMessageEdit,
+    setCategoryVariable,
     addCustomMessage,
     updateCustomMessage,
     removeCustomMessage,
@@ -177,6 +180,18 @@ export function ConfiguratorSection() {
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
+  // Which category's Edit-values surface is open (desktop expander OR
+  // mobile modal, driven by the same state). Only one is open at a time.
+  const [editValuesCategoryId, setEditValuesCategoryId] = useState<string | null>(
+    null,
+  );
+  const editValuesCategory = useMemo(
+    () =>
+      editValuesCategoryId
+        ? (CATEGORIES.find((c) => c.id === editValuesCategoryId) ?? null)
+        : null,
+    [editValuesCategoryId],
+  );
 
   const { openModal, setSummary } = useWaitlist();
   const posthog = usePostHog();
@@ -330,6 +345,24 @@ export function ConfiguratorSection() {
   return (
     <SessionProvider state={{ businessName: state.businessName }}>
       <section className="bg-bg-primary pt-20">
+        {/* Mobile-only Edit-values surface — full-page modal mounted at
+            section level, driven by the same editValuesCategoryId state
+            that toggles the desktop inline expander. Above md: the modal
+            self-hides (md:hidden inside) and the inline expanders own the
+            surface. */}
+        <EditValuesModal
+          category={editValuesCategory}
+          values={
+            editValuesCategoryId
+              ? (state.categoryValues[editValuesCategoryId]?.variables ?? {})
+              : {}
+          }
+          onChange={(name, value) => {
+            if (!editValuesCategoryId) return;
+            setCategoryVariable(editValuesCategoryId, name, value);
+          }}
+          onClose={() => setEditValuesCategoryId(null)}
+        />
         <div className="mx-auto max-w-5xl px-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-text-primary">
@@ -420,11 +453,45 @@ export function ConfiguratorSection() {
                   const addingNew =
                     editTarget?.kind === "new-custom" &&
                     editTarget.categoryId === category.id;
+                  const editValuesOpen = editValuesCategoryId === category.id;
                   return (
                     <div key={category.id}>
-                      <h4 className="mb-3 text-base font-semibold text-text-primary">
-                        {category.name}
-                      </h4>
+                      <div className="mb-3 flex items-center justify-between gap-3">
+                        <h4 className="text-base font-semibold text-text-primary">
+                          {category.name}
+                        </h4>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditValuesCategoryId(
+                              editValuesOpen ? null : category.id,
+                            )
+                          }
+                          aria-expanded={editValuesOpen}
+                          className="inline-flex shrink-0 cursor-pointer items-center gap-1 px-1 py-0.5 text-xs font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                        >
+                          Edit values
+                          {editValuesOpen ? (
+                            <ChevronUp className="size-3.5" />
+                          ) : (
+                            <ChevronDown className="size-3.5" />
+                          )}
+                        </button>
+                      </div>
+                      {/* Desktop expander — sits above the messages so
+                          previews stay visible while editing. Mobile uses
+                          the EditValuesModal mounted at section level. */}
+                      {editValuesOpen ? (
+                        <div className="mb-3 hidden rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs md:block dark:bg-bg-secondary">
+                          <EditValuesForm
+                            category={category}
+                            values={cv.variables}
+                            onChange={(name, value) =>
+                              setCategoryVariable(category.id, name, value)
+                            }
+                          />
+                        </div>
+                      ) : null}
                       <div className="space-y-3">
                         {category.messages.map((message) => {
                           if (!catState.messages[message.id]?.checked)
