@@ -1558,6 +1558,7 @@ The marketing-site home page configurator and the prototype/eventual workspace m
 **Supersedes:** none
 **Reasoning:** Two parallel sources of message content create silent drift, undermine lead-magnet credibility (a builder who edits content on the home page and signs up to find a different workspace catalog loses trust), and multiply maintenance burden. Establishing the single-canonical-source principle here lets downstream work (token rename, content authoring, surface implementation) proceed without re-litigating the question. The implementation of where that single source physically lives is a separate decision recorded at D-381.
 **Affects:** `marketing-site/components/configurator-section.tsx`, `prototype/data/messages.ts`, `prototype/lib/intake/templates.ts`, all future configurator and workspace message-rendering work.
+**Note:** per D-414, the configurator-to-workspace parity ambition this entry committed to (same default message set across surfaces) extends to a new layer — visitor-authored variable values are also persisted across the configurator → "Start building" → workspace handoff, not just the default message set. The parity principle this entry records is unchanged; its scope grows to include authored state.
 
 **D-380 — Home configurator carries four editable placeholder fields propagating to onboarding and Settings** (Date: 2026-05-11)
 The home page configurator carries at minimum four editable placeholder fields — `business_name`, `website`, `business_type` (industry), `service_type` — that populate the rendered message previews dynamically. These values propagate forward into onboarding intake (formalized/validated as needed), then to dashboard Settings, where they remain editable until carrier registration commits. Once registered, business identity locks into the carrier campaign and Settings transitions to a read-only state for these fields.
@@ -1570,6 +1571,7 @@ The ONE SET principle of D-379 commits us to a single canonical message source. 
 **Supersedes:** none
 **Reasoning:** D-375 deferred shared workspace packages on the grounds that monorepo tooling cost wasn't justified for one shared artifact (Tiptap editor). That calculus is unchanged for messages data today — only the home renders the canonical set at IH-launch. When workspace activates post-IH, the storage decision (shared package / mirror with CI check / npm-published package) gets made against then-current constraints. Until then, the canonical data lives in `marketing-site/lib/configurator/` as the single source, with the workspace consuming it later via whichever mechanism wins.
 **Affects:** `marketing-site/lib/configurator/`, future workspace data-import path, future shared-package extraction work, D-375 reasoning chain.
+**Note:** per D-414, the storage-architecture deferral is qualified — the configurator's variable-state slice is built now (front of the persistence spine: configurator → "Start building" → workspace), with its shape designed against what the workspace will need. The broader storage-architecture deferral for the workspace messages page itself stands.
 
 **D-382 — Phase 2a operates at the audience-pack layer, not the SDK namespace layer** (Date: 2026-05-11)
 
@@ -1934,3 +1936,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none. D-398 carries a Note: annotation in the same commit naming the preview-layer collapse.
 
 **Affects:** `marketing-site/lib/message-library/render.ts` (`IDENTITY_TOKENS` set + updated doc-block); D-398 (Note: annotation); `community.ts:7` inline comment remains accurate (the corpus-authoring claim still stands — only the resolver preview behavior changed).
+
+## D-414 — Configurator variable state is built as the first slice of the workspace persistence layer
+
+**Decided:** 2026-05-23 (Session 105)
+
+**Decision:** The per-category variable values authored in the marketing-site configurator (the forthcoming "Edit preview values" feature) are persisted as a structured, durable state model designed to be read by the workspace at "Start building" handoff — not as throwaway configurator-local state. The home page becomes the front of a persistence spine: configurator → "Start building" CTA → workspace, with a returning visitor's authored work preserved across sessions.
+
+**Why:** Workspace persistence was deferred (D-379/D-381) on the assumption it was months out. It is now weeks out, and the configurator's variable-authoring feature produces exactly the state the workspace will need. Building it throwaway and rebuilding the same shape for the workspace is more wasteful than building it once, correctly. Persisted authored work is also the conversion mechanic — a returning visitor finding their messages waiting is what makes "Start building" compelling.
+
+**Rejected alternative:** Build configurator variable state as a throwaway localStorage blob with no relationship to the workspace, discarded when a visitor onboards. Rejected because the workspace will need the same state within the same development arc; throwaway state means designing the shape twice.
+
+**Supersedes:** none. Qualifies the deferral posture of D-379/D-381 — workspace persistence architecture stays deferred in general, but this one slice is pulled forward deliberately. D-379/D-381 carry a Note: annotation in the same commit.
+
+**Affects:** marketing-site configurator state model (ConfiguratorState gains a structured categoryValues map); the forthcoming configurator-authoring feature (see /explorations/configurator-authoring.md); workspace persistence design (this slice becomes its first concrete input); MASTER_PLAN (flag — phase ordering may need a note once the slice's size is known; deferred to next session per the exploration doc).
