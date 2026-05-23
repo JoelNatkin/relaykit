@@ -197,8 +197,8 @@ export function WaitlistModal() {
                   Join the list
                 </h2>
                 <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-                  Summer 2026 is the target. RelayKit adds SMS to the stack
-                  you&apos;re already building on. I&apos;ll email you when
+                  RelayKit adds SMS to the stack you&apos;re already building
+                  on. Summer 2026 is the target. I&apos;ll email you when
                   it&apos;s live.
                 </p>
                 <FounderSignoff />
