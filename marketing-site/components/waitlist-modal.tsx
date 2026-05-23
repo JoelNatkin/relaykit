@@ -197,9 +197,9 @@ export function WaitlistModal() {
                   Join the list
                 </h2>
                 <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-                  Summer 2026 is the target. We&apos;re launching with
-                  verification and marketing, the rest as they&apos;re ready.
-                  I&apos;ll send you an email when we&apos;re live.
+                  Summer 2026 is the target. RelayKit adds SMS to the stack
+                  you&apos;re already building on. I&apos;ll email you when
+                  it&apos;s live.
                 </p>
                 <FounderSignoff />
               </div>
