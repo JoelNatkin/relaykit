@@ -1,4 +1,4 @@
-Status: exploring (2026-05-23) — feature design; storage decision committed as D-414, design details open
+Status: exploring (2026-05-23) — feature design; storage decision committed as D-414. State shape and three home-page affordances resolved Session 106; configurator→workspace handoff scoped, not fully designed (awaits a workspace session).
 
 # Configurator as Authoring Tool
 
@@ -19,20 +19,82 @@ Two audiences, one artifact. The copy output carries both the rendered message (
 - **Form, not inline editing.** Inline (click a rendered value, edit in place) rejected: a category variable like event_name appears in multiple messages; the form makes "set once, all previews update" natural, and matches the author's mental model of filling in their reality as a coherent set. The form should indicate, per variable, which messages it touches.
 - **All variables editable.** Including links and IDs. Authors hardcode their own URLs and know the shape of their own order/ticket numbers; seeing them in the preview is real convenience. The earlier content-vs-placeholder split is rejected — no taxonomy, every variable in the category gets an input.
 - **Identity tokens unchanged.** business_name / workspace_name / community_name keep their existing universal top-of-page input (D-413). They are not duplicated into the per-category form.
-- **Variable editing is a "managed" mutation.** Tone tabs (Standard/Friendly/Brief) and variable-value editing both operate on RelayKit's templates — they do not trip "Custom." Only hand-editing a body trips "Custom" (the escape hatch where the author owns the wording, compliance still enforced). This is the organizing concept that lets three mutation surfaces coexist on one card without overload.
+- **Variable editing is a "managed" mutation.** Tone tabs (Standard/Friendly/Brief) and variable-value editing both operate on RelayKit's templates — they do not trip "Custom." Only hand-editing a body trips "Custom" (the escape hatch where the author owns the wording, compliance still enforced). This is the organizing concept that lets three mutation surfaces coexist on one card without overload. *(Session 106 note: the message-state model is fuller than the two states this bullet implies — see Resolved §1, "Three message states." A hand-edited template and an author-created "Add message" message are distinct things in the stored shape.)*
 - **Copy output: both forms, no glossary.** Rendered message + {{variable}} template. No variable glossary — the preview sits directly above the template in the copied block, which is self-explanatory.
 - **Char-count warning on the message, not the form.** Form-level counting would false-positive on Friendly-tone verbosity. A lightweight warning on the message affordance, with a few words on the consequence (e.g. over 160 = sends as 2 texts). Affordance TBD.
 - **Max persistence.** Authored values persist durably across sessions (D-414). A returning visitor finds their work waiting, then clicks "Start building." Persistence is the conversion mechanic.
 
-## Open decisions — next session owes these
+## Resolved (Session 106)
 
-All design, not architecture — the storage commitment (D-414) is settled.
+The five open decisions, resolved. Decisions 1, 3, 4, 5 are fully designed. Decision 2 is scoped to a boundary, not fully designed — see its entry for why.
 
-1. **State shape.** The categoryValues map structure, designed against what the workspace will consume. The expensive one — get it wrong and it's costly. Needs the workspace's expected input in the room; cannot design the producer without sketching the consumer.
-2. **Configurator → workspace handoff.** At least a sketch of how categoryValues is read at "Start building." #1 depends on this.
-3. **Clear-affordance scope.** Persistence needs a counterweight — likely two levels (clear one category, clear everything to start fresh). Scope TBD.
-4. **Char-warning affordance.** Where on the message, exact wording.
-5. **Button label.** Sets the user's expectation that this is an input surface, not a read-only panel.
+### Framing established before the decisions
+
+These are the premises the decisions rest on. Established this session, all confirmed:
+
+- **One authoring surface, two stages of commitment.** The configurator (home page) and the workspace are the same authoring tool at two stages. Before registration: low stakes. After registration: real, about to reach carriers. The author's content carries from one to the other intact.
+- **Three known readers of one record.** The stored values are read by the configurator, by the onboarding flow (which may prepopulate fields from them), and by the workspace. Each reader judges the same record under its own rules.
+- **The stored record holds authorial intent only.** It stores what the author typed — variable values and message text. It stores no computed state: no character counts, no compliance verdicts, no lock flags, no "Custom" badge. Every judgment is derived per stage by whichever reader is rendering. This is what lets a lenient configurator and a strict workspace read the identical record and reach different conclusions correctly — the conclusion was never in the record.
+- **Enforcement level is a property of the stage, not the data.** An over-length message is a soft warning in the configurator and a hard gate in the workspace. Same message, same stored data; the workspace re-judges it under stricter rules. "Configurator content survives into the workspace" and "the workspace can enforce harder" are not in tension — the workspace inherits the content, not the configurator's leniency.
+
+### 1. State shape — resolved
+
+The stored structure is `categoryValues`: a map keyed by category, each category holding three buckets.
+
+```
+categoryValues: {
+  [categoryId: string]: {
+    variables:     { [variableName: string]: string },
+    customBodies:  { [templateMessageId: string]: string },
+    addedMessages: {
+      [internalId: string]: { name: string, body: string }
+    }
+  }
+}
+```
+
+**`variables`** — the category's variable values, keyed by variable name. A variable's value is shared across every message in its category: edit `appointment_date` once, every appointment message updates. Variable name is the key because that is what templates already reference (`{{appointment_date}}`). This is the one point producer and consumer already agree on, confirmed by the workspace screenshots — a value belongs to the app and is the same everywhere it appears.
+
+**`customBodies`** — per-message, keyed by the RelayKit template's message ID. An entry exists only when the author has hand-edited that template's body. Its presence is the "Custom" signal — no separate flag. The stored body is itself a template: it still contains `{{variables}}`, which still resolve from the same `variables` map. "Custom" means the author owns the *wording*; RelayKit still owns the *variable slots* inside it. A hand-edited verification message must still substitute `{{code}}` at send time, or it is broken.
+
+**`addedMessages`** — messages the author created from scratch via "+ Add message" (name and body both authored; no RelayKit template behind them). Keyed by an internal throwaway ID generated by the configurator, opaque to the author. Stores `name` because the author named it and there is no template to inherit a name from. The body is a template like any other and resolves variables from the same `variables` map.
+
+**Three message states, not two.** A message in a category is in exactly one of: *pristine template* (no `customBodies` entry, no `addedMessages` entry — renders from RelayKit's template); *edited template* (a `customBodies` entry exists — renders that text, still substitutes variables); *author-created* (an `addedMessages` entry — entirely the author's, still substitutes variables). The two-bucket split exists because an edited template and an author-created message are genuinely different things: one is a deviation from a known template with a known ID, the other is original content with no template and no canonical ID.
+
+**Char-count is always post-render.** A body like `Your {{code}} expires soon` is not its own length — it is the length after `{{code}}` substitutes. Counting is: render with current variable values, then count the result. Applies identically to pristine, edited, and author-created messages. This is why char-count is computed, never stored.
+
+**Identity tokens are not in this map.** `business_name` / `workspace_name` / `community_name` keep their existing universal top-of-page input (D-413). They are not duplicated into per-category `variables`.
+
+**What is deliberately not stored:** character counts, compliance verdicts, lock flags, "Custom" badges, tone selection. Tone is a sibling concern stored elsewhere; its per-message-vs-global fate is a workspace question (see Downstream questions) and does not touch this shape.
+
+### 2. Configurator → workspace handoff — scoped, not fully designed
+
+A full handoff design requires knowing what the workspace stores internally — and the workspace is undecided territory the team has deliberately chosen not to design this session. So decision 2 is resolved to a *boundary contract*, not a mechanism:
+
+> `categoryValues` is the shared record of authorial intent — a category-keyed map of variable values, hand-edited template bodies, and author-created messages, holding no computed or stage-specific state. Its three known readers (configurator, onboarding, workspace) each consume this same record and apply their own rules. The handoff at "Start building" is a translation step, not a raw copy: each reader maps `categoryValues` into whatever it needs.
+
+One concrete piece of the handoff *is* settled, because it falls out cleanly: **slugs are minted by the workspace, not the configurator.** A RelayKit template has a fixed known slug. An author-created message has none — the configurator keys it by a throwaway internal ID whose only job is to hold the message together during the handoff. When an author-created message crosses into the workspace, the workspace mints the real slug from the message name (`My custom login alert` → `my-custom-login-alert`) and owns slug-uniqueness, including collision handling. The configurator never touches slugs, routes, or registration state — those are workspace infrastructure. This keeps the boundary honest: the configurator stores intent; the workspace stores intent plus its own infrastructure.
+
+The rest of the handoff — exactly how onboarding prepopulates from `categoryValues`, how the workspace persists it, how post-registration variable-locking works — is left to a workspace session. The boundary contract above is the promise those sessions build against.
+
+### 3. Clear-affordance scope — resolved
+
+Two levels, both via kebab (overflow) menus:
+
+- **Global clear** — a kebab menu next to the Copy button. Clears all authored values across every category, returning the configurator to seed state.
+- **Per-category clear** — a kebab menu on each category row. Clears that one category's authored values.
+
+### 4. Char-warning affordance — resolved
+
+A triangle warning icon placed next to the edit pencil on a message. The icon carries a tooltip explaining the consequence in a few words (e.g. over 160 characters sends as two texts). The warning fires on the rendered (post-substitution) length, per decision 1. Configurator stage: warning only, non-blocking.
+
+### 5. Button label — resolved
+
+Working label "Edit values" for the per-category variable-editing affordance. Not treated as final; a string-level choice, refinable without reopening the design.
+
+## Implementation pressure-test — pending
+
+The resolved design above has not been pressure-tested against the real configurator code (`marketing-site/components/configurator-section.tsx`, `lib/configurator/*`, the `render.ts` resolver carrying the D-413 identity-token fix). Next step is a CC plan-mode pass: CC plans the implementation against this resolved design and reports where the code resists, **without building.** CC's plan returns to the PM chat for review. A clean CC plan confirms the design is buildable; it does not by itself re-validate the product reasoning, which is settled here by judgment.
 
 ## Downstream questions — parked, do not solve here
 
