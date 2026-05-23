@@ -33,17 +33,37 @@ const IDENTITY_TOKENS = new Set([
   "community_name",
 ]);
 
+/** Options for resolving a variable's preview value. */
+export interface ResolveOptions {
+  /** Live "Your business name" input — resolves identity tokens (D-413). */
+  businessName?: string;
+  /**
+   * Per-category authored variable values (D-414 / configurator-authoring
+   * Resolved §1). When a value is present and non-empty, it overrides the
+   * variable's catalogued example.
+   */
+  categoryVariables?: Record<string, string>;
+}
+
 /**
- * Resolve a variable's preview value. Identity tokens (see `IDENTITY_TOKENS`)
- * reflect the live configurator businessName input when the visitor has typed
- * one; everything else uses the variable's catalogued `example`.
+ * Resolve a variable's preview value. Resolution order:
+ *   1. Identity token + non-empty `businessName` → that input (D-413).
+ *   2. Non-empty `categoryVariables[variable.name]` → that authored value.
+ *   3. The variable's catalogued `example` from the corpus.
  */
 export function resolveVariableExample(
   variable: Variable,
-  businessName?: string,
+  options?: ResolveOptions,
 ): string {
+  const { businessName, categoryVariables } = options ?? {};
   if (IDENTITY_TOKENS.has(variable.name) && businessName && businessName.trim()) {
     return businessName.trim();
+  }
+  if (categoryVariables) {
+    const authored = categoryVariables[variable.name];
+    if (typeof authored === "string" && authored !== "") {
+      return authored;
+    }
   }
   return variable.example;
 }
@@ -56,7 +76,7 @@ export function resolveVariableExample(
 export function interpolateBody(
   body: string,
   variables: Variable[],
-  businessName?: string,
+  options?: ResolveOptions,
 ): InterpolatedSegment[] {
   const byName = new Map(variables.map((v) => [v.name, v]));
   const segments: InterpolatedSegment[] = [];
@@ -67,7 +87,7 @@ export function interpolateBody(
     const variable = match ? byName.get(match[1]) : undefined;
     if (match && variable) {
       segments.push({
-        text: resolveVariableExample(variable, businessName),
+        text: resolveVariableExample(variable, options),
         isVariable: true,
         token: match[1],
       });
@@ -90,9 +110,9 @@ export function extractTokens(body: string): string[] {
 export function flattenBody(
   body: string,
   variables: Variable[],
-  businessName?: string,
+  options?: ResolveOptions,
 ): string {
-  return interpolateBody(body, variables, businessName)
+  return interpolateBody(body, variables, options)
     .map((s) => s.text)
     .join("");
 }

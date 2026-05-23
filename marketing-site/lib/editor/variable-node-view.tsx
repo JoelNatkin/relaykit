@@ -15,14 +15,18 @@ import type { VariableNodeOptions } from "./variable-node";
 export function VariableNodeView(props: ReactNodeViewProps) {
   const { state } = useSession();
   const key: string | null = props.node.attrs.key;
-  const { variables } = props.extension.options as VariableNodeOptions;
+  const { variables, categoryVariables } =
+    props.extension.options as VariableNodeOptions;
   const selected = props.selected;
 
   const preview = (() => {
     if (!key) return "";
     const variable = variables.find((v) => v.name === key);
     return variable
-      ? resolveVariableExample(variable, state.businessName)
+      ? resolveVariableExample(variable, {
+          businessName: state.businessName,
+          categoryVariables,
+        })
       : `{{${key}}}`;
   })();
 

@@ -2,21 +2,24 @@
 
 /**
  * Configurator state — category and per-message selections, page tone,
- * business name, per-message overrides, and visitor-authored custom messages —
- * with cross-session localStorage persistence.
+ * business name, and per-category authored content — with cross-session
+ * localStorage persistence.
  *
  * State is seeded from the message-library corpus, so it tracks the corpus as
  * categories are authored. Persisted state is merged over a fresh seed on load
  * (ids intersected with the live corpus), so a removed/renamed corpus entry
  * never resurrects a stale selection.
  *
- * Flat-message model (D-408): each category carries `messages: Record<string,
- * MessageState>` directly — no `Sub`/`Stage` wrapper. STATE_VERSION 2 dropped
- * pre-D-408 persisted state; STATE_VERSION 3 drops pre-launch-prep state to
- * pick up the new default ("all messages of the default category start
- * checked"), and to align with the new `toggleCategory` cascade (a category
- * toggle ON/OFF now sets every message's `checked` to match). Bumps are
- * version-gated and fail-silent — no migration code.
+ * Authored content (D-414 / configurator-authoring Resolved §1) lives in
+ * `categoryValues[catId]`, four buckets per category:
+ *   - variables:     per-variable values, shared across the category's messages
+ *   - customBodies:  hand-edited bodies for corpus messages, keyed by message id
+ *   - addedMessages: messages the author created via "+ Add message"
+ *   - messageTones:  per-message tone pin (absent = follows page tone)
+ *
+ * STATE_VERSION 4 retires the v3 in-message `MessageOverride` shape; per-
+ * message tone and hand-edited body now live in `categoryValues`. Bumps are
+ * version-gated and fail-silent — no migration code (D-409 precedent).
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -24,66 +27,73 @@ import { CATEGORIES } from "@/lib/message-library";
 import type { VariantTone } from "@/lib/message-library";
 
 const STORAGE_KEY = "relaykit_configurator";
-const STATE_VERSION = 3 as const;
+const STATE_VERSION = 4 as const;
 const SAVE_DEBOUNCE_MS = 200;
 
 /**
  * Launch default — the default category starts checked, and all of its messages
  * start checked along with it. Per-message granular defaults are intentionally
- * absent: the new `toggleCategory` cascade makes "category on ⇒ every message
- * on" the consistent semantic, so the seed derives from
- * `DEFAULT_CHECKED_CATEGORY` alone — adding a new Verification message later
- * is automatically picked up at launch without an extra bookkeeping list.
+ * absent: the `toggleCategory` cascade makes "category on ⇒ every message on"
+ * the consistent semantic, so the seed derives from `DEFAULT_CHECKED_CATEGORY`
+ * alone — adding a new Verification message later is automatically picked up
+ * at launch without an extra bookkeeping list.
  */
 const DEFAULT_CHECKED_CATEGORY = "verification";
 
 const TONES: VariantTone[] = ["Standard", "Friendly", "Brief"];
 
-export type OverrideTone = VariantTone | "Custom";
-
-export interface MessageOverride {
-  /** Tone variant the card is pinned to, or "Custom" once the body is hand-edited. */
-  tone: OverrideTone;
-  /** The hand-edited body — present only when `tone` is "Custom". */
-  customBody?: string;
-}
-
 export interface MessageState {
   checked: boolean;
-  /** Absent = follows the page-level tone. Present = sticky card-level override. */
-  override?: MessageOverride;
-}
-
-/** A visitor-authored message. Carries forward into the workspace at signup. */
-export interface CustomMessage {
-  localId: string;
-  name: string;
-  body: string;
 }
 
 export interface CategoryState {
   checked: boolean;
   /** Keyed by message id. Empty for unauthored categories. */
   messages: Record<string, MessageState>;
-  customMessages: CustomMessage[];
+}
+
+/** A visitor-authored message — no corpus template behind it. Carries forward into the workspace at signup. */
+export interface AddedMessage {
+  localId: string;
+  name: string;
+  body: string;
+}
+
+/** Per-category authored content. Empty buckets when the visitor has touched nothing. */
+export interface CategoryValues {
+  variables: Record<string, string>;
+  customBodies: Record<string, string>;
+  addedMessages: AddedMessage[];
+  messageTones: Record<string, VariantTone>;
 }
 
 export interface ConfiguratorState {
   version: typeof STATE_VERSION;
   categories: Record<string, CategoryState>;
+  categoryValues: Record<string, CategoryValues>;
   pageTone: VariantTone;
   businessName: string;
 }
+
+/** Save decision from a corpus message's edit card. */
+export type MessageEditDecision =
+  | { kind: "tone"; tone: VariantTone }
+  | { kind: "custom"; body: string };
 
 export interface ConfiguratorActions {
   toggleCategory: (categoryId: string) => void;
   toggleMessage: (categoryId: string, messageId: string) => void;
   setPageTone: (tone: VariantTone) => void;
   setBusinessName: (name: string) => void;
-  setMessageOverride: (
+  /**
+   * Commit a message edit. `{ kind: "tone" }` pins the message to a corpus
+   * variant and clears any hand-edited body; `{ kind: "custom" }` writes a
+   * hand-edited body and clears any tone pin; `undefined` clears both.
+   */
+  setMessageEdit: (
     categoryId: string,
     messageId: string,
-    override: MessageOverride | undefined,
+    decision: MessageEditDecision | undefined,
   ) => void;
   addCustomMessage: (
     categoryId: string,
@@ -92,7 +102,7 @@ export interface ConfiguratorActions {
   updateCustomMessage: (
     categoryId: string,
     localId: string,
-    patch: Partial<Pick<CustomMessage, "name" | "body">>,
+    patch: Partial<Pick<AddedMessage, "name" | "body">>,
   ) => void;
   removeCustomMessage: (categoryId: string, localId: string) => void;
 }
@@ -102,25 +112,43 @@ function newLocalId(): string {
   return `cm-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 }
 
+function emptyCategoryValues(): CategoryValues {
+  return { variables: {}, customBodies: {}, addedMessages: [], messageTones: {} };
+}
+
+/** Return a copy of `rec` without `key`, or the same object when `key` is absent. */
+function omit<T>(rec: Record<string, T>, key: string): Record<string, T> {
+  if (!(key in rec)) return rec;
+  const out: Record<string, T> = {};
+  for (const [k, v] of Object.entries(rec)) {
+    if (k !== key) out[k] = v;
+  }
+  return out;
+}
+
 /** Fresh state seeded from the corpus, with the launch default applied. */
 function seedState(): ConfiguratorState {
   const categories: Record<string, CategoryState> = {};
+  const categoryValues: Record<string, CategoryValues> = {};
   for (const category of CATEGORIES) {
     const isDefaultCategory = category.id === DEFAULT_CHECKED_CATEGORY;
     const messages: Record<string, MessageState> = {};
     for (const message of category.messages) {
       messages[message.id] = { checked: isDefaultCategory };
     }
-    categories[category.id] = {
-      checked: isDefaultCategory,
-      messages,
-      customMessages: [],
-    };
+    categories[category.id] = { checked: isDefaultCategory, messages };
+    categoryValues[category.id] = emptyCategoryValues();
   }
-  return { version: STATE_VERSION, categories, pageTone: "Standard", businessName: "" };
+  return {
+    version: STATE_VERSION,
+    categories,
+    categoryValues,
+    pageTone: "Standard",
+    businessName: "",
+  };
 }
 
-function isValidCustomMessage(value: unknown): value is CustomMessage {
+function isAddedMessage(value: unknown): value is AddedMessage {
   if (!value || typeof value !== "object") return false;
   const m = value as Record<string, unknown>;
   return (
@@ -130,16 +158,37 @@ function isValidCustomMessage(value: unknown): value is CustomMessage {
   );
 }
 
-function readOverride(value: unknown): MessageOverride | undefined {
-  if (!value || typeof value !== "object") return undefined;
-  const o = value as Record<string, unknown>;
-  if (typeof o.tone !== "string") return undefined;
-  if (o.tone !== "Custom" && !TONES.includes(o.tone as VariantTone)) return undefined;
-  const override: MessageOverride = { tone: o.tone as OverrideTone };
-  if (o.tone === "Custom" && typeof o.customBody === "string") {
-    override.customBody = o.customBody;
+function readStringMap(value: unknown): Record<string, string> {
+  if (!value || typeof value !== "object") return {};
+  const out: Record<string, string> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    if (typeof v === "string") out[k] = v;
   }
-  return override;
+  return out;
+}
+
+function readToneMap(value: unknown): Record<string, VariantTone> {
+  if (!value || typeof value !== "object") return {};
+  const out: Record<string, VariantTone> = {};
+  for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+    if (typeof v === "string" && TONES.includes(v as VariantTone)) {
+      out[k] = v as VariantTone;
+    }
+  }
+  return out;
+}
+
+function readCategoryValues(value: unknown): CategoryValues {
+  if (!value || typeof value !== "object") return emptyCategoryValues();
+  const v = value as Record<string, unknown>;
+  return {
+    variables: readStringMap(v.variables),
+    customBodies: readStringMap(v.customBodies),
+    addedMessages: Array.isArray(v.addedMessages)
+      ? v.addedMessages.filter(isAddedMessage)
+      : [],
+    messageTones: readToneMap(v.messageTones),
+  };
 }
 
 /** Merge persisted state over a fresh seed, intersecting ids with the live corpus. */
@@ -159,18 +208,21 @@ function mergeStored(stored: unknown): ConfiguratorState {
     const storedCat = storedCats[catId];
     if (!storedCat) continue;
     if (typeof storedCat.checked === "boolean") catState.checked = storedCat.checked;
-    if (Array.isArray(storedCat.customMessages)) {
-      catState.customMessages = storedCat.customMessages.filter(isValidCustomMessage);
-    }
     const storedMsgs = (storedCat.messages ?? {}) as Record<string, Partial<MessageState>>;
     for (const [msgId, msgState] of Object.entries(catState.messages)) {
       const storedMsg = storedMsgs[msgId];
       if (!storedMsg) continue;
       if (typeof storedMsg.checked === "boolean") msgState.checked = storedMsg.checked;
-      const override = readOverride(storedMsg.override);
-      if (override) msgState.override = override;
     }
   }
+
+  const storedCV = (s.categoryValues ?? {}) as Record<string, unknown>;
+  for (const catId of Object.keys(seed.categoryValues)) {
+    if (storedCV[catId] !== undefined) {
+      seed.categoryValues[catId] = readCategoryValues(storedCV[catId]);
+    }
+  }
+
   return seed;
 }
 
@@ -207,7 +259,7 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
   }, [state]);
 
   // Cascades to every message in the category — ON sets all messages checked,
-  // OFF sets all unchecked. Tone overrides and custom messages are preserved.
+  // OFF sets all unchecked. Authored content (categoryValues) is preserved.
   const toggleCategory = useCallback((categoryId: string) => {
     setState((prev) => {
       const cat = prev.categories[categoryId];
@@ -253,29 +305,32 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     setState((prev) => ({ ...prev, businessName: name }));
   }, []);
 
-  const setMessageOverride = useCallback(
+  const setMessageEdit = useCallback(
     (
       categoryId: string,
       messageId: string,
-      override: MessageOverride | undefined,
+      decision: MessageEditDecision | undefined,
     ) => {
       setState((prev) => {
-        const cat = prev.categories[categoryId];
-        const msg = cat?.messages[messageId];
-        if (!cat || !msg) return prev;
+        const cv = prev.categoryValues[categoryId];
+        if (!cv) return prev;
+        let customBodies = cv.customBodies;
+        let messageTones = cv.messageTones;
+        if (!decision) {
+          customBodies = omit(customBodies, messageId);
+          messageTones = omit(messageTones, messageId);
+        } else if (decision.kind === "tone") {
+          customBodies = omit(customBodies, messageId);
+          messageTones = { ...messageTones, [messageId]: decision.tone };
+        } else {
+          customBodies = { ...customBodies, [messageId]: decision.body };
+          messageTones = omit(messageTones, messageId);
+        }
         return {
           ...prev,
-          categories: {
-            ...prev.categories,
-            [categoryId]: {
-              ...cat,
-              messages: {
-                ...cat.messages,
-                [messageId]: override
-                  ? { ...msg, override }
-                  : { checked: msg.checked },
-              },
-            },
+          categoryValues: {
+            ...prev.categoryValues,
+            [categoryId]: { ...cv, customBodies, messageTones },
           },
         };
       });
@@ -286,14 +341,14 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
   const addCustomMessage = useCallback(
     (categoryId: string, message: { name: string; body: string }) => {
       setState((prev) => {
-        const cat = prev.categories[categoryId];
-        if (!cat) return prev;
-        const next: CustomMessage = { localId: newLocalId(), ...message };
+        const cv = prev.categoryValues[categoryId];
+        if (!cv) return prev;
+        const next: AddedMessage = { localId: newLocalId(), ...message };
         return {
           ...prev,
-          categories: {
-            ...prev.categories,
-            [categoryId]: { ...cat, customMessages: [...cat.customMessages, next] },
+          categoryValues: {
+            ...prev.categoryValues,
+            [categoryId]: { ...cv, addedMessages: [...cv.addedMessages, next] },
           },
         };
       });
@@ -305,18 +360,18 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     (
       categoryId: string,
       localId: string,
-      patch: Partial<Pick<CustomMessage, "name" | "body">>,
+      patch: Partial<Pick<AddedMessage, "name" | "body">>,
     ) => {
       setState((prev) => {
-        const cat = prev.categories[categoryId];
-        if (!cat) return prev;
+        const cv = prev.categoryValues[categoryId];
+        if (!cv) return prev;
         return {
           ...prev,
-          categories: {
-            ...prev.categories,
+          categoryValues: {
+            ...prev.categoryValues,
             [categoryId]: {
-              ...cat,
-              customMessages: cat.customMessages.map((m) =>
+              ...cv,
+              addedMessages: cv.addedMessages.map((m) =>
                 m.localId === localId ? { ...m, ...patch } : m,
               ),
             },
@@ -329,15 +384,15 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
 
   const removeCustomMessage = useCallback((categoryId: string, localId: string) => {
     setState((prev) => {
-      const cat = prev.categories[categoryId];
-      if (!cat) return prev;
+      const cv = prev.categoryValues[categoryId];
+      if (!cv) return prev;
       return {
         ...prev,
-        categories: {
-          ...prev.categories,
+        categoryValues: {
+          ...prev.categoryValues,
           [categoryId]: {
-            ...cat,
-            customMessages: cat.customMessages.filter((m) => m.localId !== localId),
+            ...cv,
+            addedMessages: cv.addedMessages.filter((m) => m.localId !== localId),
           },
         },
       };
@@ -350,7 +405,7 @@ export function useConfiguratorState(): { state: ConfiguratorState } & Configura
     toggleMessage,
     setPageTone,
     setBusinessName,
-    setMessageOverride,
+    setMessageEdit,
     addCustomMessage,
     updateCustomMessage,
     removeCustomMessage,

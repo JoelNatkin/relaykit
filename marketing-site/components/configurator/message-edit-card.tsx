@@ -2,8 +2,10 @@
 
 /**
  * Edit card for a corpus message. The visitor picks a tone variant or
- * hand-edits the body; saving produces a sticky `MessageOverride`. Once a card
- * is overridden, the page-level tone toggle no longer drives it.
+ * hand-edits the body; saving commits a `MessageEditDecision` to the
+ * configurator state — `{ kind: "tone" }` pins the message to a corpus
+ * variant, `{ kind: "custom" }` writes a hand-edited body. Once a message
+ * carries either, the page-level tone toggle no longer drives it.
  */
 
 import { HelpCircle, Plus } from "@untitledui/icons";
@@ -14,18 +16,26 @@ import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
 import { Tooltip } from "@/components/configurator/tooltip";
 import { useSession } from "@/lib/configurator/session-context";
 import { checkCompliance } from "@/lib/configurator/compliance";
-import type { MessageOverride, OverrideTone } from "@/lib/configurator/use-configurator-state";
+import type { MessageEditDecision } from "@/lib/configurator/use-configurator-state";
 import { resolveVariableExample } from "@/lib/message-library/render";
 import type { Message, Variable, VariantTone } from "@/lib/message-library";
+
+/** Local edit-card tone selection — "Custom" is the UI pill for a hand-edited body. */
+type ActiveTone = VariantTone | "Custom";
 
 interface MessageEditCardProps {
   message: Message;
   variables: Variable[];
   pageTone: VariantTone;
-  override: MessageOverride | undefined;
+  /** Pinned tone for this message, or undefined when following the page tone. */
+  pinnedTone: VariantTone | undefined;
+  /** Hand-edited body for this message, or undefined when none. */
+  customBody: string | undefined;
+  /** Per-category authored variable values (D-414). */
+  categoryVariables: Record<string, string>;
   /** True for Marketing-shaped categories — drives the opt-out compliance rule. */
   requiresStop: boolean;
-  onSave: (override: MessageOverride) => void;
+  onSave: (decision: MessageEditDecision) => void;
   onCancel: () => void;
 }
 
@@ -58,7 +68,9 @@ export function MessageEditCard({
   message,
   variables,
   pageTone,
-  override,
+  pinnedTone,
+  customBody,
+  categoryVariables,
   requiresStop,
   onSave,
   onCancel,
@@ -69,25 +81,31 @@ export function MessageEditCard({
 
   // Tones this message actually offers, in corpus order.
   const availableTones = message.variants.map((v) => v.tone);
-  const initialTone: VariantTone = availableTones.includes(pageTone)
+  const fallbackTone: VariantTone = availableTones.includes(pageTone)
     ? pageTone
     : availableTones[0];
+  const startedFromCustom = customBody !== undefined;
+  const initialTone: ActiveTone = startedFromCustom
+    ? "Custom"
+    : (pinnedTone ?? fallbackTone);
+  const seedBody = startedFromCustom
+    ? customBody
+    : bodyForTone(message, pinnedTone ?? fallbackTone);
 
-  const [activeTone, setActiveTone] = useState<OverrideTone>(
-    override?.tone ?? initialTone,
-  );
-  const [editBody, setEditBody] = useState<string>(
-    override?.tone === "Custom"
-      ? (override.customBody ?? "")
-      : bodyForTone(message, override?.tone ?? initialTone),
-  );
+  const [activeTone, setActiveTone] = useState<ActiveTone>(initialTone);
+  const [editBody, setEditBody] = useState<string>(seedBody);
   const [customBuffer, setCustomBuffer] = useState<string | null>(
-    override?.tone === "Custom" ? (override.customBody ?? "") : null,
+    startedFromCustom ? (customBody ?? "") : null,
   );
   const [isInsertOpen, setIsInsertOpen] = useState(false);
 
   const showCustomPill = customBuffer !== null || activeTone === "Custom";
-  const compliance = checkCompliance({ body: editBody, variables, requiresStop });
+  const compliance = checkCompliance({
+    body: editBody,
+    variables,
+    requiresStop,
+    categoryVariables,
+  });
 
   useEffect(() => {
     if (!isInsertOpen) return;
@@ -137,8 +155,8 @@ export function MessageEditCard({
     if (!compliance.isCompliant) return;
     onSave(
       activeTone === "Custom"
-        ? { tone: "Custom", customBody: editBody }
-        : { tone: activeTone },
+        ? { kind: "custom", body: editBody }
+        : { kind: "tone", tone: activeTone },
     );
   }
 
@@ -171,6 +189,7 @@ export function MessageEditCard({
           <MessageEditor
             body={editBody}
             variables={variables}
+            categoryVariables={categoryVariables}
             className="text-sm leading-relaxed text-text-secondary outline-none"
             onChange={handleTextChange}
             onReady={(editor) => {
@@ -255,7 +274,10 @@ export function MessageEditCard({
                       >
                         <span className="text-text-secondary">{variable.name}</span>
                         <span className={VARIABLE_TOKEN_CLASSES}>
-                          {resolveVariableExample(variable, state.businessName)}
+                          {resolveVariableExample(variable, {
+                            businessName: state.businessName,
+                            categoryVariables,
+                          })}
                         </span>
                       </button>
                     ))

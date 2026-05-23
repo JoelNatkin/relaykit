@@ -20,6 +20,11 @@ interface MessageEditorProps {
   body: string;
   /** The message's category variable catalog — drives token recognition + previews. */
   variables: Variable[];
+  /**
+   * Per-category authored variable values (D-414). Threaded into the
+   * VariableNode so chip preview text reflects authored values.
+   */
+  categoryVariables?: Record<string, string>;
   disabled?: boolean;
   className?: string;
   onChange: (body: string) => void;
@@ -29,6 +34,7 @@ interface MessageEditorProps {
 export function MessageEditor({
   body,
   variables,
+  categoryVariables,
   disabled = false,
   className,
   onChange,
@@ -41,7 +47,7 @@ export function MessageEditor({
       Document,
       Paragraph,
       Text,
-      VariableNode.configure({ variables }),
+      VariableNode.configure({ variables, categoryVariables }),
     ],
     content: bodyToContent(body, variables),
     editable: !disabled,

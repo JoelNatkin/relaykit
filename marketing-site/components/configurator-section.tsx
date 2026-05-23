@@ -11,10 +11,7 @@ import { MobileCategoriesSummary } from "@/components/configurator/mobile-catego
 import { MobileCategoriesModal } from "@/components/configurator/mobile-categories-modal";
 import { useWaitlist, type WaitlistSummary } from "@/context/waitlist-context";
 import { SessionProvider } from "@/lib/configurator/session-context";
-import {
-  useConfiguratorState,
-  type MessageOverride,
-} from "@/lib/configurator/use-configurator-state";
+import { useConfiguratorState } from "@/lib/configurator/use-configurator-state";
 import {
   CATEGORIES,
   interpolateBody,
@@ -53,21 +50,19 @@ function categoryRequiresStop(category: Category): boolean {
   return category.tcrMapping === "MARKETING";
 }
 
-/** The body to render for a message given its override and the page tone. */
+/**
+ * Effective body for a corpus message: hand-edited body wins, otherwise the
+ * pinned tone, otherwise the page tone (D-414 / configurator-authoring §1).
+ */
 function effectiveBody(
   message: Message,
-  override: MessageOverride | undefined,
+  customBody: string | undefined,
+  pinnedTone: VariantTone | undefined,
   pageTone: VariantTone,
 ): string {
-  if (override) {
-    if (override.tone === "Custom") return override.customBody ?? "";
-    const v =
-      message.variants.find((x) => x.tone === override.tone) ??
-      message.variants[0];
-    return v?.body ?? "";
-  }
-  const v =
-    message.variants.find((x) => x.tone === pageTone) ?? message.variants[0];
+  if (customBody !== undefined) return customBody;
+  const tone = pinnedTone ?? pageTone;
+  const v = message.variants.find((x) => x.tone === tone) ?? message.variants[0];
   return v?.body ?? "";
 }
 
@@ -90,6 +85,7 @@ interface MessageReadCardProps {
   tooltip?: string;
   body: string;
   variables: Category["variables"];
+  categoryVariables: Record<string, string>;
   businessName: string;
   onEdit: () => void;
 }
@@ -99,10 +95,14 @@ function MessageReadCard({
   tooltip,
   body,
   variables,
+  categoryVariables,
   businessName,
   onEdit,
 }: MessageReadCardProps) {
-  const segments = interpolateBody(body, variables, businessName);
+  const segments = interpolateBody(body, variables, {
+    businessName,
+    categoryVariables,
+  });
   return (
     <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
       <div className="flex items-center gap-3">
@@ -168,7 +168,7 @@ export function ConfiguratorSection() {
     toggleMessage,
     setPageTone,
     setBusinessName,
-    setMessageOverride,
+    setMessageEdit,
     addCustomMessage,
     updateCustomMessage,
     removeCustomMessage,
@@ -209,19 +209,21 @@ export function ConfiguratorSection() {
     [state],
   );
 
-  // Whether any corpus message carries a card-level override.
+  // Any per-message edit — hand-edited body, pinned tone, or authored variable.
   const anyOverride = useMemo(() => {
-    for (const cat of Object.values(state.categories)) {
-      for (const msg of Object.values(cat.messages)) {
-        if (msg.override) return true;
-      }
+    for (const cv of Object.values(state.categoryValues)) {
+      if (Object.keys(cv.customBodies).length > 0) return true;
+      if (Object.keys(cv.messageTones).length > 0) return true;
+      if (Object.keys(cv.variables).length > 0) return true;
     }
     return false;
   }, [state]);
 
   const anyCustom = useMemo(
     () =>
-      Object.values(state.categories).some((c) => c.customMessages.length > 0),
+      Object.values(state.categoryValues).some(
+        (cv) => cv.addedMessages.length > 0,
+      ),
     [state],
   );
 
@@ -283,25 +285,30 @@ export function ConfiguratorSection() {
   async function handleCopy() {
     // Each visible message becomes a block: title, description, the
     // personalized example, and the raw {{token}} template — in the active
-    // tone, respecting per-card overrides. Custom messages are included.
+    // tone, respecting per-card edits. Custom messages are included.
     const blocks: string[] = [];
     for (const cat of checkedCategories) {
       const catState = state.categories[cat.id];
+      const cv = state.categoryValues[cat.id];
+      const resolveOptions = {
+        businessName: state.businessName,
+        categoryVariables: cv.variables,
+      };
       for (const message of cat.messages) {
         if (!catState.messages[message.id]?.checked) continue;
-        const override = catState.messages[message.id]?.override;
-        const template = effectiveBody(message, override, state.pageTone);
-        const example = flattenBody(
-          template,
-          cat.variables,
-          state.businessName,
+        const template = effectiveBody(
+          message,
+          cv.customBodies[message.id],
+          cv.messageTones[message.id],
+          state.pageTone,
         );
+        const example = flattenBody(template, cat.variables, resolveOptions);
         blocks.push(
           buildCopyBlock(message.name, message.tooltip, example, template),
         );
       }
-      for (const cm of catState.customMessages) {
-        const example = flattenBody(cm.body, cat.variables, state.businessName);
+      for (const cm of cv.addedMessages) {
+        const example = flattenBody(cm.body, cat.variables, resolveOptions);
         blocks.push(buildCopyBlock(cm.name, undefined, example, cm.body));
       }
     }
@@ -408,6 +415,7 @@ export function ConfiguratorSection() {
 
                 {checkedCategories.map((category) => {
                   const catState = state.categories[category.id];
+                  const cv = state.categoryValues[category.id];
                   const requiresStop = categoryRequiresStop(category);
                   const addingNew =
                     editTarget?.kind === "new-custom" &&
@@ -421,8 +429,8 @@ export function ConfiguratorSection() {
                         {category.messages.map((message) => {
                           if (!catState.messages[message.id]?.checked)
                             return null;
-                          const override =
-                            catState.messages[message.id]?.override;
+                          const customBody = cv.customBodies[message.id];
+                          const pinnedTone = cv.messageTones[message.id];
                           const isEditing =
                             editTarget?.kind === "corpus" &&
                             editTarget.categoryId === category.id &&
@@ -434,13 +442,15 @@ export function ConfiguratorSection() {
                                 message={message}
                                 variables={category.variables}
                                 pageTone={state.pageTone}
-                                override={override}
+                                pinnedTone={pinnedTone}
+                                customBody={customBody}
+                                categoryVariables={cv.variables}
                                 requiresStop={requiresStop}
-                                onSave={(ov) => {
-                                  setMessageOverride(
+                                onSave={(decision) => {
+                                  setMessageEdit(
                                     category.id,
                                     message.id,
-                                    ov,
+                                    decision,
                                   );
                                   const key = `${category.id}/${message.id}`;
                                   if (!customizedFiredRef.current.has(key)) {
@@ -451,7 +461,7 @@ export function ConfiguratorSection() {
                                         category_id: category.id,
                                         message_id: message.id,
                                         customization_type:
-                                          ov.tone === "Custom"
+                                          decision.kind === "custom"
                                             ? "custom_text"
                                             : "variant_change",
                                       },
@@ -470,10 +480,12 @@ export function ConfiguratorSection() {
                               tooltip={message.tooltip}
                               body={effectiveBody(
                                 message,
-                                override,
+                                customBody,
+                                pinnedTone,
                                 state.pageTone,
                               )}
                               variables={category.variables}
+                              categoryVariables={cv.variables}
                               businessName={state.businessName}
                               onEdit={() =>
                                 setEditTarget({
@@ -486,7 +498,7 @@ export function ConfiguratorSection() {
                           );
                         })}
 
-                        {catState.customMessages.map((cm) => {
+                        {cv.addedMessages.map((cm) => {
                           const isEditing =
                             editTarget?.kind === "custom" &&
                             editTarget.categoryId === category.id &&
@@ -497,6 +509,7 @@ export function ConfiguratorSection() {
                               name={cm.name}
                               body={cm.body}
                               variables={category.variables}
+                              categoryVariables={cv.variables}
                               businessName={state.businessName}
                               placeholder={
                                 CUSTOM_NAME_PLACEHOLDERS[category.id] ??
@@ -533,6 +546,7 @@ export function ConfiguratorSection() {
                             name=""
                             body=""
                             variables={category.variables}
+                            categoryVariables={cv.variables}
                             businessName={state.businessName}
                             placeholder={
                               CUSTOM_NAME_PLACEHOLDERS[category.id] ??

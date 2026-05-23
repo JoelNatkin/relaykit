@@ -22,6 +22,8 @@ interface CustomMessageCardProps {
   name: string;
   body: string;
   variables: Variable[];
+  /** Per-category authored variable values (D-414). */
+  categoryVariables: Record<string, string>;
   businessName: string;
   /** Category-aware placeholder for the Name field. */
   placeholder: string;
@@ -59,6 +61,7 @@ export function CustomMessageCard({
   name,
   body,
   variables,
+  categoryVariables,
   businessName,
   placeholder,
   requiresStop,
@@ -117,7 +120,12 @@ export function CustomMessageCard({
     setIsInsertOpen(false);
   }
 
-  const compliance = checkCompliance({ body: editBody, variables, requiresStop });
+  const compliance = checkCompliance({
+    body: editBody,
+    variables,
+    requiresStop,
+    categoryVariables,
+  });
   const nameEmpty = editName.trim() === "";
   const bodyEmpty = editBody.trim() === "";
   const canSave = !nameEmpty && !bodyEmpty && compliance.isCompliant;
@@ -128,7 +136,10 @@ export function CustomMessageCard({
   }
 
   if (!isEditing) {
-    const segments = interpolateBody(body, variables, businessName);
+    const segments = interpolateBody(body, variables, {
+      businessName,
+      categoryVariables,
+    });
     return (
       <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
         <div className="flex items-center gap-3">
@@ -203,6 +214,7 @@ export function CustomMessageCard({
           <MessageEditor
             body={editBody}
             variables={variables}
+            categoryVariables={categoryVariables}
             className="min-h-[4.5rem] text-sm leading-relaxed text-text-secondary outline-none"
             onChange={setEditBody}
             onReady={(editor) => {
@@ -256,7 +268,10 @@ export function CustomMessageCard({
                       >
                         <span className="text-text-secondary">{variable.name}</span>
                         <span className={VARIABLE_TOKEN_CLASSES}>
-                          {resolveVariableExample(variable, businessName)}
+                          {resolveVariableExample(variable, {
+                            businessName,
+                            categoryVariables,
+                          })}
                         </span>
                       </button>
                     ))

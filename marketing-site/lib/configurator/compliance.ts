@@ -36,15 +36,22 @@ export interface ComplianceInput {
   variables: Variable[];
   /** True for Marketing-shaped categories — opt-out language is then required. */
   requiresStop: boolean;
+  /**
+   * Per-category authored variable values — drives the post-render char count
+   * so authored values count toward the single-segment limit (D-414 /
+   * configurator-authoring Resolved §1).
+   */
+  categoryVariables?: Record<string, string>;
 }
 
 export function checkCompliance({
   body,
   variables,
   requiresStop,
+  categoryVariables,
 }: ComplianceInput): ComplianceResult {
   const issues: string[] = [];
-  const segments = interpolateBody(body, variables);
+  const segments = interpolateBody(body, variables, { categoryVariables });
   const resolved = segments.map((s) => s.text).join("");
 
   if (resolved.length > SINGLE_SEGMENT_GSM7) {

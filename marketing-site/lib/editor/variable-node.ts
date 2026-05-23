@@ -11,6 +11,11 @@ import { VariableNodeView } from "./variable-node-view";
 
 export interface VariableNodeOptions {
   variables: Variable[];
+  /**
+   * Per-category authored variable values (D-414 / configurator-authoring
+   * Resolved §1). Read by the NodeView when resolving chip preview text.
+   */
+  categoryVariables?: Record<string, string>;
 }
 
 declare module "@tiptap/core" {
@@ -25,7 +30,7 @@ export const VariableNode = Node.create<VariableNodeOptions>({
   name: "variable",
 
   addOptions() {
-    return { variables: [] };
+    return { variables: [], categoryVariables: {} };
   },
 
   group: "inline",
