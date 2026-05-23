@@ -175,7 +175,10 @@ export function CustomMessageCard({
             if (e.key === "Enter") onEditRequest();
           }}
         >
-          <p className="text-sm leading-relaxed text-text-secondary">
+          {/* break-words wraps long unbroken values (e.g. an authored
+              order_number with no spaces) inside the card instead of
+              overflowing the layout. */}
+          <p className="text-sm leading-relaxed break-words text-text-secondary">
             {segments.map((seg, i) =>
               seg.isVariable ? (
                 <span key={i} className={VARIABLE_TOKEN_CLASSES}>
@@ -234,11 +237,18 @@ export function CustomMessageCard({
           />
         </div>
 
-        {!compliance.isCompliant ? (
+        {compliance.issues.length > 0 ? (
           <div className="mt-1.5 flex flex-col items-end gap-0.5">
             {compliance.issues.map((issue) => (
-              <p key={issue} className="text-xs text-text-error-primary">
-                {issue}
+              <p
+                key={issue.message}
+                className={`text-xs ${
+                  issue.severity === "warning"
+                    ? "text-text-warning-primary"
+                    : "text-text-error-primary"
+                }`}
+              >
+                {issue.message}
               </p>
             ))}
           </div>

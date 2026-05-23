@@ -157,7 +157,10 @@ function MessageReadCard({
           if (e.key === "Enter") onEdit();
         }}
       >
-        <p className="text-sm leading-relaxed text-text-secondary">
+        {/* break-words wraps long unbroken values (e.g. an authored
+            order_number with no spaces) inside the card instead of
+            overflowing the layout. */}
+        <p className="text-sm leading-relaxed break-words text-text-secondary">
           {segments.map((seg, i) =>
             seg.isVariable ? (
               <span key={i} className={VARIABLE_TOKEN_CLASSES}>
@@ -448,9 +451,8 @@ export function ConfiguratorSection() {
                     ariaLabel="Configurator options"
                     items={[
                       {
-                        label: "Clear all",
+                        label: "Reset all to defaults",
                         onClick: clearAll,
-                        destructive: true,
                       },
                     ]}
                   />
@@ -512,9 +514,8 @@ export function ConfiguratorSection() {
                             ariaLabel={`${category.name} options`}
                             items={[
                               {
-                                label: "Clear",
+                                label: "Reset to defaults",
                                 onClick: () => clearCategory(category.id),
-                                destructive: true,
                               },
                             ]}
                           />

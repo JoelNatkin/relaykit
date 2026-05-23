@@ -198,11 +198,18 @@ export function MessageEditCard({
           />
         </div>
 
-        {!compliance.isCompliant ? (
+        {compliance.issues.length > 0 ? (
           <div className="mt-1.5 flex flex-col items-end gap-0.5">
             {compliance.issues.map((issue) => (
-              <p key={issue} className="text-xs text-text-error-primary">
-                {issue}
+              <p
+                key={issue.message}
+                className={`text-xs ${
+                  issue.severity === "warning"
+                    ? "text-text-warning-primary"
+                    : "text-text-error-primary"
+                }`}
+              >
+                {issue.message}
               </p>
             ))}
           </div>
