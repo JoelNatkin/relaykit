@@ -6,11 +6,11 @@
 
 ## Meta
 
-- Last updated: 2026-05-22
+- Last updated: 2026-05-23
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 327 active, latest D-412; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: `main` only — no unmerged feature branches. Session 103 landed five `--no-ff` feature merges — Waitlist `aced459`, Community `59c8600`, Marketing `3dd6033`, remove-combinations-dropdown `a8c1388`, transactional-stop-language `6c59820` — plus the close-out; all feature branches deleted post-merge.
-- Active explorations: 1 — golden-path-gtm (strategy sketch; exploring)
+- Decision count: 329 active, latest D-414; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Branch state: `main` only — no unmerged feature branches. Session 104 landed one `--no-ff` feature merge (`fix/configurator-identity-token-binding` at `24988f6` adding D-413); Session 105 is doc-only on `main` (D-414 + the configurator-authoring exploration).
+- Active explorations: 2 — golden-path-gtm (strategy sketch; exploring); configurator-authoring (feature design; exploring)
 
 ## Active explorations
 
@@ -19,26 +19,27 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | Name | Status | Path | Description |
 |------|--------|------|-------------|
 | golden-path-gtm | exploring | `/explorations/golden-path-gtm.md` | Golden-path-led GTM strategy sketch — starter kits as the on-ramp — recast as one bet + three positioning calls (launch redefinition, verification posture, marketing posture). Supersedes the prior sla-led-gtm sketch. Not canon. |
+| configurator-authoring | exploring | `/explorations/configurator-authoring.md` | Configurator as lightweight authoring tool — per-category variable editing, max persistence, dual copy output. Sits on top of D-414's storage commitment. Not canon. |
 
 ## Canonical docs (root)
 
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-22 | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-23 | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-15 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-22 (Session 103 — PM-behavior section compressed) | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
-| `DECISIONS.md` | 2026-05-22 (Session 103 — D-410, D-411, D-412 added; D-377/D-409 `Note:` annotations; D-410 Why corrected) | Active product decisions D-84+. |
+| `DECISIONS.md` | 2026-05-23 (Session 105 — D-414 added; D-379/D-381 `Note:` annotations. Session 104 added D-413 ahead of this row-bump.) | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
 | `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` | 2026-04-27 | Archived REPO_INDEX change-log entries (Sessions 1–49 era). |
-| `PROTOTYPE_SPEC.md` | 2026-05-22 (Session 103 — configurator: Recommended-combinations dropdown removed, all 9 categories authored) | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
+| `PROTOTYPE_SPEC.md` | 2026-05-23 (Session 105 — line 177 D-413 carry-forward: `workspace_name`/`community_name` identity tokens noted as collapsed to `business_name` in the resolver preview) | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-05-13 | Post-signup workspace architecture (state machine, layout systems). |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-22 (Session 103 close-out) | Previous CC session state (transient, overwritten each close-out). |
-| `BACKLOG.md` | 2026-05-22 (Session 103 — combinations-as-curated-subsets + centralized-opt-out-constant entries) | Parked ideas; never build without explicit promotion. |
+| `CC_HANDOFF.md` | 2026-05-23 (Session 105 close-out) | Previous CC session state (transient, overwritten each close-out). |
+| `BACKLOG.md` | 2026-05-23 (Session 105 — configurator conditional-rendering + identity-vs-default schema entries retired to `/explorations/configurator-authoring.md`) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
 
