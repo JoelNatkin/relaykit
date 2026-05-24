@@ -7,7 +7,7 @@
 ## Meta
 
 - Last updated: 2026-05-24
-- Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
+- Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist complete, experiments 2b/3c/4 are the current active work with Phase 2 Session B kickoff next
 - Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20.
 - Branch state: `main` only — no unmerged feature branches. Session 107 landed three follow-up commits on `main` after Session 106's configurator-authoring wave — `e5cd362` (mobile-input zoom rule + char-warning copy + Variables/Insert variable rename), `5c7dfd5` (double-click variable → focused Variables form + chip refresh via React context), `f7dfe94` (chevron on Insert variable affordance). The chevron commit and the doc-only close-out commit are pending PM push approval at session close.
 - Active explorations: 1 — golden-path-gtm (strategy sketch; exploring). The configurator-authoring exploration remains at `/explorations/configurator-authoring.md` with its Session 106 promotion header intact — its Resolved §1–§5 are all shipped (Session 106 + the Session 107 fast-follows that built on them); Resolved §2 (configurator → workspace handoff) still awaits a workspace session.
@@ -26,7 +26,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
 | `REPO_INDEX.md` | 2026-05-24 | This file: doc inventory, current-state pointers, canonical-sources index. |
-| `MASTER_PLAN.md` | 2026-05-24 (Session 107 — pre-launch checklist item 4 updated for Session 107 fast-follows: Variables rename + double-click + chip refresh) | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
+| `MASTER_PLAN.md` | 2026-05-24 (Session 108 — pre-launch checklist marked complete; Active focus rewritten for Phase 1 experiments 2b/3c/4 with Phase 2 Session B kickoff behind. No version bump — status correction only.) | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-22 (Session 103 — PM-behavior section compressed) | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
 | `DECISIONS.md` | 2026-05-23 (Session 106 — D-415 added for the configurator compliance severity model. Session 105 added D-414 + D-379/D-381 `Note:` annotations; Session 104 added D-413.) | Active product decisions D-84+. |
@@ -37,7 +37,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-24 (Session 107 close-out — Variables/Insert variable rename + char-warning copy + mobile zoom fix + double-click + chevron) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-24 (Session 108 close-out — MASTER_PLAN status correction: pre-launch checklist complete; Active focus rewritten for Phase 1 experiments) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-24 (Session 107 — double-click variable entry retired as shipped; slash-command-for-variable-insertion entry added.) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)

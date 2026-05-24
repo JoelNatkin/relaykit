@@ -39,17 +39,17 @@ The North Star is RelayKit's eventual purpose — serving any independent develo
 
 Phases are sequenced chunks of work that move RelayKit toward launch. Each has an ordered number and ends with something demonstrably working before the next begins.
 
-## Pre-launch checklist (active gating work)
+## Pre-launch checklist (complete)
 
-Phase 1 (Sinch Proving Ground) is the active phase by the numbered sequence below — but a short pre-launch checklist sits in front of it as gating work. Before the first Indie Hackers post goes out, Joel works through, in order:
+Phase 1 (Sinch Proving Ground) is the active phase by the numbered sequence below. A short pre-launch checklist sat in front of it as gating work; all five items are now done:
 
-1. **Blog infrastructure + first post** — in progress (branch `feat/blog-scaffold`).
-2. **Live-site tweaks** — marketing-site polish.
-3. **Configurator message refinement** — tighten the configurator's message content.
-4. **Configurator authoring layer** — `categoryValues` state, Variables forms, char-warning, reset affordances (Session 106 design, D-414). Shipped Session 106; fast-follows (double-click variable → focused Variables form; live chip refresh via React context) shipped Session 107.
-5. **First Indie Hackers post** — the launch-adjacent introduction post.
+1. **Blog infrastructure + first post** — shipped (in-repo MDX scaffold per D-387/D-388 + first published post).
+2. **Live-site tweaks** — marketing-site polish complete.
+3. **Configurator message refinement** — done (corpus authored across all 9 categories Sessions 91–103).
+4. **Configurator authoring layer** — `categoryValues` state, Variables forms, char-warning, reset affordances. Shipped Session 106 (D-414/D-415); fast-follows (double-click variable → focused Variables form; live chip refresh via React context) shipped Session 107.
+5. **First Indie Hackers post** — live on Indie Hackers.
 
-Only once the checklist clears do the Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) resume. This checklist is sequencing in front of Phase 1, not a renumbering of the phase list below.
+The Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) and the Phase 2 Session B kickoff are no longer gated. This section is retained as historical record of what sequenced in front of Phase 1 experiment pickup; it does not renumber the phase list below.
 
 ## The phases
 
@@ -69,7 +69,7 @@ Phase 0 + Phase 1 ran in parallel (Phase 0 was doc work, Phase 1 was elapsed-tim
 
 ## Active focus
 
-**Phase 1 — Sinch Proving Ground.** Experiments 3a (brand registration) and 3b (campaign registration) approved, confirming the fast-registration claim with concrete carrier numbers (Brand Tier LOW, AT&T Message Class T). Experiments 2b (inbound MO shape), 3c (Simplified→Full brand upgrade), and 4 (STOP/START/HELP) unblocked and awaiting first pickup. Phase 2 Session B kickoff unblocked on the experiments side. Pickup of these experiments is gated behind the pre-launch checklist (see "Pre-launch checklist" above) — that checklist is the current active work.
+**Phase 1 — Sinch Proving Ground.** Experiments 3a (brand registration) and 3b (campaign registration) approved, confirming the fast-registration claim with concrete carrier numbers (Brand Tier LOW, AT&T Message Class T). The active work is the remaining Phase 1 experiments — **2b (inbound MO shape), 3c (Simplified→Full brand upgrade), and 4 (STOP/START/HELP)**. **Phase 2 Session B (Sinch outbound delivery)** is the next pickup behind them.
 
 ## Out of scope at launch
 
