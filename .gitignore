@@ -33,6 +33,9 @@ yarn-error.log*
 .env
 .env*.local
 
+# PM review buffer — most recent commit's `git show HEAD` for Joel to paste into PM chat
+.pm-review.md
+
 # vercel
 .vercel
 
