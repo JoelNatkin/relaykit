@@ -1,0 +1,593 @@
+{
+  "experiment": "4",
+  "captured_at": "2026-05-24T17:35:18.714Z",
+  "campaign": {
+    "tcr_campaign_id": "CU4IUD0",
+    "registration_id": "01kqfnhy0q1rjv242c163a1wyv",
+    "brand_id": "BTTC6XS",
+    "from_number": "+12013619609",
+    "to_number": "+12066013506"
+  },
+  "pre_test_optout_state": {
+    "dashboard_view_found": false,
+    "dashboard_note": "Joel could not locate an opt-out / unsubscribed-numbers view in the Sinch dashboard for campaign CU4IUD0 or the parent account. Sinch may surface opt-out state via the API only, or not at all to customers.",
+    "api_endpoint_probed": null,
+    "api_endpoint_note": "No public Sinch XMS opt-out query endpoint surfaced in prior experiments. /xms/v1/{servicePlanId}/inbounds (recent MO history) would have captured the same evidence the 2b fixture already records — not probed.",
+    "evidence_clean": "exp-02b-mo-inbound.json (the only prior experiment to touch +12066013506) records every body sent/received. No STOP/HELP/START/UNSTOP/CANCEL/END/QUIT/UNSUBSCRIBE/OPTOUT keyword appears in any 2b body. Earliest experiment to this number is 2b itself.",
+    "treated_as": "not opted out (evidence-backed, not assumed)"
+  },
+  "round_1_setup_outbound": {
+    "outbound_send": {
+      "api_request": {
+        "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer {SINCH_API_TOKEN}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "from": "+12013619609",
+          "to": ["+12066013506"],
+          "body": "Phase 1 Experiment 4 — keyword handling test. Reply STOP.",
+          "delivery_report": "full"
+        }
+      },
+      "api_response": {
+        "status": 201,
+        "headers": {
+          "connection": "keep-alive",
+          "content-length": "347",
+          "content-type": "application/json",
+          "date": "Sun, 24 May 2026 17:17:35 GMT",
+          "x-application-context": "application:production:8080"
+        },
+        "body": {
+          "id": "01KSDFVZ0SFW17FPDWPQ8JDV4Z",
+          "to": ["12066013506"],
+          "from": "12013619609",
+          "canceled": false,
+          "body": "Phase 1 Experiment 4 — keyword handling test. Reply STOP.",
+          "type": "mt_text",
+          "created_at": "2026-05-24T17:17:35.129Z",
+          "modified_at": "2026-05-24T17:17:35.129Z",
+          "delivery_report": "full",
+          "expire_at": "2026-05-27T17:17:35.129Z",
+          "flash_message": false
+        }
+      },
+      "api_timing_ms": 264,
+      "sent_at": "2026-05-24T17:17:34.863Z"
+    },
+    "delivery_report_callback": {
+      "worker_received_at": "2026-05-24T17:17:38.056Z",
+      "delay_from_send_response_ms": 2927,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00df4782855828d",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "178",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "batch_id": "01KSDFVZ0SFW17FPDWPQ8JDV4Z",
+        "statuses": [
+          { "code": 0, "count": 1, "recipients": ["12066013506"], "status": "Delivered" }
+        ],
+        "total_message_count": 1,
+        "type": "delivery_report_sms"
+      }
+    }
+  },
+  "round_2_stop": {
+    "mo_callback": {
+      "worker_received_at": "2026-05-24T17:20:45.101Z",
+      "sinch_received_at": "2026-05-24T17:20:44.759Z",
+      "sinch_internal_delivery_ms": 342,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00df9094d81bae3",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "170",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "body": "STOP",
+        "from": "12066013506",
+        "id": "01KSDG1R6QZJ4XY3M4V9PKYNYV",
+        "operator_id": "310150",
+        "received_at": "2026-05-24T17:20:44.759Z",
+        "to": "12013619609",
+        "type": "mo_text"
+      }
+    },
+    "sinch_auto_response_dr_callback": null,
+    "phone_received_auto_response": false,
+    "phone_received_auto_response_body": null,
+    "phone_received_auto_response_confirmed_by": "joel — waited 2 minutes, no response"
+  },
+  "round_3_blocked_outbound_verification": {
+    "outbound_send": {
+      "api_request": {
+        "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer {SINCH_API_TOKEN}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "from": "+12013619609",
+          "to": ["+12066013506"],
+          "body": "Phase 1 Experiment 4 — should be blocked after STOP.",
+          "delivery_report": "full"
+        }
+      },
+      "api_response": {
+        "status": 201,
+        "headers": {
+          "connection": "keep-alive",
+          "content-length": "342",
+          "content-type": "application/json",
+          "date": "Sun, 24 May 2026 17:23:44 GMT",
+          "x-application-context": "application:production:8080"
+        },
+        "body": {
+          "id": "01KSDG77FSY1HVD2RW9YQQJ3DS",
+          "to": ["12066013506"],
+          "from": "12013619609",
+          "canceled": false,
+          "body": "Phase 1 Experiment 4 — should be blocked after STOP.",
+          "type": "mt_text",
+          "created_at": "2026-05-24T17:23:44.249Z",
+          "modified_at": "2026-05-24T17:23:44.249Z",
+          "delivery_report": "full",
+          "expire_at": "2026-05-27T17:23:44.249Z",
+          "flash_message": false
+        }
+      },
+      "api_timing_ms": 228,
+      "sent_at": "2026-05-24T17:23:44.022Z"
+    },
+    "delivery_report_callback": {
+      "worker_received_at": "2026-05-24T17:23:47.705Z",
+      "delay_from_send_response_ms": 3456,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00dfd7f08d2c999",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "178",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "batch_id": "01KSDG77FSY1HVD2RW9YQQJ3DS",
+        "statuses": [
+          { "code": 0, "count": 1, "recipients": ["12066013506"], "status": "Delivered" }
+        ],
+        "total_message_count": 1,
+        "type": "delivery_report_sms"
+      }
+    },
+    "phone_received": true,
+    "phone_received_confirmed_by": "joel — confirmed phone receipt of the post-STOP outbound, establishing that Sinch is a fully transparent passthrough on STOP (no API-layer block, no DR-layer failure, no carrier-layer silent drop)."
+  },
+  "round_4_help": {
+    "setup_outbound": {
+      "outbound_send": {
+        "api_request": {
+          "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {SINCH_API_TOKEN}",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "from": "+12013619609",
+            "to": ["+12066013506"],
+            "body": "Phase 1 Experiment 4 — HELP test. Reply HELP.",
+            "delivery_report": "full"
+          }
+        },
+        "api_response": {
+          "status": 201,
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "335",
+            "content-type": "application/json",
+            "date": "Sun, 24 May 2026 17:27:05 GMT",
+            "x-application-context": "application:production:8080"
+          },
+          "body": {
+            "id": "01KSDGDC90BCMJDM9PMJYQGV1G",
+            "to": ["12066013506"],
+            "from": "12013619609",
+            "canceled": false,
+            "body": "Phase 1 Experiment 4 — HELP test. Reply HELP.",
+            "type": "mt_text",
+            "created_at": "2026-05-24T17:27:05.760Z",
+            "modified_at": "2026-05-24T17:27:05.760Z",
+            "delivery_report": "full",
+            "expire_at": "2026-05-27T17:27:05.760Z",
+            "flash_message": false
+          }
+        },
+        "api_timing_ms": 230,
+        "sent_at": "2026-05-24T17:27:05.535Z"
+      },
+      "delivery_report_callback": {
+        "worker_received_at": "2026-05-24T17:27:08.827Z",
+        "delay_from_send_response_ms": 3067,
+        "method": "POST",
+        "path": "/",
+        "headers": {
+          "accept-encoding": "gzip, br",
+          "cf-connecting-ip": "54.173.29.238",
+          "cf-ipcountry": "US",
+          "cf-ray": "a00e02678d895ceb",
+          "cf-visitor": "{\"scheme\":\"https\"}",
+          "connection": "Keep-Alive",
+          "content-length": "178",
+          "content-type": "application/json",
+          "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+          "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+          "x-forwarded-proto": "https",
+          "x-real-ip": "54.173.29.238"
+        },
+        "body": {
+          "batch_id": "01KSDGDC90BCMJDM9PMJYQGV1G",
+          "statuses": [
+            { "code": 0, "count": 1, "recipients": ["12066013506"], "status": "Delivered" }
+          ],
+          "total_message_count": 1,
+          "type": "delivery_report_sms"
+        }
+      }
+    },
+    "mo_callback": {
+      "worker_received_at": "2026-05-24T17:28:10.590Z",
+      "sinch_received_at": "2026-05-24T17:28:10.062Z",
+      "sinch_internal_delivery_ms": 528,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00e03ea2b935ceb",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "170",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "body": "HELP",
+        "from": "12066013506",
+        "id": "01KSDGFB2EAPY53DSQ6BCQ2K9P",
+        "operator_id": "310150",
+        "received_at": "2026-05-24T17:28:10.062Z",
+        "to": "12013619609",
+        "type": "mo_text"
+      }
+    },
+    "sinch_auto_response_dr_callback": null,
+    "phone_received_auto_response": false,
+    "phone_received_auto_response_body": null,
+    "phone_received_auto_response_confirmed_by": "joel — waited 2 minutes, no response",
+    "post_help_verification_outbound": {
+      "outbound_send": {
+        "api_request": {
+          "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {SINCH_API_TOKEN}",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "from": "+12013619609",
+            "to": ["+12066013506"],
+            "body": "Phase 1 Experiment 4 — post-HELP verification, expecting delivery.",
+            "delivery_report": "full"
+          }
+        },
+        "api_response": {
+          "status": 201,
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "356",
+            "content-type": "application/json",
+            "date": "Sun, 24 May 2026 17:29:52 GMT",
+            "x-application-context": "application:production:8080"
+          },
+          "body": {
+            "id": "01KSDGJEPW028WX0ADP154VTJG",
+            "to": ["12066013506"],
+            "from": "12013619609",
+            "canceled": false,
+            "body": "Phase 1 Experiment 4 — post-HELP verification, expecting delivery.",
+            "type": "mt_text",
+            "created_at": "2026-05-24T17:29:52.092Z",
+            "modified_at": "2026-05-24T17:29:52.092Z",
+            "delivery_report": "full",
+            "expire_at": "2026-05-27T17:29:52.092Z",
+            "flash_message": false
+          }
+        },
+        "api_timing_ms": 269,
+        "sent_at": "2026-05-24T17:29:51.830Z"
+      },
+      "delivery_report_callback": {
+        "worker_received_at": "2026-05-24T17:29:55.013Z",
+        "delay_from_send_response_ms": 2921,
+        "method": "POST",
+        "path": "/",
+        "headers": {
+          "accept-encoding": "gzip, br",
+          "cf-connecting-ip": "54.173.29.238",
+          "cf-ipcountry": "US",
+          "cf-ray": "a00e0676bf0fe647",
+          "cf-visitor": "{\"scheme\":\"https\"}",
+          "connection": "Keep-Alive",
+          "content-length": "178",
+          "content-type": "application/json",
+          "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+          "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+          "x-forwarded-proto": "https",
+          "x-real-ip": "54.173.29.238"
+        },
+        "body": {
+          "batch_id": "01KSDGJEPW028WX0ADP154VTJG",
+          "statuses": [
+            { "code": 0, "count": 1, "recipients": ["12066013506"], "status": "Delivered" }
+          ],
+          "total_message_count": 1,
+          "type": "delivery_report_sms"
+        }
+      },
+      "phone_received": true,
+      "phone_received_confirmed_by": "joel — confirmed phone receipt of the post-HELP outbound; HELP does not toggle opt-out state and triggers no carrier-layer behavior STOP didn't."
+    }
+  },
+  "round_5_start": {
+    "setup_outbound": {
+      "outbound_send": {
+        "api_request": {
+          "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {SINCH_API_TOKEN}",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "from": "+12013619609",
+            "to": ["+12066013506"],
+            "body": "Phase 1 Experiment 4 — START test. Reply START.",
+            "delivery_report": "full"
+          }
+        },
+        "api_response": {
+          "status": 201,
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "337",
+            "content-type": "application/json",
+            "date": "Sun, 24 May 2026 17:31:19 GMT",
+            "x-application-context": "application:production:8080"
+          },
+          "body": {
+            "id": "01KSDGN46QJ28ZV7010KPT5RA6",
+            "to": ["12066013506"],
+            "from": "12013619609",
+            "canceled": false,
+            "body": "Phase 1 Experiment 4 — START test. Reply START.",
+            "type": "mt_text",
+            "created_at": "2026-05-24T17:31:19.639Z",
+            "modified_at": "2026-05-24T17:31:19.639Z",
+            "delivery_report": "full",
+            "expire_at": "2026-05-27T17:31:19.639Z",
+            "flash_message": false
+          }
+        },
+        "api_timing_ms": 196,
+        "sent_at": "2026-05-24T17:31:19.450Z"
+      },
+      "delivery_report_callback": {
+        "worker_received_at": "2026-05-24T17:31:21.993Z",
+        "delay_from_send_response_ms": 2354,
+        "method": "POST",
+        "path": "/",
+        "headers": {
+          "accept-encoding": "gzip, br",
+          "cf-connecting-ip": "54.173.29.238",
+          "cf-ipcountry": "US",
+          "cf-ray": "a00e08966cabe647",
+          "cf-visitor": "{\"scheme\":\"https\"}",
+          "connection": "Keep-Alive",
+          "content-length": "178",
+          "content-type": "application/json",
+          "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+          "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+          "x-forwarded-proto": "https",
+          "x-real-ip": "54.173.29.238"
+        },
+        "body": {
+          "batch_id": "01KSDGN46QJ28ZV7010KPT5RA6",
+          "statuses": [
+            { "code": 0, "count": 1, "recipients": ["12066013506"], "status": "Delivered" }
+          ],
+          "total_message_count": 1,
+          "type": "delivery_report_sms"
+        }
+      }
+    },
+    "mo_callback": {
+      "worker_received_at": "2026-05-24T17:33:10.463Z",
+      "sinch_received_at": "2026-05-24T17:33:09.903Z",
+      "sinch_internal_delivery_ms": 560,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00e0b3c4e5b4cad",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "171",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "body": "START",
+        "from": "12066013506",
+        "id": "01KSDGRFWF45VE8YMDJHZAPTZ8",
+        "operator_id": "310150",
+        "received_at": "2026-05-24T17:33:09.903Z",
+        "to": "12013619609",
+        "type": "mo_text"
+      }
+    },
+    "sinch_auto_response_dr_callback": null,
+    "phone_received_auto_response": false,
+    "phone_received_auto_response_body": null,
+    "phone_received_auto_response_confirmed_by": "joel — waited 2 minutes, no response",
+    "post_start_verification_outbound": {
+      "outbound_send": {
+        "api_request": {
+          "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+          "method": "POST",
+          "headers": {
+            "Authorization": "Bearer {SINCH_API_TOKEN}",
+            "Content-Type": "application/json"
+          },
+          "body": {
+            "from": "+12013619609",
+            "to": ["+12066013506"],
+            "body": "Phase 1 Experiment 4 — post-START verification, expecting delivery.",
+            "delivery_report": "full"
+          }
+        },
+        "api_response": {
+          "status": 201,
+          "headers": {
+            "connection": "keep-alive",
+            "content-length": "357",
+            "content-type": "application/json",
+            "date": "Sun, 24 May 2026 17:35:16 GMT",
+            "x-application-context": "application:production:8080"
+          },
+          "body": {
+            "id": "01KSDGWBS1GWQJ185YY2P8PQYX",
+            "to": ["12066013506"],
+            "from": "12013619609",
+            "canceled": false,
+            "body": "Phase 1 Experiment 4 — post-START verification, expecting delivery.",
+            "type": "mt_text",
+            "created_at": "2026-05-24T17:35:16.769Z",
+            "modified_at": "2026-05-24T17:35:16.769Z",
+            "delivery_report": "full",
+            "expire_at": "2026-05-27T17:35:16.769Z",
+            "flash_message": false
+          }
+        },
+        "api_timing_ms": 258,
+        "sent_at": "2026-05-24T17:35:16.477Z"
+      },
+      "delivery_report_callback": {
+        "worker_received_at": "2026-05-24T17:35:18.714Z",
+        "delay_from_send_response_ms": 1945,
+        "method": "POST",
+        "path": "/",
+        "headers": {
+          "accept-encoding": "gzip, br",
+          "cf-connecting-ip": "54.173.29.238",
+          "cf-ipcountry": "US",
+          "cf-ray": "a00e0e5def5a59f1",
+          "cf-visitor": "{\"scheme\":\"https\"}",
+          "connection": "Keep-Alive",
+          "content-length": "178",
+          "content-type": "application/json",
+          "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+          "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+          "x-forwarded-proto": "https",
+          "x-real-ip": "54.173.29.238"
+        },
+        "body": {
+          "batch_id": "01KSDGWBS1GWQJ185YY2P8PQYX",
+          "statuses": [
+            { "code": 0, "count": 1, "recipients": ["12066013506"], "status": "Delivered" }
+          ],
+          "total_message_count": 1,
+          "type": "delivery_report_sms"
+        }
+      },
+      "phone_received": true,
+      "phone_received_confirmed_by": "joel — confirmed phone receipt of the post-START outbound. START did not surface any divergent behavior from STOP or HELP, in either Sinch passthrough behavior or end-to-end delivery."
+    }
+  },
+  "timing": {
+    "events_table": [
+      { "event": "Round 1 setup outbound send response",       "wall_time_utc": "2026-05-24T17:17:35.129Z" },
+      { "event": "Round 1 setup DR (worker received)",          "wall_time_utc": "2026-05-24T17:17:38.056Z", "delta": "+2.927s from send response" },
+      { "event": "Round 2 STOP MO (Sinch received_at)",         "wall_time_utc": "2026-05-24T17:20:44.759Z" },
+      { "event": "Round 2 STOP MO (worker received)",           "wall_time_utc": "2026-05-24T17:20:45.101Z", "delta": "+342ms from Sinch-received" },
+      { "event": "Round 3 post-STOP outbound send response",    "wall_time_utc": "2026-05-24T17:23:44.249Z" },
+      { "event": "Round 3 post-STOP DR (worker received)",      "wall_time_utc": "2026-05-24T17:23:47.705Z", "delta": "+3.456s from send response" },
+      { "event": "Round 4 setup outbound send response",        "wall_time_utc": "2026-05-24T17:27:05.760Z" },
+      { "event": "Round 4 setup DR (worker received)",          "wall_time_utc": "2026-05-24T17:27:08.827Z", "delta": "+3.067s from send response" },
+      { "event": "Round 4 HELP MO (Sinch received_at)",         "wall_time_utc": "2026-05-24T17:28:10.062Z" },
+      { "event": "Round 4 HELP MO (worker received)",           "wall_time_utc": "2026-05-24T17:28:10.590Z", "delta": "+528ms from Sinch-received" },
+      { "event": "Round 4 post-HELP outbound send response",    "wall_time_utc": "2026-05-24T17:29:52.092Z" },
+      { "event": "Round 4 post-HELP DR (worker received)",      "wall_time_utc": "2026-05-24T17:29:55.013Z", "delta": "+2.921s from send response" },
+      { "event": "Round 5 setup outbound send response",        "wall_time_utc": "2026-05-24T17:31:19.639Z" },
+      { "event": "Round 5 setup DR (worker received)",          "wall_time_utc": "2026-05-24T17:31:21.993Z", "delta": "+2.354s from send response" },
+      { "event": "Round 5 START MO (Sinch received_at)",        "wall_time_utc": "2026-05-24T17:33:09.903Z" },
+      { "event": "Round 5 START MO (worker received)",          "wall_time_utc": "2026-05-24T17:33:10.463Z", "delta": "+560ms from Sinch-received" },
+      { "event": "Round 5 post-START outbound send response",   "wall_time_utc": "2026-05-24T17:35:16.769Z" },
+      { "event": "Round 5 post-START DR (worker received)",     "wall_time_utc": "2026-05-24T17:35:18.714Z", "delta": "+1.945s from send response" }
+    ],
+    "dr_delay_envelope_ms": { "min": 1945, "max": 3456, "all_rounds": [2927, 3456, 3067, 2921, 2354, 1945] },
+    "mo_sinch_internal_envelope_ms": { "min": 342, "max": 560, "all_rounds": [342, 528, 560] }
+  },
+  "events_captured_total": 9,
+  "events_breakdown": "1 connectivity probe (curl, pre-Round 1) + 6 DR callbacks (3 setup outbounds + 3 verification outbounds) + 3 MO callbacks (STOP, HELP, START). No auto-response DR callbacks captured — Sinch did not synthesize outbound auto-responses for any of the three keywords on campaign CU4IUD0.",
+  "notes": [
+    "Sinch behaves as a fully transparent passthrough on US English keyword MOs (STOP/HELP/START): keywords arrive as `type: mo_text` with the body field set to the literal uppercase keyword. No type-discriminator difference vs plain replies, no flag fields, no Sinch-side auto-response.",
+    "Sinch does NOT enforce opt-out at the API or delivery-report layer for STOP MOs on campaign CU4IUD0. Round 3 confirmed end-to-end: API accepted the post-STOP outbound (HTTP 201), DR callback reported Delivered (code 0), and Joel's phone received the message. There is no Sinch-side opt-out ledger visible to the customer, and no signal in the callback surface that distinguishes a post-STOP send from any other send.",
+    "Whether per-campaign auto-response and/or enforcement is a configurable Sinch dashboard feature (off by default for CU4IUD0) vs a Sinch-product-level absence is not resolved by this experiment — flagged for Sinch BDR confirmation (Elizabeth Garner). Either way, RelayKit cannot rely on Sinch's defaults for the customer-facing compliance posture.",
+    "Phase 4 architectural commitment surfaced (recorded as a Phase 4 design input, not as a D-number per PM direction): RelayKit must operate its own consent / opt-out ledger and enforce STOP / HELP-class semantics itself, keying on the body field of `mo_text` events. STOP keyword detection is RelayKit's responsibility, not Sinch's.",
+    "Implications for Phase 2 Session B kickoff: the success-side DR shape captured here matches 2b's success-side shape (and 2a's failure-side); no new DR shape variants surfaced. Phase 2's terminal-status parser remains a single-branch function on `statuses[].status`.",
+    "Pre-test opt-out state inspection — no Sinch dashboard view surfaces an opt-out / unsubscribed-numbers list for the customer (per Joel's pre-flight check). No public XMS API endpoint for opt-out querying was probed (would have been load-bearing only if Sinch enforced opt-outs; Round 3 invalidates that hypothesis). Future work for Sinch BDR: confirm whether Sinch tracks opt-outs internally at all, or surfaces them via a non-public API surface."
+  ]
+}
