@@ -1,0 +1,217 @@
+{
+  "experiment": "2b",
+  "captured_at": "2026-05-24T16:15:33.781Z",
+  "round_1_short_body": {
+    "outbound_send": {
+      "api_request": {
+        "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer {SINCH_API_TOKEN}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "from": "+12013619609",
+          "to": ["+12066013506"],
+          "body": "Phase 1 Experiment 2b — please reply with any text",
+          "delivery_report": "full"
+        }
+      },
+      "api_response": {
+        "status": 201,
+        "headers": {
+          "connection": "keep-alive",
+          "content-length": "340",
+          "content-type": "application/json",
+          "date": "Sun, 24 May 2026 16:10:32 GMT",
+          "x-application-context": "application:production:8080"
+        },
+        "body": {
+          "id": "01KSDC172QPP36PFCCVV8KWMR8",
+          "to": ["12066013506"],
+          "from": "12013619609",
+          "canceled": false,
+          "body": "Phase 1 Experiment 2b — please reply with any text",
+          "type": "mt_text",
+          "created_at": "2026-05-24T16:10:32.919Z",
+          "modified_at": "2026-05-24T16:10:32.919Z",
+          "delivery_report": "full",
+          "expire_at": "2026-05-27T16:10:32.919Z",
+          "flash_message": false
+        }
+      },
+      "api_timing_ms": 355,
+      "sent_at": "2026-05-24T16:10:32.930Z"
+    },
+    "delivery_report_callback": {
+      "worker_received_at": "2026-05-24T16:10:36.253Z",
+      "delay_from_send_response_ms": 3323,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00d92487eaa2030",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "178",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "batch_id": "01KSDC172QPP36PFCCVV8KWMR8",
+        "statuses": [
+          {
+            "code": 0,
+            "count": 1,
+            "recipients": ["12066013506"],
+            "status": "Delivered"
+          }
+        ],
+        "total_message_count": 1,
+        "type": "delivery_report_sms"
+      }
+    },
+    "mo_callback": {
+      "worker_received_at": "2026-05-24T16:12:39.852Z",
+      "sinch_received_at": "2026-05-24T16:12:39.169Z",
+      "sinch_internal_delivery_ms": 683,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00d954c7ed9e602",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "199",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "body": "MO test reply 2b — body capture",
+        "from": "12066013506",
+        "id": "01KSDC52C1CPXY5D4QKJAEA9T4",
+        "operator_id": "310150",
+        "received_at": "2026-05-24T16:12:39.169Z",
+        "to": "12013619609",
+        "type": "mo_text"
+      }
+    }
+  },
+  "round_2_long_body": {
+    "outbound_send": {
+      "api_request": {
+        "url": "https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer {SINCH_API_TOKEN}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "from": "+12013619609",
+          "to": ["+12066013506"],
+          "body": "Phase 1 Experiment 2b round 2 — please reply with a long message (200+ characters) so we can see how Sinch handles multi-segment MO.",
+          "delivery_report": "full"
+        }
+      },
+      "api_response": {
+        "status": 201,
+        "headers": {
+          "connection": "keep-alive",
+          "content-length": "422",
+          "content-type": "application/json",
+          "date": "Sun, 24 May 2026 16:13:48 GMT",
+          "x-application-context": "application:production:8080"
+        },
+        "body": {
+          "id": "01KSDC75T4AME09YK9SA1WDNKH",
+          "to": ["12066013506"],
+          "from": "12013619609",
+          "canceled": false,
+          "body": "Phase 1 Experiment 2b round 2 — please reply with a long message (200+ characters) so we can see how Sinch handles multi-segment MO.",
+          "type": "mt_text",
+          "created_at": "2026-05-24T16:13:48.228Z",
+          "modified_at": "2026-05-24T16:13:48.228Z",
+          "delivery_report": "full",
+          "expire_at": "2026-05-27T16:13:48.228Z",
+          "flash_message": false
+        }
+      },
+      "api_timing_ms": 288,
+      "sent_at": "2026-05-24T16:13:48.244Z"
+    },
+    "delivery_report_callback": {
+      "worker_received_at": "2026-05-24T16:13:50.816Z",
+      "delay_from_send_response_ms": 2572,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00d97086c120790",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "178",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "batch_id": "01KSDC75T4AME09YK9SA1WDNKH",
+        "statuses": [
+          {
+            "code": 0,
+            "count": 1,
+            "recipients": ["12066013506"],
+            "status": "Delivered"
+          }
+        ],
+        "total_message_count": 1,
+        "type": "delivery_report_sms"
+      }
+    },
+    "mo_callback_long_body": {
+      "worker_received_at": "2026-05-24T16:15:33.781Z",
+      "sinch_received_at": "2026-05-24T16:15:32.960Z",
+      "sinch_internal_delivery_ms": 821,
+      "method": "POST",
+      "path": "/",
+      "headers": {
+        "accept-encoding": "gzip, br",
+        "cf-connecting-ip": "54.173.29.238",
+        "cf-ipcountry": "US",
+        "cf-ray": "a00d998c1e4c2909",
+        "cf-visitor": "{\"scheme\":\"https\"}",
+        "connection": "Keep-Alive",
+        "content-length": "457",
+        "content-type": "application/json",
+        "host": "sinch-webhook-receiver.joelnatkin.workers.dev",
+        "user-agent": "Apache-HttpClient/5.5.1 (Java/21.0.5)",
+        "x-forwarded-proto": "https",
+        "x-real-ip": "54.173.29.238"
+      },
+      "body": {
+        "body": "Reply from Joel for round 2 — the goal here is to send a body long enough to force segmentation on the inbound path. Adding extra punctuation, multiple sentences, and around two hundred and fifty characters should be more than enough to cross at least one GSM-7 segment boundary. Thanks!\n",
+        "from": "12066013506",
+        "id": "01KSDCA7RNCW1SQ3MNH87KCG7A",
+        "operator_id": "310150",
+        "received_at": "2026-05-24T16:15:32.960Z",
+        "to": "12013619609",
+        "type": "mo_text"
+      }
+    }
+  },
+  "notes": "Experiment 2b — inbound MO message shape capture against registered + carrier-approved campaign CU4IUD0 (resubmission registration ID 01kqfnhy0q1rjv242c163a1wyv, approved 2026-05-01 per 3b cycle entry). Pre-flight verified +12013619609 Active in the campaign Numbers section with all carriers REGISTERED before send #1. Two outbound/reply rounds: round 1 short-body MO (31 chars), round 2 long-body MO (~290 chars with em-dash forcing UCS-2 encoding, several segments-worth). Webhook receiver unchanged from Session 49 scaffold; Sinch Service Plan Default Callback URL already pointed at sinch-webhook-receiver.joelnatkin.workers.dev. Authorization header redacted to {SINCH_API_TOKEN}; no live credentials in this fixture. KEY FINDINGS: (1) MO top-level discriminator is type=\"mo_text\", distinct from delivery_report_sms — flat envelope, no statuses[] wrapper. (2) MO carries no correlation field back to the outbound batch_id — Phase 4 must derive conversation threading from (from, to, time-window) if needed, or treat MOs as standalone routed-by-to events. Flagged for PM/Phase-4-design call. (3) Multi-segment MO arrives as ONE callback with the full body concatenated — no per-segment fanout. Phase 4 does not need segment reassembly. (4) Success-side delivery_report_sms shape (code:0, status:'Delivered') matches 2a's failure-side (code:310, status:'Failed') exactly — one parser, branching on status enum value. (5) operator_id is a NEW field on MO callbacks not present in DR callbacks — MCC+MNC string (310150 = AT&T Mobility). (6) No HMAC / signature header on either callback type — confirms 2a's signature-verification finding for the full Sinch XMS inbound surface."
+}

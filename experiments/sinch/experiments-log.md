@@ -206,7 +206,7 @@ _Captured 2026-04-23._
 
 ## Experiment 2b — Inbound MO message shape
 
-**Status:** BLOCKED — requires a delivery-capable sender (approved campaign + associated number). Unblocks the moment Experiment 3b campaign approves AND number `+12013619609` is associated to the approved campaign (per 3b finding, association is a separate post-approval step, not bundled into form submission).
+**Status:** complete (2026-05-24)
 
 **Goal:** capture the payload Sinch POSTs to the Service Plan callback URL when a recipient replies (mobile-originated, MO) to a message sent from a registered, deliverable RelayKit campaign. This is the Phase 4 inbound-handler contract — the exact wire shape the production receiver must dispatch on.
 
@@ -236,7 +236,72 @@ _Captured 2026-04-23._
 - Signature/HMAC header present-or-absent confirmed (Experiment 2a found none on delivery reports — does the same hold for MO?).
 - Success-side delivery-report callback shape captured to complement 2a's failure-side capture.
 
-### Status: BLOCKED on 3b approval + number-to-campaign association completion (resubmission registration ID `01kqfnhy0q1rjv242c163a1wyv`; original `01kq5ahkf08v64ymqnxsnme5bg` REJECTED 2026-04-27 — see Experiment 3b cycle entry).
+### Findings
+
+_Captured 2026-05-24. Full raw payloads in `experiments/sinch/fixtures/exp-02b-mo-inbound.json`._
+
+- **Pre-flight verification.** Campaign `CU4IUD0` (resubmission Registration ID `01kqfnhy0q1rjv242c163a1wyv`, APPROVED 2026-05-01) confirmed `APPROVED` in dashboard. Number `+12013619609` confirmed `Active` in the campaign's Numbers section with all carriers `REGISTERED`. Number-to-campaign association was already in place — no manual association step required this run. (Whether Sinch auto-associated post-approval, or Joel did it earlier without recording, is unobserved this run; flag for capture if a future re-test surfaces the manual step.)
+
+- **Outbound send shape (no change from Experiment 1 / 2a).** POST `https://us.sms.api.sinch.com/xms/v1/{servicePlanId}/batches` with `{from, to[], body, delivery_report:"full"}` returns HTTP 201 carrying the same `mt_text` envelope as `exp-01-outbound.json`. API latency 288–355ms across the two sends. Both batches show `from`/`to[]` with leading `+` in the request, stripped to bare digits in the response body — consistent with prior experiments.
+
+- **Success-side `delivery_report_sms` payload (NEW — complements 2a's failure-side).**
+  - `type: "delivery_report_sms"` (same discriminator as 2a)
+  - `statuses[].code: 0` (vs 2a's `310`)
+  - `statuses[].status: "Delivered"` (vs 2a's `"Failed"`)
+  - Outer shape identical to 2a — `batch_id`, `statuses[]` array of `{code, count, recipients, status}`, `total_message_count`, `type`. **One parser handles both terminal states; branch on `statuses[].status` enum value.**
+  - Round 1 callback delay: **3.323s** from send response. Round 2: **2.572s**. (2a's failure-side: 1.769s.) All within a sub-5s envelope.
+
+- **MO payload shape (NEW — Phase 4's primary contract).**
+  ```json
+  {
+    "body":        "<message text — UTF-8, full reassembled string>",
+    "from":        "<E.164 minus '+', e.g. 12066013506>",
+    "id":          "<ULID for this MO, distinct from any outbound batch ID>",
+    "operator_id": "<MCC+MNC, e.g. 310150 = AT&T Mobility>",
+    "received_at": "<ISO8601 set by Sinch on receive>",
+    "to":          "<E.164 minus '+'>",
+    "type":        "mo_text"
+  }
+  ```
+  - **Flat envelope, no `statuses[]` wrapper.** Phase 4 dispatcher branches on top-level `type` field — must not infer message kind from presence/absence of nested fields.
+  - **Top-level discriminator: `mo_text`** — distinct from `delivery_report_sms`. Confirms the "reserve other values" hypothesis from 2a's findings.
+  - **`from`/`to` are bare digits with no leading `+`** — matches 2a's recipient encoding. Normalization rule across all Sinch XMS callbacks is consistent: send-path uses E.164 with `+`, callbacks strip it.
+  - **`operator_id`** is a new field not present in DR payloads — MCC+MNC formatted as a string (`310150` = AT&T Mobility). Useful for carrier-aware Phase 4 policy but not required for dispatch.
+  - **`received_at`** is Sinch's internal receive timestamp, distinct from the POST timestamp visible to the receiver. Sinch internal delivery latency: **683ms (round 1), 821ms (round 2)** between Sinch-received and worker-received.
+
+- **MO→outbound correlation: NONE on the wire.** The MO payload carries no `batch_id`, no `reply_to`, no thread/conversation field referencing the outbound the user was replying to. **Phase 4 architectural choice flagged for PM:** either (a) Phase 4 treats MOs as standalone events routed to the owning customer by `to`-number only — no threading — or (b) Phase 4 derives conversation threading via (`from`, `to`, recent-time-window) lookup. 2b records the finding; the decision belongs to Phase 4 design, not this experiment.
+
+- **Multi-segment MO behavior: Sinch reassembles; one callback per MO.** Round 2's ~290-char reply (with an em-dash forcing UCS-2 — well past one 70-char UCS-2 segment) arrived as a single callback with `id: 01KSDCA7RNCW1SQ3MNH87KCG7A` and the full body concatenated in the `body` field. Envelope `content-length: 457`. **Phase 4 inbound handler does NOT need segment-stitching logic.** Eliminates a Phase 4 complexity the procedure had flagged as open.
+
+- **Body encoding.** UTF-8 preserved verbatim end-to-end. Em-dash `—` round-trips intact. Trailing whitespace (a `\n` at the end of the round-2 reply, picked up from the paste source) is preserved on the wire — Sinch does not normalize. Phase 4 may want to `.trim()` for downstream consumers.
+
+- **Transport signals (consistent across all four callback events this run; identical to 2a).** `user-agent: Apache-HttpClient/5.5.1 (Java/21.0.5)` from Sinch's Java backend; source IP `54.173.29.238` (AWS Ashburn, ASN 14618); HTTP/1.1; **no HMAC, signature, or shared-secret header on either DR or MO callbacks**. 2a's signature-verification finding extends to the full Sinch XMS inbound surface — verification by header alone is not viable for any callback type today.
+
+- **Timing summary:**
+
+  | Event                              | Wall time (UTC)   | Delta                          |
+  |------------------------------------|-------------------|--------------------------------|
+  | Round 1 outbound send response     | 16:10:32.930Z     | —                              |
+  | Round 1 DR callback (worker recv)  | 16:10:36.253Z     | +3.323s from send              |
+  | Round 1 MO callback (worker recv)  | 16:12:39.852Z     | +683ms from Sinch-received     |
+  | Round 2 outbound send response     | 16:13:48.244Z     | —                              |
+  | Round 2 DR callback (worker recv)  | 16:13:50.816Z     | +2.572s from send              |
+  | Round 2 MO callback (worker recv)  | 16:15:33.781Z     | +821ms from Sinch-received     |
+
+### Implications for Phase 2 Session B kickoff
+
+1. **Success-side `delivery_report_sms` shape matches failure-side from 2a.** Phase 2's terminal-status parser is one function branching on `statuses[].status` enum (`Delivered` / `Failed` / future values catalogued as they surface). The `messages.status` state-machine kickoff discussion now has both success and failure data points; intermediate states (pre-callback `submitted` etc.) remain open.
+2. **No HMAC on any Sinch XMS callback (DR + MO).** Webhook signature-verification design must rely on IP allowlist of Sinch's egress ranges (`54.173.29.238` and family — capture the full range from Sinch BDR), mTLS, secret path segment, or a Sinch dashboard feature not enabled by default. The "reserve" item from 2a is now confirmed for the full inbound surface.
+
+### Implications for Phase 4 (inbound message handling)
+
+1. **MO discriminator = `mo_text`.** Phase 4 dispatcher branches on top-level `type`: `delivery_report_sms` → outbound-state machine, `mo_text` → inbound handler, future types reserved.
+2. **No segment reassembly required.** Sinch concatenates multi-segment MOs into a single callback body. Phase 4 inbound handler accepts the body as a complete string.
+3. **No outbound correlation on the wire — architectural choice flagged for PM.** Phase 4 design must pick: (a) treat MOs as standalone events routed to the owning customer by `to`-number only — no threading — or (b) derive threading via (`from`, `to`, recent-time-window) lookup. 2b records the finding; deferring the decision to PM / Phase 4 design.
+4. **STOP / START / HELP detection — NOT addressed by 2b.** Experiment 5's territory. Whether keyword events arrive as `mo_text` or as a separate `type` value is still open; Experiment 5 will resolve.
+5. **`operator_id`** is present and worth persisting on the inbound record for analytics / future carrier-aware policy, but Phase 4 dispatch itself does not need it.
+
+### Status: COMPLETE — captured 2026-05-24.
 
 ---
 
