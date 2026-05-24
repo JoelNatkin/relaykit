@@ -1,15 +1,15 @@
 "use client";
 
 /**
- * Reusable kebab (overflow) menu. Same dropdown idioms as the +Variable
- * picker in the message edit card — toggle on click, close on outside
- * click + ESC. Items render as small text rows; pass `destructive: true`
- * for actions that wipe state (Clear / Clear all) so they read in
- * `text-error-primary`.
+ * Reusable kebab (overflow) menu. Same dropdown idioms as the Insert
+ * variable picker in the message edit card — toggle on click, close on
+ * outside click + ESC. Items render as small text rows; pass
+ * `destructive: true` for actions that wipe state (Clear / Clear all) so
+ * they read in `text-error-primary`.
  *
  * Used by:
  *   - the configurator's global "Clear all" (next to Copy)
- *   - each category's "Clear" (next to the Edit values trigger)
+ *   - each category's "Clear" (next to the Variables trigger)
  */
 
 import { DotsVertical } from "@untitledui/icons";

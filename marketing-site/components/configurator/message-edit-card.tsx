@@ -8,7 +8,7 @@
  * carries either, the page-level tone toggle no longer drives it.
  */
 
-import { HelpCircle, Plus } from "@untitledui/icons";
+import { HelpCircle } from "@untitledui/icons";
 import type { Editor } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import { MessageEditor } from "@/lib/editor/message-editor";
@@ -257,8 +257,7 @@ export function MessageEditCard({
                 aria-expanded={isInsertOpen}
                 className="inline-flex cursor-pointer items-center gap-1 py-1.5 text-xs font-semibold whitespace-nowrap text-text-brand-secondary transition-colors duration-100 hover:text-text-brand-secondary_hover"
               >
-                <Plus className="size-3.5" />
-                Variable
+                Insert variable
               </button>
               {isInsertOpen ? (
                 <div

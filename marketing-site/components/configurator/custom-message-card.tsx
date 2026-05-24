@@ -3,13 +3,12 @@
 /**
  * Visitor-authored custom message card. Matches the workspace authoring shape
  * (`prototype/components/catalog/custom-message-card.tsx`): a required Name
- * field, a Message body editor, and a "+ Variable" picker. Custom messages
+ * field, a Message body editor, and an Insert variable picker. Custom messages
  * carry forward into the visitor's workspace at signup.
  *
  * Out of scope here: monitor/test, kebab/archive, AI rewrite, slugs.
  */
 
-import { Plus } from "@untitledui/icons";
 import type { Editor } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import { MessageEditor } from "@/lib/editor/message-editor";
@@ -265,8 +264,7 @@ export function CustomMessageCard({
                 aria-expanded={isInsertOpen}
                 className="inline-flex cursor-pointer items-center gap-1 py-1.5 text-xs font-semibold whitespace-nowrap text-text-brand-secondary transition-colors duration-100 hover:text-text-brand-secondary_hover"
               >
-                <Plus className="size-3.5" />
-                Variable
+                Insert variable
               </button>
               {isInsertOpen ? (
                 <div

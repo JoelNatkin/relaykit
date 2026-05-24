@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Shared "Edit values" form content — one input per non-identity variable
+ * Shared "Variables" form content — one input per non-identity variable
  * in the category. Identity tokens (`business_name` / `workspace_name` /
  * `community_name`) are filtered out per D-413 — they resolve from the
  * top-of-page "Your business name" input and aren't duplicated here.
@@ -9,9 +9,9 @@
  * Pure presentational: receives the category, current per-category
  * `variables` map, and an onChange setter from the parent. Live-applies on
  * every keystroke — every preview in the category (read cards, edit-card
- * editor chips, the +Variable dropdown's preview values) reflects the new
- * value immediately, since they all read through the resolver that pulls
- * from the same `categoryValues[catId].variables` map.
+ * editor chips, the Insert variable dropdown's preview values) reflects the
+ * new value immediately, since they all read through the resolver that
+ * pulls from the same `categoryValues[catId].variables` map.
  *
  * Empty input → resolver falls through to the variable's corpus `example`.
  * The setter mirrors that: an empty value removes the entry from state.

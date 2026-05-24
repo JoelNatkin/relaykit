@@ -503,7 +503,7 @@ export function ConfiguratorSection() {
                             aria-expanded={editValuesOpen}
                             className="inline-flex cursor-pointer items-center gap-1 px-1 py-0.5 text-xs font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
                           >
-                            Edit values
+                            Variables
                             {editValuesOpen ? (
                               <ChevronUp className="size-3.5" />
                             ) : (

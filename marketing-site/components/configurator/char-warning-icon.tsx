@@ -15,7 +15,7 @@ import { Tooltip } from "@/components/configurator/tooltip";
 
 export function CharWarningIcon() {
   return (
-    <Tooltip content="Over 160 characters — counts as 2 messages.">
+    <Tooltip content="Over 160 characters. This counts as 2 messages.">
       <span className="-m-[15px] inline-flex size-11 cursor-pointer items-center justify-center">
         <AlertTriangle className="size-3.5 shrink-0 text-fg-warning-secondary" />
       </span>

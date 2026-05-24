@@ -217,7 +217,7 @@ export function WaitlistModal() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@yourapp.com"
-                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:ring-1 focus:ring-border-brand focus:outline-none"
+                  className="w-full rounded-lg border border-border-primary bg-bg-primary px-3.5 py-2.5 text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:ring-1 focus:ring-border-brand focus:outline-none"
                 />
               </div>
 
