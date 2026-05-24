@@ -82,22 +82,31 @@ Observed mappings (filled in incrementally as future experiments and dashboard c
 **Two distinct state-tracking concepts exist at the Sinch level.** Phase 5 design must track both, since they map to different parts of the customer-facing wizard.
 
 ### `IdentityStatus` (TCR-level brand identity)
-TCR's verification field for the brand identity itself. Observed terminal value in Experiment 3a: `VERIFIED`. Intermediate transitions were not visible from the dashboard event log; an API-level capture in a future experiment is needed to confirm the full transition sequence.
+
+TCR's verification field for the brand identity itself. Two terminal values observed, distinguished by registration path:
+
+| Registration path | Terminal `IdentityStatus` | Observed | Event type fired |
+|---|---|---|---|
+| Simplified | `VERIFIED` | Experiment 3a (2026-04-25T11:21) | `BRAND_IDENTITY_STATUS_UPDATE` |
+| Full (post-upgrade) | `VETTED_VERIFIED` | Experiment 3c (2026-05-24T16:14) | `BRAND_IDENTITY_STATUS_UPDATE` |
+
+Both terminal values fire the same `BRAND_IDENTITY_STATUS_UPDATE` webhook event type — there is no upgrade-specific event type at the dashboard event-log layer. Intermediate transitions during either path were not visible from the dashboard event log (which shows transition endpoints, not intermediate states); an API-level capture in a future experiment is needed to confirm whether intermediate IdentityStatus values exist during the brief in-progress windows.
 
 ### `brandRegistrationStatus` / Bundle state (Sinch's bundle-level lifecycle)
-Sinch API exposes 5 values; the dashboard exposes 7. Mapping:
+
+Sinch API exposes 5 values; the dashboard exposes 7. Mapping (updated post-3c):
 
 | API state | Dashboard state | Notes |
 |---|---|---|
 | `DRAFT` | (unknown — possibly Queue?) | API enum value; dashboard mapping TBD. |
-| `IN_PROGRESS` | In review | Observed in Experiment 3a as the initial visible state. |
-| `REJECTED` | (likely Rejected) | Mapping unconfirmed. |
-| `APPROVED` | Approved | Observed in Experiment 3a as the terminal state. |
-| `UPGRADE` | (mapping unclear) | Possibly relates to Simplified → Full upgrade path. |
+| `IN_PROGRESS` | In review | Observed in Experiments 3a + 3c as the initial visible state. |
+| `REJECTED` | Rejected | Observed in 3b cycle as the campaign-level rejection state; brand-level mapping assumed identical. |
+| `APPROVED` | Approved | Observed in Experiments 3a + 3c as the terminal Simplified state and the post-upgrade FULL state. |
+| `UPGRADE` | Upgrade | **Confirmed Experiment 3c (2026-05-24T16:13).** Bundle enters `Upgrade` state during the upgrade-in-progress window with event text `"Upgrading to FULL REGISTRATION."`, transitions to `Approved` upon FULL vetting completion (~60 seconds). |
 | _(unmapped)_ | Queue | Dashboard-only state; API equivalent unknown. To verify before Phase 2 Session B. |
 | _(unmapped)_ | Archived | Dashboard-only state; API equivalent unknown. |
 
-**The 5-vs-7 mismatch is one of three Sinch API/dashboard inconsistencies surfaced during Experiment 3a — to verify with Sinch BDR (Elizabeth Garner) before Phase 2 Session B kickoff.**
+The 5-vs-7 mismatch (Queue + Archived dashboard-only states without observed API equivalents) is one of the **four cumulative Sinch API/dashboard inconsistencies** surfaced during the 3a/3b cycle — to verify with Sinch BDR (Elizabeth Garner) before Phase 2 Session B kickoff. Experiment 3c added no fifth inconsistency.
 
 ## Field constraints we learned the hard way
 
@@ -136,3 +145,13 @@ RelayKit's customer-side state machine must distinguish three states that a sing
 Pre-flight identity validation (state SOS public-record lookup, or an analogous source-of-truth for the customer's home state) before sending to Sinch catches the most common rejection cause — cross-source identity mismatch between submitted identity and public-record identity. The 3b cycle's four rejection codes were all identity- or surface-level mismatches (`CR2020` entity name, `CR2002` address, `CR2005` website, `CR4015` CTA URL); each is detectable pre-flight if the wizard knows what to check.
 
 Customer-facing voice: when RelayKit's customer is rejected, the experience should be `your registration was rejected, here's why, here's what we'll fix, we'll resubmit when ready` — not `click here to fix.` RelayKit absorbs the clone-edit-resubmit mechanics on the customer's behalf and presents a single state transition rather than exposing the Sinch dashboard's two-Registration-ID model.
+
+## FULL upgrade path
+
+Captured from Experiment 3c (2026-05-24; full fixture at `experiments/sinch/fixtures/exp-03c-brand-upgrade.json`).
+
+The Simplified → Full brand upgrade is **one-click paid re-vetting — no form, no document upload, no additional field collection.** Sinch's `Upgrade` affordance (visible on both the brand detail view and the brands-list view as soon as a brand is APPROVED on the Simplified path) opens a single confirmation dialog disclosing a **$44 Aegis vetting** charge; clicking through submits and the bundle resolves to APPROVED + `IdentityStatus = VETTED_VERIFIED` in ~60 seconds. Brand ID and Bundle ID both persist across the upgrade — the upgrade is in-place on the same entity, not a new registration. The brand bundle's Company / Address / Contact data persists across the upgrade unchanged; **FULL re-vetting does NOT surface or validate field-level changes against public records.** Identity drift between RelayKit's submitted brand data and the customer's current state SOS / IRS records will NOT be caught by the FULL upgrade step.
+
+**Sinch-side cost is path-dependent:** a Simplified-only customer costs RelayKit $6 (3a); a customer who upgrades to Full costs RelayKit **$50 cumulative** ($6 Simplified + $44 upgrade per 3c). The customer-facing $49 registration fee covers Simplified-only customers comfortably; it is underwater only on the upgrade path, not on every customer. Pricing tier design is a Phase 5 prerequisite — see BACKLOG entry on customer brand-registration path tiering.
+
+**Implications for the Phase 5 wizard:** the customer-facing "upgrade to Full" step needs only a price disclosure, a capability summary, and a single confirm button — no field collection beyond the Simplified baseline.

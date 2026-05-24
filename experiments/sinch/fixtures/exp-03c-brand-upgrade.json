@@ -1,0 +1,272 @@
+{
+  "experiment_id": "03c",
+  "title": "Brand SIMPLIFIED → FULL upgrade",
+  "captured_at": "2026-05-24",
+  "captured_by": "CC (Session 111) with Joel-side dashboard navigation",
+  "pre_upgrade_snapshot": {
+    "account": {
+      "project_id": "6bf3a837-d11d-486c-81db-fa907adc4dd4",
+      "project_label": "My first project",
+      "balance_usd_pre_upgrade": 80.87,
+      "currency": "USD"
+    },
+    "service_plan": {
+      "service_plan_id": "e61042f3d242433da838bffa679adbbc",
+      "default_callback_url": "https://sinch-webhook-receiver.joelnatkin.workers.dev",
+      "status": "Active"
+    },
+    "brand": {
+      "brand_id": "BTTC6XS",
+      "bundle_name_display": "RelayKit (test infra)",
+      "brand_name": "RelayKit",
+      "registration_type": "Simplified",
+      "entity_type": "PRIVATE",
+      "entity_type_label": "Private Profit",
+      "vertical_api_enum": "TECHNOLOGY",
+      "vertical_label": "Information Technology Services",
+      "brand_state": "APPROVED",
+      "identity_status": "VERIFIED",
+      "identity_status_event": {
+        "timestamp": "2026-04-25T11:21",
+        "event_type": "BRAND_IDENTITY_STATUS_UPDATE",
+        "event_text": "Value of 'IdentityStatus' has been changed to 'VERIFIED'. Bundle has been APPROVED via 'BRAND_IDENTITY_STATUS_UPDATE' Webhook event",
+        "source": "Bundle event log"
+      },
+      "company_details_on_file": {
+        "company_name": "VAULTED PRESS LLC",
+        "company_email": "support@relaykit.ai",
+        "street_address": "5196 Celtic Dr",
+        "city": "North Charleston",
+        "state": "SC",
+        "postal_code": "29405",
+        "country": "United States",
+        "website": "https://relaykit.ai/",
+        "ein": "33-4607945"
+      },
+      "contact_details_on_file": {
+        "first_name": "Joel",
+        "last_name": "Natkin",
+        "phone_number": "<redacted-illegible-in-capture>",
+        "email": "joel@relaykit.ai"
+      }
+    },
+    "bundle": {
+      "bundle_id": "01kq2jqyhjynvr2wcpp0bbppgr",
+      "bundle_state": "APPROVED",
+      "bundle_number_type": "10DLC"
+    },
+    "campaigns": [
+      {
+        "tcr_campaign_id": "CU4IUD0",
+        "registration_id": "01kqfnhy0q1rjv242c163a1wyv",
+        "name": "RelayKit test mode",
+        "brand_id": "BTTC6XS",
+        "use_case": "LOW_VOLUME",
+        "sub_use_cases": ["2FA", "ACCOUNT_NOTIFICATION", "CUSTOMER_CARE", "DELIVERY_NOTIFICATION"],
+        "monthly_fee_usd_displayed": 0,
+        "automatic_renewal": true,
+        "state_label": "Active (inferred from carrier rows + Joel verbal — explicit state field not visible in Campaign detail)",
+        "operators": {
+          "tmobile":     { "status": "REGISTERED", "brand_tier": "LOW", "daily_cap": 2000 },
+          "att":         { "status": "REGISTERED", "message_class": "T", "msg_per_minute": 75 },
+          "verizon":     { "status": "REGISTERED" },
+          "us_cellular": { "status": "REGISTERED" }
+        },
+        "numbers": [{ "msisdn": "+12013619609", "status": "Active" }]
+      }
+    ],
+    "pre_upgrade_findings": [
+      {
+        "id": "name-drift-on-bundle",
+        "summary": "Brand BTTC6XS Company name field reads 'VAULTED PRESS LLC' (pre-amendment legal name). CU4IUD0 campaign was corrected to RelayKit LLC during the 3b resubmission; the brand bundle was not. SC SOS public record now shows RelayKit LLC as current name. Watch whether FULL re-vetting surfaces or silently updates the Company name field.",
+        "resolution_pointer": "RESOLVED during this experiment — see post_upgrade_continuity.company_name_drift_disposition."
+      },
+      {
+        "id": "balance-drift-pre-upgrade",
+        "summary": "Account balance moved 80.97 USD (11:49 capture) to 80.87 USD (16:00 capture), a $0.10 debit during the ~4-hour pre-flight window. Source not identified. Pre-upgrade comparator value is 80.87.",
+        "severity": "info"
+      }
+    ]
+  },
+  "upgrade_path": {
+    "surfaces": [
+      {
+        "surface": "Brand detail view",
+        "navigation": "Supporting Documentation → Bundles → RelayKit (test infra) → top-right Upgrade button (sibling to Update brand)"
+      },
+      {
+        "surface": "Brands list view",
+        "navigation": "Supporting Documentation → Your brands table → per-row Upgrade button in Actions column"
+      }
+    ],
+    "api_fallback_exercised": false,
+    "api_fallback_reason": "Dashboard path worked first attempt; 10DLC OpenAPI upgrade endpoint not investigated this run.",
+    "selected_surface_for_run": "Brand detail view"
+  },
+  "upgrade_form_field_deltas": {
+    "outcome": "No form. Single confirmation dialog with $44 Aegis vetting disclosure; clicking through submits.",
+    "fields_collected_beyond_simplified_baseline": [],
+    "documents_required": [],
+    "phase_5_hypothesis_disposition": "The Phase 5 hypothesis that FULL would gate on incorporation documents / articles of incorporation / EIN verification letter / additional officers / secondary verification methods does NOT survive contact with the actual flow. Simplified → Full is one-click paid re-vetting."
+  },
+  "cost_disclosures": [
+    {
+      "layer": "pre_form_affordance_label",
+      "value": "Upgrade button label only — no inline price.",
+      "amount_usd": null
+    },
+    {
+      "layer": "form",
+      "value": "No form exists.",
+      "amount_usd": null
+    },
+    {
+      "layer": "confirmation_dialog",
+      "value": "$44 Aegis vetting (per Joel-confirmation during the run; dialog screenshot not captured to disk this session)",
+      "amount_usd": 44.00
+    },
+    {
+      "layer": "balance_debit",
+      "value": "80.87 USD → 36.87 USD",
+      "amount_usd": 44.00
+    }
+  ],
+  "cost_disclosure_inconsistency_count": 0,
+  "cost_disclosure_inconsistency_summary": "All four disclosure layers agree on $44 — no pricing inconsistency. The four cumulative 3a/3b API/dashboard inconsistencies unchanged; 3c adds no fifth.",
+  "submission": {
+    "submitted_via": "Dashboard confirmation dialog from brand-detail view",
+    "submitted_at": "2026-05-24T16:13",
+    "approved_at": "2026-05-24T16:14",
+    "approval_observable_by_dashboard": true,
+    "joel_explicit_submission_gate_satisfied": true
+  },
+  "state_transitions": [
+    {
+      "timestamp": "2026-05-24T16:13",
+      "bundle_state": "Upgrade",
+      "event_text": "Upgrading to FULL REGISTRATION."
+    },
+    {
+      "timestamp": "2026-05-24T16:14",
+      "bundle_state": "Approved",
+      "event_text": "Value of 'IdentityStatus' has been changed to 'VETTED_VERIFIED'. Bundle has been APPROVED via 'BRAND_IDENTITY_STATUS_UPDATE' Webhook event"
+    },
+    {
+      "timestamp": "2026-05-24T16:14",
+      "bundle_state": "Approved",
+      "event_text": "Brand has been updated."
+    },
+    {
+      "timestamp": "2026-05-24T16:14",
+      "bundle_state": "Approved",
+      "event_text": "Brand has been updated."
+    }
+  ],
+  "webhook_events": [
+    {
+      "event_type": "BRAND_IDENTITY_STATUS_UPDATE",
+      "fired_at": "2026-05-24T16:14",
+      "fired_layer": "Sinch dashboard event log (internal)",
+      "notes": "Same event type as Simplified-path initial registration (3a, 2026-04-25T11:21). No upgrade-specific event type at the dashboard event-log layer. Identity status value moved VERIFIED → VETTED_VERIFIED."
+    }
+  ],
+  "webhook_receiver_observations": {
+    "wrangler_tail_started": false,
+    "reason": "Per Experiment 3a, Sinch's BRAND_IDENTITY_STATUS_UPDATE event is visible in the dashboard event log but raw payloads are not yet exposed to API-consumer callback URLs (Sinch docs explicitly say poll-only; 3a observed the dashboard-internal fire but the workers.dev receiver received nothing). 3c does not retest this — Phase 2 Session B BDR confirmation is the proper venue.",
+    "log_file": null
+  },
+  "timing": {
+    "submitted_at": "2026-05-24T16:13",
+    "approved_at": "2026-05-24T16:14",
+    "elapsed_seconds_approximate": 60,
+    "elapsed_seconds_upper_bound": 120,
+    "comparison_to_3a": "3a Simplified path was ~60 seconds end-to-end. 3c FULL upgrade is in the same order of magnitude (~60-120s). Neither leg approaches the multi-day re-vetting timing the procedure had flagged as a possible outcome."
+  },
+  "post_upgrade_continuity": {
+    "brand_id_unchanged": true,
+    "brand_id": "BTTC6XS",
+    "bundle_id_unchanged": true,
+    "bundle_id": "01kq2jqyhjynvr2wcpp0bbppgr",
+    "bundle_name_unchanged": true,
+    "bundle_name": "RelayKit (test infra)",
+    "number_type_unchanged": true,
+    "country_unchanged": true,
+    "address_unchanged": true,
+    "registration_type_change": "Simplified → Full",
+    "approved_badge_present": true,
+    "success_banner_present": true,
+    "campaigns_preserved": [
+      {
+        "tcr_campaign_id": "CU4IUD0",
+        "state_label": "Active",
+        "carriers_still_registered": ["tmobile", "att", "verizon", "us_cellular"],
+        "number_association_preserved": true,
+        "number": "+12013619609",
+        "throughput_tiers_unchanged": {
+          "tmobile_brand_tier": "LOW",
+          "tmobile_daily_cap": 2000,
+          "att_msg_per_minute": 75
+        }
+      }
+    ],
+    "company_name_drift_disposition": {
+      "field_value_post_upgrade": "VAULTED PRESS LLC",
+      "changed_during_upgrade": false,
+      "finding": "Sinch's FULL re-vetting returned VETTED_VERIFIED despite the registered Company name not matching current SC SOS public records (which show RelayKit LLC). The re-vetting did not surface, flag, or correct the stale name.",
+      "operational_followup": "Brand bundle Company name should be corrected to RelayKit LLC via 'Update brand'; RelayKit operational item, tracked outside this experiment."
+    }
+  },
+  "full_unlocks": {
+    "throughput_tier_change_on_existing_campaign": {
+      "tmobile_brand_tier_changed": false,
+      "tmobile_daily_cap_changed": false,
+      "att_msg_per_minute_changed": false,
+      "finding": "Simplified→Full brand upgrade does NOT retroactively move an existing campaign's carrier throughput tiers. Tier movement, if it happens, is not an automatic consequence of brand upgrade visible at this observation point."
+    },
+    "new_campaign_creation_flow_inspection": {
+      "inspected": true,
+      "wizard_steps_observed": [
+        "1. Select numbers",
+        "2. Select brand",
+        "3. Select use case",
+        "4. Supporting Documentation Upload",
+        "5. Campaign overview",
+        "6. Message flow and sample messages",
+        "7. Additional information",
+        "8. Review and finish"
+      ],
+      "inspection_depth": "Stopped at step 1; number +12013619609 confirmed available for selection. Use-case step (step 3) not reached.",
+      "use_case_level_unlock_inspection_exercised": false,
+      "load_bearing_for_3c": false
+    },
+    "sole_proprietor_entity_type_check": {
+      "inspected": false,
+      "reason": "Optional capture per the plan; not exercised this run. Sole Prop absence is structural to Sinch's 10DLC API enum per docs/CARRIER_BRAND_REGISTRATION_FIELDS.md — almost certainly not tier-gated. A one-screenshot confirmation in a future session would close the question for free."
+    }
+  },
+  "open_questions": [
+    {
+      "id": "new-campaign-under-full-brand-tier-movement",
+      "summary": "Does a NEW campaign created under the now-FULL brand get better tiers, or does tier assignment require separate carrier-side action / time / volume history?",
+      "captured_from": "post_upgrade_continuity finding that the existing campaign's tiers did not move",
+      "phase": "Phase 5"
+    },
+    {
+      "id": "use-case-level-unlocks-under-full",
+      "summary": "Does the campaign-creation use-case selector (step 3) expose any use cases or sub-use-cases under FULL that were unavailable under Simplified? Not exercised this run. Single-session inspection would close it.",
+      "captured_from": "Step 1 inspection halt",
+      "phase": "Phase 5"
+    },
+    {
+      "id": "vetted-verified-vs-verified-intermediate-states",
+      "summary": "VETTED_VERIFIED (FULL) and VERIFIED (Simplified) are observed IdentityStatus terminal values. Whether other IdentityStatus values exist (e.g., during the brief Upgrade-in-progress window) was not observable from this run — the dashboard event log shows the transition endpoints, not intermediate states. May be observable via 10DLC API polling in a future experiment.",
+      "captured_from": "Bundle event log",
+      "phase": "Phase 5"
+    }
+  ],
+  "notes": [
+    "Per the 'evidence-backed or explicitly Joel-confirmed' standard, every field in this fixture is grounded in either a dashboard screenshot capture or Joel's explicit confirmation during the run. The phone_number field on the brand bundle is marked <redacted-illegible-in-capture> because the dashboard display obfuscated digits in the captured image; not material for the experiment.",
+    "Wrangler-tail step from the procedure was not exercised — Sinch's docs (still) say BRAND_IDENTITY_STATUS_UPDATE is poll-only at the API-consumer surface, and 3a's observation that the event fires dashboard-internally without reaching the workers.dev receiver was not overturned. Re-testing the webhook-vs-poll question is BDR-conversation territory, not a 3c subgoal.",
+    "Pre-upgrade balance moved 80.97 USD (11:49 capture) to 80.87 USD (16:00 capture) during the ~4-hour pre-flight window. Source unidentified, recorded for transparency."
+  ]
+}

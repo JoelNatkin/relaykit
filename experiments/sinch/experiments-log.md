@@ -393,7 +393,7 @@ _Captured 2026-04-26 at submission time. Approval-time findings to be appended o
 
 ## Experiment 3c — Brand SIMPLIFIED → FULL upgrade
 
-**Status:** BLOCKED on Experiment 3b approval. Reason: running 3c against brand `BTTC6XS` while 3b is `PENDING_REVIEW` against the same brand may contaminate 3b's approval-timing measurement, and could potentially invalidate or pause 3b mid-review. Run 3c only after 3b transitions to `APPROVED` and TCR Campaign ID is assigned. (Whether upgrade-during-campaign-review breaks the campaign is itself a Phase 5 design question, but worth answering as a separate follow-up experiment, not by accidentally crashing our only approved campaign.)
+**Status:** complete (2026-05-24)
 
 **Goal:** characterize Sinch's brand upgrade flow from Simplified to Full registration. Output answers five Phase 5 design questions: (1) does the upgrade fee match the rumored $50 / API docs, or is there a third pricing-disclosure inconsistency to add to the four cumulative? (2) does brand `BTTC6XS` retain its ID across upgrade, and do 3a/3b approvals survive? (3) does FULL approval take ~60s like Simplified, or does this leg hit the multi-day timing? (4) what does FULL unlock — higher throughput tiers, additional verticals, Sole Proprietor segment, or other capabilities? (5) is upgrade a form-fill like initial registration, a re-vetting flow with document upload, or something else entirely?
 
@@ -440,7 +440,60 @@ Run on the live RelayKit brand `BTTC6XS`. Eventual RelayKit goal is FULL anyway 
 
 Pass condition for the experiment as a whole: enough evidence to design Phase 5's "upgrade your registration to Full" customer-facing wizard step end-to-end, including pricing display, field collection, timing claims, and continuity guarantees.
 
-### Status: BLOCKED on Experiment 3b approval (resubmission registration ID `01kqfnhy0q1rjv242c163a1wyv`; original `01kq5ahkf08v64ymqnxsnme5bg` REJECTED 2026-04-27 — see Experiment 3b cycle entry). Run only after 3b reaches `APPROVED` state and TCR Campaign ID is assigned.
+### Findings
+
+_Captured 2026-05-24. Full raw shapes in `experiments/sinch/fixtures/exp-03c-brand-upgrade.json`._
+
+- **Upgrade is one-click paid re-vetting — there is no form.** The `Upgrade` affordance opens a confirmation dialog disclosing `$44 Aegis vetting`; clicking through submits and the bundle resolves to `Approved` with `IdentityStatus = VETTED_VERIFIED` in ~60 seconds. **Zero additional fields collected. Zero documents required.** The Phase 5 hypothesis that FULL would gate on incorporation documents / articles of incorporation / EIN verification letter / additional officers / secondary verification methods does not survive contact with the actual flow.
+
+- **Upgrade path location.** Two dashboard surfaces expose the affordance with identical UX: brand detail view (`Supporting Documentation → Bundles → RelayKit (test infra)` — top-right `Upgrade` button, sibling to `Update brand`), and brands-list view (`Supporting Documentation` page — per-row `Upgrade` button in the `Actions` column). 10DLC API fallback not exercised — dashboard path worked first attempt.
+
+- **Cost: $44, single-source disclosure, no inconsistency.** Dialog disclosed `$44 Aegis vetting`; balance debit `80.87 USD → 36.87 USD` matched exactly. The four cumulative 3a/3b API/dashboard inconsistencies unchanged; **3c adds no fifth.** Rumored $50 figure was directionally right (actual $44) but not exact.
+
+- **Timing: ~60 seconds end-to-end.** Submitted 2026-05-24T16:13; Approved 2026-05-24T16:14. Comparable to 3a's ~60s Simplified leg. Not a multi-day re-vetting cycle. Both 3a and 3c suggest Sinch's vetting pipeline on the Simplified and Simplified→Full paths is automated end-to-end.
+
+- **IdentityStatus distinguishes Simplified from FULL terminal states.** Simplified resolves to `IdentityStatus = VERIFIED` (3a, 2026-04-25T11:21 event). FULL resolves to `IdentityStatus = VETTED_VERIFIED` (3c, 2026-05-24T16:14 event). **Both fire the same `BRAND_IDENTITY_STATUS_UPDATE` webhook event type** — there is no upgrade-specific event type at the dashboard event-log layer. `VETTED_VERIFIED` is a new state value added to `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` §IdentityStatus this session.
+
+- **Bundle state `UPGRADE` confirmed.** The API enum `UPGRADE` (one of 5 brand states per the Sinch 10DLC OpenAPI spec) was previously unmapped to a dashboard label. 3c observed the dashboard `Bundle - Upgrade` event firing at 2026-05-24T16:13 with the explanatory text `"Upgrading to FULL REGISTRATION."`, transitioning to `Bundle - Approved` ~60 seconds later. **Confirms `UPGRADE` API enum → `Upgrade` dashboard label.** Mapping landed in `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` §Bundle state this session.
+
+- **Brand ID continuity confirmed across the upgrade.** Brand `BTTC6XS` unchanged. Bundle `01kq2jqyhjynvr2wcpp0bbppgr` unchanged. Bundle name, number type, country, address all unchanged. **In-place upgrade on the same brand entity — no new brand minted.** Registration type field flipped Simplified → Full as the only mutation; Approved badge and success banner restored after the vetting window.
+
+- **Existing campaign continuity confirmed; existing campaign throughput tiers did NOT move.** `CU4IUD0` still Active post-upgrade, brand reference still `BTTC6XS`, all four carriers still REGISTERED, number `+12013619609` association preserved. But **T-Mobile Brand Tier still LOW, T-Mobile Daily Cap still 2000, AT&T still 75 msg/min** — the Simplified→Full brand upgrade does NOT retroactively move an existing campaign's carrier throughput tiers. Tier movement, if it happens, is not an automatic consequence of brand upgrade visible at this observation point.
+
+- **Sinch FULL vetting does NOT enforce company-name/public-record consistency at upgrade time.** Brand bundle's Company name field still reads `VAULTED PRESS LLC` after FULL re-vetting returned `VETTED_VERIFIED`, despite SC SOS public records showing `RelayKit LLC` as current name. **RelayKit cannot rely on the FULL upgrade step to catch identity drift on the customer's behalf.** Separately, the brand bundle's Company name should be corrected to RelayKit LLC via `Update brand` — RelayKit operational follow-up, tracked outside this experiment.
+
+- **Campaign-creation wizard is an 8-step flow** (Select numbers → Select brand → Select use case → Supporting Documentation Upload → Campaign overview → Message flow and sample messages → Additional information → Review and finish). Inspection stopped at step 1; the use-case selector (step 3) was not reached; **use-case-level unlocks under FULL not characterized this run.** Not load-bearing for closing 3c — flagged as an open question for a future single-session inspection.
+
+- **Sole Proprietor `brandEntityType` check** not exercised this run. Per `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` the Sole Prop absence is structural to Sinch's 10DLC API enum (not tier-gated), so the most likely answer is "FULL does not add Sole Prop." A one-screenshot capture in a future session would close the question.
+
+### Implications for Phase 2 Session B kickoff
+
+Webhook signature-verification status (no HMAC across the inbound surface) and the four cumulative API/dashboard inconsistencies unchanged; **3c adds no fifth inconsistency.** 3c observed `BRAND_IDENTITY_STATUS_UPDATE` firing dashboard-internally during the upgrade lifecycle; whether the event reaches API-consumer callback URLs is **unconfirmed as of 2026-05-24** — poll-only per current Sinch 10DLC API docs. **Flag as a Phase 2 Session B BDR question for Elizabeth Garner:** is dashboard-internal firing matched by a callback-layer exposure the OpenAPI spec hasn't been updated to reflect, or does API-consumer access still require polling?
+
+### Implications for Phase 5 (Registration Pipeline) wizard design
+
+1. **The "upgrade to Full" customer wizard step is much simpler than the original Phase 5 hypothesis.** Not a multi-step form with document upload. The customer-facing surface needs only: a price disclosure ($44 + whatever margin RelayKit chooses), a "what FULL gets you" capability summary, and a single confirm button. No field collection beyond what Simplified already captured. Wizard design space collapses substantially.
+
+2. **Customer-side fee tiering for the upgrade path** (BACKLOG entry on customer brand-registration path tiering): RelayKit's Sinch-side cost is path-dependent — a Simplified-only customer costs RelayKit $6 (3a); a customer who upgrades to Full costs RelayKit **$50 cumulative** ($6 Simplified + $44 upgrade per 3c). The customer-facing $49 registration fee covers Simplified-only customers comfortably; it is underwater only on the upgrade path, not on every customer. Pricing model needs an upgrade-tier surcharge designed in (specific number TBD by a pricing decision, not this experiment).
+
+3. **"Aegis" surfaces as Sinch's vetting partner** in the upgrade dialog. Voice-and-product principles will push customer-facing RelayKit copy away from the jargon, but the term may surface in compliance documentation, error messages, or back-channel API responses RelayKit eventually has to handle.
+
+4. **Throughput tiers on existing campaigns are sticky across brand upgrade** — Phase 5 wizard cannot promise the customer "upgrade your brand to get better throughput on your existing campaigns" without further evidence. Whether new campaigns under a FULL brand land at higher tiers is an open question for a future inspection.
+
+5. **FULL re-vetting is NOT an identity-drift safety net.** RelayKit's customer-side identity-validation pre-flight (state SOS lookup before brand submission, per `docs/CARRIER_BRAND_REGISTRATION_FIELDS.md` §Resubmission process) remains the only line of defense against name/address drift. The FULL upgrade step does not catch it.
+
+### Implications for Phase 4 / inbound message handling
+
+None. Upgrade flow is brand-side; doesn't touch outbound delivery or inbound handling surfaces.
+
+### Leaves open
+
+1. **New-campaign tier movement under FULL brand.** Existing campaign tiers did not move. Whether a new campaign created under the now-FULL brand gets better tiers requires submitting a new test campaign — out of scope for 3c, flagged for Phase 5.
+2. **Use-case-level unlocks under FULL.** Inspection stopped at step 1 of the campaign-creation wizard; the use-case selector (step 3) not reached. Single-session inspection of step 3 onward would close it.
+3. **Sole Proprietor entity-type check under FULL.** Not exercised. Almost certainly negative (structural absence per the API enum), but a one-screenshot capture would confirm.
+4. **`VETTED_VERIFIED` vs `VERIFIED` intermediate states.** Whether other IdentityStatus values exist during the brief Upgrade-in-progress window was not observable from the dashboard event log (which shows the transition endpoints, not intermediate states). May be observable via 10DLC API polling in a future experiment.
+
+### Status: COMPLETE — captured 2026-05-24.
 
 ---
 
