@@ -5,7 +5,7 @@
 > Not for: active workstream items (MASTER_PLAN phase scope), recorded decisions (DECISIONS), active prototypes (`/explorations/`).
 
 ## Ideas, Deferred Work, and Future Features
-### Last updated: May 20, 2026
+### Last updated: May 24, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -36,9 +36,11 @@
 
 - Configurator conditional-input rendering + Variable identity-vs-default schema distinction — both superseded by `/explorations/configurator-authoring.md` (Session 105), now shipped Session 106 (D-414 + D-415). Retire from BACKLOG.
 
-- **Configurator: double-click variable in preview opens Edit values with that input focused** — quality-of-life fast-follow to D-414. When the visitor double-clicks a variable chip in a rendered message preview, open the category's Edit values surface (desktop expander or mobile modal per viewport) and focus the input for that specific variable. Today the visitor opens Edit values, scans the list, finds the right input — a productive shortcut from the chip they care about. Implementation surface: chip dblclick handler in `configurator-section.tsx` MessageReadCard + `EditValuesForm` accepts an `autoFocusVariable` prop that focuses the matching input on mount. (Origin: Session 106 close-out — configurator-authoring fast-follow)
+- Configurator: double-click variable in preview opens Variables with that input focused — shipped Session 107 (commit 5c7dfd5) with the identity-token branch focusing the top-of-page businessName input. Retire from BACKLOG.
 
 - **Configurator: per-message "revert to RelayKit's default" without clearing the category** — remove a single message's `customBodies` entry without touching the rest of the category. Today the only revert paths are the per-category "Reset to defaults" kebab (wipes everything in the category) and the edit card's tone pills (restore the variant body, but the message stays pinned to that tone). Per-message revert lives on the read card's kebab or the edit card's footer; one action, scoped to one message. Affects `useConfiguratorState` (`setMessageEdit(catId, msgId, undefined)` already clears both buckets — wire a UI affordance to it) and a small UI surface on the message card. (Origin: Session 106 close-out — configurator-authoring fast-follow)
+
+- **Configurator: slash command for variable insertion in the message editor** — Tiptap suggestion-extension + command menu. Typing `/` inside the Tiptap message editor opens a contextual list of the category's variables; Enter inserts a chip. Needs its own session; open question whether it coexists with or replaces the current "Insert variable" popover (chevron-dropdown trigger). Implementation surface: new Tiptap extension wrapping the suggestion API (similar shape to `@tiptap/extension-mention`'s `Suggestion`), a floating command-menu renderer (likely reusing the existing dropdown idioms), and a coexistence/replacement decision before build. (Origin: Session 107 close-out — configurator fast-follow)
 
 - **Variable capitalization, possessive, and grammar mechanics** — Tokens like `{{business_type}}`, `{{service_type}}`, `{{customer_name}}` may need to be capitalized at sentence start, possessive when followed by `'s`, pluralized, or grammatically inflected. The corpus doesn't currently encode inflection hints; the render layer doesn't apply transforms. Touches: corpus schema (do tokens carry inflection metadata?), render layer (auto-capitalize at sentence start? auto-possessive?), authoring (do authors write `{{business_type|capitalize}}` or does the system infer from position?). Affects everywhere — configurator preview, workspace editing, message delivery. Likely needed before Marketing ships. (Origin: Session 95 D-380 follow-up review)
 

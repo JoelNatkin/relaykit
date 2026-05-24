@@ -46,7 +46,7 @@ Phase 1 (Sinch Proving Ground) is the active phase by the numbered sequence belo
 1. **Blog infrastructure + first post** — in progress (branch `feat/blog-scaffold`).
 2. **Live-site tweaks** — marketing-site polish.
 3. **Configurator message refinement** — tighten the configurator's message content.
-4. **Configurator authoring layer** — `categoryValues` state, Edit values forms, char-warning, reset affordances (Session 106 design, D-414). Shipped Session 106.
+4. **Configurator authoring layer** — `categoryValues` state, Variables forms, char-warning, reset affordances (Session 106 design, D-414). Shipped Session 106; fast-follows (double-click variable → focused Variables form; live chip refresh via React context) shipped Session 107.
 5. **First Indie Hackers post** — the launch-adjacent introduction post.
 
 Only once the checklist clears do the Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) resume. This checklist is sequencing in front of Phase 1, not a renumbering of the phase list below.
