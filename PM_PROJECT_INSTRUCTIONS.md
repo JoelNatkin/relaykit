@@ -451,6 +451,7 @@ Shared diagnosis: PM proposing "clean" elaborations that affect no builder decis
 - Snapshot fields in REPO_INDEX describe state, not commits — no hash references in Meta-block fields.
 - Methodology rules live in numbered checklists, not standalone prose, when CC must act on them.
 - Verify state at session start with `git status` and `git log --oneline -5` against `origin/main` when state-tracking docs disagree.
+- When a CC prompt will trigger permission approvals (gated verbs: git push, checkout/reset/restore, rm, .env/secrets, curl), list them in a heads-up block above the prompt — each verb with an explicit approve / do-not-approve. Default expected approvals can be terse; flag any do-not-approve clearly.
 
 ### PM behavior
 
