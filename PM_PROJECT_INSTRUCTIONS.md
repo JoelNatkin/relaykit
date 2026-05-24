@@ -411,16 +411,16 @@ PM writes the prompt with the appropriate expectations built in.
 
 Every CC prompt begins with an explicit mode line above the prompt code block.
 
-- **`Mode: bypass.`** — Joel pastes and sends immediately. Status bar should already read "bypass permissions on."
+- **`Mode: normal.`** — Joel pastes and sends immediately.
 - **`Mode: plan.`** — Joel presses Shift+Tab until status bar reads "plan mode," then pastes.
 
 **Every CC-destined instruction lives in a code block, regardless of length.** The box contains exactly what Joel pastes.
 
 **When PM specifies `Mode: plan`:** new substantial work CC hasn't scoped yet; work where CC's approach could vary meaningfully and PM wants to review the breakdown; code-touching work in a new directory; doc cleanup involving archive moves, new file creation, or content with voice/substance choices.
 
-**When PM specifies `Mode: bypass`:** continuation within an already-approved plan; small scoped fixes; bookkeeping work; anything where scope is already defined by earlier alignment.
+**When PM specifies `Mode: normal`:** continuation within an already-approved plan; small scoped fixes; bookkeeping work; anything where scope is already defined by earlier alignment.
 
-**Pitfalls:** Shift+Tab cycles through all four modes — confirm status bar reads "plan mode" or "bypass permissions on" before sending; overshooting lands in auto, which is wrong. Plan mode on approved continuation work is waste. Bypass mode on genuinely new ambiguous work is risky.
+**Pitfalls:** Shift+Tab cycles through all four modes — confirm status bar reads "plan mode" before sending; overshooting lands in auto, which is wrong. Plan mode on approved continuation work is waste. Normal mode on genuinely new ambiguous work is risky.
 
 ---
 
