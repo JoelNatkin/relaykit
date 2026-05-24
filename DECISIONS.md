@@ -1950,3 +1950,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none. Qualifies the deferral posture of D-379/D-381 — workspace persistence architecture stays deferred in general, but this one slice is pulled forward deliberately. D-379/D-381 carry a Note: annotation in the same commit.
 
 **Affects:** marketing-site configurator state model (ConfiguratorState gains a structured categoryValues map); the forthcoming configurator-authoring feature (see /explorations/configurator-authoring.md); workspace persistence design (this slice becomes its first concrete input); MASTER_PLAN (flag — phase ordering may need a note once the slice's size is known; deferred to next session per the exploration doc).
+
+## D-415 — Configurator compliance is severity-tiered
+
+**Decided:** 2026-05-23 (Session 106)
+
+**Decision:** `checkCompliance` returns `issues: ComplianceIssue[]` where each issue carries `severity: "blocker" | "warning"`. `isCompliant` means "no blockers" — the configurator's Save gate. Length-over-160 is a warning (the message still functions; the visitor is billed for two segments; the carrier reassembles for the recipient). Non-GSM-7 characters and missing STOP/opt-out language on Marketing-shaped categories remain blockers (real carrier-compliance failures). A future workspace consumer that treats every issue as blocking reads `issues.length === 0` directly without changing checkCompliance.
+
+**Why:** The configurator is the lenient authoring stage; the workspace is the strict pre-carrier stage. Per the configurator-authoring exploration §1: "an over-length message is a soft warning in the configurator and a hard gate in the workspace — same message, same data; the workspace re-judges it under stricter rules." Without severity tiers, length-over-160 was disabling Save in the configurator edit card — contradicting the lenient-stage commitment. Encoding severity at the issue level — rather than the consumer's responsibility to interpret — keeps configurator and workspace honest: configurator gates on `!issues.some(i => i.severity === "blocker")`, workspace can gate on `issues.length === 0`, both reading the same authored content.
+
+**Rejected alternative:** Flat `issues: string[]` where any issue blocks everywhere. Rejected because it forces a choice between configurator over-blocking (disabling Save on a length warning, breaking the lenient stage) or workspace under-blocking (allowing an over-length message through to carrier submission, breaking the strict stage). Severity-at-issue gives each consumer the right gate without consumer-side string-matching of issue text.
+
+**Supersedes:** none.
+
+**Affects:** `marketing-site/lib/configurator/compliance.ts` (`ComplianceIssue` type + `severity` discriminator + `isCompliant` re-defined as "no blockers"); the two edit-card consumers (`message-edit-card.tsx`, `custom-message-card.tsx`) — warnings render `text-text-warning-primary`, blockers render `text-text-error-primary`; future workspace stage which reads the same result with a stricter gate.

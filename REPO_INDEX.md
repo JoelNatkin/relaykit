@@ -8,9 +8,9 @@
 
 - Last updated: 2026-05-23
 - Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist gates Phase 1 experiment pickup
-- Decision count: 329 active, latest D-414; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: `main` only — no unmerged feature branches. Session 104 landed one `--no-ff` feature merge (`fix/configurator-identity-token-binding` at `24988f6` adding D-413); Session 105 is doc-only on `main` (D-414 + the configurator-authoring exploration).
-- Active explorations: 2 — golden-path-gtm (strategy sketch; exploring); configurator-authoring (feature design; exploring)
+- Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20.
+- Branch state: `main` only — no unmerged feature branches. Session 106 landed the configurator-authoring build wave as four sequential commits on `main` (70db7cb → d53c0e3 → 2702052 → a3ba24b); no feature branch.
+- Active explorations: 1 — golden-path-gtm (strategy sketch; exploring). The configurator-authoring exploration was promoted to D-414 + D-415 this session; its design substance is now canonical in PROTOTYPE_SPEC §Configurator. File retained at `/explorations/configurator-authoring.md` as historical record.
 
 ## Active explorations
 
@@ -19,7 +19,6 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | Name | Status | Path | Description |
 |------|--------|------|-------------|
 | golden-path-gtm | exploring | `/explorations/golden-path-gtm.md` | Golden-path-led GTM strategy sketch — starter kits as the on-ramp — recast as one bet + three positioning calls (launch redefinition, verification posture, marketing posture). Supersedes the prior sla-led-gtm sketch. Not canon. |
-| configurator-authoring | exploring | `/explorations/configurator-authoring.md` | Configurator as lightweight authoring tool — per-category variable editing, max persistence, dual copy output. Sits on top of D-414's storage commitment. Not canon. |
 
 ## Canonical docs (root)
 
@@ -27,19 +26,19 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
 | `REPO_INDEX.md` | 2026-05-23 | This file: doc inventory, current-state pointers, canonical-sources index. |
-| `MASTER_PLAN.md` | 2026-05-15 | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
+| `MASTER_PLAN.md` | 2026-05-23 (Session 106 — pre-launch checklist item 4 added for configurator authoring layer, D-414/D-415, shipped this session) | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-22 (Session 103 — PM-behavior section compressed) | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
-| `DECISIONS.md` | 2026-05-23 (Session 105 — D-414 added; D-379/D-381 `Note:` annotations. Session 104 added D-413 ahead of this row-bump.) | Active product decisions D-84+. |
+| `DECISIONS.md` | 2026-05-23 (Session 106 — D-415 added for the configurator compliance severity model. Session 105 added D-414 + D-379/D-381 `Note:` annotations; Session 104 added D-413.) | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
 | `REPO_INDEX_CHANGE_LOG_ARCHIVE.md` | 2026-04-27 | Archived REPO_INDEX change-log entries (Sessions 1–49 era). |
-| `PROTOTYPE_SPEC.md` | 2026-05-23 (Session 105 — line 177 D-413 carry-forward: `workspace_name`/`community_name` identity tokens noted as collapsed to `business_name` in the resolver preview) | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
+| `PROTOTYPE_SPEC.md` | 2026-05-23 (Session 106 — §Configurator rewritten for the shipped authoring layer: Edit values form + mobile modal, char-warning, reset kebabs, MessageEditDecision API, severity-tiered compliance; D-414 + D-415) | Screen-level UI specs for `/prototype` and stabilized marketing-site surfaces. |
 | `WORKSPACE_DESIGN_SPEC.md` | 2026-05-13 | Post-signup workspace architecture (state machine, layout systems). |
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-23 (Session 106 close-out) | Previous CC session state (transient, overwritten each close-out). |
-| `BACKLOG.md` | 2026-05-23 (Session 105 — configurator conditional-rendering + identity-vs-default schema entries retired to `/explorations/configurator-authoring.md`) | Parked ideas; never build without explicit promotion. |
+| `CC_HANDOFF.md` | 2026-05-23 (Session 106 close-out — configurator-authoring build wave) | Previous CC session state (transient, overwritten each close-out). |
+| `BACKLOG.md` | 2026-05-23 (Session 106 — two configurator-authoring fast-follows added: double-click variable → Edit values focused; per-message revert. Prior Session 105 entry updated to note shipped this session.) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
 
@@ -51,7 +50,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Tier 1 project knowledge). |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-17 | AGENTS.md / cursor-rules research informing Phase 8; retires when Phase 8 closes. |
 | `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-04-30 | Sinch/TCR brand registration field reference (Experiment 3a capture). |
-| `PRODUCT_SUMMARY.md` | 2026-05-22 (Session 103 close-out — §3 all 9 categories authored/live; combinations dropdown removed) | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
+| `PRODUCT_SUMMARY.md` | 2026-05-23 (Session 106 — §3 configurator paragraph rewritten: configurator is now an authoring tool, not just a preview; D-414 + D-415) | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
 | `LEGAL_DOC_DEFERRED_CLAIMS.md` | 2026-04-28 | Tracking doc for claims removed from `/marketing-site` legal docs pending feature ship, with restoration triggers. |
 | `PRE_LAUNCH_DEVIATIONS.md` | 2026-05-21 (Session 101 — entry #3 "After:" aligned to the new post-strip live string) | Tracking doc for marketing-site pre-launch-posture copy/UI deviations, with per-entry pre-launch-only vs permanent classification and restoration triggers. |
 | `VERIFICATION_SPEC.md` | 2026-05-13 | Canonical OTP/verification feature surface (server, SDK, dashboard, onboarding); drives D-369/D-370/D-371. |
@@ -194,6 +193,23 @@ Below `md:` (768px) the home configurator's categories panel collapses to a tapp
 | `marketing-site/components/configurator/category-list.tsx` | Shared presentational panel content — the "Categories" heading + 9 category cards. Consumed by both the desktop categories card and the mobile full-page modal so the surfaces stay byte-identical. Carries the `ConfiguratorCheckbox` helper. (The preset-dropdown JSX + `PRESETS` constant were removed Session 103 per D-411.) |
 | `marketing-site/components/configurator/mobile-categories-summary.tsx` | Collapsed-state summary row (mobile only, `md:hidden`). "Categories" label + count-based summary text ("Select categories" / one name / two names / "Name1, Name2 +N more") + "Edit ›" affordance. Whole row is a 64px+ button that opens the modal. |
 | `marketing-site/components/configurator/mobile-categories-modal.tsx` | Full-page mobile modal (`md:hidden`). Sticky header (44px X close, ESC support, body-scroll lock) + scrollable body rendering `<CategoryList>`. Body-scrolls (not shell-scrolls) layout pattern so the sticky header pins. Instant-apply — every toggle calls the same setter the desktop panel uses; modal stays open across selections. |
+
+## configurator authoring layer (Session 106 — D-414 + D-415)
+
+The configurator becomes a lightweight authoring tool: per-category variable editing (Edit values form, desktop expander + mobile full-page modal), char-warning on read cards when a rendered message exceeds a single SMS segment, per-category and global reset kebabs that restore defaults, and a severity-tiered compliance model that gates Save on real carrier-compliance blockers while letting length warnings through. State lives in `categoryValues[catId]` with four buckets per category — `variables`, `customBodies`, `addedMessages`, `messageTones` (Resolved §1 of `/explorations/configurator-authoring.md`, now promoted). `STATE_VERSION` bumped 3 → 4 — pre-existing v3 state drops silently per the D-409 mergeStored precedent.
+
+| Path | Purpose |
+|------|---------|
+| `marketing-site/components/configurator/edit-values-form.tsx` | Shared presentational Edit-values form — one labelled input per non-identity variable in the category's catalog (identity tokens filtered via `isIdentityToken` exported from `render.ts`), a "Used in: …" hint listing message names that reference each variable. Live onChange writes through `setCategoryVariable`. Consumed by both the desktop inline expander and the mobile full-page modal. |
+| `marketing-site/components/configurator/edit-values-modal.tsx` | Full-page mobile wrapper mirroring `MobileCategoriesModal` — sticky header (X close, ESC) + body-scroll lock + body-scrolls layout. Carries a JS-level `matchMedia("(max-width: 767.98px)")` viewport gate so the scroll-lock effect doesn't fire on desktop (where the desktop inline expander owns the surface) — `display: none` from `md:hidden` does not stop React effects. |
+| `marketing-site/components/configurator/char-warning-icon.tsx` | AlertTriangle icon in `text-fg-warning-secondary` with a Tooltip ("Over 160 characters — counts as 2 messages."). Renders on read cards (both MessageReadCard and CustomMessageCard's read branch) between the message title and the edit pencil when `compliance.isOverSegmentLength` is true. Non-blocking — purely informational. |
+| `marketing-site/components/configurator/kebab-menu.tsx` | Reusable DotsVertical overflow menu — same dropdown idioms as the +Variable picker (outside-click + ESC close, `role=menu` items). Items pattern supports optional `destructive: true` rendering in `text-text-error-primary`. Used for the global "Reset all to defaults" (next to Copy) and per-category "Reset to defaults" (next to each Edit values trigger); both render in normal `text-text-secondary` (D-415 reset framing — the action restores defaults, not destroys). |
+
+State + compliance surface this commit also reshaped:
+- `marketing-site/lib/configurator/use-configurator-state.ts` — `STATE_VERSION 4`; `ConfiguratorState.categoryValues: Record<string, CategoryValues>`; new actions `setMessageEdit` (replaces `setMessageOverride` — discriminated `{ kind: "tone" | "custom" }` decision), `setCategoryVariable`, `clearCategory`, `clearAll`. `AddedMessage` replaces `CustomMessage` as the type for visitor-authored messages, stored in `categoryValues[catId].addedMessages: AddedMessage[]` (array preserved per pressure-test §4b). `MessageOverride` / `OverrideTone` / `MessageState.override` / `CategoryState.customMessages` retired.
+- `marketing-site/lib/configurator/compliance.ts` — `ComplianceResult.issues: ComplianceIssue[]` where each issue carries `severity: "blocker" | "warning"` (D-415). `isCompliant` re-defined as "no blockers". `isOverSegmentLength: boolean` surfaced separately for the read-card warning gate.
+- `marketing-site/lib/message-library/render.ts` — `resolveVariableExample` / `interpolateBody` / `flattenBody` accept an options arg `{ businessName?, categoryVariables? }`. Resolution order: identity token → `categoryVariables` → corpus default. New exported `isIdentityToken(name)` helper.
+- `marketing-site/lib/editor/{variable-node,variable-node-view,message-editor}` — `categoryVariables` threaded through Tiptap option → NodeView → chip preview, so atomic variable chips inside the editor reflect authored values.
 
 ## Subdirectories
 
