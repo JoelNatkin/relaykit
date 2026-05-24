@@ -30,6 +30,8 @@ export interface EditValuesModalProps {
   values: EditValuesFormProps["values"];
   onChange: EditValuesFormProps["onChange"];
   onClose: () => void;
+  focusVariableName?: EditValuesFormProps["focusVariableName"];
+  onFocusDelivered?: EditValuesFormProps["onFocusDelivered"];
 }
 
 export function EditValuesModal({
@@ -37,6 +39,8 @@ export function EditValuesModal({
   values,
   onChange,
   onClose,
+  focusVariableName,
+  onFocusDelivered,
 }: EditValuesModalProps) {
   // Viewport gating — the modal is mobile-only (md:hidden in CSS), but
   // `display: none` does NOT prevent React effects from firing. Without
@@ -114,6 +118,8 @@ export function EditValuesModal({
             category={category}
             values={values}
             onChange={onChange}
+            focusVariableName={focusVariableName}
+            onFocusDelivered={onFocusDelivered}
           />
         </div>
       </div>

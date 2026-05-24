@@ -35,6 +35,8 @@ interface MessageEditCardProps {
   categoryVariables: Record<string, string>;
   /** True for Marketing-shaped categories — drives the opt-out compliance rule. */
   requiresStop: boolean;
+  /** Invoked when a variable chip in the editor is double-clicked. */
+  onVariableDoubleClick?: (variableName: string) => void;
   onSave: (decision: MessageEditDecision) => void;
   onCancel: () => void;
 }
@@ -72,6 +74,7 @@ export function MessageEditCard({
   customBody,
   categoryVariables,
   requiresStop,
+  onVariableDoubleClick,
   onSave,
   onCancel,
 }: MessageEditCardProps) {
@@ -190,6 +193,7 @@ export function MessageEditCard({
             body={editBody}
             variables={variables}
             categoryVariables={categoryVariables}
+            onVariableDoubleClick={onVariableDoubleClick}
             className="text-sm leading-relaxed text-text-secondary outline-none"
             onChange={handleTextChange}
             onReady={(editor) => {

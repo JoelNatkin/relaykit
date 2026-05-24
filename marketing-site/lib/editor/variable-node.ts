@@ -2,6 +2,10 @@
  * Tiptap node for message variables. Variables render as atomic,
  * indivisibly-selectable tokens (D-350). The category `variables` catalog
  * flows through to the NodeView so it can resolve preview values.
+ *
+ * Per-category authored values (D-414) are surfaced through the
+ * CategoryVariablesContext, not extension options — see
+ * `./category-variables-context.ts` for the rationale.
  */
 
 import { Node, mergeAttributes } from "@tiptap/core";
@@ -12,10 +16,12 @@ import { VariableNodeView } from "./variable-node-view";
 export interface VariableNodeOptions {
   variables: Variable[];
   /**
-   * Per-category authored variable values (D-414 / configurator-authoring
-   * Resolved §1). Read by the NodeView when resolving chip preview text.
+   * Invoked when a chip is double-clicked — the configurator routes this
+   * to opening the category's Variables form with the named variable's
+   * input focused (or to the top-of-page businessName input when the token
+   * is an identity token per D-413).
    */
-  categoryVariables?: Record<string, string>;
+  onVariableDoubleClick?: (variableName: string) => void;
 }
 
 declare module "@tiptap/core" {
@@ -30,7 +36,7 @@ export const VariableNode = Node.create<VariableNodeOptions>({
   name: "variable",
 
   addOptions() {
-    return { variables: [], categoryVariables: {} };
+    return { variables: [] };
   },
 
   group: "inline",

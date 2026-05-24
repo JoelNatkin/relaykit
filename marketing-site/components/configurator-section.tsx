@@ -21,6 +21,7 @@ import {
   CATEGORIES,
   interpolateBody,
   flattenBody,
+  isIdentityToken,
 } from "@/lib/message-library";
 import type { Category, Message, VariantTone } from "@/lib/message-library";
 import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
@@ -95,6 +96,8 @@ interface MessageReadCardProps {
   /** True for Marketing-shaped categories — affects compliance issues, not the length warning. */
   requiresStop: boolean;
   onEdit: () => void;
+  /** Double-click on a variable chip — opens the Variables form focused on that variable. */
+  onVariableDoubleClick: (variableName: string) => void;
 }
 
 function MessageReadCard({
@@ -106,6 +109,7 @@ function MessageReadCard({
   businessName,
   requiresStop,
   onEdit,
+  onVariableDoubleClick,
 }: MessageReadCardProps) {
   const segments = interpolateBody(body, variables, {
     businessName,
@@ -163,7 +167,18 @@ function MessageReadCard({
         <p className="text-sm leading-relaxed break-words text-text-secondary">
           {segments.map((seg, i) =>
             seg.isVariable ? (
-              <span key={i} className={VARIABLE_TOKEN_CLASSES}>
+              // Chips swallow single-click so the parent edit handler
+              // doesn't open the edit card on the first half of a
+              // double-click. Double-click routes to the Variables form.
+              <span
+                key={i}
+                className={`${VARIABLE_TOKEN_CLASSES} cursor-pointer`}
+                onClick={(e) => e.stopPropagation()}
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  if (seg.token) onVariableDoubleClick(seg.token);
+                }}
+              >
                 {seg.text}
               </span>
             ) : (
@@ -201,11 +216,22 @@ export function ConfiguratorSection() {
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
-  // Which category's Edit-values surface is open (desktop expander OR
+  // Which category's Variables surface is open (desktop expander OR
   // mobile modal, driven by the same state). Only one is open at a time.
   const [editValuesCategoryId, setEditValuesCategoryId] = useState<string | null>(
     null,
   );
+  // Variable name to focus inside the Variables form on next open/update.
+  // Set when a chip is double-clicked; cleared by the form once focus has
+  // been delivered (so subsequent unfocused opens don't re-focus stale state).
+  const [focusVariableOnOpen, setFocusVariableOnOpen] = useState<string | null>(
+    null,
+  );
+  // Identity-token branch of the double-click handler targets the top-of-
+  // page "Your business name" input via this ref (D-413 — identity tokens
+  // are filtered out of the Variables form).
+  const businessNameInputRef = useRef<HTMLInputElement | null>(null);
+
   const editValuesCategory = useMemo(
     () =>
       editValuesCategoryId
@@ -213,6 +239,23 @@ export function ConfiguratorSection() {
         : null,
     [editValuesCategoryId],
   );
+
+  function handleVariableDoubleClick(
+    categoryId: string,
+    variableName: string,
+  ) {
+    if (isIdentityToken(variableName)) {
+      // Identity tokens (business_name / workspace_name / community_name,
+      // per D-413) live on the top-of-page input, not in the Variables form.
+      const input = businessNameInputRef.current;
+      if (!input) return;
+      input.scrollIntoView({ block: "center", behavior: "smooth" });
+      input.focus();
+      return;
+    }
+    setEditValuesCategoryId(categoryId);
+    setFocusVariableOnOpen(variableName);
+  }
 
   const { openModal, setSummary } = useWaitlist();
   const posthog = usePostHog();
@@ -383,6 +426,8 @@ export function ConfiguratorSection() {
             setCategoryVariable(editValuesCategoryId, name, value);
           }}
           onClose={() => setEditValuesCategoryId(null)}
+          focusVariableName={focusVariableOnOpen}
+          onFocusDelivered={() => setFocusVariableOnOpen(null)}
         />
         <div className="mx-auto max-w-5xl px-6">
           <div>
@@ -461,6 +506,7 @@ export function ConfiguratorSection() {
 
               <div className="mt-4">
                 <input
+                  ref={businessNameInputRef}
                   type="text"
                   value={state.businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
@@ -532,6 +578,10 @@ export function ConfiguratorSection() {
                             onChange={(name, value) =>
                               setCategoryVariable(category.id, name, value)
                             }
+                            focusVariableName={focusVariableOnOpen}
+                            onFocusDelivered={() =>
+                              setFocusVariableOnOpen(null)
+                            }
                           />
                         </div>
                       ) : null}
@@ -556,6 +606,9 @@ export function ConfiguratorSection() {
                                 customBody={customBody}
                                 categoryVariables={cv.variables}
                                 requiresStop={requiresStop}
+                                onVariableDoubleClick={(name) =>
+                                  handleVariableDoubleClick(category.id, name)
+                                }
                                 onSave={(decision) => {
                                   setMessageEdit(
                                     category.id,
@@ -605,6 +658,9 @@ export function ConfiguratorSection() {
                                   messageId: message.id,
                                 })
                               }
+                              onVariableDoubleClick={(name) =>
+                                handleVariableDoubleClick(category.id, name)
+                              }
                             />
                           );
                         })}
@@ -648,6 +704,9 @@ export function ConfiguratorSection() {
                                 removeCustomMessage(category.id, cm.localId);
                                 setEditTarget(null);
                               }}
+                              onVariableDoubleClick={(name) =>
+                                handleVariableDoubleClick(category.id, name)
+                              }
                             />
                           );
                         })}
@@ -667,6 +726,9 @@ export function ConfiguratorSection() {
                             isEditing
                             isNew
                             onEditRequest={() => {}}
+                            onVariableDoubleClick={(name) =>
+                              handleVariableDoubleClick(category.id, name)
+                            }
                             onSave={(next) => {
                               addCustomMessage(category.id, next);
                               posthog?.capture(

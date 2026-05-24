@@ -37,6 +37,8 @@ interface CustomMessageCardProps {
   onCancel: () => void;
   /** Present for saved messages — absent for a never-saved draft. */
   onRemove?: () => void;
+  /** Double-click on a variable chip — opens the Variables form focused on that variable. */
+  onVariableDoubleClick?: (variableName: string) => void;
 }
 
 function PencilIcon() {
@@ -71,6 +73,7 @@ export function CustomMessageCard({
   onSave,
   onCancel,
   onRemove,
+  onVariableDoubleClick,
 }: CustomMessageCardProps) {
   const editorRef = useRef<Editor | null>(null);
   const insertWrapperRef = useRef<HTMLDivElement>(null);
@@ -180,7 +183,19 @@ export function CustomMessageCard({
           <p className="text-sm leading-relaxed break-words text-text-secondary">
             {segments.map((seg, i) =>
               seg.isVariable ? (
-                <span key={i} className={VARIABLE_TOKEN_CLASSES}>
+                // Chips swallow single-click so the parent edit handler
+                // doesn't open the edit card on the first half of a
+                // double-click. Double-click routes to the Variables form.
+                <span
+                  key={i}
+                  className={`${VARIABLE_TOKEN_CLASSES} cursor-pointer`}
+                  onClick={(e) => e.stopPropagation()}
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    if (seg.token && onVariableDoubleClick)
+                      onVariableDoubleClick(seg.token);
+                  }}
+                >
                   {seg.text}
                 </span>
               ) : (

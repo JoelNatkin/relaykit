@@ -20,7 +20,7 @@
  * modal so the two surfaces stay byte-identical.
  */
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import type { Category } from "@/lib/message-library";
 import { isIdentityToken } from "@/lib/message-library";
 
@@ -29,9 +29,22 @@ export interface EditValuesFormProps {
   /** Current per-category variable values. */
   values: Record<string, string>;
   onChange: (variableName: string, value: string) => void;
+  /**
+   * When non-null, the matching variable's input is focused after render
+   * (used by the double-click-to-edit flow). The parent clears the signal
+   * via onFocusDelivered once focus has landed.
+   */
+  focusVariableName?: string | null;
+  onFocusDelivered?: () => void;
 }
 
-export function EditValuesForm({ category, values, onChange }: EditValuesFormProps) {
+export function EditValuesForm({
+  category,
+  values,
+  onChange,
+  focusVariableName,
+  onFocusDelivered,
+}: EditValuesFormProps) {
   const editableVariables = useMemo(
     () => category.variables.filter((v) => !isIdentityToken(v.name)),
     [category.variables],
@@ -54,6 +67,34 @@ export function EditValuesForm({ category, values, onChange }: EditValuesFormPro
     }
     return map;
   }, [editableVariables, category.messages]);
+
+  // Focus delivery — runs after the inputs mount/update. We look up the
+  // input by its deterministic id (set on each input below) so the form
+  // doesn't need to manage a ref-map keyed by variable name. Identity
+  // tokens are filtered out above, so a focus signal for one falls through
+  // silently — the configurator routes identity-token double-clicks to the
+  // top-of-page input directly.
+  useEffect(() => {
+    if (!focusVariableName) return;
+    const referenced = editableVariables.some(
+      (v) => v.name === focusVariableName,
+    );
+    if (!referenced) return;
+    const inputId = `edit-values-${category.id}-${focusVariableName}`;
+    const el = document.getElementById(inputId) as HTMLInputElement | null;
+    if (el) {
+      el.focus();
+      // Position the caret at the end rather than selecting the whole value —
+      // less destructive for a visitor who wants to append.
+      const len = el.value.length;
+      try {
+        el.setSelectionRange(len, len);
+      } catch {
+        // Some input types reject setSelectionRange; ignore.
+      }
+    }
+    onFocusDelivered?.();
+  }, [focusVariableName, editableVariables, category.id, onFocusDelivered]);
 
   if (editableVariables.length === 0) {
     return (

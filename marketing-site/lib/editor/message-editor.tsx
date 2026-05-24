@@ -4,6 +4,10 @@
  * Thin Tiptap wrapper for editing a single SMS message body. The external
  * interface is the message-library `{{double-brace}}` body format. Enter is
  * suppressed (SMS messages are single-line).
+ *
+ * `categoryVariables` is passed through React context (not extension
+ * options) so chip previews stay reactive — see
+ * `./category-variables-context.ts`.
  */
 
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
@@ -13,6 +17,7 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
 import type { Variable } from "@/lib/message-library/types";
 import { VariableNode } from "./variable-node";
+import { CategoryVariablesContext } from "./category-variables-context";
 import { bodyToContent, docToBody } from "./template-serde";
 
 interface MessageEditorProps {
@@ -21,10 +26,12 @@ interface MessageEditorProps {
   /** The message's category variable catalog — drives token recognition + previews. */
   variables: Variable[];
   /**
-   * Per-category authored variable values (D-414). Threaded into the
-   * VariableNode so chip preview text reflects authored values.
+   * Per-category authored variable values (D-414). Surfaced via context so
+   * NodeView chips re-render reactively without remounting the editor.
    */
   categoryVariables?: Record<string, string>;
+  /** Invoked when a chip is double-clicked — see VariableNode.onVariableDoubleClick. */
+  onVariableDoubleClick?: (variableName: string) => void;
   disabled?: boolean;
   className?: string;
   onChange: (body: string) => void;
@@ -35,19 +42,29 @@ export function MessageEditor({
   body,
   variables,
   categoryVariables,
+  onVariableDoubleClick,
   disabled = false,
   className,
   onChange,
   onReady,
 }: MessageEditorProps) {
   const lastEmittedRef = useRef<string>(body);
+  // Mutable handle so the editor's extension can always reach the latest
+  // double-click callback without needing the extensions array rebuilt.
+  const dblClickRef = useRef<typeof onVariableDoubleClick>(onVariableDoubleClick);
+  useEffect(() => {
+    dblClickRef.current = onVariableDoubleClick;
+  }, [onVariableDoubleClick]);
 
   const editor = useEditor({
     extensions: [
       Document,
       Paragraph,
       Text,
-      VariableNode.configure({ variables, categoryVariables }),
+      VariableNode.configure({
+        variables,
+        onVariableDoubleClick: (name: string) => dblClickRef.current?.(name),
+      }),
     ],
     content: bodyToContent(body, variables),
     editable: !disabled,
@@ -101,5 +118,9 @@ export function MessageEditor({
     if (editor && onReady) onReady(editor);
   }, [editor, onReady]);
 
-  return <EditorContent editor={editor} />;
+  return (
+    <CategoryVariablesContext.Provider value={categoryVariables}>
+      <EditorContent editor={editor} />
+    </CategoryVariablesContext.Provider>
+  );
 }
