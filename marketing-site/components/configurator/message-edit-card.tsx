@@ -8,7 +8,7 @@
  * carries either, the page-level tone toggle no longer drives it.
  */
 
-import { HelpCircle } from "@untitledui/icons";
+import { ChevronDown, HelpCircle } from "@untitledui/icons";
 import type { Editor } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
 import { MessageEditor } from "@/lib/editor/message-editor";
@@ -262,6 +262,7 @@ export function MessageEditCard({
                 className="inline-flex cursor-pointer items-center gap-1 py-1.5 text-xs font-semibold whitespace-nowrap text-text-brand-secondary transition-colors duration-100 hover:text-text-brand-secondary_hover"
               >
                 Insert variable
+                <ChevronDown className="size-3.5" />
               </button>
               {isInsertOpen ? (
                 <div
