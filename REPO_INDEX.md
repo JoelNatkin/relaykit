@@ -7,7 +7,7 @@
 ## Meta
 
 - Last updated: 2026-05-24
-- Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist complete, experiments 2b/3c/4 are the current active work with Phase 2 Session B kickoff next
+- Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist complete; 2b inbound MO shape complete (2026-05-24); experiments 3c (Simplified→Full brand upgrade) and 4 (STOP/START/HELP) remain before Phase 2 Session B kickoff
 - Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20.
 - Branch state: `main` only — no unmerged feature branches. Session 107 landed three follow-up commits on `main` after Session 106's configurator-authoring wave — `e5cd362` (mobile-input zoom rule + char-warning copy + Variables/Insert variable rename), `5c7dfd5` (double-click variable → focused Variables form + chip refresh via React context), `f7dfe94` (chevron on Insert variable affordance). The chevron commit and the doc-only close-out commit are pending PM push approval at session close.
 - Active explorations: 1 — golden-path-gtm (strategy sketch; exploring). The configurator-authoring exploration remains at `/explorations/configurator-authoring.md` with its Session 106 promotion header intact — its Resolved §1–§5 are all shipped (Session 106 + the Session 107 fast-follows that built on them); Resolved §2 (configurator → workspace handoff) still awaits a workspace session.
@@ -37,7 +37,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-24 (Session 108 close-out — MASTER_PLAN status correction: pre-launch checklist complete; Active focus rewritten for Phase 1 experiments) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-24 (Session 109 close-out — Experiment 2b inbound MO shape captured; .pm-review.md gitignore hygiene; Phase 4 MO-correlation open question surfaced as carry-forward) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-24 (Session 107 — double-click variable entry retired as shipped; slash-command-for-variable-insertion entry added.) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -221,5 +221,5 @@ Session 107 also added a global mobile-input rule at `marketing-site/app/globals
 - `/docs/archive` — superseded PRDs and old strategy
 - `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`. Current outputs: `audits/prototype-inventory-2026-05-13.md` (read-only inventory of /prototype/ that drove the Session 87 archive operation). `audits/research/2026-05-16/` holds the 9 per-category lead-magnet research files for the Wave 2 message-library workstream (templates scaffolded Session 91; research content + §6 RESOLVED/DEFERRED/D-link resolutions populated 2026-05-17, Session 93).
 - `/explorations` — sandbox files (see Active explorations above)
-- `/experiments` — Phase 1 Sinch proving-ground throwaway code
+- `/experiments` — Phase 1 Sinch proving-ground throwaway code. Findings + fixtures captured in `experiments/sinch/experiments-log.md`. Status as of 2026-05-24: Experiments 1/1b/2a/3a/3b/2b complete; 3c (brand upgrade) and 4 (STOP/START/HELP) remain. 2b added fixture `experiments/sinch/fixtures/exp-02b-mo-inbound.json` (bidirectional MO + DR capture, 217 lines)
 - `/prototype/archive` — files removed from the active prototype on 2026-05-13 (Session 87 bulk archive); source paths mirrored; see `prototype/archive/README.md` for the un-archive procedure
