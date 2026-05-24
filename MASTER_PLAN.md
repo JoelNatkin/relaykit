@@ -69,7 +69,7 @@ Phase 0 + Phase 1 ran in parallel (Phase 0 was doc work, Phase 1 was elapsed-tim
 
 ## Active focus
 
-**Phase 1 — Sinch Proving Ground.** Experiments 3a (brand registration) and 3b (campaign registration) approved, confirming the fast-registration claim with concrete carrier numbers (Brand Tier LOW, AT&T Message Class T). The active work is the remaining Phase 1 experiments — **2b (inbound MO shape), 3c (Simplified→Full brand upgrade), and 4 (STOP/START/HELP)**. **Phase 2 Session B (Sinch outbound delivery)** is the next pickup behind them.
+**Phase 2 — Session B (Sinch outbound delivery).** Phase 1 (Sinch Proving Ground) complete as of 2026-05-24 — all experiments (1 / 1b / 2a / 3a / 3b cycle / 2b / 3c / 4) closed with fixtures and findings captured. Session B builds the `/api` outbound send path against the proven Sinch behavior, including delivery-report callback handling. Phase 1's open items (four cumulative API/dashboard inconsistencies for BDR, webhook signature-verification design, MO→outbound correlation architectural choice, and the consent-ledger commitment scoped to Phase 4) carry forward as Session B kickoff inputs.
 
 ## Out of scope at launch
 

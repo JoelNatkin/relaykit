@@ -6,10 +6,10 @@
 
 ## Meta
 
-- Last updated: 2026-05-24
-- Active phase: Phase 1 — Sinch Proving Ground (per MASTER_PLAN.md); pre-launch checklist complete; experiments 2b (inbound MO shape) and 4 (STOP/START/HELP) both complete (2026-05-24); experiment 3c (Simplified→Full brand upgrade) is the last remaining Phase 1 experiment before Phase 2 Session B kickoff
-- Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20.
-- Branch state: `main` only — no unmerged feature branches. Session 110 pushed one experiments commit direct on main (`8abc4c3` — Experiment 4 STOP/START/HELP capture, originally `ca83174` pre-amend); this close-out commit follows the mechanical-skip-review bar per Session 109 precedent.
+- Last updated: 2026-05-24 (Session 111 close-out)
+- Active phase: Phase 2 — Session B (Sinch outbound delivery) per MASTER_PLAN.md. **Phase 1 (Sinch Proving Ground) complete as of 2026-05-24** — Experiment 3c (brand SIMPLIFIED→FULL upgrade) captured this session, completing the 1 / 1b / 2a / 3a / 3b cycle / 2b / 3c / 4 set. Session B is the next substantive pickup; a kickoff prep round (spec reconciliation against Phase 1 findings, batched BDR conversation, signature-verification design) precedes substantive Phase 2 code work.
+- Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20. (No new decisions Session 111 — experimental findings recorded as findings, not decisions, per proving-ground rules.)
+- Branch state: `main` only — no unmerged feature branches. Session 111 added five direct-on-main commits: `2ff3c78` (settings allowlist), `a815a3b` (Talking to Joel guidance tightening), `fe35037` (approval heads-up guidance), `61f2477` (Experiment 3c substantive capture, PM-approved in-chat before commit), and this close-out commit (mechanical-skip-review bar per Session 109/110 precedent). All five unpushed entering close-out; awaiting Joel's push decision.
 - Active explorations: 1 — golden-path-gtm (strategy sketch; exploring). The configurator-authoring exploration remains at `/explorations/configurator-authoring.md` with its Session 106 promotion header intact — its Resolved §1–§5 are all shipped (Session 106 + the Session 107 fast-follows that built on them); Resolved §2 (configurator → workspace handoff) still awaits a workspace session.
 
 ## Active explorations
@@ -25,8 +25,8 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-24 (Session 110 close-out — Experiment 4 status flipped; new exp-04 fixture pointer; CC_HANDOFF row refreshed) | This file: doc inventory, current-state pointers, canonical-sources index. |
-| `MASTER_PLAN.md` | 2026-05-24 (Session 108 — pre-launch checklist marked complete; Active focus rewritten for Phase 1 experiments 2b/3c/4 with Phase 2 Session B kickoff behind. No version bump — status correction only.) | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
+| `REPO_INDEX.md` | 2026-05-24 (Session 111 close-out — Phase 1 complete; active phase line flipped to Phase 2 Session B; branch state refreshed with five unpushed Session 111 commits; canonical docs table rows for MASTER_PLAN/REPO_INDEX/CC_HANDOFF/CARRIER_BRAND_REGISTRATION_FIELDS updated; `/experiments` subdirectory entry updated with exp-03c fixture pointer and Phase 1 complete status) | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `MASTER_PLAN.md` | 2026-05-24 (Session 111 — Active focus rewritten for Phase 2 Session B with Phase 1 complete declared. No version bump — status correction only.) | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-22 (Session 103 — PM-behavior section compressed) | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
 | `DECISIONS.md` | 2026-05-23 (Session 106 — D-415 added for the configurator compliance severity model. Session 105 added D-414 + D-379/D-381 `Note:` annotations; Session 104 added D-413.) | Active product decisions D-84+. |
@@ -37,7 +37,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-24 (Session 110 close-out — Experiment 4 STOP/START/HELP captured; Phase 4 consent-ledger architectural commitment surfaced; BDR question for Elizabeth Garner on Sinch internal opt-out tracking; 3c is the last remaining Phase 1 experiment) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-24 (Session 111 close-out — Experiment 3c brand SIMPLIFIED→FULL upgrade captured; Phase 1 Sinch Proving Ground complete; retirement-sweep + drift-watch findings included; MESSAGE_PIPELINE_SPEC drift flagged for Session B kickoff prep) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-24 (Session 107 — double-click variable entry retired as shipped; slash-command-for-variable-insertion entry added.) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -49,7 +49,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` | 2026-04-03 | Copy rules, vocabulary/framing tables, emotional-states map (Tier 1 project knowledge). |
 | `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Tier 1 project knowledge). |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-17 | AGENTS.md / cursor-rules research informing Phase 8; retires when Phase 8 closes. |
-| `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-04-30 | Sinch/TCR brand registration field reference (Experiment 3a capture). |
+| `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-05-24 (Session 111 — §IdentityStatus rewritten as two-row table covering Simplified `VERIFIED` + Full `VETTED_VERIFIED`; §Bundle state table updated to confirm `UPGRADE` → `Upgrade` mapping from 3c and `REJECTED` → `Rejected` from 3b cycle, inconsistency-count corrected to four cumulative; new `## FULL upgrade path` section added documenting one-click paid re-vetting + path-dependent $50 cumulative Sinch-cost) | Sinch/TCR brand registration field reference (Experiments 3a + 3c captures). |
 | `PRODUCT_SUMMARY.md` | 2026-05-24 (Session 107 — §3 configurator paragraph picks up the Variables rename + the double-click-jumps-to-where-the-variable-is-edited affordance) | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |
 | `LEGAL_DOC_DEFERRED_CLAIMS.md` | 2026-04-28 | Tracking doc for claims removed from `/marketing-site` legal docs pending feature ship, with restoration triggers. |
 | `PRE_LAUNCH_DEVIATIONS.md` | 2026-05-21 (Session 101 — entry #3 "After:" aligned to the new post-strip live string) | Tracking doc for marketing-site pre-launch-posture copy/UI deviations, with per-entry pre-launch-only vs permanent classification and restoration triggers. |
@@ -221,5 +221,5 @@ Session 107 also added a global mobile-input rule at `marketing-site/app/globals
 - `/docs/archive` — superseded PRDs and old strategy
 - `/audits` — audit sweep outputs; process defined in `audits/audits-README.md`. Current outputs: `audits/prototype-inventory-2026-05-13.md` (read-only inventory of /prototype/ that drove the Session 87 archive operation). `audits/research/2026-05-16/` holds the 9 per-category lead-magnet research files for the Wave 2 message-library workstream (templates scaffolded Session 91; research content + §6 RESOLVED/DEFERRED/D-link resolutions populated 2026-05-17, Session 93).
 - `/explorations` — sandbox files (see Active explorations above)
-- `/experiments` — Phase 1 Sinch proving-ground throwaway code. Findings + fixtures captured in `experiments/sinch/experiments-log.md`. Status as of 2026-05-24: Experiments 1/1b/2a/3a/3b/2b/4 complete; 3c (brand SIMPLIFIED→FULL upgrade) is the last remaining Phase 1 experiment. 2b added fixture `experiments/sinch/fixtures/exp-02b-mo-inbound.json` (bidirectional MO + DR capture, 217 lines); Experiment 4 added fixture `experiments/sinch/fixtures/exp-04-keyword-handling.json` (5-round STOP/HELP/START capture: 3 MOs + 6 success-side DRs, 593 lines)
+- `/experiments` — Phase 1 Sinch proving-ground throwaway code. Findings + fixtures captured in `experiments/sinch/experiments-log.md`. Status as of 2026-05-24: **Phase 1 complete — all experiments closed** (1 / 1b / 2a / 3a / 3b cycle / 2b / 3c / 4). Fixtures: `exp-01-outbound.json`, `exp-02a-delivery-report.json`, `exp-02b-mo-inbound.json` (bidirectional MO + DR capture, 217 lines), `exp-04-keyword-handling.json` (5-round STOP/HELP/START capture: 3 MOs + 6 success-side DRs, 593 lines), and `exp-03c-brand-upgrade.json` (Session 111 — SIMPLIFIED→FULL upgrade on live brand BTTC6XS: one-click paid re-vetting at $44 Aegis vetting, ~60s elapsed, brand ID continuity confirmed, IdentityStatus VERIFIED → VETTED_VERIFIED, Bundle state UPGRADE confirmed)
 - `/prototype/archive` — files removed from the active prototype on 2026-05-13 (Session 87 bulk archive); source paths mirrored; see `prototype/archive/README.md` for the un-archive procedure
