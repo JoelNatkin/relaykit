@@ -1,55 +1,51 @@
-# CC_HANDOFF — Session 112 — Doc-only: PM Mode signaling rename, relaykit-writing-prose skill landed, no-EIN exploration scaffolded
+# CC_HANDOFF — Session 113 — fix/marketing-home-polish merged: logo polish + iOS zoom fix + paperwork rewrite + pricing copy
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
 **Date:** 2026-05-25
-**Branches:** `main` only — two commits direct on main this session, both unpushed entering close-out. No feature branches.
+**Branches:** `main` post-merge. `fix/marketing-home-polish` fully merged via fast-forward; not deleted (local or remote) — surface for Joel's cleanup call.
 
-`Commits: 2 | Files modified: 7 | Decisions added: 0 | External actions: 1 (Sinch support email sent to onlineteam@sinch.com — Joel-side, queued the four TFN questions captured in /explorations/no-ein-sole-proprietor-path.md)`
+`Commits: 3 | Files modified: 3 | Decisions added: 0 | External actions: 2 (branch push to origin/fix/marketing-home-polish; main push to origin/main after fast-forward merge)`
 
 ---
 
 ## Session character
 
-Doc-only session bridging Session 111's Phase 1 close-out and the eventual Phase 2 Session B kickoff. Three discrete pieces of work landed:
+Visual-verification + tuning + push session for the production marketing-site polish branch. Joel had pre-authored three commits before opening the session (`e4e9d75` logo wordmark viewBox tighten + Codex + reusable script; `f4fe88d` iOS input-zoom fix; `4525efe` paperwork section rewrite). This session added two more, pushed the branch to a Vercel preview, Joel device-tested + approved on real iOS, then fast-forward-merged into main and pushed.
 
-1. **PM instructions trimmed of bypass-mode language.** With CC permissions migrated to allowlist (Session 111's `2ff3c78`), §CC Mode Signaling in `PM_PROJECT_INSTRUCTIONS.md` still emitted `Mode: bypass` instructions that named a state no longer reachable. Renamed `Mode: bypass` → `Mode: normal`, stripped two "bypass permissions on" status-bar references, kept the existing dual-mode framing (committed early-session as `0257a6a`).
-
-2. **`relaykit-writing-prose` skill version-controlled.** Previously lived only in the Claude.ai UI. Placed at `.claude/skills/relaykit-writing-prose/` (matching the existing `.claude/skills/tdd/` precedent, picked up immediately by Claude Code's skill auto-discovery) with a `references/exemplars.md` subfile carrying annotated worked-example posts. `## Claude Code skills` section added to REPO_INDEX retroactively documenting both this skill and the previously-undocumented tdd skill. The "punchy-style" twin skill is anticipated but not yet authored — current skill is scoped to traditional measured prose.
-
-3. **No-EIN customer-path exploration scaffolded** at `/explorations/no-ein-sole-proprietor-path.md`. Captures the deeper finding from Joel's manual Sinch "New brand" form walk (2026-05-24, replaced the planned Experiment 5 — pre-planned then abandoned when the answer arrived directly): the EIN wall is TCR-wide, not Sinch-specific. This kills three of the four BACKLOG options for serving sole-prop customers (secondary carrier / RelayKit-as-CSP / umbrella brand all still route through TCR). Toll-free verification is the one live path. Sinch support email sent 2026-05-25 with four questions (real-world TFN approval rate, Business Registration Number alternatives, API-vs-form availability, throughput/deliverability vs. 10DLC); reply pending. BACKLOG `Sole Proprietor customer segment` entry got a one-line back-pointer to the exploration.
-
-No code changes. No D-number lands — exploration is `Status: exploring`, not a committed decision. Per CLAUDE.md, decision-promotion happens when the Sinch reply resolves the build-cost and approval-rate questions.
+The cadence-pause memory rule (`feedback_pm_review_cadence.md`) governed the multi-commit flow throughout: one `.pm-review.md` per commit, paused for PM review between each commit. Worked smoothly across the two tuning commits + the close-out.
 
 ## Commits — chronological
 
-1. `0257a6a` — **`docs: rename Mode: bypass to Mode: normal in PM instructions`.** Three edits to §CC Mode Signaling in PM_PROJECT_INSTRUCTIONS.md: `Mode: bypass` → `Mode: normal` on the bullet, on the "When PM specifies" line, and in the Pitfalls bullet; "Status bar should already read 'bypass permissions on'" stripped from the bullet; "Bypass mode on genuinely new ambiguous work is risky" → "Normal mode...". 1 file / +3 / −3. PM-approved in plan mode before commit.
+1. `d3312e5` — **`fix(marketing): tune Claude + Windsurf logo heights`**. Two heightClass tunings in `AI_TOOLS` (marketing-site/app/page.tsx). Windsurf went `h-[44px]` → `h-[18px]` first (commit `6aff329`, amended), then on PM-directed second pass to `h-[14px]` final (~20% reduction). Claude went `h-[18px]` → `h-[16px]` (10% reduction). Header comment block rewritten — the stale "(2) windsurf needs 2x peer height because only ~33% canvas" claim removed, since Fix 1's viewBox tighten resolved the underlying loose-canvas situation. Eyeball-tuned for visual weight, not arithmetic. 1 file / +6 / −10.
 
-2. **This commit — close-out.** Seven-file batch: `.claude/skills/relaykit-writing-prose/SKILL.md` (new), `.claude/skills/relaykit-writing-prose/references/exemplars.md` (new), `/explorations/no-ein-sole-proprietor-path.md` (new), `BACKLOG.md` (one-line back-pointer appended to the Sole Proprietor entry), `REPO_INDEX.md` (new `## Claude Code skills` section retroactively listing tdd + relaykit-writing-prose; new row in Active explorations table for no-ein-sole-proprietor-path; Meta block bumped — last_updated, active explorations count + descriptions, branch state, decision-count parenthetical; canonical-docs table rows refreshed for REPO_INDEX/CC_HANDOFF/BACKLOG/PM_PROJECT_INSTRUCTIONS), `PM_PROJECT_INSTRUCTIONS.md` (in-file Updated header bumped May 22 → May 25), `CC_HANDOFF.md` (this file). Mechanical, skip review per Joel direction.
+2. `dd1ae70` — **`fix(marketing): clarify overage + marketing add-on pricing copy`**. Two string-only edits in the pricing section of marketing-site/app/page.tsx:
+   - L202: `$8 per 500 over.` → `$8 per additional 500.`
+   - L208: `Marketing categories add $10/mo.` → `Marketing category messages, add $10/mo.`
+   1 file / +2 / −2.
+
+3. **This commit — close-out.** Two-file edit: REPO_INDEX.md Meta block + canonical-docs Last-touched annotations; CC_HANDOFF.md overwritten. Mechanical doc work; close-out itself directly on main per Joel's instruction to push main when merge + docs are done.
+
+Branch merge: `git checkout main && git merge --ff-only fix/marketing-home-polish` — fast-forward applied cleanly, no conflicts, 15 files / +207 / −32 advanced from `72f9921` to `dd1ae70`.
 
 ## Quality checks
 
-- No tsc/eslint — doc-only session; CLAUDE.md doc-only-session rules apply (grep verification replaces build verification).
-- Skill auto-discovery verified mid-session: the new `relaykit-writing-prose` skill appeared immediately in the Skill tool's available-skills list after the file writes, confirming `.claude/skills/` was the correct placement vs. Joel's initially-suggested `docs/skills/`.
-- Three plan-mode plans walked this session (bypass-rename, Experiment 5 — later abandoned, skill placement). Experiment 5 plan was scoped + approved + then abandoned without execution when Joel surfaced he had already walked the form manually and found the answer. Plan file was deleted before the next plan re-used the filename slot.
+- `npx tsc --noEmit` clean on `marketing-site/` (run twice — once mid-session per commit, once after the merge).
+- `npx eslint marketing-site/app/` clean (silent runs).
+- Vercel preview build for the branch push reached **Ready** at `https://relaykit-marketing-site-3vubo7ab9-joelnatkins-projects.vercel.app` (~45s build, matches recent pattern). Joel device-tested on real iOS, all four marketing-home fixes verified visually including the iOS zoom behavior on contenteditable + role=textbox surfaces.
+- Fast-forward merge was clean — no conflicts to resolve.
 
 ## Decisions
 
-None. Exploration is `Status: exploring`. Decision-promotion will happen when the Sinch support reply resolves the open questions (per the exploration file's "Where this goes next" section).
+None. All five branch commits are PROTOTYPE-level: SVG viewBox cleanup (script + new Codex asset), a bug fix (iOS zoom regression on contenteditable + role=textbox), copy rewrites (paperwork section + two pricing-copy clarifications), eyeball-tuned heights. None pass the seven gate tests for a D-number — every change can be expressed as "change X to Y" or "move X to where Y is now", which is the Shortcut test failure mode that routes to PROTOTYPE_SPEC instead of DECISIONS.
 
 D-counts unchanged: 330 active, latest D-415; archive D-01–D-83.
 
 ## Exploration-doc disposition
 
-**New:** `/explorations/no-ein-sole-proprietor-path.md` (Status: exploring). REPO_INDEX Active explorations table updated to include it. BACKLOG Sole Proprietor entry got a back-pointer.
-
-**No PRODUCT_SUMMARY pointer added.** Judgment call surfaced for PM review: the exploration is about *which* customers RelayKit can serve, not the customer experience itself. No concrete customer-experience change is committed yet. When the exploration promotes (D-number or scope cut), PRODUCT_SUMMARY will get the pointer then.
-
-**No PROTOTYPE_SPEC pointer added.** Not UI-related.
-
-No other exploration-doc movement this session.
+No exploration-doc movement this session.
 
 ## Retirement sweep
 
@@ -63,88 +59,108 @@ N/A — mid-phase close-out, same reason as above.
 
 ### NEW this session
 
-**(a) Sinch support reply pending.** Email sent 2026-05-25 to `onlineteam@sinch.com`. Four questions covering toll-free verification sole-proprietor approval rate + Business Registration Number alternatives + API-vs-form availability + throughput/deliverability vs. 10DLC. When the reply lands, append to `/explorations/no-ein-sole-proprietor-path.md` — add a new "Reply received" subsection under the email block. Reply substance may promote the exploration to a D-number or MASTER_PLAN scope note.
+**(a) PRODUCT_SUMMARY.md has mildly stale pricing phrasing in two spots.** Per Joel's close-out direction, noted but not edited:
+- L208 (marketing-site home pricing section): says `"Marketing categories add $10/mo. Volume pricing above 5,000 messages."` — site now reads `"Marketing category messages, add $10/mo."` Same fact, but the new phrasing is canonical site language.
+- L216 (App Settings → Billing section): uses `"$8/500"` shorthand — site says `"$8 per additional 500"`. Marginal stylistic difference, not a fact mismatch.
 
-**(b) Punchy-style twin skill is anticipated but not yet authored.** Current `relaykit-writing-prose` is scoped to the traditional measured-prose style; a separate skill for Joel's choppier Indie Hackers style is expected later. The `description` field on the current skill already mentions this, but the twin doesn't exist yet — no action this session.
+Flag for a future PRODUCT_SUMMARY refresh round. Not blocking.
 
-**(c) PM_PROJECT_INSTRUCTIONS `Last touched` annotation in REPO_INDEX was stale entering this session.** Row had read `2026-05-22 (Session 103 — PM-behavior section compressed)`, missing the Session 111 commits `a815a3b` (Talking to Joel guidance) and `fe35037` (approval heads-up guidance). This close-out's refresh replaces the stale annotation with Session 112's edit; the Session 111 commits remain in git log but aren't separately captured in REPO_INDEX. Flag in case PM wants future close-outs to be more proactive about Last-touched maintenance.
+**(b) PRICING_MODEL.md verification carry-forward** (Joel-flagged this session as item #5). Verify at a future session that PRICING_MODEL phrasing doesn't contradict the new site copy. Carry-forward, not this session's work.
 
-### Surviving from Session 111 (no change this session unless flagged)
+**(c) `marketing-site/scripts/tighten-wordmark-viewboxes.mjs` is the reusable wordmark-tightening tool.** Landed in `e4e9d75` (pre-session). Uses the `svg-path-bbox` devDep (added to `marketing-site/package.json` in the same commit). Walks each `<path d=…>`, computes global min/max, rewrites the root viewBox, strips standalone width=/height=. Idempotent on re-run. Stops loudly on shapes it can't safely bbox (transforms in the render tree, render-tree non-path geometry, `<use>` references). Allows clip-path-only `<g>` wrappers and defs-only `<rect>`/`<circle>` (Figma-export shape on Copilot). **Re-run on any new tool wordmark SVG before adding to `AI_TOOLS` in marketing-site/app/page.tsx.**
 
+**(d) Eyeball-tuned AI_TOOLS heights are the new baseline.** Visual weight, not pixel-precise. Future logo additions need similar tuning + dual desktop/mobile-breakpoint verification:
+
+| Logo | heightClass |
+|------|-------------|
+| Claude | `h-[16px]` |
+| Cursor | `h-[22px]` |
+| Windsurf | `h-[14px]` |
+| Copilot | `h-[20px]` |
+| Cline | `h-[18px]` |
+| Codex | `h-[22px]` |
+
+**(e) Vercel preview URLs follow a per-deployment hash pattern** — e.g., `relaykit-marketing-site-3vubo7ab9-joelnatkins-projects.vercel.app`. `vercel inspect <url>` reads deployment state (Building / Ready / Error / Failed / Canceled). `vercel ls` lists recent deployments with the most recent push at the top.
+
+**(f) The cadence-pause memory rule (`feedback_pm_review_cadence.md`) was applied systematically this session.** First multi-commit production-facing branch run since the rule landed in memory. Pattern: separate `.pm-review.md` refresh + PM-approval pause after each commit, never batched. Worked cleanly.
+
+### Surviving from Session 112 (no change this session unless flagged)
+
+- **Sinch support reply pending** — email sent 2026-05-25 to `onlineteam@sinch.com`; four-question batch on toll-free verification sole-prop approval. When the reply lands, append to `/explorations/no-ein-sole-proprietor-path.md`.
+- **Punchy-style twin skill anticipated but not yet authored** (current `relaykit-writing-prose` skill is measured-prose only).
 - **MESSAGE_PIPELINE_SPEC drift** flagged by Session 111's drift-watch — spec hasn't been touched since 2026-05-13; Phase 1 findings (ULID IDs, DR shapes, MO shape, terminal-status parser, no-HMAC) not yet reconciled in. Session B kickoff prep should include a spec reconciliation round.
-- **Phase 2 Session B kickoff prep round** is the named next pickup per MASTER_PLAN: (a) spec reconciliation, (b) batched BDR conversation, (c) MO correlation architectural-choice confirmation, (d) signature-verification design approach.
-- **Focused DECISIONS retirement sweep** recommended before Phase 2 work — Phase 1 → Phase 2 boundary sweep was scope-incomplete because DECISIONS.md exceeds the single-Read size; chunked-read scan deferred.
-- **MASTER_PLAN "Launch focus" refresh** — separately scoped from §Active focus; carry-forward from Session 108. Active focus updated Session 111; Launch focus untouched.
-- **Brand bundle Company name correction** — RelayKit operational follow-up: update brand `BTTC6XS` Company name field from `VAULTED PRESS LLC` to `RelayKit LLC` via Sinch dashboard `Update brand`. Joel-side.
+- **Phase 2 Session B kickoff prep round** is the named next pickup per MASTER_PLAN.
+- **Focused DECISIONS retirement sweep** recommended before Phase 2 work.
+- **MASTER_PLAN "Launch focus" refresh** — separately scoped from §Active focus; carry-forward from Session 108.
+- **Brand bundle Company name correction** — RelayKit operational follow-up; update brand `BTTC6XS` Company name field from `VAULTED PRESS LLC` to `RelayKit LLC` via Sinch dashboard. Joel-side.
 - **Phase 4 consent-ledger architectural commitment** — scoped to Phase 4 when Phase 4 starts.
-- **BDR queue (Elizabeth Garner)** — four cumulative API/dashboard inconsistencies + Experiment 3c `BRAND_IDENTITY_STATUS_UPDATE` callback exposure + Experiment 4 opt-out tracking + per-campaign auto-response config. Single batched conversation. (Separate from the Sinch support email this session — that went to `onlineteam@sinch.com`, not Elizabeth Garner.)
-- **`MobileCategoriesModal` latent scroll-lock pattern** — same fix as the `EditValuesModal` viewport guard from Session 106; fixable on the next session that touches it.
-- **D-389/D-391/D-392/D-395/D-401 stale positional-language cleanup** — pending dedicated session.
-- **PostHog dashboard rename pass** — pending.
+- **BDR queue (Elizabeth Garner)** — four cumulative API/dashboard inconsistencies + Experiment 3c callback exposure + Experiment 4 opt-out tracking + per-campaign auto-response config.
+- **`MobileCategoriesModal` latent scroll-lock pattern** — same fix as `EditValuesModal` viewport guard.
+- **D-389/D-391/D-392/D-395/D-401 stale positional-language cleanup**.
+- **PostHog dashboard rename pass**.
 - **PostHog vs Plausible/Fathom reconciliation** in `docs/MARKETING_STRATEGY.md`.
-- **Tooltip touch-event handling / `aria-describedby` / viewport-edge positioning** — pending.
-- **D-378's stale parenthetical; D-380 drift carry-over** — pending.
+- **Tooltip touch-event handling / `aria-describedby` / viewport-edge positioning**.
+- **D-378's stale parenthetical; D-380 drift carry-over**.
 - **`docs/POST_TOPICS.md` still untracked** — surviving carry-forward.
-- **Per-message "revert to RelayKit's default" configurator fast-follow** — pending.
-- **Slash-command-for-variable-insertion configurator fast-follow** — pending.
+- **Per-message "revert to RelayKit's default" configurator fast-follow**.
+- **Slash-command-for-variable-insertion configurator fast-follow**.
 
 ## Gotchas for next session
 
-1. **The planned Experiment 5 (Sinch dashboard inspection) was scoped + approved in plan mode, then abandoned.** Joel walked the form manually and surfaced the deeper TCR-level finding directly. The plan file was deleted before execution; the question it would have answered is documented at `/explorations/no-ein-sole-proprietor-path.md`. Don't re-plan Experiment 5; the slot is closed.
+1. **`fix/marketing-home-polish` branch still exists locally + on origin.** Fully merged into main, no work pending. Joel's call on cleanup: `git branch -d fix/marketing-home-polish && git push origin --delete fix/marketing-home-polish`.
 
-2. **The `relaykit-writing-prose` skill is live and auto-discoverable.** If the user asks CC to draft external content (blog, Indie Hackers, marketing copy), the skill should fire. Skill convention is now: `.claude/skills/[name]/SKILL.md` + optional `references/`. Future skills follow this pattern.
+2. **Header comment block in `marketing-site/app/page.tsx` was updated to match the new height-tuning reality.** The previous "(2) windsurf needs 2x peer height" claim is gone — don't re-introduce it if asked to "restore the old explanation."
 
-3. **The no-EIN exploration is `Status: exploring`, not decided.** Do not propagate to MASTER_PLAN/DECISIONS/PRODUCT_SUMMARY until the Sinch reply lands and the exploration promotes via a deliberate session.
+3. **The `tighten-wordmark-viewboxes.mjs` script's bail-out cases matter.** If a new vendor ships an SVG with transforms in the render tree, `<use>` refs, or non-path geometry outside `<defs>`, the script will halt loudly — that's by design, not a bug. Manual viewBox tightening needed in those rare cases.
 
-4. **REPO_INDEX `## Claude Code skills` section added.** Retroactively documents tdd. Future skill additions should append to that table.
+4. **iOS zoom fix is now in `marketing-site/app/globals.css` as a single `@media (max-width: 767.98px)` block forcing `font-size: 16px !important` on inputs / textareas / selects / `[contenteditable]` / `[role=textbox]`.** Don't re-introduce per-input `text-base` Tailwind classes for zoom prevention — the global rule handles it.
+
+5. **PM cadence pause is now load-bearing for production-facing branches.** One commit → write `.pm-review.md` → wait → next commit. Joel will reject a batched review if you collapse multiple commits into a single `.pm-review.md` (per `feedback_pm_review_cadence.md`).
 
 ### Surviving gotchas from prior sessions (no change this session)
 
-All Session 111 gotchas remain operational — see git log for the prior CC_HANDOFF.
-
-- **Sinch `BRAND_IDENTITY_STATUS_UPDATE` is the brand-lifecycle event type.**
-- **Sinch FULL re-vetting does NOT enforce company-name/public-record consistency.**
-- **Path-dependent Sinch-cost framing** — $6 Simplified-only customer vs. $50 cumulative upgrade-path customer; pricing-model upgrade-tier surcharge TBD.
-- **Campaign-creation wizard is an 8-step flow.**
-- **Wrangler tail invocation pattern across 2a/2b/4.**
-- **Sinch's `mo_text` is the unified MO discriminator.**
-- **Sinch dashboard surfaces no customer-facing opt-out view.**
-- **Receiver behavior held up unchanged across 2a / 2b / 4** (Worker `experiments/sinch/webhook-receiver/src/index.js`).
-- **`STATE_VERSION 3→4` silent drop.**
+All Session 112 gotchas remain operational — see git log for the prior CC_HANDOFF. Notable:
+- **`relaykit-writing-prose` skill is live and auto-discoverable** at `.claude/skills/relaykit-writing-prose/`.
+- **No-EIN exploration is `Status: exploring`** — do not propagate to MASTER_PLAN/DECISIONS/PRODUCT_SUMMARY until the Sinch reply lands.
+- **Sinch `BRAND_IDENTITY_STATUS_UPDATE`** is the brand-lifecycle event type.
+- **Sinch FULL re-vetting** does NOT enforce company-name/public-record consistency.
+- **Path-dependent Sinch-cost framing** — $6 Simplified-only customer vs. $50 cumulative upgrade-path customer.
+- **`STATE_VERSION 3→4` silent drop**.
 - **`isCompliant` = "no blockers"** (D-415).
 - **Tiptap `categoryVariables` is context-driven** (Session 107).
-- **`MessageOverride` retirement is complete** (Session 107).
-- **`.pm-review.md` is gitignored** (Session 109).
+- **`.pm-review.md` is gitignored**.
 - **Untracked carry-forward files**: `.agents/`, `AGENTS.md`, `docs/POST_TOPICS.md`, `api/node_modules/`.
 
 ## Files modified this session
 
-7 unique:
+3 unique:
 
-- `PM_PROJECT_INSTRUCTIONS.md` — commit `0257a6a`: §CC Mode Signaling `Mode: bypass` → `Mode: normal` (three edits). Close-out commit: in-file Updated header bumped May 22 → May 25.
-- `.claude/skills/relaykit-writing-prose/SKILL.md` — close-out commit: new file (lifted verbatim from the Claude.ai UI export).
-- `.claude/skills/relaykit-writing-prose/references/exemplars.md` — close-out commit: new file (lifted verbatim).
-- `/explorations/no-ein-sole-proprietor-path.md` — close-out commit: new file scaffolded with PM-authored substance and the verbatim Sinch support email body.
-- `BACKLOG.md` — close-out commit: one-line back-pointer appended to the `Sole Proprietor customer segment` entry.
-- `REPO_INDEX.md` — close-out commit: new `## Claude Code skills` section; Active explorations table row added; Meta block bumped; canonical-docs `Last touched` annotations refreshed for REPO_INDEX/CC_HANDOFF/BACKLOG/PM_PROJECT_INSTRUCTIONS.
+- `marketing-site/app/page.tsx` — commits `d3312e5` (logo height tune + header comment rewrite) + `dd1ae70` (two pricing-copy strings).
+- `REPO_INDEX.md` — this close-out commit: Meta block branch-state rewritten; canonical-docs `Last touched` for REPO_INDEX + CC_HANDOFF refreshed.
 - `CC_HANDOFF.md` — this file, overwritten.
+
+(The full fix/marketing-home-polish merge advances 15 files into main, but only 1 was authored this session — `page.tsx`. The other 14 came from the three pre-existing commits Joel had authored before opening the session: globals.css, package.json/package-lock.json, 10 SVG files, and the tighten-wordmark-viewboxes.mjs script.)
 
 ## Unmerged branches
 
-None. All commits on `main`.
+None blocking. `fix/marketing-home-polish` exists locally + on origin after merge — work is captured in main, branch cleanup is Joel's call.
 
 ## Suggested next session
 
-1. **Phase 2 Session B kickoff prep** — the named next pickup per MASTER_PLAN, unchanged from Session 111's recommendation. Pre-work: spec reconciliation against Phase 1 findings, batched BDR conversation, MO correlation architectural-choice confirmation, signature-verification design approach.
+1. **PRICING_MODEL.md verification** — per Joel's close-out flag (item #5). Cross-check phrasing against the new marketing-site copy. Low priority, single-focus session.
 
-2. **Push Session 112's pending commits** — `0257a6a` + the close-out. Joel's call.
+2. **PRODUCT_SUMMARY.md refresh** — bring L208 + L216 in line with new site copy ("Marketing category messages, add $10/mo." and "$8 per additional 500"). Bundle with #1 above if a phrasing-alignment session makes sense.
 
-3. **Watch for the Sinch support reply** — when it lands, append to `/explorations/no-ein-sole-proprietor-path.md`. May trigger exploration promotion (D-number or scope-cut decision).
+3. **Phase 2 Session B kickoff prep** — the named next pickup per MASTER_PLAN, unchanged. Pre-work: spec reconciliation against Phase 1 findings, batched BDR conversation, MO correlation architectural-choice confirmation, signature-verification design approach.
 
-4. **MASTER_PLAN "Launch focus" refresh** — separately scoped from §Active focus; carry-forward from Session 108.
+4. **Watch for the Sinch support reply** — Session 112 carry-forward.
 
-5. **Focused DECISIONS retirement sweep session** — recommended per Session 111's retirement-sweep findings.
+5. **MASTER_PLAN "Launch focus" refresh** — separately scoped from §Active focus; carry-forward from Session 108.
 
-6. **Brand bundle Company name correction** — RelayKit operational follow-up; Joel-side dashboard work.
+6. **Focused DECISIONS retirement sweep session** — per Session 111's findings.
+
+7. **Brand bundle Company name correction** — Joel-side dashboard work.
+
+8. **fix/marketing-home-polish branch cleanup** — optional housekeeping.
 
 Doc carry-forwards from prior sessions still viable as fillers.

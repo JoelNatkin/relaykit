@@ -6,10 +6,10 @@
 
 ## Meta
 
-- Last updated: 2026-05-25 (Session 112 close-out)
-- Active phase: Phase 2 — Session B (Sinch outbound delivery) per MASTER_PLAN.md. **Phase 1 (Sinch Proving Ground) complete as of 2026-05-24** — Experiment 3c (brand SIMPLIFIED→FULL upgrade) captured this session, completing the 1 / 1b / 2a / 3a / 3b cycle / 2b / 3c / 4 set. Session B is the next substantive pickup; a kickoff prep round (spec reconciliation against Phase 1 findings, batched BDR conversation, signature-verification design) precedes substantive Phase 2 code work.
-- Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20. (No new decisions Session 112 — doc-only session.)
-- Branch state: `main` only — no unmerged feature branches. Session 111's five commits pushed in the interim. Session 112 added two direct-on-main commits: `0257a6a` (Mode: bypass → Mode: normal rename in `PM_PROJECT_INSTRUCTIONS.md`, following the allowlist migration from Session 111's `2ff3c78`) and this close-out commit (`relaykit-writing-prose` skill landed at `.claude/skills/relaykit-writing-prose/`; `/explorations/no-ein-sole-proprietor-path.md` scaffolded; BACKLOG back-pointer added). Both Session 112 commits unpushed entering close-out; awaiting Joel's push decision.
+- Last updated: 2026-05-25 (Session 113 close-out)
+- Active phase: Phase 2 — Session B (Sinch outbound delivery) per MASTER_PLAN.md. **Phase 1 (Sinch Proving Ground) complete as of 2026-05-24** — Experiment 3c (brand SIMPLIFIED→FULL upgrade) captured Session 111, completing the 1 / 1b / 2a / 3a / 3b cycle / 2b / 3c / 4 set. Session B is the next substantive pickup; a kickoff prep round (spec reconciliation against Phase 1 findings, batched BDR conversation, signature-verification design) precedes substantive Phase 2 code work.
+- Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20. (No new decisions Session 113 — prototype-level marketing-home polish.)
+- Branch state: `main` only — no unmerged feature branches. Session 113 merged `fix/marketing-home-polish` (five commits: `e4e9d75` logo wordmark viewBox tighten + Codex addition + reusable `tighten-wordmark-viewboxes.mjs` script; `f4fe88d` iOS input-zoom fix covering contenteditable + role=textbox; `4525efe` paperwork section rewrite as "know the rules"; `d3312e5` Claude + Windsurf logo height tune; `dd1ae70` overage + marketing add-on pricing copy clarification) into main as fast-forward, then pushed. Session 112's two commits (`0257a6a` + `72f9921`) were pushed in the interim before this session opened. Session 113 close-out commit pushed alongside. The merged feature branch (`fix/marketing-home-polish`) remains in local + remote pending Joel's cleanup call.
 - Active explorations: 2 — golden-path-gtm (strategy sketch; exploring) + no-ein-sole-proprietor-path (Session 112; active research on the no-EIN customer-path question; toll-free verification as the live route; Sinch support reply pending; exploring). The configurator-authoring exploration remains at `/explorations/configurator-authoring.md` with its Session 106 promotion header intact — its Resolved §1–§5 are all shipped (Session 106 + the Session 107 fast-follows that built on them); Resolved §2 (configurator → workspace handoff) still awaits a workspace session.
 
 ## Active explorations
@@ -26,7 +26,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-25 (Session 112 close-out — new `## Claude Code skills` section added retroactively documenting tdd + the new relaykit-writing-prose skill; new exploration row added for no-ein-sole-proprietor-path; Meta block bumped; canonical-docs `Last touched` annotations refreshed for REPO_INDEX/CC_HANDOFF/BACKLOG/PM_PROJECT_INSTRUCTIONS) | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-25 (Session 113 close-out — Meta block branch-state rewritten for the fix/marketing-home-polish merge; CC_HANDOFF row Last touched refreshed) | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-24 (Session 111 — Active focus rewritten for Phase 2 Session B with Phase 1 complete declared. No version bump — status correction only.) | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-25 (Session 112 — Mode: bypass renamed to Mode: normal in §CC Mode Signaling per allowlist migration; in-file Updated header bumped) | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
@@ -38,7 +38,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-25 (Session 112 close-out — doc-only session: PM_PROJECT_INSTRUCTIONS Mode: bypass → Mode: normal rename; relaykit-writing-prose skill placed at `.claude/skills/`; no-EIN/sole-proprietor exploration scaffolded; BACKLOG back-pointer added) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-25 (Session 113 close-out — fix/marketing-home-polish merged into main: logo wordmark viewBox tighten + Codex; iOS zoom fix; paperwork rewrite; logo height tune; pricing copy clarification) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-25 (Session 112 — one-line back-pointer added to the Sole Proprietor customer-segment entry, linking to `/explorations/no-ein-sole-proprietor-path.md`.) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
