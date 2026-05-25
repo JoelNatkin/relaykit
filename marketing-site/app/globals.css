@@ -291,15 +291,20 @@
   100% { opacity: 0; }
 }
 
-/* iOS auto-zooms focused inputs whose computed font-size is < 16px. Force
-   16px on inputs/textareas/selects below the md: breakpoint. !important is
-   intentional — it must override Tailwind text-size utilities like text-sm
-   / text-xs (utilities outrank element selectors on specificity). Do not
-   remove without checking that no mobile input drops below 16px. */
+/* iOS auto-zooms focused text surfaces whose computed font-size is < 16px.
+   Force 16px on every focusable text surface below the md: breakpoint.
+   Includes contenteditable (Tiptap and future rich-text editors) and
+   ARIA-marked textboxes — input/textarea/select alone is not sufficient.
+   !important + unlayered (top-level, no @layer wrapper) — beats every
+   Tailwind text-size utility regardless of cascade order. Do not add a
+   per-instance text-size override below 16px on mobile without first
+   confirming the input cannot trigger iOS zoom. */
 @media (max-width: 767.98px) {
   input,
   textarea,
-  select {
+  select,
+  [contenteditable]:not([contenteditable="false"]),
+  [role="textbox"] {
     font-size: 16px !important;
   }
 }
