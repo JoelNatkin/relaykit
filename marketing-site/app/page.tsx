@@ -23,6 +23,7 @@ const AI_TOOLS = [
   { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", negSrc: "/logos/tool_logos_wordmarks/windsurf_neg.svg", alt: "Windsurf", heightClass: "h-[44px]" },
   { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", negSrc: null, alt: "GitHub Copilot", heightClass: "h-[20px]" },
   { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", negSrc: "/logos/tool_logos_wordmarks/Cline_neg.svg", alt: "Cline", heightClass: "h-[18px]" },
+  { src: "/logos/tool_logos_wordmarks/codex_pos.svg", negSrc: "/logos/tool_logos_wordmarks/codex_neg.svg", alt: "Codex", heightClass: "h-[22px]" },
 ] as const;
 
 // Hand-tokenized code sample with semantic-token-based syntax highlighting.
