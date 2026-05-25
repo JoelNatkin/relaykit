@@ -3,14 +3,10 @@ import { ConfiguratorSection } from "@/components/configurator-section";
 import { EarlyAccessButton } from "@/components/early-access-button";
 import { PreviewListMock } from "@/components/preview-list-mock";
 
-// Per-logo heights tune visual weight, not pixel height. Heights compensate
-// for two things: (1) icon-plus-wordmark logos (Cursor, Copilot) render
-// taller at a given pixel height than pure wordmarks because the icon
-// glyph takes vertical room; (2) some SVGs have transparent padding baked
-// into the viewBox — windsurf in particular uses only ~33% of its canvas
-// height, so it needs roughly 2x the height of peers to render at matching
-// visible size. The flex row uses items-center, so the taller windsurf
-// cell centers cleanly with shorter siblings.
+// Per-logo heights tune visual weight, not pixel height: icon-plus-wordmark
+// logos (Cursor, Copilot, Codex) render taller at a given pixel height than
+// pure wordmarks because the icon glyph takes vertical room. The flex row
+// uses items-center, so different cell heights center cleanly.
 //
 // negSrc points to the dark-mode wordmark asset. When present, render
 // dual Image elements with a block dark:hidden / hidden dark:block swap.
@@ -18,9 +14,9 @@ import { PreviewListMock } from "@/components/preview-list-mock";
 // TODO(Joel): source claude_neg.svg and Copilot_neg.svg so all five logos
 // can use the dual-Image swap and drop the filter workaround.
 const AI_TOOLS = [
-  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", negSrc: null, alt: "Claude Code", heightClass: "h-[18px]" },
+  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", negSrc: null, alt: "Claude Code", heightClass: "h-[16px]" },
   { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", negSrc: "/logos/tool_logos_wordmarks/Cursor_neg.svg", alt: "Cursor", heightClass: "h-[22px]" },
-  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", negSrc: "/logos/tool_logos_wordmarks/windsurf_neg.svg", alt: "Windsurf", heightClass: "h-[44px]" },
+  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", negSrc: "/logos/tool_logos_wordmarks/windsurf_neg.svg", alt: "Windsurf", heightClass: "h-[14px]" },
   { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", negSrc: null, alt: "GitHub Copilot", heightClass: "h-[20px]" },
   { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", negSrc: "/logos/tool_logos_wordmarks/Cline_neg.svg", alt: "Cline", heightClass: "h-[18px]" },
   { src: "/logos/tool_logos_wordmarks/codex_pos.svg", negSrc: "/logos/tool_logos_wordmarks/codex_neg.svg", alt: "Codex", heightClass: "h-[22px]" },
