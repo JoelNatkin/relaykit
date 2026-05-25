@@ -199,13 +199,13 @@ export default function MarketingHome() {
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
                   We file your registration with carriers. Approval takes about three days. 500
-                  messages included per month. $8 per 500 over. Refund if you&apos;re not approved.
+                  messages included per month. $8 per additional 500. Refund if you&apos;re not approved.
                 </p>
               </div>
             </div>
 
             <p className="mt-4 text-xs text-text-tertiary">
-              Marketing categories add $10/mo. Volume pricing above 5,000 messages.
+              Marketing category messages, add $10/mo. Volume pricing above 5,000 messages.
             </p>
 
             <p className="mt-3 text-sm text-text-tertiary">
