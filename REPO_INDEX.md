@@ -6,11 +6,11 @@
 
 ## Meta
 
-- Last updated: 2026-05-24 (Session 111 close-out)
+- Last updated: 2026-05-25 (Session 112 close-out)
 - Active phase: Phase 2 — Session B (Sinch outbound delivery) per MASTER_PLAN.md. **Phase 1 (Sinch Proving Ground) complete as of 2026-05-24** — Experiment 3c (brand SIMPLIFIED→FULL upgrade) captured this session, completing the 1 / 1b / 2a / 3a / 3b cycle / 2b / 3c / 4 set. Session B is the next substantive pickup; a kickoff prep round (spec reconciliation against Phase 1 findings, batched BDR conversation, signature-verification design) precedes substantive Phase 2 code work.
-- Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20. (No new decisions Session 111 — experimental findings recorded as findings, not decisions, per proving-ground rules.)
-- Branch state: `main` only — no unmerged feature branches. Session 111 added five direct-on-main commits: `2ff3c78` (settings allowlist), `a815a3b` (Talking to Joel guidance tightening), `fe35037` (approval heads-up guidance), `61f2477` (Experiment 3c substantive capture, PM-approved in-chat before commit), and this close-out commit (mechanical-skip-review bar per Session 109/110 precedent). All five unpushed entering close-out; awaiting Joel's push decision.
-- Active explorations: 1 — golden-path-gtm (strategy sketch; exploring). The configurator-authoring exploration remains at `/explorations/configurator-authoring.md` with its Session 106 promotion header intact — its Resolved §1–§5 are all shipped (Session 106 + the Session 107 fast-follows that built on them); Resolved §2 (configurator → workspace handoff) still awaits a workspace session.
+- Decision count: 330 active, latest D-415; D-01–D-83 archived. Marketing decisions: latest MD-20. (No new decisions Session 112 — doc-only session.)
+- Branch state: `main` only — no unmerged feature branches. Session 111's five commits pushed in the interim. Session 112 added two direct-on-main commits: `0257a6a` (Mode: bypass → Mode: normal rename in `PM_PROJECT_INSTRUCTIONS.md`, following the allowlist migration from Session 111's `2ff3c78`) and this close-out commit (`relaykit-writing-prose` skill landed at `.claude/skills/relaykit-writing-prose/`; `/explorations/no-ein-sole-proprietor-path.md` scaffolded; BACKLOG back-pointer added). Both Session 112 commits unpushed entering close-out; awaiting Joel's push decision.
+- Active explorations: 2 — golden-path-gtm (strategy sketch; exploring) + no-ein-sole-proprietor-path (Session 112; active research on the no-EIN customer-path question; toll-free verification as the live route; Sinch support reply pending; exploring). The configurator-authoring exploration remains at `/explorations/configurator-authoring.md` with its Session 106 promotion header intact — its Resolved §1–§5 are all shipped (Session 106 + the Session 107 fast-follows that built on them); Resolved §2 (configurator → workspace handoff) still awaits a workspace session.
 
 ## Active explorations
 
@@ -19,15 +19,16 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | Name | Status | Path | Description |
 |------|--------|------|-------------|
 | golden-path-gtm | exploring | `/explorations/golden-path-gtm.md` | Golden-path-led GTM strategy sketch — starter kits as the on-ramp — recast as one bet + three positioning calls (launch redefinition, verification posture, marketing posture). Supersedes the prior sla-led-gtm sketch. Not canon. |
+| no-ein-sole-proprietor-path | exploring | `/explorations/no-ein-sole-proprietor-path.md` | Working notes on whether RelayKit can serve US founders with no EIN. Confirms the 10DLC EIN wall is TCR-wide (not Sinch-specific), kills three of the four BACKLOG options, names toll-free verification as the one live path. Sinch support email sent 2026-05-25; awaiting reply. Not canon. |
 
 ## Canonical docs (root)
 
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-24 (Session 111 close-out — Phase 1 complete; active phase line flipped to Phase 2 Session B; branch state refreshed with five unpushed Session 111 commits; canonical docs table rows for MASTER_PLAN/REPO_INDEX/CC_HANDOFF/CARRIER_BRAND_REGISTRATION_FIELDS updated; `/experiments` subdirectory entry updated with exp-03c fixture pointer and Phase 1 complete status) | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-25 (Session 112 close-out — new `## Claude Code skills` section added retroactively documenting tdd + the new relaykit-writing-prose skill; new exploration row added for no-ein-sole-proprietor-path; Meta block bumped; canonical-docs `Last touched` annotations refreshed for REPO_INDEX/CC_HANDOFF/BACKLOG/PM_PROJECT_INSTRUCTIONS) | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-24 (Session 111 — Active focus rewritten for Phase 2 Session B with Phase 1 complete declared. No version bump — status correction only.) | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
-| `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-22 (Session 103 — PM-behavior section compressed) | Canonical PM/Architect instructions (synced to Claude.ai UI). |
+| `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-25 (Session 112 — Mode: bypass renamed to Mode: normal in §CC Mode Signaling per allowlist migration; in-file Updated header bumped) | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
 | `DECISIONS.md` | 2026-05-23 (Session 106 — D-415 added for the configurator compliance severity model. Session 105 added D-414 + D-379/D-381 `Note:` annotations; Session 104 added D-413.) | Active product decisions D-84+. |
 | `DECISIONS_ARCHIVE.md` | 2026-05-13 | Archived decisions D-01–D-83. |
@@ -37,8 +38,8 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-24 (Session 111 close-out — Experiment 3c brand SIMPLIFIED→FULL upgrade captured; Phase 1 Sinch Proving Ground complete; retirement-sweep + drift-watch findings included; MESSAGE_PIPELINE_SPEC drift flagged for Session B kickoff prep) | Previous CC session state (transient, overwritten each close-out). |
-| `BACKLOG.md` | 2026-05-24 (Session 107 — double-click variable entry retired as shipped; slash-command-for-variable-insertion entry added.) | Parked ideas; never build without explicit promotion. |
+| `CC_HANDOFF.md` | 2026-05-25 (Session 112 close-out — doc-only session: PM_PROJECT_INSTRUCTIONS Mode: bypass → Mode: normal rename; relaykit-writing-prose skill placed at `.claude/skills/`; no-EIN/sole-proprietor exploration scaffolded; BACKLOG back-pointer added) | Previous CC session state (transient, overwritten each close-out). |
+| `BACKLOG.md` | 2026-05-25 (Session 112 — one-line back-pointer added to the Sole Proprietor customer-segment entry, linking to `/explorations/no-ein-sole-proprietor-path.md`.) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
 
@@ -215,6 +216,16 @@ State + compliance surface this commit also reshaped:
 - `marketing-site/lib/editor/{variable-node,variable-node-view,message-editor}` — Session 107 refactor: `categoryVariables` moved off `VariableNode.configure(...)` and onto the new `CategoryVariablesContext`; `VariableNode.options` gains `onVariableDoubleClick(name)` which the NodeView wires through `onDoubleClick` (preventDefault + stopPropagation); `MessageEditor` accepts the callback as a prop and exposes it through a mutable ref so the extension always reaches the latest closure without rebuilding the extensions array.
 
 Session 107 also added a global mobile-input rule at `marketing-site/app/globals.css` (single `@media (max-width: 767.98px)` block forcing `font-size: 16px !important` on inputs/textareas/selects to kill iOS auto-zoom). Replaces the per-input `text-base` patch that was previously on the waitlist email input — single source of behavior for the entire marketing site.
+
+## Claude Code skills
+
+Project-scoped skills auto-discovered by Claude Code from `.claude/skills/`. Each skill is a directory with a `SKILL.md` at its root and optional `references/` files. CC invokes them via the Skill tool when their triggers fire.
+
+| Path | Purpose |
+|------|---------|
+| `.claude/skills/tdd/SKILL.md` | Red-Green-Refactor TDD discipline for code changes. |
+| `.claude/skills/relaykit-writing-prose/SKILL.md` | Voice + craft rules for traditional-prose RelayKit external writing (blog, Indie Hackers, marketing pages, partner pitches). Layers on top of `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`. A separate punchy-style skill is anticipated later. |
+| `.claude/skills/relaykit-writing-prose/references/exemplars.md` | Annotated finished-post exemplars supporting the prose skill. |
 
 ## Subdirectories
 
