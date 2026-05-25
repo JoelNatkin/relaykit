@@ -220,13 +220,9 @@ export default function MarketingHome() {
 
           {/* Right col: paperwork */}
           <div>
-            <h2 className="text-2xl font-bold text-text-primary">We handle the paperwork.</h2>
+            <h2 className="text-2xl font-bold text-text-primary">We know the rules so you don&apos;t have to.</h2>
             <p className="mt-6 text-base leading-relaxed text-text-secondary">
-              Registration paperwork. The approval back-and-forth. The opt-in form your users see.
-              STOP handling. Opt-out tracking. Delivery monitoring.
-            </p>
-            <p className="mt-6 text-sm italic text-text-tertiary">
-              We read it so you don&apos;t have to.
+              There&apos;s a thick stack of carrier regulation behind every text message — who you have to register with, what you&apos;re allowed to say, how fast you can send, what happens when someone replies STOP. We&apos;ve read all of it. You get an SDK.
             </p>
           </div>
         </div>
