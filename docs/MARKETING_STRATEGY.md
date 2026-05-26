@@ -30,6 +30,8 @@ Build-in-public posture. Public revenue, public failures, public learnings. Piet
 
 The doc is organized by audience because every play traces back to who we're trying to reach. Within each audience, we list the plays in order of leverage with trigger conditions instead of dates.
 
+The corpus-derived archetype model — who has the problem RelayKit solves, organized by app shape and SMS need — lives in `docs/CUSTOMER_ARCHETYPE_FOUNDATION.md`. This section (and MD-9) answers who we reach and where; that doc answers who has the problem.
+
 ### Primary: Indie SaaS founders shipping with starter kits
 
 These are indie SaaS founders building production SaaS on modern stacks. They use Makerkit, Supastarter, ShipFast, KolbySisk's open-source starter, or the Vercel SaaS template as their starting point. They build with Cursor, Claude Code, or Windsurf. They ship fast, they iterate, they read indie founders' Twitter feeds. They have no patience for enterprise sales motions or carrier jargon. SMS is something they need but actively avoid because of 10DLC complexity. This is the launch audience.
