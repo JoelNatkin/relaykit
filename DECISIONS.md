@@ -1992,3 +1992,45 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none — retires informal "two co-equal headlines" framing not held by a D.
 
 **Affects:** MASTER_PLAN.md §Launch focus (rewritten in the same commit); MARKETING_STRATEGY positioning (verification + marketing remain offered, each may have a dedicated landing page, but neither carries the homepage headline); CUSTOMER_ARCHETYPE_FOUNDATION.md §2.3 already anticipates this on the verification side (universal-coverage-layer framing, not security-frontier framing).
+
+## D-418 — Vertical eligibility uses a four-bucket model with sub-vertical routing
+
+**Decided:** 2026-05-27 (Session 115)
+
+**Decision:** Every vertical (and sub-vertical where routing splits it) lands in one of four buckets: barred at launch, declined at launch, vetting-required (indeterminate status, backlog), or in-scope. Cannabis and firearms are barred at launch — cannabis on permanent carrier-prohibition grounds, firearms on case-by-case-vetting-burden grounds that contradict the one-person-shop automation posture. The 12 TCR Special categories sit in the vetting-required bucket, status genuinely open ("may or may not ever"), not a roadmap commitment. Verticals/sub-verticals in the in-scope bucket may carry per-vertical content rules (see D-419); most don't.
+
+**Why:** Flat vertical categorization is too coarse for the actual customer-eligibility shape. "Healthcare" contains both administrative scheduling (no PHI required, no BAA needed) and clinical care delivery (PHI-is-the-message, BAA territory); blanket-declining healthcare blocks the dentist-appointment-reminder use case wrongly. "Financial services" contains both budgeting apps (safe with content rules) and payday lenders (vetting-required). Sub-vertical routing resolves the BAA-revisit and lending/collections fast-follows that `CUSTOMER_ARCHETYPE_FOUNDATION` §4 named — the answer is sub-vertical routing, not content qualification. The four-bucket model also names firearms honestly: the operative reason is the one-person-shop automation posture, not absolute carrier prohibition.
+
+**Rejected alternative:** The prior flat 6-vertical `industry-gating.ts` model with healthcare blanket-declined. Rejected because it forecloses administrative-healthcare use cases the carrier ecosystem actually allows, and because it offered no structure for routing fintech sub-verticals (banking/budgeting eligible, lending/collections precluded) to different outcomes.
+
+**Supersedes:** none — refines D-49 (industry tiers) and D-18 (healthcare decline) without retiring them; both remain valid as the underlying carrier/policy reasoning. The four-bucket model and sub-vertical routing are an extension layer above them.
+
+**Affects:** `prototype/lib/intake/industry-gating.ts` (now stale against this model — sub-vertical-routing rework in a later session per `/explorations/vertical-constraints.md` §5); future repo constraint data file (the schema the configurator and `industry-gating.ts` rework both read); BACKLOG.md (Clinical healthcare enablement added as an indeterminate item in this commit; existing "Special TCR categories — out of scope at launch" entry updated in-place with the (indeterminate) marker + vetting-required-bucket framing); `docs/CUSTOMER_ARCHETYPE_FOUNDATION.md` §4 (BAA-revisit + lending/collections advisory-layer fast-follows are resolved by sub-vertical routing; pointer to be added when the data file lands, per the exploration's §7); `docs/VERTICAL_TAXONOMY_DRAFT.md` §3 (consistent — vetting-required bucket maps to TCR Special-out-of-scope; no conflict, the new model is more granular but compatible).
+
+## D-419 — Per-vertical content-rule layer exists, applied at message-authoring time and surfaced in the configurator and in per-vertical primers
+
+**Decided:** 2026-05-27 (Session 115)
+
+**Decision:** Constrained verticals (today: legal, fintech-eligible-sub-verticals, healthcare-administrative) carry content rules beyond the corpus-wide category rules. Rules express as prohibitions paired with safe rewrites ("instead of X, send Y"). Same rules surface twice: condensed in the configurator UI when a constrained sub-vertical is selected, full-depth in permanently-accessible per-vertical primer docs. Enforcement source of truth is a repo data file (built in a later session per `/explorations/vertical-constraints.md` §6) that the configurator reads.
+
+**Why:** Bare prohibitions ("don't include account balances") leave a developer guessing at the safe shape. The corpus already exemplifies the doorbell-not-delivery pattern (notification-then-portal) — the per-vertical content rules name what the doorbell may not say, paired with a safe rewrite that demonstrates the pattern's application in context. Two surfaces because the developer encounters two moments: a quick check during configuration (condensed), and a deep read when authoring or operating (primer). One enforcement source so the two surfaces never drift; condensation happens downstream of the primer, not in parallel with it.
+
+**Rejected alternative:** Bare prohibitions with no rewrite guidance. Rejected because a developer needs to know what *does* work, not only what doesn't — and showing the rewrite is also how the doorbell-not-delivery pattern transmits across verticals.
+
+**Supersedes:** none.
+
+**Affects:** future repo constraint data file (schema: prohibitions + safe rewrites per rule, keyed by sub-vertical); per-vertical primer authoring sessions for legal, fintech-eligible, healthcare-administrative (see `/explorations/vertical-constraints.md` §4 + §6); configurator condensation pass (later session, source = primers); `docs/CUSTOMER_ARCHETYPE_FOUNDATION.md` §4a (resolves the "content-specific advisory layer in the configurator for lending and collections language" fast-follow — that's now sub-vertical routing, not content qualification, per D-418).
+
+## D-420 — BACKLOG.md items may carry a "committed" or "indeterminate" marker
+
+**Decided:** 2026-05-27 (Session 115)
+
+**Decision:** BACKLOG items may carry an inline marker — "committed" or "indeterminate" — that signals status orthogonally to section placement. "committed" means RelayKit will do this; not yet scheduled. "indeterminate" means status is genuinely open — may or may not ever. Unmarked items default to undetermined-priority parking-lot. This is a small methodology convention, not a roadmap doc; the marker is an attribute on existing tracked items in BACKLOG.md.
+
+**Why:** BACKLOG carries a mix of (a) ideas RelayKit has committed to but hasn't scheduled, (b) ideas whose status is genuinely open with no commitment either direction, and (c) parking-lot items whose priority is undetermined. The three categories require different signals to a reader, and conflating them caused the prior "BACKLOG = roadmap" misreading. Two explicit markers + default-unmarked covers all three without requiring a third file or a sweep of every existing entry.
+
+**Rejected alternative:** A separate roadmap document. Rejected because it splits BACKLOG into two locations (committed-with-no-date in roadmap, indeterminate in BACKLOG), forces re-classification overhead, and creates synchronization risk between them. A marker on the existing tracked item achieves the same reader-signal with no second file.
+
+**Supersedes:** none.
+
+**Affects:** `BACKLOG.md` (three items added with markers in this commit; existing items may gain markers in later sweeps — out of scope for this commit); future BACKLOG additions (carry marker where applicable); `PM_PROJECT_INSTRUCTIONS.md` / `CLAUDE.md` (optional one-line pointer to this convention if it proves load-bearing — deferred, no edit this commit).
