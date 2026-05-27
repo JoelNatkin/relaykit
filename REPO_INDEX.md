@@ -6,7 +6,7 @@
 
 ## Meta
 
-- Last updated: 2026-05-27 (Session 115)
+- Last updated: 2026-05-27 (Session 116)
 - Active phase: Phase 2 — Session B (Sinch outbound delivery) per MASTER_PLAN.md. **Phase 1 (Sinch Proving Ground) complete as of 2026-05-24** — Experiment 3c (brand SIMPLIFIED→FULL upgrade) captured Session 111, completing the 1 / 1b / 2a / 3a / 3b cycle / 2b / 3c / 4 set. Session B is the next substantive pickup; a kickoff prep round (spec reconciliation against Phase 1 findings, batched BDR conversation, signature-verification design) precedes substantive Phase 2 code work.
 - Decision count: 335 active, latest D-420; D-01–D-83 archived. Marketing decisions: latest MD-20. (Session 115: D-418 four-bucket vertical-eligibility model with sub-vertical routing + D-419 per-vertical content-rule layer + D-420 BACKLOG marker methodology, all paired with `/explorations/vertical-constraints.md`.)
 - Branch state: `main` only — no unmerged feature branches. Session 113 merged `fix/marketing-home-polish` (five commits: `e4e9d75` logo wordmark viewBox tighten + Codex addition + reusable `tighten-wordmark-viewboxes.mjs` script; `f4fe88d` iOS input-zoom fix covering contenteditable + role=textbox; `4525efe` paperwork section rewrite as "know the rules"; `d3312e5` Claude + Windsurf logo height tune; `dd1ae70` overage + marketing add-on pricing copy clarification) into main as fast-forward, then pushed. Session 112's two commits (`0257a6a` + `72f9921`) were pushed in the interim before this session opened. Session 113 close-out commit pushed alongside. The merged feature branch (`fix/marketing-home-polish`) remains in local + remote pending Joel's cleanup call.
@@ -62,6 +62,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_AUTHORING_GUIDE.md` | 2026-05-22 (Session 103 — §7 STOP posture sharpened per D-412) | Canonical procedure for authoring a message-library category — method, message-shape rules, tone variants, technical disciplines, compliance baseline. |
 | `TESTING_GUIDE_DRAFT.md` | 2026-05-01 | DRAFT — Phase 8 guide for AI tools building integration test/debug surfaces inside customer apps. |
 | `VERTICAL_TAXONOMY_DRAFT.md` | 2026-05-17 (v0.4) | DRAFT — vertical-taxonomy thinking from Experiments 3a/3b; Phase 5 design prerequisite. |
+| `AIRTABLE_SCHEMA.md` | 2026-05-27 (Session 116 — initial creation) | RelayKit Constraints Airtable base structure and connector reference. |
 | `BRAND_AUDIT.md` | 2026-05-07 | Stage 1 brand audit synthesis from 24 SaaS sites; informs Stage 2 brand direction. |
 | `BRAND_AUDIT_LENS.md` | 2026-05-05 | Stage 1 operating mode for brand audit walks; retires when Stage 2 consumes outputs. |
 | `SECURITY_DRAFT.md` | 2026-05-03 | DRAFT — canonical security posture, threat surface inventory, pumping defense detail (§3). |
