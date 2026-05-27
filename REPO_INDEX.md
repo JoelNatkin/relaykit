@@ -27,7 +27,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | File | Last touched | Purpose |
 |------|-------------|---------|
 | `README.md` | 2026-04-21 | Repo-root orientation; one-sentence pointers to canonical docs. |
-| `REPO_INDEX.md` | 2026-05-27 (Session 115 — Meta block bumped: decision count 332→335, latest D-420, exploration count 2→3; Active explorations row added for vertical-constraints; DECISIONS + BACKLOG Last touched refreshed) | This file: doc inventory, current-state pointers, canonical-sources index. |
+| `REPO_INDEX.md` | 2026-05-27 (Session 115 close-out — Meta block bumped across two prior commits and this close-out: decision count 330→335, latest D-420, exploration count 2→3; Active explorations row added for vertical-constraints; DECISIONS + BACKLOG + MASTER_PLAN + CC_HANDOFF + REPO_INDEX self Last touched refreshed) | This file: doc inventory, current-state pointers, canonical-sources index. |
 | `MASTER_PLAN.md` | 2026-05-26 (Session 114 — §Launch focus rewritten per D-416 + D-417: launch defined as the live integrated-on-starter-kits product, not corpus completion; neither verification nor marketing carries brand identity. Lean rewrite's no-version-line posture preserved.) | Vision and roadmap — North Star, launch focus, ranked customer values, working principles, pre-launch checklist, phase list, active focus, out-of-scope. |
 | `PM_PROJECT_INSTRUCTIONS.md` | 2026-05-25 (Session 112 — Mode: bypass renamed to Mode: normal in §CC Mode Signaling per allowlist migration; in-file Updated header bumped) | Canonical PM/Architect instructions (synced to Claude.ai UI). |
 | `CLAUDE.md` | 2026-05-13 | CC standing instructions (session-start reads, code style, ledger stewardship, close-out). |
@@ -39,7 +39,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-26 (Session 114 close-out — CUSTOMER_ARCHETYPE_FOUNDATION.md added as canonical /docs/ doc; MARKETING_STRATEGY audience-section pointer added; MASTER_PLAN pointer flagged for PM) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-27 (Session 115 close-out — D-416/D-417 launch redefinition + MASTER_PLAN §Launch focus rewrite; vertical-constraints exploration created at primer depth; D-418/D-419/D-420 appended; BACKLOG markers introduced and applied to three items including an in-place merge of the existing Special TCR entry) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-27 (Session 115 — two items appended under Likely > Product Features: Multi-tenant support (committed) + Clinical healthcare enablement (indeterminate); existing "Special TCR categories — out of scope at launch" entry updated in-place with (indeterminate) marker + D-418 bucket framing + cross-reference to the vertical-constraints exploration. Markers per D-420 methodology. Last updated header bumped.) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
