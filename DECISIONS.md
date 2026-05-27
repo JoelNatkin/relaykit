@@ -1964,3 +1964,31 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none.
 
 **Affects:** `marketing-site/lib/configurator/compliance.ts` (`ComplianceIssue` type + `severity` discriminator + `isCompliant` re-defined as "no blockers"); the two edit-card consumers (`message-edit-card.tsx`, `custom-message-card.tsx`) — warnings render `text-text-warning-primary`, blockers render `text-text-error-primary`; future workspace stage which reads the same result with a stricter gate.
+
+## D-416 — "Launch" redefined: the live integrated product, not the message corpus
+
+**Decided:** 2026-05-26 (Session 114)
+
+**Decision:** Launch means the product is live and integrated end to end on a curated set of starter kits — a developer can go clone-to-paid-live-texts. Count and identity of the launch kits is TBD (see golden-path GTM work). The nine-category message corpus, completed Session 103, is the lead-magnet/configurator surface — already shipped and not a launch variable.
+
+**Why:** The informal definition of launch had drifted toward "marketing site live + corpus complete," which understates what shipping the product actually requires. A buyer cannot complete a clone-to-paid-live-texts path today on any specific starter kit; the corpus is necessary but not sufficient. Naming the live-integrated-product as the launch definition keeps phase ordering honest and prevents corpus-led milestones from being mistaken for product-launch milestones.
+
+**Rejected alternative:** Marketing-site-led launch defined by which message categories exist — i.e., "launch" anchored to corpus completion. Rejected because the corpus is a lead-magnet, not the product. Shipping the configurator without a working clone-to-live path leaves the buyer at a marketing surface with nowhere to integrate.
+
+**Supersedes:** none (clarifies a definition that drifted; no prior D stated it).
+
+**Affects:** MASTER_PLAN.md §Launch focus (rewritten in the same commit); future phase-ordering decisions (Phase 9 starter-kit integration validation is now load-bearing for the launch definition rather than a downstream polish step); MARKETING_STRATEGY positioning (launch claims must reflect the integrated-product framing, not the corpus-complete framing).
+
+## D-417 — Neither verification nor marketing is RelayKit's brand identity
+
+**Decided:** 2026-05-26 (Session 114)
+
+**Decision:** Verification and marketing remain fully offered capabilities and may have their own landing pages and SEO. Neither is RelayKit's brand identity. The brand sits above both: verification and marketing are doors into RelayKit, not the building. The launch headline is the integrated-product framing (D-416), not a single-capability headline.
+
+**Why:** SMS OTP is ceding ground to passkeys and TOTP — anchoring brand identity on a primitive whose category is weakening is a strategic mistake even though SMS OTP remains a durable coverage layer (per CUSTOMER_ARCHETYPE_FOUNDATION §2.3). RelayKit is also not a marketing-SMS company; its compliance-authoring model and category breadth are the structural advantages, and a marketing-led headline collapses the product to one of its narrower surfaces. Keeping the brand above the capabilities preserves the door-vs-building framing on every surface.
+
+**Rejected alternative:** Verification and marketing as two co-equal launch headlines. Rejected because (a) it inherits the SMS-OTP weakening curve as part of brand identity, and (b) two co-equal headlines is operationally indistinguishable from no headline — it scatters positioning instead of focusing it.
+
+**Supersedes:** none — retires informal "two co-equal headlines" framing not held by a D.
+
+**Affects:** MASTER_PLAN.md §Launch focus (rewritten in the same commit); MARKETING_STRATEGY positioning (verification + marketing remain offered, each may have a dedicated landing page, but neither carries the homepage headline); CUSTOMER_ARCHETYPE_FOUNDATION.md §2.3 already anticipates this on the verification side (universal-coverage-layer framing, not security-frontier framing).
