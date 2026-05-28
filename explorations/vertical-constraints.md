@@ -1,5 +1,7 @@
 Status: exploring (2026-05-27) — preservation of today's vertical-constraints work (Product Thread 115). NOT canon. Promotes to a repo constraint data file + per-vertical primers via a sequenced series of follow-up sessions (see §6). Do not propagate into PROTOTYPE_SPEC, PRODUCT_SUMMARY, MARKETING_STRATEGY, or the live configurator until those follow-ups happen in order.
 
+**Session 117 output:** `/explorations/vertical-buckets-research.md` — bucket-level enumeration for all 136 sub-verticals, shaped to populate Airtable.
+
 # Vertical constraints — eligibility model, sub-vertical routing, content-rule sets
 
 A working-session sketch capturing the eligibility model, the sub-vertical routing principle, and the full-depth content rules for the three constrained verticals authored in Product Thread 115. Source of truth for the Airtable build, the repo constraint data file, the `industry-gating.ts` rework, and the per-vertical primer authoring sessions that follow.
