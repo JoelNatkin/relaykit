@@ -5,11 +5,11 @@
 // AIRTABLE_SCHEMA.md (which has known drift on Bucket emoji prefixes and Severity parentheticals).
 
 export type Bucket =
-  | "Barred at launch"
-  | "Vetting-required (indeterminate)"
-  | "In-scope, with content rules"
-  | "In-scope, no content rules"
-  | "Declined at launch";
+  | "Clear"
+  | "Conditional"
+  | "Not yet, maybe not ever"
+  | "Not yet"
+  | "Not our lane";
 
 export type BucketReason =
   | "Carrier prohibition (statutory)"

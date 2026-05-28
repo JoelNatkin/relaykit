@@ -14,7 +14,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "banking-budgeting-apps",
         name: "Banking & budgeting apps (consumer)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -52,7 +52,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "payments-money-movement",
         name: "Payments / money movement (consumer)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -62,7 +62,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "personal-investing-brokerage",
         name: "Personal investing / brokerage",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -72,7 +72,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "crypto-web3-wallets-exchanges-defi",
         name: "Crypto / Web3 wallets, exchanges, DeFi",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -82,7 +82,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "lending-bnpl-credit",
         name: "Lending / BNPL / credit",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -92,7 +92,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "insurance",
         name: "Insurance (consumer-facing)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -102,7 +102,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "tax-prep-filing-software",
         name: "Tax prep / filing software (consumer)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -112,7 +112,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "accounting-bookkeeping-saas",
         name: "Accounting / bookkeeping SaaS (B2B sold to SMBs)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -122,7 +122,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "financial-advisor-wealth-management-tools",
         name: "Financial advisor / wealth-management tools",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -132,7 +132,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "debt-collection-collections-tooling",
         name: "Debt collection / collections tooling",
-        bucket: "Barred at launch",
+        bucket: "Not our lane",
         bucketReason: "Carrier prohibition (statutory)",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: false,
@@ -142,7 +142,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "money-transfer-remittance",
         name: "Money-transfer remittance (cross-border)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -152,7 +152,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "real-estate-referral-lead-gen-sms",
         name: "Real-estate referral / lead-gen SMS",
-        bucket: "Declined at launch",
+        bucket: "Not yet",
         bucketReason: "Customer-pull dependent",
         constraintSource: "RelayKit-specific, deferred",
         routingTrigger: false,
@@ -162,7 +162,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "earned-wage-access-on-demand-pay",
         name: "Earned wage access / on-demand pay",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -179,7 +179,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "clinical-care-patient-facing",
         name: "Clinical care / patient-facing (covered entities)",
-        bucket: "Declined at launch",
+        bucket: "Not yet",
         bucketReason: "BAA gating (legal call)",
         constraintSource: "RelayKit-specific, deferred",
         routingTrigger: false,
@@ -189,7 +189,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "healthcare-administrative",
         name: "Healthcare administrative (scheduling, intake, billing — non-clinical)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -245,7 +245,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "mental-health-therapy-platforms",
         name: "Mental health / therapy platforms",
-        bucket: "Declined at launch",
+        bucket: "Not yet",
         bucketReason: "BAA gating (legal call)",
         constraintSource: "RelayKit-specific, deferred",
         routingTrigger: false,
@@ -255,7 +255,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "wellness-fitness-habit-tracking",
         name: "Wellness / fitness / habit tracking (non-clinical)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -265,7 +265,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "nutrition-meal-planning",
         name: "Nutrition / meal planning (non-clinical)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -275,7 +275,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "health-condition-management",
         name: "Health condition management (consumer, non-clinical framing)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "RelayKit-specific, case-by-case",
         routingTrigger: true,
@@ -285,7 +285,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "pharmacies-prescription-apps",
         name: "Pharmacies / prescription apps",
-        bucket: "Declined at launch",
+        bucket: "Not yet",
         bucketReason: "BAA gating (legal call)",
         constraintSource: "RelayKit-specific, deferred",
         routingTrigger: false,
@@ -295,7 +295,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "medical-billing-rcm-tools",
         name: "Medical billing / RCM tools (B2B)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "RelayKit-specific, case-by-case",
         routingTrigger: true,
@@ -305,7 +305,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "veterinary-clinics-pet-health",
         name: "Veterinary clinics & pet health",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: true,
@@ -315,7 +315,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "medical-device-wearable-companion-apps",
         name: "Medical device / wearable companion apps",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "RelayKit-specific, case-by-case",
         routingTrigger: true,
@@ -325,7 +325,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "health-insurance-navigation-benefits",
         name: "Health insurance navigation / benefits",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "RelayKit-specific, case-by-case",
         routingTrigger: true,
@@ -335,7 +335,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "clinical-research-patient-recruitment",
         name: "Clinical research / patient recruitment",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -345,7 +345,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "virtual-first-clinic-admin",
         name: "Virtual-first clinic admin (booking/intake, no clinical content in SMS)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -355,7 +355,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "caregiving-home-health-coordination",
         name: "Caregiving / home health coordination",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "RelayKit-specific, case-by-case",
         routingTrigger: true,
@@ -372,7 +372,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "trade-services-dispatch",
         name: "Trade services dispatch (HVAC, plumbing, electrical)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -382,7 +382,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "landscaping-lawn-care",
         name: "Landscaping / lawn care",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -392,7 +392,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "cleaning-services",
         name: "Cleaning services (residential + commercial)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -402,7 +402,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "home-improvement-contractors-remodeling",
         name: "Home improvement / contractors / remodeling",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -412,7 +412,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "moving-services",
         name: "Moving services (direct ops)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -422,7 +422,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "pest-control",
         name: "Pest control",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -432,7 +432,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "pool-spa-maintenance",
         name: "Pool / spa maintenance",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -442,7 +442,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "locksmith-emergency-services",
         name: "Locksmith / emergency services",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -452,7 +452,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "junk-removal-hauling",
         name: "Junk removal / hauling",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -462,7 +462,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "appliance-repair",
         name: "Appliance repair",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -472,7 +472,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "home-security-monitoring",
         name: "Home security / monitoring (consumer)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -482,7 +482,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "storage-facilities",
         name: "Storage facilities (self-storage SaaS)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -492,7 +492,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "pet-services",
         name: "Pet services (grooming, walking, boarding, training)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -502,7 +502,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "solar-installation-dispatch",
         name: "Solar installation dispatch",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -512,7 +512,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "solar-lead-generation",
         name: "Solar lead-generation",
-        bucket: "Declined at launch",
+        bucket: "Not yet",
         bucketReason: "Customer-pull dependent",
         constraintSource: "RelayKit-specific, deferred",
         routingTrigger: false,
@@ -522,7 +522,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "moving-services-brokerages-aggregators",
         name: "Moving services brokerages / aggregators",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -539,7 +539,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "legal-practice-tools",
         name: "Legal practice tools (law-firm CRM, client intake, case management)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -586,7 +586,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "accounting-cpa-practice-tools",
         name: "Accounting / CPA practice tools (B2B, not bookkeeping SaaS)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -596,7 +596,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "tax-practice-tools",
         name: "Tax practice tools (preparer-facing, B2B)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -606,7 +606,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "business-management-consultants",
         name: "Business / management consultants",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -616,7 +616,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "marketing-advertising-agencies",
         name: "Marketing / advertising agencies",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -626,7 +626,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "design-studios-freelance-design-tools",
         name: "Design studios / freelance design tools",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -636,7 +636,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "architecture-engineering-firms",
         name: "Architecture / engineering firms",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -646,7 +646,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "recruiting-staffing-agencies",
         name: "Recruiting / staffing agencies",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -656,7 +656,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "immigration-services",
         name: "Immigration services (visa/document prep, non-attorney)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "RelayKit-specific, case-by-case",
         routingTrigger: true,
@@ -666,7 +666,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "notary-services-mobile-notaries",
         name: "Notary services / mobile notaries (in-person)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -676,7 +676,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "translation-interpretation-services",
         name: "Translation / interpretation services",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -686,7 +686,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "private-investigation-security-services",
         name: "Private investigation / security services",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -696,7 +696,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "coaching-executive-coaching",
         name: "Coaching / executive coaching (non-clinical, non-therapy)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -706,7 +706,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "real-estate-agents-brokerages",
         name: "Real estate agents / brokerages (operations, not lead-gen)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -716,7 +716,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "property-management",
         name: "Property management (rental ops)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -726,7 +726,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "remote-online-notarization",
         name: "Remote online notarization (RON)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -743,7 +743,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "e-commerce-online-retail",
         name: "E-commerce / online retail (general consumer goods)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -753,7 +753,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "restaurants",
         name: "Restaurants (single-location operations)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -763,7 +763,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "restaurant-chains-multi-location-ops",
         name: "Restaurant chains / multi-location ops",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -773,7 +773,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "food-delivery-ghost-kitchens",
         name: "Food delivery / ghost kitchens",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -783,7 +783,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "grocery-specialty-food-retail",
         name: "Grocery / specialty food retail",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -793,7 +793,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "alcohol-delivery-alcohol-retail",
         name: "Alcohol delivery / alcohol retail",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -803,7 +803,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "caf-s-coffee-shops",
         name: "Cafés / coffee shops (single location)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -813,7 +813,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "hotels-boutique-accommodations",
         name: "Hotels / boutique accommodations",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -823,7 +823,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "short-term-rental-management",
         name: "Short-term rental management (Airbnb-host tooling)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -833,7 +833,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "salons-spas-personal-grooming",
         name: "Salons / spas / personal grooming",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -843,7 +843,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "tattoo-piercing-studios",
         name: "Tattoo / piercing studios",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -853,7 +853,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "event-ticketing",
         name: "Event ticketing (primary sales — venues, organizers)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -863,7 +863,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "ticket-resale-secondary-marketplace",
         name: "Ticket resale / secondary marketplace",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -873,7 +873,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "gyms-fitness-studios",
         name: "Gyms / fitness studios (membership ops)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -883,7 +883,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "subscription-boxes-recurring-physical-goods",
         name: "Subscription boxes / recurring physical goods",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -893,7 +893,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "cannabis-retail-dispensaries",
         name: "Cannabis retail / dispensaries",
-        bucket: "Barred at launch",
+        bucket: "Not our lane",
         bucketReason: "Carrier prohibition (statutory)",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: false,
@@ -903,7 +903,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "firearms-ammunition-retail",
         name: "Firearms / ammunition retail",
-        bucket: "Barred at launch",
+        bucket: "Not our lane",
         bucketReason: "Carrier prohibition (statutory)",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: false,
@@ -913,7 +913,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "vape-tobacco-nicotine-retail",
         name: "Vape / tobacco / nicotine retail",
-        bucket: "Barred at launch",
+        bucket: "Not our lane",
         bucketReason: "Carrier prohibition (statutory)",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: false,
@@ -923,7 +923,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "adult-content-age-gated-retail",
         name: "Adult content / age-gated retail (non-pharmaceutical)",
-        bucket: "Barred at launch",
+        bucket: "Not our lane",
         bucketReason: "Carrier prohibition (statutory)",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: false,
@@ -933,7 +933,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "gambling-sportsbooks-casino-apps",
         name: "Gambling / sportsbooks / casino apps",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -943,7 +943,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "sweepstakes-contest-platforms",
         name: "Sweepstakes / contest platforms",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -953,7 +953,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "pet-retail-specialty-pet-goods",
         name: "Pet retail / specialty pet goods",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -970,7 +970,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "newsletter-email-creator-tools",
         name: "Newsletter / email creator tools (paid subscriptions)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -980,7 +980,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "course-creator-cohort-based-learning-platforms",
         name: "Course creator / cohort-based learning platforms",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -990,7 +990,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "membership-community-platforms",
         name: "Membership / community platforms (Circle/Mighty Networks style)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1000,7 +1000,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "creator-monetization-tools",
         name: "Creator monetization tools (tip jars, paid DMs, fan-club tooling)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "RelayKit-specific, case-by-case",
         routingTrigger: true,
@@ -1010,7 +1010,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "live-streaming-video-creator-tools",
         name: "Live streaming / video creator tools",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1020,7 +1020,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "audience-growth-follower-management-tools",
         name: "Audience-growth / follower-management tools",
-        bucket: "Declined at launch",
+        bucket: "Not yet",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "RelayKit-specific, deferred",
         routingTrigger: false,
@@ -1030,7 +1030,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "podcast-hosting-podcaster-tools",
         name: "Podcast hosting / podcaster tools",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1040,7 +1040,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "influencer-marketplaces-brand-creator-matchmaking",
         name: "Influencer marketplaces / brand-creator matchmaking",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1050,7 +1050,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "fan-engagement-fan-club-platforms",
         name: "Fan engagement / fan club platforms",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1060,7 +1060,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "patreon-style-recurring-patronage",
         name: "Patreon-style recurring patronage (non-adult)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1070,7 +1070,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "online-community-for-affinity-groups",
         name: "Online community for affinity groups (hobby, professional, support)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1080,7 +1080,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "dating-matchmaking-apps",
         name: "Dating / matchmaking apps",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1090,7 +1090,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "social-discovery-friendship-apps",
         name: "Social discovery / friendship apps (non-dating)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1100,7 +1100,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "adult-dating-hookup-apps",
         name: "Adult dating / hookup apps",
-        bucket: "Barred at launch",
+        bucket: "Not our lane",
         bucketReason: "Carrier prohibition (statutory)",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: false,
@@ -1110,7 +1110,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "religious-faith-based-community-tools",
         name: "Religious / faith-based community tools (platform SaaS)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1120,7 +1120,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "political-advocacy-cause-based-organizing",
         name: "Political / advocacy / cause-based organizing (platform SaaS)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1130,7 +1130,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "nonprofit-charity-fundraising-platforms",
         name: "Nonprofit / charity / fundraising platforms (SaaS)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1140,7 +1140,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "web3-dao-governance-coordination-tooling",
         name: "Web3 / DAO governance & coordination tooling",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1157,7 +1157,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "project-management-productivity-saas",
         name: "Project management / productivity SaaS",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1167,7 +1167,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "crm-sales-saas",
         name: "CRM / sales SaaS",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1177,7 +1177,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "customer-support-helpdesk-saas",
         name: "Customer support / helpdesk SaaS",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1187,7 +1187,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "internal-communications-team-chat-tools",
         name: "Internal communications / team chat tools",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1197,7 +1197,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "hr-hris-payroll-adjacent-saas",
         name: "HR / HRIS / payroll-adjacent SaaS",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1207,7 +1207,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "applicant-tracking-recruiting-platforms",
         name: "Applicant tracking / recruiting platforms",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1217,7 +1217,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "identity-authentication-sso-saas",
         name: "Identity / authentication / SSO SaaS",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1227,7 +1227,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "cybersecurity-threat-detection-siem",
         name: "Cybersecurity / threat detection / SIEM",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1237,7 +1237,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "surveillance-employee-monitoring-spyware-adjacent",
         name: "Surveillance / employee monitoring / spyware-adjacent",
-        bucket: "Barred at launch",
+        bucket: "Not our lane",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "RelayKit-specific, permanent",
         routingTrigger: false,
@@ -1247,7 +1247,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "marketing-automation-email-marketing-saas",
         name: "Marketing automation / email-marketing SaaS",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1257,7 +1257,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "analytics-business-intelligence-saas",
         name: "Analytics / business intelligence SaaS",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1267,7 +1267,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "developer-tools-api-platforms-infrastructure-saas",
         name: "Developer tools / API platforms / infrastructure SaaS",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1277,7 +1277,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "e-signature-document-workflow-saas",
         name: "E-signature / document workflow SaaS",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1287,7 +1287,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "customer-engagement-messaging-platforms",
         name: "Customer engagement / messaging platforms (CPaaS-adjacent)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "RelayKit-specific, case-by-case",
         routingTrigger: true,
@@ -1297,7 +1297,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "survey-feedback-collection-saas",
         name: "Survey / feedback collection SaaS",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1307,7 +1307,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "logistics-supply-chain-fleet-management-saas",
         name: "Logistics / supply-chain / fleet management SaaS",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1317,7 +1317,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "compliance-legal-ops-grc-tooling",
         name: "Compliance / legal-ops / GRC tooling",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1327,7 +1327,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "education-edtech-operational-saas",
         name: "Education / EdTech operational SaaS (K-12 and higher-ed admin tooling)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1337,7 +1337,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "childcare-preschool-after-school-program-operational-saas",
         name: "Childcare / preschool / after-school program operational SaaS",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1347,7 +1347,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "iot-connected-device-platforms",
         name: "IoT / connected-device platforms (consumer-facing)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1364,7 +1364,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "government-agency-communications",
         name: "Government agency communications (federal/state/local operational)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1374,7 +1374,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "emergency-alerts-public-safety-notifications",
         name: "Emergency alerts / public safety notifications",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -1384,7 +1384,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "voter-registration-civic-engagement",
         name: "Voter registration / civic engagement (nonpartisan)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1394,7 +1394,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "political-campaigns-partisan-organizing",
         name: "Political campaigns / partisan organizing (single-campaign ops)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1404,7 +1404,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "public-school-district-communications",
         name: "Public-school district communications",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1414,7 +1414,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "higher-education-administration",
         name: "Higher-education administration",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1424,7 +1424,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "library-systems-civic-information-services",
         name: "Library systems / civic information services",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1434,7 +1434,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "public-transit-mass-transit-operational",
         name: "Public transit / mass transit operational",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1444,7 +1444,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "municipal-utilities",
         name: "Municipal utilities (water, power, gas)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1454,7 +1454,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "311-non-emergency-civic-services",
         name: "311 / non-emergency civic services",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1464,7 +1464,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "court-judicial-system-communications",
         name: "Court / judicial system communications",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -1474,7 +1474,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "correctional-probation-parole-communications",
         name: "Correctional / probation / parole communications",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "Vetting burden (case-by-case)",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -1484,7 +1484,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "charity-501c3-fundraising",
         name: "Charity / 501c3 fundraising (institutional, not platform)",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1494,7 +1494,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "faith-based-institutional-administration",
         name: "Faith-based institutional administration (church, mosque, synagogue ops)",
-        bucket: "In-scope, no content rules",
+        bucket: "Clear",
         bucketReason: "Standard eligibility",
         constraintSource: "Not applicable",
         routingTrigger: false,
@@ -1504,7 +1504,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "public-health-community-health-communications",
         name: "Public health / community health communications (non-clinical)",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide regulatory",
         routingTrigger: true,
@@ -1514,7 +1514,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "housing-assistance-public-housing-administration",
         name: "Housing assistance / public-housing administration",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1524,7 +1524,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "veterans-services-military-family-support",
         name: "Veterans services / military-family support",
-        bucket: "Vetting-required (indeterminate)",
+        bucket: "Not yet, maybe not ever",
         bucketReason: "TCR Special category",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
@@ -1534,7 +1534,7 @@ export const VERTICALS: ReadonlyArray<Vertical> = [
       {
         slug: "public-defender-legal-aid-operational-tooling",
         name: "Public defender / legal aid operational tooling",
-        bucket: "In-scope, with content rules",
+        bucket: "Conditional",
         bucketReason: "Standard eligibility",
         constraintSource: "Industry-wide standard",
         routingTrigger: true,
