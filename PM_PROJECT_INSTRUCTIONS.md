@@ -467,6 +467,8 @@ Shared diagnosis: PM proposing "clean" elaborations that affect no builder decis
 
 **Instructions for Joel.** When telling Joel what to do, use numbered steps with concrete actions. Say what file to open, what to change, what to save. For simple sequences (under ~3 steps), list them all at once. For complex or non-linear sequences — anywhere Joel may hit something unexpected — give one step at a time. Joel does the step, shows the result, PM gives the next step.
 
+**Continuity of intent.** Front-door state (elig + messages) flows forward into onboarding/registration without re-entry, gaining scrutiny at each threshold, never re-collection. Design every public surface as the first step of registration, not a separate thing.
+
 ---
 
 *End of PM_PROJECT_INSTRUCTIONS.md*
