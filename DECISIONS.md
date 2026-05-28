@@ -2007,6 +2007,8 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 
 **Affects:** `prototype/lib/intake/industry-gating.ts` (now stale against this model — sub-vertical-routing rework in a later session per `/explorations/vertical-constraints.md` §5); future repo constraint data file (the schema the configurator and `industry-gating.ts` rework both read); BACKLOG.md (Clinical healthcare enablement added as an indeterminate item in this commit; existing "Special TCR categories — out of scope at launch" entry updated in-place with the (indeterminate) marker + vetting-required-bucket framing); `docs/CUSTOMER_ARCHETYPE_FOUNDATION.md` §4 (BAA-revisit + lending/collections advisory-layer fast-follows are resolved by sub-vertical routing; pointer to be added when the data file lands, per the exploration's §7); `docs/VERTICAL_TAXONOMY_DRAFT.md` §3 (consistent — vetting-required bucket maps to TCR Special-out-of-scope; no conflict, the new model is more granular but compatible).
 
+⚠ Superseded by D-422: the four-bucket model is replaced by a five-bucket model — barred + declined collapse into "Not our lane", vetting-required renames to "Not yet maybe not ever", in-scope splits into "Clear" and "Conditional", and a new capacity-deferred "Not yet" bucket (including multi-tenant) is added. Sub-vertical routing carries forward unchanged.
+
 ## D-419 — Per-vertical content-rule layer exists, applied at message-authoring time and surfaced in the configurator and in per-vertical primers
 
 **Decided:** 2026-05-27 (Session 115)
@@ -2034,3 +2036,29 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none.
 
 **Affects:** `BACKLOG.md` (three items added with markers in this commit; existing items may gain markers in later sweeps — out of scope for this commit); future BACKLOG additions (carry marker where applicable); `PM_PROJECT_INSTRUCTIONS.md` / `CLAUDE.md` (optional one-line pointer to this convention if it proves load-bearing — deferred, no edit this commit).
+
+## D-421 — `/lib/constraints/` established as top-level shared-libs convention
+
+**Decided:** 2026-05-28 (Session 118)
+
+**Decision:** Shared code consumed by multiple packages (marketing-site, prototype, future api consumers) lives at repo root `/lib/`, not inside any one consumer package. `/lib/constraints/` is the first such surface — establishing the convention for future shared-code additions.
+
+**Rejected alternative:** Co-locate constraint data inside `/marketing-site/lib/constraints/` or `/prototype/lib/constraints/`. Rejected because either choice arbitrarily privileges one consumer; the constraint data is canonical infrastructure that no single consumer owns.
+
+**Supersedes:** none. D-375 (no shared workspace package for the Tiptap editor) is unaffected — top-level `/lib/` is a plain-directory convention for typed-data surfaces, not a workspace-tooling commitment. D-381 (deferred messages-storage architecture) is a separate artifact decision.
+
+**Affects:** `/lib/constraints/` (the four-file schema landed Session 118); future shared-code surfaces across `/marketing-site` + `/prototype/api` (default to top-level `/lib/<name>/` unless workspace tooling lands first); `REPO_INDEX.md` (constraint-data-layer section already names this convention); `CLAUDE.md` (optional one-line pointer if the convention proves load-bearing — deferred, no edit this commit).
+
+## D-422 — Eligibility section ("elig") replaces vertical-eligibility widget framing; five-bucket model with bucket-specific verdict-copy patterns
+
+**Decided:** 2026-05-28 (Session 118)
+
+**Decision:** The constraint-checker on `relaykit.ai` is renamed "Eligibility section" (or "elig" in shorthand) — not "widget". Buckets collapse to five: Clear (no constraints), Conditional (rules apply, in scope), Not yet maybe not ever (vetting territory we haven't built for), Not yet (capacity-deferred including multi-tenant), Not our lane (won't offer). Vetting reframes from "review-needed" to "not yet, maybe not ever" — vetting is a different operational animal we haven't built UX / promise / submission rigor for, and may never. Multi-tenant routes into "Not yet" with the same UX as other capacity-deferred sub-verticals. Verdict-copy patterns and per-bucket UX shape live in `/explorations/vertical-constraints.md` (to be updated separately).
+
+**Why:** "Widget" framed the surface as a peripheral utility; "Eligibility section" names what it actually is — the first step of registration (continuity-of-intent, MASTER_PLAN Working principle #7). The four-bucket model (D-418) conflated two operationally different shapes inside vetting-required — TCR-Special vetting we may never build for, and capacity-deferred work we have committed to but not scheduled. Splitting them into "Not yet maybe not ever" and "Not yet" makes the UX honest at the threshold and matches BACKLOG's `(committed)` / `(indeterminate)` marker convention (D-420). Splitting D-418's in-scope into "Clear" and "Conditional" surfaces the per-vertical content-rule layer (D-419) at the bucket level.
+
+**Rejected alternative:** Keep D-418's four-bucket model and the "widget" framing. Rejected because the four-bucket model collapses two semantically different reasons for non-acceptance ("we won't ever" vs "we will when we build it"), and "widget" mis-frames the surface's role in the registration funnel.
+
+**Supersedes:** D-418 — the four-bucket vertical-eligibility model is replaced. Sub-vertical routing (D-418's other commitment) carries forward unchanged; D-419's per-vertical content-rule layer maps onto the "Conditional" bucket without modification.
+
+**Affects:** `/explorations/vertical-constraints.md` (rename "widget" → "Eligibility section" / "elig"; rewrite bucket section to five buckets with per-bucket UX shape; verdict-copy patterns — out of scope for this commit, to be updated separately); `/lib/constraints/types.ts` `Bucket` union (currently carries D-418's four values; needs five-value update in a follow-up commit alongside the schema doc); `docs/AIRTABLE_SCHEMA.md` + the live Airtable Constraints base `appxThB8UWmNulAMt` (Bucket field options re-mapped, PM-driven); the future Eligibility section UI (per-bucket verdict copy); `prototype/lib/intake/industry-gating.ts` rework (uses the new five-bucket model when data lands); `BACKLOG.md` (multi-tenant `(committed)` entry routes into "Not yet").
