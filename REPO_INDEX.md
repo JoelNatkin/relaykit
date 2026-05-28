@@ -6,7 +6,7 @@
 
 ## Meta
 
-- Last updated: 2026-05-27 (Session 117)
+- Last updated: 2026-05-28 (Session 118)
 - Active phase: Phase 2 — Session B (Sinch outbound delivery) per MASTER_PLAN.md. **Phase 1 (Sinch Proving Ground) complete as of 2026-05-24** — Experiment 3c (brand SIMPLIFIED→FULL upgrade) captured Session 111, completing the 1 / 1b / 2a / 3a / 3b cycle / 2b / 3c / 4 set. Session B is the next substantive pickup; a kickoff prep round (spec reconciliation against Phase 1 findings, batched BDR conversation, signature-verification design) precedes substantive Phase 2 code work.
 - Decision count: 335 active, latest D-420; D-01–D-83 archived. Marketing decisions: latest MD-20. (Session 115: D-418 four-bucket vertical-eligibility model with sub-vertical routing + D-419 per-vertical content-rule layer + D-420 BACKLOG marker methodology, all paired with `/explorations/vertical-constraints.md`.)
 - Branch state: `main` only — no unmerged feature branches. Session 113 merged `fix/marketing-home-polish` (five commits: `e4e9d75` logo wordmark viewBox tighten + Codex addition + reusable `tighten-wordmark-viewboxes.mjs` script; `f4fe88d` iOS input-zoom fix covering contenteditable + role=textbox; `4525efe` paperwork section rewrite as "know the rules"; `d3312e5` Claude + Windsurf logo height tune; `dd1ae70` overage + marketing add-on pricing copy clarification) into main as fast-forward, then pushed. Session 112's two commits (`0257a6a` + `72f9921`) were pushed in the interim before this session opened. Session 113 close-out commit pushed alongside. The merged feature branch (`fix/marketing-home-polish`) remains in local + remote pending Joel's cleanup call.
@@ -40,7 +40,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MESSAGE_PIPELINE_SPEC.md` | 2026-05-13 | `/api` message pipeline (Session A complete, Session B addressed by Phase 2, Session C deferred). |
 | `SDK_BUILD_PLAN.md` | 2026-05-13 | `/sdk` retrospective + Phase 8 delivery spec (README, AGENTS.md, npm publish). |
 | `SRC_SUNSET.md` | 2026-05-13 | `/src` capability-to-phase map per D-358; retires when Phase 5 closes. |
-| `CC_HANDOFF.md` | 2026-05-27 (Session 115 close-out — D-416/D-417 launch redefinition + MASTER_PLAN §Launch focus rewrite; vertical-constraints exploration created at primer depth; D-418/D-419/D-420 appended; BACKLOG markers introduced and applied to three items including an in-place merge of the existing Special TCR entry) | Previous CC session state (transient, overwritten each close-out). |
+| `CC_HANDOFF.md` | 2026-05-28 (Session 118 close-out — `/lib/constraints/` schema landed as four files behind the upcoming connector-generated `verticals.ts` data fill: `types.ts` (enums + interfaces), `verticals.ts` (empty `ReadonlyArray<Vertical>` placeholder), `lookup.ts` (lazy-memoized indexes + four query helpers), `index.ts` (barrel). Schema implements the already-recorded vertical-constraints model; no DECISIONS entry added.) | Previous CC session state (transient, overwritten each close-out). |
 | `BACKLOG.md` | 2026-05-27 (Session 115 — two items appended under Likely > Product Features: Multi-tenant support (committed) + Clinical healthcare enablement (indeterminate); existing "Special TCR categories — out of scope at launch" entry updated in-place with (indeterminate) marker + D-418 bucket framing + cross-reference to the vertical-constraints exploration. Markers per D-420 methodology. Last updated header bumped.) | Parked ideas; never build without explicit promotion. |
 
 ## Canonical docs (`/docs`)
@@ -220,6 +220,19 @@ State + compliance surface this commit also reshaped:
 - `marketing-site/lib/editor/{variable-node,variable-node-view,message-editor}` — Session 107 refactor: `categoryVariables` moved off `VariableNode.configure(...)` and onto the new `CategoryVariablesContext`; `VariableNode.options` gains `onVariableDoubleClick(name)` which the NodeView wires through `onDoubleClick` (preventDefault + stopPropagation); `MessageEditor` accepts the callback as a prop and exposes it through a mutable ref so the extension always reaches the latest closure without rebuilding the extensions array.
 
 Session 107 also added a global mobile-input rule at `marketing-site/app/globals.css` (single `@media (max-width: 767.98px)` block forcing `font-size: 16px !important` on inputs/textareas/selects to kill iOS auto-zoom). Replaces the per-input `text-base` patch that was previously on the waitlist email input — single source of behavior for the entire marketing site.
+
+## constraint data layer (Session 118)
+
+`/lib/constraints/` is a new top-level shared directory housing the static, committed TypeScript constraint data — the single enforcement source of truth referenced by `/explorations/vertical-constraints.md` §6 step 3. PM generates the populated `verticals.ts` data from the Airtable Constraints base (`appxThB8UWmNulAMt`) via the Airtable MCP connector. No runtime Airtable sync. Schema landed Session 118; data fill is a follow-up. Future consumers: the configurator widget (§6 step 7) and the reworked `prototype/lib/intake/industry-gating.ts` (§6 step 4). New top-level directory establishes the shared-libs convention for code consumed by both `/marketing-site` and `/prototype/api`.
+
+| Path | Purpose |
+|------|---------|
+| `lib/constraints/types.ts` | Type definitions: `Bucket` / `BucketReason` / `ConstraintSource` / `Severity` union types (verbatim live-base option strings — note `Bucket` strips emoji prefixes from the AIRTABLE_SCHEMA doc and `Severity` strips parentheticals; other unions match the doc exactly), plus `ContentRule` / `SubVertical` / `Vertical` interfaces. `Status` and `Priority` Airtable fields intentionally omitted (authoring-workflow only). |
+| `lib/constraints/verticals.ts` | The committed data — `export const VERTICALS: ReadonlyArray<Vertical> = []`. Currently empty; PM connector-generates the populated array in a follow-up session. `ReadonlyArray` enforces no-mutation at the type level. |
+| `lib/constraints/lookup.ts` | Four query helpers backed by lazy-memoized `Map<slug, …>` indexes: `lookupEligibility(verticalSlug, subVerticalSlug)` → `EligibilityVerdict \| null` (the named eligibility consumer); `findVertical(slug)` / `findSubVertical(slug)` for direct lookups; `getContentRules(subVerticalSlug)` → `ContentRule[]` (empty for most sub-verticals; the named content-rules consumer). |
+| `lib/constraints/index.ts` | Barrel re-export of all types, `VERTICALS`, the four lookup helpers, and the `EligibilityVerdict` type. |
+
+Design choices (rationale in `/Users/macbookpro/.claude/plans/plan-mode-task-design-the-zippy-sutherland.md`): inline rule nesting on sub-vertical (matches Airtable's "one rule = one sub-vertical, duplicate rows when shared" invariant); explicit hand-authored kebab-case slugs (load-bearing for URLs and primer file paths; not derived from `name`); sub-vertical required (not optional) on `lookupEligibility` because every vertical in the data has sub-verticals.
 
 ## Claude Code skills
 
