@@ -26,6 +26,7 @@ import type {
 } from "@/lib/configurator/use-elig-state";
 import { VERTICALS, findVertical } from "../../../lib/constraints";
 import { EligDropdown, type EligDropdownOption } from "./elig-dropdown";
+import { EligVerdictCard } from "./elig-verdict-card";
 
 /**
  * D3 placeholder copy. Default: "What kind of {vertical-name-lowercased}?".
@@ -93,32 +94,35 @@ export function EligSection({
     : [];
 
   return (
-    <div className="flex flex-col gap-2">
-      <EligDropdown
-        placeholder="My app sends messages..."
-        value={state.multiTenant}
-        options={MULTI_TENANT_OPTIONS}
-        onChange={(v) =>
-          onMultiTenantChange(v as MultiTenantValue | null)
-        }
-        ariaLabel="Who does your app send messages for?"
-      />
-      <EligDropdown
-        placeholder="What industry does your app serve?"
-        value={state.verticalSlug}
-        options={VERTICAL_OPTIONS}
-        onChange={onVerticalChange}
-        ariaLabel="What industry does your app serve?"
-      />
-      {showSubVerticalDropdown && selectedVertical ? (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         <EligDropdown
-          placeholder={eligD3Placeholder(selectedVertical)}
-          value={state.subVerticalSlug}
-          options={subVerticalOptions}
-          onChange={onSubVerticalChange}
-          ariaLabel={eligD3Placeholder(selectedVertical)}
+          placeholder="My app sends messages..."
+          value={state.multiTenant}
+          options={MULTI_TENANT_OPTIONS}
+          onChange={(v) =>
+            onMultiTenantChange(v as MultiTenantValue | null)
+          }
+          ariaLabel="Who does your app send messages for?"
         />
-      ) : null}
+        <EligDropdown
+          placeholder="What industry does your app serve?"
+          value={state.verticalSlug}
+          options={VERTICAL_OPTIONS}
+          onChange={onVerticalChange}
+          ariaLabel="What industry does your app serve?"
+        />
+        {showSubVerticalDropdown && selectedVertical ? (
+          <EligDropdown
+            placeholder={eligD3Placeholder(selectedVertical)}
+            value={state.subVerticalSlug}
+            options={subVerticalOptions}
+            onChange={onSubVerticalChange}
+            ariaLabel={eligD3Placeholder(selectedVertical)}
+          />
+        ) : null}
+      </div>
+      <EligVerdictCard state={state} />
     </div>
   );
 }

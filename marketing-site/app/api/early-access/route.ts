@@ -51,6 +51,14 @@ export async function POST(req: Request): Promise<Response> {
       : null;
   const configuratorTouched = raw.configuratorTouched === true;
   const ctaSource = typeof raw.ctaSource === "string" ? raw.ctaSource : null;
+  // Elig-section signal — distinguishes vetting-interest (🟠) from
+  // capacity-deferred / multi-tenant (⚫) signups feeding through the same
+  // waitlist (vertical-constraints §9.7). Free-form string from the elig
+  // surface; no server-side enum. Null for non-elig signups.
+  const interestTag =
+    typeof raw.interestTag === "string" && raw.interestTag.trim() !== ""
+      ? raw.interestTag.trim()
+      : null;
 
   let supabase: ReturnType<typeof getSupabaseServerClient>;
   try {
@@ -70,6 +78,7 @@ export async function POST(req: Request): Promise<Response> {
       business_name: businessName,
       configurator_touched: configuratorTouched,
       cta_source: ctaSource,
+      interest_tag: interestTag,
     })
     .select("unsubscribe_token")
     .single();

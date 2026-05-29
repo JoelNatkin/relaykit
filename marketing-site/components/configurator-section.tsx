@@ -14,6 +14,7 @@ import { EditValuesModal } from "@/components/configurator/edit-values-modal";
 import { CharWarningIcon } from "@/components/configurator/char-warning-icon";
 import { KebabMenu } from "@/components/configurator/kebab-menu";
 import { EligSection } from "@/components/configurator/elig-section";
+import { EligEmptyState } from "@/components/configurator/elig-empty-state";
 import { checkCompliance } from "@/lib/configurator/compliance";
 import { useWaitlist, type WaitlistSummary } from "@/context/waitlist-context";
 import { SessionProvider } from "@/lib/configurator/session-context";
@@ -224,6 +225,21 @@ export function ConfiguratorSection() {
     setVerticalSlug: setEligVerticalSlug,
     setSubVerticalSlug: setEligSubVerticalSlug,
   } = useEligState();
+
+  // Verdict-driven gates (Wave 2 — vertical-constraints §9.3):
+  //   - 🟠 / ⚫ / 🔴 disable the categories panel + replace the message
+  //     stream with the empty-state placeholder. Authoring controls (tone
+  //     pills, Copy, kebab, business name input) go away too — they're
+  //     dead UI with no messages to operate on.
+  //   - 🔴 also hides the bottom "Get early access" CTA per PM ruling §5.2
+  //     (no future state to sign up for). 🟠/⚫ keep the bottom CTA as a
+  //     secondary backup; the inline waitlist in the verdict card is the
+  //     primary capture.
+  const isMessageAreaDisabled =
+    eligState.verdict.tier === "not-yet-maybe-not" ||
+    eligState.verdict.tier === "not-yet" ||
+    eligState.verdict.tier === "not-our-lane";
+  const hideBottomCta = eligState.verdict.tier === "not-our-lane";
 
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
@@ -456,28 +472,51 @@ export function ConfiguratorSection() {
             {/* Mobile-only categories: collapsed summary row + full-page
                 modal. Both are display:none at md: and above — the desktop
                 panel below takes over the left grid cell there. */}
-            <div className="md:hidden">
-              <MobileCategoriesSummary
-                selected={checkedCategories}
-                onOpen={() => setMobileCategoriesOpen(true)}
-              />
-              <MobileCategoriesModal
-                isOpen={mobileCategoriesOpen}
-                onClose={() => setMobileCategoriesOpen(false)}
-                state={state}
-                onCategoryToggle={handleCategoryToggle}
-                onMessageToggle={handleMessageToggle}
-              />
+            <div
+              className={`md:hidden ${isMessageAreaDisabled ? "cursor-not-allowed" : ""}`}
+            >
+              <div
+                className={
+                  isMessageAreaDisabled ? "pointer-events-none opacity-50" : ""
+                }
+              >
+                <MobileCategoriesSummary
+                  selected={checkedCategories}
+                  onOpen={() => setMobileCategoriesOpen(true)}
+                />
+                <MobileCategoriesModal
+                  isOpen={mobileCategoriesOpen}
+                  onClose={() => setMobileCategoriesOpen(false)}
+                  state={state}
+                  onCategoryToggle={handleCategoryToggle}
+                  onMessageToggle={handleMessageToggle}
+                />
+              </div>
             </div>
 
             {/* Desktop categories panel (≥md:). Same content as the modal
-                via the shared CategoryList component. */}
-            <div className="hidden rounded-xl border border-border-secondary bg-bg-primary md:block md:min-w-60">
-              <CategoryList
-                state={state}
-                onCategoryToggle={handleCategoryToggle}
-                onMessageToggle={handleMessageToggle}
-              />
+                via the shared CategoryList component. PM ruling §5.6:
+                disabled on 🟠/⚫/🔴 via opacity + pointer-events-none;
+                cursor-not-allowed on the wrapper so hover still feels
+                disabled. Existing checked state is preserved (re-selecting
+                an in-scope vertical brings the user back to their prior
+                shape per §6 preservation principle). */}
+            <div
+              className={`hidden rounded-xl border border-border-secondary bg-bg-primary md:block md:min-w-60 ${
+                isMessageAreaDisabled ? "cursor-not-allowed" : ""
+              }`}
+            >
+              <div
+                className={
+                  isMessageAreaDisabled ? "pointer-events-none opacity-50" : ""
+                }
+              >
+                <CategoryList
+                  state={state}
+                  onCategoryToggle={handleCategoryToggle}
+                  onMessageToggle={handleMessageToggle}
+                />
+              </div>
             </div>
 
             {/* Messages column */}
@@ -495,53 +534,61 @@ export function ConfiguratorSection() {
                   onSubVerticalChange={setEligSubVerticalSlug}
                 />
               </div>
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex flex-wrap gap-2">
-                  {PAGE_TONES.map((tone) => (
-                    <button
-                      key={tone}
-                      type="button"
-                      onClick={() => setPageTone(tone)}
-                      className={tonePillClasses(state.pageTone === tone)}
-                    >
-                      {tone}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={handleCopy}
-                    className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-                  >
-                    <Copy01 className="size-4" />
-                    {copyToastVisible ? "Copied" : "Copy"}
-                  </button>
-                  <KebabMenu
-                    ariaLabel="Configurator options"
-                    items={[
-                      {
-                        label: "Reset all to defaults",
-                        onClick: clearAll,
-                      },
-                    ]}
-                  />
-                </div>
-              </div>
+              {isMessageAreaDisabled ? null : (
+                <>
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap gap-2">
+                      {PAGE_TONES.map((tone) => (
+                        <button
+                          key={tone}
+                          type="button"
+                          onClick={() => setPageTone(tone)}
+                          className={tonePillClasses(state.pageTone === tone)}
+                        >
+                          {tone}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={handleCopy}
+                        className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                      >
+                        <Copy01 className="size-4" />
+                        {copyToastVisible ? "Copied" : "Copy"}
+                      </button>
+                      <KebabMenu
+                        ariaLabel="Configurator options"
+                        items={[
+                          {
+                            label: "Reset all to defaults",
+                            onClick: clearAll,
+                          },
+                        ]}
+                      />
+                    </div>
+                  </div>
 
-              <div className="mt-4">
-                <input
-                  ref={businessNameInputRef}
-                  type="text"
-                  value={state.businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="Your business name"
-                  className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-                />
-              </div>
+                  <div className="mt-4">
+                    <input
+                      ref={businessNameInputRef}
+                      type="text"
+                      value={state.businessName}
+                      onChange={(e) => setBusinessName(e.target.value)}
+                      placeholder="Your business name"
+                      className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                    />
+                  </div>
+                </>
+              )}
 
               <div className="mt-8 space-y-7">
-                {checkedCategories.length === 0 ? (
+                {isMessageAreaDisabled ? (
+                  <EligEmptyState state={eligState} />
+                ) : null}
+
+                {!isMessageAreaDisabled && checkedCategories.length === 0 ? (
                   <div className="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-border-secondary px-6 py-10 text-center">
                     <p className="text-sm text-text-tertiary">
                       Select a category to see your messages.
@@ -549,7 +596,7 @@ export function ConfiguratorSection() {
                   </div>
                 ) : null}
 
-                {checkedCategories.map((category) => {
+                {!isMessageAreaDisabled && checkedCategories.map((category) => {
                   const catState = state.categories[category.id];
                   const cv = state.categoryValues[category.id];
                   const requiresStop = categoryRequiresStop(category);
@@ -789,23 +836,29 @@ export function ConfiguratorSection() {
                 })}
               </div>
 
-              <div className="mt-10">
-                {/* PRE-LAUNCH (2026-05-16): opens the waitlist modal. Revert to
-                    a <Link> "Start building with SMS →" (href "/signup") when
-                    onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-                <button
-                  type="button"
-                  onClick={() => openModal("mid-page")}
-                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
-                >
-                  Get early access
-                </button>
-                {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-                <p className="mt-4 text-sm text-text-secondary">
-                  The messages above are yours — copy them and use them with any
-                  provider today. The full product ships summer 2026.
-                </p>
-              </div>
+              {hideBottomCta ? null : (
+                <div className="mt-10">
+                  {/* PRE-LAUNCH (2026-05-16): opens the waitlist modal. Revert to
+                      a <Link> "Start building with SMS →" (href "/signup") when
+                      onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md
+                      WAVE 2 (2026-05-29): hidden on 🔴 not-our-lane verdicts
+                      (PM ruling §5.2 — no future state to sign up for). 🟠/⚫
+                      keep this as a secondary backup; the inline waitlist in
+                      the verdict card is the primary capture. */}
+                  <button
+                    type="button"
+                    onClick={() => openModal("mid-page")}
+                    className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
+                  >
+                    Get early access
+                  </button>
+                  {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
+                  <p className="mt-4 text-sm text-text-secondary">
+                    The messages above are yours — copy them and use them with any
+                    provider today. The full product ships summer 2026.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
