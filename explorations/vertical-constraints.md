@@ -1,18 +1,22 @@
-Status: exploring (2026-05-27) — preservation of today's vertical-constraints work (Product Thread 115). NOT canon. Promotes to a repo constraint data file + per-vertical primers via a sequenced series of follow-up sessions (see §6). Do not propagate into PROTOTYPE_SPEC, PRODUCT_SUMMARY, MARKETING_STRATEGY, or the live configurator until those follow-ups happen in order.
+Status: exploring (2026-05-27, updated 2026-05-29) — preservation of Product Thread 115 vertical-constraints work plus Session 119 elig-section design output. NOT canon. Promotes to a repo constraint data file + per-vertical primers + the elig section build via a sequenced series of follow-up sessions (see §6). Do not propagate into PROTOTYPE_SPEC, PRODUCT_SUMMARY, MARKETING_STRATEGY, or the live configurator until those follow-ups happen in order.
 
-**Session 117 output:** `/explorations/vertical-buckets-research.md` — bucket-level enumeration for all 136 sub-verticals, shaped to populate Airtable.
+**Session 117 output:** `/explorations/vertical-buckets-research.md` — bucket-level enumeration for all 137 sub-verticals, shaped to populate Airtable.
 
-# Vertical constraints — eligibility model, sub-vertical routing, content-rule sets
+**Session 118 output:** Airtable Constraints base populated end-to-end (8 Verticals, 137 Sub-verticals, 12 Rules), `/lib/constraints/` schema built, `verticals.ts` generated and committed.
 
-A working-session sketch capturing the eligibility model, the sub-vertical routing principle, and the full-depth content rules for the three constrained verticals authored in Product Thread 115. Source of truth for the Airtable build, the repo constraint data file, the `industry-gating.ts` rework, and the per-vertical primer authoring sessions that follow.
+**Session 119 output:** D-418 superseded by D-422 (four buckets → five). Bucket strings in `/lib/constraints/` updated to D-422. Elig section design fully shaped — verdict-copy patterns for all five buckets, per-category copy patterns, three anchored 🟡 global cards authored, six 🔴 sub-vertical lines authored, dropdown structure decided.
 
-The full content rules below are authored at primer depth — more than what will surface in the configurator and more than what the SMS 101 page will carry on its face. They're preserved at depth here because condensing happens downstream, not now; the primer-authoring session needs the depth, the configurator session needs the condensation.
+# Vertical constraints — eligibility model, sub-vertical routing, content-rule sets, elig section design
+
+A working-session sketch capturing the eligibility model, the sub-vertical routing principle, the full-depth content rules for the three constrained verticals authored in Product Thread 115, and the elig-section design from Session 119. Source of truth for the Airtable build, the repo constraint data file, the `industry-gating.ts` rework, the per-vertical primer authoring sessions, and the elig-section UI build.
+
+The full content rules in §4 are authored at primer depth — more than what will surface in the elig section and more than what the SMS 101 page will carry on its face. They're preserved at depth here because condensing happens downstream, not now; the primer-authoring session needs the depth, the elig-copy session has already drawn the condensed version (§9).
 
 ---
 
 ## §1 — The two-question model
 
-Two genuinely different questions a developer asks, and the page (and the widget) must answer them separately:
+Two genuinely different questions a developer asks, and the elig section must answer them separately:
 
 1. **Vertical eligibility** — "can my *business* use RelayKit?" About *who you are*.
 2. **Message-content rules** — "can I send *this text*?" About *what the message says*.
@@ -21,42 +25,48 @@ Most of RelayKit's audience — generic indie SaaS — only ever encounters ques
 
 ---
 
-## §2 — The four-bucket eligibility model
+## §2 — The five-bucket eligibility model
 
-Every vertical (and, where routing splits it, every sub-vertical) lands in one of four buckets:
+Every vertical (and, where routing splits it, every sub-vertical) lands in one of five buckets. The bucket strings below are the canonical Bucket union values in `/lib/constraints/types.ts` per D-422.
 
-1. **Barred at launch** — cannot use RelayKit, full stop. Cannabis (carrier-prohibited at federal level; prohibited even in jurisdictions where legalized); firearms (carrier-scrutiny + requires case-by-case approval babysitting that contradicts the one-person-shop posture — not statutorily banned, but flagged under SHAFT).
+1. **Clear** (🟢) — no constraints, full eligibility. The dominant bucket — 64 of 137 sub-verticals. Generic indie SaaS lives here.
 
-2. **Declined at launch, blanket** — empty at present, after healthcare moved to sub-vertical routing.
+2. **Conditional** (🟡) — eligible with content rules. Today: legal-practice-tools, banking-budgeting-apps, healthcare-administrative, plus 22 other sub-verticals where rule layers exist (HIPAA-hygiene, FDCPA-adjacent, attorney-client privilege, EEOC-consent, locksmith fraud, fair-housing). 25 sub-verticals.
 
-3. **Vetting-required, deferred (indeterminate status)** — the 12 TCR Special categories: Charity, K-12, Political Campaign, Sweepstakes, Polling and Voting, Emergency, Machine to Machine, Proxy, Direct Lending, Agents and Franchises, Social, Fraud Alert. Status is genuinely open ("may or may not ever"), not a roadmap commitment. Future work toward vetting capability is non-trivial UX and operational lift; backlog item, not committed item.
+3. **Not yet, maybe not ever** (🟠) — vetting territory we haven't built UX/promise/submission rigor for. Includes TCR Special categories (gambling, dating, crypto, sweepstakes), regulated verticals (insurance, immigration legal-aid), and case-by-case vetting burdens. 35 sub-verticals. The "maybe not ever" honesty matters: vetting is a different operational animal we may never invest in.
 
-4. **In scope** — everything else, including legal, financial/fintech (eligible sub-verticals), restaurants, and the entire generic-indie-SaaS audience. Within this bucket, some verticals/sub-verticals carry content rules (see §4); most don't.
+4. **Not yet** (⚫) — capacity-deferred. We want this; it's on the roadmap; not in launch. Multi-tenant support routes here. Sub-verticals: real-estate lead-gen, solar lead-gen, audience-growth tooling, healthcare clinical/mental-health/pharmacies (BAA-gated). 6 sub-verticals + multi-tenant feature.
 
-**Firearms-as-barred reasoning.** Firearms is *technically* not as absolutely barred as cannabis — a firearms business *can* sometimes get approved with risk-mitigation. But that's a case-by-case approval babysitting path, which contradicts the one-person-shop automation posture RelayKit is built around. Same outcome as cannabis at launch; honest reason is "we don't do vetting babysitting," not "carriers fully prohibit it."
+5. **Not our lane** (🔴) — we won't offer this. Merges D-418's "Barred" and "Declined" — the merged "we won't" bucket regardless of whether the "won't" reason is carrier-imposed or values-imposed. Cannabis, firearms, vape/tobacco, adult content, adult dating (all SHAFT carrier-prohibition). Plus surveillance/employee-monitoring (values-permanent). 7 sub-verticals.
+
+**Distinguishing 🟠 from ⚫.** Both are "not yet" at launch, but the disposition differs. 🟠 is honest about uncertainty — vetting may never happen. ⚫ is forward-looking — capacity-deferred, actively wanted. The user-facing copy reflects this (§9).
+
+**Distinguishing ⚫ deferred from 🔴 values-permanent.** The bright line is *values posture vs. capacity gate*. Capacity-deferred = industry serves with infrastructure we don't have at launch ops; we want to build it. Values-permanent = we won't build it at any operating scale. Surveillance is the only values-permanent row in the corpus today; future PMs evaluating new RelayKit-specific bars apply this test.
+
+**Firearms-as-Not-our-lane reasoning.** Firearms is *technically* not as absolutely barred as cannabis — a firearms business *can* sometimes get approved with risk-mitigation. But that's a case-by-case approval babysitting path, which contradicts the one-person-shop automation posture RelayKit is built around. Same outcome as cannabis at launch; honest reason is "we don't do vetting babysitting," not "carriers fully prohibit it."
 
 ---
 
 ## §3 — Sub-vertical routing
 
-Flat vertical categorization is too coarse. "Financial services" contains both budgeting apps (safe) and payday lenders (vetting-required); "healthcare" contains both dentists doing appointment reminders (safe with PHI rules) and telehealth platforms messaging diagnoses (clinical, BAA territory).
+Flat vertical categorization is too coarse. "Financial services" contains both budgeting apps (🟢/🟡) and payday lenders (🟠); "healthcare" contains both dentists doing appointment reminders (🟡) and telehealth platforms messaging diagnoses (⚫ BAA-gated).
 
-The model: a top-level vertical can carry a **secondary dropdown** of sub-verticals. Each sub-vertical lands in one of the four buckets independently. The widget UI surfaces this as a conditional second dropdown — pick "Financial services" → see the sub-verticals → pick the one that matches → land in the correct bucket.
+The model: a top-level vertical can carry a **secondary dropdown** of sub-verticals. Each sub-vertical lands in one of the five buckets independently. The elig section UI surfaces this as a conditional secondary dropdown — pick the vertical, then where routing applies, pick the sub-vertical, then land in the correct bucket.
 
-**Principle (worth elevating to the primer):** accepting any vertical or sub-vertical happens on RelayKit's terms. The widget isn't passively sorting; it's deciding, sub-vertical by sub-vertical, what it takes.
+**Routing trigger.** 60 of 137 sub-verticals carry `routingTrigger: true`. Some verticals are routing-heavy (civic surfaces it on most rows), some never trigger. The data file is the source of truth for whether the secondary dropdown surfaces.
 
-Implications for the data model: vertical → sub-vertical is a one-to-many relationship; each sub-vertical row carries its own bucket and content-rule pointer. The Airtable and the repo data file should both reflect this two-level structure.
+**Principle (worth elevating to the primer):** accepting any vertical or sub-vertical happens on RelayKit's terms. The elig section isn't passively sorting; it's deciding, sub-vertical by sub-vertical, what it takes.
 
 ---
 
-## §4 — Constrained verticals (in-scope-with-content-rules)
+## §4 — Constrained verticals (Conditional / 🟡, with content rules)
 
-These are the verticals where the per-vertical content layer applies. Authored at primer depth — the configurator will surface condensed versions, the primers will surface full versions.
+These are the verticals where the per-vertical content layer applies. Authored at primer depth — the elig section surfaces condensed versions per §9, the primers will surface full versions.
 
 ### §4a — Legal
 
 **Sub-vertical routing.** Legal/legal-tech splits into two:
-- **Practice tools / case-management / client portals** → eligible with content rules (this section).
+- **Practice tools / case-management / client portals** → 🟡 with content rules (this section).
 - **Specific sub-practices that may trigger vetting** (bankruptcy practice, criminal defense, immigration legal aid as standalone product focus) → flag for sub-vertical review before authoring rules; provisionally same content rules but possibly elevated scrutiny.
 
 **Principle.** SMS is an insecure, often-shared channel. The recipient's phone may be seen by others. The rule isn't "legal can't send texts" — it's "the text can't contain anything that breaches client confidentiality or attorney-client privilege if read by the wrong eyes."
@@ -82,8 +92,8 @@ These are the verticals where the per-vertical content layer applies. Authored a
 ### §4b — Financial services / fintech
 
 **Sub-vertical routing.** Fintech splits sharply:
-- **Banking & accounts** (neobanks doing account notifications), **budgeting & personal finance**, **payments processing** → eligible with content rules (this section).
-- **Lending, debt collection, credit repair, credit services** → precluded at launch via the vetting-required bucket. These are not "content-rule-able" — they're vertical-eligibility decisions that route to preclusion. Lending, debt collection, and credit content face elevated carrier scrutiny; they also carry their own legal regimes (FDCPA for collections) above RelayKit's pay grade at launch.
+- **Banking & accounts** (neobanks doing account notifications), **budgeting & personal finance**, **payments processing** → 🟡 with content rules (this section).
+- **Lending, debt collection, credit repair, credit services** → routed to 🟠 (vetting) or 🔴 (Not our lane — debt collection specifically). These are not "content-rule-able" — they're vertical-eligibility decisions. Lending, debt collection, and credit content face elevated carrier scrutiny; they also carry their own legal regimes (FDCPA for collections) above RelayKit's pay grade at launch.
 
 **Principle.** Two risk sources, both real: (a) financial details that identify the recipient's money situation are privacy-sensitive (the SMS may be seen by others); (b) lending/credit/collections content draws elevated carrier scrutiny.
 
@@ -99,13 +109,13 @@ These are the verticals where the per-vertical content layer applies. Authored a
 
 3. **Fraud and security alerts are encouraged, with no specifics.** "New sign-in, unrecognized device — secure your account" is exactly the right shape. The rule constrains *detail*, not the alert itself.
 
-**Note for primer.** Rules around lending content, credit-decision content, and collections language are *not* content rules at the eligible-sub-vertical level — they're routing decisions that send the developer to a precluded sub-vertical. The primer should explain this clearly: "if your product is fundamentally a lending product, this isn't a content-rules conversation; you're in a different bucket entirely." This resolves the `CUSTOMER_ARCHETYPE_FOUNDATION` §4a flag about the fast-registration promise not being unconditionally honest for lending/credit/debt-collection — the answer is sub-vertical routing, not content qualification.
+**Note for primer.** Rules around lending content, credit-decision content, and collections language are *not* content rules at the eligible-sub-vertical level — they're routing decisions that send the developer to a 🟠 or 🔴 sub-vertical. The primer should explain this clearly: "if your product is fundamentally a lending product, this isn't a content-rules conversation; you're in a different bucket entirely."
 
 ### §4c — Healthcare
 
 **Sub-vertical routing.** Healthcare's split *is* the answer to the long-running BAA question:
-- **Administrative / scheduling tools** (appointment booking, practice-management, patient-portal notifications, intake forms) → eligible with content rules (this section). PHI is never required for the message; if content rules hold, no PHI passes through RelayKit, and there's nothing for a BAA to cover.
-- **Clinical / care-delivery** (telehealth platforms, EHR/EMR with patient SMS, anything that messages diagnoses, results, medications, or care instructions) → precluded at launch via the vetting-required bucket. PHI *is* the message; content rules can't make this safe; the BAA question is unavoidable. Future enablement is gated on the BAA liability call (legal, not product).
+- **Administrative / scheduling tools** (appointment booking, practice-management, patient-portal notifications, intake forms) → 🟡 with content rules (this section). PHI is never required for the message; if content rules hold, no PHI passes through RelayKit, and there's nothing for a BAA to cover.
+- **Clinical / care-delivery** (telehealth platforms, EHR/EMR with patient SMS, anything that messages diagnoses, results, medications, or care instructions) → ⚫ Not yet (capacity-deferred on BAA program). PHI *is* the message; content rules can't make this safe; the BAA question is unavoidable. Future enablement is gated on the BAA liability call (legal, not product).
 
 **Principle.** Stricter than legal or fintech, because in healthcare the recipient's identity-as-patient is itself sensitive — even a facility name can leak a diagnosis. The SMS is a doorbell, never a delivery.
 
@@ -129,11 +139,11 @@ These are the verticals where the per-vertical content layer applies. Authored a
 
 5. **The portal carries everything clinical.** The SMS notifies that an appointment, a result, or a document exists; the authenticated surface holds the substance. Same pattern as legal.
 
-**BAA status.** Administrative healthcare does not need a BAA (no PHI passes through, by rule). Clinical healthcare is precluded at launch precisely because the BAA question can't be resolved on product grounds — it needs a legal call. That call is a tracked open item, indeterminate-status, in the vetting-required backlog.
+**BAA status.** Administrative healthcare does not need a BAA (no PHI passes through, by rule). Clinical healthcare is ⚫ Not yet at launch precisely because the BAA question can't be resolved on product grounds — it needs a legal call. That call is a tracked open item in the capacity-deferred queue.
 
 ### §4d — Restaurants
 
-In-scope; advisory tier only. Carriers sometimes review promotional restaurant content under SHAFT (alcohol); this surfaces at promo time, not as content rules on the eligible side. Restaurants do not need their own content-rule set beyond the corpus-wide rules (no credentials, no promo outside Marketing, SHAFT-C in Marketing). The `industry-gating.ts` advisory copy stays appropriate.
+🟢 Clear at the sub-vertical level. Carriers sometimes review promotional restaurant content under SHAFT (alcohol); this surfaces at promo time, not as content rules on the eligible side. Restaurants do not need their own content-rule set beyond the corpus-wide rules (no credentials, no promo outside Marketing, SHAFT-C in Marketing).
 
 ---
 
@@ -141,42 +151,202 @@ In-scope; advisory tier only. Carriers sometimes review promotional restaurant c
 
 The current `prototype/lib/intake/industry-gating.ts` is flat (6 verticals, regex-matched, one advisory sentence each) and predates the sub-vertical routing model. It is now stale in two specific ways:
 
-1. **Healthcare is flat-declined.** Under the new model, administrative healthcare is in-scope (with content rules) and only clinical healthcare is precluded. Flat decline blocks the dentist appointment-reminder use case wrongly.
+1. **Healthcare is flat-declined.** Under the new model, administrative healthcare is 🟡 (with content rules) and only clinical healthcare is ⚫ Not yet. Flat decline blocks the dentist appointment-reminder use case wrongly.
 2. **No sub-vertical structure.** Financial services, legal, and healthcare all need secondary-dropdown routing. The current regex model doesn't accommodate that.
 
-`industry-gating.ts` rework is its own session, sequenced after the repo constraint data file exists (see §6).
+`industry-gating.ts` rework is its own session, sequenced after the data file exists (it now does) and after the elig section UI is built (it doesn't yet). One open call: whether to rework `industry-gating.ts` in `/prototype` at all, given the directory is sunset-bound (D-358), or whether the gating logic should move to the elig section directly. Decision deferred to step 4.
 
 ---
 
 ## §6 — Sequence of follow-up sessions
 
-In order. Each step requires the one above:
+Updated as of Session 119. In order. Each step requires the one above:
 
-1. **This doc lands + D-numbers recorded** (today, Product Thread 115).
-2. **Airtable build** — two-level structure (vertical → sub-vertical as linked records), pre-built views designed around how Joel actually uses it. Joel-led; PM specs the schema. Most verticals resolve to "eligible, no content rules" and fill in fast; the constrained ones get the depth from §4.
-3. **Repo constraint data file** — CC builds the schema (the structure the configurator will read); Joel hand-transfers from Airtable into it. Single enforcement source of truth. Hand-transfer is deliberate; no live Airtable→repo sync.
-4. **`industry-gating.ts` rework** — replace flat regex model with sub-vertical structure reading from the data file. CC.
-5. **Per-vertical primer authoring** — full-depth guides for each constrained vertical, expanded from §4 with worked-example libraries. Permanently-accessible tier-3 docs. Joel + PM session.
-6. **Configurator copy authoring** — condensed high-level rules that surface in the configurator UI when a sub-vertical with content rules is selected. Joel + PM session, source: the primers.
-7. **Widget build on relaykit.ai** — two dropdowns (single/multi-tenant + business type) plus conditional sub-vertical secondary dropdown + eligibility verdict + content-rule preview where applicable. CC build; reads the constraint data file; surfaces what the primers established. Multi-tenant routes to a *feature-specific* waitlist (not the release waitlist).
-8. **SMS 101 page** — the public tier-3 page housing the consent + multi-tenant explanation and pointing at the per-vertical primers. Mostly assembly once 1–7 exist.
+1. ~~This doc lands + D-numbers recorded~~ (Session 116, complete).
+2. ~~Airtable build~~ — Session 118, complete (137 sub-verticals + 12 rules populated end-to-end).
+3. ~~Repo constraint data file~~ — Session 118, complete (`/lib/constraints/types.ts` + `verticals.ts` committed).
+4. ~~Session 119 elig design + D-422 + bucket-string rename~~ — complete.
+5. **AIRTABLE_SCHEMA + live base re-mapping** — bring Airtable's bucket select-option strings into line with D-422. PM-led via connector. Bucket option values change from D-418-era to: Clear / Conditional / Not yet, maybe not ever / Not yet / Not our lane. The six "Declined at launch" rows in Airtable re-tag to "Not yet" per the constraintSource disambiguation already applied in the repo data file.
+6. **`industry-gating.ts` rework** — replace flat regex model with sub-vertical structure reading from the data file. CC. Or fold into step 7 if `/prototype` rework isn't worth doing pre-sunset.
+7. **Elig section UI build** — the central work. CC, plan-mode. Two label-less dropdowns (vertical, conditional sub-vertical) plus a multi-tenant dropdown that routes single → continue, multi-tenant → ⚫ Not yet. Reset × per dropdown. Verdict card under the dropdowns per §9. Per-category cards under affected category headers per §9. Disabled categories on 🟠/⚫/🔴 per §9. Empty-state illustration placeholder. No live CTAs at launch — pre-launch state holds the elig section but no Start-building integration yet. Reads `/lib/constraints/`.
+8. **Per-vertical primer authoring** — full-depth guides for each 🟡 constrained sub-vertical, expanded from §4 with worked-example libraries. Permanently-accessible tier-3 docs. Joel + PM session. Author as customer pull demands; don't pre-author all 25 🟡 sub-verticals speculatively.
+9. **SMS 101 page** — the public tier-3 page housing the consent + multi-tenant explanation and pointing at the per-vertical primers. Mostly assembly once 1–8 exist.
 
 ---
 
 ## §7 — Relationships to existing docs
 
-- **`CUSTOMER_ARCHETYPE_FOUNDATION` §4** names the deferred-category posture, the healthcare BAA revisit, and the content-specific advisory layer for lending/collections as fast-follows. This exploration *resolves* the latter two: the BAA revisit becomes a sub-vertical routing call (administrative healthcare in, clinical out, clinical's future gated on the BAA question); the lending/collections advisory layer becomes sub-vertical routing (those sub-verticals are precluded, not content-rule-able). Add a pointer from §4 to this exploration when the data file lands; don't restate.
-- **`VERTICAL_TAXONOMY_DRAFT` §3** carries the TCR Special decline — consistent with our vetting-required bucket. No conflict; the new model is more granular but not incompatible.
-- **`industry-gating.ts`** — stale, see §5. Rework is session 4 in the sequence above.
-- **MASTER_PLAN** — no amendment required from the constraint work itself. The launch-definition amendment from the golden-path half of Product Thread 115 (D-416, D-417) already covers what changed at the launch level.
+- **`CUSTOMER_ARCHETYPE_FOUNDATION` §4** names the deferred-category posture, the healthcare BAA revisit, and the content-specific advisory layer for lending/collections as fast-follows. This exploration *resolves* the latter two: the BAA revisit becomes a sub-vertical routing call (administrative healthcare → 🟡, clinical → ⚫); the lending/collections advisory layer becomes sub-vertical routing (those sub-verticals are 🟠/🔴, not content-rule-able). Add a pointer from §4 to this exploration when this doc promotes.
+- **`VERTICAL_TAXONOMY_DRAFT` §3** carries the TCR Special decline — consistent with our 🟠 bucket. No conflict.
+- **`industry-gating.ts`** — stale, see §5. Rework is step 6 in the sequence above.
+- **MASTER_PLAN** — no amendment required from the constraint work itself. The launch-definition amendment from the golden-path half of Product Thread 115 (D-416, D-417) already covers what changed at the launch level. Principle #7 (continuity of intent, Session 119) governs the elig-to-onboarding-to-registration data handoff shape.
 
 ---
 
 ## §8 — Promotion criteria
 
 This exploration is `promoted` when:
-- The repo constraint data file is committed (sequence step 3 above), and
-- `industry-gating.ts` has been reworked against it (step 4), and
-- The per-vertical primers exist as canonical docs (step 5).
+- The repo constraint data file is committed (Session 118, ✅), and
+- `industry-gating.ts` has been reworked against it (step 6), and
+- The elig section UI is built and live (step 7), and
+- The per-vertical primers exist as canonical docs (step 8).
 
-At that point, the canonical homes for this material are: the data file (enforcement structure), the primers (full-depth guidance), the configurator (condensed in-context rules), and the SMS 101 page (public tier-3 surface). This exploration's job ends.
+At that point, the canonical homes for this material are: the data file (enforcement structure), the primers (full-depth guidance), the elig section UI (condensed in-context rules), and the SMS 101 page (public tier-3 surface). This exploration's job ends.
+
+---
+
+## §9 — Elig section design (Session 119)
+
+The elig section ("elig") is the customer-facing eligibility surface on relaykit.ai. It sits in the upper right of the configurator area, above the message tone toggle. It answers the two-question model (§1) and shapes the messages section below it.
+
+### §9.1 — Naming
+
+**Elig section** / **elig**. Not "widget," not "eligibility widget," not "constraint checker." The naming is intentional: this surface is a section of the page, not a bolt-on tool.
+
+### §9.2 — Structural decisions
+
+**Dropdowns (three, two visible at any time):**
+
+1. **Multi-tenant question.** Placeholder: *"My app sends messages..."*. Options: *"for one business (mine)"* / *"for many businesses (my customers)"*.
+2. **Vertical.** Placeholder: *"What industry does your app serve?"*. Options: the 8 verticals from `/lib/constraints/`.
+3. **Sub-vertical (conditional).** Surfaces only when the picked vertical has sub-verticals with `routingTrigger: true`. Placeholder: TBD at build time, follows the same label-less pattern.
+
+**No field labels.** Placeholders do the labeling work. Locked Session 119.
+
+**Reset affordance.** Small **×** appears inside each dropdown on the right side, only when a value is selected. Click = back to placeholder state. Each dropdown independent. Untitled UI Select `isClearable` pattern.
+
+**Default state is free-use.** Leaving all dropdowns in placeholder state = the messages section works as the lead magnet it already is. Tire-kickers and message-only users browse freely. Making a selection = opt into the front-door experience. Single surface, no mode toggle.
+
+**Continuity of intent.** Per MASTER_PLAN principle #7. Whatever the user enters in elig + messages flows forward into onboarding and registration without re-entry. Build elig now to hold its selections in a clean, exportable shape; wiring to onboarding happens at launch (no live CTAs yet).
+
+### §9.3 — Verdict surface
+
+Verdict appears as a card directly under the dropdowns (the "Global feedback" zone). The verdict card shape varies by bucket. Same zone, different weight.
+
+🟢 **Clear** — quiet confirmation, low-contrast single line, no card:
+
+> ✓ You're set — pick your messages below.
+
+Check icon `fg-success-secondary`, line in `text-tertiary`, no border, no fill. Acknowledges the pick took effect without ceremony.
+
+🟡 **Conditional** — blue info card, check icon, two-tier (collapsed + expander):
+
+Collapsed:
+> ✓ You're set — we'll flag the rules where they apply. *More info* [chevron]
+
+Expanded (the why/what/how prose, three short paragraphs per the pattern: channel reality → vivid trio → consequence → what we keep out → what we do by default). See §9.4 for the three authored cards.
+
+🟠 **Not yet, maybe not ever** — orange info card. Disabled categories column. Friendly empty state in messages area (illustration placeholder). Tagged waitlist signup. Per-sub-vertical copy follows pattern:
+
+> This one's harder than we're set up for today.
+> Get notified if it becomes available [email]
+
+⚫ **Not yet** — orange info card. Same UX shape as 🟠 (disabled categories, empty-state, illustration, tagged waitlist). Copy is forward-looking:
+
+> Coming soon. Get notified when it becomes available [email]
+
+Multi-tenant routes here with this same shape — selecting "for many businesses (my customers)" in dropdown 1 triggers ⚫ Not yet without requiring dropdown 2/3.
+
+🔴 **Not our lane** — orange info card. Same UX shape as 🟠/⚫ (disabled categories, empty-state, illustration). No waitlist (no future state we're working toward). Copy follows pattern:
+
+> We're not able to send [sub-category] messages. Try searching for a specialized [type] provider.
+
+See §9.5 for the six authored sub-vertical lines.
+
+### §9.4 — 🟡 Conditional global card (expanded prose) — three authored cards
+
+Pattern: **channel reality → vivid trio → consequence (whose harm, whose authority) → what we keep out → what we do by default.**
+
+**Legal practice tools:**
+
+> SMS is open infrastructure — unencrypted and shared across screens.
+>
+> "Arrest." "Custody." "Bankruptcy." If the wrong eyes see these in a message, that's a privilege breach to a court, and can risk your registration with carriers. So specifics stay out of the message body. Case details, names, and status words move into your app, behind a link.
+>
+> We shape your messages this way by default, and also help you author new ones safely.
+
+**Banking / budgeting apps:**
+
+> SMS is open infrastructure — unencrypted and shared across screens.
+>
+> "$4,212." "Charged at Liquor Barn." "Payment overdue." If the wrong eyes see these in a message, that's a privacy breach to your customer, and can risk your registration with carriers. So specifics stay out of the message body. Balances, transactions, and merchant names move into your app, behind a link.
+>
+> We shape your messages this way by default, and also help you author new ones safely.
+
+**Healthcare administrative:**
+
+> SMS is open infrastructure — unencrypted and shared across screens.
+>
+> "Chemotherapy." "Dr. Chen, Psychiatry." "Bright Path Recovery." If the wrong eyes see these in a message, that's a HIPAA exposure for your practice, and can risk your registration with carriers. So specifics stay out of the message body. Conditions, providers, and facility names move into your app, behind a link.
+>
+> We shape your messages this way by default, and also help you author new ones safely.
+
+### §9.5 — 🟡 per-category cards (under category headers)
+
+Per-category cards live in the content area under each affected category's header (not in the left rail category selector — that stays clean). Two-tier: collapsed line + expander labeled "Examples" + [chevron].
+
+Pattern: **[Specifics] are a [vertical-specific harm] risk. Link to your app instead.**
+
+**Legal × any affected category:**
+> Case details, names, and status words are a privilege risk. Link to your app instead. *Examples* [chevron]
+
+**Banking × any affected category:**
+> Balances, transactions, and merchant names are a privacy risk. Link to your app instead. *Examples* [chevron]
+
+**Healthcare-admin × any affected category:**
+> Conditions, providers, and facility names are a HIPAA risk. Link to your app instead. *Examples* [chevron]
+
+**Verification carve-out.** No per-category card on Verification for any vertical. Verification is content-neutral by nature (4-8 digit codes); the rules don't bite. The data model needs a `categoriesAffected` field (or similar) on the Rule type at implementation — currently rules are attached at sub-vertical level without per-category scoping.
+
+**Card visibility ≠ rule enforcement.** Even where no per-category card surfaces, rules still enforce at the message level. The card is informational; enforcement is everywhere the rule applies.
+
+**Examples writing rule.** Each example must be plausible for the vertical *and* applicable to the category. Generic-fits-anywhere examples fail. Subject example authoring to an independent sniff-test review (fresh Claude instance, no context contamination).
+
+### §9.6 — 🔴 Not our lane — six authored sub-vertical lines
+
+Standardized closer: **"Try searching for a..."**.
+
+**Cannabis retail / dispensaries:**
+> We're not able to send cannabis messages. Try searching for a specialized provider for state-regulated programs.
+
+**Firearms / ammunition retail:**
+> We're not able to send firearms messages. Try searching for a specialized FFL provider.
+
+**Vape / tobacco / nicotine retail:**
+> We're not able to send tobacco or vape messages. Try searching for an age-gated provider.
+
+**Adult content / age-gated retail:**
+> We're not able to send adult-content messages. Try searching for an age-gated provider.
+
+**Adult dating / hookup apps:**
+> We're not able to send messages for adult dating apps. Try searching for an age-gated provider.
+
+**Surveillance / employee monitoring** (values-permanent — distinct shape):
+
+Orange box (primary):
+> We're not able to send messages for surveillance or covert monitoring tools.
+
+Empty state (smaller type):
+> Try searching for another provider.
+
+The values-bar honesty (this is RelayKit's choice, not a carrier limit) stays internal. The surface stays short.
+
+### §9.7 — Waitlist mechanics
+
+🟠 and ⚫ both feed signal capture via the existing "Get early access" list with an **interest-tag field** — not separate segmented lists. Tag distinguishes downstream: vetting-interest (🟠) feeds "is this real demand or fringe?" queue; multi-tenant-interest / capacity-deferred-sub-vertical-interest (⚫) feeds "build this next" queue. Same mechanism, distinct signal.
+
+🔴 gets no waitlist. There's no future state we're working toward.
+
+The "promote interest-tag to real segmented waitlist" call gets revisited when demand justifies it or a deferred feature gets close to shipping.
+
+### §9.8 — What's deferred from Session 119
+
+- **Empty-state illustration** for 🟠/⚫/🔴 — placeholder hole at build time. One shared illustration vs. three distinct, TBD.
+- **The "Start building" CTA** at launch — doesn't exist yet, no onboarding app to route to. Elig section holds its selections in a clean exportable shape; wiring happens at launch.
+- **Per-category card content for non-anchored 🟡 sub-verticals** — author as customer pull demands, not pre-authored speculatively.
+- **AIRTABLE_SCHEMA + live base re-mapping** to D-422 — step 5 in §6.
+- **`industry-gating.ts` rework decision** — whether to rework in `/prototype` or move logic to elig section directly.
+
+---
+
+*End of vertical-constraints.md*
