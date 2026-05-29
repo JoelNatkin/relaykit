@@ -13,10 +13,12 @@ import { EditValuesForm } from "@/components/configurator/edit-values-form";
 import { EditValuesModal } from "@/components/configurator/edit-values-modal";
 import { CharWarningIcon } from "@/components/configurator/char-warning-icon";
 import { KebabMenu } from "@/components/configurator/kebab-menu";
+import { EligSection } from "@/components/configurator/elig-section";
 import { checkCompliance } from "@/lib/configurator/compliance";
 import { useWaitlist, type WaitlistSummary } from "@/context/waitlist-context";
 import { SessionProvider } from "@/lib/configurator/session-context";
 import { useConfiguratorState } from "@/lib/configurator/use-configurator-state";
+import { useEligState } from "@/lib/configurator/use-elig-state";
 import {
   CATEGORIES,
   interpolateBody,
@@ -212,6 +214,16 @@ export function ConfiguratorSection() {
     updateCustomMessage,
     removeCustomMessage,
   } = useConfiguratorState();
+
+  // Elig state hoisted here so Wave 2 can gate sibling rendering (categories
+  // panel + message stream) off the verdict. Persists to localStorage.relaykit_elig
+  // lazily — no write until the visitor's first interaction (PM ruling §5.8).
+  const {
+    state: eligState,
+    setMultiTenant: setEligMultiTenant,
+    setVerticalSlug: setEligVerticalSlug,
+    setSubVerticalSlug: setEligSubVerticalSlug,
+  } = useEligState();
 
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
@@ -470,6 +482,19 @@ export function ConfiguratorSection() {
 
             {/* Messages column */}
             <div className="flex flex-col md:max-w-[540px]">
+              {/* Elig section — sits at the top of the right column above the
+                  tone pills (vertical-constraints §9). Wave 1 ships dropdowns
+                  + state + localStorage emission only; Wave 2 adds the
+                  verdict cards and the disabled-categories + empty-state
+                  behavior for 🟠/⚫/🔴. */}
+              <div className="mb-6">
+                <EligSection
+                  state={eligState}
+                  onMultiTenantChange={setEligMultiTenant}
+                  onVerticalChange={setEligVerticalSlug}
+                  onSubVerticalChange={setEligSubVerticalSlug}
+                />
+              </div>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
                   {PAGE_TONES.map((tone) => (
