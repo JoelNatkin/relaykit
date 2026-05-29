@@ -37,6 +37,8 @@ export interface ContentRule {
   safeRewriteWarm?: string;
   safeRewriteBrief?: string;
   severity: Severity;
+  /** When present, the rule applies only to the listed category slugs; when absent, the rule applies to all categories the sub-vertical's bucket allows. */
+  categoriesAffected?: string[];
   source: string;
   notes?: string;
 }
