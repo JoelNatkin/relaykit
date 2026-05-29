@@ -1,4 +1,4 @@
-# CC_HANDOFF — Session 118 — `/lib/constraints/` schema landing
+# CC_HANDOFF — Session 119 — continuity-of-intent + D-421/D-422 + D-422 bucket-string rename
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
@@ -7,66 +7,67 @@
 **Date:** 2026-05-28
 **Branches:** `main` only — no unmerged feature branches. `fix/marketing-home-polish` (merged Session 113) still exists locally + on origin pending Joel's cleanup call.
 
-`Commits: 2 | Files modified: 6 | Decisions added: 0 | External actions: 1 (one push to origin/main carrying both this session's commits)`
+`Commits: 4 | Files modified: 7 | Decisions added: 2 | External actions: 4 (one push per commit)`
 
 ---
 
 ## Session character
 
-Code-landing session in plan-mode. Joel directed a schema-only design pass for the repo constraint data file (`/explorations/vertical-constraints.md` §6 step 3, the single enforcement source of truth the configurator widget and the reworked `industry-gating.ts` will both read). Pattern: plan-mode → research (read the docs + the existing flat `industry-gating.ts` + the live Airtable base for ground-truth select-option strings) → plan file written + AskUserQuestion to resolve placement/scope → plan approved → auto-mode implementation → close-out.
+A three-commit doc/data wave executing the front-edge of the elig-section build sequence. (1) MASTER_PLAN gains a new Working principle #7 "Continuity of intent" naming the public-surface → onboarding → registration data-carry promise as a load-bearing principle, paired with a matching PM-behavior bullet; (2) D-421 + D-422 land in DECISIONS, with the supersession rule kicking in mid-prompt — PM had marked `Supersedes: none` on D-422 but the grep surfaced D-418 as a genuine target, flagged, Joel re-routed to `Supersedes: D-418` and D-418 took its supersession mark in the same commit; (3) plan-mode + auto-mode executed step 1 of `/explorations/vertical-constraints.md` §6 — a mechanical rename of the `Bucket` union in `/lib/constraints/types.ts` and all 137 `bucket:` fields in `verticals.ts` to the D-422 five-bucket model. The `Declined at launch` split turned out fully deterministic from `constraintSource` (every Declined row carried `RelayKit-specific, deferred` → `Not yet`); no row required PM judgment. Each commit was pushed solo without a `.pm-review.md` cycle per Joel's standing directive this session.
 
-Two substantive commits: the four-file schema landing (`66218be`), and this close-out.
-
-The PM correction worth flagging up front: the plan file's "Joel hand-transfers" framing for populating `verticals.ts` is **superseded** — PM connector-generates the populated array from the Airtable Constraints base (`appxThB8UWmNulAMt`) via the Airtable MCP connector, not by hand. The committed `verticals.ts` comment + REPO_INDEX + this handoff all reflect the connector-generated framing; the planning artifact at `/Users/macbookpro/.claude/plans/plan-mode-task-design-the-zippy-sutherland.md` retains the older framing as a planning-time snapshot, not current truth.
+The supersession catch is the substantive process moment — the system worked as designed (CLAUDE.md grep-before-append discipline flagged a conflict PM hadn't anticipated, before damage), and Joel accepted the redirect cleanly.
 
 ## Pre-flight ledger scan
 
 ```
 DECISIONS ledger scan:
-- Active count: 335 (latest D-420) — unchanged this session
+- Active count: 337 (latest D-422)  — was 335 at session start
 - Archive range: D-01 through D-83
-- New this session: none
+- New this session: D-421, D-422
 - Marketing decisions: latest MD-20 (unchanged)
+- Supersession marks landed: D-418 ⚠ Superseded by D-422 (same commit as D-422)
 - No flags
 ```
 
 ## Commits — chronological
 
-1. **`66218be` — `feat: add constraint data file schema (types, empty data placeholder, lookup helpers)`.** 4 files / +172 / −0 (all new files).
-   - `lib/constraints/types.ts` — `Bucket` / `BucketReason` / `ConstraintSource` / `Severity` union types (verbatim live-base option strings: `Bucket` strips the doc's emoji prefixes but keeps `"(indeterminate)"`; `Severity` strips parentheticals to bare `"Enforced"` / `"Advisory"`; other unions match the doc exactly); `ContentRule` / `SubVertical` / `Vertical` interfaces; `Status` and `Priority` Airtable fields intentionally omitted (authoring-workflow only).
-   - `lib/constraints/verticals.ts` — `export const VERTICALS: ReadonlyArray<Vertical> = []`. Empty placeholder; comment notes PM-via-connector generation.
-   - `lib/constraints/lookup.ts` — `lookupEligibility(verticalSlug, subVerticalSlug)` (the named eligibility consumer; sub-vertical required, not optional, because every vertical in the data has sub-verticals); `findVertical` / `findSubVertical` direct lookups; `getContentRules(subVerticalSlug)` returning `ContentRule[]` (empty array for most). Lazy-memoized `Map<slug, …>` indexes built on first call.
-   - `lib/constraints/index.ts` — barrel re-export of all types, `VERTICALS`, the four lookup helpers, and the `EligibilityVerdict` type.
+1. **`5d026f4` — `docs: add continuity-of-intent principle to MASTER_PLAN and PM instructions`.** 3 files / +4 / −1.
+   - `MASTER_PLAN.md` — appended Working principle #7 "Continuity of intent" (long form — naming the public-surface → onboarding → registration data-carry promise, the scrutiny-shifts-not-data invariant, and the "never re-enter / never wave through" lines).
+   - `PM_PROJECT_INSTRUCTIONS.md` — appended a one-line **Continuity of intent** bullet under §Standing Reminders > §PM behavior covering the same idea operationally ("design every public surface as the first step of registration, not a separate thing").
+   - `REPO_INDEX.md` — MASTER_PLAN.md Last touched row bumped (Session 118 framing at the time — fixed to Session 119 in this close-out commit).
 
-2. **This commit — close-out.** Two files: `REPO_INDEX.md` (Meta `Last updated` → 2026-05-28 / Session 118; `CC_HANDOFF.md` row in canonical-docs table refreshed off the Session 115 stale state flagged as Session 117 gotcha (a); new section "constraint data layer (Session 118)" added between the configurator-authoring-layer section and the Claude Code skills section, with the four-file table + design-choices recap) and `CC_HANDOFF.md` (this file, overwritten).
+2. **`328c2cc` — `docs: record D-421 (/lib/constraints/ convention) and D-422 (elig section, five-bucket model)`.** 2 files / +29 / −1.
+   - `DECISIONS.md` — D-421 (`/lib/constraints/` established as top-level shared-libs convention; Supersedes: none, with explicit notes that D-375's workspace-tooling rejection and D-381's deferred messages-storage architecture are unaffected) + D-422 (Eligibility section / "elig" replaces widget framing; five-bucket model; Supersedes: D-418) + the supersession mark `⚠ Superseded by D-422` appended to D-418's body.
+   - `REPO_INDEX.md` — decision count 335 → 337, latest D-420 → D-422, with a Session 118-framed parenthetical (fixed to Session 119 in this close-out).
+
+3. **`786dc10` — `chore: update Bucket strings in /lib/constraints/ to D-422 five-bucket model`.** 2 files / +142 / −142.
+   - `lib/constraints/types.ts` — `Bucket` union swapped from the D-418 five strings (`Barred at launch` / `Vetting-required (indeterminate)` / `In-scope, with content rules` / `In-scope, no content rules` / `Declined at launch`) to the D-422 five (`Clear` / `Conditional` / `Not yet, maybe not ever` / `Not yet` / `Not our lane`).
+   - `lib/constraints/verticals.ts` — all 137 `bucket:` fields updated. Final breakdown: 64 Clear · 25 Conditional · 35 "Not yet, maybe not ever" · 6 "Not yet" · 7 "Not our lane". Plan file: `/Users/macbookpro/.claude/plans/step-1-of-the-fluffy-gray.md`.
+
+4. **This commit — close-out.** Three files: `REPO_INDEX.md` (Meta last_updated 2026-05-28 Session 118 → 119; decision-count parenthetical Session 118 → 119 with the D-421/D-422 decided-line cosmetic-mismatch flag added; Last touched columns for REPO_INDEX-self + MASTER_PLAN + PM_PROJECT_INSTRUCTIONS + DECISIONS + CC_HANDOFF bumped to Session 119), `PM_PROJECT_INSTRUCTIONS.md` (in-file Updated header bumped May 25 → May 28), `CC_HANDOFF.md` (this file, overwritten).
 
 ## Quality checks
 
-- **`tsc --noEmit` clean on `/lib/constraints/`** — root tsconfig is strict and picks up `**/*.ts`. Filtering tsc output for `lib/constraints/` yields zero errors. (Other tsc output is pre-existing noise from the root tsconfig's `@/*` → `./src/*` alias colliding with marketing-site's own `@/*` → `./marketing-site/*` alias — untouched by this session.)
-- **eslint / vitest skipped per Joel's direction** — only `/lib/constraints/` `.ts` files touched, and Joel said skip those gates outside that dir.
-- **No copy gate** — no user-facing strings added; all four files are infrastructure with internal comments only.
+- **tsc clean on `/lib/constraints/`** (filter for `^lib/constraints` in tsc output to skip pre-existing root-tsconfig noise from the marketing-site `@/*` alias collision). Verified inline before commit 3 — zero errors on filter.
+- **Sanity grep on `verticals.ts`** — 0 old strings remaining, 137 new strings, per-bucket breakdown 64/25/35/6/7 = 137 ✓.
+- **eslint / vitest skipped** — Joel's standing direction for `/lib/constraints/`-touching commits in this sequence.
+- **No copy gate** — no user-facing strings added.
 
 ## Decisions
 
-None added this session. D-counts unchanged: 335 active, latest D-420; archive D-01–D-83.
+Two added: **D-421** and **D-422**. Both follow the canonical Decision / Why / Rejected alternative / Supersedes / Affects shape. D-418 took its supersession mark in the same commit as D-422.
 
-### D-number candidates flagged for PM (not recorded unilaterally)
-
-Per Joel's close-out direction, flagging two design choices made this session that may or may not warrant D-numbers — PM decides:
-
-**Candidate A — `/lib/constraints/` as a new top-level shared directory.** This is the first shared-code surface between `/marketing-site` and `/prototype/api`; the repo has had no such convention before (each app carries its own `lib/`). Six-month test: a future contributor adding another piece of code consumed by both apps would benefit from knowing the convention exists and where it lives. Alternative-test: real alternatives were considered in the AskUserQuestion call (`marketing-site/lib/constraints/` vs new top-level `/lib/constraints/` vs `prototype/lib/constraints/`); top-level won on cleanest separation. **CC lean:** plausibly worth a D-number, or alternatively a one-line addition to CLAUDE.md noting the shared-libs convention. PM's call.
-
-**Candidate B — Inline rule nesting on `SubVertical` (vs. separate keyed collection).** The plan explains the rationale: mirrors the Airtable "one rule = one sub-vertical, duplicate when shared" invariant; lookups trivialize; no dangling-ID class of bug. Alternative-test: real (separate `Record<RuleId, Rule>` was the considered alternative). Six-month test: a future CC session can discover the shape from `types.ts` in 10 seconds — the choice is self-documenting from the code, not load-bearing convention. **CC lean:** does not warrant a D-number. PM's call.
+**Cosmetic flag.** D-421 and D-422 both carry `**Decided:** 2026-05-28 (Session 118)` in their decided-line. This close-out demarcates Session 119, so by the session-counting convention the decided-line is one short. The decision bodies are immutable; the mismatch is cosmetic-only — it refers to the same calendar day, same workstream, across the prior 7f97955 close-out checkpoint. Flagged in the REPO_INDEX decision-count parenthetical so future readers don't read it as drift.
 
 ## Exploration-doc disposition
 
-No exploration created, status-changed, or promoted this session. All four explorations remain at status `exploring`:
+No exploration created, status-changed, or promoted this session. All four explorations remain `exploring`:
 - `golden-path-gtm`
 - `no-ein-sole-proprietor-path`
-- `vertical-constraints` — the schema in this session implements this exploration's §6 step 3; not yet promoted
+- `vertical-constraints` — its §6 step 3 (schema landing, prior session) and the new step 1 of the elig-section sequence (this session — `Bucket` rename) both shipped; the doc itself still describes the D-418 four-bucket model, awaiting the step-2 rewrite (PM-led, next session)
 - `vertical-buckets-research`
 
-Active explorations count unchanged at 4.
+REPO_INDEX's Active-explorations row for `vertical-constraints` (row 23) still says "Four-bucket eligibility model" — accurate to the doc's current state. Refreshes when the doc rewrite lands in step 2.
 
 ## Retirement sweep
 
@@ -76,89 +77,55 @@ N/A — mid-phase close-out (Phase 1 closed Session 111; Phase 2 Session B not y
 
 N/A — mid-phase close-out.
 
-## Carry-forward watch items
-
-### NEW this session
-
-**(a) `lib/constraints/verticals.ts` is an empty placeholder awaiting connector-generated data.** PM session pulls the 8 verticals / 137 sub-verticals / 12 content-rule rows from Airtable base `appxThB8UWmNulAMt` via the Airtable MCP connector and populates the `VERTICALS` array. Slugs are kebab-case, hand-authored at generation time (sub-verticals lack a Slug field in Airtable today). Once the data is committed, `industry-gating.ts` rework becomes unblocked.
-
-**(b) `industry-gating.ts` rework is the next CC pickup**, per `/explorations/vertical-constraints.md` §6 step 4. Gated on (a) above. Sketch lives in the plan file under "industry-gating.ts rework sketch": tier derivation from bucket (Barred → hard_decline_blocked; Declined / Vetting-required → hard_decline_waitlist; In-scope-with-rules → advisory; In-scope-no-rules → no gate); keyword regexes retire; flat healthcare-decline goes away; single callsite (`prototype/components/registration/business-details-form.tsx`) so migration surface is contained.
-
-**(c) Two D-number candidates flagged for PM** (see Decisions section above): `/lib/constraints/` top-level placement, and inline-rule-nesting. CC lean documented; PM decides.
-
-**(d) Plan file `/Users/macbookpro/.claude/plans/plan-mode-task-design-the-zippy-sutherland.md`** carries the "Joel hand-transfers" framing that PM superseded post-approval. Plan files are planning-time snapshots, not current-truth artifacts; the committed code and REPO_INDEX are authoritative on the connector-generated framing. Noting here so a future reader cross-referencing the plan doesn't propagate the older framing.
-
-**(e) Routing-trigger semantics still ambiguous.** Schema carries `routingTrigger: boolean` as passthrough; the Airtable schema-doc text ("Does this sub-vertical surface in a conditional secondary dropdown in widget?") doesn't pin down what the per-row checkbox actually gates. Resolution waits on the widget build (§6 step 7). No design action needed in the data-population session.
-
-### Surviving from Session 117 (no change this session unless noted)
-
-**(f) REPO_INDEX's CC_HANDOFF row staleness from Session 117 gotcha (a) — RESOLVED this session.** The row now reflects Session 118.
-
-**(g) Session 116's `338ddb8` AIRTABLE_SCHEMA commit + Session 117's `6b29fd8` vertical-buckets-research commit + Session 117's close-out commit pushed together on Session 117's push.** Already-resolved historical context, no action.
-
-**(h) `vertical-buckets-research.md` bucket values are not committed policy** — the doc itself flags this; the Airtable base is the editable source. Schema-design this session inherits the same posture: union types are committed; row data is editable in Airtable until populated into `verticals.ts`.
-
-### Surviving from earlier sessions (no change this session)
-
-**(i) `/explorations/vertical-constraints.md` §6 sequence remains operative.** Step 3 (this session's schema landing) now sits in the repo; step 4 (industry-gating rework) is unblocked once data fills (a); step 5 (per-vertical primer authoring) and step 6 (configurator copy authoring) sequence after; step 7 (widget build) reads the data file.
-
-**(j) `(committed)` / `(indeterminate)` BACKLOG marker convention** (D-420) — still sparsely applied; PM may direct a marker sweep later.
-
-**(k) MASTER_PLAN pointer to CUSTOMER_ARCHETYPE_FOUNDATION §4** — Joel/PM-side carry-forward; still open.
-
-**(l) PRICING_MODEL.md / PRODUCT_SUMMARY.md pricing-phrasing refresh** vs new marketing-site copy — carry-forward.
-
-**(m) Sinch support reply pending** — email sent 2026-05-25; still awaiting reply.
-
-**(n) Phase 2 Session B kickoff prep round** is the named alternative CC-side pickup per MASTER_PLAN §Active focus — independent of the constraint-data workstream. Either constraint-data populate → industry-gating rework OR Phase 2 Session B kickoff prep is the right next thing; PM decides which thread CC picks up first.
-
-**(o) Punchy-style twin skill** for `relaykit-writing-prose` — anticipated, not yet authored.
-
-**(p) MESSAGE_PIPELINE_SPEC drift** flagged Session 111 — reconciliation deferred to Phase 2 Session B kickoff.
-
-**(q) BDR queue (Elizabeth Garner)** — four cumulative API/dashboard inconsistencies + Experiment 3c callback exposure + Experiment 4 opt-out tracking + per-campaign auto-response config.
-
-**(r) `MobileCategoriesModal` latent scroll-lock pattern** — same fix as `EditValuesModal` viewport guard; fix on the next session that touches it.
-
-**(s) `fix/marketing-home-polish` branch** still exists locally + on origin post-Session-113 merge. Joel's cleanup call.
-
-**(t) DECISIONS retirement sweep recommended before Phase 2.** Session 111 carry-forward.
-
-**(u) D-49/D-18 carry no back-pointer to D-418** by PM direction. Carry-forward.
-
-**(v) D-389/D-391/D-392/D-395/D-401 stale positional-language cleanup; PostHog dashboard rename pass; PostHog vs Plausible/Fathom reconciliation in MARKETING_STRATEGY; tooltip touch-event handling; D-378 stale parenthetical + D-380 drift; per-message "revert to RelayKit's default" + slash-command-for-variable-insertion configurator fast-follows; `docs/POST_TOPICS.md` untracked.** Bundle of small Session 113/115 carry-forwards; no change this session.
-
 ## Gotchas for next session
 
-1. **`verticals.ts` is empty.** Any CC code that imports `VERTICALS` or calls the lookups will return `null` / empty arrays until PM populates. Do not rely on data being there before PM's connector-generation session lands.
+1. **`BucketReason` union still carries D-418-era strings.** `Carrier prohibition (statutory)`, `BAA gating (legal call)`, `Customer-pull dependent`, `TCR Special category`, `Vetting burden (case-by-case)`, `Standard eligibility` survive verbatim from D-418. Intentional — the `bucketReason` field describes *why a row sits in its bucket*, orthogonal to the bucket-string rename. A future commit that re-aligns reason strings to D-422 language is fine but not required; the current union is accurate row-level reasoning.
 
-2. **`tsc --noEmit` at repo root produces unrelated marketing-site errors** from the root tsconfig's `@/*` → `./src/*` alias colliding with marketing-site's own alias. These are pre-existing and untouched by this session. When verifying `/lib/constraints/` typechecks, filter for `^lib/constraints` in the tsc output rather than reading the whole error list.
+2. **`notes` free-text in `verticals.ts` carries cosmetic D-418-era phrases.** Words like "barred at launch", "deferred", "vetting" appear in row notes describing the rationale or context. These are prose, not typed fields; they're cosmetic drift, not contradictions. A separate notes-prose sweep can clean them if PM wants. Not done in step-1 commit on purpose.
 
-3. **Severity and Bucket union strings come from the live Airtable base, not from AIRTABLE_SCHEMA.md.** The doc has known drift: Bucket carries emoji prefixes in the doc that don't exist in the live base; Severity has parenthetical-extended labels in the doc that are bare in the live base. The committed `types.ts` strings match the live base. If AIRTABLE_SCHEMA.md is later updated to drop the drift, the union types should stay matched to whatever the live base actually carries — re-query the schema via `get_table_schema` before tweaking.
+3. **`/explorations/vertical-constraints.md` still describes the D-418 four-bucket model.** Step 2 of the elig-section sequence rewrites it (PM-led). Until then, the exploration doc and the constraint data diverge — code is the source of truth, doc is stale. REPO_INDEX's Active-explorations description column for the doc reflects the doc's current state; refreshes with the rewrite.
 
-4. **`industry-gating.ts` rework requires the data to be in `verticals.ts` first.** Sequence matters; CC can scaffold the rework in advance but verifying the migration end-to-end needs populated data.
+4. **`docs/AIRTABLE_SCHEMA.md` Bucket field options still list D-418 strings.** The live Airtable Constraints base (`appxThB8UWmNulAMt`) similarly carries D-418 strings in its singleSelect options. Both need re-mapping in a PM-led step 3 commit (paired — the doc reflects the live base). Until that lands, the schema doc and the committed `types.ts` Bucket union diverge.
 
-5. **No DECISIONS entry was added this session even though two design choices arguably warrant one.** PM has the flags (in this handoff's Decisions section); next session may see D-numbers landed or may not, depending on PM's call.
+5. **`prototype/lib/intake/industry-gating.ts` is now further stale.** Step 4 of the elig-section sequence per `/explorations/vertical-constraints.md` §6. The pre-existing staleness (flat 6-vertical model vs sub-vertical routing) compounds with the new bucket-model change; rework consumes both at once.
 
-### Surviving gotchas from prior sessions (no change this session)
+6. **Plan file `/Users/macbookpro/.claude/plans/step-1-of-the-fluffy-gray.md`** is the planning-time snapshot for the step-1 rename. Committed code is authoritative; the plan file is a historical artifact and may eventually be cleaned up alongside other `.claude/plans/` snapshots.
 
-All Session 116 / 117 gotchas remain operational:
-- **Untracked carry-forward files**: `.agents/`, `AGENTS.md`, `docs/POST_TOPICS.md`, `api/node_modules/`.
-- **`.pm-review.md` is gitignored**.
-- **No-EIN exploration is `Status: exploring`**.
-- **STATE_VERSION 3→4 silent drop**, **`isCompliant` = "no blockers"** (D-415).
-- **iOS zoom fix** lives at `marketing-site/app/globals.css` `@media (max-width: 767.98px)`.
-- **`vertical-buckets-research.md`'s bucket values are not committed policy** — Airtable is the editable source.
+7. **`BucketReason` may need additions, not just renames, in a future commit.** D-422's "Not yet" bucket (capacity-deferred) accepts rows with bucket reasons across BAA gating, Customer-pull dependent, and Vetting burden — none of which are bucket-specific. If PM later wants per-bucket reason taxonomies tightened, that's a separate design pass.
+
+### Surviving from prior sessions (no change this session)
+
+8. **REPO_INDEX Active-explorations narrative for `vertical-constraints`** in the Meta block also says "four-bucket eligibility model" — same staleness as #3 above; same fix path (step-2 doc rewrite triggers refresh).
+
+9. **All Session 118 / 117 / 116 gotchas remain operational** — see prior CC_HANDOFF if needed (the schema-landing version was the prior file content). Highlights:
+   - `lib/constraints/verticals.ts` is populated (8 verticals · 137 sub-verticals · 12 content rules) per the PM connector-generated commit `7221164` that landed between the Session 118 close-out (7f97955) and this session's open.
+   - `tsc --noEmit` at repo root produces unrelated marketing-site errors — filter for `^lib/constraints` when verifying.
+   - Severity and Bucket union strings come from the live Airtable base, not from AIRTABLE_SCHEMA.md drift. Re-query the schema via `get_table_schema` before tweaking.
+   - `MobileCategoriesModal` latent scroll-lock-on-desktop pattern (Session 107 carry-forward) unfixed.
+   - `fix/marketing-home-polish` branch still exists locally + on origin post-Session-113 merge; cleanup Joel's call.
+   - DECISIONS retirement sweep recommended before Phase 2 (Session 111 carry-forward).
+   - D-49/D-18 carry no back-pointer to D-418 by PM direction (now also no back-pointer to D-422; same posture).
+   - D-389/D-391/D-392/D-395/D-401 stale positional-language cleanup; PostHog dashboard rename pass; PostHog vs Plausible/Fathom reconciliation in MARKETING_STRATEGY; tooltip touch-event handling; D-378 stale parenthetical + D-380 drift; per-message "revert to RelayKit's default" + slash-command-for-variable-insertion configurator fast-follows; `docs/POST_TOPICS.md` untracked. Bundle of small Session 113/115 carry-forwards.
+   - Punchy-style twin skill for `relaykit-writing-prose` anticipated, not yet authored.
+   - BDR queue (Elizabeth Garner): four cumulative API/dashboard inconsistencies + Experiment 3c callback exposure + Experiment 4 opt-out tracking + per-campaign auto-response config.
+   - Untracked carry-forward files: `.agents/`, `AGENTS.md`, `docs/POST_TOPICS.md`, `api/node_modules/`.
+   - `.pm-review.md` is gitignored.
+   - `no-ein-sole-proprietor-path` exploration: Sinch support reply still pending (email sent 2026-05-25).
+   - MASTER_PLAN pointer to CUSTOMER_ARCHETYPE_FOUNDATION §4 — open.
+   - PRICING_MODEL.md / PRODUCT_SUMMARY.md pricing-phrasing refresh vs new marketing-site copy — open.
+   - MESSAGE_PIPELINE_SPEC drift flagged Session 111; reconciliation deferred to Phase 2 Session B kickoff.
+   - STATE_VERSION 3→4 silent drop on the configurator; `isCompliant` = "no blockers" per D-415; iOS zoom fix at `marketing-site/app/globals.css`; `vertical-buckets-research.md` bucket values not committed policy (Airtable is the editable source — now superseded posture-wise by the D-422 model, but the source-of-truth pointer is unchanged).
 
 ## Files modified this session
 
-6 unique (4 from the schema commit `66218be` + 2 from this close-out):
+7 unique:
 
-- `lib/constraints/types.ts` — commit `66218be` (new, 46 lines).
-- `lib/constraints/verticals.ts` — commit `66218be` (new, 12 lines).
-- `lib/constraints/lookup.ts` — commit `66218be` (new, 79 lines).
-- `lib/constraints/index.ts` — commit `66218be` (new, 19 lines).
-- `REPO_INDEX.md` — this close-out commit (Meta last_updated bump + CC_HANDOFF row refreshed + new "constraint data layer (Session 118)" section added).
+- `MASTER_PLAN.md` — commit `5d026f4` (Working principle #7 appended).
+- `PM_PROJECT_INSTRUCTIONS.md` — commit `5d026f4` (Continuity of intent bullet under §PM behavior) + this close-out (in-file Updated header May 25 → May 28).
+- `REPO_INDEX.md` — commit `5d026f4` (MASTER_PLAN row Last touched) + commit `328c2cc` (decision count 335 → 337, latest D-422) + this close-out (Meta last_updated session bump to 119; decision-count parenthetical session framing; Last touched bumps on REPO_INDEX self + MASTER_PLAN + PM_PROJECT_INSTRUCTIONS + DECISIONS + CC_HANDOFF).
+- `DECISIONS.md` — commit `328c2cc` (D-421 + D-422 appended; D-418 ⚠ Superseded by D-422 line appended to D-418 body).
+- `lib/constraints/types.ts` — commit `786dc10` (Bucket union swap).
+- `lib/constraints/verticals.ts` — commit `786dc10` (137 `bucket:` field rewrites).
 - `CC_HANDOFF.md` — this file, overwritten in the close-out commit.
 
 ## Unmerged branches
@@ -167,15 +134,18 @@ None blocking. `fix/marketing-home-polish` exists locally + on origin (post-Sess
 
 ## Suggested next session
 
-**For PM:** Airtable bulk-extract → `verticals.ts` populate via the Airtable MCP connector. Sequence: read Verticals table → read Sub-verticals table → join on parent vertical → read Rules table → join on `Applies to` → assemble nested TypeScript object literals → author kebab-case sub-vertical slugs at generation time → write to `lib/constraints/verticals.ts`. Tested by `tsc --noEmit` + a smoke-call against `lookupEligibility("financial-services", "banking-budgeting-apps")` returning a non-null verdict.
+**Elig-section build sequence — steps 2–5** per `/explorations/vertical-constraints.md` §6:
 
-**For CC, after the data lands:** `industry-gating.ts` rework per `/explorations/vertical-constraints.md` §6 step 4. Sketched in the plan file under "industry-gating.ts rework sketch". Single callsite (`prototype/components/registration/business-details-form.tsx`); migration surface is contained.
+- **Step 2 (PM-led)** — rewrite `/explorations/vertical-constraints.md` for the D-422 five-bucket model: rename "widget" → "Eligibility section" / "elig" throughout; rewrite the bucket section to describe the five buckets in D-422 language with per-bucket UX shape and verdict-copy patterns; add the multi-tenant routing note for the "Not yet" bucket. Triggers REPO_INDEX Active-explorations description refresh.
+- **Step 3 (paired)** — `docs/AIRTABLE_SCHEMA.md` Bucket field options re-mapped to D-422 strings + live Airtable base (`appxThB8UWmNulAMt`) Bucket singleSelect options updated via the Airtable MCP connector. PM-driven on the live base; CC-driven on the schema doc.
+- **Step 4 (CC)** — `prototype/lib/intake/industry-gating.ts` rework. The pre-existing staleness (flat 6-vertical model vs sub-vertical routing per D-418) plus the new bucket-model change consume in one pass. Single callsite (`prototype/components/registration/business-details-form.tsx`); migration surface is contained. Sketch lives in `/Users/macbookpro/.claude/plans/plan-mode-task-design-the-zippy-sutherland.md` under "industry-gating.ts rework sketch" — adapt the tier-derivation to the new five-bucket model (Clear/Conditional → no/advisory gate; "Not yet, maybe not ever" / "Not yet" → waitlist-shape gate; "Not our lane" → hard decline).
+- **Step 5 (CC)** — Eligibility section UI build on the marketing-site. Per-bucket verdict copy + per-bucket UX shape (Clear → continue; Conditional → continue with content-rules preview; Not yet, maybe not ever → vetting-waitlist join; Not yet → capacity-waitlist join; Not our lane → final decline with explanation).
 
 **Background carry-forwards** still viable as fillers in any session:
 
-- **PRICING_MODEL.md / PRODUCT_SUMMARY.md pricing-phrasing refresh** (Session 113 carry-forward).
-- **MASTER_PLAN pointer to CUSTOMER_ARCHETYPE_FOUNDATION §4** (Session 114 carry-forward).
-- **Focused DECISIONS retirement sweep session** (Session 111 carry-forward).
-- **Watch for the Sinch support reply** (Session 112 carry-forward).
-- **`fix/marketing-home-polish` branch cleanup** — optional housekeeping.
-- **Phase 2 Session B kickoff prep round** — independent thread per MASTER_PLAN §Active focus.
+- PRICING_MODEL.md / PRODUCT_SUMMARY.md pricing-phrasing refresh (Session 113 carry-forward).
+- MASTER_PLAN pointer to CUSTOMER_ARCHETYPE_FOUNDATION §4 (Session 114 carry-forward).
+- Focused DECISIONS retirement sweep session (Session 111 carry-forward).
+- Watch for the Sinch support reply (Session 112 carry-forward).
+- `fix/marketing-home-polish` branch cleanup — optional housekeeping.
+- Phase 2 Session B kickoff prep round — independent thread per MASTER_PLAN §Active focus.
