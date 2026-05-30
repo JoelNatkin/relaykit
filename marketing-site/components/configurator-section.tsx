@@ -15,7 +15,12 @@ import { CharWarningIcon } from "@/components/configurator/char-warning-icon";
 import { KebabMenu } from "@/components/configurator/kebab-menu";
 import { EligSection } from "@/components/configurator/elig-section";
 import { EligEmptyState } from "@/components/configurator/elig-empty-state";
+import { EligPerCategoryCard } from "@/components/configurator/elig-per-category-card";
 import { checkCompliance } from "@/lib/configurator/compliance";
+import {
+  getPerCategoryCopy,
+  isCategoryAffected,
+} from "@/lib/configurator/elig-copy";
 import { useWaitlist, type WaitlistSummary } from "@/context/waitlist-context";
 import { SessionProvider } from "@/lib/configurator/session-context";
 import { useConfiguratorState } from "@/lib/configurator/use-configurator-state";
@@ -605,6 +610,17 @@ export function ConfiguratorSection() {
                     editTarget?.kind === "new-custom" &&
                     editTarget.categoryId === category.id;
                   const editValuesOpen = editValuesCategoryId === category.id;
+                  // Per-category card (Wave 3, §9.5) — surfaces under affected
+                  // category headers on 🟡 verdicts. isCategoryAffected
+                  // walks the sub-vertical's contentRules (Verification
+                  // always excluded by carve-out) and uses categoriesAffected
+                  // when populated. Null skips the card.
+                  const perCategoryCopy =
+                    eligState.verdict.tier === "conditional" &&
+                    eligState.subVerticalSlug !== null &&
+                    isCategoryAffected(eligState.subVerticalSlug, category.id)
+                      ? getPerCategoryCopy(eligState.subVerticalSlug)
+                      : null;
                   return (
                     <div key={category.id}>
                       <div className="mb-3 flex items-center justify-between gap-3">
@@ -640,6 +656,9 @@ export function ConfiguratorSection() {
                           />
                         </div>
                       </div>
+                      {perCategoryCopy ? (
+                        <EligPerCategoryCard line={perCategoryCopy.line} />
+                      ) : null}
                       {/* Desktop expander — sits above the messages so
                           previews stay visible while editing. Mobile uses
                           the EditValuesModal mounted at section level. */}

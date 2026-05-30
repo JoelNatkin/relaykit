@@ -14,6 +14,7 @@
  * of a new anchored card adds an entry here.
  */
 
+import { findSubVertical } from "../../../lib/constraints";
 import type { EligState } from "./use-elig-state";
 
 /** Slug used by the surveillance carve-out's two-tier shape (§9.6). */
@@ -148,6 +149,74 @@ export function getNotOurLaneLine(
   return (
     NOT_OUR_LANE_LINES[subVerticalSlug] ?? genericNotOurLaneLine(subVerticalName)
   );
+}
+
+// ─── 🟡 per-category cards (§9.5) ───────────────────────────────────────────
+
+/**
+ * Verification category id — content-neutral by nature (4–8 digit codes),
+ * never receives a per-category card on any vertical (§9.5 carve-out).
+ */
+export const VERIFICATION_CATEGORY_ID = "verification";
+
+export interface PerCategoryCardCopy {
+  line: string;
+}
+
+/**
+ * Three §9.5 anchored per-category card lines, keyed by sub-vertical slug.
+ * Pattern: "[Specifics] are a [vertical-specific harm] risk. Link to your
+ * app instead." Examples expander is deferred (Wave 3 renders the chevron
+ * but does nothing on click).
+ */
+export const ANCHORED_PER_CATEGORY: Readonly<Record<string, PerCategoryCardCopy>> = {
+  "legal-practice-tools": {
+    line: "Case details, names, and status words are a privilege risk. Link to your app instead.",
+  },
+  "banking-budgeting-apps": {
+    line: "Balances, transactions, and merchant names are a privacy risk. Link to your app instead.",
+  },
+  "healthcare-administrative": {
+    line: "Conditions, providers, and facility names are a HIPAA risk. Link to your app instead.",
+  },
+};
+
+/**
+ * Generic fallback used when a 🟡 sub-vertical has rules but no anchored
+ * per-category copy. Wave 3 currently has no production trigger for this
+ * branch (the 22 non-anchored 🟡 sub-verticals carry zero contentRules) —
+ * the fallback reserves the shape for when data evolves.
+ */
+export const GENERIC_PER_CATEGORY: PerCategoryCardCopy = {
+  line: "Some content rules apply to your industry. Link to your app instead.",
+};
+
+export function getPerCategoryCopy(subVerticalSlug: string): PerCategoryCardCopy {
+  return ANCHORED_PER_CATEGORY[subVerticalSlug] ?? GENERIC_PER_CATEGORY;
+}
+
+/**
+ * For a given 🟡 sub-vertical, decide whether `categoryId` should receive a
+ * per-category card. Logic:
+ *   - Verification is always excluded (§9.5 content-neutral carve-out).
+ *   - Else: walk the sub-vertical's contentRules; if any rule's
+ *     categoriesAffected is absent (= applies to all eligible categories)
+ *     OR includes the category slug, the category is affected.
+ *   - Zero rules ⇒ not affected. This is the production-current behavior
+ *     for the 22 unanchored 🟡 sub-verticals (no rules → no cards).
+ */
+export function isCategoryAffected(
+  subVerticalSlug: string,
+  categoryId: string,
+): boolean {
+  if (categoryId === VERIFICATION_CATEGORY_ID) return false;
+  const sub = findSubVertical(subVerticalSlug);
+  if (!sub) return false;
+  for (const rule of sub.contentRules) {
+    if (!rule.categoriesAffected) return true;
+    if (rule.categoriesAffected.includes(categoryId)) return true;
+  }
+  return false;
 }
 
 // ─── interest_tag (§9.7) ────────────────────────────────────────────────────
