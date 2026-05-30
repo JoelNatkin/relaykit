@@ -1,4 +1,4 @@
-# CC_HANDOFF — Session 120 — vertical-constraints rewrite + ContentRule.categoriesAffected groundwork
+# CC_HANDOFF — Session 121 — elig section structural build complete (Waves 1–3)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
@@ -7,15 +7,20 @@
 **Date:** 2026-05-29
 **Branches:** `main` only — no unmerged feature branches. `fix/marketing-home-polish` (merged Session 113) still exists locally + on origin pending Joel's cleanup call.
 
-`Commits: 3 | Files modified: 5 | Decisions added: 0 | External actions: 2 (one push mid-session, one push at close-out)`
+`Commits: 5 | Files modified: 15 | Decisions added: 0 | External actions: 4 pushes`
 
 ---
 
 ## Session character
 
-Three contained threads, all groundwork for the upcoming Session B elig-section UI build. (1) `/explorations/vertical-constraints.md` rewritten per its own §6 step 2 — D-422 five-bucket model threaded through §2–§8, the new §9 elig-section design absorbed (verdict-copy patterns for all five buckets, per-category copy patterns, three anchored 🟡 global cards authored, six 🔴 sub-vertical lines authored, dropdown structure decided). Single commit `94bb17a`, pushed solo per Joel's skip-review directive. (2) Fact-finding for Session 120 planning: greps enumerated every `detectIndustryGate` / `IndustryGateResult` / `IndustryTier` consumer in the tree; deep-read of `prototype/components/registration/business-details-form.tsx` returned the form's purpose, the three callsites (lines 231/257/333), the 19 fields, the props interface, and the vertical-assumption posture; prototype dev server brought up on `localhost:3002` for review. (3) Schema groundwork: `ContentRule.categoriesAffected?: string[]` added between `severity` and `source` with the one-line JSDoc, `pre-submission-state-and-editability.md` tracked as an active exploration (file existed on disk untracked; flagged + included with the schema commit per dangling-pointer reasoning). Single commit `73155cb`, unpushed until this close-out.
+The full structural build of the home configurator elig section per `/explorations/vertical-constraints.md` §9 and D-422 — completing step 7 of that exploration's §6 sequence. Three waves, four production commits + a PM-review revision, all reviewed via `.pm-review.md` and approved before push. No new D-numbers — the build implements existing D-422 + the §9 design verbatim; no alternative-rejection moments triggered. PROTOTYPE_SPEC, PRODUCT_SUMMARY, REPO_INDEX, and the exploration doc itself all updated this close-out to reflect the new surface.
 
-No decisions added. No production code changes. No PROTOTYPE_SPEC / PRODUCT_SUMMARY changes. No MASTER_PLAN changes.
+The session arc spans across the broader elig section work that started Session 120 (groundwork: `73155cb` `ContentRule.categoriesAffected` schema field + pre-submission exploration tracked; `040f12a` Session 120 close-out). Session 121's four wave commits + the Wave 2 PM-review revision deliver the live UI consuming that schema and that data layer:
+
+- **Wave 1 — `c9dddc4`** — three-dropdown skeleton + state hook with lazy-create `localStorage.relaykit_elig` rule (key absent until first interaction) + verdict derivation (multi-tenant short-circuit; `lookupEligibility` path; vertical-only-shared-bucket branch kept for data robustness though currently unreachable in production data) + `eligD3Placeholder` helper with 5 awkward-vertical overrides.
+- **Wave 2 — `0150537`** — verdict cards across all five D-422 buckets (3 §9.4 anchored 🟡 cards + generic 🟡 fallback; 🟠/⚫ inline waitlist with `interest_tag` POST; 5 §9.6 🔴 anchored lines + surveillance two-tier carve-out + generic 🔴 fallback; multi-tenant-specific ⚫ copy) + disabled categories panel + empty-state placeholder + bottom CTA hide on 🔴 + migration 009 for the nullable `interest_tag` column.
+- **Wave 2 revision — `5284d35`** — PM review revision: bottom CTA now hides on every disabled bucket (🟠/⚫/🔴), not just 🔴. `isMessageAreaDisabled` and `hideBottomCta` collapsed to the same boolean. Single-file, single-purpose revision commit.
+- **Wave 3 — `297af90`** — per-category §9.5 cards under affected category headers on 🟡 verdicts + `categoriesAffected` gating + Verification carve-out + non-functional Examples chevron (§9.8 expander content deferred, sniff-test-gated).
 
 ## Pre-flight ledger scan (at session open)
 
@@ -28,34 +33,35 @@ DECISIONS ledger scan:
 - No flags
 ```
 
-## Commits — chronological
+## Commits — elig arc (chronological, Sessions 120 + 121)
 
-1. **`94bb17a` — `docs: rewrite vertical-constraints.md with Session 119 elig design + D-422 bucket model`.** 2 files / +217 / −47. Pushed mid-session.
-   - `explorations/vertical-constraints.md` — full rewrite. §1 two-question model preserved. §2 five-bucket model with bright-line distinguishers (🟠 vs ⚫, ⚫ vs 🔴 values-permanent, firearms-as-Not-our-lane reasoning). §3 sub-vertical routing principle. §4 full-depth content rules for the three 🟡 constrained verticals (legal / fintech / healthcare-administrative). §5 stale-state notes on `industry-gating.ts`. §6 sequence updated for Sessions 116/118/119 complete. §7 doc relationships. §8 promotion criteria. §9 entirely new — elig section design (naming, three-dropdown structure, verdict surface per bucket, three anchored 🟡 global cards, three per-category card patterns, six 🔴 sub-vertical lines, waitlist mechanics, deferred items).
-   - `REPO_INDEX.md` — Meta `Last updated` bumped to 2026-05-29 with §6-step-2 marker.
+Sessions 120 commits (prerequisites, already in 120's CC_HANDOFF):
+1. `73155cb` — `chore: ContentRule.categoriesAffected schema field + pre-submission exploration tracked` (Session 120 / "Session A" of the elig arc per Joel's framing).
+2. `040f12a` — `chore(close-out): Session 120 — vertical-constraints rewrite + ContentRule.categoriesAffected groundwork`.
 
-2. **`73155cb` — `chore: ContentRule.categoriesAffected schema field + pre-submission exploration tracked`.** 3 files / +269 / −1. Unpushed until close-out.
-   - `lib/constraints/types.ts` — `categoriesAffected?: string[]` added to `ContentRule` between `severity` and `source`, with one-line JSDoc. No callers, no rule data using it yet.
-   - `REPO_INDEX.md` — Active explorations count 4 → 5; Meta narrative extended; table row added for `pre-submission-state-and-editability`.
-   - `explorations/pre-submission-state-and-editability.md` — newly tracked (existed on disk, was untracked).
-
-3. **This commit — close-out.** Two files: `REPO_INDEX.md` (Meta `Last updated` re-bumped to Session 120 close-out framing; REPO_INDEX-self + CC_HANDOFF Last touched rows bumped to Session 120) and `CC_HANDOFF.md` (this file, overwritten).
+Session 121 commits (this session):
+3. `c9dddc4` — `feat(marketing-site): Wave 1 elig section — three-dropdown skeleton + state + localStorage emission`. 4 files / +570.
+4. `0150537` — `feat(marketing-site): Wave 2 elig section — verdict cards (5 buckets) + disabled categories + empty state + interest_tag waitlist`. 7 files / +711 / −105.
+5. `5284d35` — `fix(marketing-site): hide elig bottom CTA on 🟠/⚫ too, not just 🔴`. 1 file / +12 / −9.
+6. `297af90` — `feat(marketing-site): Wave 3 elig section — per-category cards on 🟡 verdicts (§9.5)`. 3 files / +130.
+7. **This commit — close-out.** REPO_INDEX.md, PROTOTYPE_SPEC.md, docs/PRODUCT_SUMMARY.md, explorations/vertical-constraints.md, CC_HANDOFF.md (this file overwritten).
 
 ## Quality checks
 
-- **tsc clean on `/lib/constraints/`** — verified twice (post-schema-edit and at close-out). Filter for `^lib/constraints` in tsc output to skip pre-existing root-tsconfig noise from the marketing-site `@/*` alias collision.
-- **eslint / vitest skipped** — doc + schema-only session per Joel's standing direction.
-- **No copy gate** — no user-facing strings.
-- **Dev server restart** — stopped + `.next` cleared + restarted on `localhost:3002` per end-of-task workflow rule. Background task `bp5jyfsgk`.
+- **tsc --noEmit clean on `marketing-site/`** — verified after each wave + at close-out.
+- **eslint clean on `marketing-site/`** — verified after each wave + at close-out.
+- **Per-commit `.pm-review.md` cadence** observed for all four production commits (Wave 1, Wave 2, Wave 2 revision, Wave 3). Each commit paused for PM review before push.
+- **Dev server restart** done after each wave (kill port 3002, `rm -rf .next`, restart) per end-of-task workflow rule. Dev server running on `localhost:3002` at close-out — confirm before next session starts a fresh restart.
+- **Doc-only close-out commit** skipped `.pm-review.md` per ceremony filter (Joel's directive — close-out doc updates are mechanical).
 
 ## Decisions
 
-None added.
+None added. The build implements existing D-422 + the §9 design verbatim — no alternative-rejection moments triggered.
 
 ## Exploration-doc disposition
 
-- `vertical-constraints` — rewritten per §6 step 2. Doc body now reflects D-422 five-bucket model and the new §9 elig-section design. **Status header bumped to `Status: exploring (2026-05-27, updated 2026-05-29)`.** REPO_INDEX active-explorations table description column **still reads "Four-bucket eligibility model"** — table-vs-doc drift carried forward (Joel narrowly scoped both REPO_INDEX edits to `Last updated` + count bumps).
-- `pre-submission-state-and-editability` — new active exploration tracked this session per Joel's instruction. Description: "Pre-registration-submission state model — capture, editability, continuity, failure modes."
+- **`vertical-constraints`** — §6 step 7 (elig section UI build) now strike-through complete. The doc's Status header bumped to reflect Session 121 completion of step 7. Steps 5/6/8/9 outstanding (Airtable re-mapping + `industry-gating.ts` rework + per-vertical primer authoring + SMS 101 page). Doc stays at `Status: exploring` — promotion still gated on the remaining steps per §8.
+- **`pre-submission-state-and-editability`** — unchanged this session.
 - All other explorations unchanged.
 
 ## Retirement sweep
@@ -68,29 +74,37 @@ N/A — mid-phase close-out.
 
 ## Gotchas for next session
 
-1. **`industry-gating.ts` has confirmed consumers** (Session 120 fact-finding). Live path: `prototype/components/registration/business-details-form.tsx` lines 231/257/333 — three callsites, all gated on `business_description` (free-text textarea) + `service_type` (use-case-conditional input). No vertical/sub-vertical prop reaches the form. Mirror at `src/components/intake/business-details-form.tsx` + `src/lib/intake/industry-gating.ts` exists but is `/src` and sunset-bound per D-358; live consumer is the prototype path only. Notable: the form assumes the user picked a `UseCaseId` upstream but does **not** assume an upstream vertical.
+### Critical for next deploy
 
-2. **`ContentRule.categoriesAffected` is schema-only.** No rule data uses it yet; `verticals.ts` is unchanged. Joel deferred per-rule population to the elig build session. Verification carve-out (per `/explorations/vertical-constraints.md` §9.5) is the canonical first use case.
+1. **Migration 009 needs Supabase SQL Editor application before next production deploy.** `api/supabase/migrations/009_early_access_interest_tag.sql` adds a nullable `interest_tag` column + partial index to `early_access_subscribers`. Without it, the elig section's 🟠/⚫ inline waitlist inserts will fail (the route handler now writes the column unconditionally). Existing signups (without `interest_tag`) continue to work because the column is nullable. Apply via the Supabase SQL Editor; the file is the migration script, not yet applied.
 
-3. **REPO_INDEX active-explorations table description column for `vertical-constraints`** still reads "Four-bucket eligibility model + sub-vertical routing + full content-rules depth for the three constrained verticals…" — stale against the rewritten doc, which is now five-bucket + §9 elig design. Description refresh deferred (Joel narrowly scoped both REPO_INDEX edits this session).
+### Wave 3 / data layer
 
-4. **REPO_INDEX Active-explorations narrative in the Meta block** also still says "four-bucket eligibility model" for `vertical-constraints` — same staleness. Same fix path.
+2. **`categoriesAffected` gating is wired but inert.** Every rule in `lib/constraints/verticals.ts` omits the field today, so "absent ⇒ applies to all" is the universal branch. The 3 anchored 🟡 sub-verticals therefore surface per-category cards under every non-Verification checked category. Once PM populates `categoriesAffected` per rule (e.g. to scope a Banking rule to Account events only), the gating tightens automatically with no code change. Verification is hardcoded out at the rendering layer regardless of `categoriesAffected`.
 
-5. **`pre-submission-state-and-editability.md` was untracked on disk** before this session's commit `73155cb` — file existed (16K, written 2026-05-29 by PM) but had no git entry. CC included it in the schema commit to avoid the REPO_INDEX pointer dangling at HEAD. If Joel intended it to remain untracked, revert the file-creation half of `73155cb`.
+3. **Vertical-only D2 resolution branch is dead today.** `useEligState`'s "verticalSlug set + no `routingTrigger: true` rows" branch never fires — every vertical in `verticals.ts` has at least one routing-trigger sub-vertical. Kept for data robustness; would activate if a vertical with all-`routingTrigger: false` rows ever lands. PM verified this pre-flight Session 121.
 
-6. **Dev server still running on `localhost:3002`** (background task `bp5jyfsgk`) post-restart per end-of-task rule. Next session may want to stop it before starting their own.
+4. **D3 lists ALL sub-verticals of the picked vertical** (not just `routingTrigger: true` rows). PM confirmed Wave 1 review: routing-trigger flag determines whether D3 surfaces at all, not what verdicts the sub-verticals can produce. A 🟢 Clear sub-vertical selected via D3 (in a vertical with routing triggers) resolves to 🟢 verdict — that's intended behavior.
+
+### UX choices PM should validate live
+
+5. **Brand-system call:** §9.3's literal "blue info card" (🟡) and "orange info card" (🟠/⚫/🔴) expressed via neutral lifted surface (`bg-bg-secondary`) + semantic icon/text colors (success-secondary for 🟢/🟡; warning-secondary for 🟠/⚫/🔴). The post-D-405 monochrome palette has no chromatic accent except warning/error/success. PM approved with "if the visual weight reads too light once rendered, we revisit as polish."
+
+6. **Beyond-strict-§9.3 UX decisions** (PM approved Wave 2):
+   - Tone pills + Copy + kebab + business name input hidden on every disabled bucket (dead UI when no message stream renders).
+   - Bottom CTA hidden on every disabled bucket (revised in `5284d35` — Wave 2 PM review).
 
 ### Surviving from prior sessions (no change this session)
 
-7. **All Session 119 gotchas remain operational.** Highlights:
-   - `BucketReason` union still carries D-418-era strings (cosmetic; intentional — describes *why a row sits in its bucket*, orthogonal to bucket strings).
+7. **All Session 120 gotchas remain operational.** Highlights:
+   - `BucketReason` union still carries D-418-era strings (cosmetic — describes *why a row sits in its bucket*, orthogonal to bucket strings).
    - `notes` free-text in `verticals.ts` carries D-418-era phrases ("barred at launch", "deferred", "vetting") — cosmetic, prose-not-typed.
-   - `docs/AIRTABLE_SCHEMA.md` Bucket field options still list D-418 strings; live Airtable Constraints base (`appxThB8UWmNulAMt`) similarly carries D-418 singleSelect options. Both need re-mapping in PM-led step 5 of §6.
-   - `prototype/lib/intake/industry-gating.ts` rework: now compounded with bucket-model change (step 6 of `/explorations/vertical-constraints.md` §6).
+   - `docs/AIRTABLE_SCHEMA.md` Bucket field options still list D-418 strings; live Airtable Constraints base (`appxThB8UWmNulAMt`) similarly carries D-418 singleSelect options. Both need re-mapping in PM-led step 5 of `/explorations/vertical-constraints.md` §6.
+   - `prototype/lib/intake/industry-gating.ts` rework: compounded with bucket-model change (step 6 of `/explorations/vertical-constraints.md` §6).
+   - `pre-submission-state-and-editability.md` exploration still active.
+   - REPO_INDEX active-explorations description for `vertical-constraints` refreshed this close-out (drops the stale "four-bucket" carry-forward).
 
-8. **All Session 118 / 117 / 116 / 115 / 114 / 113 / 112 / 111 gotchas remain operational** — see Session 119 CC_HANDOFF if needed. Highlights:
-   - `lib/constraints/verticals.ts` populated (8 verticals · 137 sub-verticals · 12 content rules) per `7221164`.
-   - `tsc --noEmit` at repo root produces unrelated marketing-site errors — filter for `^lib/constraints`.
+8. **All Session 118 / 117 / 116 / 115 / 114 / 113 / 112 / 111 gotchas remain operational** — see Session 120 CC_HANDOFF if needed. Highlights:
    - `MobileCategoriesModal` latent scroll-lock-on-desktop pattern (Session 107 carry-forward) unfixed.
    - `fix/marketing-home-polish` branch still exists locally + on origin post-Session-113 merge.
    - DECISIONS retirement sweep recommended before Phase 2 (Session 111 carry-forward).
@@ -109,13 +123,37 @@ N/A — mid-phase close-out.
 
 ## Files modified this session
 
-5 unique:
+15 unique:
 
-- `explorations/vertical-constraints.md` — commit `94bb17a` (full rewrite for D-422 + §9 elig design).
-- `REPO_INDEX.md` — commits `94bb17a` (Meta `Last updated` bump) + `73155cb` (Active explorations count + narrative + table row) + this close-out (Meta `Last updated` re-bump + Last touched columns for REPO_INDEX self + CC_HANDOFF).
-- `lib/constraints/types.ts` — commit `73155cb` (`categoriesAffected?: string[]` added to `ContentRule`).
-- `explorations/pre-submission-state-and-editability.md` — commit `73155cb` (newly tracked).
-- `CC_HANDOFF.md` — this file, overwritten.
+**Wave 1 (`c9dddc4`):**
+- `marketing-site/lib/configurator/use-elig-state.ts` (new)
+- `marketing-site/components/configurator/elig-dropdown.tsx` (new)
+- `marketing-site/components/configurator/elig-section.tsx` (new)
+- `marketing-site/components/configurator-section.tsx` (modified — Wave 1 mount)
+
+**Wave 2 (`0150537`):**
+- `marketing-site/lib/configurator/elig-copy.ts` (new)
+- `marketing-site/components/configurator/elig-verdict-card.tsx` (new)
+- `marketing-site/components/configurator/elig-empty-state.tsx` (new)
+- `marketing-site/components/configurator/elig-section.tsx` (modified — verdict card mount)
+- `marketing-site/components/configurator-section.tsx` (modified — verdict gating)
+- `marketing-site/app/api/early-access/route.ts` (modified — interest_tag accepted)
+- `api/supabase/migrations/009_early_access_interest_tag.sql` (new)
+
+**Wave 2 revision (`5284d35`):**
+- `marketing-site/components/configurator-section.tsx` (modified — bottom CTA hide on all disabled buckets)
+
+**Wave 3 (`297af90`):**
+- `marketing-site/lib/configurator/elig-copy.ts` (modified — per-category copy + isCategoryAffected)
+- `marketing-site/components/configurator/elig-per-category-card.tsx` (new)
+- `marketing-site/components/configurator-section.tsx` (modified — per-category card mount)
+
+**Close-out (this commit):**
+- `REPO_INDEX.md` (Meta + Last touched rows + new "elig section (Session 121)" sub-section + `vertical-constraints` exploration row refresh)
+- `PROTOTYPE_SPEC.md` (new "Configurator Elig section" sub-section + Last updated bump + Bottom CTA bullet annotation)
+- `docs/PRODUCT_SUMMARY.md` (§3 paragraph adds elig surface + Last reviewed bump)
+- `explorations/vertical-constraints.md` (Status header bump + §6 step 7 strike-through)
+- `CC_HANDOFF.md` (this file, overwritten)
 
 ## In progress
 
@@ -127,15 +165,22 @@ None blocking. `fix/marketing-home-polish` exists locally + on origin (post-Sess
 
 ## Suggested next session
 
-**Phase 2 Session B — elig section UI build, plan-mode.** PM will scope and prompt. Per `/explorations/vertical-constraints.md` §6 step 7: two label-less dropdowns (vertical + conditional sub-vertical) plus the multi-tenant dropdown that routes single → continue / multi-tenant → ⚫ Not yet. Reset × per dropdown. Verdict card under the dropdowns per §9.3. Per-category cards under affected category headers per §9.5. Disabled categories on 🟠/⚫/🔴 per §9.3. Empty-state illustration placeholder. No live CTAs at launch — pre-launch state holds the elig section but no Start-building integration yet. Reads `/lib/constraints/`. The new `ContentRule.categoriesAffected` field is the schema hook for the Verification carve-out and any future per-category 🟡 scoping.
+**Joel testing pass on the live elig section** at `localhost:3002` — walk the matrix: every vertical × sub-vertical combination, multi-tenant short-circuit, reset × on each dropdown, the three anchored 🟡 expanded prose (legal/banking/healthcare-admin), the six 🔴 lines (cannabis/firearms/vape/adult-content/adult-dating/surveillance), the generic 🟡 fallback (any non-anchored 🟡 sub-vertical), the inline waitlist on 🟠/⚫ (will fail on insert until migration 009 lands — note for testing), per-category cards under non-Verification categories on the anchored 🟡 trio, Verification carve-out confirmed (no per-category card on Verification anywhere). Notes from the testing pass may seed refinement work (copy tweaks, visual polish, edge-case fixes).
+
+**Downstream elig-arc sessions** (any/all can pick up next per Joel's priority):
+- **Step 5** — AIRTABLE_SCHEMA + live Airtable Constraints base bucket-option re-mapping to D-422 strings. PM-led via the Airtable connector.
+- **Step 6** — `prototype/lib/intake/industry-gating.ts` rework decision (whether to rework in `/prototype` pre-sunset, or fold the gating logic into the elig section's verdict directly).
+- **Step 8** — per-vertical primer authoring (legal / banking / healthcare-admin primers as customer pull demands; not all 25 🟡 sub-verticals speculatively).
+- **Step 9** — SMS 101 public tier-3 page assembly once 1–8 exist.
+
+**Migration 009 application** — Joel applies via the Supabase SQL Editor before next production deploy. The migration file is the script; one-time apply.
 
 **Background carry-forwards** still viable as fillers in any session:
-- AIRTABLE_SCHEMA + live base D-418 → D-422 re-mapping (PM-driven; step 5 of `/explorations/vertical-constraints.md` §6).
-- `industry-gating.ts` rework decision (step 6 of `/explorations/vertical-constraints.md` §6 — whether to rework `/prototype` pre-sunset or fold logic into elig section directly).
-- REPO_INDEX active-explorations description refresh for `vertical-constraints` (table column + Meta narrative).
+- REPO_INDEX active-explorations description for `vertical-constraints` already refreshed this close-out (drops "four-bucket" carry-forward).
 - PRICING_MODEL.md / PRODUCT_SUMMARY.md pricing-phrasing refresh (Session 113 carry-forward).
 - MASTER_PLAN pointer to CUSTOMER_ARCHETYPE_FOUNDATION §4 (Session 114 carry-forward).
 - Focused DECISIONS retirement sweep session (Session 111 carry-forward).
 - Watch for the Sinch support reply (Session 112 carry-forward).
 - `fix/marketing-home-polish` branch cleanup — optional housekeeping.
 - Phase 2 Session B kickoff prep round — independent thread per MASTER_PLAN §Active focus.
+- Examples expander content for §9.5 per-category cards — deferred per §9.8, sniff-test-gated.
