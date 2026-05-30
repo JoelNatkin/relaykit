@@ -231,15 +231,16 @@ export function ConfiguratorSection() {
   //     stream with the empty-state placeholder. Authoring controls (tone
   //     pills, Copy, kebab, business name input) go away too — they're
   //     dead UI with no messages to operate on.
-  //   - 🔴 also hides the bottom "Get early access" CTA per PM ruling §5.2
-  //     (no future state to sign up for). 🟠/⚫ keep the bottom CTA as a
-  //     secondary backup; the inline waitlist in the verdict card is the
-  //     primary capture.
+  //   - Bottom "Get early access" CTA hides on every disabled bucket. On
+  //     🔴 there's no future state to sign up for; on 🟠/⚫ the inline
+  //     form in the verdict card is the canonical capture and a backup
+  //     CTA would produce untagged general-waitlist signups that bypass
+  //     the interest_tag segmentation.
   const isMessageAreaDisabled =
     eligState.verdict.tier === "not-yet-maybe-not" ||
     eligState.verdict.tier === "not-yet" ||
     eligState.verdict.tier === "not-our-lane";
-  const hideBottomCta = eligState.verdict.tier === "not-our-lane";
+  const hideBottomCta = isMessageAreaDisabled;
 
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
@@ -841,10 +842,12 @@ export function ConfiguratorSection() {
                   {/* PRE-LAUNCH (2026-05-16): opens the waitlist modal. Revert to
                       a <Link> "Start building with SMS →" (href "/signup") when
                       onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md
-                      WAVE 2 (2026-05-29): hidden on 🔴 not-our-lane verdicts
-                      (PM ruling §5.2 — no future state to sign up for). 🟠/⚫
-                      keep this as a secondary backup; the inline waitlist in
-                      the verdict card is the primary capture. */}
+                      WAVE 2 (2026-05-29): hidden on every disabled bucket
+                      (🟠/⚫/🔴). The inline form in the verdict card is the
+                      canonical capture on 🟠/⚫; a backup CTA here would
+                      produce untagged general-waitlist signups that bypass
+                      the interest_tag segmentation. 🔴 has no waitlist at
+                      all (PM ruling §5.2 — no future state to sign up for). */}
                   <button
                     type="button"
                     onClick={() => openModal("mid-page")}
