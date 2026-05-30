@@ -187,6 +187,8 @@ Pre-launch marketing home stays live with the configurator as lead magnet and "G
 
 **Operationalized by:** `docs/PRE_LAUNCH_DEVIATIONS.md` — active deviations tracked there until product ships.
 
+**⚠ Superseded by MD-21:** the pre-launch posture (configurator-as-lead-magnet, "Get early access" primary CTA) is replaced by the standalone-free-product reframe. MD-19's waitlist-earns-its-keep logic survives in spirit; the CTA hierarchy and framing do not.
+
 **MD-20 — Waitlist signup implementation: DIY (Supabase + Resend) over hosted vendor (Waitlister.me)** (Date: 2026-05-16)
 
 Build waitlist signup on our own stack — a Supabase `early_access_subscribers` table plus a Resend transactional welcome email — rather than using a hosted waitlist vendor.
@@ -198,6 +200,22 @@ Build waitlist signup on our own stack — a Supabase `early_access_subscribers`
 **Rejects:** Waitlister.me Growth ($39/mo, uncertain metadata templating in welcome emails); Waitlister.me Pro + webhook-to-Resend (paying for the vendor while bypassing its main feature).
 
 **Operationalized by:** `marketing-site/app/api/early-access/route.ts` and supporting infrastructure — migration `007_early_access_subscribers.sql`, the waitlist modal, and the entries tracked in `docs/PRE_LAUNCH_DEVIATIONS.md`.
+
+**MD-21 — Marketing reframe: the configurator is a standalone free product (compliant-message authoring tool), the paid integration is the upsell behind a clean line** (Date: 2026-05-30)
+
+The marketing home is reframed around what exists today: a free, no-signup, universal compliant-message authoring tool that anyone sending SMS can use and copy from. This is positioned as opinionated craft — "compliant text messages for your app, free to use" — not as a crippled demo or a pre-launch teaser. The paid integration product (SDK + carrier delivery) is presented below the tool as forthcoming ("Shipping Summer 2026"), not foregrounded. The line between the two is clean: the tool is complete and usable now; the integration is the upsell. Hero leads with the tool; the integration story, AI-tool logos, pricing, and waitlist all move into a clearly-delineated lower section.
+
+**Reasoning:** Research into the free-tool-as-top-of-funnel play (HubSpot, Resend, Stripe-docs-as-marketing) confirmed it works for dev-infra, and confirmed the failure mode — a beloved free tool whose users never convert. RelayKit's structural protection against that failure: the people who'd use the authoring tool (devs adding SMS to an app) are the same people who'll need the sending product, just earlier in their journey. The free tool isn't a different audience than the paid one. The "SMS templates / examples" SEO lane is saturated (Twilio, Infobip, Text Request own it via static listicles), but an interactive, opinionated, compliance-aware tool is categorically better than a listicle and is winnable differentiation. The generosity of a complete free tool — versus competitors' crippled demos — is itself the brand for a trust-driven indie product.
+
+**Supersedes:** MD-19 (honest pre-launch with "Get early access" as primary CTA across all surfaces) — fully. The pre-launch posture is replaced: primary configurator CTA becomes "Copy messages" (present-tense tool action), "Get early access" is removed from the appbar and configurator, the waitlist relocates to the lower "Join the list" integration section. MD-20 (DIY waitlist mechanism) survives unchanged — the waitlist still exists, it just moves and is reframed.
+
+**Extends (does not supersede):** MD-1 / MD-9 (audience-narrow, use-case-broad). The free tool is usable by anyone sending SMS (wider than the ICP), but the paid product's target audience remains indie SaaS founders. Tool-usability breadth and paid-audience narrowness are not in tension — the free tool is top-of-funnel for the same narrow paid audience.
+
+**Rejects:** Tool-as-lead-magnet-only (the prior framing — configurator exists solely to earn a waitlist signup for a forthcoming product; emotionally weak because it asks visitors to be excited about something that doesn't exist yet, and wastes the genuine present-tense value of the shipped authoring tool). Also rejects: foregrounding the paid integration in the hero (contradicts "the tool is the product today").
+
+**Operationalized by:** the `sketch/configurator-reframe` branch (Session 122) — bucket-behavior changes (messages shown for all buckets except values-barred; values-barred sub-verticals become unselectable under a "Not supported" divider), hero rewrite, bottom-section restructure, CTA changes. `docs/PRE_LAUNCH_DEVIATIONS.md` updated to reflect the superseded MD-19 posture.
+
+**Trigger to revisit:** the free tool draws strong usage but conversion to the paid integration is weak once it ships (the cannibalization failure mode materializes); OR the integration ships and the page evolves to its post-launch state (remove "Shipping Summer 2026" + waitlist, add "Build with RelayKit" CTA beside "Copy messages," flip the lower sections to present tense — already scoped).
 
 ## Tools and Force Multipliers
 
