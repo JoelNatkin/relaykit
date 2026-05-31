@@ -78,14 +78,15 @@ export function getContentRules(subVerticalSlug: string): ContentRule[] {
 }
 
 /**
- * Customer-facing rule summaries for a sub-vertical — the populated
- * `customerSummary` strings across its content rules, in declaration order.
- * Empty until the Airtable Constraints base authors the field and the connector
- * regenerates VERTICALS. The elig RulesCard renders these as bullets and is
- * suppressed entirely when the list is empty.
+ * Customer-facing rule bullets for a sub-vertical — the sub-vertical-level
+ * `cardRuleBullets` authored in the Airtable Constraints base ("Card rule
+ * bullets" column) and landed via connector regeneration. Empty for Clear /
+ * Not-our-lane sub-verticals and until the field is populated. The elig
+ * RulesCard renders these as bullets and is suppressed when the list is empty.
+ * Supersedes the former rule-level ContentRule.customerSummary mapping.
  */
 export function getRuleSummaries(subVerticalSlug: string): string[] {
-  return getContentRules(subVerticalSlug)
-    .map((rule) => rule.customerSummary)
-    .filter((summary): summary is string => summary !== undefined && summary.trim() !== "");
+  return (findSubVertical(subVerticalSlug)?.cardRuleBullets ?? []).filter(
+    (bullet) => bullet.trim() !== "",
+  );
 }

@@ -36,14 +36,6 @@ export interface ContentRule {
   safeRewritePlain: string;
   safeRewriteWarm?: string;
   safeRewriteBrief?: string;
-  /**
-   * Optional short, customer-facing summary of this rule — authored in customer
-   * voice in the Airtable Constraints base (not the enforcement `prohibition`
-   * text), reaching this file via connector generation. Unpopulated until then.
-   * Rendered as a bullet by the elig RulesCard, which is suppressed entirely
-   * where no rule carries this field.
-   */
-  customerSummary?: string;
   severity: Severity;
   /** When present, the rule applies only to the listed category slugs; when absent, the rule applies to all categories the sub-vertical's bucket allows. */
   categoriesAffected?: string[];
@@ -58,6 +50,15 @@ export interface SubVertical {
   bucketReason: BucketReason;
   constraintSource: ConstraintSource;
   routingTrigger: boolean;
+  /**
+   * Customer-facing rule bullets rendered by the elig RulesCard for Conditional
+   * and Not-yet sub-verticals (exactly 3 by Airtable authoring convention; the
+   * card renders whatever is present). Authored in the Airtable Constraints base
+   * ("Card rule bullets" column) and landed here via connector regeneration —
+   * empty for Clear and Not-our-lane sub-verticals. Supersedes the former
+   * rule-level ContentRule.customerSummary.
+   */
+  cardRuleBullets?: string[];
   preemptiveNotice?: string;
   notes?: string;
   contentRules: ContentRule[];

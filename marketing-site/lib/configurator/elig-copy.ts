@@ -1,11 +1,11 @@
 /**
  * Authored copy + helpers for the elig section.
  *
- * After the configurator reframe this module holds:
- *   - CONDITIONAL_NOTE_LINE — heading for the 🟡 rules card. The bullets under
- *     it come from the constraint data layer (ContentRule.customerSummary,
+ * After the configurator rework this module holds:
+ *   - CONDITIONAL_NOTE_LINE — heading for the rules card. The bullets under it
+ *     come from the constraint data layer (SubVertical.cardRuleBullets,
  *     authored in the Airtable Constraints base), not from this file.
- *   - NOT_YET_BOUNDARY_LINE — the ⚫/🟠 message-area boundary line.
+ *   - NOT_OFFERED_LEAD_LINE — the ⚫/🟠 "Request it" lead sentence.
  *   - the §9.5 per-category card copy + affected-category logic.
  *   - eligInterestTag — the interest_tag for the Request-category waitlist POST.
  *   - NOT_YET_MULTI_TENANT_LINE — dormant (see note); retained for a future
@@ -20,13 +20,16 @@ import type { EligState } from "./use-elig-state";
 
 // ─── 🟡 Conditional ─────────────────────────────────────────────────────────
 
-/** Heading above the customer-facing rule bullets in the 🟡 verdict card. */
+/** Heading above the customer-facing rule bullets in the rules card. */
 export const CONDITIONAL_NOTE_LINE = "Your industry has a few rules.";
 
 // ─── ⚫ Not yet + 🟠 Not yet, maybe not ever ────────────────────────────────
 
-/** Boundary line shown in the message area for both Not-yet buckets. */
-export const NOT_YET_BOUNDARY_LINE = "RelayKit can't send this category yet.";
+/**
+ * Lead sentence for the 🟠/⚫ Not-yet "Request it" line shown below the message
+ * stream. The configurator renders the "Request it" action alongside it.
+ */
+export const NOT_OFFERED_LEAD_LINE = "RelayKit doesn't offer this category.";
 
 /**
  * DORMANT — retained for a future multi-tenant return. Multi-tenant routing was

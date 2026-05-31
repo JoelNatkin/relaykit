@@ -1,20 +1,19 @@
 "use client";
 
 /**
- * Verdict card under the elig dropdowns. Renders only for 🟡 Conditional
- * sub-verticals that carry customer-facing rule summaries:
+ * Verdict card under the elig dropdowns. Renders a quiet "i" rules card for any
+ * sub-vertical that carries customer-facing rule bullets:
  *
  *   🟢 clear              — nothing (the message stream below is the confirmation).
- *   🟡 conditional        — a quiet "i" rules card listing the customer-facing
- *                           rule summaries; suppressed entirely when none exist.
- *   ⚫ / 🟠 not-yet        — nothing here; the message-area treatment in
- *                           EligEmptyState carries the boundary line + Request action.
+ *   🟡 conditional        — rules card listing the customer-facing bullets.
+ *   ⚫ / 🟠 not-yet        — same rules card (the category is still offered as a
+ *                           free draft; the "Request it" line sits below the stream).
  *   🔴 not-our-lane       — nothing (those sub-verticals are unselectable).
  *
- * Rule summaries come from the constraint data layer
- * (ContentRule.customerSummary, authored in the Airtable Constraints base).
- * Until that field is populated, every Conditional vertical resolves to zero
- * summaries and this card is suppressed.
+ * In every case the card is suppressed when the sub-vertical carries no bullets.
+ * Bullets come from the constraint data layer (SubVertical.cardRuleBullets,
+ * authored in the Airtable Constraints base "Card rule bullets" column, landed
+ * via connector regeneration). Until that data lands, the card is suppressed.
  *
  * Brand-system note: §9.3 calls for a "blue" info card, but the post-D-405
  * monochrome warm-neutral palette has no chromatic accent — the card uses a
@@ -32,11 +31,22 @@ export interface EligVerdictCardProps {
 
 export function EligVerdictCard({ state }: EligVerdictCardProps) {
   const tier = state.verdict.tier;
-  if (tier !== "conditional" || !state.subVerticalSlug) return null;
+  // The rules card surfaces wherever a sub-vertical carries customer-facing
+  // bullets: 🟡 Conditional and both Not-yet buckets (🟠/⚫). 🟢 Clear and 🔴
+  // Not-our-lane never carry bullets, so they fall through the empty check below.
+  if (
+    (tier !== "conditional" &&
+      tier !== "not-yet" &&
+      tier !== "not-yet-maybe-not") ||
+    !state.subVerticalSlug
+  ) {
+    return null;
+  }
 
   const bullets = getRuleSummaries(state.subVerticalSlug);
-  // Suppress the card entirely where no customer-facing summaries exist — no
-  // heading-only tease. (Empty everywhere until Airtable authors customerSummary.)
+  // Suppress the card entirely where no customer-facing bullets exist — no
+  // heading-only tease. (Empty everywhere until the Airtable "Card rule bullets"
+  // column lands via connector regeneration.)
   if (bullets.length === 0) return null;
 
   return <RulesCard heading={CONDITIONAL_NOTE_LINE} bullets={bullets} />;

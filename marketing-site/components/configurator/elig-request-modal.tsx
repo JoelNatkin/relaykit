@@ -2,7 +2,7 @@
 
 /**
  * "Request category" modal for the elig Not-yet buckets (⚫ / 🟠). Opened from
- * the message-area treatment in EligEmptyState.
+ * the 🟠/⚫ "Request it" line below the configurator message stream.
  *
  * Mirrors the WaitlistModal shell/pattern (backdrop, centered dialog, ESC +
  * backdrop close, body-scroll lock, email field, submit, success state).

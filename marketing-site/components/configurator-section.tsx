@@ -2,6 +2,7 @@
 
 import { ChevronDown, ChevronUp, Copy01, Edit01, HelpCircle, Plus } from "@untitledui/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { MessageEditCard } from "@/components/configurator/message-edit-card";
 import { CustomMessageCard } from "@/components/configurator/custom-message-card";
@@ -14,10 +15,12 @@ import { EditValuesModal } from "@/components/configurator/edit-values-modal";
 import { CharWarningIcon } from "@/components/configurator/char-warning-icon";
 import { KebabMenu } from "@/components/configurator/kebab-menu";
 import { EligSection } from "@/components/configurator/elig-section";
-import { EligEmptyState } from "@/components/configurator/elig-empty-state";
+import { EligRequestModal } from "@/components/configurator/elig-request-modal";
 import { EligPerCategoryCard } from "@/components/configurator/elig-per-category-card";
 import { checkCompliance } from "@/lib/configurator/compliance";
 import {
+  NOT_OFFERED_LEAD_LINE,
+  eligInterestTag,
   getPerCategoryCopy,
   isCategoryAffected,
 } from "@/lib/configurator/elig-copy";
@@ -230,23 +233,19 @@ export function ConfiguratorSection() {
     setSubVerticalSlug: setEligSubVerticalSlug,
   } = useEligState();
 
-  // Verdict-driven gates (vertical-constraints §9.3):
-  //   - 🟠 / ⚫ / 🔴 disable the categories panel + replace the message stream
-  //     with EligEmptyState. Authoring controls (tone pills, Copy, kebab,
-  //     business name input) go away too — dead UI with no messages to operate
-  //     on. For 🟠/⚫, EligEmptyState carries the boundary line + "Request
-  //     category" action; 🔴 sub-verticals are unselectable, so that path is
-  //     unreachable from fresh interaction.
-  //   - The bottom "Copy messages" CTA hides on every disabled bucket — there
-  //     are no messages to copy when the stream is replaced.
-  const isMessageAreaDisabled =
-    eligState.verdict.tier === "not-yet-maybe-not" ||
+  // The configurator is a complete free authoring tool for every bucket the
+  // user can reach: the message area is never disabled or replaced. 🔴
+  // Not-our-lane is handled entirely at the sub-vertical dropdown (its items
+  // render disabled), so it can't be selected. 🟠/⚫ Not-yet additionally show a
+  // "Request it" line below the stream (the rules card lives in EligSection).
+  const showsRequestLine =
     eligState.verdict.tier === "not-yet" ||
-    eligState.verdict.tier === "not-our-lane";
-  const hideBottomCta = isMessageAreaDisabled;
+    eligState.verdict.tier === "not-yet-maybe-not";
 
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
+  // Opens the "Request category" modal from the 🟠/⚫ Not-yet "Request it" line.
+  const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   // Which category's Variables surface is open (desktop expander OR
   // mobile modal, driven by the same state). Only one is open at a time.
@@ -466,6 +465,13 @@ export function ConfiguratorSection() {
           focusVariableName={focusVariableOnOpen}
           onFocusDelivered={() => setFocusVariableOnOpen(null)}
         />
+        {/* Request-category modal for the 🟠/⚫ Not-yet "Request it" line;
+            interest_tag derived from the elig verdict (vetting:/capacity:). */}
+        <EligRequestModal
+          isOpen={requestModalOpen}
+          onClose={() => setRequestModalOpen(false)}
+          interestTag={eligInterestTag(eligState)}
+        />
         <div className="mx-auto max-w-5xl px-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-text-primary">
@@ -477,73 +483,48 @@ export function ConfiguratorSection() {
             {/* Mobile-only categories: collapsed summary row + full-page
                 modal. Both are display:none at md: and above — the desktop
                 panel below takes over the left grid cell there. */}
-            <div
-              className={`md:hidden ${isMessageAreaDisabled ? "cursor-not-allowed" : ""}`}
-            >
-              <div
-                className={
-                  isMessageAreaDisabled ? "pointer-events-none opacity-50" : ""
-                }
-              >
-                <MobileCategoriesSummary
-                  selected={checkedCategories}
-                  onOpen={() => setMobileCategoriesOpen(true)}
-                />
-                <MobileCategoriesModal
-                  isOpen={mobileCategoriesOpen}
-                  onClose={() => setMobileCategoriesOpen(false)}
-                  state={state}
-                  onCategoryToggle={handleCategoryToggle}
-                  onMessageToggle={handleMessageToggle}
-                />
-              </div>
+            <div className="md:hidden">
+              <MobileCategoriesSummary
+                selected={checkedCategories}
+                onOpen={() => setMobileCategoriesOpen(true)}
+              />
+              <MobileCategoriesModal
+                isOpen={mobileCategoriesOpen}
+                onClose={() => setMobileCategoriesOpen(false)}
+                state={state}
+                onCategoryToggle={handleCategoryToggle}
+                onMessageToggle={handleMessageToggle}
+              />
             </div>
 
             {/* Desktop categories panel (≥md:). Same content as the modal
-                via the shared CategoryList component. PM ruling §5.6:
-                disabled on 🟠/⚫/🔴 via opacity + pointer-events-none;
-                cursor-not-allowed on the wrapper so hover still feels
-                disabled. Existing checked state is preserved (re-selecting
-                an in-scope vertical brings the user back to their prior
-                shape per §6 preservation principle). */}
-            <div
-              className={`hidden rounded-xl border border-border-secondary bg-bg-primary md:block md:min-w-60 ${
-                isMessageAreaDisabled ? "cursor-not-allowed" : ""
-              }`}
-            >
-              <div
-                className={
-                  isMessageAreaDisabled ? "pointer-events-none opacity-50" : ""
-                }
-              >
-                <CategoryList
-                  state={state}
-                  onCategoryToggle={handleCategoryToggle}
-                  onMessageToggle={handleMessageToggle}
-                />
-              </div>
+                via the shared CategoryList component. Never disabled — the
+                configurator is a free authoring tool for every reachable
+                bucket. */}
+            <div className="hidden rounded-xl border border-border-secondary bg-bg-primary md:block md:min-w-60">
+              <CategoryList
+                state={state}
+                onCategoryToggle={handleCategoryToggle}
+                onMessageToggle={handleMessageToggle}
+              />
             </div>
 
             {/* Messages column */}
             <div className="flex flex-col md:max-w-[540px]">
-              {/* Elig section sits at the top of the right column, above the
-                  tone pills (vertical-constraints §9): identity dropdowns +
-                  verdict, with disabled-bucket gating of the rest of the column.
-                  The "Your business name" input sits with the identity inputs,
-                  above the industry dropdown, gated by isMessageAreaDisabled so
-                  it hides on disabled buckets. */}
-              {isMessageAreaDisabled ? null : (
-                <div className="mb-2">
-                  <input
-                    ref={businessNameInputRef}
-                    type="text"
-                    value={state.businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="Your business name"
-                    className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-                  />
-                </div>
-              )}
+              {/* The "Your business name" input sits with the identity inputs,
+                  above the industry dropdown (vertical-constraints §9). */}
+              <div className="mb-2">
+                <input
+                  ref={businessNameInputRef}
+                  type="text"
+                  value={state.businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
+                  placeholder="Your business name"
+                  className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                />
+              </div>
+              {/* Elig section: identity dropdowns + verdict/rules card
+                  (vertical-constraints §9). Sits above the tone pills. */}
               <div className="mb-6">
                 <EligSection
                   state={eligState}
@@ -551,52 +532,42 @@ export function ConfiguratorSection() {
                   onSubVerticalChange={setEligSubVerticalSlug}
                 />
               </div>
-              {isMessageAreaDisabled ? null : (
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex flex-wrap gap-2">
-                    {PAGE_TONES.map((tone) => (
-                      <button
-                        key={tone}
-                        type="button"
-                        onClick={() => setPageTone(tone)}
-                        className={tonePillClasses(state.pageTone === tone)}
-                      >
-                        {tone}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex flex-wrap gap-2">
+                  {PAGE_TONES.map((tone) => (
                     <button
+                      key={tone}
                       type="button"
-                      onClick={handleCopy}
-                      className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                      onClick={() => setPageTone(tone)}
+                      className={tonePillClasses(state.pageTone === tone)}
                     >
-                      <Copy01 className="size-4" />
-                      {copyToastVisible ? "Copied" : "Copy"}
+                      {tone}
                     </button>
-                    <KebabMenu
-                      ariaLabel="Configurator options"
-                      items={[
-                        {
-                          label: "Reset all to defaults",
-                          onClick: clearAll,
-                        },
-                      ]}
-                    />
-                  </div>
+                  ))}
                 </div>
-              )}
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                  >
+                    <Copy01 className="size-4" />
+                    {copyToastVisible ? "Copied" : "Copy"}
+                  </button>
+                  <KebabMenu
+                    ariaLabel="Configurator options"
+                    items={[
+                      {
+                        label: "Reset all to defaults",
+                        onClick: clearAll,
+                      },
+                    ]}
+                  />
+                </div>
+              </div>
 
               <div className="mt-8 space-y-7">
-                {/* Disabled buckets replace the message stream with
-                    EligEmptyState: 🟠/⚫ render the boundary line + "Request
-                    category" action there; 🔴 sub-verticals are unselectable,
-                    so that path is unreachable from fresh interaction. */}
-                {isMessageAreaDisabled ? (
-                  <EligEmptyState state={eligState} />
-                ) : null}
-
-                {!isMessageAreaDisabled && checkedCategories.length === 0 ? (
+                {checkedCategories.length === 0 ? (
                   <div className="flex min-h-40 items-center justify-center rounded-xl border border-dashed border-border-secondary px-6 py-10 text-center">
                     <p className="text-sm text-text-tertiary">
                       Select a category to see your messages.
@@ -604,7 +575,7 @@ export function ConfiguratorSection() {
                   </div>
                 ) : null}
 
-                {!isMessageAreaDisabled && checkedCategories.map((category) => {
+                {checkedCategories.map((category) => {
                   const catState = state.categories[category.id];
                   const cv = state.categoryValues[category.id];
                   const requiresStop = categoryRequiresStop(category);
@@ -858,21 +829,46 @@ export function ConfiguratorSection() {
                 })}
               </div>
 
-              {hideBottomCta ? null : (
-                <div className="mt-10">
-                  {/* Copies the configured messages to the clipboard — the same
-                      action as the Copy button in the tone row. Hidden on every
-                      disabled bucket (no messages to copy when the stream is
-                      replaced by EligEmptyState). */}
-                  <button
-                    type="button"
-                    onClick={handleCopy}
-                    className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
-                  >
-                    {copyToastVisible ? "Copied" : "Copy messages"}
-                  </button>
+              {showsRequestLine ? (
+                <div className="mt-6">
+                  <p className="text-sm text-text-tertiary">
+                    {NOT_OFFERED_LEAD_LINE}{" "}
+                    <button
+                      type="button"
+                      onClick={() => setRequestModalOpen(true)}
+                      className="cursor-pointer font-medium text-text-primary underline transition duration-100 ease-linear hover:text-text-secondary"
+                    >
+                      Request it.
+                    </button>
+                  </p>
                 </div>
-              )}
+              ) : null}
+
+              <div className="mt-10">
+                {/* Copies the configured messages to the clipboard — the same
+                    action as the Copy button in the tone row. */}
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
+                >
+                  {copyToastVisible ? "Copied" : "Copy messages"}
+                </button>
+                {/* Point-of-use legal disclaimer (LEGAL_EXPOSURE_REMEDIATION
+                    §3.1) — shown under the Copy CTA for every selectable
+                    category. */}
+                <p className="mt-3 text-xs leading-relaxed text-text-tertiary">
+                  A starting point, not legal advice — you&apos;re responsible
+                  for consent and compliance. See our{" "}
+                  <Link
+                    href="/terms"
+                    className="underline transition duration-100 ease-linear hover:text-text-secondary"
+                  >
+                    Terms
+                  </Link>
+                  .
+                </p>
+              </div>
             </div>
           </div>
         </div>
