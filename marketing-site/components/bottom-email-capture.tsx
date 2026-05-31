@@ -58,7 +58,7 @@ export function BottomEmailCapture() {
       <button
         type="submit"
         disabled={status === "loading" || email.trim() === ""}
-        className="cursor-pointer rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-solid_hover disabled:cursor-not-allowed disabled:opacity-50"
+        className="cursor-pointer rounded-lg bg-bg-brand-cta px-4 py-2.5 text-sm font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === "loading" ? "Joining…" : "Join the list"}
       </button>

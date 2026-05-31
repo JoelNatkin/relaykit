@@ -147,7 +147,7 @@ export function EligRequestModal({
               <button
                 type="button"
                 onClick={requestClose}
-                className="mt-10 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-bg-brand-solid px-4 py-2.5 text-sm font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-solid_hover"
+                className="mt-10 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-bg-brand-cta px-4 py-2.5 text-sm font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
               >
                 Close
               </button>
@@ -163,9 +163,8 @@ export function EligRequestModal({
                   Request category
                 </h2>
                 <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-                  We&apos;d love to be able to send messages in this category
-                  but we&apos;re not there yet. Sign up and we&apos;ll email you
-                  if it becomes available.
+                  Sign up and we&apos;ll email you if this category becomes
+                  available.
                 </p>
               </div>
 
