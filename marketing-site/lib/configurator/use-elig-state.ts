@@ -12,8 +12,11 @@
  * creates it with whatever subset of fields are now set.
  *
  * Verdict derivation:
- *   1. multiTenant === "multi" → ⚫ Not yet (multi-tenant routes here
- *      regardless of D2/D3 per vertical-constraints §9.3).
+ *   1. multiTenant === "multi" → ⚫ Not yet. DORMANT: the multi-tenant entry
+ *      point (the D1 dropdown) was removed from the elig UI, so multiTenant can
+ *      no longer become "multi" through the UI. The field, setter, type, and
+ *      this branch are retained intact for a future multi-tenant return
+ *      (eligInterestTag still reads the field).
  *   2. verticalSlug + subVerticalSlug both set → lookupEligibility's bucket.
  *   3. verticalSlug set + the vertical has NO routingTrigger:true rows →
  *      verdict resolves at D2 from the single shared bucket. (Currently
@@ -32,7 +35,14 @@ import type { Bucket } from "../../../lib/constraints/types";
 import { findVertical, lookupEligibility } from "../../../lib/constraints/lookup";
 
 const STORAGE_KEY = "relaykit_elig";
-const STATE_VERSION = 1 as const;
+// v2 (configurator reframe): persisted semantics changed — multiTenant is always
+// null now (D1 dropdown removed) and Not-our-lane sub-verticals are no longer
+// selectable. Bumping invalidates stale v1 elig picks on load, so a returning
+// visitor with a persisted 🔴 / multi-tenant selection lands back on the default
+// full library rather than a blank, greyed, non-clearable state. Scoped to the
+// relaykit_elig key (the two dropdowns); message customizations persist
+// separately under relaykit_configurator and are untouched by this bump.
+const STATE_VERSION = 2 as const;
 const SAVE_DEBOUNCE_MS = 200;
 
 export type MultiTenantValue = "single" | "multi";
@@ -52,6 +62,11 @@ export interface Verdict {
 export interface EligState {
   /** Schema version — bumps invalidate persisted state on load. */
   version: typeof STATE_VERSION;
+  /**
+   * DORMANT — see header note. No UI sets this after the D1 dropdown removal,
+   * so it's always null now. Retained in the type because eligInterestTag reads
+   * it and to keep a future multi-tenant return a pure UI re-add.
+   */
   multiTenant: MultiTenantValue | null;
   verticalSlug: string | null;
   subVerticalSlug: string | null;
@@ -96,7 +111,9 @@ function deriveVerdict(input: {
   // The bucket/tier fields are complete from Wave 1 so persisted state is durable.
 
   if (input.multiTenant === "multi") {
-    // Multi-tenant routes to ⚫ Not yet regardless of D2/D3 (§9.3).
+    // DORMANT branch — the multi-tenant entry point (D1 dropdown) was removed
+    // from the UI, so this is unreachable today. Kept for a future multi-tenant
+    // return. Multi-tenant routes to ⚫ Not yet regardless of D2/D3 (§9.3).
     return {
       bucket: "Not yet",
       verdict: { tier: "not-yet", copy: null },
@@ -222,6 +239,9 @@ export function useEligState(): { state: EligState } & EligActions {
     };
   }, [state]);
 
+  // DORMANT — no UI calls this after the D1 dropdown removal. Retained (with the
+  // multiTenant field + MultiTenantValue type + the deriveVerdict branch) for a
+  // future multi-tenant return.
   const setMultiTenant = useCallback((value: MultiTenantValue | null) => {
     touchedRef.current = true;
     setState((prev) => {

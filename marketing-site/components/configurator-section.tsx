@@ -226,21 +226,19 @@ export function ConfiguratorSection() {
   // lazily — no write until the visitor's first interaction (PM ruling §5.8).
   const {
     state: eligState,
-    setMultiTenant: setEligMultiTenant,
     setVerticalSlug: setEligVerticalSlug,
     setSubVerticalSlug: setEligSubVerticalSlug,
   } = useEligState();
 
-  // Verdict-driven gates (Wave 2 — vertical-constraints §9.3):
-  //   - 🟠 / ⚫ / 🔴 disable the categories panel + replace the message
-  //     stream with the empty-state placeholder. Authoring controls (tone
-  //     pills, Copy, kebab, business name input) go away too — they're
-  //     dead UI with no messages to operate on.
-  //   - Bottom "Get early access" CTA hides on every disabled bucket. On
-  //     🔴 there's no future state to sign up for; on 🟠/⚫ the inline
-  //     form in the verdict card is the canonical capture and a backup
-  //     CTA would produce untagged general-waitlist signups that bypass
-  //     the interest_tag segmentation.
+  // Verdict-driven gates (vertical-constraints §9.3):
+  //   - 🟠 / ⚫ / 🔴 disable the categories panel + replace the message stream
+  //     with EligEmptyState. Authoring controls (tone pills, Copy, kebab,
+  //     business name input) go away too — dead UI with no messages to operate
+  //     on. For 🟠/⚫, EligEmptyState carries the boundary line + "Request
+  //     category" action; 🔴 sub-verticals are unselectable, so that path is
+  //     unreachable from fresh interaction.
+  //   - The bottom "Copy messages" CTA hides on every disabled bucket — there
+  //     are no messages to copy when the stream is replaced.
   const isMessageAreaDisabled =
     eligState.verdict.tier === "not-yet-maybe-not" ||
     eligState.verdict.tier === "not-yet" ||
@@ -291,7 +289,11 @@ export function ConfiguratorSection() {
     setFocusVariableOnOpen(variableName);
   }
 
-  const { openModal, setSummary } = useWaitlist();
+  // openModal is intentionally not consumed here anymore — the mid-page CTA now
+  // copies the messages (Copy messages) rather than opening the waitlist modal.
+  // setSummary still publishes the configurator selection into the waitlist
+  // context (consumed by the layout-mounted modal, which remains mounted).
+  const { setSummary } = useWaitlist();
   const posthog = usePostHog();
   // Message ids that have already fired `configurator_message_customized` —
   // the event fires once per message per session, on first override.
@@ -358,8 +360,9 @@ export function ConfiguratorSection() {
     return matchesVerificationOnly ? PRESET_VERIFICATION_ONLY : "Custom";
   }, [state, anyOverride, anyCustom]);
 
-  // Publish a snapshot to the waitlist context so the modal (opened from any
-  // "Get early access" CTA) reflects what the visitor configured.
+  // Publish a snapshot to the waitlist context. The layout-mounted waitlist
+  // modal reads it; the modal remains mounted though no CTA opens it after the
+  // reframe (teardown deferred).
   const waitlistSummary = useMemo<WaitlistSummary>(() => {
     const messagesSelected: string[] = [];
     for (const cat of checkedCategories) {
@@ -468,10 +471,6 @@ export function ConfiguratorSection() {
             <h2 className="text-2xl font-bold tracking-tight text-text-primary">
               Configure your messages
             </h2>
-            {/* PRE-LAUNCH (2026-05-15): revert to "All messages included. You can change these later in your workspace." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-            <p className="mt-3 text-base text-text-tertiary">
-              All messages included — yours to copy and use with any provider today.
-            </p>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
@@ -527,69 +526,72 @@ export function ConfiguratorSection() {
 
             {/* Messages column */}
             <div className="flex flex-col md:max-w-[540px]">
-              {/* Elig section — sits at the top of the right column above the
-                  tone pills (vertical-constraints §9). Wave 1 ships dropdowns
-                  + state + localStorage emission only; Wave 2 adds the
-                  verdict cards and the disabled-categories + empty-state
-                  behavior for 🟠/⚫/🔴. */}
+              {/* Elig section sits at the top of the right column, above the
+                  tone pills (vertical-constraints §9): identity dropdowns +
+                  verdict, with disabled-bucket gating of the rest of the column.
+                  The "Your business name" input sits with the identity inputs,
+                  above the industry dropdown, gated by isMessageAreaDisabled so
+                  it hides on disabled buckets. */}
+              {isMessageAreaDisabled ? null : (
+                <div className="mb-2">
+                  <input
+                    ref={businessNameInputRef}
+                    type="text"
+                    value={state.businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    placeholder="Your business name"
+                    className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                  />
+                </div>
+              )}
               <div className="mb-6">
                 <EligSection
                   state={eligState}
-                  onMultiTenantChange={setEligMultiTenant}
                   onVerticalChange={setEligVerticalSlug}
                   onSubVerticalChange={setEligSubVerticalSlug}
                 />
               </div>
               {isMessageAreaDisabled ? null : (
-                <>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap gap-2">
-                      {PAGE_TONES.map((tone) => (
-                        <button
-                          key={tone}
-                          type="button"
-                          onClick={() => setPageTone(tone)}
-                          className={tonePillClasses(state.pageTone === tone)}
-                        >
-                          {tone}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-wrap gap-2">
+                    {PAGE_TONES.map((tone) => (
                       <button
+                        key={tone}
                         type="button"
-                        onClick={handleCopy}
-                        className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                        onClick={() => setPageTone(tone)}
+                        className={tonePillClasses(state.pageTone === tone)}
                       >
-                        <Copy01 className="size-4" />
-                        {copyToastVisible ? "Copied" : "Copy"}
+                        {tone}
                       </button>
-                      <KebabMenu
-                        ariaLabel="Configurator options"
-                        items={[
-                          {
-                            label: "Reset all to defaults",
-                            onClick: clearAll,
-                          },
-                        ]}
-                      />
-                    </div>
+                    ))}
                   </div>
-
-                  <div className="mt-4">
-                    <input
-                      ref={businessNameInputRef}
-                      type="text"
-                      value={state.businessName}
-                      onChange={(e) => setBusinessName(e.target.value)}
-                      placeholder="Your business name"
-                      className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={handleCopy}
+                      className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                    >
+                      <Copy01 className="size-4" />
+                      {copyToastVisible ? "Copied" : "Copy"}
+                    </button>
+                    <KebabMenu
+                      ariaLabel="Configurator options"
+                      items={[
+                        {
+                          label: "Reset all to defaults",
+                          onClick: clearAll,
+                        },
+                      ]}
                     />
                   </div>
-                </>
+                </div>
               )}
 
               <div className="mt-8 space-y-7">
+                {/* Disabled buckets replace the message stream with
+                    EligEmptyState: 🟠/⚫ render the boundary line + "Request
+                    category" action there; 🔴 sub-verticals are unselectable,
+                    so that path is unreachable from fresh interaction. */}
                 {isMessageAreaDisabled ? (
                   <EligEmptyState state={eligState} />
                 ) : null}
@@ -858,27 +860,17 @@ export function ConfiguratorSection() {
 
               {hideBottomCta ? null : (
                 <div className="mt-10">
-                  {/* PRE-LAUNCH (2026-05-16): opens the waitlist modal. Revert to
-                      a <Link> "Start building with SMS →" (href "/signup") when
-                      onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md
-                      WAVE 2 (2026-05-29): hidden on every disabled bucket
-                      (🟠/⚫/🔴). The inline form in the verdict card is the
-                      canonical capture on 🟠/⚫; a backup CTA here would
-                      produce untagged general-waitlist signups that bypass
-                      the interest_tag segmentation. 🔴 has no waitlist at
-                      all (PM ruling §5.2 — no future state to sign up for). */}
+                  {/* Copies the configured messages to the clipboard — the same
+                      action as the Copy button in the tone row. Hidden on every
+                      disabled bucket (no messages to copy when the stream is
+                      replaced by EligEmptyState). */}
                   <button
                     type="button"
-                    onClick={() => openModal("mid-page")}
+                    onClick={handleCopy}
                     className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
                   >
-                    Get early access
+                    {copyToastVisible ? "Copied" : "Copy messages"}
                   </button>
-                  {/* PRE-LAUNCH (2026-05-15): revert to "Next: a few quick questions, then you build with your AI tool while we register you. Three days to your first real text." when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-                  <p className="mt-4 text-sm text-text-secondary">
-                    The messages above are yours — copy them and use them with any
-                    provider today. The full product ships summer 2026.
-                  </p>
                 </div>
               )}
             </div>

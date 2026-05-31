@@ -12,11 +12,13 @@
  */
 
 import { ChevronDown, XClose } from "@untitledui/icons";
-import { useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 export interface EligDropdownOption {
   value: string;
   label: string;
+  /** When true, the option renders greyed + non-clickable. */
+  disabled?: boolean;
 }
 
 export interface EligDropdownProps {
@@ -28,6 +30,18 @@ export interface EligDropdownProps {
   ariaLabel: string;
   /** Optional — when true, the field renders disabled (greyed, no toggle). */
   disabled?: boolean;
+  /**
+   * When true (default), a reset × replaces the chevron once a value is
+   * selected. When false, the chevron always shows and there's no inline
+   * clear affordance (used by the sub-vertical dropdown).
+   */
+  clearable?: boolean;
+  /**
+   * When set, options flagged `disabled` are grouped at the bottom under a
+   * divider + this header label (e.g. "Not supported"). Disabled options
+   * are greyed and non-clickable.
+   */
+  disabledGroupLabel?: string;
 }
 
 export function EligDropdown({
@@ -37,6 +51,8 @@ export function EligDropdown({
   onChange,
   ariaLabel,
   disabled = false,
+  clearable = true,
+  disabledGroupLabel,
 }: EligDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -67,6 +83,12 @@ export function EligDropdown({
     : null;
   const isPlaceholder = !selectedOption;
 
+  // Enabled options first, disabled ("Not supported") grouped last. V8's sort
+  // is stable, so original relative order is preserved within each group.
+  const orderedOptions = [...options].sort(
+    (a, b) => Number(a.disabled ?? false) - Number(b.disabled ?? false),
+  );
+
   return (
     <div className="relative w-full" ref={wrapperRef}>
       <button
@@ -86,7 +108,7 @@ export function EligDropdown({
         <span className="truncate text-left">
           {selectedOption?.label ?? placeholder}
         </span>
-        {selectedOption ? (
+        {selectedOption && clearable ? (
           <span
             role="button"
             tabIndex={0}
@@ -118,26 +140,50 @@ export function EligDropdown({
           aria-label={ariaLabel}
           className="absolute top-full right-0 left-0 z-20 mt-1 max-h-72 overflow-y-auto rounded-lg border border-border-secondary bg-bg-primary py-1 shadow-lg"
         >
-          {options.map((option) => {
+          {orderedOptions.map((option, idx) => {
             const isSelected = option.value === value;
+            // Inject the divider + group header before the first disabled item.
+            const startsDisabledGroup =
+              !!option.disabled &&
+              (idx === 0 || !orderedOptions[idx - 1].disabled);
             return (
-              <button
-                key={option.value}
-                type="button"
-                role="option"
-                aria-selected={isSelected}
-                onClick={() => {
-                  setIsOpen(false);
-                  onChange(option.value);
-                }}
-                className={`flex w-full cursor-pointer items-center px-3 py-2 text-left text-sm transition duration-100 ease-linear hover:bg-bg-primary_hover ${
-                  isSelected
-                    ? "bg-bg-primary_hover text-text-primary"
-                    : "text-text-secondary"
-                }`}
-              >
-                {option.label}
-              </button>
+              <Fragment key={option.value}>
+                {startsDisabledGroup && disabledGroupLabel ? (
+                  <div role="presentation">
+                    <div className="my-1 border-t border-border-secondary" />
+                    <p className="px-3 py-1 text-xs font-medium text-text-quaternary">
+                      {disabledGroupLabel}
+                    </p>
+                  </div>
+                ) : null}
+                {option.disabled ? (
+                  <div
+                    role="option"
+                    aria-selected={false}
+                    aria-disabled
+                    className="flex w-full cursor-not-allowed items-center px-3 py-2 text-left text-sm text-disabled"
+                  >
+                    {option.label}
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={isSelected}
+                    onClick={() => {
+                      setIsOpen(false);
+                      onChange(option.value);
+                    }}
+                    className={`flex w-full cursor-pointer items-center px-3 py-2 text-left text-sm transition duration-100 ease-linear hover:bg-bg-primary_hover ${
+                      isSelected
+                        ? "bg-bg-primary_hover text-text-primary"
+                        : "text-text-secondary"
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                )}
+              </Fragment>
             );
           })}
         </div>

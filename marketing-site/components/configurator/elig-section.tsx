@@ -20,10 +20,7 @@
  * placeholder.
  */
 
-import type {
-  MultiTenantValue,
-  EligState,
-} from "@/lib/configurator/use-elig-state";
+import type { EligState } from "@/lib/configurator/use-elig-state";
 import { VERTICALS, findVertical } from "../../../lib/constraints";
 import { EligDropdown, type EligDropdownOption } from "./elig-dropdown";
 import { EligVerdictCard } from "./elig-verdict-card";
@@ -50,11 +47,6 @@ export function eligD3Placeholder(vertical: {
   return `What kind of ${phrase}?`;
 }
 
-const MULTI_TENANT_OPTIONS: EligDropdownOption[] = [
-  { value: "single", label: "for one business (mine)" },
-  { value: "multi", label: "for many businesses (my customers)" },
-];
-
 const VERTICAL_OPTIONS: EligDropdownOption[] = VERTICALS.map((v) => ({
   value: v.slug,
   label: v.name,
@@ -62,14 +54,12 @@ const VERTICAL_OPTIONS: EligDropdownOption[] = VERTICALS.map((v) => ({
 
 export interface EligSectionProps {
   state: EligState;
-  onMultiTenantChange: (value: MultiTenantValue | null) => void;
   onVerticalChange: (slug: string | null) => void;
   onSubVerticalChange: (slug: string | null) => void;
 }
 
 export function EligSection({
   state,
-  onMultiTenantChange,
   onVerticalChange,
   onSubVerticalChange,
 }: EligSectionProps) {
@@ -86,25 +76,21 @@ export function EligSection({
     selectedVertical.subVerticals.some((s) => s.routingTrigger)
   );
 
+  // "Not our lane" sub-verticals render disabled + grouped under a "Not
+  // supported" header. Membership comes straight from the data bucket — not a
+  // hardcoded list — so it tracks data changes. The dropdown sorts disabled
+  // options to the bottom.
   const subVerticalOptions: EligDropdownOption[] = selectedVertical
     ? selectedVertical.subVerticals.map((s) => ({
         value: s.slug,
         label: s.name,
+        disabled: s.bucket === "Not our lane",
       }))
     : [];
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col gap-2">
-        <EligDropdown
-          placeholder="My app sends messages..."
-          value={state.multiTenant}
-          options={MULTI_TENANT_OPTIONS}
-          onChange={(v) =>
-            onMultiTenantChange(v as MultiTenantValue | null)
-          }
-          ariaLabel="Who does your app send messages for?"
-        />
         <EligDropdown
           placeholder="What industry does your app serve?"
           value={state.verticalSlug}
@@ -119,6 +105,8 @@ export function EligSection({
             options={subVerticalOptions}
             onChange={onSubVerticalChange}
             ariaLabel={eligD3Placeholder(selectedVertical)}
+            clearable={false}
+            disabledGroupLabel="Not supported"
           />
         ) : null}
       </div>
