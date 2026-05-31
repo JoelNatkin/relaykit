@@ -1,6 +1,6 @@
 import Image from "next/image";
+import { BottomEmailCapture } from "@/components/bottom-email-capture";
 import { ConfiguratorSection } from "@/components/configurator-section";
-import { EarlyAccessButton } from "@/components/early-access-button";
 import { PreviewListMock } from "@/components/preview-list-mock";
 
 // Per-logo heights tune visual weight, not pixel height: icon-plus-wordmark
@@ -60,63 +60,66 @@ export default function MarketingHome() {
       {/* Section 1 — Hero */}
       <div className="pt-16">
         <div className="mx-auto max-w-5xl px-6">
-          {/* PRE-LAUNCH (2026-05-15): temporary pre-launch tag — remove this element when onboarding ships. See docs/PRE_LAUNCH_DEVIATIONS.md */}
-          <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-tertiary">
-            PRE-LAUNCH · SHIPPING SUMMER 2026
-          </p>
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
             SMS for builders
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-            Compliant SMS that drops into your stack, wired by your AI tool.
+            Compliant text messages for your app. Free to use.
           </p>
-          <p className="mt-4 text-sm font-medium text-text-primary">
-            Free to build. $49 + $19/mo to go live.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-3">
-            {AI_TOOLS.map((tool) =>
-              tool.negSrc ? (
-                <span key={tool.alt} className="contents">
-                  <Image
-                    src={tool.src}
-                    alt={tool.alt}
-                    width={140}
-                    height={24}
-                    className={`${tool.heightClass} w-auto brightness-0 dark:hidden`}
-                  />
-                  <Image
-                    src={tool.negSrc}
-                    alt=""
-                    aria-hidden
-                    width={140}
-                    height={24}
-                    className={`${tool.heightClass} hidden w-auto dark:inline-block`}
-                  />
-                </span>
-              ) : (
-                <Image
-                  key={tool.alt}
-                  src={tool.src}
-                  alt={tool.alt}
-                  width={140}
-                  height={24}
-                  className={`${tool.heightClass} w-auto brightness-0 dark:invert`}
-                />
-              )
-            )}
-          </div>
         </div>
       </div>
 
       {/* Section 2 — Configurator */}
       <ConfiguratorSection />
 
+      {/* "Shipping Summer 2026" — heads the post-launch detail below the configurator */}
+      <div className="mx-auto mt-[100px] max-w-5xl px-6">
+        <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+          Shipping Summer 2026
+        </h1>
+      </div>
+
       {/* Section 3 — Build it */}
-      <section className="mx-auto mt-[100px] max-w-5xl px-6">
+      <section className="mx-auto mt-12 max-w-5xl px-6">
         <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
           Configure &gt; Build
         </p>
         <h2 className="mt-2 text-2xl font-bold text-text-primary">Hand it to your AI tool.</h2>
+
+        {/* AI-tool logo row — sits under the "Hand it to your AI tool." heading,
+            where the tools it names belong (rather than in the hero). */}
+        <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-3">
+          {AI_TOOLS.map((tool) =>
+            tool.negSrc ? (
+              <span key={tool.alt} className="contents">
+                <Image
+                  src={tool.src}
+                  alt={tool.alt}
+                  width={140}
+                  height={24}
+                  className={`${tool.heightClass} w-auto brightness-0 dark:hidden`}
+                />
+                <Image
+                  src={tool.negSrc}
+                  alt=""
+                  aria-hidden
+                  width={140}
+                  height={24}
+                  className={`${tool.heightClass} hidden w-auto dark:inline-block`}
+                />
+              </span>
+            ) : (
+              <Image
+                key={tool.alt}
+                src={tool.src}
+                alt={tool.alt}
+                width={140}
+                height={24}
+                className={`${tool.heightClass} w-auto brightness-0 dark:invert`}
+              />
+            )
+          )}
+        </div>
 
         <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           <div className="flex flex-col gap-5">
@@ -125,8 +128,7 @@ export default function MarketingHome() {
               Supastarter, MakerKit, Vercel + Supabase.
             </p>
             <p className="text-base leading-relaxed text-text-secondary">
-              <strong className="font-bold text-text-primary">Already built.</strong> Hand the build spec to your AI tool, point it at where you handle
-              auth, and let it wire up the rest.
+              <strong className="font-bold text-text-primary">Already built.</strong> Hand our build spec to your AI tool and let it wire up the rest.
             </p>
           </div>
 
@@ -143,23 +145,26 @@ export default function MarketingHome() {
           Build &gt; Test
         </p>
         <h2 className="mt-2 text-2xl font-bold text-text-primary">
-          Real SMS, before customers see anything.
+          Real texts to your phone, before you go live.
         </h2>
 
         <div className="mt-10 grid grid-cols-1 items-start gap-12 md:grid-cols-2">
           <div className="flex flex-col gap-6">
             <div>
-              <h3 className="text-base font-bold text-text-primary">Preview list</h3>
+              <h3 className="text-base font-bold text-text-primary">Your circle of test phones.</h3>
               <p className="mt-2 text-base leading-relaxed text-text-secondary">
                 Add yourself, your team, your beta testers. Each person verifies once. After that,
                 your app&apos;s SMS features work for them the way they will for customers.
               </p>
             </div>
             <div>
-              <h3 className="text-base font-bold text-text-primary">Testing utilities</h3>
-              <p className="mt-2 text-base leading-relaxed text-text-secondary">
-                Your AI tool also sets up testing tools in your app. Trigger an OTP, fire a
-                reminder, queue a message — from your editor.
+              <p className="text-base font-semibold text-text-primary">
+                A test page, built into your app.
+              </p>
+              <p className="mt-1 text-base leading-relaxed text-text-secondary">
+                Trigger your real flows — a booking, an OTP, a reminder — and
+                watch the whole loop resolve: sent, delivered, your database
+                updated.
               </p>
             </div>
           </div>
@@ -184,7 +189,7 @@ export default function MarketingHome() {
                 </p>
                 <h3 className="mt-2 text-lg font-bold text-text-primary">Build for free</h3>
                 <p className="mt-2 text-sm leading-relaxed text-text-tertiary">
-                  Set up your messages. Wire up the SDK. Test with real phones. No credit card.
+                  Set up your messages. Add the code to your app. Test with real phones. No credit card.
                 </p>
               </div>
 
@@ -204,13 +209,10 @@ export default function MarketingHome() {
               </div>
             </div>
 
-            <p className="mt-4 text-xs text-text-tertiary">
-              Marketing category messages, add $10/mo. Volume pricing above 5,000 messages.
-            </p>
-
-            <p className="mt-3 text-sm text-text-tertiary">
-              US and Canada at launch. We don&apos;t handle HIPAA, healthcare-regulated workflows,
-              or enterprise procurement.
+            <p className="mt-4 text-xs leading-relaxed text-text-tertiary">
+              Marketing category messages, add $10/mo. Volume pricing above 5,000
+              messages. US and Canada at launch. We don&apos;t handle HIPAA,
+              healthcare-regulated workflows, or enterprise procurement.
             </p>
           </div>
 
@@ -218,24 +220,32 @@ export default function MarketingHome() {
           <div>
             <h2 className="text-2xl font-bold text-text-primary">We know the rules so you don&apos;t have to.</h2>
             <p className="mt-6 text-base leading-relaxed text-text-secondary">
-              There&apos;s a thick stack of carrier regulation behind every text message — who you have to register with, what you&apos;re allowed to say, how fast you can send, what happens when someone replies STOP. We&apos;ve read all of it. You get an SDK.
+              There&apos;s a thick stack of carrier regulation behind every text message — who you have to register with, what you&apos;re allowed to say, how fast you can send, what happens when someone replies STOP. We&apos;ve read all of it. You get clean code that drops into your app.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Section 6 — Closing CTA */}
+      {/* Section 6 — Closing CTA (two-column; left holds the block, right empty) */}
       <section className="mx-auto mt-[100px] mb-[100px] max-w-5xl px-6">
-        <h2 className="text-2xl font-bold text-text-primary">Ready when you are.</h2>
-        <p className="mt-4 max-w-xl text-base leading-relaxed text-text-tertiary">
-          Configure today. Live in three days. Refund if not approved.
-        </p>
-        <EarlyAccessButton
-          source="bottom"
-          className="mt-8 inline-block cursor-pointer rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
-        >
-          Get early access
-        </EarlyAccessButton>
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+          {/* Left column */}
+          <div>
+            <h2 className="text-2xl font-bold text-text-primary">
+              Join the list.
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-text-tertiary">
+              RelayKit adds SMS to the stack you&apos;re already building on.
+              Summer 2026 is the target. I&apos;ll email you when it&apos;s live.
+            </p>
+            <p className="mt-2 text-base text-text-tertiary">
+              — Joel, solo founder
+            </p>
+            <BottomEmailCapture />
+          </div>
+          {/* Right column — reserved */}
+          <div />
+        </div>
       </section>
     </div>
   );

@@ -2,12 +2,10 @@
 
 import { Moon01, Sun } from "@untitledui/icons";
 import Link from "next/link";
-import { useWaitlist } from "@/context/waitlist-context";
 import { useTheme } from "@/lib/use-theme";
 
 export function TopNav() {
   const { theme, toggle } = useTheme();
-  const { openModal } = useWaitlist();
   // Names the action the click performs (the target state), not the current
   // state. Pre-mount the theme is unknown, so use a neutral label.
   const actionLabel =
@@ -41,13 +39,6 @@ export function TopNav() {
             ) : (
               <Sun className="size-5" />
             )}
-          </button>
-          <button
-            type="button"
-            onClick={() => openModal("top-nav")}
-            className="cursor-pointer rounded-lg border border-border-primary bg-bg-primary px-4 py-2 text-sm font-semibold text-text-secondary transition duration-100 ease-linear hover:bg-bg-primary_hover"
-          >
-            Get early access
           </button>
         </div>
       </div>
