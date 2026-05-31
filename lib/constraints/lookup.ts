@@ -76,3 +76,16 @@ export function lookupEligibility(
 export function getContentRules(subVerticalSlug: string): ContentRule[] {
   return findSubVertical(subVerticalSlug)?.contentRules ?? [];
 }
+
+/**
+ * Customer-facing rule summaries for a sub-vertical — the populated
+ * `customerSummary` strings across its content rules, in declaration order.
+ * Empty until the Airtable Constraints base authors the field and the connector
+ * regenerates VERTICALS. The elig RulesCard renders these as bullets and is
+ * suppressed entirely when the list is empty.
+ */
+export function getRuleSummaries(subVerticalSlug: string): string[] {
+  return getContentRules(subVerticalSlug)
+    .map((rule) => rule.customerSummary)
+    .filter((summary): summary is string => summary !== undefined && summary.trim() !== "");
+}

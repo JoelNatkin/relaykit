@@ -14,6 +14,7 @@ export {
   findSubVertical,
   findVertical,
   getContentRules,
+  getRuleSummaries,
   lookupEligibility,
 } from "./lookup";
 
