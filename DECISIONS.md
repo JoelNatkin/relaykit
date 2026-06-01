@@ -2062,3 +2062,61 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** D-418 — the four-bucket vertical-eligibility model is replaced. Sub-vertical routing (D-418's other commitment) carries forward unchanged; D-419's per-vertical content-rule layer maps onto the "Conditional" bucket without modification.
 
 **Affects:** `/explorations/vertical-constraints.md` (rename "widget" → "Eligibility section" / "elig"; rewrite bucket section to five buckets with per-bucket UX shape; verdict-copy patterns — out of scope for this commit, to be updated separately); `/lib/constraints/types.ts` `Bucket` union (currently carries D-418's four values; needs five-value update in a follow-up commit alongside the schema doc); `docs/AIRTABLE_SCHEMA.md` + the live Airtable Constraints base `appxThB8UWmNulAMt` (Bucket field options re-mapped, PM-driven); the future Eligibility section UI (per-bucket verdict copy); `prototype/lib/intake/industry-gating.ts` rework (uses the new five-bucket model when data lands); `BACKLOG.md` (multi-tenant `(committed)` entry routes into "Not yet").
+
+⚠ Partially superseded by D-426: the "Multi-tenant routes into 'Not yet' with the same UX as other capacity-deferred sub-verticals" claim no longer holds at the UI level — the multi-tenant entry point (D1 dropdown) was removed from the elig section. The five-bucket model, the routing logic, and the interest-tag mapping all carry forward unchanged (the multi-tenant machinery is retained dormant); only the UI surface is gone.
+
+## D-423 — Customer-facing rule bullets are a sub-vertical-level `cardRuleBullets` field, authored in Airtable and landed via wholesale connector-dump write
+
+**Decided:** 2026-05-31 (Session 123)
+
+**Decision:** The rules card's customer-facing bullets live as a sub-vertical-level `cardRuleBullets: string[]` field on `SubVertical` (3 bullets by Airtable authoring convention), not as the rule-level `ContentRule.customerSummary` the Wave B helper read. They are authored in the Airtable Constraints base ("Card rule bullets" column on the Sub-verticals table) and reach `/lib/constraints/verticals.ts` the same way all constraint data does — PM regenerates the full file via the Airtable MCP connector and relays the complete output, which CC writes wholesale (entire-file replacement). A wholesale connector-dump replacement is not the hand-editing D-421's airgap forbids; it is the sanctioned landing path for connector-generated data. `getRuleSummaries(slug)` now reads `cardRuleBullets`.
+
+**Why:** A "rules card" is one card per sub-vertical with a fixed small number of bullets — a sub-vertical-level shape, not a per-rule aggregation. Mapping over `ContentRule.customerSummary` (Wave B) coupled the card's bullet count to the enforcement-rule count, which is the wrong cardinality (some sub-verticals carry zero or many content rules but still want exactly three card bullets). Putting the bullets on the sub-vertical decouples customer-facing card copy from the enforcement-rule data. The airgap clarification matters because the bullets are authored in Airtable (where PM works) but CC can't read Airtable and PM can't write to disk — the wholesale write is the only path that honors both halves.
+
+**Rejected alternative:** Keep the rule-level `customerSummary` mapping (Wave B); OR author the bullets in a separate CC-editable `card-bullets.ts` keyed by slug. The first is rejected on cardinality (rule-count ≠ card-bullet-count). The second was considered and rejected because it introduces a second sub-vertical data source that can drift from `verticals.ts`; one connector-generated file stays canonical.
+
+**Supersedes:** none of record. Wave B's `ContentRule.customerSummary` field + `getRuleSummaries` mapping is removed by this decision, but Wave B was never assigned a D-number, so there is no ledger entry to mark. Extends/clarifies D-421 — names the wholesale connector-dump write as the sanctioned, non-hand-edit landing path for `verticals.ts`.
+
+**Affects:** `/lib/constraints/types.ts` (`SubVertical.cardRuleBullets?` added, `ContentRule.customerSummary?` removed); `/lib/constraints/lookup.ts` (`getRuleSummaries` reads `cardRuleBullets`); `/lib/constraints/verticals.ts` (regenerated wholesale — 65 selectable sub-verticals filled, Clear/Not-our-lane empty); `docs/AIRTABLE_SCHEMA.md` ("Card rule bullets" column on the Sub-verticals table); the elig RulesCard (renders the bullets); commits `759e4c1` + `aad2f7c`.
+
+## D-424 — The configurator is a free authoring tool whose output is a compliant-ready starting point, not a compliance guarantee; a point-of-use disclaimer states this
+
+**Decided:** 2026-05-31 (Session 123)
+
+**Decision:** The public, no-login configurator is positioned as a free authoring tool that hands the visitor message text and rule guidance — a compliant-ready starting point, not a compliance guarantee or legal advice. A point-of-use disclaimer sits under the Copy-messages CTA on every selectable category: "Not legal advice — you're responsible for consent and compliance. See our Terms." (Terms → `/terms`). This is the product-side expression of the legal-exposure remediation (`/explorations/LEGAL_EXPOSURE_REMEDIATION.md` §3.1); the browsewrap footer line (§3.2) and the Terms/AUP/Privacy edits (§3.4–§3.6) are separate, still-parked pieces.
+
+**Why:** The reframe (MD-21) turned the configurator from a lead-magnet preview into a tool anonymous visitors actually author with and copy from — including rule-card "advice" — while the ToS protections that would normally cover that reliance are gated behind account creation. A visible point-of-use disclaimer puts the visitor on notice at the moment of use, which is the highest-leverage, lowest-cost remediation and the one that rides directly with the configurator UI. It never claims guaranteed compliance (CLAUDE.md hard constraint) — it states the opposite.
+
+**Rejected alternative:** Rely on the gated ToS alone (no point-of-use disclaimer), or surface the disclaimer only in the footer. Rejected because neither reaches the anonymous visitor at the moment they copy message text and act on rule guidance.
+
+**Supersedes:** none.
+
+**Affects:** `marketing-site/components/configurator-section.tsx` (disclaimer under the Copy CTA); `/explorations/LEGAL_EXPOSURE_REMEDIATION.md` (§3.1 resolved; §3.2 + §3.4–§3.6 parked); `docs/PRODUCT_SUMMARY.md`; commit `759e4c1` (disclaimer shortened in `42f906b`).
+
+## D-425 — The configurator authors freely for every reachable bucket; only Not-our-lane is gated, at the sub-vertical dropdown
+
+**Decided:** 2026-05-31 (Session 123)
+
+**Decision:** The configurator message area is never disabled or replaced. Every bucket the visitor can reach — Clear, Conditional, and both Not-yet tiers — renders the full message stream, tone pills, Copy, and business-name input. The only gate is 🔴 Not-our-lane, handled entirely at the sub-vertical dropdown (those items render disabled/unselectable; selecting is impossible). The rules card (heading + 3 bullets from `cardRuleBullets`) surfaces for Conditional and both Not-yet tiers; on the Not-yet tiers it gains a footer (divider + AlertTriangle + "RelayKit doesn't send this category. Request it." → `EligRequestModal`). 🟡 Conditional shows bullets only; 🟢 Clear shows neither card nor footer.
+
+**Why:** This is the product-UX expression of MD-21's free-standalone-tool posture: a tool that disables itself for whole industries isn't a complete free product. The prior treatment (Wave C/D) disabled the categories panel and replaced the message stream with an empty-state for 🟠/⚫/🔴 — which withheld the free authoring value from exactly the visitors who could still use it as a draft. Moving the only hard gate to the dropdown (where 🔴 is genuinely out of scope) keeps the tool generous while staying honest about what RelayKit will and won't send.
+
+**Rejected alternative:** Keep the Wave C/D gating — disable the categories panel and replace the message stream with the Not-yet empty-state for 🟠/⚫/🔴. Rejected because it contradicts the free-tool posture (MD-21) by withholding usable output from reachable buckets, and conflates "we don't send this lane" (🔴) with "we don't send this yet" (🟠/⚫), which still authors fine as a draft.
+
+**Supersedes:** none of record. The superseded treatment shipped across the Session 122 Wave C/D promotion commits, which were not assigned D-numbers (the elig build implemented D-422 + the exploration spec). Product-UX expression of MD-21 (marketing positioning); pairs with D-423 (the rules-card data) and D-424 (the disclaimer).
+
+**Affects:** `marketing-site/components/configurator-section.tsx` (removed `isMessageAreaDisabled` gating); `marketing-site/components/configurator/elig-verdict-card.tsx` (rules card + Not-yet footer); `elig-section.tsx` (threads `onRequest`); `elig-empty-state.tsx` (deleted); `PROTOTYPE_SPEC.md`; `docs/PRODUCT_SUMMARY.md`; commits `759e4c1` + `42f906b`.
+
+## D-426 — Multi-tenant entry point removed from the elig UI; routing machinery retained dormant
+
+**Decided:** 2026-05-31 (Session 123)
+
+**Decision:** The multi-tenant question (D-422's D1 dropdown) is removed from the eligibility section UI. The visitor can no longer self-identify as multi-tenant, so the elig section is two dropdowns (industry + sub-vertical), not three. The multi-tenant routing machinery — the `multiTenant` field/setter in `EligState`, the `deriveVerdict` branch routing multi → ⚫ Not yet, the `MultiTenantValue` type, and the `eligInterestTag` read — is retained intact and dormant (DORMANT-commented), so a future multi-tenant return is a pure UI re-add, not a re-build.
+
+**Why:** Multi-tenant SMS isn't part of launch, and asking every visitor a multi-tenant question up front taxed the common single-tenant path with a question almost no one needed — friction at the top of the funnel for a capability that won't ship at launch. Removing the UI surface while keeping the routing logic dormant preserves the decision (multi-tenant → Not yet, D-422) without paying the per-visitor UX cost now.
+
+**Rejected alternative:** Keep the D1 multi-tenant dropdown surfaced (D-422 as originally shipped). Rejected because it front-loads a launch-irrelevant question; the dormant-machinery approach keeps the routing without the friction.
+
+**Supersedes:** Partially supersedes D-422 — narrows its "Multi-tenant routes into 'Not yet' with the same UX as other capacity-deferred sub-verticals" claim: the routing carries forward, but there is no longer a UI entry point that produces a multi-tenant verdict. D-422's five-bucket model is otherwise unchanged. D-422 marked in the same commit.
+
+**Affects:** `marketing-site/lib/configurator/use-elig-state.ts` (`multiTenant` field/setter/branch kept dormant); `marketing-site/components/configurator/elig-section.tsx` (D1 dropdown removed — landed Session 122 Wave D, commit `203ce2d`; recorded here); `marketing-site/lib/configurator/elig-copy.ts` (`eligInterestTag` still reads `multiTenant`, dormant); `NOT_YET_MULTI_TENANT_LINE` (dormant). The machinery removal is deferred until a multi-tenant decision settles.

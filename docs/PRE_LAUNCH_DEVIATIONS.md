@@ -6,9 +6,23 @@
 
 ---
 
+## Session 122–123 reconciliation (configurator free-tool reframe + rework)
+
+The Session 122 free-tool reframe (MD-21) and the Session 123 rework (D-424/D-425) **superseded the front-of-page waitlist-CTA posture** that entries 1–6 below describe. Verified against current code on `feat/configurator-reframe`:
+
+- **Entries 1, 3, 4 — RESOLVED (reframe, not restoration).** The hero `PRE-LAUNCH · SHIPPING SUMMER 2026` tag is gone (a `Shipping Summer 2026` header now sits below the configurator instead); the pre-CTA paragraph and the configurator subhead were rewritten by the reframe, not reverted to their pre-launch originals. These did not "restore to the product flow" — the reframe replaced them outright. They no longer need tracking here.
+- **Entry 2 — SUPERSEDED.** The mid-page CTA is now a "Copy messages" button (`handleCopy`), not a waitlist trigger. The "restore `Start building with SMS →`" plan is moot; the button's post-launch evolution is scoped in MD-21's revisit note ("add a 'Build with RelayKit' CTA beside 'Copy messages'").
+- **Entries 5, 6 — SUPERSEDED.** Top-nav "Get early access" is removed entirely. The closing section is now an inline `BottomEmailCapture` "Join the list." email block (POST `/api/early-access`, `ctaSource: "bottom"`), not the modal-opening button.
+- **Entry 11 (NEW) — point-of-use legal disclaimer.** The Session 123 rework added a disclaimer under the Copy CTA (D-424). It is **permanent**, not pre-launch — recorded below for completeness.
+- **Entries 7, 8, 9, 10 — UNCHANGED.** The `WaitlistModal` + `WaitlistProvider` remain mounted in `layout.tsx` (now reachable-dead after the reframe removed every opener — teardown is a parked post-merge follow-up); the early-access API + permanent subscriber table persist.
+
+Full revert of the resolved entries is unnecessary — they were superseded by a forward design change, not held for restoration. They are retained below as historical record; the live tracking set is now entries 7–11.
+
+---
+
 ## Active deviations
 
-### 1 — Hero pre-launch tag
+### 1 — Hero pre-launch tag  *(RESOLVED — superseded by the Session 122 reframe; see reconciliation above)*
 
 **File:** `marketing-site/app/page.tsx`
 
@@ -18,7 +32,7 @@
 
 **Restoration trigger:** Onboarding and delivery ship — remove the tag element entirely.
 
-### 2 — Mid-page CTA below the configurator
+### 2 — Mid-page CTA below the configurator  *(SUPERSEDED — now a "Copy messages" button; see reconciliation above)*
 
 **File:** `marketing-site/components/configurator-section.tsx`
 
@@ -30,7 +44,7 @@
 
 **Restoration trigger:** Onboarding and delivery ship — restore the `<Link>` labeled `Start building with SMS →` with `href="/signup"`.
 
-### 3 — Pre-CTA paragraph above the mid-page CTA
+### 3 — Pre-CTA paragraph above the mid-page CTA  *(RESOLVED — rewritten by the reframe; see reconciliation above)*
 
 **File:** `marketing-site/components/configurator-section.tsx`
 
@@ -40,7 +54,7 @@
 
 **Restoration trigger:** Onboarding and delivery ship — restore the original paragraph.
 
-### 4 — Configurator subhead
+### 4 — Configurator subhead  *(RESOLVED — rewritten by the reframe; see reconciliation above)*
 
 **File:** `marketing-site/components/configurator-section.tsx`
 
@@ -50,7 +64,7 @@
 
 **Restoration trigger:** Onboarding and delivery ship — restore the original subhead.
 
-### 5 — Top-nav "Get early access" button
+### 5 — Top-nav "Get early access" button  *(SUPERSEDED — removed entirely by the reframe; see reconciliation above)*
 
 **File:** `marketing-site/components/top-nav.tsx`
 
@@ -62,7 +76,7 @@
 
 **Restoration trigger:** Onboarding and delivery ship — restore a product-entry link in place of the modal trigger.
 
-### 6 — Closing-section "Get early access" button
+### 6 — Closing-section "Get early access" button  *(SUPERSEDED — now an inline `BottomEmailCapture` "Join the list." block; see reconciliation above)*
 
 **File:** `marketing-site/app/page.tsx`
 
@@ -122,8 +136,20 @@
 
 **Restoration trigger:** None — keep. Every email sent during the pre-launch period carries an unsubscribe link that must keep working after launch (list hygiene / CAN-SPAM). Do not revert.
 
+### 11 — Point-of-use legal disclaimer under the Copy CTA
+
+**File:** `marketing-site/components/configurator-section.tsx`
+
+**Type:** permanent
+
+**Before:** Did not exist.
+
+**After:** A one-line disclaimer under the bottom "Copy messages" CTA — "Not legal advice — you're responsible for consent and compliance. See our Terms." ("Terms" → `/terms`, Next `<Link>`). Product-side expression of the free-tool legal posture (D-424; `/explorations/LEGAL_EXPOSURE_REMEDIATION.md` §3.1).
+
+**Restoration trigger:** None — keep. The free authoring tool persists past launch; the point-of-use disclaimer stays with it. (The companion browsewrap footer line, §3.2, is a separate parked add.)
+
 ---
 
 ## Restoration
 
-Product ships and onboarding is live → revert every entry flagged **pre-launch-only** above. Entries flagged **permanent** (and the `early_access_subscribers` table data) stay. Once only permanent entries remain, fold those into the permanent record and delete this doc.
+Product ships and onboarding is live → revert every entry still flagged **pre-launch-only**. As of Session 123 the live pre-launch-only set is just **entries 7, 8, 9 (the route)** — the waitlist modal/context/welcome-email machinery, now reachable-dead after the reframe (post-merge teardown). Entries 1–6 were **superseded by the Session 122–123 reframe** (see the reconciliation block at the top — no revert needed). Entries flagged **permanent** (10, 11, the `send.ts` infra, and the `early_access_subscribers` table data) stay. Once only permanent entries remain, fold those into the permanent record and delete this doc.

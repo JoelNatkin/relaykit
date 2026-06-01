@@ -42,6 +42,7 @@ Working table. ~80-150 rows expected. Most go fast; constrained ones get depth.
 | Preemptive notice | multilineText | One-line notice for high-stakes constrained sub-verticals only |
 | Notes | multilineText | Reasoning, edge cases |
 | Content rules | multipleRecordLinks (auto, reverse of Rules.Applies to) | |
+| Card rule bullets | multilineText | Customer-facing rule bullets for the elig rules card (D-423). Authored in customer voice (not the enforcement Prohibition text); convention is 3 bullets per row, one per line. Populated on the 65 selectable (Conditional / Not-yet) sub-verticals; left empty for Clear and Not-our-lane. Lands in `/lib/constraints/verticals.ts` as `SubVertical.cardRuleBullets: string[]` via wholesale connector regeneration; `getRuleSummaries(slug)` reads it. Supersedes the prior rule-level `Rules` → `customerSummary` plumbing. |
 
 ### Rules (`tblDq3Yqi8Wx5EyYc`)
 Content-rule library. Initial 15-25 rows from `vertical-constraints.md` §4. Grows as primer-authoring sessions add to it.
