@@ -1,60 +1,67 @@
-# CC_HANDOFF — configurator rework + Wave E close-out (Session 123)
+# CC_HANDOFF — push + merge + branch cleanup + audit sweep (Session 124)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 5 this session | Files modified: 14 distinct | Decisions added: 4 (D-423–D-426) | External actions: 0 (nothing pushed)
+**Session metrics:** Commits: 4 this session | Files modified: 6 distinct | Decisions added: 0 | External actions: 5 (push feat branch, push main ×2, delete origin/feat, delete origin/fix)
 
-**Status:** The held configurator rework (CC_HANDOFF pending a + b from the prior session) is **built, doc'd, and closed out** on `feat/configurator-reframe`. **NOT pushed, NOT merged.** `main` unchanged at `4c655d3`. Awaiting Joel's review + Vercel preview before merge.
+**Status:** The configurator reframe is **merged to `main` and live in production at relaykit.ai.** All feature branches deleted — **only `main` remains** (local + remote), pushed and in sync. Session was push/merge/cleanup + a doc-only Categories 2/4 audit sweep. No code changed; no new decisions.
 
 ---
 
-## Branch state
+## Commits this session (top = newest)
 
-`feat/configurator-reframe` — **11 commits ahead of `main`, UNPUSHED.** This session added the last 5 (top = newest):
+- **(this close-out commit)** — **docs**: Session 124 close-out — REPO_INDEX reconciled post-merge (branch state, Meta, F-5 inventory, `/audits` sweep row, Last-touched rows) + this CC_HANDOFF overwrite.
+- `d8bab96` — **audit**: record `audits/SWEEP_2026-05-31.md` (Categories 2 & 4; findings-only).
+- `4871107` — **docs**: PM-authored mechanical edits — `PM_PROJECT_INSTRUCTIONS.md` "## Airtable connector" section (+ Updated header → May 31) + `LEGAL_EXPOSURE_REMEDIATION.md` `tatus`→`Status` typo.
+- `0c06638` — **chore**: remove `.claude/settings.json` `ask` permission block (deliberate, for bypass mode — Joel-directed).
 
-- `2a65460` — **chore**: `.claude/settings.json` permissions tuning (deny `git reset --hard`/`git clean`; allow-broaden dev toolset + promote `rm`/`rmdir`/`git checkout`/`git reset` ask→allow). Discrete commit per the close-out spec. `settings.local.json` stays gitignored/personal — not committed.
-- `6e77d63` — **docs**: Wave E close-out — D-423–D-426 + PROTOTYPE_SPEC/PRODUCT_SUMMARY/AIRTABLE_SCHEMA/PRE_LAUNCH_DEVIATIONS/REPO_INDEX reconciliation + `explorations/LEGAL_EXPOSURE_REMEDIATION.md` added.
-- `42f906b` — **fix**: Not-yet "Request it" moved into the rules-card footer (divider + AlertTriangle + link → existing `EligRequestModal`); disclaimer shortened to fix a desktop orphan. (Amended twice during its session for the icon color → `text-text-tertiary`.)
-- `aad2f7c` — **data**: `verticals.ts` wholesale connector regen — `cardRuleBullets` on all 65 selectable subs + CPaaS-adjacent 🟠→🔴.
-- `759e4c1` — **feat**: the rework — message area never disabled, rules card for Conditional + both Not-yet, only 🔴 gated (at the dropdown), `cardRuleBullets` repoint, point-of-use disclaimer, `elig-empty-state.tsx` deleted.
-
-The six commits below those (`1c3ec7c` … `c8675bb`) are the Session 122 Waves A–D reframe + the prior in-progress handoff, also unpushed. The earlier `sketch/configurator-reframe` (`a482a73`) remains as the WIP historical record (unmerged; Joel's cleanup call).
-
-Working-tree carry-forwards (NOT part of any commit, left alone): `M PM_PROJECT_INSTRUCTIONS.md`, untracked `.agents/`, `AGENTS.md`, `api/node_modules/`, `docs/POST_TOPICS.md`. `.pm-review.md` gitignored.
+(The 12-commit reframe stack `c8675bb`…`5f8e160` was authored Sessions 122–123; this session **pushed and fast-forward-merged** it to `main`, it did not re-author it.)
 
 ## Done this session
 
-- **Configurator rework (code, 3 commits).** Free authoring tool for every reachable bucket; message area never disabled; 🔴 unselectable at the sub-vertical dropdown only. Rules card (heading + 3 `cardRuleBullets`) for 🟡 Conditional + both 🟠/⚫ Not-yet; Not-yet adds a footer (divider + AlertTriangle + "RelayKit doesn't send this category. Request it." → `EligRequestModal`). Point-of-use disclaimer under the Copy CTA → `/terms`. Multi-tenant D1 dropdown removed, machinery dormant. `getRuleSummaries` repointed rule-level → sub-vertical `cardRuleBullets`; `ContentRule.customerSummary` removed. `verticals.ts` regenerated (65 subs filled, CPaaS flipped). Gates: tsc + eslint clean each commit; `.next` clean-restart, `GET / 200`.
-- **Wave E doc close-out (2 commits).** D-423–D-426 recorded (7 gate tests; pre-flight scan; D-422 ⚠ Partially superseded by D-426 same commit). PROTOTYPE_SPEC elig section + PRODUCT_SUMMARY §3 rewritten to current truth. AIRTABLE_SCHEMA "Card rule bullets" column. PRE_LAUNCH_DEVIATIONS reconciled (1–6 superseded by the reframe, new permanent entry 11, live set narrowed to 7–9). REPO_INDEX meta + sub-sections + connector-note fix + new exploration row. settings.json committed separately.
+- **Pushed `feat/configurator-reframe`** (12 commits) → origin; confirmed Vercel **Preview** built green.
+- **Committed the intentional `.claude/settings.json` `ask`-block removal** (`0c06638`) as a standalone chore; pushed to main.
+- **Merged `feat/configurator-reframe` → `main`** (clean 12-commit fast-forward, `0c48931..5f8e160`); pushed. Confirmed Vercel **Production** deploy Ready and serving on relaykit.ai / www.relaykit.ai.
+- **Branch cleanup** — deleted (local + remote where present): `feat/configurator-reframe` (merged), `fix/marketing-home-polish` (merged Session 113), `sketch/configurator-reframe` (unmerged WIP, force-deleted `-D`; recover via `a482a73`). Only `main` remains.
+- **Audit sweep** (plan-mode, Categories 2 & 4) → `audits/SWEEP_2026-05-31.md`. Tally: 0 real contradictions / 5 soft drift / 2 probably-fine. The branch-state soft-drift items (F-1..F-4) are **resolved by this close-out**; **F-5** (uninventoried `bottom-email-capture.tsx`) **fixed in REPO_INDEX this close-out**.
+- **PM bundle** committed (Airtable connector section + typo fix).
 
-## Decisions added (D-423–D-426)
+## In progress / not started
 
-- **D-423** — customer-facing rule bullets = sub-vertical `cardRuleBullets`, authored in Airtable ("Card rule bullets"), landed via wholesale connector-dump CC write. Extends/clarifies D-421 (wholesale dump ≠ hand-edit); supersedes Wave B's `customerSummary` (which was never a D-number, so no ledger mark needed).
-- **D-424** — free-tool point-of-use disclaimer (LEGAL_EXPOSURE_REMEDIATION §3.1).
-- **D-425** — free-authoring-tool gating: message area never disabled; only Not-our-lane gated, at the dropdown. Product-UX expression of MD-21.
-- **D-426** — multi-tenant entry point removed from the elig UI; routing machinery retained dormant. **Partially supersedes D-422** (its "multi-tenant routes with the same UX" claim — D-422 marked).
+- None mid-flight. All this session's work is committed.
 
-## Parked / next (do NOT start unprompted)
+## Quality checks
 
-- **(a) Migration `009_early_access_interest_tag.sql`** — Joel applies via Supabase SQL Editor **before production deploy**, or the elig "Request it" / inline waitlist inserts fail. `BottomEmailCapture` (no interestTag) unaffected.
-- **(b) Browsewrap footer line** (LEGAL_EXPOSURE_REMEDIATION §3.2) — "By using this site you agree to our Terms…" below the `footer.tsx` copyright. Clean adjacent add; PM's call whether bundled or its own copy-only commit. (§3.4–§3.6 ToS/AUP/Privacy edits also parked.)
-- **(c) Vercel preview + merge** — Joel reviews the preview, then merge `feat/configurator-reframe` → `main` and push. The whole 11-commit stack lands together.
-- **(d) Post-merge teardown** — waitlist-modal machinery is reachable-dead after the reframe (`WaitlistProvider` + `WaitlistModal` in `layout.tsx`, `EarlyAccessButton`, `waitlist-context`, the configurator `setSummary` publish). PRE_LAUNCH_DEVIATIONS entries 7–9.
-- **(e) AIRTABLE_SCHEMA Bucket-field drift** (pre-existing, NOT this session's) — the Sub-verticals `Bucket` row (line 36) still lists D-418's four-bucket emoji labels, not D-422's five-bucket strings. D-422's "Affects" flagged this as PM-driven; left untouched here. Flag for a PM connector pass.
+- `tsc --noEmit` / `eslint`: **skipped (doc-only session)** — no `.ts/.tsx` touched. Confirmed via `git status` (only `.md` files changed this session).
+- Doc-edit landings verified via `git status` + grep (per the silent-edit gotcha).
+- Branch refs verified: `git branch -a` shows only `main` + `origin/main`. Local/remote `main` both at the same HEAD.
+
+## Decisions added
+
+None. Per the seven gate tests, nothing this session resolved a product alternative — push/merge/cleanup/audit are process; the settings.json change is local tooling. The PM-authored Airtable-connector section is reference doc, not a D-number.
 
 ## Gotchas
 
-- **Edit-tool silent no-op (observed once).** The first `docs/AIRTABLE_SCHEMA.md` edit reported "updated successfully" but did NOT persist to disk (mtime unchanged, grep count 0). Caught it during the pre-commit consistency pass (file missing from `git status`), re-read, re-applied — second edit persisted. **Lesson: verify doc edits landed via `git status`/grep before committing, don't trust the success message alone.**
-- **Bash `&&`/chained-grep short-circuit.** `grep -c` returns exit 1 on zero matches, which kills chained verification commands mid-run (truncates output). Use `{ …; } 2>&1; true` or per-line `$(grep -c …)` for multi-check verification blocks.
-- **`cardRuleBullets` is dormant-until-data only in the sense that it's now populated** — the card renders live for all 65 selectable subs. If a future connector regen ships an empty file, the card self-suppresses (no heading-only tease) — by design.
-- **`multiTenant` must stay in `EligState`** — `eligInterestTag` reads `state.multiTenant`; removing the field breaks the build (D-426 keeps it dormant, not deleted).
+- **Disk near-full / ENOSPC (recurring all session).** `df` reports ~45Gi "Avail" but on APFS that includes **purgeable** space; real writable free is near zero. Symptom: the harness's stdout capture and `grep`/redirect writes intermittently fail with *"temp filesystem … is full (0MB free)"* — commands often run but their output is lost/truncated. Workarounds used: retry, split multi-file greps into single commands, route through `Read` when capture fails. **Reads are unaffected.** Worth actually freeing space (see next task).
+- **`api/node_modules/` is untracked and NOT gitignored.** Root `.gitignore` has `/node_modules` (root-anchored), which does **not** match `api/node_modules` (141 entries). Left untracked, not committed. A one-line `.gitignore` fix (unanchored `node_modules/`) would close the gap — deferred to Joel.
+- **Untracked carry-forwards left alone** (per the standing pattern): `AGENTS.md` (223 lines, a CLAUDE.md-style CC-instructions mirror), `docs/POST_TOPICS.md` (268 lines, marketing topic inventory), `.agents/skills/`. Not authored this session, out of the doc-close-out scope, unknown readiness — **not committed**. If any should be tracked, Joel directs.
+- **Migration `009_early_access_interest_tag.sql`** — Joel confirmed **applied** in Supabase before the merge; the elig "Request it" / inline-waitlist inserts are working in prod. (No longer a blocker.)
+- **`sketch/configurator-reframe` was force-deleted** (`-D`, unmerged). Its one commit `a482a73` is recoverable from reflog for ~90 days: `git branch sketch/configurator-reframe a482a73`.
 
-## Retirement sweep / Drift watch
+## Files modified this session
 
-N/A — mid-phase close-out (Phase 2 Session B not yet kicked off; no MASTER_PLAN phase boundary crossed this session).
+`.claude/settings.json`, `PM_PROJECT_INSTRUCTIONS.md`, `explorations/LEGAL_EXPOSURE_REMEDIATION.md`, `audits/SWEEP_2026-05-31.md` (new), `REPO_INDEX.md`, `CC_HANDOFF.md`.
 
-## Suggested next session
+## Unmerged feature branches
 
-Joel reviews the Vercel preview of `feat/configurator-reframe`; on approval, **apply migration 009**, merge to `main`, push. Then either the browsewrap/legal-doc follow-ups (LEGAL_EXPOSURE_REMEDIATION §3.2 + §3.4–§3.6) or pivot to the parked **Phase 2 — Session B (Sinch outbound delivery)** kickoff (spec reconciliation vs Phase 1 findings, batched BDR conversation, signature-verification design).
+None. `git branch -a` = `main` + `origin/main` only.
+
+## Suggested next tasks
+
+1. **Free disk space** — the ENOSPC condition will keep degrading tool reliability. Reclaim APFS purgeable space; consider gitignoring `api/node_modules/`.
+2. **Audit triage** (PM + Joel) — `audits/SWEEP_2026-05-31.md`. F-1..F-5 already resolved by this close-out; F-6 (REPO_INDEX Meta verbosity) is optional/no-action. Nothing warrants a fix-wave.
+3. **Parked legal-doc follow-ups** — `LEGAL_EXPOSURE_REMEDIATION.md` §3.2 (browsewrap footer line) + §3.4–§3.6 (ToS/AUP/Privacy edits). Clean copy-only adds; PM's call on bundling.
+4. **Post-merge teardown** — waitlist-modal machinery is reachable-dead after the reframe (`WaitlistProvider`/`WaitlistModal` in `layout.tsx`, `EarlyAccessButton`, `waitlist-context`, the configurator `setSummary` publish). PRE_LAUNCH_DEVIATIONS entries 7–9.
+5. **Phase 2 — Session B (Sinch outbound delivery)** kickoff — spec reconciliation vs Phase 1 findings, batched BDR conversation, signature-verification design. The substantive next phase.
