@@ -85,25 +85,6 @@
       "Bash(git reset*)",
       "Bash(rm *)",
       "Bash(rmdir *)"
-    ],
-    "ask": [
-      "Bash(curl *)",
-      "Read(.env*)",
-      "Read(**/.env*)",
-      "Read(**/secrets/**)",
-      "Read(**/*.pem)",
-      "Read(**/*.key)",
-      "Read(**/id_rsa*)",
-      "Read(**/credentials*)",
-      "Edit(.env*)",
-      "Edit(**/.env*)",
-      "Edit(**/secrets/**)",
-      "Write(.env*)",
-      "Write(**/.env*)",
-      "Write(**/secrets/**)",
-      "Bash(git push*)",
-      "Bash(cat .env*)",
-      "Bash(cat **/.env*)"
     ]
   }
 }
