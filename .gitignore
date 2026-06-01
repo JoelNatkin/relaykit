@@ -36,6 +36,9 @@ yarn-error.log*
 # PM review buffer — most recent commit's `git show HEAD` for Joel to paste into PM chat
 .pm-review.md
 
+# PM-to-future-PM artifacts (browser-chat handoffs, never committed)
+.pm/
+
 # vercel
 .vercel
 
