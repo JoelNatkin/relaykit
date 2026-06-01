@@ -26,10 +26,10 @@ export const CONDITIONAL_NOTE_LINE = "Your industry has a few rules.";
 // ─── ⚫ Not yet + 🟠 Not yet, maybe not ever ────────────────────────────────
 
 /**
- * Lead sentence for the 🟠/⚫ Not-yet "Request it" line shown below the message
- * stream. The configurator renders the "Request it" action alongside it.
+ * Lead sentence for the 🟠/⚫ Not-yet "Request it" footer inside the rules card.
+ * The card renders the "Request it" link action alongside it.
  */
-export const NOT_OFFERED_LEAD_LINE = "RelayKit doesn't offer this category.";
+export const NOT_OFFERED_LEAD_LINE = "RelayKit doesn't send this category.";
 
 /**
  * DORMANT — retained for a future multi-tenant return. Multi-tenant routing was

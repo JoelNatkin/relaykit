@@ -19,7 +19,6 @@ import { EligRequestModal } from "@/components/configurator/elig-request-modal";
 import { EligPerCategoryCard } from "@/components/configurator/elig-per-category-card";
 import { checkCompliance } from "@/lib/configurator/compliance";
 import {
-  NOT_OFFERED_LEAD_LINE,
   eligInterestTag,
   getPerCategoryCopy,
   isCategoryAffected,
@@ -236,11 +235,9 @@ export function ConfiguratorSection() {
   // The configurator is a complete free authoring tool for every bucket the
   // user can reach: the message area is never disabled or replaced. 🔴
   // Not-our-lane is handled entirely at the sub-vertical dropdown (its items
-  // render disabled), so it can't be selected. 🟠/⚫ Not-yet additionally show a
-  // "Request it" line below the stream (the rules card lives in EligSection).
-  const showsRequestLine =
-    eligState.verdict.tier === "not-yet" ||
-    eligState.verdict.tier === "not-yet-maybe-not";
+  // render disabled), so it can't be selected. 🟠/⚫ Not-yet show a "Request it"
+  // footer inside the rules card (in EligSection), which calls back to open the
+  // EligRequestModal owned here.
 
   const [editTarget, setEditTarget] = useState<EditTarget>(null);
   const [copyToastVisible, setCopyToastVisible] = useState(false);
@@ -530,6 +527,7 @@ export function ConfiguratorSection() {
                   state={eligState}
                   onVerticalChange={setEligVerticalSlug}
                   onSubVerticalChange={setEligSubVerticalSlug}
+                  onRequest={() => setRequestModalOpen(true)}
                 />
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -829,21 +827,6 @@ export function ConfiguratorSection() {
                 })}
               </div>
 
-              {showsRequestLine ? (
-                <div className="mt-6">
-                  <p className="text-sm text-text-tertiary">
-                    {NOT_OFFERED_LEAD_LINE}{" "}
-                    <button
-                      type="button"
-                      onClick={() => setRequestModalOpen(true)}
-                      className="cursor-pointer font-medium text-text-primary underline transition duration-100 ease-linear hover:text-text-secondary"
-                    >
-                      Request it.
-                    </button>
-                  </p>
-                </div>
-              ) : null}
-
               <div className="mt-10">
                 {/* Copies the configured messages to the clipboard — the same
                     action as the Copy button in the tone row. */}
@@ -858,8 +841,8 @@ export function ConfiguratorSection() {
                     §3.1) — shown under the Copy CTA for every selectable
                     category. */}
                 <p className="mt-3 text-xs leading-relaxed text-text-tertiary">
-                  A starting point, not legal advice — you&apos;re responsible
-                  for consent and compliance. See our{" "}
+                  Not legal advice — you&apos;re responsible for consent and
+                  compliance. See our{" "}
                   <Link
                     href="/terms"
                     className="underline transition duration-100 ease-linear hover:text-text-secondary"

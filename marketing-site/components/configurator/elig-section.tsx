@@ -56,12 +56,15 @@ export interface EligSectionProps {
   state: EligState;
   onVerticalChange: (slug: string | null) => void;
   onSubVerticalChange: (slug: string | null) => void;
+  /** Opens the EligRequestModal from the verdict card's Not-yet footer. */
+  onRequest: () => void;
 }
 
 export function EligSection({
   state,
   onVerticalChange,
   onSubVerticalChange,
+  onRequest,
 }: EligSectionProps) {
   const selectedVertical = state.verticalSlug
     ? findVertical(state.verticalSlug)
@@ -110,7 +113,7 @@ export function EligSection({
           />
         ) : null}
       </div>
-      <EligVerdictCard state={state} />
+      <EligVerdictCard state={state} onRequest={onRequest} />
     </div>
   );
 }
