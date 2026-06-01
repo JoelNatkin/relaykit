@@ -5,7 +5,7 @@
 > Not for: CC's operational rules (CLAUDE.md), product specifications (spec docs), session narrative.
 
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: May 28, 2026
+### Updated: May 31, 2026
 
 ---
 
@@ -240,6 +240,18 @@ When review IS required, the commit uses `.pm-review.md`: CC writes `git show HE
 - **`/docs/archive`** — Superseded PRDs, vision docs, old strategy.
 - **`/audits`** — One-off audit deliverables, read-only.
 - **`/explorations`** — Sandbox for ideas being prototyped before commitment.
+
+---
+
+## Airtable connector
+
+Full read + write (CRUD) at "create" permission — not write-only. Verified end-to-end 2026-05-31 (read, schema, create, update, delete).
+
+- **Load tools first.** Airtable tools are deferred; load via `tool_search` before use. Surfacing is wording-sensitive — a generic "Airtable" search returns the writers but misses the readers, so search the tool name directly (`list_records_for_table`, `search_records`, `list_tables_for_base`, `list_bases`). Never infer a missing capability from one failed search.
+- **"Not found" = grant scope, not permission.** The connector sees only bases shared at connect time; run `list_bases` to confirm scope. Grant is now all-bases, so new bases are covered.
+- **Writes use `fld…` field IDs, not names.** Get them from `list_tables_for_base` or from any read (records return keyed by field ID); reads accept names or IDs.
+- **Sequence:** `list_bases` → `list_tables_for_base` → `list_records_for_table` / `search_records` → `create` / `update` / `delete_records_for_table`.
+- **Reference:** Constraints base `appxThB8UWmNulAMt`; tables Verticals `tblh8a9saKuRBdApk`, Sub-verticals `tblsTgbqncUJLtIqb`, Rules `tblDq3Yqi8Wx5EyYc`. PM authors here in consultation with Joel; the repo stays the enforcement source of truth (D-421).
 
 ---
 

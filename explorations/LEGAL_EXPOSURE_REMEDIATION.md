@@ -1,4 +1,4 @@
-tatus: exploring
+Status: exploring
 
 # Legal Exposure Remediation — Free Authoring Tool
 
