@@ -51,8 +51,8 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 |------|-------------|---------|
 | `PRICING_MODEL.md` | 2026-05-13 | Tier definitions, costs, pricing logic. Canonical source for pricing facts. |
 | `PRD_SETTINGS_v2_3.md` | 2026-05-13 | Settings business logic (rejection behavior, refund policy, error codes, notification triggers, account-vs-app field split). |
-| `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` | 2026-04-03 | Copy rules, vocabulary/framing tables, emotional-states map (Tier 1 project knowledge). |
-| `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Tier 1 project knowledge). |
+| `VOICE_AND_PRODUCT_PRINCIPLES_v2.md` | 2026-04-03 | Copy rules, vocabulary/framing tables, emotional-states map (Claude.ai project knowledge). |
+| `UNTITLED_UI_REFERENCE.md` | 2026-04-27 | Design system tokens + component APIs (Claude.ai project knowledge). |
 | `AI_INTEGRATION_RESEARCH.md` | 2026-04-17 | AGENTS.md / cursor-rules research informing Phase 8; retires when Phase 8 closes. |
 | `CARRIER_BRAND_REGISTRATION_FIELDS.md` | 2026-05-24 (Session 111 — §IdentityStatus rewritten as two-row table covering Simplified `VERIFIED` + Full `VETTED_VERIFIED`; §Bundle state table updated to confirm `UPGRADE` → `Upgrade` mapping from 3c and `REJECTED` → `Rejected` from 3b cycle, inconsistency-count corrected to four cumulative; new `## FULL upgrade path` section added documenting one-click paid re-vetting + path-dependent $50 cumulative Sinch-cost) | Sinch/TCR brand registration field reference (Experiments 3a + 3c captures). |
 | `PRODUCT_SUMMARY.md` | 2026-05-31 (Session 123 — §3 elig description reworked: two dropdowns (multi-tenant removed), message authoring live for every reachable industry, rules card for conditional + "not yet" with a "Request it" footer, 🔴 unpickable in the dropdown, point-of-use disclaimer under Copy; Last reviewed bumped) | Customer-experience-oriented summary of RelayKit (CC-maintained, PM-facing reference). |

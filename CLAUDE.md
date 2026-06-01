@@ -92,6 +92,9 @@ No disk changes made — awaiting PM review.
 ```
 Sweep produces findings only. No edits to DECISIONS.md or DECISIONS_ARCHIVE.md during close-out. Mid-phase close-outs skip the sweep.
 
+### Drift watch (phase-boundary close-outs only)
+For each canonical doc listed in REPO_INDEX's 'Canonical sources by topic' index, emit a one-line verdict in CC_HANDOFF's 'Drift watch' section: `fresh` (doc's last commit ≥ subject-area commit), `stale: subject moved YYYY-MM-DD, doc last touched YYYY-MM-DD` (flag for PM), or `n/a — no subject movement this phase`. Subject-area reference points: MASTER_PLAN.md, CC_HANDOFF.md, current-phase artifacts, any doc this phase modified. Also verify the canonical-sources index covers every doc listed in REPO_INDEX's docs tables and every topic touched this phase has an entry — flag missing entries. Findings only — no edits. Mid-phase close-outs skip. Pairs with the retirement sweep above.
+
 ### Guardrails
 - Never fix without permission. Surface flags; PM directs corrections.
 - Grep both DECISIONS.md and DECISIONS_ARCHIVE.md — archived entries are authoritative unless superseded.
@@ -143,17 +146,13 @@ Then run the pre-flight ledger scan (above) and report findings.
 Do not load DECISIONS_ARCHIVE.md unless Joel points to a specific D-number OR you're greping for supersession candidates before appending a new decision.
 
 ## Session close-out
-1. `tsc --noEmit` and `eslint` clean on all modified directories (skip for doc-only sessions)
-2. Commit working code (atomic commits, descriptive messages)
-3. Append any unrecorded decisions to DECISIONS.md using canonical format with filled-in Supersedes field. Apply all seven gate tests per PM_PROJECT_INSTRUCTIONS.md. Supersession notes on older decisions land in the same commit.
-4. Update PROTOTYPE_SPEC.md for any screens that changed
-5. Update PRODUCT_SUMMARY.md if this session changed what a customer would experience differently (new screens, new flows, removed features, changed customer journey, new architectural commitments that affect what the customer sees or does). Bump "Last reviewed" date. Criteria for substantive vs. non-substantive change live in the PRODUCT_SUMMARY.md maintenance section below.
-6. Update MASTER_PLAN.md if PM flagged a plan change (bump version if substantive)
-7. Run retirement sweep if close-out crosses a phase boundary (findings only — no edits)
-8. Update REPO_INDEX.md: Meta block (last_updated, decision_count if applicable, new/removed files, active plan pointer); `/docs` table (`Last touched` entries for any docs modified this session). Also bump in-file `Updated` headers on any modified docs that carry them (e.g., `PM_PROJECT_INSTRUCTIONS.md` carries one; `MASTER_PLAN.md` only bumps on version changes).
-9. Overwrite CC_HANDOFF.md. Include near the top a quantitative session metrics line: `Commits: N | Files modified: N | Decisions added: N | External actions: N`. Counting convention: include the close-out commit itself in Commits and Files-modified. Body: commits, completed work, in-progress work, quality checks passed, retirement sweep findings (if applicable), drift-watch findings (if applicable), gotchas, files modified, unmerged feature branches with their current state and what they're waiting on, suggested next tasks.
-10. **Drift watch (phase-boundary close-outs only).** For each canonical doc listed in REPO_INDEX's 'Canonical sources by topic' index, emit a one-line verdict in CC_HANDOFF's 'Drift watch' section: `fresh` (doc's last commit ≥ subject-area commit), `stale: subject moved YYYY-MM-DD, doc last touched YYYY-MM-DD` (flag for PM), or `n/a — no subject movement this phase`. Subject-area reference points: MASTER_PLAN.md, CC_HANDOFF.md, current-phase artifacts, any doc this phase modified. Also verify the canonical-sources index covers every doc listed in REPO_INDEX's docs tables and every topic touched this phase has an entry — flag missing entries. Findings only — no edits. Mid-phase close-outs skip. Pairs with retirement sweep at step 7.
-11. Do NOT push — PM review first
+
+**Canon is maintained ambient — during the session, as the work happens, not saved for close-out:** append decisions to DECISIONS.md the moment one is made (seven gate tests, Supersedes filled, supersession notes same commit); update PROTOTYPE_SPEC.md when a screen changes and PRODUCT_SUMMARY.md when customer-facing behavior changes (bump its "Last reviewed"); bump REPO_INDEX.md Meta + `/docs` rows when files or pointers move (and in-file `Updated` headers on docs that carry them); keep CC_HANDOFF.md as a running log appended per commit/wave with its metrics line current (`Commits: N | Files modified: N | Decisions added: N | External actions: N`); update MASTER_PLAN.md when PM flags a plan change. Commit working code in atomic, descriptively-messaged commits as you go. Close-out then just verifies and ships:
+
+1. Quality gates (skip for doc-only sessions): `tsc --noEmit` + `eslint` clean on modified dirs; `/api` tests green if touched.
+2. Verify canon is current — DECISIONS, PROTOTYPE_SPEC, PRODUCT_SUMMARY, REPO_INDEX, CC_HANDOFF all reflect this session; close any gap now and finalize the CC_HANDOFF metrics line + suggested next tasks.
+3. Phase-boundary close-outs only: run the retirement sweep + drift watch (see their sections under DECISIONS ledger stewardship) → findings into CC_HANDOFF, no disk edits.
+4. Do NOT push — PM review first (or push per the review bar).
 
 ### Branching for production-facing work
 
@@ -164,7 +163,9 @@ Trivial changes (typos, comment-only edits, doc reorgs not touching user-facing 
 Branch hygiene: at session close-out, surface any unmerged feature branches in CC_HANDOFF so they don't get lost. Do not delete branches until merged.
 
 ## PM review cadence (.pm-review.md)
-After each local commit but before pushing, write `git show HEAD` (or full files if PM-relevant) to `.pm-review.md` at the repo root, overwriting existing content. The file is gitignored — never commit it. Joel pastes its content into the PM chat for review; PM approves push or directs amends. On amend, refresh `.pm-review.md` with the new HEAD. The file represents only the most recent commit awaiting review. See `PM_PROJECT_INSTRUCTIONS.md` "PM Review Cadence" for full procedure.
+After each local commit but before pushing, write `git show HEAD` (or full files if PM-relevant) to `.pm-review.md` at the repo root, overwriting existing content. The file is gitignored — never commit it. PM reads `.pm-review.md` directly from disk via MCP when Joel says "gg" (go get); PM approves push or directs amends. On amend, refresh `.pm-review.md` with the new HEAD. The file represents only the most recent commit awaiting review. See `PM_PROJECT_INSTRUCTIONS.md` "PM Review Cadence" for full procedure.
+
+**Plan files:** plan-mode plans write to `.pm/plans/` (set via `plansDirectory` in `.claude/settings.json`) — repo-local and gitignored, so PM can read CC's plans natively via MCP.
 
 ## Copy rule
 Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts, modals), read `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` in full and apply the vocabulary table, framing-shift table, emotional-states map, and one-sentence principle. No exceptions for "minor" strings.

@@ -1,4 +1,5 @@
 {
+  "plansDirectory": "./.pm/plans",
   "permissions": {
     "defaultMode": "default",
     "deny": [
