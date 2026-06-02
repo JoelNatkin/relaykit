@@ -79,6 +79,7 @@ Naming these explicitly so they don't drift in:
 - Full two-way inbox product (basic viewer at launch)
 - Multi-project support (single-project at launch)
 - BYO Twilio/Sinch (managed-only)
+- Sole proprietors without a registered business entity (the launch route for these founders is forming an entity for the 10DLC path — Sinch's toll-free fallback can't be automated and its sole-prop vetting is discretionary; see explorations/no-ein-sole-proprietor-path.md)
 - Platform tier (post-launch)
 - Drip sequences / multi-message workflows
 - MMS / media attachments

@@ -1,4 +1,4 @@
-Status: exploring
+Status: promoted (2026-06-02) — deferred at launch; MASTER_PLAN §Out of scope at launch
 
 # No-EIN / Sole-Proprietor Customer Path
 
@@ -64,3 +64,45 @@ Joel Natkin
 ## Where this goes next
 
 When the Sinch reply lands, append it here. If it resolves the build-cost and approval-rate questions, this exploration promotes — either to a D-number (if it commits RelayKit to building the toll-free path) or a MASTER_PLAN scope note (if no-EIN is deferred or cut from launch). The product story under consideration: 10DLC for EIN'd businesses, toll-free for no-EIN US sole proprietors.
+
+## Resolution (2026-06-02)
+
+**Outcome: deferred at launch.** Sole proprietors without a registered business entity are out of scope at launch (MASTER_PLAN §Out of scope at launch). No D-number — a scope call, not a product-alternative decision.
+
+**Terminology correction.** We stop calling this segment "no-EIN." An EIN is cheap and fast; it is not the wall. The wall is whether the founder is a registered legal business entity. The carrier ecosystem keys verification to a government business registration number (BRN), and a sole proprietor is, by definition, someone operating without forming a separate entity. The canonical term is now **"sole proprietor"** — it is the precise legal status, it is EIN-agnostic (a sole prop *with* an EIN still has no entity type in TCR's 10DLC registry), and it is the carrier ecosystem's own word (the toll-free entity-type list literally includes "Sole Proprietor").
+
+**The Sinch reply (verbatim, for the record).** Received from Sukasini Sivasubbiramaniyan, Sinch Support, in reply to the 2026-05-24 email above:
+
+> Hello Joel,
+>
+> Thank you for reaching out to our Customer Support team!
+>
+> Toll-Free sender verification usually takes up to 5 business days. If additional documents are required, the review may take longer. For sole proprietors without an EIN, extra verification checks are needed, and approval is not guaranteed. Because of this, the review process may take longer than standard EIN-backed submissions.
+>
+> Kindly make use of the below links:
+> - What is the turnaround time for Toll-Free sender verification? (community.sinch.com … /ta-p/9153)
+> - What is Business Registration Number for Toll-Free Sender? (community.sinch.com … /ta-p/18775)
+>
+> To request a TFN kindly make use of the below link:
+> - Request New Toll-Free Numbers (community.sinch.com … /ta-p/18043)
+>
+> Kind regards,
+> Sukasini Sivasubbiramaniyan | Sinch Support
+
+The reply answered ~1 of the 4 questions directly (timeline, partially) and punted the rest to knowledge-base links. The links are where the consequential answers live.
+
+**What the knowledge base resolved (the build-cost crux + a closing door):**
+
+1. **No API on Sinch — manual form only (Q3, the build-cost answer).** Sinch states there is no automatic way to complete sender verification for TFNs; every Verified Sender Form is submitted and reviewed manually. The form lives in the Sinch dashboard on the number's detail page. This is the decisive finding: unlike 10DLC brand/campaign registration (API-driven end to end), the toll-free path **cannot be automated on Sinch**. (Note: this is a Sinch limitation, not industry-wide — Telnyx exposes a programmatic TFV API. Doesn't help us; we're on Sinch.)
+
+2. **BRN required as of January 2026 (the escape hatch tightened).** A Business Registration Number is now mandatory for all new TFN verification submissions (optional from 2025-09-30). For US organizations the accepted BRN is the EIN, matched to the legal business name. The Sole Proprietor entity type survives with a carve-out — no EIN means additional vetting on review, with approval explicitly *not guaranteed*. So the only door for an unregistered founder is now a discretionary, manually-vetted maybe. Industry-wide (Twilio, Telnyx, SignalWire made the same change), so it doesn't move by switching carriers.
+
+3. **The international BRN list sharpens who's actually in the group.** Sinch accepts national BRNs worldwide (Canadian BN, UK CRN, Australian ABN/ACN, EU VAT, etc.). The defining axis is "has a government business registration number." Non-US founders who hold one are **not** in the deferred group. The deferred group is precisely: founders with no acceptable BRN — canonically, US sole proprietors without a registered entity.
+
+4. *(Minor, doesn't affect us:* already-verified TFNs are grandfathered — no resubmission under the new BRN rule. We only ever register new.)
+
+**Why defer (Option C of three).** Two alternatives were considered and rejected: (A) RelayKit submits the VSF manually per customer — a blocking, rejection-prone manual step in every sole-prop onboarding, the wrong load at solo-founder stage; (B) hand the customer to Sinch's form — breaks the core promise by exposing telecom mechanics on a third-party surface mid-onboarding. Both trade away something central (the automated engine, or the experience promise) to serve a genuinely narrow segment that has a real alternative. **Option C — defer, door open:** the launch route for these founders is forming an entity (the EIN comes with it) → the fully automated 10DLC path. Interest is captured via the existing elig interest-tag. Reversible: if post-launch the tag fills up, Option A becomes a deliberate, volume-justified choice rather than a launch-time guess.
+
+**Still open, deliberately not pursued pre-launch:** the real sole-prop approval rate (not published anywhere; only a Sinch human could give it, if at all) and a hard confirm that Sinch's newer API platform has zero programmatic TFV. Neither changes the launch call.
+
+**Earlier BACKLOG options b/c/d remain killed** per "What's confirmed" above (the TCR 10DLC exclusion is registry-wide, so secondary carrier / RelayKit-as-CSP / umbrella-brand all hit the same wall).
