@@ -65,9 +65,10 @@ export default function MarketingHome() {
             <br />
             minus the rulebook.
           </h1>
-          <p className="mt-4 max-w-2xl md:max-w-xl text-lg text-text-tertiary">
-            Use these messages anywhere today. Send them through RelayKit Summer
-            2026.
+          <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
+            Use these messages anywhere today. Send them{" "}
+            <br className="hidden md:block" />
+            through RelayKit Summer 2026.
           </p>
           <a
             href="#sending"
