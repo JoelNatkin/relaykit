@@ -472,8 +472,12 @@ export function ConfiguratorSection() {
         <div className="mx-auto max-w-5xl px-6">
           <div>
             <h2 className="text-2xl font-bold tracking-tight text-text-primary">
-              Configure your messages
+              Write your messages
             </h2>
+            <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
+              Templates configured for your industry, style, and details. Use
+              them with any provider today.
+            </p>
           </div>
 
           <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">

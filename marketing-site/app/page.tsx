@@ -61,10 +61,10 @@ export default function MarketingHome() {
       <div className="pt-16">
         <div className="mx-auto max-w-5xl px-6">
           <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-            SMS for builders
+            SMS for your app, minus the rulebook.
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-            Compliant text messages for your app. Free to use.
+            Real sending from your code, Summer 2026.
           </p>
         </div>
       </div>
