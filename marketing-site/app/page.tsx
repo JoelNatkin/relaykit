@@ -65,13 +65,13 @@ export default function MarketingHome() {
             <br />
             minus the rulebook.
           </h1>
-          <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
+          <p className="mt-4 max-w-2xl md:max-w-xl text-lg text-text-tertiary">
             Use these messages anywhere today. Send them through RelayKit Summer
             2026.
           </p>
           <a
             href="#sending"
-            className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
+            className="mt-4 inline-flex items-center gap-1 text-lg font-medium text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
           >
             See how sending works ↓
           </a>
