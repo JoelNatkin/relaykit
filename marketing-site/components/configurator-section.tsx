@@ -475,8 +475,7 @@ export function ConfiguratorSection() {
               Write your messages
             </h2>
             <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-              Templates configured for your industry, style, and details. Use
-              them with any provider today.
+              Templates configured for your app.
             </p>
           </div>
 

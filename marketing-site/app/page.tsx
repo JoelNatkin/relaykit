@@ -64,8 +64,15 @@ export default function MarketingHome() {
             SMS for your app, minus the rulebook.
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-            Real sending from your code, Summer 2026.
+            Use these messages anywhere today. Send them through RelayKit Summer
+            2026.
           </p>
+          <a
+            href="#sending"
+            className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
+          >
+            See how sending works ↓
+          </a>
         </div>
       </div>
 
@@ -73,7 +80,7 @@ export default function MarketingHome() {
       <ConfiguratorSection />
 
       {/* "Shipping Summer 2026" — heads the post-launch detail below the configurator */}
-      <div className="mx-auto mt-[100px] max-w-5xl px-6">
+      <div id="sending" className="mx-auto mt-[100px] max-w-5xl px-6 scroll-mt-20">
         <h1 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
           Shipping Summer 2026
         </h1>
