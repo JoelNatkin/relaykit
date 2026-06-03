@@ -94,9 +94,9 @@ export default function MarketingHome() {
         <p className="text-xs font-semibold uppercase tracking-wide text-text-primary">
           Configure &gt; Build
         </p>
-        <h2 className="mt-2 text-2xl font-bold text-text-primary">Hand it to your AI tool.</h2>
+        <h2 className="mt-2 text-2xl font-bold text-text-primary">Hand them to your AI tool.</h2>
 
-        {/* AI-tool logo row — sits under the "Hand it to your AI tool." heading,
+        {/* AI-tool logo row — sits under the "Hand them to your AI tool." heading,
             where the tools it names belong (rather than in the hero). */}
         <div className="mt-8 flex flex-wrap items-center gap-x-10 gap-y-3">
           {AI_TOOLS.map((tool) =>
