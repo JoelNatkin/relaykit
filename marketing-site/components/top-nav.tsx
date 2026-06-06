@@ -25,6 +25,29 @@ export function TopNav() {
           RelayKit
         </Link>
         <div className="flex items-center gap-6">
+          {/* Primary nav links. Hidden on the smallest viewports to avoid
+              crowding the wordmark; full responsive nav lands with the Wave 3
+              home build. Logo (left) stays the home link. */}
+          <div className="hidden items-center gap-6 sm:flex">
+            <Link
+              href="/messages"
+              className="text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
+            >
+              Messages
+            </Link>
+            <Link
+              href="/#pricing"
+              className="text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/blog"
+              className="text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
+            >
+              Blog
+            </Link>
+          </div>
           <button
             type="button"
             onClick={toggle}

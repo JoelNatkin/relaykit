@@ -26,6 +26,14 @@ export function Footer() {
             <ul className="mt-3 flex flex-col gap-2">
               <li>
                 <Link
+                  href="/messages"
+                  className="text-sm text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                >
+                  Messages
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/blog"
                   className="text-sm text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
                 >

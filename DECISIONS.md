@@ -1560,6 +1560,8 @@ The marketing-site home page configurator and the prototype/eventual workspace m
 **Affects:** `marketing-site/components/configurator-section.tsx`, `prototype/data/messages.ts`, `prototype/lib/intake/templates.ts`, all future configurator and workspace message-rendering work.
 **Note:** per D-414, the configurator-to-workspace parity ambition this entry committed to (same default message set across surfaces) extends to a new layer — visitor-authored variable values are also persisted across the configurator → "Start building" → workspace handoff, not just the default message set. The parity principle this entry records is unchanged; its scope grows to include authored state.
 
+⚠ Partially superseded by D-428: the home-page *placement* claim is narrowed — the full configurator now lives at `/messages`; the home (`/`) shows a configurator *peek* (Appointments, 2 cards, tone + Copy live), which is a sample. D-379's one-source / no-drift *principle* is unchanged and is in fact preserved by the peek rendering the same canonical corpus through the same shared components (`MessageReadCard` / `tone-pill`).
+
 **D-380 — Home configurator carries four editable placeholder fields propagating to onboarding and Settings** (Date: 2026-05-11)
 The home page configurator carries at minimum four editable placeholder fields — `business_name`, `website`, `business_type` (industry), `service_type` — that populate the rendered message previews dynamically. These values propagate forward into onboarding intake (formalized/validated as needed), then to dashboard Settings, where they remain editable until carrier registration commits. Once registered, business identity locks into the carrier campaign and Settings transitions to a read-only state for these fields.
 **Supersedes:** none
@@ -2136,3 +2138,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none — this is an amendment, not an overturn. D-405's monochrome *system* stays operative; only its "no chromatic accent" absolute is narrowed, and the selected checkbox's checked state returns to a chromatic fill (reversing D-405's 2026-05-19 checkbox amendment for that state only). D-405 marked with an `⚠ Amended by D-427` line in the same commit.
 
 **Affects:** `marketing-site/app/globals.css` (gold tokens in `@theme`, no `.dark` override — deferral commented); `marketing-site/components/configurator/tone-pill.ts` (selected pill); `marketing-site/components/configurator/category-list.tsx` (selected checkbox); `marketing-site/components/configurator-section.tsx` (bottom "Copy messages" CTA). The 4th site ("Open the configurator →") lands with the home build (Wave 3).
+
+## D-428 — Marketing home at `/`; the configurator tool moves to `/messages`
+
+**Decided:** 2026-06-06 (Session 127)
+
+**Decision:** `/` becomes a marketing home (hero, how-it-works, configurator peek, paperwork, AI, test, pricing, CTA) rebuilt from the v10 design. The full message configurator — the free standalone authoring tool — moves to its own route, `/messages`, with a thin demand-voice header and the real `ConfiguratorSection` (its own go-live/forward CTA intact). The home no longer hosts the full configurator; it carries a small **peek** (Appointments, 2 real corpus cards, working tone pills + Copy, an "Open the configurator →" link to `/messages`) that renders the same canonical corpus through the same shared components.
+
+**Why:** A marketing home and a free standalone tool want different surfaces. The home sells the integrated paid product (D-416) and routes interested visitors to the tool; the tool gets a clean, focused URL it can be linked to directly and that reads as a product in its own right (MD-21). Splitting them lets each be built and iterated without the other's constraints, and the peek still demonstrates the tool on the home without duplicating it.
+
+**Rejected alternative:** Keep the full configurator on `/` (the prior unrecorded default, described by D-379). Rejected because the home then has to be both a marketing page and the tool, and the standalone free-tool positioning (MD-21) has no clean home of its own.
+
+**Supersedes:** D-379 (partial) — narrows D-379's home-page *placement* claim ("the home page is not a sample or teaser; it is the full product") to: the full tool lives at `/messages`, the home shows a peek (which is a sample). D-379's one-source / no-drift *principle* carries forward unchanged and is preserved by the peek rendering the same canonical corpus through the same shared components. D-379 marked with an `⚠ Partially superseded by D-428` line in the same commit.
+
+**Affects:** `marketing-site/app/page.tsx` (home; full v10 build lands Wave 3); `marketing-site/app/messages/page.tsx` (new — configurator tool); `marketing-site/components/configurator-peek.tsx` (new — Wave 3); `marketing-site/components/top-nav.tsx` + `marketing-site/components/footer.tsx` (Messages link); `marketing-site/components/configurator-section.tsx` (now consumed by `/messages`).

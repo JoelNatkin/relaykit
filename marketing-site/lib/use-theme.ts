@@ -7,7 +7,9 @@ export type Theme = "light" | "dark";
 const STORAGE_KEY = "relaykit-theme";
 
 function readDomTheme(): Theme {
-  if (typeof document === "undefined") return "light";
+  // Dark is the site-wide default (the inline head script applies it unless
+  // the user has explicitly stored 'light'); the SSR fallback matches.
+  if (typeof document === "undefined") return "dark";
   return document.documentElement.classList.contains("dark") ? "dark" : "light";
 }
 
@@ -33,7 +35,9 @@ export function useTheme(): {
 
     function onStorage(event: StorageEvent) {
       if (event.key !== STORAGE_KEY) return;
-      const next: Theme = event.newValue === "dark" ? "dark" : "light";
+      // Dark default: only an explicit stored 'light' yields light; a cleared
+      // or absent value falls back to dark, matching the head script.
+      const next: Theme = event.newValue === "light" ? "light" : "dark";
       applyTheme(next);
       setTheme(next);
     }
