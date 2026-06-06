@@ -40,8 +40,8 @@ function ConfiguratorCheckbox({
   const glyphSize = size === "category" ? "size-3" : "size-2.5";
   const borderColor = disabled ? "border-border-secondary" : "border-border-primary";
   // sketch/configurator-polish only: Metallic Gold on the SELECTED parent
-  // category checkbox (gold fill + white check, both modes). Sub-item
-  // checkboxes stay monochrome. Hardcoded locally — not wired through tokens.
+  // category checkbox (gold fill + dark check). Sub-item checkboxes stay
+  // monochrome. Hardcoded locally — not wired through theme tokens.
   const gold = size === "category" && checked;
   const boxClasses = gold
     ? `${boxSize} appearance-none rounded border border-[#E0B010] bg-[#E0B010]`
@@ -61,7 +61,7 @@ function ConfiguratorCheckbox({
           viewBox="0 0 10 10"
           fill="none"
           aria-hidden
-          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} ${gold ? "text-white" : "text-text-primary"}`}
+          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} ${gold ? "text-[#13120E]" : "text-text-primary"}`}
         >
           <path
             d="M1.75 5.25 4 7.25 8.25 2.75"

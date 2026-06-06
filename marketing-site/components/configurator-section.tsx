@@ -57,9 +57,9 @@ function tonePillClasses(active: boolean): string {
   const base =
     "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
   // sketch/configurator-polish only: Metallic Gold on the SELECTED tone pill
-  // (gold fill + white text, both modes). Unselected pills unchanged. Local.
+  // (gold fill + dark text). Unselected pills unchanged. Hardcoded locally.
   return active
-    ? `${base} bg-[#E0B010] text-white border border-[#E0B010]`
+    ? `${base} bg-[#E0B010] text-[#13120E] border border-[#E0B010]`
     : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
 }
 
@@ -653,7 +653,7 @@ export function ConfiguratorSection() {
                           />
                         </div>
                       ) : null}
-                      <div className="space-y-5">
+                      <div className="space-y-4">
                         {category.messages.map((message) => {
                           if (!catState.messages[message.id]?.checked)
                             return null;
@@ -836,12 +836,12 @@ export function ConfiguratorSection() {
                 {/* Copies the configured messages to the clipboard — the same
                     action as the Copy button in the tone row. */}
                 {/* sketch/configurator-polish only: Metallic Gold primary CTA
-                    (solid gold bg + white text, both modes). Hardcoded locally.
-                    The inline "Copy" in the tone row stays neutral. */}
+                    (solid gold bg + dark text). Hardcoded locally. The inline
+                    "Copy" in the tone row stays neutral. */}
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-[#E0B010] text-base font-semibold text-white transition duration-100 ease-linear hover:bg-[#E0B010]/90"
+                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-[#E0B010] text-base font-semibold text-[#13120E] transition duration-100 ease-linear hover:bg-[#E0B010]/90"
                 >
                   {copyToastVisible ? "Copied" : "Copy messages"}
                 </button>
