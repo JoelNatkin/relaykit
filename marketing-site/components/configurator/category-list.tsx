@@ -39,6 +39,13 @@ function ConfiguratorCheckbox({
   const boxSize = size === "category" ? "size-5" : "size-4";
   const glyphSize = size === "category" ? "size-3" : "size-2.5";
   const borderColor = disabled ? "border-border-secondary" : "border-border-primary";
+  // sketch/configurator-polish only: Metallic Gold on the SELECTED parent
+  // category checkbox (gold fill + dark check). Sub-item checkboxes stay
+  // monochrome. Hardcoded locally — not wired through theme tokens.
+  const gold = size === "category" && checked;
+  const boxClasses = gold
+    ? `${boxSize} appearance-none rounded border border-[#E0B010] bg-[#E0B010]`
+    : `${boxSize} appearance-none rounded border ${borderColor} bg-bg-primary dark:bg-bg-secondary`;
   return (
     <span className={`relative mt-0.5 inline-flex ${boxSize} shrink-0`}>
       <input
@@ -47,14 +54,14 @@ function ConfiguratorCheckbox({
         readOnly
         tabIndex={-1}
         disabled={disabled}
-        className={`${boxSize} appearance-none rounded border ${borderColor} bg-bg-primary dark:bg-bg-secondary`}
+        className={boxClasses}
       />
       {checked ? (
         <svg
           viewBox="0 0 10 10"
           fill="none"
           aria-hidden
-          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} text-text-primary`}
+          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} ${gold ? "text-[#13120E]" : "text-text-primary"}`}
         >
           <path
             d="M1.75 5.25 4 7.25 8.25 2.75"

@@ -56,8 +56,10 @@ const CUSTOM_NAME_PLACEHOLDERS: Record<string, string> = {
 function tonePillClasses(active: boolean): string {
   const base =
     "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
+  // sketch/configurator-polish only: Metallic Gold on the SELECTED tone pill
+  // (gold fill + dark text). Unselected pills unchanged. Hardcoded locally.
   return active
-    ? `${base} bg-bg-brand-solid text-text-on-brand border border-bg-brand-solid`
+    ? `${base} bg-[#E0B010] text-[#13120E] border border-[#E0B010]`
     : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
 }
 
@@ -833,10 +835,13 @@ export function ConfiguratorSection() {
               <div className="mt-10">
                 {/* Copies the configured messages to the clipboard — the same
                     action as the Copy button in the tone row. */}
+                {/* sketch/configurator-polish only: Metallic Gold primary CTA
+                    (solid gold bg + dark text). Hardcoded locally. The inline
+                    "Copy" in the tone row stays neutral. */}
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
+                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-[#E0B010] text-base font-semibold text-[#13120E] transition duration-100 ease-linear hover:bg-[#E0B010]/90"
                 >
                   {copyToastVisible ? "Copied" : "Copy messages"}
                 </button>
