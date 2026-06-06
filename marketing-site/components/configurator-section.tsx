@@ -1,23 +1,26 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Copy01, Edit01, HelpCircle, Plus } from "@untitledui/icons";
+import { ChevronDown, ChevronUp, Copy01, Plus } from "@untitledui/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
 import { MessageEditCard } from "@/components/configurator/message-edit-card";
 import { CustomMessageCard } from "@/components/configurator/custom-message-card";
-import { Tooltip } from "@/components/configurator/tooltip";
+import { MessageReadCard } from "@/components/configurator/message-read-card";
+import {
+  PAGE_TONES,
+  tonePillClasses,
+  effectiveBody,
+} from "@/components/configurator/tone-pill";
 import { CategoryList } from "@/components/configurator/category-list";
 import { MobileCategoriesSummary } from "@/components/configurator/mobile-categories-summary";
 import { MobileCategoriesModal } from "@/components/configurator/mobile-categories-modal";
 import { EditValuesForm } from "@/components/configurator/edit-values-form";
 import { EditValuesModal } from "@/components/configurator/edit-values-modal";
-import { CharWarningIcon } from "@/components/configurator/char-warning-icon";
 import { KebabMenu } from "@/components/configurator/kebab-menu";
 import { EligSection } from "@/components/configurator/elig-section";
 import { EligRequestModal } from "@/components/configurator/elig-request-modal";
 import { EligPerCategoryCard } from "@/components/configurator/elig-per-category-card";
-import { checkCompliance } from "@/lib/configurator/compliance";
 import {
   eligInterestTag,
   getPerCategoryCopy,
@@ -29,14 +32,10 @@ import { useConfiguratorState } from "@/lib/configurator/use-configurator-state"
 import { useEligState } from "@/lib/configurator/use-elig-state";
 import {
   CATEGORIES,
-  interpolateBody,
   flattenBody,
   isIdentityToken,
 } from "@/lib/message-library";
-import type { Category, Message, VariantTone } from "@/lib/message-library";
-import { VARIABLE_TOKEN_CLASSES } from "@/lib/editor/variable-token";
-
-const PAGE_TONES: VariantTone[] = ["Standard", "Friendly", "Brief"];
+import type { Category } from "@/lib/message-library";
 
 const PRESET_VERIFICATION_ONLY = "Verification only";
 
@@ -53,33 +52,9 @@ const CUSTOM_NAME_PLACEHOLDERS: Record<string, string> = {
   "account-events": "e.g. Password changed",
 };
 
-function tonePillClasses(active: boolean): string {
-  const base =
-    "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
-  return active
-    ? `${base} bg-bg-brand-solid text-text-on-brand border border-bg-brand-solid`
-    : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
-}
-
 /** Marketing-shaped categories require opt-out language; Verification does not. */
 function categoryRequiresStop(category: Category): boolean {
   return category.tcrMapping === "MARKETING";
-}
-
-/**
- * Effective body for a corpus message: hand-edited body wins, otherwise the
- * pinned tone, otherwise the page tone (D-414 / configurator-authoring §1).
- */
-function effectiveBody(
-  message: Message,
-  customBody: string | undefined,
-  pinnedTone: VariantTone | undefined,
-  pageTone: VariantTone,
-): string {
-  if (customBody !== undefined) return customBody;
-  const tone = pinnedTone ?? pageTone;
-  const v = message.variants.find((x) => x.tone === tone) ?? message.variants[0];
-  return v?.body ?? "";
 }
 
 /**
@@ -94,111 +69,6 @@ function buildCopyBlock(
 ): string {
   const head = description ? `${title}\n${description}` : title;
   return `${head}\n\nExample\n${example}\n\nTemplate\n${template}`;
-}
-
-interface MessageReadCardProps {
-  name: string;
-  tooltip?: string;
-  body: string;
-  variables: Category["variables"];
-  categoryVariables: Record<string, string>;
-  businessName: string;
-  /** True for Marketing-shaped categories — affects compliance issues, not the length warning. */
-  requiresStop: boolean;
-  onEdit: () => void;
-  /** Double-click on a variable chip — opens the Variables form focused on that variable. */
-  onVariableDoubleClick: (variableName: string) => void;
-}
-
-function MessageReadCard({
-  name,
-  tooltip,
-  body,
-  variables,
-  categoryVariables,
-  businessName,
-  requiresStop,
-  onEdit,
-  onVariableDoubleClick,
-}: MessageReadCardProps) {
-  const segments = interpolateBody(body, variables, {
-    businessName,
-    categoryVariables,
-  });
-  // Post-render length check (D-414 / configurator-authoring §4). Read-mode
-  // warning is non-blocking and fires only on segment length — other
-  // compliance issues stay in the edit card where they can be fixed.
-  const compliance = checkCompliance({
-    body,
-    variables,
-    requiresStop,
-    categoryVariables,
-  });
-  return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
-      <div className="flex items-center gap-3">
-        <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          <span className="min-w-0 truncate text-sm font-semibold text-text-primary">
-            {name}
-          </span>
-          {tooltip ? (
-            <Tooltip content={tooltip}>
-              {/* 44px hit area wrapper with negative margins to preserve
-                  the icon's 14px layout footprint — keeps the row layout
-                  unchanged while extending the tap target. */}
-              <span className="-m-[15px] inline-flex size-11 items-center justify-center">
-                <HelpCircle className="size-3.5 shrink-0 text-fg-quaternary" />
-              </span>
-            </Tooltip>
-          ) : null}
-        </div>
-        {compliance.isOverSegmentLength ? <CharWarningIcon /> : null}
-        <button
-          type="button"
-          onClick={onEdit}
-          aria-label="Edit message"
-          className="cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
-        >
-          <Edit01 className="size-[17px]" />
-        </button>
-      </div>
-      <div
-        className="mt-1 cursor-pointer"
-        role="button"
-        tabIndex={0}
-        onClick={onEdit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") onEdit();
-        }}
-      >
-        {/* break-words wraps long unbroken values (e.g. an authored
-            order_number with no spaces) inside the card instead of
-            overflowing the layout. */}
-        <p className="text-sm leading-relaxed break-words text-text-secondary">
-          {segments.map((seg, i) =>
-            seg.isVariable ? (
-              // Chips swallow single-click so the parent edit handler
-              // doesn't open the edit card on the first half of a
-              // double-click. Double-click routes to the Variables form.
-              <span
-                key={i}
-                className={`${VARIABLE_TOKEN_CLASSES} cursor-pointer`}
-                onClick={(e) => e.stopPropagation()}
-                onDoubleClick={(e) => {
-                  e.stopPropagation();
-                  if (seg.token) onVariableDoubleClick(seg.token);
-                }}
-              >
-                {seg.text}
-              </span>
-            ) : (
-              <span key={i}>{seg.text}</span>
-            ),
-          )}
-        </p>
-      </div>
-    </div>
-  );
 }
 
 type EditTarget =
