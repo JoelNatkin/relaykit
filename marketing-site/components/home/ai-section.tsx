@@ -62,7 +62,7 @@ export function AiSection() {
       id="build"
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
-      <div className="grid items-center gap-14 lg:grid-cols-[1fr_1.05fr]">
+      <div className="grid items-center gap-14 lg:grid-cols-2">
         <div>
           <Eyebrow>Build</Eyebrow>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">

@@ -9,7 +9,7 @@ import type { Category, Variable } from "@/lib/message-library";
 // Real before→after: each example is a canonical corpus message (the same
 // bodies the configurator produces), shown as its raw {{token}} template, then
 // resolved through interpolateBody with corpus example values. No artifact
-// placeholders. No outer card — the pairs sit on the page background.
+// placeholders. No outer wrapper card; each side sits in its own message card.
 type Example = { body: string; variables: Variable[] };
 
 function pick(category: Category, messageId: string): Example {
@@ -27,7 +27,7 @@ const EXAMPLES: Example[] = [
 
 // Template: regular font for words; only the {{token}} segments render in mono
 // with a slight gold-tint background (same tint as the "What we handle"
-// featured-icon backgrounds).
+// featured-icon backgrounds) + white token text.
 function TemplateForm({ body }: { body: string }) {
   return (
     <>
@@ -39,7 +39,7 @@ function TemplateForm({ body }: { body: string }) {
           return match ? (
             <span
               key={i}
-              className="rounded bg-bg-gold/15 px-1.5 py-0.5 font-mono text-[0.82rem] text-gold"
+              className="rounded bg-bg-gold/15 px-1.5 py-0.5 font-mono text-[0.82rem] text-text-white"
             >
               {match[1]}
             </span>
@@ -72,10 +72,10 @@ function PreviewForm({ body, variables }: Example) {
 export function VariablesCallout() {
   return (
     <div className="mt-10">
-      <div className="text-lg font-semibold text-text-primary">
+      <div className="text-2xl font-semibold tracking-tight text-text-primary">
         See exactly what customers will receive.
       </div>
-      <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-text-secondary">
+      <p className="mt-2 max-w-lg text-sm leading-relaxed text-text-secondary">
         Preview appointment times, order details, links, names, and other
         variables using realistic data — before you ever write code.
       </p>
@@ -85,7 +85,7 @@ export function VariablesCallout() {
             key={i}
             className="grid items-center gap-3 border-t border-dashed border-border-secondary py-5 md:grid-cols-[1fr_2rem_1fr]"
           >
-            <div className="text-sm leading-relaxed text-text-secondary">
+            <div className="rounded-2xl rounded-bl-sm border border-border-secondary bg-bg-primary px-3.5 py-3 text-sm leading-relaxed text-text-secondary dark:bg-bg-secondary">
               <TemplateForm body={ex.body} />
             </div>
             <div className="hidden text-center text-text-tertiary md:block" aria-hidden>

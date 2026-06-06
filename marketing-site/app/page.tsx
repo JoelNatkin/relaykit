@@ -156,12 +156,13 @@ export default function MarketingHome() {
         </div>
 
         {/* Clipped viewport into the live tool. overflow-hidden clips the lower
-            categories (team alerts / login codes); the negative offset skips the
-            section's own pt-20 + heading so the window opens on the tool itself.
-            One instance only (shared localStorage with /messages = continuity of
-            intent). Fully interactive; only the height is fixed. */}
+            categories (team alerts / login codes). The -mt offset trims the
+            configurator's 80px pt-20 (deterministic) to ~16px so the window
+            opens cleanly on its own header — no cut type. One instance only
+            (shared localStorage with /messages = continuity of intent). Fully
+            interactive; only the height is fixed. */}
         <div className="relative mt-8 h-[560px] overflow-hidden rounded-2xl border border-border-primary md:mt-10 md:h-[640px]">
-          <div className="-mt-[150px]">
+          <div className="-mt-[64px]">
             <ConfiguratorSection />
           </div>
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-bg-primary md:h-20" />
