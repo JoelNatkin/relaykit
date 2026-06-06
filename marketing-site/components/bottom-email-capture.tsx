@@ -1,15 +1,20 @@
 "use client";
 
 /**
- * Inline email capture for the home page's bottom "Join the list" section.
- * On-page email field → POST /api/early-access (ctaSource "bottom"); no modal.
+ * Inline email capture for the home page's "Join the list" section.
+ * On-page email field → POST /api/early-access; no modal. `ctaSource` defaults
+ * to "bottom" for back-compat; the v10 final CTA passes "home-final".
  */
 
 import { useState } from "react";
 
 type Status = "idle" | "loading" | "success" | "error";
 
-export function BottomEmailCapture() {
+export function BottomEmailCapture({
+  ctaSource = "bottom",
+}: {
+  ctaSource?: string;
+}) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
 
@@ -21,7 +26,7 @@ export function BottomEmailCapture() {
       const res = await fetch("/api/early-access", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), ctaSource: "bottom" }),
+        body: JSON.stringify({ email: email.trim(), ctaSource }),
       });
       const data = (await res.json().catch(() => null)) as
         | { ok?: boolean }
