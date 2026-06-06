@@ -1,8 +1,8 @@
 /**
- * Shared tone helpers — extracted from configurator-section.tsx so the
- * home configurator peek (`components/configurator-peek.tsx`) and the full
- * configurator render the SAME tone pills and resolve the SAME effective
- * body per tone (D-379/D-381 — one source, no drift).
+ * Shared tone helpers — extracted from configurator-section.tsx as the single
+ * source for tone pills + effective-body-per-tone (D-379/D-381 — one source,
+ * no drift), used by the configurator at `/messages` and in the home's
+ * embedded ConfiguratorSection.
  */
 
 import type { Message, VariantTone } from "@/lib/message-library";

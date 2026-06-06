@@ -72,7 +72,7 @@ export function HowItWorks() {
             {step.link ? (
               <Link
                 href={step.link.href}
-                className="mt-3 inline-block text-sm text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
+                className="mt-3 inline-block text-sm font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
               >
                 {step.link.text}
               </Link>

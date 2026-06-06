@@ -26,7 +26,7 @@ export function Pricing() {
       <div className="mt-10 grid grid-cols-1 items-start gap-12 lg:grid-cols-[1.05fr_0.95fr]">
         <div className="overflow-hidden rounded-2xl border border-border-secondary bg-bg-primary dark:bg-bg-secondary">
           <div className="p-7">
-            <div className="font-mono text-xs uppercase tracking-[0.13em] text-text-tertiary">
+            <div className="font-mono text-xs uppercase tracking-[0.13em] text-gold">
               Stage 1
             </div>
             <h3 className="mt-3 text-2xl font-semibold tracking-tight text-text-primary">
@@ -38,7 +38,7 @@ export function Pricing() {
             </p>
           </div>
           <div className="border-t border-border-secondary p-7">
-            <div className="font-mono text-xs uppercase tracking-[0.13em] text-text-tertiary">
+            <div className="font-mono text-xs uppercase tracking-[0.13em] text-gold">
               Stage 2
             </div>
             <h3 className="mt-3 text-2xl font-semibold tracking-tight text-text-primary">

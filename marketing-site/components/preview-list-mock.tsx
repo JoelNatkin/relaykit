@@ -47,7 +47,7 @@ export function PreviewListMock() {
       </ul>
 
       <div className="mt-3">
-        <span className="text-sm font-semibold text-text-brand-secondary">+ Invite someone</span>
+        <span className="text-sm font-semibold text-gold">+ Invite someone</span>
       </div>
     </div>
   );

@@ -7,8 +7,9 @@ import { Pricing } from "@/components/home/pricing";
 import { FinalCta } from "@/components/home/final-cta";
 import { Eyebrow } from "@/components/home/section-ui";
 import { VariablesCallout } from "@/components/home/variables-callout";
-import { ConfiguratorPeek } from "@/components/configurator-peek";
+import { ConfiguratorSection } from "@/components/configurator-section";
 import { PreviewListMock } from "@/components/preview-list-mock";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "RelayKit — The easiest way to ship SMS in your app",
@@ -16,9 +17,10 @@ export const metadata: Metadata = {
     "Pick the messages your app needs. RelayKit handles registration, opt-outs, and the carrier rules behind the scenes. Your AI tool wires up the rest.",
 };
 
-// Recognition — the "expected vs discovered" compare. Friction markers (both
-// columns) are error-red; the closing resolve line is gold (D-427 accent
-// system; red/green status colors are D-405 semantic colors).
+// Recognition — the "expected vs discovered" compare. The simple expected
+// steps get success-green arrows; the discovered friction markers get error-red
+// dots; the closing resolve line is gold (D-427 accent system; green/red are
+// D-405 semantic colors).
 const EXPECTED = ["Write a message", "Add an API call", "Ship"];
 const DISCOVERED = [
   "Registration",
@@ -52,7 +54,7 @@ function Recognition() {
                 key={item}
                 className="flex items-center gap-3 text-base text-text-primary"
               >
-                <span className="text-sm text-fg-error-primary" aria-hidden>
+                <span className="text-sm text-fg-success-primary" aria-hidden>
                   →
                 </span>
                 {item}
@@ -126,12 +128,45 @@ export default function MarketingHome() {
       <Recognition />
       <HowItWorks />
 
-      {/* Configurator — peek + trust line + variables callout */}
+      {/* Configurator — the REAL <ConfiguratorSection/> (the exact component
+          /messages renders) shown through a fixed-height clipped window; trust
+          line + variables callout below. */}
       <section
         id="configurator"
         className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
       >
-        <ConfiguratorPeek />
+        <div className="flex flex-wrap items-end justify-between gap-6">
+          <div className="max-w-xl">
+            <Eyebrow>The configurator · live today</Eyebrow>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+              Start with a complete message plan.
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-text-secondary">
+              RelayKit generates the messages most apps need, customized for your
+              industry and use case.
+            </p>
+          </div>
+          {/* Gold text affordance — D-427. */}
+          <Link
+            href="/messages"
+            className="text-sm font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
+          >
+            Open the configurator <span aria-hidden>→</span>
+          </Link>
+        </div>
+
+        {/* Clipped viewport into the live tool. overflow-hidden clips the lower
+            categories (team alerts / login codes); the negative offset skips the
+            section's own pt-20 + heading so the window opens on the tool itself.
+            One instance only (shared localStorage with /messages = continuity of
+            intent). Fully interactive; only the height is fixed. */}
+        <div className="relative mt-8 h-[560px] overflow-hidden rounded-2xl border border-border-primary md:mt-10 md:h-[640px]">
+          <div className="-mt-[150px]">
+            <ConfiguratorSection />
+          </div>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-bg-primary md:h-20" />
+        </div>
+
         <p className="mt-5 max-w-3xl text-sm leading-relaxed text-text-tertiary">
           Copy the templates and use them anywhere today — no signup required.
           Twilio, Sinch, Telnyx, custom infrastructure, whatever you&apos;re

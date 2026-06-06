@@ -1,10 +1,10 @@
 /**
- * MessageReadCard — the read-mode corpus message card. Extracted verbatim
- * from configurator-section.tsx so the full configurator AND the home
- * configurator peek (`components/configurator-peek.tsx`) render the SAME
- * canonical card (D-379/D-381 — one source, no drift). Pure, prop-driven,
- * provider-free: takes `businessName` as a prop, uses interpolateBody +
- * VARIABLE_TOKEN_CLASSES + checkCompliance.
+ * MessageReadCard — the read-mode corpus message card. Extracted from
+ * configurator-section.tsx as a single shared card (D-379/D-381 — one source,
+ * no drift); the configurator renders it at `/messages` and in the home's
+ * embedded ConfiguratorSection. Pure, prop-driven, provider-free: takes
+ * `businessName` as a prop, uses interpolateBody + VARIABLE_TOKEN_CLASSES +
+ * checkCompliance.
  */
 
 import { Edit01, HelpCircle } from "@untitledui/icons";
