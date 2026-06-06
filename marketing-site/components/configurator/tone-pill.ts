@@ -13,7 +13,8 @@ export function tonePillClasses(active: boolean): string {
   const base =
     "rounded-full px-3 py-1.5 text-sm font-medium transition duration-100 ease-linear";
   return active
-    ? `${base} bg-bg-brand-solid text-text-on-brand border border-bg-brand-solid`
+    ? // Selected tone pill — gold fill + dark ink (D-427, one of the four gold sites).
+      `${base} bg-bg-gold text-text-on-gold border border-border-gold`
     : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
 }
 

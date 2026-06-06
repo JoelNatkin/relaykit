@@ -47,14 +47,21 @@ function ConfiguratorCheckbox({
         readOnly
         tabIndex={-1}
         disabled={disabled}
-        className={`${boxSize} appearance-none rounded border ${borderColor} bg-bg-primary dark:bg-bg-secondary`}
+        className={`${boxSize} appearance-none rounded border ${
+          checked && !disabled
+            ? // Selected checkbox — gold fill + border (D-427, one of the four
+              // gold sites; re-gilds the checked state the D-405 2026-05-19
+              // amendment had moved to the neutral form-control treatment).
+              "border-border-gold bg-bg-gold"
+            : `${borderColor} bg-bg-primary dark:bg-bg-secondary`
+        }`}
       />
       {checked ? (
         <svg
           viewBox="0 0 10 10"
           fill="none"
           aria-hidden
-          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} text-text-primary`}
+          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} text-text-on-gold`}
         >
           <path
             d="M1.75 5.25 4 7.25 8.25 2.75"

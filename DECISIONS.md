@@ -1829,6 +1829,8 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 
 **Amended:** 2026-05-19 — "Checked checkboxes" removed from the lifted-element list above; the brand-800 lifted treatment now applies to CTA and selected pills only. Checkbox checked state uses the form-control treatment — matches the dropdown trigger's fill + border, with a hand-rendered check glyph on top; the 1px stroke is retained (the glyph has comfortable spacing in the box).
 
+⚠ Amended by D-427 (2026-06-06): a single metallic-gold chromatic accent (#E0B010) is introduced over the monochrome system, scoped to exactly four sites (primary CTA fill, the home "Open the configurator →" link, the selected category checkbox, the selected tone pill). D-405's monochrome system stays operative everywhere else — only its "no chromatic accent" absolute is narrowed. The selected checkbox returns to a chromatic (gold) fill + dark-ink glyph for its checked state, reversing the 2026-05-19 checkbox amendment for that state only.
+
 ## D-406 — `early_access_subscribers` is RLS-locked; the rest of the schema is not
 
 **Decided:** 2026-05-19 (Session 98)
@@ -2120,3 +2122,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** Partially supersedes D-422 — narrows its "Multi-tenant routes into 'Not yet' with the same UX as other capacity-deferred sub-verticals" claim: the routing carries forward, but there is no longer a UI entry point that produces a multi-tenant verdict. D-422's five-bucket model is otherwise unchanged. D-422 marked in the same commit.
 
 **Affects:** `marketing-site/lib/configurator/use-elig-state.ts` (`multiTenant` field/setter/branch kept dormant); `marketing-site/components/configurator/elig-section.tsx` (D1 dropdown removed — landed Session 122 Wave D, commit `203ce2d`; recorded here); `marketing-site/lib/configurator/elig-copy.ts` (`eligInterestTag` still reads `multiTenant`, dormant); `NOT_YET_MULTI_TENANT_LINE` (dormant). The machinery removal is deferred until a multi-tenant decision settles.
+
+## D-427 — Single metallic-gold accent introduced over the D-405 monochrome system, scoped to four sites
+
+**Decided:** 2026-06-06 (Session 127)
+
+**Decision:** RelayKit introduces one chromatic accent — Metallic Gold `#E0B010` — over the D-405 Gray Warm monochrome system, scoped to exactly four sites and nowhere else: (1) primary CTA buttons (solid gold fill + `#13120E` dark-ink foreground, not an outline), (2) the home configurator-peek's "Open the configurator →" affordance (`text-gold`), (3) the selected category checkbox (gold fill + dark glyph), and (4) the selected tone pill (gold fill + dark text). The accent is a real theme token (`--color-gold` / `--color-text-on-gold` / `--color-bg-gold` / `--color-border-gold` in `globals.css @theme`), the same value in both light and dark modes. Everything else stays monochrome Gray Warm — variable `{tokens}`, nav links, body links, secondary/ghost buttons, eyebrow dots, status ticks, and the inline tone-row "Copy" are explicitly NOT gilded.
+
+**Why:** A single restrained accent gives the marketing surfaces one point of warmth and directs the eye to the actions that matter (configure, copy, go live) without reverting to a hue-driven brand. Authoring it as a token (not hardcoded hex) keeps the four sites in one place and lets the deferred dark-mode legibility tuning land in one edit later.
+
+**Rejected alternative:** Staying fully monochrome per D-405 as-is (no accent) — rejected as flat for a marketing home that needs a focal action color. Also rejected: the v10 artifact's broader gilding (chips, glow, delivered status, inline links) — over-applied, pulls attention from message content; narrowed to the four sites. Also rejected: per-mode gold values — the dark-mode "hue reads dark / dark-ink-on-gold is heavy" tuning is knowingly deferred, not solved by a second value now.
+
+**Supersedes:** none — this is an amendment, not an overturn. D-405's monochrome *system* stays operative; only its "no chromatic accent" absolute is narrowed, and the selected checkbox's checked state returns to a chromatic fill (reversing D-405's 2026-05-19 checkbox amendment for that state only). D-405 marked with an `⚠ Amended by D-427` line in the same commit.
+
+**Affects:** `marketing-site/app/globals.css` (gold tokens in `@theme`, no `.dark` override — deferral commented); `marketing-site/components/configurator/tone-pill.ts` (selected pill); `marketing-site/components/configurator/category-list.tsx` (selected checkbox); `marketing-site/components/configurator-section.tsx` (bottom "Copy messages" CTA). The 4th site ("Open the configurator →") lands with the home build (Wave 3).

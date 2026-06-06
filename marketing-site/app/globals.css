@@ -136,6 +136,18 @@
   --color-bg-brand-solid_hover: var(--color-brand-900);
   --color-bg-brand-cta: var(--color-brand-800);
   --color-bg-brand-cta_hover: var(--color-brand-900);
+
+  /* METALLIC GOLD ACCENT (D-427) — the single chromatic accent over the
+     D-405 monochrome system, scoped to exactly four sites: primary CTA fill,
+     the home "Open the configurator →" link, the selected category checkbox,
+     and the selected tone pill. Same value in both light and dark modes (no
+     .dark override below) — the "hue reads dark / dark-ink-on-gold is heavy"
+     legibility tuning is knowingly DEFERRED, not solved here. */
+  --color-gold: rgb(224 176 16); /* #E0B010 */
+  --color-text-on-gold: rgb(19 18 14); /* #13120E dark ink foreground */
+  --color-bg-gold: var(--color-gold);
+  --color-border-gold: var(--color-gold);
+
   --color-bg-error-primary: var(--color-error-50);
   --color-bg-error-secondary: var(--color-error-100);
   --color-bg-error-solid: var(--color-error-600);

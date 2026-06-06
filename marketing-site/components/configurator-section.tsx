@@ -521,7 +521,7 @@ export function ConfiguratorSection() {
                           />
                         </div>
                       ) : null}
-                      <div className="space-y-3">
+                      <div className="space-y-4">
                         {category.messages.map((message) => {
                           if (!catState.messages[message.id]?.checked)
                             return null;
@@ -706,7 +706,7 @@ export function ConfiguratorSection() {
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-brand-cta text-base font-semibold text-text-on-brand transition duration-100 ease-linear hover:bg-bg-brand-cta_hover"
+                  className="flex h-15 w-full cursor-pointer items-center justify-center rounded-lg bg-bg-gold text-base font-semibold text-text-on-gold transition duration-100 ease-linear hover:bg-bg-gold/90"
                 >
                   {copyToastVisible ? "Copied" : "Copy messages"}
                 </button>
