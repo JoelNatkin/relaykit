@@ -20,17 +20,6 @@ import { Eyebrow } from "@/components/home/section-ui";
 // needed (and the visible data never contradicts the cards).
 const CATEGORY = CATEGORIES.find((c) => c.id === "appointments");
 
-// Decorative category strip (verbatim v10 copy). Appointments is the active,
-// previewed category; the rest set the configurator's shape. Static — the full
-// strip lives at /messages.
-const STRIP = [
-  { name: "Appointments", desc: "Confirmations, reminders, reschedules.", active: true },
-  { name: "Verification", desc: "Codes, recovery, 2FA.", active: false },
-  { name: "Order updates", desc: "Shipping, delivery, returns.", active: false },
-  { name: "Customer support", desc: "Ticket updates, follow-ups.", active: false },
-  { name: "Team alerts", desc: "Incident pings, on-call.", active: false },
-] as const;
-
 function StripCheckbox({ active }: { active: boolean }) {
   return (
     <span
@@ -100,33 +89,36 @@ export function ConfiguratorPeek() {
       </div>
 
       <div className="mt-11 grid overflow-hidden rounded-2xl border border-border-primary bg-bg-primary shadow-xl md:grid-cols-[244px_1fr] dark:bg-bg-secondary">
-        {/* Category strip */}
+        {/* Category strip — the real corpus (CATEGORIES); Appointments active. */}
         <div className="flex gap-2 overflow-x-auto border-b border-border-secondary bg-bg-primary p-3 md:flex-col md:gap-1 md:overflow-visible md:border-r md:border-b-0 dark:bg-bg-primary">
-          {STRIP.map((cat) => (
-            <div
-              key={cat.name}
-              className={`flex flex-none items-start gap-2.5 rounded-lg px-2.5 py-2.5 md:flex-auto ${
-                cat.active ? "bg-bg-secondary" : ""
-              }`}
-            >
-              <StripCheckbox active={cat.active} />
-              <div>
-                <div className="text-sm font-medium text-text-primary">
-                  {cat.name}
-                </div>
-                <div className="mt-0.5 hidden text-xs text-text-tertiary md:block">
-                  {cat.desc}
+          {CATEGORIES.map((cat) => {
+            const active = cat.id === CATEGORY.id;
+            return (
+              <div
+                key={cat.id}
+                className={`flex flex-none items-start gap-2.5 rounded-lg px-2.5 py-2.5 md:flex-auto ${
+                  active ? "bg-bg-secondary" : ""
+                }`}
+              >
+                <StripCheckbox active={active} />
+                <div>
+                  <div className="text-sm font-medium text-text-primary">
+                    {cat.name}
+                  </div>
+                  <div className="mt-0.5 hidden text-xs text-text-tertiary md:block">
+                    {cat.description}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Edit panel */}
         <div className="p-5">
           <div className="mb-4 flex flex-wrap items-center gap-3">
             <span className="rounded-lg border border-border-secondary bg-bg-primary px-3 py-2 text-sm text-text-secondary dark:bg-bg-primary">
-              Appointments
+              {CATEGORY.name}
             </span>
             <div className="ml-auto flex gap-1.5">
               {PAGE_TONES.map((t) => (

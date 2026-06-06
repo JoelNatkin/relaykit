@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Eyebrow } from "@/components/home/section-ui";
 
-// Progress fill widths track the four steps (25/50/75/100%). Monochrome per
-// the locked gold rule (the v10 artifact filled these in the accent).
+// Progress fill widths track the four steps (25/50/75/100%), filled in gold
+// (D-427 accent system).
 type Step = {
   label: string;
   fill: string;
@@ -58,7 +58,7 @@ export function HowItWorks() {
         {STEPS.map((step) => (
           <div key={step.label} className="relative pt-6">
             <div className="absolute inset-x-0 top-0 h-0.5 bg-border-primary" aria-hidden>
-              <div className={`h-full bg-fg-secondary ${step.fill}`} />
+              <div className={`h-full bg-bg-gold ${step.fill}`} />
             </div>
             <div className="font-mono text-xs tracking-[0.12em] text-text-tertiary">
               {step.label}

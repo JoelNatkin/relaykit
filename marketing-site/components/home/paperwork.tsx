@@ -2,8 +2,7 @@ import { FileCheck02, ShieldTick, SlashCircle01 } from "@untitledui/icons";
 import type { FC } from "react";
 import { Eyebrow } from "@/components/home/section-ui";
 
-// Icon tints are monochrome per the locked gold rule (the v10 artifact tinted
-// these with the accent).
+// Featured-icon backgrounds are a gold tint (D-427 accent system).
 const CARDS: { Icon: FC<{ className?: string }>; title: string; body: string }[] =
   [
     {
@@ -45,7 +44,7 @@ export function Paperwork() {
             key={title}
             className="rounded-2xl border border-border-secondary bg-bg-primary p-6 transition duration-150 ease-linear hover:-translate-y-0.5 hover:border-border-primary dark:bg-bg-secondary"
           >
-            <div className="mb-4 grid size-8 place-items-center rounded-lg bg-bg-secondary text-fg-secondary dark:bg-bg-tertiary">
+            <div className="mb-4 grid size-8 place-items-center rounded-lg bg-bg-gold/15 text-gold">
               <Icon className="size-4" />
             </div>
             <h3 className="mb-2 text-lg font-semibold text-text-primary">

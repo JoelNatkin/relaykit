@@ -16,8 +16,9 @@ export const metadata: Metadata = {
     "Pick the messages your app needs. RelayKit handles registration, opt-outs, and the carrier rules behind the scenes. Your AI tool wires up the rest.",
 };
 
-// Recognition — the "expected vs discovered" compare. The closing accent line
-// is monochrome per the locked gold rule (weight, not the accent).
+// Recognition — the "expected vs discovered" compare. Friction markers (both
+// columns) are error-red; the closing resolve line is gold (D-427 accent
+// system; red/green status colors are D-405 semantic colors).
 const EXPECTED = ["Write a message", "Add an API call", "Ship"];
 const DISCOVERED = [
   "Registration",
@@ -51,7 +52,7 @@ function Recognition() {
                 key={item}
                 className="flex items-center gap-3 text-base text-text-primary"
               >
-                <span className="text-sm text-text-tertiary" aria-hidden>
+                <span className="text-sm text-fg-error-primary" aria-hidden>
                   →
                 </span>
                 {item}
@@ -70,7 +71,7 @@ function Recognition() {
                 className="flex items-center gap-3 text-base text-text-primary"
               >
                 <span
-                  className="size-1.5 flex-none rounded-full bg-fg-quaternary"
+                  className="size-1.5 flex-none rounded-full bg-fg-error-primary"
                   aria-hidden
                 />
                 {item}
@@ -82,7 +83,7 @@ function Recognition() {
       <p className="mt-6 text-center text-lg leading-relaxed text-text-secondary">
         Most developers discover the second column after they start building.
         <br />
-        <span className="font-semibold text-text-primary">
+        <span className="font-semibold text-gold">
           RelayKit handles them.
         </span>
       </p>

@@ -1,62 +1,72 @@
-import type { ReactNode } from "react";
+import {
+  APPOINTMENTS,
+  ORDER_UPDATES,
+  VERIFICATION,
+  interpolateBody,
+} from "@/lib/message-library";
+import type { Category, Variable } from "@/lib/message-library";
 
-// Static before→after illustration (verbatim v10 copy). Variable tokens render
-// NEUTRAL per the locked gold rule — never gilded.
-function Chip({ children }: { children: ReactNode }) {
+// Real before→after: each example is a canonical corpus message (the same
+// bodies the configurator produces), shown as its raw {{token}} template, then
+// resolved through interpolateBody with corpus example values. No artifact
+// placeholders. Variable values render in the neutral text-variable color, the
+// same treatment as the real MessageReadCard.
+type Example = { body: string; variables: Variable[] };
+
+function pick(category: Category, messageId: string): Example {
+  const message = category.messages.find((m) => m.id === messageId);
+  const variant =
+    message?.variants.find((v) => v.tone === "Standard") ?? message?.variants[0];
+  return { body: variant?.body ?? "", variables: category.variables };
+}
+
+const EXAMPLES: Example[] = [
+  pick(APPOINTMENTS, "confirmation"),
+  pick(ORDER_UPDATES, "order-shipped"),
+  pick(VERIFICATION, "verification-code"),
+];
+
+// Raw template: {{token}} segments become neutral chips showing the token name.
+function TemplateForm({ body }: { body: string }) {
   return (
-    <span className="rounded bg-bg-secondary px-1.5 py-0.5 font-mono text-[0.82rem] text-text-variable">
-      {children}
-    </span>
+    <>
+      {body
+        .split(/(\{\{\w+\}\})/g)
+        .filter(Boolean)
+        .map((part, i) => {
+          const match = part.match(/^\{\{(\w+)\}\}$/);
+          return match ? (
+            <span
+              key={i}
+              className="rounded bg-bg-tertiary px-1.5 py-0.5 font-mono text-[0.82rem] text-text-variable"
+            >
+              {match[1]}
+            </span>
+          ) : (
+            <span key={i}>{part}</span>
+          );
+        })}
+    </>
   );
 }
 
-function Strong({ children }: { children: ReactNode }) {
-  return <b className="font-semibold text-text-primary">{children}</b>;
+// Resolved preview via interpolateBody (corpus example values, businessName="").
+// Variable segments take the neutral text-variable color — same as the card.
+function PreviewForm({ body, variables }: Example) {
+  return (
+    <>
+      {interpolateBody(body, variables, { businessName: "" }).map((seg, i) =>
+        seg.isVariable ? (
+          <span key={i} className="font-medium text-text-variable">
+            {seg.text}
+          </span>
+        ) : (
+          <span key={i}>{seg.text}</span>
+        ),
+      )}
+    </>
+  );
 }
-
-const SETS: { tmpl: ReactNode; prev: ReactNode }[] = [
-  {
-    tmpl: (
-      <>
-        Your appointment is confirmed for <Chip>{"{time}"}</Chip> on{" "}
-        <Chip>{"{date}"}</Chip>.
-      </>
-    ),
-    prev: (
-      <>
-        Your appointment is confirmed for <Strong>2:00 PM</Strong> on{" "}
-        <Strong>Fri, Jun 6</Strong>.
-      </>
-    ),
-  },
-  {
-    tmpl: (
-      <>
-        Order <Chip>{"{order}"}</Chip> shipped. Track it: <Chip>{"{link}"}</Chip>
-      </>
-    ),
-    prev: (
-      <>
-        Order <Strong>#4821</Strong> shipped. Track it:{" "}
-        <Strong>acme.co/t/4821</Strong>
-      </>
-    ),
-  },
-  {
-    tmpl: (
-      <>
-        Hi <Chip>{"{name}"}</Chip>, your code is <Chip>{"{code}"}</Chip>. Expires
-        in 10 min.
-      </>
-    ),
-    prev: (
-      <>
-        Hi <Strong>Sarah</Strong>, your code is <Strong>482910</Strong>. Expires
-        in 10 min.
-      </>
-    ),
-  },
-];
 
 export function VariablesCallout() {
   return (
@@ -69,19 +79,22 @@ export function VariablesCallout() {
         variables using realistic data — before you ever write code.
       </p>
       <div className="mt-4">
-        {SETS.map((set, i) => (
+        {EXAMPLES.map((ex, i) => (
           <div
             key={i}
             className="grid items-center gap-3 border-t border-dashed border-border-secondary py-4 md:grid-cols-[1fr_2rem_1fr]"
           >
-            <div className="rounded-2xl rounded-bl-sm border border-border-secondary bg-bg-secondary px-3.5 py-3 font-mono text-sm leading-relaxed text-text-secondary">
-              {set.tmpl}
+            <div className="rounded-2xl rounded-bl-sm border border-border-secondary bg-bg-primary px-3.5 py-3 font-mono text-sm leading-relaxed text-text-secondary dark:bg-bg-secondary">
+              <TemplateForm body={ex.body} />
             </div>
-            <div className="text-center text-text-tertiary max-md:rotate-90 max-md:justify-self-start" aria-hidden>
+            <div
+              className="text-center text-text-tertiary max-md:rotate-90 max-md:justify-self-start"
+              aria-hidden
+            >
               →
             </div>
-            <div className="rounded-2xl rounded-br-sm border border-border-secondary bg-bg-secondary px-3.5 py-3 text-sm leading-relaxed text-text-secondary">
-              {set.prev}
+            <div className="rounded-2xl rounded-br-sm border border-border-secondary bg-bg-primary px-3.5 py-3 text-sm leading-relaxed text-text-secondary dark:bg-bg-secondary">
+              <PreviewForm body={ex.body} variables={ex.variables} />
             </div>
           </div>
         ))}

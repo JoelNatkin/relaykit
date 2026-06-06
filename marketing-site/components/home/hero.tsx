@@ -40,14 +40,14 @@ function PhoneMock() {
             </span>
           </div>
           <div className="flex items-center gap-1.5 self-start pl-1 text-[0.7rem] text-text-tertiary">
-            <span className="size-1.5 rounded-full bg-fg-quaternary" aria-hidden />
+            <span className="size-1.5 rounded-full bg-fg-success-primary" aria-hidden />
             Delivered
           </div>
           <div className="max-w-[86%] self-start rounded-2xl rounded-bl-sm border border-border-secondary bg-bg-secondary px-3 py-2.5 text-sm leading-snug text-text-secondary">
             Heads up — your appointment is in 1 hour. Reply C to confirm.
           </div>
           <div className="flex items-center gap-1.5 self-start pl-1 text-[0.7rem] text-text-tertiary">
-            <span className="size-1.5 rounded-full bg-fg-quaternary" aria-hidden />
+            <span className="size-1.5 rounded-full bg-fg-success-primary" aria-hidden />
             Delivered
           </div>
         </div>

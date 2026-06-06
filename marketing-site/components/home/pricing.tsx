@@ -1,8 +1,8 @@
 import { Eyebrow } from "@/components/home/section-ui";
 
 // Verbatim v10 copy; canon-clean against PRICING_MODEL v6.0 + D-215 ("a few
-// days", no day count). Ticks and the price figure are monochrome per the
-// locked gold rule (emphasis via weight, not the accent).
+// days", no day count). Ticks are gold (D-427 accent system); the price figure
+// stays monochrome (emphasis via weight).
 const INCLUDES = [
   "500 messages a month",
   "Your own sending number",
@@ -62,7 +62,7 @@ export function Pricing() {
                 key={item}
                 className="flex items-center gap-3 border-t border-dashed border-border-secondary py-3.5 text-base text-text-secondary last:border-b last:border-dashed last:border-border-secondary"
               >
-                <span className="flex-none text-fg-secondary" aria-hidden>
+                <span className="flex-none text-gold" aria-hidden>
                   ✓
                 </span>
                 {item}

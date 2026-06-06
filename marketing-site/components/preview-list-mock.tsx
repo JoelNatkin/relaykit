@@ -1,7 +1,8 @@
 // Static Preview list mock for Section 4 (Test it for real). Mirrors
 // prototype/components/test-phones-card.tsx structure — same card chrome,
-// same status-dot conventions (verified = bg-fg-success-primary, invited =
-// bg-fg-quaternary), same "+ Invite someone" link styling. Three hardcoded
+// status-dot conventions: verified = green (bg-fg-success-primary), invited =
+// gold (bg-bg-gold, D-427 accent system); same "+ Invite someone" link
+// styling. Three hardcoded
 // rows; non-interactive on the marketing surface.
 
 const ROWS = [
@@ -12,7 +13,7 @@ const ROWS = [
 
 const STATUS_DOT = {
   verified: "bg-fg-success-primary",
-  invited: "bg-fg-quaternary",
+  invited: "bg-bg-gold",
 } as const;
 
 const STATUS_LABEL = {

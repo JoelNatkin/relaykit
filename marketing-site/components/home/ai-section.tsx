@@ -1,6 +1,17 @@
+import Image from "next/image";
 import { Eyebrow } from "@/components/home/section-ui";
 
-const TOOLS = ["Claude", "Cursor", "Windsurf", "Copilot", "Cline", "Codex"];
+// AI-tool wordmark logos with dark/light asset swap (restored from the prior
+// home). negSrc = the dark-mode wordmark; when null, a brightness-0/dark:invert
+// filter approximates it. Per-logo heightClass tunes optical weight.
+const AI_TOOLS = [
+  { src: "/logos/tool_logos_wordmarks/claude_pos.svg", negSrc: null, alt: "Claude Code", heightClass: "h-[16px]" },
+  { src: "/logos/tool_logos_wordmarks/Cursor_pos.svg", negSrc: "/logos/tool_logos_wordmarks/Cursor_neg.svg", alt: "Cursor", heightClass: "h-[22px]" },
+  { src: "/logos/tool_logos_wordmarks/windsurf_pos.svg", negSrc: "/logos/tool_logos_wordmarks/windsurf_neg.svg", alt: "Windsurf", heightClass: "h-[14px]" },
+  { src: "/logos/tool_logos_wordmarks/Copilot_pos.svg", negSrc: null, alt: "GitHub Copilot", heightClass: "h-[20px]" },
+  { src: "/logos/tool_logos_wordmarks/Cline_pos.svg", negSrc: "/logos/tool_logos_wordmarks/Cline_neg.svg", alt: "Cline", heightClass: "h-[18px]" },
+  { src: "/logos/tool_logos_wordmarks/codex_pos.svg", negSrc: "/logos/tool_logos_wordmarks/codex_neg.svg", alt: "Codex", heightClass: "h-[22px]" },
+] as const;
 
 // REAL SDK signature (sdk/src/index.ts): `new RelayKit()` +
 // `appointments.sendConfirmation(phone, { date, time })` — overrides the v10
@@ -18,7 +29,7 @@ function CodeCard() {
       <pre className="overflow-x-auto whitespace-pre p-6 font-mono text-sm leading-relaxed text-text-white">
         <span className="text-fg-brand-secondary">import</span>
         {" { "}
-        <span className="text-fg-warning-secondary">RelayKit</span>
+        <span className="text-gold">RelayKit</span>
         {" } "}
         <span className="text-fg-brand-secondary">from</span>{" "}
         <span className="text-fg-success-secondary">{"'relaykit'"}</span>
@@ -26,17 +37,17 @@ function CodeCard() {
         <span className="text-fg-brand-secondary">const</span>
         {" relaykit = "}
         <span className="text-fg-brand-secondary">new</span>{" "}
-        <span className="text-fg-warning-secondary">RelayKit</span>
+        <span className="text-gold">RelayKit</span>
         {"();\n\n"}
         <span className="text-fg-brand-secondary">await</span>
         {" relaykit.appointments."}
-        <span className="text-fg-warning-secondary">sendConfirmation</span>
+        <span className="text-gold">sendConfirmation</span>
         {"(customer.phone, {\n  "}
-        <span className="text-fg-warning-secondary">date</span>
+        <span className="text-gold">date</span>
         {": "}
         <span className="text-fg-success-secondary">{"'Fri, Jun 6'"}</span>
         {",\n  "}
-        <span className="text-fg-warning-secondary">time</span>
+        <span className="text-gold">time</span>
         {": "}
         <span className="text-fg-success-secondary">{"'2:00 PM'"}</span>
         {",\n});"}
@@ -62,15 +73,37 @@ export function AiSection() {
             Messages, variables, event triggers, testing steps, and integration
             guidance arrive for smooth integration.
           </p>
-          <div className="mt-7 flex flex-wrap gap-2">
-            {TOOLS.map((tool) => (
-              <span
-                key={tool}
-                className="rounded-full border border-border-secondary px-3.5 py-1.5 font-mono text-xs text-text-secondary"
-              >
-                {tool}
-              </span>
-            ))}
+          <div className="mt-7 flex flex-wrap items-center gap-x-8 gap-y-3">
+            {AI_TOOLS.map((tool) =>
+              tool.negSrc ? (
+                <span key={tool.alt} className="contents">
+                  <Image
+                    src={tool.src}
+                    alt={tool.alt}
+                    width={140}
+                    height={24}
+                    className={`${tool.heightClass} w-auto brightness-0 dark:hidden`}
+                  />
+                  <Image
+                    src={tool.negSrc}
+                    alt=""
+                    aria-hidden
+                    width={140}
+                    height={24}
+                    className={`${tool.heightClass} hidden w-auto dark:inline-block`}
+                  />
+                </span>
+              ) : (
+                <Image
+                  key={tool.alt}
+                  src={tool.src}
+                  alt={tool.alt}
+                  width={140}
+                  height={24}
+                  className={`${tool.heightClass} w-auto brightness-0 dark:invert`}
+                />
+              ),
+            )}
           </div>
           <p className="mt-5 text-sm text-text-tertiary">
             Slots into ShipFast, Supastarter, MakerKit, and Vercel + Supabase.

@@ -2,15 +2,14 @@ import Link from "next/link";
 
 /**
  * Shared marketing-home primitives. Centralizing the eyebrow + CTA styles
- * keeps the locked gold rule (D-427) in one place: PrimaryCta is the only
- * gold-fill button site on the home; the eyebrow dot is deliberately
- * monochrome (the v10 artifact's gold dot is overridden per the locked rule).
+ * keeps the gold accent system (D-427) in one place: PrimaryCta is the
+ * gold-fill button; the eyebrow dot is gold.
  */
 
 export function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-text-tertiary">
-      <span className="size-1.5 rounded-sm bg-fg-quaternary" aria-hidden />
+      <span className="size-1.5 rounded-sm bg-bg-gold" aria-hidden />
       {children}
     </span>
   );
