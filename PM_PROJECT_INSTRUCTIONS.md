@@ -5,7 +5,7 @@
 > Not for: CC's operational rules (CLAUDE.md), product specifications (spec docs), session narrative.
 
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: June 1, 2026
+### Updated: June 7, 2026
 
 ---
 
@@ -329,7 +329,14 @@ Canon should already be current from ambient maintenance this session (decisions
 
 **Hard triggers:** chat crosses ~40–50 exchanges; Joel starts a new work session; multiple topic shifts and early context is stale.
 
-**PM_HANDOFF is a live on-disk worktable** at `.pm/PM_HANDOFF.md` (gitignored). PM writes to it directly — no chat-paste rotation. Update it **ambient, on meaningful triggers** — a decision locked, a workstream shift, a file-of-interest changed, a mode shift. Not constant; not saved up for session-end. Read it at every session open. *(Supersedes the old rule that PM_HANDOFF is a chat-rotation artifact never saved to the repo.)*
+**PM_HANDOFF is a live on-disk worktable** at `.pm/PM_HANDOFF.md` (gitignored). PM writes to it directly — no chat-paste rotation. Read it at every session open.
+
+**Write to it as the work lands, not at session end — hard rule, not ambient.** A long fix loop is exactly where it slips: many small events, each feeling too minor to log, then a stale handoff and Joel having to ask what got dropped. Convert the soft trigger into checkpoints PM cannot pass without acting:
+- **Log-now events:** a commit approved or pushed · a new component / surface / file created · a decision made or a D-number gone pending · a blocker or owed-at-merge item added or resolved · a workstream or focus shift.
+- **Debt ceiling:** never let more than ~3 log-now events stack unrecorded. At 3, flush to PM_HANDOFF before starting the next task.
+- **Reconcile checkpoints:** before writing a CC prompt that opens a new sub-task, and before answering "what's next" or "are we forgetting anything," bring PM_HANDOFF current first, then respond.
+
+*(Supersedes the chat-rotation rule and the prior soft "ambient, on meaningful triggers / not saved up for session-end" phrasing.)*
 
 **What it holds** (keep current, prune freely): where we are (active phase, built, in-progress); what was completed since last update; active decisions / open questions; pending MASTER_PLAN amendments; the next CC prompt (exact); watch items (conflicts, bugs, quality); pending decisions with planned D-numbers; carry-forward items.
 
