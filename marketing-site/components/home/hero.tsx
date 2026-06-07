@@ -3,8 +3,7 @@ import { Eyebrow, GhostCta, PrimaryCta } from "@/components/home/section-ui";
 
 // Decorative dot-grid texture behind the hero. Theme-neutral mid-gray at low
 // alpha reads as a subtle texture on both the dark and light page (it is not a
-// brand color), masked to fade toward the edges. The v10 gold glow is dropped
-// per the locked monochrome rule.
+// brand color), masked to fade toward the edges.
 const DOT_GRID_STYLE: React.CSSProperties = {
   backgroundImage:
     "radial-gradient(circle, rgb(128 128 128 / 0.07) 1px, transparent 1.5px)",
@@ -13,6 +12,19 @@ const DOT_GRID_STYLE: React.CSSProperties = {
     "radial-gradient(ellipse 60% 70% at 72% 46%, #000, transparent 72%)",
   maskImage:
     "radial-gradient(ellipse 60% 70% at 72% 46%, #000, transparent 72%)",
+};
+
+// Soft neutral depth glow behind the phone so it doesn't read as floating on
+// the dark page. The v10 *gold* glow is still dropped — this is a NON-color
+// white-alpha radial, consistent with the monochrome background rule (gold
+// stays the sparing accent, D-427). Same focal point as the dot-grid mask
+// (72% 46%) so glow + texture sit centered behind the phone together. Alpha
+// (0.05) and radius are the tuning knobs — nudge here. Dark-mode depth cue;
+// on the light (white-bg) theme a white-alpha glow is effectively invisible,
+// which is fine — the floating issue is dark-mode-specific.
+const HERO_GLOW_STYLE: React.CSSProperties = {
+  background:
+    "radial-gradient(58% 46% at 72% 46%, rgb(255 255 255 / 0.05), transparent 70%)",
 };
 
 function PhoneMock() {
@@ -63,6 +75,11 @@ function PhoneMock() {
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={HERO_GLOW_STYLE}
+        aria-hidden
+      />
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={DOT_GRID_STYLE}
