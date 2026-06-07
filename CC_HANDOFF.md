@@ -5,9 +5,9 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 10 (9 feature/doc + this handoff) | Files modified: ~25 distinct (mostly `marketing-site/`) | Decisions added: 2 (D-427, D-428) | External actions: push ×6 (branch + 4 review rounds + this commit), Vercel previews polled per push
+**Session metrics:** Commits: 12 (11 on `feat/marketing-home` incl. this close-out + 1 on `main` `2688820`) | Files modified: ~26 distinct (mostly `marketing-site/`; + CLAUDE.md on main) | Decisions added: 2 (D-427, D-428) | External actions: push ×8 (branch + 4 review rounds + handoff refresh + main + this close-out), Vercel previews polled per branch push
 
-**Status:** Building the new marketing home on branch **`feat/marketing-home`** (off `main`). **NOT merged.** A live Vercel preview is under PM/Joel review; we are iterating on review feedback. `main` is untouched. Do **not** merge until PM approves the preview.
+**Status:** Building the new marketing home on branch **`feat/marketing-home`** (off `main`). **NOT merged.** A live Vercel preview is under PM/Joel review; we are iterating on review feedback. Do **not** merge until PM approves the preview. **`main` advanced by `2688820`** ("docs: harden CC_HANDOFF wave-boundary update rule in CLAUDE.md") — a standalone methodology-doc edit committed directly to main, unrelated to the home build; this branch is behind main by that one commit. No conflict expected at merge (the branch never touched CLAUDE.md).
 
 **Latest preview (HEAD `43d3c2b`):** `https://relaykit-marketing-site-gvzi2mj24-joelnatkins-projects.vercel.app` (401 to anonymous = Vercel preview protection — open signed into Vercel). Each push gets a fresh preview URL; fetch the current one via `gh api repos/JoelNatkin/relaykit/deployments?sha=$(git rev-parse HEAD)` → latest deployment → `/statuses` → `environment_url`.
 
@@ -58,7 +58,7 @@ Open question raised to PM, not blocking: whether **PROVE** section wants vertic
 ## Pending / next steps
 
 - **Wave 4 is already done** (`2da38af`): MASTER_PLAN one-liner + REPO_INDEX meta bump. The per-wave verification list (tsc / eslint / build / hex no-leak grep) has been run green on every wave + review round.
-- **Next:** await PM/Joel preview approval → **merge `feat/marketing-home` to `main`** (do not merge unprompted).
+- **Next:** await PM/Joel preview approval → **merge `feat/marketing-home` to `main`** (do not merge unprompted). `main` is 1 commit ahead (`2688820`, a CLAUDE.md methodology edit) — a normal merge/rebase incorporates it cleanly; no conflict (the branch never touched CLAUDE.md).
 - **Owed at merge** (deferred so they describe the final, stabilized state): PROTOTYPE_SPEC home/routing rewrite + the accent-system note; PRODUCT_SUMMARY (the `/` vs `/messages` split changes customer experience); the fuller REPO_INDEX file-inventory for `components/home/*` + `/messages`; and adding STAGE labels to D-427's enumeration.
 - **Deferred to a separate wave (NOT this build):** the voice/docs wave — VOICE_v2 revision landing, writing-skill reconciliation, and the Twilio/Sinch/Telnyx trust-line carve-out documentation. The home ships the verbatim trust line now.
 - **Pre-deploy blocker (carried):** Supabase migration `api/supabase/migrations/009_early_access_interest_tag.sql` must be applied via the SQL Editor before the next production deploy (the home final-CTA + elig waitlist inserts use `/api/early-access`).
@@ -71,7 +71,7 @@ Open question raised to PM, not blocking: whether **PROVE** section wants vertic
 
 ## Files modified / added this session
 
-New: `marketing-site/app/messages/page.tsx`; `components/home/{hero,category-rotor,how-it-works,paperwork,pricing,final-cta,ai-section,variables-callout,section-ui}.tsx`; `components/configurator/{message-read-card.tsx,tone-pill.ts}`. Rewritten: `app/page.tsx`. Modified: `app/globals.css` (gold tokens), `app/layout.tsx` + `lib/use-theme.ts` (dark default), `components/configurator-section.tsx`, `components/configurator/category-list.tsx`, `components/configurator/{mobile-categories-modal,edit-values-modal}.tsx` (portal), `components/{top-nav,footer,bottom-email-capture,preview-list-mock}.tsx`. Deleted: `components/configurator-peek.tsx` (the rejected mockup). Canon: `DECISIONS.md`, `MASTER_PLAN.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`.
+New: `marketing-site/app/messages/page.tsx`; `components/home/{hero,category-rotor,how-it-works,paperwork,pricing,final-cta,ai-section,variables-callout,section-ui}.tsx`; `components/configurator/{message-read-card.tsx,tone-pill.ts}`. Rewritten: `app/page.tsx`. Modified: `app/globals.css` (gold tokens), `app/layout.tsx` + `lib/use-theme.ts` (dark default), `components/configurator-section.tsx`, `components/configurator/category-list.tsx`, `components/configurator/{mobile-categories-modal,edit-values-modal}.tsx` (portal), `components/{top-nav,footer,bottom-email-capture,preview-list-mock}.tsx`. Deleted: `components/configurator-peek.tsx` (the rejected mockup). Canon (this branch): `DECISIONS.md`, `MASTER_PLAN.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`. Separately on `main` (not this branch): `CLAUDE.md` — commit `2688820`.
 
 ## Untracked carryovers — DO NOT COMMIT
 
