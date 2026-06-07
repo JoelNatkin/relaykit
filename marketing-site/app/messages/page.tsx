@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ConfiguratorSection } from "@/components/configurator-section";
+import { MessagesQuickstart } from "@/components/messages-quickstart";
 
 export const metadata: Metadata = {
   title: "Message configurator — RelayKit",
@@ -22,6 +23,7 @@ export default function MessagesPage() {
           your app — free, no account.
         </p>
       </div>
+      <MessagesQuickstart />
       <ConfiguratorSection />
     </div>
   );
