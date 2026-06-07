@@ -90,7 +90,7 @@ export function Hero() {
           <div>
             <Eyebrow>Shipping Summer 2026</Eyebrow>
             <h1 className="mt-5 text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
-              The easiest way to ship SMS in your app.
+              The easiest way to add text messaging to your app.
             </h1>
             <CategoryRotor />
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-text-secondary">
