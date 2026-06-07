@@ -14,23 +14,28 @@ const DOT_GRID_STYLE: React.CSSProperties = {
     "radial-gradient(ellipse 60% 70% at 72% 46%, #000, transparent 72%)",
 };
 
-// Soft neutral depth glow behind the phone so it doesn't read as floating on
-// the dark page. The v10 *gold* glow is still dropped — this is a NON-color
-// white-alpha radial, consistent with the monochrome background rule (gold
-// stays the sparing accent, D-427). Same focal point as the dot-grid mask
-// (72% 46%) so glow + texture sit centered behind the phone together. Alpha
-// (0.05) and radius are the tuning knobs — nudge here. Dark-mode depth cue;
-// on the light (white-bg) theme a white-alpha glow is effectively invisible,
-// which is fine — the floating issue is dark-mode-specific.
+// Phone-scoped, fixed-size neutral halo behind the phone so it doesn't read as
+// floating on the dark page. Sized in a fixed box (see PhoneMock) rather than
+// section percentages, so it stays phone-scale and centered at any viewport
+// width. The v10 *gold* glow is still dropped — this is a NON-color white-alpha
+// radial, consistent with the monochrome background rule (gold stays the
+// sparing accent, D-427). Tuning knobs: the alpha (0.06) here + the box size
+// (680×600) on the layer in PhoneMock. Dark-mode depth cue; on the light
+// (white-bg) theme a white-alpha glow is effectively invisible, which is fine
+// — the floating issue is dark-mode-specific.
 const HERO_GLOW_STYLE: React.CSSProperties = {
-  background:
-    "radial-gradient(58% 46% at 72% 46%, rgb(255 255 255 / 0.05), transparent 70%)",
+  background: "radial-gradient(rgb(255 255 255 / 0.06) 0%, transparent 70%)",
 };
 
 function PhoneMock() {
   return (
-    <div className="flex justify-center">
-      <div className="w-[280px] rounded-[2.5rem] border border-border-primary bg-bg-secondary p-3 shadow-2xl">
+    <div className="relative flex justify-center">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[680px] w-[600px] -translate-x-1/2 -translate-y-1/2"
+        style={HERO_GLOW_STYLE}
+      />
+      <div className="relative w-[280px] rounded-[2.5rem] border border-border-primary bg-bg-secondary p-3 shadow-2xl">
         {/* The phone SCREEN stays dark in both page themes (it's an SMS app on
             a phone). Scoping `dark` here makes every semantic token inside the
             screen resolve to its dark-mode value regardless of page mode; the
@@ -75,11 +80,6 @@ function PhoneMock() {
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <div
-        className="pointer-events-none absolute inset-0 z-0"
-        style={HERO_GLOW_STYLE}
-        aria-hidden
-      />
       <div
         className="pointer-events-none absolute inset-0 z-0"
         style={DOT_GRID_STYLE}
