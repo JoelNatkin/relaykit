@@ -12,7 +12,7 @@ import { PreviewListMock } from "@/components/preview-list-mock";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "RelayKit — The easiest way to ship SMS in your app",
+  title: "RelayKit — The easiest way to add text messaging to your app",
   description:
     "Pick the messages your app needs. RelayKit handles registration, opt-outs, and the carrier rules behind the scenes. Your AI tool wires up the rest.",
 };
