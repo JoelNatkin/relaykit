@@ -340,16 +340,11 @@ export function ConfiguratorSection() {
           interestTag={eligInterestTag(eligState)}
         />
         <div className="mx-auto max-w-5xl px-6">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-text-primary">
-              Write your messages
-            </h2>
-            <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
-              Templates configured for your app.
-            </p>
-          </div>
+          <h2 className="mb-4 text-2xl font-bold tracking-tight text-text-primary">
+            Write your messages
+          </h2>
 
-          <div className="mt-8 grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
             {/* Mobile-only categories: collapsed summary row + full-page
                 modal. Both are display:none at md: and above — the desktop
                 panel below takes over the left grid cell there. */}
