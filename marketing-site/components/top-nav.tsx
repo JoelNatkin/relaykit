@@ -48,6 +48,16 @@ export function TopNav() {
           RelayKit
         </Link>
         <div className="flex items-center gap-6">
+          {/* Theme toggle — desktop only; on mobile it moves into the menu. */}
+          <button
+            type="button"
+            onClick={toggle}
+            aria-label={actionLabel}
+            title={actionLabel}
+            className="hidden size-9 cursor-pointer items-center justify-center text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary sm:flex"
+          >
+            <ThemeIcon theme={theme} />
+          </button>
           {/* Primary nav links. Hidden below sm — the hamburger menu takes
               over there. Logo (left) stays the home link. */}
           <div className="hidden items-center gap-6 sm:flex">
@@ -61,16 +71,6 @@ export function TopNav() {
               </Link>
             ))}
           </div>
-          {/* Theme toggle — desktop only; on mobile it moves into the menu. */}
-          <button
-            type="button"
-            onClick={toggle}
-            aria-label={actionLabel}
-            title={actionLabel}
-            className="hidden size-9 cursor-pointer items-center justify-center text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary sm:flex"
-          >
-            <ThemeIcon theme={theme} />
-          </button>
           {/* Hamburger — mobile only; opens the full-screen menu. */}
           <button
             type="button"
