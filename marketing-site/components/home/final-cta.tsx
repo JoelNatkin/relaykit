@@ -13,7 +13,7 @@ export function FinalCta() {
         </div>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
           The messages are ready now.
-          <br />
+          <br className="hidden sm:block" />
           <span className="text-text-tertiary">
             Sending arrives Summer 2026.
           </span>
