@@ -1,88 +1,43 @@
-# CC_HANDOFF — Marketing-home rebuild (Session 127)
+# CC_HANDOFF — Go-live + marketing-home close-out (Session 128)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
-> This session it is kept current at every wave/commit boundary (not saved for close-out), because the work is a long multi-round build on an unmerged branch and the session has already hit one transient error — the next CC must not be blind to it.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 12 (11 on `feat/marketing-home` incl. this close-out + 1 on `main` `2688820`) | Files modified: ~26 distinct (mostly `marketing-site/`; + CLAUDE.md on main) | Decisions added: 2 (D-427, D-428) | External actions: push ×8 (branch + 4 review rounds + handoff refresh + main + this close-out), Vercel previews polled per branch push
+**Session metrics:** Commits: 14 (11 polish/feature on `feat/marketing-home` + 2 merges + 1 standalone docs on `main`) + the held canon commit (pending PM gg) | Files modified: ~18 distinct (`marketing-site/*` polish + 5 canon docs) | Decisions added: 1 (D-429) + the D-427 enumeration completion (pricing Stage labels) | External actions: Vercel **production deploy** of `main` (succeeded), 1 tagged prod `/api/early-access` smoke-test signup, push ×12
 
-**Status:** Building the new marketing home on branch **`feat/marketing-home`** (off `main`). **NOT merged.** A live Vercel preview is under PM/Joel review; we are iterating on review feedback. Do **not** merge until PM approves the preview. **`main` advanced by `2688820`** ("docs: harden CC_HANDOFF wave-boundary update rule in CLAUDE.md") — a standalone methodology-doc edit committed directly to main, unrelated to the home build; this branch is behind main by that one commit. No conflict expected at merge (the branch never touched CLAUDE.md).
-
-**Latest preview (HEAD `43d3c2b`):** `https://relaykit-marketing-site-gvzi2mj24-joelnatkins-projects.vercel.app` (401 to anonymous = Vercel preview protection — open signed into Vercel). Each push gets a fresh preview URL; fetch the current one via `gh api repos/JoelNatkin/relaykit/deployments?sha=$(git rev-parse HEAD)` → latest deployment → `/statuses` → `environment_url`.
+**Status: 🟢 LIVE in production.** `feat/marketing-home` is merged to `main` and deployed at **relaykit.ai** — the v10 marketing home at `/`, the free configurator tool at `/messages`, dark default, gold accent, mobile nav menu, and the `/messages` quick-start strip are all live. Phase 1 of the go-live plan is complete and verified; Phase 2 canon is done on disk but the **canon commit is held for PM "gg"** (see below).
 
 ---
 
-## What this build is
+## What shipped this session
 
-`/` is rebuilt from the `relaykit-home-v10.html` design artifact (copy taken **verbatim**) in the real stack. The full message configurator (the free standalone tool) moved to **`/messages`**; the home shows the **real** configurator in a clipped window (see top gotcha). One new chromatic accent — **Metallic Gold `#E0B010`** — was introduced over the D-405 monochrome base, the first chromatic accent since D-405. Dark mode is now the **site-wide default**.
+**Branch polish (before go-live), all on `feat/marketing-home`:** home eyebrow placement + column top-align + card-stroke consistency (`88d7b5c`); responsive final-CTA headline break + inter-sentence space (`815f8ab`, `3a1257f`); `/messages` bottom spacing (`949f89f`); configurator subtitle removed + header spacing to 16px (`f155aaa`); `/messages` quick-start orientation strip (`6a7bc54`, fill dropped `85dcb06`); neutral hero phone glow (`f065c66`, scoped tight to the phone `8e177dc`); mobile nav menu (`3e5a168`, amended with `role="dialog"` + dead-backdrop removal + shared `NAV_LINKS`); desktop theme toggle moved left of the links (`c771da6`).
 
-## Commits this session (top = newest)
+**Go-live (Phase 1):** picked up `main`'s `2688820` into the branch (merge `3ea5c31`), gates green on the integrated tree, `--no-ff` merge to `main` (`33048a5`), pushed → Vercel production deploy **succeeded**. Production verified: `/` and `/messages` serve the new build (HTTP 200); the hamburger button is in the served markup; `POST /api/early-access` returned `{ok:true, emailDelivered:true}` (the `interest_tag` insert path works — migration 009 confirmed live).
 
-- `43d3c2b` — **fix (review 4):** mobile + light-mode. Mobile peek height 560→640; mobile full-page modals (categories + edit-values) portal to `document.body`; BUILD section `min-w-0` (mobile overflow); hero phone screen forced dark in light mode; variables-callout token text → mode-aware.
-- `506a2c0` — **fix (review 3):** BUILD even 50/50; peek top offset 150→64px (clean top); gold scoped to **category** checkbox only (message-level neutral); variables template in cards; bigger headline / narrower body.
-- `baa5982` — **fix (review 2):** **deleted the hand-built `configurator-peek.tsx`**; home now embeds the REAL `<ConfiguratorSection/>` clipped. Recognition arrows green; how-it-works/preview-invite/pricing-STAGE gold.
-- `47563c6` — **fix (review 1):** widened the gold accent system (D-427 rewritten in place); made the peek strip + variables callout use the real corpus.
-- `2da38af` — **Wave 4 (docs):** MASTER_PLAN one-liner for the marketing-home deliverable + REPO_INDEX meta bump (decision count 343 / branch state).
-- `6401d28` — **Wave 3:** full v10 home (`components/home/*` sections) + configurator peek + real SDK snippet.
-- `4c4c8c0` — **Wave 2 (D-428):** route split — `/` stub + new `/messages`; nav/footer Messages links; dark default site-wide.
-- `15a42c1` — **Wave 1 (D-427):** gold token in `globals.css` + 3 configurator gold sites + message-card spacing 12→16px.
-- `684df6d` — **Wave 0:** byte-identical extraction of `MessageReadCard` + `tone-pill` from `configurator-section.tsx`.
+**Standalone docs commit on `main` (`5600159`, pushed, no gg gate):** PM_PROJECT_INSTRUCTIONS handoff-discipline rewrite ("write as work lands") + date bump to June 7.
 
-(Everything below `684df6d` is Session 125 / `main`.)
+**Phase 2 canon (HELD — staged, NOT pushed, awaiting gg):** D-429 (`/messages` dismissible quick-start strip, Supersedes none) + the D-427 enumeration completion (pricing Stage labels); PROTOTYPE_SPEC home/routing rewrite (+ `/messages` + top-nav-menu subsections, + the configurator header copy corrected to "Write your messages"); PRODUCT_SUMMARY `/` vs `/messages` split (Last reviewed → 2026-06-07); REPO_INDEX home-build inventory + Meta/decision/branch reconciliation; this CC_HANDOFF.
 
-## Decisions added
+## Held for PM review (gg)
 
-- **D-427** — Metallic-gold accent system over the D-405 monochrome base. **Supersedes: none** (amendment). D-405 marked `⚠ Amended by D-427` in the same commit. NOTE: title/wording were **already widened** from the original "four sites" to "accent system" in `47563c6` — see accent-system gotcha for the one remaining enumeration gap.
-- **D-428** — Marketing home at `/`; configurator tool at `/messages`. **Supersedes: D-379 (partial)** — narrows D-379's "home is the full product, not a teaser" placement claim. D-379 marked `⚠ Partially superseded by D-428` in the same commit. (PM-approved the partial-supersession call mid-session.)
+The canon commit is local on `main`, **not pushed**. `git show` of the **D-429 + PROTOTYPE_SPEC + PRODUCT_SUMMARY** edits is in `.pm-review.md`. On "gg" → `git push origin main`.
 
-## Top gotcha for the next CC
+## Cleanup item
 
-**The configurator PEEK on the home must be the REAL `<ConfiguratorSection/>`** — the exact component `/messages` renders — embedded in a fixed-height (`h-[640px]`) `overflow-hidden` window in `app/page.tsx`, offset up (`-mt-[64px]`, trims the configurator's deterministic 80px `pt-20`) so it opens cleanly on the tool. It is NOT a recreation of the v10 HTML mockup. **Rebuilding it as a mockup was attempted and rejected across ~3 review rounds** — do not regress to a hand-built peek. The window is one instance, fully interactive, and shares `relaykit_configurator` / `relaykit_elig` localStorage with `/messages` (deliberate — continuity of intent, MASTER_PLAN #7; routes never co-mount).
+The go-live smoke test created a real tagged row in `early_access_subscribers` — email `joel+golive-smoke@gmail.com`, `ctaSource`/`interest_tag` = `golive-smoke-test` — and sent a welcome email to Joel's inbox. Delete the row when convenient.
 
-## Accent system (gold expanded past D-427's original "four sites")
+## Branch state
 
-Gold now marks, via tokens (`--color-gold` etc., no raw hex outside `globals.css`): primary CTAs, the peek "Open the configurator →" link, **category** checkbox (not message-level), selected tone pill, section eyebrow dots, how-it-works progress bars, "RelayKit handles them." resolve line, paperwork featured-icon backgrounds (tint), pricing-includes checkmarks, AI code-snippet identifier highlight, preview-list "Invited" dot, and pricing **STAGE 1/2 labels**. Plus D-405 **semantic** colors carry status/meaning: **green** (Delivered / Verified), **red** (recognition friction markers). D-427 already describes the system, BUT its enumeration was written before the round-3 STAGE-labels addition — **owed: add the pricing STAGE labels to D-427's enumeration** (minor; the decision is otherwise current).
-
-## In progress / done-awaiting-verification
-
-Round-4 fixes are all **committed in `43d3c2b`** and built clean; they await PM confirmation on the preview:
-- Mobile peek height 560→640px — **done.**
-- Mobile category-modal chrome rendering at the bottom — **done** (fixed by portaling both mobile modals to `body`; was peek-specific, `/messages` was unaffected).
-- BUILD section mobile horizontal overflow — **done** (`min-w-0` on grid columns so the code block scrolls internally).
-- Light-mode hero phone screen rendering white — **done** (scoped `dark` class on the screen element; frame still follows page).
-- Light-mode variables-callout token text unreadable — **done** (`text-text-white` → `text-text-primary`).
-
-Open question raised to PM, not blocking: whether **PROVE** section wants vertical top-alignment (its grid is already 50/50 by width).
-
-## Pending / next steps
-
-- **Wave 4 is already done** (`2da38af`): MASTER_PLAN one-liner + REPO_INDEX meta bump. The per-wave verification list (tsc / eslint / build / hex no-leak grep) has been run green on every wave + review round.
-- **Next:** await PM/Joel preview approval → **merge `feat/marketing-home` to `main`** (do not merge unprompted). `main` is 1 commit ahead (`2688820`, a CLAUDE.md methodology edit) — a normal merge/rebase incorporates it cleanly; no conflict (the branch never touched CLAUDE.md).
-- **Owed at merge** (deferred so they describe the final, stabilized state): PROTOTYPE_SPEC home/routing rewrite + the accent-system note; PRODUCT_SUMMARY (the `/` vs `/messages` split changes customer experience); the fuller REPO_INDEX file-inventory for `components/home/*` + `/messages`; and adding STAGE labels to D-427's enumeration.
-- **Deferred to a separate wave (NOT this build):** the voice/docs wave — VOICE_v2 revision landing, writing-skill reconciliation, and the Twilio/Sinch/Telnyx trust-line carve-out documentation. The home ships the verbatim trust line now.
-- **Pre-deploy blocker (carried):** Supabase migration `api/supabase/migrations/009_early_access_interest_tag.sql` must be applied via the SQL Editor before the next production deploy (the home final-CTA + elig waitlist inserts use `/api/early-access`).
-
-## Locked / standing rules for this build
-
-- **Home copy is verbatim** from the v10 artifact. If a line conflicts with canon (pricing / D-215 day-counts), STOP and flag — do not self-edit. (Pricing + "a few days" were pre-checked clean.)
-- **AI code snippet uses the REAL SDK signature** (`new RelayKit()` / `appointments.sendConfirmation(phone, { date, time })`), not the artifact's invented `import { relaykit }` form.
-- **Gold via tokens only** — `grep -rE "E0B010|13120E" marketing-site/` must return only the `globals.css` token defs (+ the unrelated brand-950 `#13120E` comment).
-
-## Files modified / added this session
-
-New: `marketing-site/app/messages/page.tsx`; `components/home/{hero,category-rotor,how-it-works,paperwork,pricing,final-cta,ai-section,variables-callout,section-ui}.tsx`; `components/configurator/{message-read-card.tsx,tone-pill.ts}`. Rewritten: `app/page.tsx`. Modified: `app/globals.css` (gold tokens), `app/layout.tsx` + `lib/use-theme.ts` (dark default), `components/configurator-section.tsx`, `components/configurator/category-list.tsx`, `components/configurator/{mobile-categories-modal,edit-values-modal}.tsx` (portal), `components/{top-nav,footer,bottom-email-capture,preview-list-mock}.tsx`. Deleted: `components/configurator-peek.tsx` (the rejected mockup). Canon (this branch): `DECISIONS.md`, `MASTER_PLAN.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`. Separately on `main` (not this branch): `CLAUDE.md` — commit `2688820`.
+`main` is the live production branch. `feat/marketing-home` is merged (`33048a5`) but not deleted — optional cleanup. No other branches.
 
 ## Untracked carryovers — DO NOT COMMIT
 
-Two untracked files are pre-existing carryovers from another branch, **not** marketing-home work; they have stayed untracked through every commit this session and must continue to:
-- `marketing-site/content/posts/the-feature-serious-scheduling-apps-build.mdx`
-- `.claude/settings.local.json`
+Two untracked files persist from another branch and must stay untracked: `marketing-site/content/posts/the-feature-serious-scheduling-apps-build.mdx` and `.claude/settings.local.json`.
 
-## PM review mechanic
+## Next steps
 
-`.pm-review.md` (gitignored) holds `git show HEAD` of the latest commit for PM's "gg". It is refreshed after every commit this session.
-
-## Unmerged feature branches
-
-- **`feat/marketing-home`** (local + remote, pushed, in sync) — this build. Unmerged, under preview review. Only this branch + `main` exist.
+- **PM:** review `.pm-review.md` → "gg" to push the held canon commit.
+- The marketing-home workstream is complete and live. The next substantive product pickup is **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN (unchanged by this session).
+- Two items best eyeballed in-browser on prod (client-rendered, absent from static HTML by design): the `/messages` quick-start strip render/dismiss-persist, and the mobile hamburger open/close + in-menu theme toggle.
