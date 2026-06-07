@@ -89,7 +89,7 @@ export function Hero() {
         <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
             <Eyebrow>Shipping Summer 2026</Eyebrow>
-            <h1 className="mt-5 text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
+            <h1 className="mt-5 text-balance text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
               The easiest way to add text messaging to your app.
             </h1>
             <CategoryRotor />
