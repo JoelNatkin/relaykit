@@ -71,7 +71,7 @@ export function MessagesQuickstart() {
 
   return (
     <section className="mx-auto mt-10 max-w-5xl px-6">
-      <div className="relative rounded-2xl border border-border-secondary p-7 dark:bg-bg-secondary">
+      <div className="relative rounded-2xl border border-border-secondary p-7">
         <button
           type="button"
           onClick={dismiss}
