@@ -20,7 +20,7 @@ const AI_TOOLS = [
 // code block stays inverted + monochrome (no gold) in both themes.
 function CodeCard() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border-primary bg-bg-code-surface shadow-xl">
+    <div className="overflow-hidden rounded-2xl border border-border-secondary bg-bg-code-surface shadow-xl">
       <div className="flex gap-1.5 border-b border-white/5 px-4 py-3.5" aria-hidden>
         <span className="size-2.5 rounded-full bg-bg-tertiary" />
         <span className="size-2.5 rounded-full bg-bg-tertiary" />
@@ -62,13 +62,13 @@ export function AiSection() {
       id="build"
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
-      <div className="grid items-center gap-14 lg:grid-cols-2">
+      <Eyebrow>Build</Eyebrow>
+      <div className="mt-8 grid items-start gap-14 md:mt-10 lg:grid-cols-2">
         {/* min-w-0 lets the columns shrink below their content width so the
             code block's overflow-x-auto scrolls internally instead of forcing
             horizontal page overflow on mobile (grid items default to min-w:auto). */}
         <div className="min-w-0">
-          <Eyebrow>Build</Eyebrow>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
             Give your AI tool a build spec, not a pile of docs.
           </h2>
           <p className="mt-4 text-base leading-relaxed text-text-secondary">

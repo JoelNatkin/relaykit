@@ -62,7 +62,7 @@ function Recognition() {
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-border-primary bg-bg-primary p-7 dark:bg-bg-secondary">
+        <div className="rounded-2xl border border-border-secondary bg-bg-primary p-7 dark:bg-bg-secondary">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
             What you discovered
           </div>
@@ -99,11 +99,11 @@ function Test() {
       id="test"
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
-      <div className="grid items-center gap-14 lg:grid-cols-2">
+      <Eyebrow>Prove</Eyebrow>
+      <div className="mt-8 grid items-start gap-14 md:mt-10 lg:grid-cols-2">
         <PreviewListMock />
         <div>
-          <Eyebrow>Prove</Eyebrow>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
             Run test messages through real phones.
           </h2>
           <p className="mt-4 text-base leading-relaxed text-text-secondary">
