@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 // marketing/support sections are duplicated here — the home (/) owns those.
 export default function MessagesPage() {
   return (
-    <div>
+    <div className="pb-20 sm:pb-28">
       <div className="mx-auto max-w-5xl px-6 pt-16">
         <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
           Your app&apos;s text messages, ready to copy.
