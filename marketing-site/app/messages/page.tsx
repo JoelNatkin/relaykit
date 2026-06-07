@@ -15,10 +15,10 @@ export default function MessagesPage() {
   return (
     <div className="pb-20 sm:pb-28">
       <div className="mx-auto max-w-5xl px-6 pt-16">
-        <h1 className="text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
+        <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
           Your app&apos;s text messages, ready to copy.
         </h1>
-        <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
+        <p className="mt-4 max-w-xl text-lg text-text-tertiary">
           Pick the ones you need, make the wording yours, and paste them into
           your app — free, no account.
         </p>
