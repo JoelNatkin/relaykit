@@ -39,6 +39,9 @@ function ConfiguratorCheckbox({
   const boxSize = size === "category" ? "size-5" : "size-4";
   const glyphSize = size === "category" ? "size-3" : "size-2.5";
   const borderColor = disabled ? "border-border-secondary" : "border-border-primary";
+  // Gold marks the selected CATEGORY only (D-427). Message-level (sub) checkboxes
+  // keep the neutral D-405 form-control treatment, gold or not.
+  const goldChecked = size === "category" && checked && !disabled;
   return (
     <span className={`relative mt-0.5 inline-flex ${boxSize} shrink-0`}>
       <input
@@ -47,14 +50,20 @@ function ConfiguratorCheckbox({
         readOnly
         tabIndex={-1}
         disabled={disabled}
-        className={`${boxSize} appearance-none rounded border ${borderColor} bg-bg-primary dark:bg-bg-secondary`}
+        className={`${boxSize} appearance-none rounded border ${
+          goldChecked
+            ? "border-border-gold bg-bg-gold"
+            : `${borderColor} bg-bg-primary dark:bg-bg-secondary`
+        }`}
       />
       {checked ? (
         <svg
           viewBox="0 0 10 10"
           fill="none"
           aria-hidden
-          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} text-text-primary`}
+          className={`pointer-events-none absolute inset-0 m-auto ${glyphSize} ${
+            goldChecked ? "text-text-on-gold" : "text-text-primary"
+          }`}
         >
           <path
             d="M1.75 5.25 4 7.25 8.25 2.75"

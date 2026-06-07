@@ -16,6 +16,8 @@ That is the whole thesis. Every phase serves it. If a phase stops serving it, we
 
 The North Star is RelayKit's eventual purpose — serving any independent developer who needs SMS. Launch is the live, integrated product: a developer clones a supported starter kit, integrates RelayKit end to end, and goes from clone to paid live texts. Launch ships on a curated set of starter kits rather than a single one — triangulating the most common kits so the product is proven against more than one codebase shape (count and identity TBD; see golden-path GTM work). All nine message categories are live; the corpus is complete and is not a launch variable. Neither verification nor marketing is RelayKit's identity — both are fully offered, each may have its own landing page, but the brand sits above them as the layer that lets builders add SMS (D-416, D-417). Distribution leans on embedding RelayKit into existing successful starter kits rather than building our own — the Resend playbook. The message-authoring configurator is a complete, free, standalone product today; launch (per D-416) refers specifically to the integrated paid product, which is the upsell.
 
+Marketing surfaces (artifacts, not a phase): the public marketing home lives at `/` and the free configurator tool at `/messages` (split per D-428); the home is rebuilt from the v10 design and introduces a single metallic-gold accent over the D-405 monochrome system (D-427).
+
 ## Customer values, ranked
 
 1. **Fast registration** — Sinch's ~3 day approval vs. Twilio's weeks. The single biggest differentiator.

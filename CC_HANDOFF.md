@@ -1,65 +1,88 @@
-# CC_HANDOFF — PM workflow methodology waves (Session 125)
+# CC_HANDOFF — Marketing-home rebuild (Session 127)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
+> This session it is kept current at every wave/commit boundary (not saved for close-out), because the work is a long multi-round build on an unmerged branch and the session has already hit one transient error — the next CC must not be blind to it.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 3 (incl. this close-out) | Files modified: 6 distinct | Decisions added: 0 | External actions: 2 (push ×2)
+**Session metrics:** Commits: 12 (11 on `feat/marketing-home` incl. this close-out + 1 on `main` `2688820`) | Files modified: ~26 distinct (mostly `marketing-site/`; + CLAUDE.md on main) | Decisions added: 2 (D-427, D-428) | External actions: push ×8 (branch + 4 review rounds + handoff refresh + main + this close-out), Vercel previews polled per branch push
 
-**Status:** Doc-only PM-methodology session. Two PM-driven waves landed the MCP-era workflow shifts into canon (CLAUDE.md + PM_PROJECT_INSTRUCTIONS.md), plus the `.pm/` infrastructure (gitignored PM worktable + plan-file redirect). No product code touched; no new decisions. `main` pushed and in sync.
+**Status:** Building the new marketing home on branch **`feat/marketing-home`** (off `main`). **NOT merged.** A live Vercel preview is under PM/Joel review; we are iterating on review feedback. Do **not** merge until PM approves the preview. **`main` advanced by `2688820`** ("docs: harden CC_HANDOFF wave-boundary update rule in CLAUDE.md") — a standalone methodology-doc edit committed directly to main, unrelated to the home build; this branch is behind main by that one commit. No conflict expected at merge (the branch never touched CLAUDE.md).
+
+**Latest preview (HEAD `43d3c2b`):** `https://relaykit-marketing-site-gvzi2mj24-joelnatkins-projects.vercel.app` (401 to anonymous = Vercel preview protection — open signed into Vercel). Each push gets a fresh preview URL; fetch the current one via `gh api repos/JoelNatkin/relaykit/deployments?sha=$(git rev-parse HEAD)` → latest deployment → `/statuses` → `environment_url`.
 
 ---
 
+## What this build is
+
+`/` is rebuilt from the `relaykit-home-v10.html` design artifact (copy taken **verbatim**) in the real stack. The full message configurator (the free standalone tool) moved to **`/messages`**; the home shows the **real** configurator in a clipped window (see top gotcha). One new chromatic accent — **Metallic Gold `#E0B010`** — was introduced over the D-405 monochrome base, the first chromatic accent since D-405. Dark mode is now the **site-wide default**.
+
 ## Commits this session (top = newest)
 
-- **(this close-out commit)** — **docs**: Session 125 CC_HANDOFF overwrite.
-- `bc5f17e` — **docs**: MCP-era workflow wave. Message describes the *deferred* wave (shifts 2 & 8 + plansDirectory + tier-label cleanup), but the commit **also contains the earlier 6-shift PM-doc revision** — see gotcha. Net across the file set: −18 lines (deferred portion); PM doc overall 487→466.
-- `d35064e` — **chore**: gitignore `.pm/` for PM browser-chat handoff artifacts (`.pm/PM_HANDOFF.md`, `.pm/AUDIT_NOTES.md`, `.pm/plans/`).
+- `43d3c2b` — **fix (review 4):** mobile + light-mode. Mobile peek height 560→640; mobile full-page modals (categories + edit-values) portal to `document.body`; BUILD section `min-w-0` (mobile overflow); hero phone screen forced dark in light mode; variables-callout token text → mode-aware.
+- `506a2c0` — **fix (review 3):** BUILD even 50/50; peek top offset 150→64px (clean top); gold scoped to **category** checkbox only (message-level neutral); variables template in cards; bigger headline / narrower body.
+- `baa5982` — **fix (review 2):** **deleted the hand-built `configurator-peek.tsx`**; home now embeds the REAL `<ConfiguratorSection/>` clipped. Recognition arrows green; how-it-works/preview-invite/pricing-STAGE gold.
+- `47563c6` — **fix (review 1):** widened the gold accent system (D-427 rewritten in place); made the peek strip + variables callout use the real corpus.
+- `2da38af` — **Wave 4 (docs):** MASTER_PLAN one-liner for the marketing-home deliverable + REPO_INDEX meta bump (decision count 343 / branch state).
+- `6401d28` — **Wave 3:** full v10 home (`components/home/*` sections) + configurator peek + real SDK snippet.
+- `4c4c8c0` — **Wave 2 (D-428):** route split — `/` stub + new `/messages`; nav/footer Messages links; dark default site-wide.
+- `15a42c1` — **Wave 1 (D-427):** gold token in `globals.css` + 3 configurator gold sites + message-card spacing 12→16px.
+- `684df6d` — **Wave 0:** byte-identical extraction of `MessageReadCard` + `tone-pill` from `configurator-section.tsx`.
 
-(Everything below `d35064e` is Session 124 — `89380a0` and earlier.)
-
-## Done this session
-
-Two waves, both PM-gated, reflecting PM's new live filesystem-MCP read access to the repo:
-
-1. **PM_PROJECT_INSTRUCTIONS revision** (6 of 8 MCP-era shifts + 3 principles). Applied shifts **1** (PM_HANDOFF = live on-disk ambient worktable), **3** (read-on-demand via MCP; killed the Tier-1/2/3 upload ritual), **4** (three-mode Audits section), **5** (three-user ownership), **6** (no-guessing), **7** (librarianship-first). Principles folded in: three-user ownership, no-guessing, librarianship. Inverted "File Requests: Ask, Don't Assume" → "File Access: PM Ranges". One-source cuts ("What RelayKit Is" + "The Codebase" → pointers). Net −16 lines (487→470). **This wave was uncommitted at the time and rode into `bc5f17e`.**
-
-2. **Paired CLAUDE.md + PM wave** (`bc5f17e`) — the deferred shifts:
-   - **Shift 2** — PM reads `.pm-review.md` from disk via MCP on Joel's **"gg"** (go get); CC's write behavior unchanged. Updated both Review-Cadence sections + added a "gg" shorthand row.
-   - **Shift 8** — CC close-out shrunk to **ambient-maintenance + verify/ship**. Canon (DECISIONS, PROTOTYPE_SPEC, PRODUCT_SUMMARY, REPO_INDEX, CC_HANDOFF) is now maintained *as the work happens*, not written at session end. Drift-watch definition relocated to its own subsection beside Retirement sweep.
-   - **Item A** — `plansDirectory: "./.pm/plans"` in `.claude/settings.json` so plan-mode plans land repo-local + gitignored (PM-readable via MCP). Documented in CLAUDE.md. `.pm/plans/` created.
-   - **Item B** — REPO_INDEX stale `(Tier 1 project knowledge)` → `(Claude.ai project knowledge)` ×2 (dead tier model). The briefed "line-17 Tier-2 block" did not exist; corrected to the real minimal fix.
-   - Net −18 lines across the 4 files.
-3. **`.pm/` infrastructure** — directory created + gitignored (`d35064e`); `.pm/PM_HANDOFF.md` is now PM's live worktable (PM-authored, gitignored).
-
-## In progress / not started
-
-- None mid-flight. All committed and pushed.
-
-## Quality checks
-
-- `tsc --noEmit` / `eslint`: **skipped (doc-only session)** — no `.ts/.tsx` touched.
-- Cross-doc consistency verified via grep: no "paste into PM chat" survives in either canon doc; "gg" present in all three target spots; shift-8 anchors present in both; drift-watch preserved (not orphaned); `settings.json` valid JSON with `permissions` intact.
+(Everything below `684df6d` is Session 125 / `main`.)
 
 ## Decisions added
 
-None. Workflow methodology, not product — nothing resolved a product alternative (fails the seven gate tests). The shifts change how PM/CC operate, not what RelayKit ships.
+- **D-427** — Metallic-gold accent system over the D-405 monochrome base. **Supersedes: none** (amendment). D-405 marked `⚠ Amended by D-427` in the same commit. NOTE: title/wording were **already widened** from the original "four sites" to "accent system" in `47563c6` — see accent-system gotcha for the one remaining enumeration gap.
+- **D-428** — Marketing home at `/`; configurator tool at `/messages`. **Supersedes: D-379 (partial)** — narrows D-379's "home is the full product, not a teaser" placement claim. D-379 marked `⚠ Partially superseded by D-428` in the same commit. (PM-approved the partial-supersession call mid-session.)
 
-## Gotchas
+## Top gotcha for the next CC
 
-- **`bc5f17e` bundles two waves; its message names only one.** The earlier 6-shift PM-doc revision was reported "not committed, ready for review," then sat uncommitted in the working tree and was swept into `bc5f17e` when the deferred wave was staged (`git add PM_PROJECT_INSTRUCTIONS.md` caught both). The commit is already pushed, so the message wasn't amended (would need force-push). If you grep history: `bc5f17e`'s PM-doc diff is 487→466 (both waves), not just the deferred ~20 lines.
-- **The "gg" disk-read mechanic is now live.** `.pm-review.md` currently holds `git show` of `bc5f17e` (approved + pushed). This session was its proof-of-concept; the paste rotation is retired.
-- **Two trims owed (both pre-existing, neither blocking):** CLAUDE.md 224 vs its 200 ceiling (this wave net +1, structural for list rendering — separate trim audit owed per CLAUDE.md's own rule); PM_PROJECT_INSTRUCTIONS 466 vs its 400 ceiling (dedicated trim wave still owed).
-- **`api/node_modules/` still untracked + not gitignored** (root `.gitignore` uses anchored `/node_modules`). One-line fix: unanchored `node_modules/`. Carried in `.pm/PM_HANDOFF.md`; deferred to Joel.
+**The configurator PEEK on the home must be the REAL `<ConfiguratorSection/>`** — the exact component `/messages` renders — embedded in a fixed-height (`h-[640px]`) `overflow-hidden` window in `app/page.tsx`, offset up (`-mt-[64px]`, trims the configurator's deterministic 80px `pt-20`) so it opens cleanly on the tool. It is NOT a recreation of the v10 HTML mockup. **Rebuilding it as a mockup was attempted and rejected across ~3 review rounds** — do not regress to a hand-built peek. The window is one instance, fully interactive, and shares `relaykit_configurator` / `relaykit_elig` localStorage with `/messages` (deliberate — continuity of intent, MASTER_PLAN #7; routes never co-mount).
 
-## Files modified this session
+## Accent system (gold expanded past D-427's original "four sites")
 
-`.gitignore`, `.claude/settings.json`, `CLAUDE.md`, `PM_PROJECT_INSTRUCTIONS.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`. (Plus gitignored, untracked: `.pm/PM_HANDOFF.md`, `.pm/plans/`, `.pm-review.md`.)
+Gold now marks, via tokens (`--color-gold` etc., no raw hex outside `globals.css`): primary CTAs, the peek "Open the configurator →" link, **category** checkbox (not message-level), selected tone pill, section eyebrow dots, how-it-works progress bars, "RelayKit handles them." resolve line, paperwork featured-icon backgrounds (tint), pricing-includes checkmarks, AI code-snippet identifier highlight, preview-list "Invited" dot, and pricing **STAGE 1/2 labels**. Plus D-405 **semantic** colors carry status/meaning: **green** (Delivered / Verified), **red** (recognition friction markers). D-427 already describes the system, BUT its enumeration was written before the round-3 STAGE-labels addition — **owed: add the pricing STAGE labels to D-427's enumeration** (minor; the decision is otherwise current).
+
+## In progress / done-awaiting-verification
+
+Round-4 fixes are all **committed in `43d3c2b`** and built clean; they await PM confirmation on the preview:
+- Mobile peek height 560→640px — **done.**
+- Mobile category-modal chrome rendering at the bottom — **done** (fixed by portaling both mobile modals to `body`; was peek-specific, `/messages` was unaffected).
+- BUILD section mobile horizontal overflow — **done** (`min-w-0` on grid columns so the code block scrolls internally).
+- Light-mode hero phone screen rendering white — **done** (scoped `dark` class on the screen element; frame still follows page).
+- Light-mode variables-callout token text unreadable — **done** (`text-text-white` → `text-text-primary`).
+
+Open question raised to PM, not blocking: whether **PROVE** section wants vertical top-alignment (its grid is already 50/50 by width).
+
+## Pending / next steps
+
+- **Wave 4 is already done** (`2da38af`): MASTER_PLAN one-liner + REPO_INDEX meta bump. The per-wave verification list (tsc / eslint / build / hex no-leak grep) has been run green on every wave + review round.
+- **Next:** await PM/Joel preview approval → **merge `feat/marketing-home` to `main`** (do not merge unprompted). `main` is 1 commit ahead (`2688820`, a CLAUDE.md methodology edit) — a normal merge/rebase incorporates it cleanly; no conflict (the branch never touched CLAUDE.md).
+- **Owed at merge** (deferred so they describe the final, stabilized state): PROTOTYPE_SPEC home/routing rewrite + the accent-system note; PRODUCT_SUMMARY (the `/` vs `/messages` split changes customer experience); the fuller REPO_INDEX file-inventory for `components/home/*` + `/messages`; and adding STAGE labels to D-427's enumeration.
+- **Deferred to a separate wave (NOT this build):** the voice/docs wave — VOICE_v2 revision landing, writing-skill reconciliation, and the Twilio/Sinch/Telnyx trust-line carve-out documentation. The home ships the verbatim trust line now.
+- **Pre-deploy blocker (carried):** Supabase migration `api/supabase/migrations/009_early_access_interest_tag.sql` must be applied via the SQL Editor before the next production deploy (the home final-CTA + elig waitlist inserts use `/api/early-access`).
+
+## Locked / standing rules for this build
+
+- **Home copy is verbatim** from the v10 artifact. If a line conflicts with canon (pricing / D-215 day-counts), STOP and flag — do not self-edit. (Pricing + "a few days" were pre-checked clean.)
+- **AI code snippet uses the REAL SDK signature** (`new RelayKit()` / `appointments.sendConfirmation(phone, { date, time })`), not the artifact's invented `import { relaykit }` form.
+- **Gold via tokens only** — `grep -rE "E0B010|13120E" marketing-site/` must return only the `globals.css` token defs (+ the unrelated brand-950 `#13120E` comment).
+
+## Files modified / added this session
+
+New: `marketing-site/app/messages/page.tsx`; `components/home/{hero,category-rotor,how-it-works,paperwork,pricing,final-cta,ai-section,variables-callout,section-ui}.tsx`; `components/configurator/{message-read-card.tsx,tone-pill.ts}`. Rewritten: `app/page.tsx`. Modified: `app/globals.css` (gold tokens), `app/layout.tsx` + `lib/use-theme.ts` (dark default), `components/configurator-section.tsx`, `components/configurator/category-list.tsx`, `components/configurator/{mobile-categories-modal,edit-values-modal}.tsx` (portal), `components/{top-nav,footer,bottom-email-capture,preview-list-mock}.tsx`. Deleted: `components/configurator-peek.tsx` (the rejected mockup). Canon (this branch): `DECISIONS.md`, `MASTER_PLAN.md`, `REPO_INDEX.md`, `CC_HANDOFF.md`. Separately on `main` (not this branch): `CLAUDE.md` — commit `2688820`.
+
+## Untracked carryovers — DO NOT COMMIT
+
+Two untracked files are pre-existing carryovers from another branch, **not** marketing-home work; they have stayed untracked through every commit this session and must continue to:
+- `marketing-site/content/posts/the-feature-serious-scheduling-apps-build.mdx`
+- `.claude/settings.local.json`
+
+## PM review mechanic
+
+`.pm-review.md` (gitignored) holds `git show HEAD` of the latest commit for PM's "gg". It is refreshed after every commit this session.
 
 ## Unmerged feature branches
 
-None. Only `main` (local + remote), in sync.
-
-## Suggested next tasks
-
-**Priority list lives in `.pm/PM_HANDOFF.md`** — PM just refreshed it (session-open reads, current state, what's-next, carry-forwards). Read that first. Headline items it carries: Sinch TFN email + no-EIN/sole-prop plumbing; blog posts; legal follow-ups (`LEGAL_EXPOSURE_REMEDIATION.md` §3.2 + §3.4–§3.6); marketing page polish; compliance-toggle exploration (scaffold to `/explorations/` first); and the two doc trims above. The substantive build pickup remains **Phase 2 — Session B (Sinch outbound delivery)**.
+- **`feat/marketing-home`** (local + remote, pushed, in sync) — this build. Unmerged, under preview review. Only this branch + `main` exist.
