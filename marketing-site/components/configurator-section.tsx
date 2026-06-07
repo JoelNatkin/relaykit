@@ -340,7 +340,7 @@ export function ConfiguratorSection() {
           interestTag={eligInterestTag(eligState)}
         />
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="mb-4 text-2xl font-bold tracking-tight text-text-primary">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight text-text-primary">
             Write your messages
           </h2>
 
