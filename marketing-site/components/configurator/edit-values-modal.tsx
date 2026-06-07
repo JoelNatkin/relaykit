@@ -18,6 +18,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { XClose } from "@untitledui/icons";
 import type { Category } from "@/lib/message-library";
 import {
@@ -83,9 +84,12 @@ export function EditValuesModal({
     return () => document.removeEventListener("keydown", handleKey);
   }, [isOpen, onClose]);
 
-  if (!isOpen || !category) return null;
+  if (!isOpen || !category || typeof document === "undefined") return null;
 
-  return (
+  // Portaled to <body> so the fixed modal escapes any clipped/offset ancestor
+  // (e.g. the home configurator peek's overflow-hidden window) and positions
+  // against the true viewport. Harmless on /messages where there is no clip.
+  return createPortal(
     <>
       {/* Backdrop — dead on full-screen mobile but kept for symmetry with
           MobileCategoriesModal / the waitlist modal. */}
@@ -123,6 +127,7 @@ export function EditValuesModal({
           />
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   );
 }

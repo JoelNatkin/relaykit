@@ -63,7 +63,10 @@ export function AiSection() {
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
       <div className="grid items-center gap-14 lg:grid-cols-2">
-        <div>
+        {/* min-w-0 lets the columns shrink below their content width so the
+            code block's overflow-x-auto scrolls internally instead of forcing
+            horizontal page overflow on mobile (grid items default to min-w:auto). */}
+        <div className="min-w-0">
           <Eyebrow>Build</Eyebrow>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
             Give your AI tool a build spec, not a pile of docs.
@@ -109,7 +112,7 @@ export function AiSection() {
             Slots into ShipFast, Supastarter, MakerKit, and Vercel + Supabase.
           </p>
         </div>
-        <div>
+        <div className="min-w-0">
           <CodeCard />
           <p className="mt-3.5 font-mono text-sm text-text-tertiary">
             That&apos;s the send.

@@ -161,7 +161,7 @@ export default function MarketingHome() {
             opens cleanly on its own header — no cut type. One instance only
             (shared localStorage with /messages = continuity of intent). Fully
             interactive; only the height is fixed. */}
-        <div className="relative mt-8 h-[560px] overflow-hidden rounded-2xl border border-border-primary md:mt-10 md:h-[640px]">
+        <div className="relative mt-8 h-[640px] overflow-hidden rounded-2xl border border-border-primary md:mt-10">
           <div className="-mt-[64px]">
             <ConfiguratorSection />
           </div>

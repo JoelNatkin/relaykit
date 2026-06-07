@@ -19,7 +19,11 @@ function PhoneMock() {
   return (
     <div className="flex justify-center">
       <div className="w-[280px] rounded-[2.5rem] border border-border-primary bg-bg-secondary p-3 shadow-2xl">
-        <div className="flex h-[520px] flex-col gap-3 overflow-hidden rounded-[2rem] bg-bg-primary p-4">
+        {/* The phone SCREEN stays dark in both page themes (it's an SMS app on
+            a phone). Scoping `dark` here makes every semantic token inside the
+            screen resolve to its dark-mode value regardless of page mode; the
+            frame above follows the page theme normally. */}
+        <div className="dark flex h-[520px] flex-col gap-3 overflow-hidden rounded-[2rem] bg-bg-primary p-4">
           <div className="flex justify-between font-mono text-[0.7rem] text-text-quaternary">
             <span>9:41</span>
             <span>5G</span>

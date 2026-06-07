@@ -27,7 +27,8 @@ const EXAMPLES: Example[] = [
 
 // Template: regular font for words; only the {{token}} segments render in mono
 // with a slight gold-tint background (same tint as the "What we handle"
-// featured-icon backgrounds) + white token text.
+// featured-icon backgrounds) + mode-aware primary token text (dark in light
+// mode, light in dark mode).
 function TemplateForm({ body }: { body: string }) {
   return (
     <>
@@ -39,7 +40,7 @@ function TemplateForm({ body }: { body: string }) {
           return match ? (
             <span
               key={i}
-              className="rounded bg-bg-gold/15 px-1.5 py-0.5 font-mono text-[0.82rem] text-text-white"
+              className="rounded bg-bg-gold/15 px-1.5 py-0.5 font-mono text-[0.82rem] text-text-primary"
             >
               {match[1]}
             </span>
