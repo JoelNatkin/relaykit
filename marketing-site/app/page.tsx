@@ -46,7 +46,7 @@ function Recognition() {
       <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-border-secondary bg-bg-primary p-7 dark:bg-bg-secondary">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-            What you expected
+            You expected it to take days
           </div>
           <ul className="grid gap-3">
             {EXPECTED.map((item) => (
@@ -64,7 +64,7 @@ function Recognition() {
         </div>
         <div className="rounded-2xl border border-border-secondary bg-bg-primary p-7 dark:bg-bg-secondary">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-            What you discovered
+            You discovered that it took weeks
           </div>
           <ul className="grid gap-3">
             {DISCOVERED.map((item) => (
