@@ -115,7 +115,7 @@ The repo-root `README.md` may paraphrase one-sentence summaries from any of thes
 ### When this index drifts
 If PM or CC discovers two docs that both claim canonical ownership of the same topic, flag for PM judgment per the One Source Rule. Update this index and the canonical doc together; never silently override.
 
-## marketing-site blog (new — Session 89)
+## marketing-site blog (new — Session 89; last post 2026-06-08, Session 128)
 
 V1 blog scaffold per D-387 (in-repo MDX) and D-388 (cluster-primary taxonomy), built on branch `feat/blog-scaffold` (merged to main Session 90). Files added to the `marketing-site/` app:
 
@@ -134,7 +134,7 @@ V1 blog scaffold per D-387 (in-repo MDX) and D-388 (cluster-primary taxonomy), b
 | `lib/blog/format.ts` | Shared date formatter. |
 | `lib/blog/mdx-components.tsx` | MDX element → styled component map (hand-rolled prose). |
 | `components/blog/*` | `mdx-content`, `prose`, `post-header`, `post-card`, `cluster-badge`, `lane-badge`, `json-ld`. |
-| `content/posts/*.mdx` | Blog posts (1 published: `adding-text-messages-to-your-app-shouldnt-take-a-month.mdx`). |
+| `content/posts/*.mdx` | Blog posts (2 published: `adding-text-messages-to-your-app-shouldnt-take-a-month.mdx` (compliance-registration / supply) + `we-put-our-best-tool-in-front-of-everyone.mdx` (worldview / worldview — added Session 128, 2026-06-08, merged to `main`)). |
 | `public/blog-og-default.png` | Static brand-default OG image. |
 
 Modified: `app/layout.tsx` (added `metadataBase`); `components/footer.tsx` (Blog link, "Resources" column); `package.json` (new deps: `next-mdx-remote` v6, `gray-matter`, `reading-time`, `remark-gfm`, `remark-smartypants`, `rehype-pretty-code`, `shiki`, `feed`); `.env.example` (`NEXT_PUBLIC_SITE_URL`).
