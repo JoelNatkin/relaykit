@@ -134,7 +134,7 @@ V1 blog scaffold per D-387 (in-repo MDX) and D-388 (cluster-primary taxonomy), b
 | `lib/blog/format.ts` | Shared date formatter. |
 | `lib/blog/mdx-components.tsx` | MDX element → styled component map (hand-rolled prose). |
 | `components/blog/*` | `mdx-content`, `prose`, `post-header`, `post-card`, `cluster-badge`, `lane-badge`, `json-ld`. |
-| `content/posts/*.mdx` | Blog posts (2 published: `adding-text-messages-to-your-app-shouldnt-take-a-month.mdx` (compliance-registration / supply) + `we-put-our-best-tool-in-front-of-everyone.mdx` (worldview / worldview — added Session 128, 2026-06-08, merged to `main`)). |
+| `content/posts/*.mdx` | Blog posts (3 published: `adding-text-messages-to-your-app-shouldnt-take-a-month.mdx` (compliance-registration / supply) + `we-put-our-best-tool-in-front-of-everyone.mdx` (worldview / worldview) + `the-feature-that-serious-scheduling-apps-eventually-build.mdx` (vertical-patterns / demand, dated 2026-06-04) — the latter two added Session 128, 2026-06-08, straight to `main`). |
 | `public/blog-og-default.png` | Static brand-default OG image. |
 
 Modified: `app/layout.tsx` (added `metadataBase`); `components/footer.tsx` (Blog link, "Resources" column); `package.json` (new deps: `next-mdx-remote` v6, `gray-matter`, `reading-time`, `remark-gfm`, `remark-smartypants`, `rehype-pretty-code`, `shiki`, `feed`); `.env.example` (`NEXT_PUBLIC_SITE_URL`).
