@@ -72,7 +72,7 @@ function PreviewForm({ body, variables }: Example) {
 
 export function VariablesCallout() {
   return (
-    <div className="mt-10">
+    <div className="mt-16">
       <div className="text-2xl font-semibold tracking-tight text-text-primary">
         See exactly what customers will receive.
       </div>
