@@ -90,7 +90,7 @@ function RulesCard({
   onRequest,
 }: RulesCardProps) {
   return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
+    <div className="rounded-xl border border-border-secondary bg-surface-card p-4 shadow-xs">
       <div className="flex items-start gap-2">
         <InfoCircle className="mt-0.5 size-4 shrink-0 text-fg-quaternary" />
         <div className="flex-1">

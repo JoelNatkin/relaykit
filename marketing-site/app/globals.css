@@ -162,6 +162,17 @@
      home-page CodeSample reads as a contained, inverted surface. */
   --color-bg-code-surface: var(--color-brand-900);
 
+  /* SEMANTIC SURFACE COLORS — design-refresh depth ladder (warm neutral).
+     A 4-tier elevation scale for the configurator (and later the home):
+     page (deepest) < card < inset panels < message cards (most lifted).
+     Light mode uses conventional light elevation (white cards on a faint
+     page); the warm shift lives in the .dark block below. Extends D-405's
+     Gray Warm system — value carries depth, no chromatic accent. */
+  --color-surface-page: var(--color-brand-50);
+  --color-surface-card: var(--color-brand-25);
+  --color-surface-inset: var(--color-brand-100);
+  --color-surface-raised: var(--color-brand-25);
+
   /* FEATURED ICON COLORS */
   --color-featured-icon-light-fg-brand: var(--color-brand-600);
   --color-featured-icon-light-fg-gray: var(--color-brand-500);
@@ -257,6 +268,14 @@
 
   /* Code-block surface stays a lifted dark surface in dark mode too. */
   --color-bg-code-surface: var(--color-brand-900);
+
+  /* SURFACE — warm depth ladder (dark). Slightly warmer than the cool
+     brand-900..950 steps; value-not-hue, still within D-405. surface-page
+     is the OPEN TUNING VALUE — dial warmth/darkness on this one line. */
+  --color-surface-page: rgb(22 19 15); /* #16130F — warmer + a hair lighter than brand-950 (#13120E) */
+  --color-surface-card: rgb(29 25 20); /* #1D1914 — tool container, lifted off the page */
+  --color-surface-inset: rgb(34 29 23); /* #221D17 — categories panel + setup zone */
+  --color-surface-raised: rgb(40 34 27); /* #28221B — message cards, most lifted (carry the shadow) */
 
   /* FEATURED ICON */
   --color-featured-icon-light-fg-brand: var(--color-brand-400);
