@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Copy01, Plus } from "@untitledui/icons";
+import { ChevronDown, ChevronUp, Copy01, Edit01, Plus } from "@untitledui/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
@@ -400,19 +400,24 @@ export function ConfiguratorSection() {
               {hasSetupSelection && !setupEditing ? (
                 <div className="flex items-center justify-between gap-3">
                   <p className="min-w-0 truncate text-sm text-text-secondary">
-                    {[
-                      state.businessName.trim(),
-                      (selectedSubVertical ?? selectedVertical)?.name,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
+                    {state.businessName.trim() ? (
+                      <span className="font-semibold">
+                        {state.businessName.trim()}
+                      </span>
+                    ) : null}
+                    {state.businessName.trim() &&
+                    (selectedSubVertical ?? selectedVertical)?.name
+                      ? " · "
+                      : null}
+                    {(selectedSubVertical ?? selectedVertical)?.name ?? null}
                   </p>
                   <button
                     type="button"
                     onClick={() => setSetupEditing(true)}
-                    className="shrink-0 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                    aria-label="Edit"
+                    className="shrink-0 cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
                   >
-                    Edit
+                    <Edit01 className="size-[17px]" />
                   </button>
                 </div>
               ) : (
