@@ -38,6 +38,9 @@ function ConfiguratorCheckbox({
 }) {
   const boxSize = size === "category" ? "size-5" : "size-4";
   const glyphSize = size === "category" ? "size-3" : "size-2.5";
+  // Large category boxes get a slightly thicker stroke; sub (message-level)
+  // boxes keep the 1px default untouched.
+  const borderWidth = size === "category" ? "border-[1.5px]" : "border";
   const borderColor = disabled ? "border-border-secondary" : "border-border-primary";
   // Gold marks the selected CATEGORY only (D-427). Message-level (sub) checkboxes
   // keep the neutral D-405 form-control treatment, gold or not.
@@ -50,7 +53,7 @@ function ConfiguratorCheckbox({
         readOnly
         tabIndex={-1}
         disabled={disabled}
-        className={`${boxSize} appearance-none rounded border ${
+        className={`${boxSize} appearance-none rounded ${borderWidth} ${
           goldChecked
             ? "border-border-gold bg-bg-gold"
             : `${borderColor} bg-bg-primary dark:bg-bg-secondary`
