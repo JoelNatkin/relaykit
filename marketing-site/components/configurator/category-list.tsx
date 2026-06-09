@@ -89,6 +89,10 @@ export interface CategoryListProps {
   // suppresses the column's own h3 to avoid a doubled heading. Desktop
   // renders with the default (heading visible).
   showHeading?: boolean;
+  // When false, checked categories do NOT expand their per-message rows —
+  // the panel stays flat. Default true (the live tool expands on check); the
+  // static hero graphic opts out to keep a compact flat panel.
+  expandChecked?: boolean;
 }
 
 export function CategoryList({
@@ -96,6 +100,7 @@ export function CategoryList({
   onCategoryToggle,
   onMessageToggle,
   showHeading = true,
+  expandChecked = true,
 }: CategoryListProps) {
   return (
     <>
@@ -151,7 +156,7 @@ export function CategoryList({
               </div>
             )}
 
-            {authored && checked ? (
+            {authored && checked && expandChecked ? (
               <div className="mt-3 space-y-2 pl-7">
                 {category.messages.map((message) => {
                   const messageChecked =
