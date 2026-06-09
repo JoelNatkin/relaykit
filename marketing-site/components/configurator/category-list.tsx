@@ -82,18 +82,27 @@ export interface CategoryListProps {
   state: ConfiguratorState;
   onCategoryToggle: (categoryId: string) => void;
   onMessageToggle: (categoryId: string, messageId: string) => void;
+  // The mobile sheet provides its own "Categories" header row, so it
+  // suppresses the column's own h3 to avoid a doubled heading. Desktop
+  // renders with the default (heading visible).
+  showHeading?: boolean;
 }
 
 export function CategoryList({
   state,
   onCategoryToggle,
   onMessageToggle,
+  showHeading = true,
 }: CategoryListProps) {
   return (
     <>
-      <div className="px-4 pt-5">
-        <h3 className="text-base font-semibold text-text-primary">Categories</h3>
-      </div>
+      {showHeading ? (
+        <div className="px-4 pt-5">
+          <h3 className="text-base font-semibold text-text-primary">
+            Categories
+          </h3>
+        </div>
+      ) : null}
 
       {CATEGORIES.map((category) => {
         const catState = state.categories[category.id];
