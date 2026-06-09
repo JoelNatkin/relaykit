@@ -473,7 +473,7 @@ export function ConfiguratorSection() {
               </div>
 
               {/* Messages column */}
-              <div className="flex flex-col md:max-w-[540px]">
+              <div className="flex flex-col md:max-w-[500px]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
                   {PAGE_TONES.map((tone) => (
