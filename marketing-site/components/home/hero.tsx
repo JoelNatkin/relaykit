@@ -24,7 +24,7 @@ export function Hero() {
         style={DOT_GRID_STYLE}
         aria-hidden
       />
-      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[560px]">
+      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[680px]">
         {/* Two columns on lg: copy left, configurator peek right. items-start
             keeps both top-aligned; the peek is confined to the right column so
             it can NEVER overlap the copy at any width. */}
@@ -56,15 +56,16 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Configurator product peek — desktop only. The graphic is absolute
-              inside this right column (top-anchored, so the header + categories
-              + Verification cards show and the rest of the card bleeds off the
-              BOTTOM) and scaled down to read as a tasteful peek. It bleeds off
-              the right edge into the gutter, clipped by the section's
-              overflow-hidden. Confined to this column, so the copy is never
-              overlapped. Width / scale / top offset are visual tunables. */}
+          {/* Configurator product peek — desktop only. A bounded, rounded,
+              overflow-clipped WINDOW that gives the card its own visible edges:
+              the rounded top-left + bottom-left corners both show and the
+              bottom sits above the hero's bottom (NOT a flat section slice).
+              Positioned lower (negative space above) and scaled to a peek; only
+              the RIGHT side runs off the viewport, clipped by the section's
+              overflow-hidden. Confined to this column → never overlaps the copy.
+              top / height / width / scale are visual tunables. */}
           <div className="relative hidden lg:block">
-            <div className="pointer-events-none absolute left-0 top-6 w-[860px] origin-top-left scale-[0.8]">
+            <div className="pointer-events-none absolute left-0 top-[140px] h-[480px] w-[920px] origin-top-left scale-[0.85] overflow-hidden rounded-[22px] shadow-2xl">
               <HeroConfiguratorGraphic />
             </div>
           </div>
