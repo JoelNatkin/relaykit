@@ -71,7 +71,7 @@ export function MessagesQuickstart() {
 
   return (
     <section className="mx-auto mt-10 max-w-5xl px-6">
-      <div className="relative rounded-2xl border border-border-secondary p-7">
+      <div className="relative rounded-2xl border border-border-secondary bg-surface-card p-7">
         <button
           type="button"
           onClick={dismiss}
@@ -88,12 +88,12 @@ export function MessagesQuickstart() {
 
         <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step) => (
-            <div key={step.label} className="relative pt-6">
-              <div className="absolute inset-x-0 top-0 h-0.5 bg-border-primary" aria-hidden>
-                <div className={`h-full bg-bg-gold ${step.fill}`} />
-              </div>
+            <div key={step.label}>
               <div className="font-mono text-xs tracking-[0.12em] text-text-tertiary">
                 {step.label}
+              </div>
+              <div className="mt-3 h-0.5 w-full bg-border-primary" aria-hidden>
+                <div className={`h-full bg-bg-gold ${step.fill}`} />
               </div>
               <h3 className="mt-4 text-lg font-semibold text-text-primary">
                 {step.title}
