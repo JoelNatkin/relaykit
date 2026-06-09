@@ -1,6 +1,14 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Copy01, Edit01, Plus } from "@untitledui/icons";
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Copy01,
+  Edit01,
+  InfoCircle,
+  Plus,
+} from "@untitledui/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
@@ -19,6 +27,10 @@ import { EditValuesForm } from "@/components/configurator/edit-values-form";
 import { EditValuesModal } from "@/components/configurator/edit-values-modal";
 import { KebabMenu } from "@/components/configurator/kebab-menu";
 import { EligSection } from "@/components/configurator/elig-section";
+import {
+  EligVerdictCard,
+  getAdvisory,
+} from "@/components/configurator/elig-verdict-card";
 import { EligRequestModal } from "@/components/configurator/elig-request-modal";
 import { EligPerCategoryCard } from "@/components/configurator/elig-per-category-card";
 import {
@@ -112,6 +124,12 @@ export function ConfiguratorSection() {
   // selection completes; Edit re-expands.
   const [setupEditing, setSetupEditing] = useState(true);
 
+  // Presentation-only dismiss for the eligibility advisory card. Local +
+  // session-only — not persisted, never part of the elig/configurator state.
+  // Defaults open; resets to open on each new vertical/sub selection; the
+  // card's X dismisses it and the summary-row icon reopens it.
+  const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
+
   const selectedVertical = eligState.verticalSlug
     ? findVertical(eligState.verticalSlug)
     : null;
@@ -126,6 +144,10 @@ export function ConfiguratorSection() {
   const hasSetupSelection =
     !!eligState.verticalSlug &&
     (!!eligState.subVerticalSlug || !verticalHasSubPrompt);
+  // Whether an advisory exists for the current verdict (+ its severity) — drives
+  // the persistent card and the severity-matched reopen icon on the summary row.
+  // Pure read of the already-derived verdict; no eligibility logic here.
+  const advisory = getAdvisory(eligState);
 
   // Wrappers thread the existing elig setters (the cascade lives in
   // use-elig-state) and add ONLY the presentation collapse flip.
@@ -134,10 +156,14 @@ export function ConfiguratorSection() {
     const v = slug ? findVertical(slug) : null;
     const completes = !!v && !v.subVerticals.some((s) => s.routingTrigger);
     setSetupEditing(slug ? !completes : true);
+    setAdvisoryDismissed(false);
   }
   function handleSubVerticalChange(slug: string | null) {
     setEligSubVerticalSlug(slug);
-    if (slug) setSetupEditing(false);
+    if (slug) {
+      setSetupEditing(false);
+      setAdvisoryDismissed(false);
+    }
   }
 
   // The configurator is a complete free authoring tool for every bucket the
@@ -411,14 +437,32 @@ export function ConfiguratorSection() {
                       : null}
                     {(selectedSubVertical ?? selectedVertical)?.name ?? null}
                   </p>
-                  <button
-                    type="button"
-                    onClick={() => setSetupEditing(true)}
-                    aria-label="Edit"
-                    className="shrink-0 cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
-                  >
-                    <Edit01 className="size-[17px]" />
-                  </button>
+                  <div className="flex shrink-0 items-center gap-0.5">
+                    {/* Severity-matched reopen icon — only when an advisory
+                        exists for the current verdict and has been dismissed. */}
+                    {advisory && advisoryDismissed ? (
+                      <button
+                        type="button"
+                        onClick={() => setAdvisoryDismissed(false)}
+                        aria-label="Show rules"
+                        className="cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
+                      >
+                        {advisory.severity === "warning" ? (
+                          <AlertTriangle className="size-[17px]" />
+                        ) : (
+                          <InfoCircle className="size-[17px]" />
+                        )}
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => setSetupEditing(true)}
+                      aria-label="Edit"
+                      className="cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
+                    >
+                      <Edit01 className="size-[17px]" />
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col gap-3">
@@ -436,11 +480,24 @@ export function ConfiguratorSection() {
                     state={eligState}
                     onVerticalChange={handleVerticalChange}
                     onSubVerticalChange={handleSubVerticalChange}
-                    onRequest={() => setRequestModalOpen(true)}
                   />
                 </div>
               )}
             </div>
+
+            {/* Eligibility advisory — hoisted OUT of the setup-zone collapse so
+                it persists in both the editing and the condensed-summary states
+                (it self-gates to nothing when there's no advisory). Dismissed
+                via its X; reopened via the summary-row icon. */}
+            {advisory && !advisoryDismissed ? (
+              <div className="mb-6">
+                <EligVerdictCard
+                  state={eligState}
+                  onRequest={() => setRequestModalOpen(true)}
+                  onDismiss={() => setAdvisoryDismissed(true)}
+                />
+              </div>
+            ) : null}
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
               {/* Mobile-only categories: collapsed summary row + full-page

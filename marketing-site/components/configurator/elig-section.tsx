@@ -23,7 +23,6 @@
 import type { EligState } from "@/lib/configurator/use-elig-state";
 import { VERTICALS, findVertical } from "../../../lib/constraints";
 import { EligDropdown, type EligDropdownOption } from "./elig-dropdown";
-import { EligVerdictCard } from "./elig-verdict-card";
 
 /**
  * D3 placeholder copy. Default: "What kind of {vertical-name-lowercased}?".
@@ -56,15 +55,12 @@ export interface EligSectionProps {
   state: EligState;
   onVerticalChange: (slug: string | null) => void;
   onSubVerticalChange: (slug: string | null) => void;
-  /** Opens the EligRequestModal from the verdict card's Not-yet footer. */
-  onRequest: () => void;
 }
 
 export function EligSection({
   state,
   onVerticalChange,
   onSubVerticalChange,
-  onRequest,
 }: EligSectionProps) {
   const selectedVertical = state.verticalSlug
     ? findVertical(state.verticalSlug)
@@ -113,7 +109,6 @@ export function EligSection({
           />
         ) : null}
       </div>
-      <EligVerdictCard state={state} onRequest={onRequest} />
     </div>
   );
 }
