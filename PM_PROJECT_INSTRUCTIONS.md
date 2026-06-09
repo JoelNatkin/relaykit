@@ -5,7 +5,7 @@
 > Not for: CC's operational rules (CLAUDE.md), product specifications (spec docs), session narrative.
 
 ## For the PM/Architect guiding Joel through CC build sessions
-### Updated: June 7, 2026
+### Updated: June 9, 2026
 
 ---
 
@@ -329,7 +329,7 @@ Canon should already be current from ambient maintenance this session (decisions
 
 **Hard triggers:** chat crosses ~40–50 exchanges; Joel starts a new work session; multiple topic shifts and early context is stale.
 
-**PM_HANDOFF is a live on-disk worktable** at `.pm/PM_HANDOFF.md` (gitignored). PM writes to it directly — no chat-paste rotation. Read it at every session open.
+**PM_HANDOFF is a live on-disk worktable** at `.pm/PM_HANDOFF.md` (gitignored), read at every session open. **Two write channels — PM authors the content either way:** (1) **direct MCP write**, the default; (2) **CC transcription channel** — when the filesystem MCP is unresponsive (it can hang for minutes), hand CC a delimited `PM_HANDOFF update` block and CC writes it to disk verbatim and unstaged. CC never authors PM_HANDOFF content. This is not the old chat-paste rotation. Cross-ref: CLAUDE.md "PM_HANDOFF channel" + the per-commit-handoff rule under Session close-out (the CC-side counterpart that keeps CC_HANDOFF fresh).
 
 **Write to it as the work lands, not at session end — hard rule, not ambient.** A long fix loop is exactly where it slips: many small events, each feeling too minor to log, then a stale handoff and Joel having to ask what got dropped. Convert the soft trigger into checkpoints PM cannot pass without acting:
 - **Log-now events:** a commit approved or pushed · a new component / surface / file created · a decision made or a D-number gone pending · a blocker or owed-at-merge item added or resolved · a workstream or focus shift.
