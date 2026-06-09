@@ -147,12 +147,16 @@ Do not load DECISIONS_ARCHIVE.md unless Joel points to a specific D-number OR yo
 
 ## Session close-out
 
-**Canon is maintained ambient — during the session, as the work happens, not saved for close-out:** append decisions to DECISIONS.md the moment one is made (seven gate tests, Supersedes filled, supersession notes same commit); update PROTOTYPE_SPEC.md when a screen changes and PRODUCT_SUMMARY.md when customer-facing behavior changes (bump its "Last reviewed"); bump REPO_INDEX.md Meta + `/docs` rows when files or pointers move (and in-file `Updated` headers on docs that carry them); **update CC_HANDOFF.md at each commit and wave boundary — a hard step, not deferred upkeep** (append the commit, keep the metrics line current: `Commits: N | Files modified: N | Decisions added: N | External actions: N`); refreshing it only at close-out is the failure mode (Session 127: frozen at the prior session through nine commits, so a mid-build crash or rotation inherits a blind handoff); update MASTER_PLAN.md when PM flags a plan change. Commit working code in atomic, descriptively-messaged commits as you go. Close-out then just verifies and ships:
+**Canon is maintained ambient — during the session, as the work happens, not saved for close-out:** append decisions to DECISIONS.md the moment one is made (seven gate tests, Supersedes filled, supersession notes same commit); update PROTOTYPE_SPEC.md when a screen changes and PRODUCT_SUMMARY.md when customer-facing behavior changes (bump its "Last reviewed"); bump REPO_INDEX.md Meta + `/docs` rows when files or pointers move (and in-file `Updated` headers on docs that carry them); update CC_HANDOFF.md per the **Per-commit handoff** rule below (in the same commit as substantive work); update MASTER_PLAN.md when PM flags a plan change. Commit working code in atomic, descriptively-messaged commits as you go. Close-out then just verifies and ships:
 
 1. Quality gates (skip for doc-only sessions): `tsc --noEmit` + `eslint` clean on modified dirs; `/api` tests green if touched.
 2. Verify canon is current — DECISIONS, PROTOTYPE_SPEC, PRODUCT_SUMMARY, REPO_INDEX, CC_HANDOFF all reflect this session; close any gap now and finalize the CC_HANDOFF metrics line + suggested next tasks.
 3. Phase-boundary close-outs only: run the retirement sweep + drift watch (see their sections under DECISIONS ledger stewardship) → findings into CC_HANDOFF, no disk edits.
 4. Do NOT push — PM review first (or push per the review bar).
+
+### Per-commit handoff — CC_HANDOFF.md is never stale between close-outs
+
+Any commit that lands **substantive work** — a new component/surface, copy or content of substance, a published blog post, a decision, or an architectural / design-token change — updates `CC_HANDOFF.md` **in the same commit**, authored by CC from its own diff: what landed, current `main` intent, in-flight branches, corrected carryovers, next steps. Keep the metrics line current (`Commits: N | Files modified: N | Decisions added: N | External actions: N`). This binds the cases that used to bypass any handoff update — **straight-to-main commits and branch pushes** (on a branch the update lives on the branch and reconciles at merge) — not just wave/close-out boundaries. **Skip only trivial one-line copy/spacing fixes.** Close-out remains the fuller reconcile; refreshing only then is the failure mode (Session 127: frozen through nine commits, so a mid-build crash or rotation inherits a blind handoff). PM-side counterpart: PM_PROJECT_INSTRUCTIONS.md handoff-discipline.
 
 ### Branching for production-facing work
 
@@ -166,6 +170,8 @@ Branch hygiene: at session close-out, surface any unmerged feature branches in C
 After each local commit but before pushing, write `git show HEAD` (or full files if PM-relevant) to `.pm-review.md` at the repo root, overwriting existing content. The file is gitignored — never commit it. PM reads `.pm-review.md` directly from disk via MCP when Joel says "gg" (go get); PM approves push or directs amends. On amend, refresh `.pm-review.md` with the new HEAD. The file represents only the most recent commit awaiting review. See `PM_PROJECT_INSTRUCTIONS.md` "PM Review Cadence" for full procedure.
 
 **Plan files:** plan-mode plans write to `.pm/plans/` (set via `plansDirectory` in `.claude/settings.json`) — repo-local and gitignored, so PM can read CC's plans natively via MCP.
+
+**PM_HANDOFF channel.** When a PM prompt contains a delimited `PM_HANDOFF update` block, write its contents to `.pm/PM_HANDOFF.md` as given and do **not** stage it (`.pm/` is gitignored). CC transcribes PM's block to disk; CC does not author or edit PM_HANDOFF content — its substance and carry-forward rules are PM-owned (PM_PROJECT_INSTRUCTIONS.md Session Management).
 
 ## Copy rule
 Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts, modals), read `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` in full and apply the vocabulary table, framing-shift table, emotional-states map, and one-sentence principle. No exceptions for "minor" strings.
