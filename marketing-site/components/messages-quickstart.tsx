@@ -32,7 +32,7 @@ const STEPS: Step[] = [
     label: "03 · Personalize",
     fill: "w-full",
     title: "Make it yours",
-    body: "Fill in your own values, tweak the wording or add messages, then copy them into your code.",
+    body: "Fill in your own variables, tweak the wording, then copy it into your code.",
   },
 ];
 
