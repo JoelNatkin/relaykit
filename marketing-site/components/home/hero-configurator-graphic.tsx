@@ -77,7 +77,7 @@ export function HeroConfiguratorGraphic() {
     <div
       inert
       aria-hidden
-      className="rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl sm:p-7"
+      className="surface-flat rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl sm:p-7"
     >
       {/* Header row — mirrors ConfiguratorSection. */}
       <div className="mb-5 flex items-center justify-between gap-3 border-b border-border-secondary pb-5">
