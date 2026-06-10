@@ -64,7 +64,7 @@ export function MessagesQuickstart() {
 
   return (
     <section className="mx-auto mt-10 max-w-5xl px-6">
-      <div className="relative rounded-[22px] border border-border-primary bg-surface-card p-7 shadow-xl">
+      <div className="relative rounded-[22px] border border-border-primary bg-surface-card p-7 pb-11 shadow-xl">
         <button
           type="button"
           onClick={dismiss}
@@ -74,12 +74,12 @@ export function MessagesQuickstart() {
           <X className="size-5" aria-hidden />
         </button>
 
-        <Eyebrow>Quick start</Eyebrow>
+        <Eyebrow>Quick Start</Eyebrow>
         <h2 className="mt-8 text-2xl font-bold tracking-tight text-text-primary">
           Build your message plan in three steps.
         </h2>
 
-        <StepStrip steps={STEPS} className="mt-6" />
+        <StepStrip steps={STEPS} className="mt-12" />
       </div>
     </section>
   );
