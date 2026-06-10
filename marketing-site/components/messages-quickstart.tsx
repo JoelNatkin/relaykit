@@ -31,7 +31,7 @@ const STEPS: Step[] = [
 
 export function MessagesQuickstart() {
   return (
-    <section className="mx-auto max-w-5xl border-t border-b border-border-secondary px-6 py-20 sm:py-28">
+    <section className="mx-auto mt-20 max-w-5xl border-t border-b border-border-secondary px-6 py-20">
       <div className="max-w-2xl">
         <Eyebrow>Quick Start</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">

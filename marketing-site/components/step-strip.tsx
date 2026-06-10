@@ -34,7 +34,7 @@ export function StepStrip({
           >
             <div className={`h-full bg-bg-gold ${step.fill}`} />
           </div>
-          <div className="font-mono text-xs tracking-[0.12em] text-text-tertiary">
+          <div className="font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
             {step.label}
           </div>
           <h3 className="mt-4 text-lg font-semibold text-text-primary">
