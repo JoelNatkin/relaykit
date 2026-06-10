@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Menu01, Moon01, Sun, X } from "@untitledui/icons";
+import { Menu01, X } from "@untitledui/icons";
 import Link from "next/link";
-import { useTheme } from "@/lib/use-theme";
 
 // Primary nav links — shared href source for the desktop bar and the mobile
 // menu so the two never drift. (Legal/Resources stay in the footer.)
@@ -14,29 +13,8 @@ const NAV_LINKS = [
   { href: "/blog", label: "Blog" },
 ] as const;
 
-// Theme-toggle icon mirroring the bar's logic: Moon in dark, Sun in light, an
-// invisible placeholder pre-mount (theme unknown server-side).
-function ThemeIcon({ theme }: { theme: "dark" | "light" | null }) {
-  if (theme === null) return <span className="size-5" aria-hidden />;
-  return theme === "dark" ? (
-    <Moon01 className="size-5" />
-  ) : (
-    <Sun className="size-5" />
-  );
-}
-
 export function TopNav() {
-  const { theme, toggle } = useTheme();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // Names the action the click performs (the target state), not the current
-  // state. Pre-mount the theme is unknown, so use a neutral label.
-  const actionLabel =
-    theme === null
-      ? "Toggle color theme"
-      : theme === "dark"
-        ? "Switch to light mode"
-        : "Switch to dark mode";
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 h-14 border-b border-border-secondary bg-bg-primary">
@@ -48,16 +26,6 @@ export function TopNav() {
           RelayKit
         </Link>
         <div className="flex items-center gap-6">
-          {/* Theme toggle — desktop only; on mobile it moves into the menu. */}
-          <button
-            type="button"
-            onClick={toggle}
-            aria-label={actionLabel}
-            title={actionLabel}
-            className="hidden size-9 cursor-pointer items-center justify-center text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary sm:flex"
-          >
-            <ThemeIcon theme={theme} />
-          </button>
           {/* Primary nav links. Hidden below sm — the hamburger menu takes
               over there. Logo (left) stays the home link. */}
           <div className="hidden items-center gap-6 sm:flex">
@@ -84,13 +52,7 @@ export function TopNav() {
         </div>
       </div>
 
-      <MobileNavMenu
-        isOpen={menuOpen}
-        onClose={() => setMenuOpen(false)}
-        theme={theme}
-        toggle={toggle}
-        actionLabel={actionLabel}
-      />
+      <MobileNavMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </nav>
   );
 }
@@ -98,9 +60,6 @@ export function TopNav() {
 interface MobileNavMenuProps {
   isOpen: boolean;
   onClose: () => void;
-  theme: "dark" | "light" | null;
-  toggle: () => void;
-  actionLabel: string;
 }
 
 // Full-screen mobile menu mirroring mobile-categories-modal's idioms: portal
@@ -108,14 +67,8 @@ interface MobileNavMenuProps {
 // layout (shell is flex-col with no overflow; body owns the scroll so the
 // header pins). Adds focus management — focus moves into the panel on open and
 // restores to the trigger on close. sm:hidden throughout (desktop bar owns the
-// links + toggle there).
-function MobileNavMenu({
-  isOpen,
-  onClose,
-  theme,
-  toggle,
-  actionLabel,
-}: MobileNavMenuProps) {
+// links there).
+function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const restoreFocusRef = useRef<Element | null>(null);
 
@@ -201,17 +154,6 @@ function MobileNavMenu({
                 {link.label}
               </Link>
             ))}
-            {/* Theme toggle — same useTheme toggle/theme as the desktop bar. */}
-            <button
-              type="button"
-              onClick={toggle}
-              className="flex items-center gap-3 py-4 text-lg font-medium text-text-primary transition duration-100 ease-linear hover:text-text-secondary"
-            >
-              <span className="text-fg-quaternary">
-                <ThemeIcon theme={theme} />
-              </span>
-              {actionLabel}
-            </button>
           </div>
         </div>
       </div>,
