@@ -137,7 +137,7 @@ export default function MarketingHome() {
       >
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-xl">
-            <Eyebrow>The configurator · live today</Eyebrow>
+            <Eyebrow>The messages · live today</Eyebrow>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
               Start with a complete message plan.
             </h2>
@@ -151,7 +151,7 @@ export default function MarketingHome() {
             href="/messages"
             className="text-sm font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
           >
-            Open the configurator <span aria-hidden>→</span>
+            Open Messages <span aria-hidden>→</span>
           </Link>
         </div>
 

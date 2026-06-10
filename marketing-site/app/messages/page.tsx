@@ -3,7 +3,7 @@ import { ConfiguratorSection } from "@/components/configurator-section";
 import { MessagesQuickstart } from "@/components/messages-quickstart";
 
 export const metadata: Metadata = {
-  title: "Message configurator — RelayKit",
+  title: "Messages — RelayKit",
   description:
     "Pick the text messages your app sends, make the wording yours, and copy them into your code. Free, no account.",
 };

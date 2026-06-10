@@ -554,7 +554,7 @@ export function ConfiguratorSection() {
                     {copyToastVisible ? "Copied" : "Copy"}
                   </button>
                   <KebabMenu
-                    ariaLabel="Configurator options"
+                    ariaLabel="Message options"
                     items={[
                       {
                         label: "Reset all to defaults",

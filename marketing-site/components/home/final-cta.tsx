@@ -19,13 +19,13 @@ export function FinalCta() {
           </span>
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          Use the free configurator today. Build your message plan, customize the
+          Use Messages free today. Build your message plan, customize the
           templates, and take them anywhere. When RelayKit sending launches,
           everything you&apos;ve already created comes with you.
         </p>
         <div className="mt-7 flex justify-center">
           <PrimaryCta href="/messages">
-            Open the configurator <span aria-hidden>→</span>
+            Open Messages <span aria-hidden>→</span>
           </PrimaryCta>
         </div>
         <p className="mt-8 text-sm text-text-tertiary">
