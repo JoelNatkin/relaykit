@@ -15,7 +15,7 @@ export default function MessagesPage() {
   return (
     <div className="pb-20 sm:pb-28">
       <div className="mx-auto max-w-5xl px-6 pt-16">
-        <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
+        <h1 className="max-w-2xl text-5xl font-bold tracking-tight text-text-primary">
           Text messages for{" "}
           <br className="hidden sm:block" />
           your app. <span className="text-text-headline-muted">Ready to copy.</span>
