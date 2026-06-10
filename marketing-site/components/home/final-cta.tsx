@@ -21,7 +21,8 @@ export function FinalCta() {
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
           Use Messages free today. Build your message plan, customize the
           templates, and take them anywhere. When RelayKit sending launches,
-          everything you&apos;ve already created comes with you.
+          you&apos;ll be able to send them — registration, opt-outs, and the
+          carrier rules handled for you.
         </p>
         <div className="mt-7 flex justify-center">
           <PrimaryCta href="/messages">
