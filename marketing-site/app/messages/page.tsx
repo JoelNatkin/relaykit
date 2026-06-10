@@ -18,7 +18,7 @@ export default function MessagesPage() {
         <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-text-primary sm:text-5xl">
           Text messages for{" "}
           <br className="hidden sm:block" />
-          your app, ready to copy.
+          your app. <span className="text-text-headline-muted">Ready to copy.</span>
         </h1>
         <p className="mt-4 max-w-xl text-lg text-text-tertiary">
           Pick the ones you need, make the wording yours,{" "}
@@ -27,7 +27,9 @@ export default function MessagesPage() {
         </p>
       </div>
       <MessagesQuickstart />
-      <ConfiguratorSection />
+      <div className="-mt-5">
+        <ConfiguratorSection />
+      </div>
     </div>
   );
 }
