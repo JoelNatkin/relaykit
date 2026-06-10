@@ -74,8 +74,8 @@
   --color-text-disabled: var(--color-brand-400);
   --color-text-placeholder: var(--color-brand-500);
   --color-text-placeholder_subtle: var(--color-brand-300);
-  /* Hero H1 muted accent — fixed warm-gray (#958675); single value, both modes. */
-  --color-text-headline-muted: rgb(149 134 117);
+  /* Hero H1 muted accent — fixed warm-gray (#756C61); single value, both modes. */
+  --color-text-headline-muted: rgb(117 108 97);
   --color-text-brand-primary: var(--color-brand-900);
   --color-text-brand-secondary: var(--color-brand-500);
   --color-text-brand-tertiary: var(--color-brand-500);
