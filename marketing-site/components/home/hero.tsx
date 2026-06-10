@@ -25,19 +25,26 @@ export function Hero() {
         aria-hidden
       />
       <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[960px]">
+        {/* Full-width headline band — the H1 spans the section so "Easier"
+            sits inline after "for your app." The two-column split starts
+            BELOW this band. */}
+        <div className="max-w-4xl">
+          <Eyebrow>Shipping Summer 2026</Eyebrow>
+          <h1 className="mt-5 text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
+            Text messaging{" "}
+            <br className="hidden sm:block" />
+            for your app. <span className="text-text-headline-muted">Easier</span>
+          </h1>
+          <CategoryRotor />
+        </div>
+
         {/* Two columns on lg: copy left, configurator peek right. items-start
             keeps both top-aligned; the peek is confined to the right column so
             it can NEVER overlap the copy at any width. */}
-        <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
-          {/* Hero copy — upper-left (verbatim). */}
+        <div className="mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
+          {/* Hero copy — left column (verbatim). */}
           <div className="max-w-xl">
-            <Eyebrow>Shipping Summer 2026</Eyebrow>
-            <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
-              Text messaging for your app.
-              <span className="block text-text-headline-muted">Easier</span>
-            </h1>
-            <CategoryRotor />
-            <p className="mt-4 max-w-xl text-lg leading-relaxed text-text-secondary">
+            <p className="max-w-xl text-lg leading-relaxed text-text-secondary">
               Pick the messages your app needs. RelayKit handles registration,
               opt-outs, and the carrier rules behind the scenes. Your AI tool
               wires up the rest.
@@ -66,7 +73,7 @@ export function Hero() {
               overflow-hidden. Confined to this column → never overlaps the copy.
               top / height / width / scale are visual tunables. */}
           <div className="relative hidden lg:block">
-            <div className="pointer-events-none absolute left-0 top-[330px] h-[600px] w-[920px] origin-top-left scale-[0.85] overflow-hidden rounded-[22px] shadow-2xl">
+            <div className="pointer-events-none absolute left-0 top-[40px] h-[600px] w-[920px] origin-top-left scale-[0.85] overflow-hidden rounded-[22px] shadow-2xl">
               <HeroConfiguratorGraphic />
             </div>
           </div>
