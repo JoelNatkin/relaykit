@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { MessagesQuickstart } from "@/components/messages-quickstart";
-import { GhostCta } from "@/components/home/section-ui";
+import { PrimaryCta } from "@/components/home/section-ui";
 import { BottomEmailCapture } from "@/components/bottom-email-capture";
 
 export const metadata: Metadata = {
@@ -26,7 +26,7 @@ export default function MessagesPage() {
           Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026.
         </p>
         <div className="mt-6">
-          <GhostCta href="#join">Join the waitlist</GhostCta>
+          <PrimaryCta href="#join">Join the waitlist</PrimaryCta>
         </div>
       </div>
       <MessagesQuickstart />
