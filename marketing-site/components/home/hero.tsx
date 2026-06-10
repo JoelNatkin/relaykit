@@ -33,10 +33,8 @@ export function Hero() {
           <div className="max-w-xl">
             <Eyebrow>Shipping Summer 2026</Eyebrow>
             <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
-              Add text messaging to your app.
-              <span className="block text-text-headline-muted">
-                The easy way
-              </span>
+              Text messaging for your app.
+              <span className="block text-text-headline-muted">Easier</span>
             </h1>
             <CategoryRotor />
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-text-secondary">
