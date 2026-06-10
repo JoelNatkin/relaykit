@@ -23,7 +23,7 @@ const STATUS_LABEL = {
 
 export function PreviewListMock() {
   return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-6 dark:bg-bg-secondary">
+    <div className="rounded-xl border border-border-secondary bg-surface-card p-6">
       <h3 className="text-base font-semibold text-text-primary">Preview list</h3>
       <p className="mt-1 text-sm text-text-tertiary">
         Your safe audience for sending test messages, before and after launch.

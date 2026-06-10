@@ -44,7 +44,7 @@ function Recognition() {
         </h2>
       </div>
       <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-border-secondary bg-bg-primary p-7 dark:bg-bg-secondary">
+        <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
             You expected days
           </div>
@@ -62,7 +62,7 @@ function Recognition() {
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-border-secondary bg-bg-primary p-7 dark:bg-bg-secondary">
+        <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
             You got weeks
           </div>

@@ -42,7 +42,7 @@ export function Paperwork() {
         {CARDS.map(({ Icon, title, body }) => (
           <div
             key={title}
-            className="rounded-2xl border border-border-secondary bg-bg-primary p-6 transition duration-150 ease-linear hover:-translate-y-0.5 hover:border-border-primary dark:bg-bg-secondary"
+            className="rounded-2xl border border-border-secondary bg-surface-card p-6 transition duration-150 ease-linear hover:-translate-y-0.5 hover:border-border-primary"
           >
             <div className="mb-4 grid size-8 place-items-center rounded-lg bg-bg-gold/15 text-gold">
               <Icon className="size-4" />
