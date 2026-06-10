@@ -35,7 +35,7 @@ export default function MessagesPage() {
         id="join"
         className="mx-auto mt-20 max-w-5xl border-t border-border-secondary px-6 py-20 text-center sm:py-28"
       >
-        <div className="mx-auto max-w-xl">
+        <div className="mx-auto max-w-[616px]">
           <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
             Sending arrives Summer 2026
           </h2>
