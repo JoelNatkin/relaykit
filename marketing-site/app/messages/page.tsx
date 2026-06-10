@@ -27,9 +27,7 @@ export default function MessagesPage() {
         </p>
       </div>
       <MessagesQuickstart />
-      <div className="-mt-5">
-        <ConfiguratorSection />
-      </div>
+      <ConfiguratorSection />
     </div>
   );
 }
