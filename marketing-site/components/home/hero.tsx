@@ -24,7 +24,7 @@ export function Hero() {
         style={DOT_GRID_STYLE}
         aria-hidden
       />
-      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[960px]">
+      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[820px]">
         {/* Full-width headline band — the H1 spans the section so "Easier"
             sits inline after "for your app." The two-column split starts
             BELOW this band. */}
