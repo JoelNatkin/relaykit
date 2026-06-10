@@ -13,12 +13,22 @@ const FRAMES = [
   "Account events.",
   "Every text your app sends.",
 ];
-const INTERVAL_MS = 2200;
-const FADE_MS = 340;
+const INTERVAL_MS = 1700;
+const FADE_MS = 280;
 
 export function CategoryRotor() {
   const [index, setIndex] = useState(0);
-  const [out, setOut] = useState(false);
+  // Start hidden so the FIRST frame plays the same fade/slide-in as the rest,
+  // rather than mounting static at full opacity. Flipped to shown on first
+  // paint via rAF below.
+  const [out, setOut] = useState(true);
+
+  // First-frame entrance: reveal frame 0 once the initial hidden state has
+  // painted, so the CSS transition actually fires for index 0 too.
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setOut(false));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
     // Stop on the final frame — one pass, no loop, no further timers.

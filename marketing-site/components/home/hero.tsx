@@ -44,7 +44,7 @@ export function Hero() {
           {/* Hero copy — left column (verbatim). */}
           <div className="max-w-xl">
             <CategoryRotor />
-            <p className="mt-4 max-w-xl text-lg leading-relaxed text-text-secondary">
+            <p className="mt-3 max-w-xl text-lg leading-relaxed text-text-secondary">
               Pick the messages your app needs. RelayKit handles registration,
               opt-outs, and the carrier rules behind the scenes. Your AI tool
               wires up the rest.
