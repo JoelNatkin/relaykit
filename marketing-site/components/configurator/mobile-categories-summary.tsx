@@ -40,6 +40,7 @@ export function MobileCategoriesSummary({
   const isEmpty = selected.length === 0;
   return (
     <div className="rounded-xl border border-border-secondary bg-surface-inset p-4">
+      <span className="mb-1.5 block text-sm font-medium text-text-secondary">Categories</span>
       <button
         type="button"
         onClick={onOpen}
