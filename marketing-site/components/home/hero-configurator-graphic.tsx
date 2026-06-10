@@ -29,6 +29,10 @@ import type { Category } from "@/lib/message-library";
 const DEMO_BUSINESS = "Acme";
 // Only Verification is checked in the demo state.
 const DEMO_CHECKED = new Set(["verification"]);
+// Curated rail set — drop Customer support, Team alerts, Community. The
+// CATEGORIES source is untouched; display order is preserved by filtering.
+const RAIL_EXCLUDED = new Set(["customer-support", "team-alerts", "community"]);
+const RAIL_CATEGORIES = CATEGORIES.filter((c) => !RAIL_EXCLUDED.has(c.id));
 // Right column shows only the Verification group, first two messages.
 const DEMO_GROUPS: Category[] = [VERIFICATION];
 
@@ -41,10 +45,10 @@ function RailCheckbox({ checked }: { checked: boolean }) {
   return (
     <span className="relative inline-flex size-5 shrink-0">
       <span
-        className={`size-5 rounded border ${
+        className={`size-5 rounded ${
           checked
-            ? "border-border-gold bg-bg-gold"
-            : "border-border-primary bg-bg-primary dark:bg-bg-secondary"
+            ? "border border-border-gold bg-bg-gold"
+            : "border-2 border-border-primary"
         }`}
       />
       {checked ? (
@@ -92,11 +96,11 @@ export function HeroConfiguratorGraphic() {
           <h3 className="text-base font-semibold text-text-primary">
             Categories
           </h3>
-          <div className="mt-5 flex flex-col gap-6">
-            {CATEGORIES.map((category) => (
+          <div className="mt-5 flex flex-col gap-5">
+            {RAIL_CATEGORIES.map((category) => (
               <div key={category.id} className="flex items-center gap-3">
                 <RailCheckbox checked={DEMO_CHECKED.has(category.id)} />
-                <span className="text-sm font-medium text-text-primary">
+                <span className="text-lg font-medium text-text-primary">
                   {category.name}
                 </span>
               </div>
