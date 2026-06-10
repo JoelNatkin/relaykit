@@ -277,9 +277,9 @@
      page. value-not-hue, still within D-405. surface-page is the OPEN TUNING
      VALUE — dial warmth/darkness on this one line. */
   --color-surface-page: rgb(22 19 15); /* #16130F — page behind the tool (unchanged) */
-  --color-surface-card: rgb(29 26 21); /* #1D1A15 — tool container + inputs */
-  --color-surface-inset: rgb(33 30 25); /* #211E19 — rail, input-group, message cards */
-  --color-surface-raised: rgb(33 30 25); /* #211E19 — collapsed to inset (dry-out) */
+  --color-surface-card: rgb(24 21 17); /* #181511 — tool container + inputs */
+  --color-surface-inset: rgb(30 26 21); /* #1E1A15 — rail, input-group, message cards */
+  --color-surface-raised: rgb(30 26 21); /* #1E1A15 — collapsed to inset (dry-out) */
 
   /* FEATURED ICON */
   --color-featured-icon-light-fg-brand: var(--color-brand-400);
