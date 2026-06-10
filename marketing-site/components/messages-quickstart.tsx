@@ -80,7 +80,7 @@ export function MessagesQuickstart() {
           Build your message plan in three steps.
         </h2>
 
-        <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-[52px] md:grid-cols-3 md:gap-y-9">
+        <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-[52px] md:grid-cols-3 md:gap-y-9">
           {STEPS.map((step) => (
             <div key={step.label}>
               <div className="font-mono text-xs tracking-[0.12em] text-text-tertiary">
