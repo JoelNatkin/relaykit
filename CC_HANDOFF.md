@@ -30,8 +30,8 @@
 
 ## OPEN next session (per PM)
 
-- **(a)** `/messages` hero subhead orphan — "2026." wraps alone; widen `max-w-[520px]` → `[580px]` (visual dial).
-- **(b)** `/messages` `#join` `<p>` body wording — undecided; PM proposed 4 options, **#3 recommended**. (Current text is the now/later body matching the home final-CTA line.)
+- ~~**(a)** `/messages` hero subhead orphan — widen `max-w-[520px]` → `[580px]`.~~ **DONE** (next-session commit, branch HEAD): subhead is now `max-w-[580px]`.
+- ~~**(b)** `/messages` `#join` `<p>` body wording.~~ **DONE** (same commit): both `/messages` `#join` and home `final-cta.tsx` bodies now read "You can start with the messages today. When RelayKit launches, we'll take care of registration, opt-outs, delivery, and the carrier requirements behind the scenes." — the two now/later bodies stay in sync. Same commit also relabelled the `BottomEmailCapture` button "Join the list" → "Join the waitlist" (shared component — lands on both home final-CTA and `/messages` `#join`).
 
 ## Carry-forwards
 

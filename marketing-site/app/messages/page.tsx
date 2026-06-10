@@ -22,7 +22,7 @@ export default function MessagesPage() {
           <br className="hidden sm:block" />
           your app. <span className="text-text-headline-muted">Ready to copy.</span>
         </h1>
-        <p className="mt-4 max-w-[520px] text-lg text-text-tertiary">
+        <p className="mt-4 max-w-[580px] text-lg text-text-tertiary">
           Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026.
         </p>
         <div className="mt-6">
@@ -40,7 +40,7 @@ export default function MessagesPage() {
             Sending arrives Summer 2026
           </h2>
           <p className="mt-4 text-base leading-relaxed text-text-secondary">
-            Use Messages free today. Build your message plan, customize the templates, and take them anywhere. When RelayKit sending launches, you&apos;ll be able to send them — registration, opt-outs, and the carrier rules handled for you.
+            You can start with the messages today. When RelayKit launches, we&apos;ll take care of registration, opt-outs, delivery, and the carrier requirements behind the scenes.
           </p>
           <div className="flex justify-center">
             <BottomEmailCapture ctaSource="messages-final" />
