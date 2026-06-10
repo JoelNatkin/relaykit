@@ -24,7 +24,7 @@ export function Hero() {
         style={DOT_GRID_STYLE}
         aria-hidden
       />
-      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[680px]">
+      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[960px]">
         {/* Two columns on lg: copy left, configurator peek right. items-start
             keeps both top-aligned; the peek is confined to the right column so
             it can NEVER overlap the copy at any width. */}
@@ -65,7 +65,7 @@ export function Hero() {
               overflow-hidden. Confined to this column → never overlaps the copy.
               top / height / width / scale are visual tunables. */}
           <div className="relative hidden lg:block">
-            <div className="pointer-events-none absolute left-0 top-[140px] h-[480px] w-[920px] origin-top-left scale-[0.85] overflow-hidden rounded-[22px] shadow-2xl">
+            <div className="pointer-events-none absolute left-0 top-[330px] h-[600px] w-[920px] origin-top-left scale-[0.85] overflow-hidden rounded-[22px] shadow-2xl">
               <HeroConfiguratorGraphic />
             </div>
           </div>

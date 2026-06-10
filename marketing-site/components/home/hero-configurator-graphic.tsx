@@ -6,73 +6,68 @@
  * NOT a live instance: it owns no state, calls no configurator/elig hooks, and
  * never touches localStorage — so it can't clobber the home's real embedded
  * ConfiguratorSection or /messages. It reproduces a fixed demo state (business
- * "Acme", industry Project management / productivity SaaS, Verification +
- * Appointments selected) by reusing the REAL presentational leaf components
- * (CategoryList, MessageReadCard, tone pills) with hardcoded props, so leaf-
- * level style + content tweaks flow through automatically — no screenshot to
- * go stale. The container chrome (card shell, header, grid, group headings) is
- * mirrored from configurator-section.tsx and must be hand-synced if that chrome
- * is restyled.
+ * "Acme", Verification selected) as a product-forward peek.
  *
- * The whole subtree is `inert` (+ aria-hidden) so it's purely decorative — no
- * pointer, focus, or a11y interaction. Industry/sub-vertical is reflected only
- * by the absence of an eligibility advisory (productivity SaaS is bucket
- * "Clear"); no setup-summary row is rendered, matching the hero composition.
+ * The left rail is HAND-BUILT in this file (it no longer reuses <CategoryList>):
+ * it maps over every entry in CATEGORIES rendering a checkbox + the category
+ * name only — no description sub-text and no per-row messages. Because it's
+ * bespoke, it must be HAND-SYNCED if the category set or the checkbox styling
+ * changes. The message cards still reuse the real <MessageReadCard> so message
+ * styling + content track automatically. The whole subtree is `inert` (+
+ * aria-hidden) so it's purely decorative — no pointer, focus, or a11y.
  */
 
-import { Copy01 } from "@untitledui/icons";
-import { CategoryList } from "@/components/configurator/category-list";
 import { MessageReadCard } from "@/components/configurator/message-read-card";
 import {
   PAGE_TONES,
   tonePillClasses,
   effectiveBody,
 } from "@/components/configurator/tone-pill";
-import { CATEGORIES, VERIFICATION, APPOINTMENTS } from "@/lib/message-library";
+import { CATEGORIES, VERIFICATION } from "@/lib/message-library";
 import type { Category } from "@/lib/message-library";
-import type {
-  ConfiguratorState,
-  CategoryState,
-  MessageState,
-  CategoryValues,
-} from "@/lib/configurator/use-configurator-state";
 
 const DEMO_BUSINESS = "Acme";
-const DEMO_CHECKED = new Set(["verification", "appointments"]);
-// Category groups shown in the right column, in display order. Both selected.
-const DEMO_GROUPS: Category[] = [VERIFICATION, APPOINTMENTS];
+// Only Verification is checked in the demo state.
+const DEMO_CHECKED = new Set(["verification"]);
+// Right column shows only the Verification group, first two messages.
+const DEMO_GROUPS: Category[] = [VERIFICATION];
 
 const noop = () => {};
 
-// A hardcoded ConfiguratorState shaped exactly like the live one, with
-// Verification + Appointments checked. CategoryList only reads `categories`,
-// but the full shape keeps the type honest without a cast.
-function buildDemoState(): ConfiguratorState {
-  const categories: Record<string, CategoryState> = {};
-  const categoryValues: Record<string, CategoryValues> = {};
-  for (const category of CATEGORIES) {
-    const checked = DEMO_CHECKED.has(category.id);
-    const messages: Record<string, MessageState> = {};
-    for (const m of category.messages) messages[m.id] = { checked };
-    categories[category.id] = { checked, messages };
-    categoryValues[category.id] = {
-      variables: {},
-      customBodies: {},
-      addedMessages: [],
-      messageTones: {},
-    };
-  }
-  return {
-    version: 4,
-    categories,
-    categoryValues,
-    pageTone: "Standard",
-    businessName: DEMO_BUSINESS,
-  };
+// Bespoke rail checkbox — gold filled check when selected, empty rounded square
+// otherwise. Mirrors the live category checkbox visually (D-427 gold for the
+// selected CATEGORY) but is hand-built here; sync if that styling changes.
+function RailCheckbox({ checked }: { checked: boolean }) {
+  return (
+    <span className="relative inline-flex size-5 shrink-0">
+      <span
+        className={`size-5 rounded border ${
+          checked
+            ? "border-border-gold bg-bg-gold"
+            : "border-border-primary bg-bg-primary dark:bg-bg-secondary"
+        }`}
+      />
+      {checked ? (
+        <svg
+          viewBox="0 0 10 10"
+          fill="none"
+          aria-hidden
+          className="pointer-events-none absolute inset-0 m-auto size-3 text-text-on-gold"
+        >
+          <path
+            d="M1.75 5.25 4 7.25 8.25 2.75"
+            stroke="currentColor"
+            strokeWidth="1.75"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ) : null}
+    </span>
+  );
 }
 
 export function HeroConfiguratorGraphic() {
-  const state = buildDemoState();
   return (
     // inert: no pointer/focus/a11y — purely decorative product peek.
     <div
@@ -91,33 +86,35 @@ export function HeroConfiguratorGraphic() {
       </div>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
-        {/* Categories panel — flat (expandChecked=false), inset surface. */}
-        <div className="rounded-xl border border-border-secondary bg-surface-inset md:min-w-60">
-          <CategoryList
-            state={state}
-            onCategoryToggle={noop}
-            onMessageToggle={noop}
-            expandChecked={false}
-          />
+        {/* Hand-built categories rail — checkbox + name only, no dividers,
+            24px (gap-6) between rows. All categories; Verification checked. */}
+        <div className="rounded-xl border border-border-secondary bg-surface-inset p-5 md:min-w-60">
+          <h3 className="text-base font-semibold text-text-primary">
+            Categories
+          </h3>
+          <div className="mt-5 flex flex-col gap-6">
+            {CATEGORIES.map((category) => (
+              <div key={category.id} className="flex items-center gap-3">
+                <RailCheckbox checked={DEMO_CHECKED.has(category.id)} />
+                <span className="text-sm font-medium text-text-primary">
+                  {category.name}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Messages column */}
         <div className="flex flex-col md:max-w-[500px]">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex flex-wrap gap-2">
-              {PAGE_TONES.map((tone) => (
-                <span
-                  key={tone}
-                  className={tonePillClasses(tone === "Standard")}
-                >
-                  {tone}
-                </span>
-              ))}
-            </div>
-            <span className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary">
-              <Copy01 className="size-4" />
-              Copy
-            </span>
+          <div className="flex flex-wrap gap-2">
+            {PAGE_TONES.map((tone) => (
+              <span
+                key={tone}
+                className={tonePillClasses(tone === "Standard")}
+              >
+                {tone}
+              </span>
+            ))}
           </div>
 
           <div className="mt-8 space-y-7">
@@ -131,7 +128,7 @@ export function HeroConfiguratorGraphic() {
                     </h4>
                   </div>
                   <div className="space-y-4">
-                    {category.messages.map((message) => (
+                    {category.messages.slice(0, 2).map((message) => (
                       <MessageReadCard
                         key={message.id}
                         name={message.name}
@@ -154,6 +151,11 @@ export function HeroConfiguratorGraphic() {
                 </div>
               );
             })}
+          </div>
+
+          {/* Prominent gold Copy CTA spanning the messages column (D-427). */}
+          <div className="mt-7 flex h-12 w-full items-center justify-center rounded-lg bg-bg-gold text-base font-semibold text-text-on-gold">
+            Copy messages
           </div>
         </div>
       </div>
