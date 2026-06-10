@@ -29,7 +29,7 @@ export function Hero() {
             sits inline after "for your app." The two-column split starts
             BELOW this band. */}
         <div className="max-w-4xl">
-          <Eyebrow>Shipping Summer 2026</Eyebrow>
+          <Eyebrow>Free message templates — live now</Eyebrow>
           <h1 className="mt-5 text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
             Text messaging{" "}
             <br className="hidden sm:block" />

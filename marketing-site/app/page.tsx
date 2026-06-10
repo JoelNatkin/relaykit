@@ -121,10 +121,21 @@ function Test() {
   );
 }
 
+function StatusBand() {
+  return (
+    <section className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-8">
+      <p className="max-w-3xl text-base leading-relaxed text-text-secondary">
+        <span className="font-semibold text-text-primary">The message templates are live and free right now</span> — pick them, make the wording yours, and copy them into your app, no account. RelayKit&apos;s own sending — registration with carriers and delivery — arrives Summer 2026.
+      </p>
+    </section>
+  );
+}
+
 export default function MarketingHome() {
   return (
     <div>
       <Hero />
+      <StatusBand />
       <Recognition />
       <HowItWorks />
 
