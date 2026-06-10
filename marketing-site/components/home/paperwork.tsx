@@ -38,7 +38,7 @@ export function Paperwork() {
           all of it, so you don&apos;t have to.
         </p>
       </div>
-      <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
         {CARDS.map(({ Icon, title, body }) => (
           <div
             key={title}
