@@ -17,12 +17,12 @@ export default function MessagesPage() {
   return (
     <div>
       <div className="mx-auto max-w-5xl px-6 pt-16">
-        <h1 className="max-w-2xl text-5xl font-bold tracking-tight text-text-primary">
+        <h1 className="max-w-2xl text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
           Text messages for{" "}
           <br className="hidden sm:block" />
           your app. <span className="text-text-headline-muted">Ready to copy.</span>
         </h1>
-        <p className="mt-4 max-w-2xl text-lg text-text-tertiary">
+        <p className="mt-4 max-w-[520px] text-lg text-text-tertiary">
           Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026.
         </p>
         <div className="mt-6">
@@ -37,10 +37,10 @@ export default function MessagesPage() {
       >
         <div className="mx-auto max-w-xl">
           <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-            Want RelayKit to send these for you?
+            Sending arrives Summer 2026
           </h2>
           <p className="mt-4 text-base leading-relaxed text-text-secondary">
-            Sending launches Summer 2026 — get an email when it&apos;s live.
+            Use Messages free today. Build your message plan, customize the templates, and take them anywhere. When RelayKit sending launches, you&apos;ll be able to send them — registration, opt-outs, and the carrier rules handled for you.
           </p>
           <div className="flex justify-center">
             <BottomEmailCapture ctaSource="messages-final" />
