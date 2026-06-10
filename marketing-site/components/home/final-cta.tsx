@@ -7,7 +7,7 @@ export function FinalCta() {
       id="join"
       className="border-t border-border-secondary px-6 py-20 text-center sm:py-28"
     >
-      <div className="mx-auto max-w-xl">
+      <div className="mx-auto max-w-[616px]">
         <div className="flex justify-center">
           <Eyebrow>Start now</Eyebrow>
         </div>
