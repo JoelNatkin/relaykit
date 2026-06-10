@@ -1549,6 +1549,8 @@ Dark mode on `/marketing-site` ships as vanilla React + CSS — no `next-themes`
 
 **Supersedes:** none
 
+⚠ Superseded by D-430 (2026-06-10): the user-switchable light/dark mechanism here — the toggle, `relaykit-theme` persistence, `prefers-color-scheme` first-visit default, and the inline FOUC pre-hydration script — is removed; the marketing site is now dark-only (`<html className="dark">`, server-rendered). The `--color-bg-code-surface` token introduced by this decision is unaffected (separate concern; its home usage separately moved to `bg-surface-card`).
+
 **Reasoning:** `next-themes` would have added a runtime dep + provider boundary for behavior we can express in ~60 lines (hook + 3-line FOUC script). The `bg-code-surface` token exists because conflating "primary-solid surface" with "code surface" forces a choice between (a) flipping the code sample to `gray-900` in dark mode (a small but unwanted shift) or (b) freezing `bg-primary-solid` itself, which costs us tooltip flexibility. Two distinct tokens lets each behave correctly. Per-origin storage scope is intentional: `app.relaykit.ai` will be a separate Next.js app with its own UX; sharing a theme key cross-origin would require a custom domain auth dance that buys nothing for the v1 surfaces.
 
 **Affects:** `marketing-site/app/globals.css` (token block + `.dark` overrides + `bg-code-surface` definitions); `marketing-site/app/layout.tsx` (inline FOUC script + `suppressHydrationWarning` + `bg-bg-primary` on body); `marketing-site/lib/use-theme.ts` (vanilla hook); `marketing-site/components/top-nav.tsx` (toggle button); `marketing-site/components/configurator-section.tsx` + `marketing-site/components/configurator/message-edit-card.tsx` (`text-white → text-text-white`); `marketing-site/app/page.tsx` (wordmark `_neg` variants, code-sample swap to `bg-code-surface`); `marketing-site/eslint.config.mjs` (`/lib/` coverage).
@@ -2168,3 +2170,15 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none.
 
 **Affects:** `marketing-site/components/messages-quickstart.tsx` (new); `marketing-site/app/messages/page.tsx` (mounts it between the header and `ConfiguratorSection`).
+
+## D-430 — Single dark theme; light mode removed (marketing site)
+
+**Decided:** 2026-06-10 (Session 129, branch `feat/design-refresh`)
+
+**Decision:** The marketing site is dark-only and **not user-switchable**. Light mode is removed: `lib/use-theme.ts` is deleted, `app/layout.tsx` server-renders `<html className="dark">` (the `.dark` block's `color-scheme: dark` removes the FOUC, so the inline pre-hydration theme script and `relaykit-theme` localStorage are gone), and the theme toggles + `ThemeIcon` are removed from `top-nav.tsx` (desktop bar + mobile menu). `globals.css` light token values remain as dead base — collapsing them is deferred to a separate task.
+
+**Why:** The warm-monochrome brand (D-405) is dark-first by design; a parallel light theme added surface area with no pre-launch value.
+
+**Supersedes:** D-378 (partial) — D-378's user-switchable light/dark *mechanism* (toggle, `relaykit-theme` persistence, `prefers-color-scheme` first-visit default, FOUC pre-hydration script) is removed; the site is dark-only. D-378's `--color-bg-code-surface` token introduction is a separate concern, not superseded here (its home usage separately moved to `bg-surface-card` this session). D-378 marked with an `⚠ Superseded by D-430` line in the same commit.
+
+**Affects:** `marketing-site/lib/use-theme.ts` (deleted); `marketing-site/app/layout.tsx` (`<html className="dark">`; `themeInitScript` + inline `<head>` script removed); `marketing-site/components/top-nav.tsx` (theme toggle + `ThemeIcon` + `useTheme`/`Moon01`/`Sun` imports removed, on the desktop bar and the mobile menu); `marketing-site/app/globals.css` (light token values remain as dead base; collapse deferred).
