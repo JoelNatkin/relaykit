@@ -76,7 +76,7 @@ export function MessagesQuickstart() {
         </button>
 
         <Eyebrow>Quick start</Eyebrow>
-        <h2 className="mt-4 text-2xl font-bold tracking-tight text-text-primary">
+        <h2 className="mt-6 text-2xl font-bold tracking-tight text-text-primary">
           Build your message plan in three steps.
         </h2>
 
