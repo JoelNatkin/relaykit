@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Eyebrow } from "@/components/home/section-ui";
 
-// Progress fill widths track the four steps (25/50/75/100%), filled in gold
+// Progress fill widths track the three steps (1/3, 2/3, full), filled in gold
 // (D-427 accent system).
 type Step = {
   label: string;
@@ -14,25 +14,19 @@ type Step = {
 const STEPS: Step[] = [
   {
     label: "01 · PLAN",
-    fill: "w-1/4",
+    fill: "w-1/3",
     title: "Choose your messages",
     body: "Pick the messages your app needs from templates that already know the rules.",
     link: { href: "/messages", text: "Browse the messages →" },
   },
   {
     label: "02 · BUILD",
-    fill: "w-1/2",
-    title: "Hand off the spec",
-    body: "Give the build spec to your AI tool and let it wire up the integration.",
+    fill: "w-2/3",
+    title: "Build and test",
+    body: "Hand the spec to your AI tool, then test the full flow on real phones before launch.",
   },
   {
-    label: "03 · PROVE",
-    fill: "w-3/4",
-    title: "Test with real phones",
-    body: "Run the full flow to your own phone and your team's before launch.",
-  },
-  {
-    label: "04 · LAUNCH",
+    label: "03 · LAUNCH",
     fill: "w-full",
     title: "Go live",
     body: "RelayKit handles registration and delivery. A few days to approval.",
@@ -48,13 +42,13 @@ export function HowItWorks() {
       <div className="max-w-2xl">
         <Eyebrow>How it works</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          From idea to live SMS, in four steps.
+          From idea to live SMS, in three steps.
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
           No telecom expertise required. The hard parts happen on our side.
         </p>
       </div>
-      <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-9 md:grid-cols-3">
         {STEPS.map((step) => (
           <div key={step.label} className="relative pt-6">
             <div className="absolute inset-x-0 top-0 h-0.5 bg-border-primary" aria-hidden>
