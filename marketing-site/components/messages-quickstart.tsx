@@ -12,33 +12,27 @@ import { Eyebrow } from "@/components/home/section-ui";
 
 const DISMISS_KEY = "relaykit_quickstart_dismissed";
 
-// Cumulative fills (25/50/75/100%) — same pattern as the home steps.
+// Cumulative fills (thirds: 1/3, 2/3, full) — same pattern as the home steps.
 type Step = { label: string; fill: string; title: string; body: string };
 
 const STEPS: Step[] = [
   {
     label: "01 · Details",
-    fill: "w-1/4",
+    fill: "w-1/3",
     title: "Add your business",
     body: "Your business name and industry, so the templates read like your app.",
   },
   {
     label: "02 · Select",
-    fill: "w-1/2",
+    fill: "w-2/3",
     title: "Pick your messages",
     body: "Choose the categories and the individual messages your app sends.",
   },
   {
     label: "03 · Personalize",
-    fill: "w-3/4",
-    title: "Add your data",
-    body: "Open Variables to fill in your own values and adjust the wording.",
-  },
-  {
-    label: "04 · Edit",
     fill: "w-full",
     title: "Make it yours",
-    body: "Edit any message or add your own, then copy them into your code.",
+    body: "Fill in your own values, tweak the wording or add messages, then copy them into your code.",
   },
 ];
 
@@ -83,10 +77,10 @@ export function MessagesQuickstart() {
 
         <Eyebrow>Quick start</Eyebrow>
         <h2 className="mt-4 text-2xl font-bold tracking-tight text-text-primary">
-          Build your message plan in four steps.
+          Build your message plan in three steps.
         </h2>
 
-        <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-[52px] md:grid-cols-3 md:gap-y-9">
           {STEPS.map((step) => (
             <div key={step.label}>
               <div className="font-mono text-xs tracking-[0.12em] text-text-tertiary">
