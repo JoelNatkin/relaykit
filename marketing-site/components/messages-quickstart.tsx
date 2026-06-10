@@ -3,18 +3,17 @@
 import { useEffect, useState } from "react";
 import { X } from "@untitledui/icons";
 import { Eyebrow } from "@/components/home/section-ui";
+import { StepStrip, type Step } from "@/components/step-strip";
 
 // Page-level orientation strip for /messages ONLY — deliberately not inside
 // ConfiguratorSection (that component also renders in the home's clipped peek;
-// this strip must not leak there). Reuses How-it-works' exact visual language:
-// the same gold cumulative progress bar + mono-label / title / body step markup
-// (D-427 accent system). Dismissible, persisted to localStorage.
+// this strip must not leak there). Renders the shared <StepStrip/> — the same
+// canonical home How-it-works look (D-427 accent system). Dismissible,
+// persisted to localStorage.
 
 const DISMISS_KEY = "relaykit_quickstart_dismissed";
 
 // Cumulative fills (thirds: 1/3, 2/3, full) — same pattern as the home steps.
-type Step = { label: string; fill: string; title: string; body: string };
-
 const STEPS: Step[] = [
   {
     label: "01 · Details",
@@ -80,24 +79,7 @@ export function MessagesQuickstart() {
           Build your message plan in three steps.
         </h2>
 
-        <div className="mt-6 grid grid-cols-1 gap-x-14 gap-y-[52px] md:grid-cols-3 md:gap-y-9">
-          {STEPS.map((step) => (
-            <div key={step.label}>
-              <div className="font-mono text-xs tracking-[0.12em] text-text-tertiary">
-                {step.label}
-              </div>
-              <div className="mt-3 h-0.5 w-full bg-border-primary" aria-hidden>
-                <div className={`h-full bg-bg-gold ${step.fill}`} />
-              </div>
-              <h3 className="mt-3 text-lg font-semibold text-text-primary">
-                {step.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                {step.body}
-              </p>
-            </div>
-          ))}
-        </div>
+        <StepStrip steps={STEPS} className="mt-6" />
       </div>
     </section>
   );
