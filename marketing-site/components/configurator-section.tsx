@@ -413,7 +413,7 @@ export function ConfiguratorSection() {
               <h2 className="text-2xl font-bold tracking-tight text-text-primary">
                 Write your messages
               </h2>
-              <span className="shrink-0 rounded-full border border-border-secondary bg-surface-inset px-3 py-1 text-xs font-medium text-text-tertiary">
+              <span className="hidden md:inline-block shrink-0 rounded-full border border-border-secondary bg-surface-inset px-3 py-1 text-xs font-medium text-text-tertiary">
                 Free · no account
               </span>
             </div>
