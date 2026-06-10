@@ -35,7 +35,6 @@ export function Hero() {
             <br className="hidden sm:block" />
             for your app. <span className="text-text-headline-muted">Easier</span>
           </h1>
-          <CategoryRotor />
         </div>
 
         {/* Two columns on lg: copy left, configurator peek right. items-start
@@ -44,7 +43,8 @@ export function Hero() {
         <div className="mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
           {/* Hero copy — left column (verbatim). */}
           <div className="max-w-xl">
-            <p className="max-w-xl text-lg leading-relaxed text-text-secondary">
+            <CategoryRotor />
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-text-secondary">
               Pick the messages your app needs. RelayKit handles registration,
               opt-outs, and the carrier rules behind the scenes. Your AI tool
               wires up the rest.
