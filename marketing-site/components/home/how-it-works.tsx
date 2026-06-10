@@ -48,7 +48,7 @@ export function HowItWorks() {
           No telecom expertise required. The hard parts happen on our side.
         </p>
       </div>
-      <div className="mt-14 grid grid-cols-1 gap-x-10 gap-y-9 md:grid-cols-3">
+      <div className="mt-14 grid grid-cols-1 gap-x-[60px] gap-y-[60px] md:grid-cols-3">
         {STEPS.map((step) => (
           <div key={step.label} className="relative pt-6">
             <div className="absolute inset-x-0 top-0 h-0.5 bg-border-primary" aria-hidden>
