@@ -89,7 +89,7 @@ export function MessagesQuickstart() {
               <div className="mt-3 h-0.5 w-full bg-border-primary" aria-hidden>
                 <div className={`h-full bg-bg-gold ${step.fill}`} />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-text-primary">
+              <h3 className="mt-3 text-lg font-semibold text-text-primary">
                 {step.title}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-text-secondary">
