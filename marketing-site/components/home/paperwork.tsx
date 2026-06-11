@@ -7,17 +7,17 @@ const CARDS: { Icon: FC<{ className?: string }>; title: string; body: string }[]
   [
     {
       Icon: FileCheck02,
-      title: "Registration, handled",
+      title: "Registration handled",
       body: "We file your brand and message registration with the carriers and walk it through approval. You stay in your editor.",
     },
     {
       Icon: ShieldTick,
-      title: "Messages, compliant",
+      title: "Messages compliant",
       body: "Templates and custom messages are checked against what carriers allow, not just passed through.",
     },
     {
       Icon: SlashCircle01,
-      title: "Opt-outs, enforced",
+      title: "Opt-ins & opt-outs covered",
       body: "When someone replies STOP, we stop. Consent is tracked and enforced at delivery — not something you wire up yourself.",
     },
   ];

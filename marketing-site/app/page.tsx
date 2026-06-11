@@ -40,13 +40,13 @@ function Recognition() {
       <div className="max-w-2xl">
         <Eyebrow>Why RelayKit</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          The feature is small. The paperwork isn&apos;t.
+          The rules show up after you start building.
         </h2>
       </div>
       <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-            You expected days
+            The feature
           </div>
           <ul className="grid gap-3">
             {EXPECTED.map((item) => (
@@ -64,7 +64,7 @@ function Recognition() {
         </div>
         <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-            You got weeks
+            The requirements
           </div>
           <ul className="grid gap-3">
             {DISCOVERED.map((item) => (
@@ -82,13 +82,6 @@ function Recognition() {
           </ul>
         </div>
       </div>
-      <p className="mt-6 text-center text-lg leading-relaxed text-text-secondary">
-        Most developers discover the second column after they start building.
-        <br />
-        <span className="font-semibold text-gold">
-          RelayKit handles them.
-        </span>
-      </p>
     </section>
   );
 }
