@@ -4,11 +4,11 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 >
-> **NOTE — BRANCH copy.** Reflects `feat/post-launch-polish` (UNMERGED, on Vercel preview). `main` is live in production — the **design-refresh go-live merge happened earlier this session** (`feat/design-refresh` → `main`, `73e2878`); the prior handoff covered that. This session then branched `feat/post-launch-polish` off `main` and did the polish below.
+> **NOTE — MERGED to `main`.** `feat/post-launch-polish` was PM-reviewed, approved, and merged to `main` via no-ff merge **`abef727`** (pushed `73e2878..abef727`, 2026-06-11); Vercel production deploy follows the push. The branch is left in place (not deleted). The full-branch diff was prepped to `.pm-review.md` for the cumulative review before merge.
 
-**Session metrics:** Commits: 21 on `feat/post-launch-polish` (`f1309e3` → `26b9b00`) + this close-out | Files modified: hero.tsx, hero-configurator-graphic.tsx, step-strip.tsx, messages-quickstart.tsx, app/page.tsx, app/messages/page.tsx, configurator-section.tsx, top-nav.tsx, bottom-email-capture.tsx, final-cta.tsx, how-it-works.tsx, paperwork.tsx, ai-section.tsx, pricing.tsx; **deleted** components/home/category-rotor.tsx | Decisions added: 0 (all copy/visual — no product alternative resolved) | External actions: branch push per commit, Vercel preview per commit; **no merge**.
+**Session metrics:** Commits: 23 on `feat/post-launch-polish` (`f1309e3` → `6532c53`) + the go-live merge `abef727` + this handoff refresh | Files modified: hero.tsx, hero-configurator-graphic.tsx, step-strip.tsx, messages-quickstart.tsx, app/page.tsx, app/messages/page.tsx, configurator-section.tsx, top-nav.tsx, bottom-email-capture.tsx, final-cta.tsx, how-it-works.tsx, paperwork.tsx, ai-section.tsx, pricing.tsx; **deleted** components/home/category-rotor.tsx | Decisions added: 0 (all copy/visual — no product alternative resolved) | External actions: branch push per commit, Vercel preview per commit, **production deploy on the merge push**.
 
-**Status: 🟡 `feat/post-launch-polish` UNMERGED, on Vercel preview — awaiting cumulative PM review (gg) of the full branch diff before merge to `main`.** HEAD `26b9b00`, in sync with `origin/feat/post-launch-polish`. Branched from `main` after the go-live merge (which is live at relaykit.ai). Ran on the relaxed per-commit cadence (trivial/visually-verifiable auto-shipped after build+push; a couple of `.pm-review.md` rounds early on).
+**Status: 🟢 `feat/post-launch-polish` MERGED to `main` (go-live), `abef727` — production deploy on push.** Final quality gate on the branch passed before merge (`tsc --noEmit` clean, `eslint .` clean, `npm run build` succeeded on a fresh `.next`). **Confirm the Vercel production build lands green at relaykit.ai before treating the polish as live.** Ran on the relaxed per-commit cadence (trivial/visually-verifiable auto-shipped after build+push; `.pm-review.md` rounds for the copy work + the cumulative pre-merge review).
 
 ---
 
@@ -25,16 +25,13 @@
 - **`/messages` misc.** Hero H1 now all white (dropped the `text-text-headline-muted` span on "Ready to copy."); waitlist inline link made unbreakable (`whitespace-nowrap`) + subhead `max-w-[520px]`; `#join` waitlist section + the now/later body in lockstep with the home final-CTA.
 - **Nav logo** `text-base` → `text-lg` (both nav instances).
 
-## ⚠ Pending before merge to `main`
+## ⚠ Doc reconciliation owed — NOW DUE (post-merge; the polish is on `main`)
 
-1. **Cumulative PM review (gg) of the full branch diff** — 20 commits accrued on the preview without a single bundled review. PM should review `git diff main...feat/post-launch-polish` before merge.
-2. ~~**Final-CTA body copy revision**~~ — **LANDED** (`26b9b00`, 2026-06-11). The body now reads "You can start with the messages today. When sending launches, your AI tool wires up the integration, you test on real phones, and registration and opt-outs stay handled behind the scenes." — rounds out the prior compliance-only second sentence with the AI-build-spec + real-phone-testing virtues. Applied to **`components/home/final-cta.tsx` AND `app/messages/page.tsx` `#join` in lockstep** (verbatim pair, both verified identical). Awaiting Joel's preview eyeball, but no longer a merge blocker.
+Both pre-merge blockers are cleared — the final-CTA copy landed (`26b9b00` / refined to an inline gold `/messages` link + dropped redundant button in `6532c53`), and the cumulative PM review passed (merge `abef727`). What remains is the **deferred doc-reconciliation pass, now the next task** — the home spec/index describe pre-polish reality and the merge made them stale on `main`:
 
-## Doc reconciliation owed at merge (deferred — NOT done this session)
-
-- **PROTOTYPE_SPEC** — already-pending home-spec reconciliation (from design-refresh) is now **bigger**: the hero rework (new H1, no eyebrow, interactive self-clipping mock, responsive stack), the eyebrow "THE ___" series, the Recognition full-width accordion + expander copy, the "Choose your messages" retitle, and the carded `/messages` quick-start all need to land in the spec.
-- **REPO_INDEX "marketing home (v10)" rows** — `hero.tsx` (still describes the old "Easier" two-tone H1 + `CategoryRotor` + static graphic), `app/page.tsx` (Recognition/eyebrow), `step-strip.tsx` ("render identically" — now has a `card` variant), `how-it-works.tsx` are stale. This close-out only removed the deleted **`category-rotor.tsx`** row (file-removal touch); the rest is a merge-time pass.
-- **D-429 still stale** (carried from design-refresh) — the `/messages` quick-start is a permanent section, now also *carded*; ledger is PM-gated.
+- **PROTOTYPE_SPEC home-spec pass** — the §"Home page (`/`)" section still describes pre-polish reality. Needs: the hero rework (new H1 "The easiest way to add text messaging to your app.", **no eyebrow**, **interactive self-clipping mock** `hero-configurator-graphic.tsx` replacing the old `PhoneMock`/`category-rotor.tsx` rotor — the standing "Hero rotor note" should be **removed**, the rotor file is deleted, responsive stack), the eyebrow "THE ___" series, the Recognition **full-width requirements accordion** + sourced expander copy (replacing the two-card "expected days / got weeks" model), the **"Choose your messages"** retitle, the **carded** `/messages` quick-start (`StepStrip` `variant="card"`), and the final-CTA simplification (inline gold `/messages` link, no PrimaryCta).
+- **REPO_INDEX "marketing home (v10)" rows** — `hero.tsx` (still describes the old "Easier" two-tone H1 + `CategoryRotor` + static graphic), `app/page.tsx` (Recognition/eyebrow), `step-strip.tsx` ("render identically" — now has a `card` variant), `how-it-works.tsx`, `final-cta.tsx` are stale and need bringing to shipped reality.
+- **D-429 still stale** (carried from design-refresh) — the `/messages` quick-start is a permanent, now *carded* section, not the dismissible four-step strip D-429 records; the ledger is **PM-gated** (amend/supersede is PM's call), and PROTOTYPE_SPEC §"Quick-start strip" reconciles once PM rules.
 
 ## Visual tunables awaiting Joel's eyeball (preview)
 
@@ -53,11 +50,12 @@
 
 ## Branch state
 
-**`feat/post-launch-polish` UNMERGED** (HEAD `4de442c`, pushed, on preview). Branched from `main` after the go-live merge. `main` is the live production branch (design-refresh merged this session, `73e2878`). `feat/design-refresh` + `feat/marketing-home` are merged-not-deleted (optional cleanup). No other active branches.
+**`feat/post-launch-polish` MERGED to `main`** via no-ff merge `abef727` (branch HEAD `6532c53`). `main` is the live production branch. `feat/post-launch-polish` + `feat/design-refresh` + `feat/marketing-home` are all merged-not-deleted (optional cleanup). No other active branches.
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
-- **PM cumulative review (gg)** of `feat/post-launch-polish` → resolve the final-CTA body copy (Joel picks; apply to final-cta.tsx + `/messages` `#join` together) → merge to `main` → at merge, do the PROTOTYPE_SPEC + REPO_INDEX "marketing home" reconciliation pass.
+- **Confirm the production deploy** — watch the Vercel build off the `main` push (`abef727`) land green at relaykit.ai; the polish is "live" only once it does.
+- **Doc-reconciliation pass (now due, see above)** — the PROTOTYPE_SPEC home-spec pass + REPO_INDEX "marketing home" rows + the PM-gated D-429 staleness call. This is the immediate next task now that the polish is on `main`.
 - **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN remains the parallel substantive product pickup.
