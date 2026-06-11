@@ -39,9 +39,9 @@ export function Hero() {
               The easiest way to add text messaging to your app.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary">
-              Ready-made texts that cut no-shows, support tickets,
+              Ready-made texts that cut no-shows,
               <br className="hidden sm:block" />
-              and missed codes.
+              support tickets, and missed codes.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <PrimaryCta href="/messages">

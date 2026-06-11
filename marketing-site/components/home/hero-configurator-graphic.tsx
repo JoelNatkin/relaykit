@@ -59,12 +59,12 @@ function nextCategoryId(currentId: string): string {
 // Bespoke rail checkbox — gold filled check when selected, empty rounded square
 // otherwise. Mirrors the live category checkbox visually (D-427 gold for the
 // selected CATEGORY) but is hand-built here; sync if that styling changes.
-// size-4 to suit the compact card rail.
+// size-5 box (a step up from the prior size-4) for the card rail.
 function RailCheckbox({ checked }: { checked: boolean }) {
   return (
-    <span className="relative inline-flex size-4 shrink-0">
+    <span className="relative inline-flex size-5 shrink-0">
       <span
-        className={`size-4 rounded ${
+        className={`size-5 rounded ${
           checked
             ? "border border-border-gold bg-bg-gold"
             : "border-2 border-border-primary"
@@ -75,7 +75,7 @@ function RailCheckbox({ checked }: { checked: boolean }) {
           viewBox="0 0 10 10"
           fill="none"
           aria-hidden
-          className="pointer-events-none absolute inset-0 m-auto size-2.5 text-text-on-gold"
+          className="pointer-events-none absolute inset-0 m-auto size-3 text-text-on-gold"
         >
           <path
             d="M1.75 5.25 4 7.25 8.25 2.75"
@@ -154,8 +154,9 @@ export function HeroConfiguratorGraphic() {
   return (
     // Self-clipping card: fixed height + overflow-hidden + uniform border. The
     // height shows ~2½ message cards; the 3rd is cut by the card's own bottom
-    // edge (clean clip, no fade). Height is a visual tunable.
-    <div className="surface-flat h-[480px] overflow-hidden rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl">
+    // edge (clean clip, no fade). The full 9-row rail fits within this height;
+    // the bottom edge cuts a MESSAGE card, not the rail. Height is a tunable.
+    <div className="surface-flat h-[450px] overflow-hidden rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl">
       {/* Header row — mirrors ConfiguratorSection, sized down for the card. */}
       <div className="mb-4 flex items-center justify-between gap-3 border-b border-border-secondary pb-4">
         <h2 className="text-lg font-bold tracking-tight text-text-primary">
@@ -166,10 +167,10 @@ export function HeroConfiguratorGraphic() {
         </span>
       </div>
 
-      {/* Fixed tracks: 170px rail + 500px messages. The messages column is
+      {/* Fixed tracks: 188px rail + 500px messages. The messages column is
           intentionally wider than the card — it crops at the card's right edge
           (overflow-hidden), a deliberate peek, not a shrunk-to-fit column. */}
-      <div className="grid grid-cols-[170px_500px] gap-4">
+      <div className="grid grid-cols-[188px_500px] gap-4">
         {/* Hand-built categories rail — the ONLY interactive part. All 9
             categories; each row is a real button with aria-pressed; clicking
             sets manual mode. Tightened spacing/type to stay comfortable at
