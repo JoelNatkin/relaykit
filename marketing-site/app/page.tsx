@@ -169,11 +169,11 @@ export default function MarketingHome() {
           <div className="max-w-xl">
             <Eyebrow>The messages</Eyebrow>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-              Reminders, order updates, login codes — every job, not just one.
+              Messages for every job.
             </h2>
             <p className="mt-4 text-base leading-relaxed text-text-secondary">
               Pick your industry; every message adjusts to it. Most apps need a
-              couple — the whole set&apos;s here if you do.
+              couple of categories — the whole set&apos;s here for you.
             </p>
           </div>
           {/* Gold text affordance — D-427. */}
