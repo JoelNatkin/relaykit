@@ -548,10 +548,13 @@ export function ConfiguratorSection() {
                   <button
                     type="button"
                     onClick={handleCopy}
+                    aria-label="Copy"
                     className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
                   >
                     <Copy01 className="size-4" />
-                    {copyToastVisible ? "Copied" : "Copy"}
+                    <span className="hidden sm:inline">
+                      {copyToastVisible ? "Copied" : "Copy"}
+                    </span>
                   </button>
                   <KebabMenu
                     ariaLabel="Message options"

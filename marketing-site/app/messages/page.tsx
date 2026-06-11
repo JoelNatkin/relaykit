@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { MessagesQuickstart } from "@/components/messages-quickstart";
-import { PrimaryCta } from "@/components/home/section-ui";
 import { BottomEmailCapture } from "@/components/bottom-email-capture";
 
 export const metadata: Metadata = {
@@ -23,11 +22,15 @@ export default function MessagesPage() {
           your app. <span className="text-text-headline-muted">Ready to copy.</span>
         </h1>
         <p className="mt-4 max-w-[580px] text-lg text-text-tertiary">
-          Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026.
+          Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026 —{" "}
+          <a
+            href="#join"
+            className="font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
+          >
+            join the waitlist
+          </a>
+          .
         </p>
-        <div className="mt-6">
-          <PrimaryCta href="#join">Join the waitlist</PrimaryCta>
-        </div>
       </div>
       <MessagesQuickstart />
       <ConfiguratorSection />
