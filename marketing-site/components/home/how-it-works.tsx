@@ -32,12 +32,12 @@ export function HowItWorks() {
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
       <div className="max-w-2xl">
-        <Eyebrow>How it works</Eyebrow>
+        <Eyebrow>The process</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          From idea to live SMS, in three steps.
+          What it takes to go live.
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          No telecom expertise required. The hard parts happen on our side.
+          No telecom expertise required. We handle the carrier side.
         </p>
       </div>
       <StepStrip steps={STEPS} className="mt-14" />

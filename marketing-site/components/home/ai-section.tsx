@@ -62,7 +62,7 @@ export function AiSection() {
       id="build"
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
-      <Eyebrow>Build</Eyebrow>
+      <Eyebrow>The build</Eyebrow>
       <div className="mt-8 grid items-start gap-14 md:mt-10 lg:grid-cols-2">
         {/* min-w-0 lets the columns shrink below their content width so the
             code block's overflow-x-auto scrolls internally instead of forcing

@@ -1,46 +1,65 @@
 "use client";
 
 /**
- * Static, non-interactive graphic of the configurator for the home hero.
+ * Configurator card for the home hero — mildly interactive, state-ISOLATED,
+ * self-clipping.
  *
- * NOT a live instance: it owns no state, calls no configurator/elig hooks, and
- * never touches localStorage — so it can't clobber the home's real embedded
- * ConfiguratorSection or /messages. It reproduces a fixed demo state (business
- * "Acme", Verification selected) as a product-forward peek.
+ * Self-contained card: its OWN container is the fixed-height, overflow-hidden,
+ * uniformly-bordered box — there is no external clipping window, no scaled
+ * 920px layout, no gradient/mask/taper. The internals are sized to fit the
+ * card's own (column) width; the bottom edge cleanly cuts the third message
+ * card.
  *
- * The left rail is HAND-BUILT in this file (it no longer reuses <CategoryList>):
- * it maps over every entry in CATEGORIES rendering a checkbox + the category
- * name only — no description sub-text and no per-row messages. Because it's
- * bespoke, it must be HAND-SYNCED if the category set or the checkbox styling
- * changes. The message cards still reuse the real <MessageReadCard> so message
- * styling + content track automatically. The whole subtree is `inert` (+
- * aria-hidden) so it's purely decorative — no pointer, focus, or a11y.
+ * NOT a live instance: it owns ONLY local view state (which category is active
+ * + a manual-override flag). It calls NO configurator/elig hooks and NEVER
+ * touches localStorage — so it can't clobber the home's real embedded
+ * ConfiguratorSection or /messages. It reproduces a demo state (business
+ * "Acme", one category selected) as a product-forward peek.
+ *
+ * Behavior: every 8s it auto-advances the active category through
+ * RAIL_CATEGORIES (wrapping), the checked checkbox + the messages column
+ * following along with a soft ~280ms fade/translate swap. Any click on a rail
+ * row selects that category and permanently stops the auto-advance for this
+ * mount. prefers-reduced-motion disables both the auto-advance and the swap
+ * animation.
+ *
+ * The left rail is HAND-BUILT here (it doesn't reuse <CategoryList>): it maps
+ * RAIL_CATEGORIES to a checkbox + name only. Because it's bespoke, it must be
+ * HAND-SYNCED if the category set or checkbox styling changes. The message
+ * cards reuse the real <MessageReadCard> so message styling + content track
+ * automatically. Only the rail rows are interactive; the rest of the card
+ * (tone pills, message cards, Copy CTA) stays decorative via `inert`.
  */
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MessageReadCard } from "@/components/configurator/message-read-card";
 import {
   PAGE_TONES,
   tonePillClasses,
   effectiveBody,
 } from "@/components/configurator/tone-pill";
-import { CATEGORIES, VERIFICATION } from "@/lib/message-library";
+import { CATEGORIES } from "@/lib/message-library";
 import type { Category } from "@/lib/message-library";
 
 const DEMO_BUSINESS = "Acme";
-// Only Verification is checked in the demo state.
-const DEMO_CHECKED = new Set(["verification"]);
-// Curated rail set — drop Customer support, Team alerts, Community. The
-// CATEGORIES source is untouched; display order is preserved by filtering.
-const RAIL_EXCLUDED = new Set(["customer-support", "team-alerts", "community"]);
-const RAIL_CATEGORIES = CATEGORIES.filter((c) => !RAIL_EXCLUDED.has(c.id));
-// Right column shows only the Verification group, first two messages.
-const DEMO_GROUPS: Category[] = [VERIFICATION];
+// Full rail — every category in the corpus (all 9), display order preserved.
+// Auto-advance cycles through the whole set.
+const RAIL_CATEGORIES = CATEGORIES;
 
-const noop = () => {};
+const INITIAL_CATEGORY = "verification";
+const ADVANCE_MS = 6000;
+const SWAP_MS = 280;
+
+function nextCategoryId(currentId: string): string {
+  const idx = RAIL_CATEGORIES.findIndex((c) => c.id === currentId);
+  const next = RAIL_CATEGORIES[(idx + 1) % RAIL_CATEGORIES.length];
+  return next.id;
+}
 
 // Bespoke rail checkbox — gold filled check when selected, empty rounded square
 // otherwise. Mirrors the live category checkbox visually (D-427 gold for the
 // selected CATEGORY) but is hand-built here; sync if that styling changes.
+// size-5 (20px) box — matches the real configurator's category checkbox size.
 function RailCheckbox({ checked }: { checked: boolean }) {
   return (
     <span className="relative inline-flex size-5 shrink-0">
@@ -72,44 +91,119 @@ function RailCheckbox({ checked }: { checked: boolean }) {
 }
 
 export function HeroConfiguratorGraphic() {
+  const [activeId, setActiveId] = useState<string>(INITIAL_CATEGORY);
+  // `out` drives the swap fade (mirrors the site's existing rotor motion).
+  const [out, setOut] = useState(false);
+  const [manual, setManual] = useState(false);
+  const [reduced, setReduced] = useState(false);
+
+  // Refs so the interval + swap helper read fresh values without re-arming.
+  const activeIdRef = useRef(activeId);
+  activeIdRef.current = activeId;
+  const reducedRef = useRef(reduced);
+  reducedRef.current = reduced;
+  const swapTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Detect (and track) prefers-reduced-motion. Client-only → no SSR mismatch.
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  // Swap to a category with the soft fade. Under reduced motion, swap instantly
+  // (the fade classes are disabled too, so the trough would just blank).
+  const swapTo = useCallback((id: string) => {
+    clearTimeout(swapTimer.current);
+    if (reducedRef.current) {
+      setActiveId(id);
+      setOut(false);
+      return;
+    }
+    setOut(true);
+    swapTimer.current = setTimeout(() => {
+      setActiveId(id);
+      setOut(false);
+    }, SWAP_MS);
+  }, []);
+
+  // Auto-advance every 8s — never under manual override or reduced motion.
+  useEffect(() => {
+    if (manual || reduced) return;
+    const interval = setInterval(() => {
+      swapTo(nextCategoryId(activeIdRef.current));
+    }, ADVANCE_MS);
+    return () => clearInterval(interval);
+  }, [manual, reduced, swapTo]);
+
+  // Clear any pending swap timer on unmount.
+  useEffect(() => () => clearTimeout(swapTimer.current), []);
+
+  function handleSelect(id: string) {
+    setManual(true); // stops auto-advance permanently for this mount
+    if (id === activeIdRef.current) return;
+    swapTo(id);
+  }
+
+  const activeCategory: Category =
+    CATEGORIES.find((c) => c.id === activeId) ?? RAIL_CATEGORIES[0];
+  const requiresStop = activeCategory.tcrMapping === "MARKETING";
+
   return (
-    // inert: no pointer/focus/a11y — purely decorative product peek.
-    <div
-      inert
-      aria-hidden
-      className="surface-flat rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl sm:p-7"
-    >
-      {/* Header row — mirrors ConfiguratorSection. */}
-      <div className="mb-5 flex items-center justify-between gap-3 border-b border-border-secondary pb-5">
-        <h2 className="text-2xl font-bold tracking-tight text-text-primary">
-          Write your messages
+    // Self-clipping card: fixed height + overflow-hidden + uniform border. The
+    // height shows ~2½ message cards; the 3rd is cut by the card's own bottom
+    // edge (clean clip, no fade). The full 9-row rail fits within this height;
+    // the bottom edge cuts a MESSAGE card, not the rail. Height is a tunable.
+    //
+    // Surfaces are the REAL configurator tokens — NOT `surface-flat`. The card
+    // is bg-surface-card, the rail panel bg-surface-inset, and the reused
+    // <MessageReadCard> renders bg-surface-raised, exactly as ConfiguratorSection
+    // / CategoryList / MessageReadCard do, so the mock is indistinguishable from
+    // the real tool's color treatment (no flattened/approximated surfaces).
+    <div className="h-[480px] overflow-hidden rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl">
+      {/* Header row — mirrors ConfiguratorSection, sized down for the card. */}
+      <div className="mb-4 flex items-center justify-between gap-3 border-b border-border-secondary pb-4">
+        <h2 className="text-lg font-bold tracking-tight text-text-primary">
+          Choose your messages
         </h2>
-        <span className="shrink-0 rounded-full border border-border-secondary bg-surface-inset px-3 py-1 text-xs font-medium text-text-tertiary">
+        <span className="shrink-0 rounded-full border border-border-secondary bg-surface-inset px-2.5 py-1 text-xs font-medium text-text-tertiary">
           Free · no account
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
-        {/* Hand-built categories rail — checkbox + name only, no dividers,
-            24px (gap-6) between rows. All categories; Verification checked. */}
-        <div className="rounded-xl border border-border-secondary bg-surface-inset p-5 md:min-w-60">
-          <h3 className="text-base font-semibold text-text-primary">
-            Categories
-          </h3>
-          <div className="mt-5 flex flex-col gap-5">
+      {/* Fixed tracks: 188px rail + 500px messages. The messages column is
+          intentionally wider than the card — it crops at the card's right edge
+          (overflow-hidden), a deliberate peek, not a shrunk-to-fit column. */}
+      <div className="grid grid-cols-[188px_500px] gap-4">
+        {/* Hand-built categories rail — the ONLY interactive part. All 9
+            categories; each row is a real button with aria-pressed; clicking
+            sets manual mode. Tightened spacing/type to stay comfortable at
+            170px with 9 rows. */}
+        <div className="rounded-xl border border-border-secondary bg-surface-inset p-3">
+          <h3 className="text-base font-semibold text-text-primary">Categories</h3>
+          <div className="mt-3 flex flex-col gap-[14px]">
             {RAIL_CATEGORIES.map((category) => (
-              <div key={category.id} className="flex items-center gap-3">
-                <RailCheckbox checked={DEMO_CHECKED.has(category.id)} />
-                <span className="text-lg font-medium text-text-primary">
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => handleSelect(category.id)}
+                aria-pressed={category.id === activeId}
+                className="flex items-center gap-2 text-left"
+              >
+                <RailCheckbox checked={category.id === activeId} />
+                <span className="text-sm font-medium text-text-primary">
                   {category.name}
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
 
-        {/* Messages column */}
-        <div className="flex flex-col md:max-w-[500px]">
+        {/* Messages column — decorative (inert): tone pills, the swapping
+            category group, and the Copy CTA are all non-interactive. */}
+        <div className="flex flex-col" inert aria-hidden>
           <div className="flex flex-wrap gap-2">
             {PAGE_TONES.map((tone) => (
               <span
@@ -121,43 +215,45 @@ export function HeroConfiguratorGraphic() {
             ))}
           </div>
 
-          <div className="mt-8 space-y-7">
-            {DEMO_GROUPS.map((category) => {
-              const requiresStop = category.tcrMapping === "MARKETING";
-              return (
-                <div key={category.id}>
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <h4 className="text-base font-semibold text-text-primary">
-                      {category.name}
-                    </h4>
-                  </div>
-                  <div className="space-y-4">
-                    {category.messages.slice(0, 2).map((message) => (
-                      <MessageReadCard
-                        key={message.id}
-                        name={message.name}
-                        tooltip={message.tooltip}
-                        body={effectiveBody(
-                          message,
-                          undefined,
-                          undefined,
-                          "Standard",
-                        )}
-                        variables={category.variables}
-                        categoryVariables={{}}
-                        businessName={DEMO_BUSINESS}
-                        requiresStop={requiresStop}
-                        onEdit={noop}
-                        onVariableDoubleClick={noop}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
+          {/* Swapping content — soft fade + slight translate-y, ~280ms, matching
+              the site's existing rotor motion; disabled under reduced motion. */}
+          <div
+            className={`mt-6 transition-all duration-300 ease-linear motion-reduce:transition-none ${
+              out ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"
+            }`}
+          >
+            <div>
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <h4 className="text-sm font-semibold text-text-primary">
+                  {activeCategory.name}
+                </h4>
+              </div>
+              <div className="space-y-3">
+                {activeCategory.messages.slice(0, 3).map((message) => (
+                  <MessageReadCard
+                    key={message.id}
+                    name={message.name}
+                    tooltip={message.tooltip}
+                    body={effectiveBody(
+                      message,
+                      undefined,
+                      undefined,
+                      "Standard",
+                    )}
+                    variables={activeCategory.variables}
+                    categoryVariables={{}}
+                    businessName={DEMO_BUSINESS}
+                    requiresStop={requiresStop}
+                    onEdit={() => {}}
+                    onVariableDoubleClick={() => {}}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
 
-          {/* Prominent gold Copy CTA spanning the messages column (D-427). */}
+          {/* Prominent gold Copy CTA spanning the messages column (D-427). Sits
+              below the clip line — cropped by the card's bottom edge. */}
           <div className="mt-7 flex h-12 w-full items-center justify-center rounded-lg bg-bg-gold text-base font-semibold text-text-on-gold">
             Copy messages
           </div>

@@ -1,11 +1,10 @@
-import { CategoryRotor } from "@/components/home/category-rotor";
 import { HeroConfiguratorGraphic } from "@/components/home/hero-configurator-graphic";
-import { Eyebrow, GhostCta, PrimaryCta } from "@/components/home/section-ui";
+import { GhostCta, PrimaryCta } from "@/components/home/section-ui";
 
 // Decorative dot-grid texture behind the hero. Theme-neutral mid-gray at low
 // alpha reads as a subtle texture on both the dark and light page (it is not a
 // brand color), masked to fade toward the edges — focal point sits lower-right
-// where the configurator peek now lives.
+// where the configurator card lives.
 const DOT_GRID_STYLE: React.CSSProperties = {
   backgroundImage:
     "radial-gradient(circle, rgb(128 128 128 / 0.07) 1px, transparent 1.5px)",
@@ -16,6 +15,15 @@ const DOT_GRID_STYLE: React.CSSProperties = {
     "radial-gradient(ellipse 60% 70% at 76% 72%, #000, transparent 72%)",
 };
 
+// Soft ambient glow behind the configurator card — brand warm-gray family
+// (rgb 149 134 117), NOT gold — to set the card off from the page. Barely-
+// there (~0.10 center) with a wide radial falloff to transparent so the card's
+// border stays crisp against it. Sits above the dot-grid and below the card.
+const HERO_GLOW_STYLE: React.CSSProperties = {
+  background:
+    "radial-gradient(ellipse at center, rgb(149 134 117 / 0.10) 0%, rgb(149 134 117 / 0.05) 45%, transparent 72%)",
+};
+
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
@@ -24,30 +32,27 @@ export function Hero() {
         style={DOT_GRID_STYLE}
         aria-hidden
       />
-      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[820px]">
-        {/* Full-width headline band — the H1 spans the section so "Easier"
-            sits inline after "for your app." The two-column split starts
-            BELOW this band. */}
-        <div className="max-w-4xl">
-          <Eyebrow>Free message templates — live now</Eyebrow>
-          <h1 className="mt-5 text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
-            Text messaging{" "}
-            <br className="hidden sm:block" />
-            for your app. <span className="text-text-headline-muted">Easier</span>
-          </h1>
-        </div>
-
-        {/* Two columns on lg: copy left, configurator peek right. items-start
-            keeps both top-aligned; the peek is confined to the right column so
-            it can NEVER overlap the copy at any width. */}
-        <div className="mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
-          {/* Hero copy — left column (verbatim). */}
-          <div className="max-w-xl">
-            <CategoryRotor />
-            <p className="mt-3 max-w-xl text-lg leading-relaxed text-text-secondary">
-              Pick the messages your app needs. RelayKit handles registration,
-              opt-outs, and the carrier rules behind the scenes. Your AI tool
-              wires up the rest.
+      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24">
+        {/* Hero layout. STACKS below the side-by-side threshold (copy on top,
+            mock card centered below) and goes side-by-side above it — the mock
+            never disappears at any width. Side-by-side holds down to ~940px:
+            left 400 + mock 360 + compressed 48px gutter = 808 content → ~856px
+            viewport at the floor; min-[940px] keeps a little buffer. minmax
+            tracks: LEFT (copy) grows via 1fr; RIGHT (mock) shrinks first toward
+            its 360px min, then the left toward 400px. Gutter compresses: 48px
+            (gap-x-12) through the tight range, 80px (gap-x-20) once wide. */}
+        <div className="grid grid-cols-1 gap-12 min-[940px]:grid-cols-[minmax(400px,1fr)_minmax(360px,420px)] min-[940px]:items-start min-[940px]:gap-x-12 min-[1100px]:gap-x-20">
+          {/* Left column — all hero copy (eyebrow, H1, subhead, CTAs, trust). */}
+          <div>
+            {/* No eyebrow here (removed) — mt-8 gives the H1 breathing room
+                from the top in place of the old eyebrow block. */}
+            <h1 className="mt-8 text-balance text-5xl font-bold leading-[0.95] tracking-tight text-text-primary sm:text-6xl lg:text-[64px]">
+              The easiest way to add text messaging to your app.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary">
+              Ready-made texts that cut no-shows,
+              <br className="hidden sm:block" />
+              support tickets, and missed codes.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <PrimaryCta href="/messages">
@@ -64,16 +69,26 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Configurator product peek — desktop only. A bounded, rounded,
-              overflow-clipped WINDOW that gives the card its own visible edges:
-              the rounded top-left + bottom-left corners both show and the
-              bottom sits above the hero's bottom (NOT a flat section slice).
-              Positioned lower (negative space above) and scaled to a peek; only
-              the RIGHT side runs off the viewport, clipped by the section's
-              overflow-hidden. Confined to this column → never overlaps the copy.
-              top / height / width / scale are visual tunables. */}
-          <div className="relative hidden lg:block">
-            <div className="pointer-events-none absolute left-0 top-[40px] h-[600px] w-[920px] origin-top-left scale-[0.85] overflow-hidden rounded-[22px] shadow-2xl">
+          {/* Right column — the SELF-CONTAINED configurator card. Sizes to its
+              column and clips itself (no absolute window, no scale, no bleed).
+              STACKED (below 940px): centered, full width up to 560px, no top
+              offset — it sits below the copy. SIDE-BY-SIDE (≥940px): fills the
+              mock track and its TOP edge aligns with the H1's first-line cap
+              height. The H1 box top is mt-8 (32px) below the grid top; pt-10
+              (40px) drops the card ~8px further onto the cap height (the
+              ascender gap above the capitals). Visual tunable — verify
+              1440/1200 that the card top and H1 top read as one line. */}
+          <div className="mx-auto w-full max-w-[560px] min-[940px]:mx-0 min-[940px]:max-w-none min-[940px]:pt-10">
+            {/* relative wrapper hugs the card so the glow sizes to it; the glow
+                is -z-10 (behind the static card, above the section dot-grid)
+                and -inset-16 so it spills a comfortable margin past the card
+                edges as ambient light. */}
+            <div className="relative">
+              <div
+                className="pointer-events-none absolute -inset-16 -z-10"
+                style={HERO_GLOW_STYLE}
+                aria-hidden
+              />
               <HeroConfiguratorGraphic />
             </div>
           </div>

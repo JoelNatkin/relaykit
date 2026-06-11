@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { MessagesQuickstart } from "@/components/messages-quickstart";
-import { PrimaryCta } from "@/components/home/section-ui";
 import { BottomEmailCapture } from "@/components/bottom-email-capture";
 
 export const metadata: Metadata = {
@@ -20,14 +19,21 @@ export default function MessagesPage() {
         <h1 className="max-w-2xl text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
           Text messages for{" "}
           <br className="hidden sm:block" />
-          your app. <span className="text-text-headline-muted">Ready to copy.</span>
+          your app. Ready to copy.
         </h1>
-        <p className="mt-4 max-w-[580px] text-lg text-text-tertiary">
-          Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026.
+        <p className="mt-4 max-w-[520px] text-lg text-text-tertiary">
+          Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026 —{" "}
+          {/* whitespace-nowrap keeps the link an unbreakable unit so "join the
+              waitlist" can never split across lines; the narrowed max-w shapes
+              where it lands. */}
+          <a
+            href="#join"
+            className="font-medium whitespace-nowrap text-gold transition duration-100 ease-linear hover:opacity-90"
+          >
+            join the waitlist
+          </a>
+          .
         </p>
-        <div className="mt-6">
-          <PrimaryCta href="#join">Join the waitlist</PrimaryCta>
-        </div>
       </div>
       <MessagesQuickstart />
       <ConfiguratorSection />
@@ -40,7 +46,7 @@ export default function MessagesPage() {
             Sending arrives Summer 2026
           </h2>
           <p className="mt-4 text-base leading-relaxed text-text-secondary">
-            You can start with the messages today. When RelayKit launches, we&apos;ll take care of registration, opt-outs, delivery, and the carrier requirements behind the scenes.
+            You can start with the messages today. When sending launches, your AI tool wires up the integration, you test on real phones, and registration and opt-outs stay handled behind the scenes.
           </p>
           <div className="flex justify-center">
             <BottomEmailCapture ctaSource="messages-final" />

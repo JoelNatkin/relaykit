@@ -10,6 +10,7 @@ import { VariablesCallout } from "@/components/home/variables-callout";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { PreviewListMock } from "@/components/preview-list-mock";
 import Link from "next/link";
+import { ChevronDown } from "@untitledui/icons";
 
 export const metadata: Metadata = {
   title: "RelayKit — The easiest way to add text messaging to your app",
@@ -17,18 +18,47 @@ export const metadata: Metadata = {
     "Pick the messages your app needs. RelayKit handles registration, opt-outs, and the carrier rules behind the scenes. Your AI tool wires up the rest.",
 };
 
-// Recognition — the "expected vs discovered" compare. The simple expected
-// steps get success-green arrows; the discovered friction markers get error-red
-// dots; the closing resolve line is gold (D-427 accent system; green/red are
-// D-405 semantic colors).
-const EXPECTED = ["Write a message", "Add an API call", "Ship"];
+// Recognition — the requirements the developer didn't expect. Each is an
+// error-red row in a single full-width card that expands (native <details>
+// accordion, one open at a time via the shared name="requirements") to show
+// what it entails. Red is a D-405 semantic color.
 const DISCOVERED = [
-  "Registration",
-  "Carrier review",
-  "Consent requirements",
-  "Build a compliance website",
-  "STOP and HELP handling",
-  "Message restrictions",
+  {
+    title: "Registration",
+    body: "Before anything sends, your business gets registered in a central registry that every US carrier checks — legal name, tax ID, website, and what you plan to send. Details have to match your IRS records exactly, or the application bounces.",
+    relay:
+      "RelayKit collects this during setup and files the registration for you.",
+  },
+  {
+    title: "Carrier review",
+    body: "Reviewers check your registration and your messages against carrier rules before you're allowed to send. Other providers typically take two to three weeks — and every rejection restarts the clock, with no guarantee the next round clears.",
+    relay:
+      "RelayKit submissions are prepared to pass the first time; approval typically takes a few days.",
+  },
+  {
+    title: "Consent requirements",
+    body: "You have to collect and keep proof that every recipient agreed to get texts from you — how they opted in, when, and which kinds of messages they agreed to. Someone who signed up for appointment reminders hasn't agreed to marketing.",
+    relay:
+      "RelayKit provides the opt-in language and keeps the consent records automatically.",
+  },
+  {
+    title: "Build a compliance website",
+    body: "Reviewers visit your website looking for a privacy policy with specific mobile-data language, posted terms, and a visible description of your texting program. A missing or half-finished site is the single most common reason registrations get rejected.",
+    relay:
+      "RelayKit generates and hosts a compliance site for you — privacy policy, terms, and opt-in page included.",
+  },
+  {
+    title: "STOP and HELP handling",
+    body: "A reply of STOP has to halt messages to that person immediately, and HELP has to get a real answer — automatically, every time. Getting it wrong is a fast way to get a number shut down.",
+    relay:
+      "RelayKit handles both at the delivery layer; when someone replies STOP, we stop.",
+  },
+  {
+    title: "Message restrictions",
+    body: "Carriers limit what businesses can say over text: entire content categories are banned, links get scrutinized, and messages outside your registered use case can get your number flagged. The rules live across multiple carrier policies, and they change.",
+    relay:
+      "RelayKit's templates already follow them, and custom messages are checked before they send — not just passed through.",
+  },
 ];
 
 function Recognition() {
@@ -38,57 +68,44 @@ function Recognition() {
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
       <div className="max-w-2xl">
-        <Eyebrow>Why RelayKit</Eyebrow>
+        <Eyebrow>The problem</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          The feature is small. The paperwork isn&apos;t.
+          The rules show up after you start building.
         </h2>
+        <p className="mt-4 text-base leading-relaxed text-text-secondary">
+          US carriers require these from every business that sends texts.
+          Getting approved can take weeks if not done right.
+        </p>
       </div>
-      <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
-          <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-            You expected days
-          </div>
-          <ul className="grid gap-3">
-            {EXPECTED.map((item) => (
-              <li
-                key={item}
-                className="flex items-center gap-3 text-base text-text-primary"
-              >
-                <span className="text-sm text-fg-success-primary" aria-hidden>
-                  →
-                </span>
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
-          <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-            You got weeks
-          </div>
-          <ul className="grid gap-3">
-            {DISCOVERED.map((item) => (
-              <li
-                key={item}
-                className="flex items-center gap-3 text-base text-text-primary"
-              >
+      <div className="mt-12 rounded-2xl border border-border-secondary bg-surface-card p-7">
+        <div>
+          {DISCOVERED.map((item) => (
+            <details
+              key={item.title}
+              name="requirements"
+              className="group border-b border-border-secondary last:border-b-0"
+            >
+              <summary className="flex cursor-pointer list-none items-center gap-3 py-3 text-base text-text-primary [&::-webkit-details-marker]:hidden">
                 <span
                   className="size-1.5 flex-none rounded-full bg-fg-error-primary"
                   aria-hidden
                 />
-                {item}
-              </li>
-            ))}
-          </ul>
+                <span className="flex-1">{item.title}</span>
+                <ChevronDown
+                  className="size-4 flex-none text-text-tertiary transition-transform duration-200 group-open:rotate-180"
+                  aria-hidden
+                />
+              </summary>
+              {/* Rows/titles span the full card; only the open body is capped
+                  for readable line length. */}
+              <div className="max-w-[460px] space-y-2.5 pb-4 pl-[18px] text-sm leading-relaxed text-text-secondary">
+                <p>{item.body}</p>
+                <p>{item.relay}</p>
+              </div>
+            </details>
+          ))}
         </div>
       </div>
-      <p className="mt-6 text-center text-lg leading-relaxed text-text-secondary">
-        Most developers discover the second column after they start building.
-        <br />
-        <span className="font-semibold text-gold">
-          RelayKit handles them.
-        </span>
-      </p>
     </section>
   );
 }
@@ -99,7 +116,7 @@ function Test() {
       id="test"
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
-      <Eyebrow>Prove</Eyebrow>
+      <Eyebrow>The test</Eyebrow>
       <div className="mt-8 grid items-start gap-14 md:mt-10 lg:grid-cols-2">
         <PreviewListMock />
         <div>
@@ -125,7 +142,8 @@ function StatusBand() {
   return (
     <section className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-8 text-center">
       <p className="text-base text-text-primary">
-        Our free message templates are live.{" "}
+        Our free message templates are live.
+        <br />
         <span className="text-text-tertiary">Sending arrives Summer 2026.</span>
       </p>
     </section>
@@ -149,7 +167,7 @@ export default function MarketingHome() {
       >
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-xl">
-            <Eyebrow>The messages · live today</Eyebrow>
+            <Eyebrow>The messages</Eyebrow>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
               Start with a complete message plan.
             </h2>

@@ -21,7 +21,7 @@ export function TopNav() {
       <div className="mx-auto flex h-full max-w-5xl items-center justify-between px-6">
         <Link
           href="/"
-          className="text-base font-bold tracking-tight text-text-primary transition duration-100 ease-linear hover:text-text-secondary"
+          className="text-lg font-bold tracking-tight text-text-primary transition duration-100 ease-linear hover:text-text-secondary"
         >
           RelayKit
         </Link>
@@ -127,7 +127,7 @@ function MobileNavMenu({ isOpen, onClose }: MobileNavMenuProps) {
           <Link
             href="/"
             onClick={onClose}
-            className="text-base font-bold tracking-tight text-text-primary transition duration-100 ease-linear hover:text-text-secondary"
+            className="text-lg font-bold tracking-tight text-text-primary transition duration-100 ease-linear hover:text-text-secondary"
           >
             RelayKit
           </Link>

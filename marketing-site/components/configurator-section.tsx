@@ -411,7 +411,7 @@ export function ConfiguratorSection() {
             {/* Header row — real title + a quiet free-tool pill, divider below. */}
             <div className="mb-5 flex items-center justify-between gap-3 border-b border-border-secondary pb-5">
               <h2 className="text-2xl font-bold tracking-tight text-text-primary">
-                Write your messages
+                Choose your messages
               </h2>
               <span className="hidden md:inline-block shrink-0 rounded-full border border-border-secondary bg-surface-inset px-3 py-1 text-xs font-medium text-text-tertiary">
                 Free · no account
@@ -548,10 +548,13 @@ export function ConfiguratorSection() {
                   <button
                     type="button"
                     onClick={handleCopy}
+                    aria-label="Copy"
                     className="inline-flex items-center gap-1.5 px-2 py-1.5 text-sm font-medium text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
                   >
                     <Copy01 className="size-4" />
-                    {copyToastVisible ? "Copied" : "Copy"}
+                    <span className="hidden sm:inline">
+                      {copyToastVisible ? "Copied" : "Copy"}
+                    </span>
                   </button>
                   <KebabMenu
                     ariaLabel="Message options"
