@@ -101,7 +101,7 @@ export function EligDropdown({
         aria-expanded={isOpen}
         aria-label={ariaLabel}
         disabled={disabled}
-        className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base transition duration-100 ease-linear hover:border-border-brand focus:border-border-brand focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
+        className={`flex w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-border-primary bg-surface-card px-3 py-2.5 text-base transition duration-100 ease-linear hover:border-border-brand focus:border-border-brand focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${
           isPlaceholder ? "text-text-placeholder" : "text-text-primary"
         }`}
       >
@@ -138,7 +138,7 @@ export function EligDropdown({
         <div
           role="listbox"
           aria-label={ariaLabel}
-          className="absolute top-full right-0 left-0 z-20 mt-1 max-h-72 overflow-y-auto rounded-lg border border-border-secondary bg-bg-primary py-1 shadow-lg"
+          className="absolute top-full right-0 left-0 z-20 mt-1 max-h-72 overflow-y-auto rounded-lg border border-border-secondary bg-surface-card py-1 shadow-lg"
         >
           {orderedOptions.map((option, idx) => {
             const isSelected = option.value === value;

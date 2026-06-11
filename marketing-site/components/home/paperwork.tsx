@@ -38,11 +38,11 @@ export function Paperwork() {
           all of it, so you don&apos;t have to.
         </p>
       </div>
-      <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
         {CARDS.map(({ Icon, title, body }) => (
           <div
             key={title}
-            className="rounded-2xl border border-border-secondary bg-bg-primary p-6 transition duration-150 ease-linear hover:-translate-y-0.5 hover:border-border-primary dark:bg-bg-secondary"
+            className="rounded-2xl border border-border-secondary bg-surface-card p-6 transition duration-150 ease-linear hover:-translate-y-0.5 hover:border-border-primary"
           >
             <div className="mb-4 grid size-8 place-items-center rounded-lg bg-bg-gold/15 text-gold">
               <Icon className="size-4" />

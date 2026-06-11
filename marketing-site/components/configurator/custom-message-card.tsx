@@ -154,7 +154,7 @@ export function CustomMessageCard({
       categoryVariables,
     });
     return (
-      <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
+      <div className="rounded-xl border border-border-secondary bg-surface-raised p-4 shadow-sm">
         <div className="flex items-center gap-3">
           <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">
             {name || "Untitled message"}
@@ -210,7 +210,7 @@ export function CustomMessageCard({
   }
 
   return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
+    <div className="rounded-xl border border-border-secondary bg-surface-raised p-4 shadow-sm">
       <div>
         <label
           htmlFor="custom-message-name"

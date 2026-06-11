@@ -20,7 +20,7 @@ const AI_TOOLS = [
 // code block stays inverted + monochrome (no gold) in both themes.
 function CodeCard() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-border-secondary bg-bg-code-surface shadow-xl">
+    <div className="overflow-hidden rounded-2xl border border-border-secondary bg-surface-card shadow-xl">
       <div className="flex gap-1.5 border-b border-white/5 px-4 py-3.5" aria-hidden>
         <span className="size-2.5 rounded-full bg-bg-tertiary" />
         <span className="size-2.5 rounded-full bg-bg-tertiary" />

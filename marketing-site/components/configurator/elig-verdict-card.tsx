@@ -24,7 +24,7 @@
  * neutral surface lift + a quiet quaternary "i" icon.
  */
 
-import { AlertTriangle, InfoCircle } from "@untitledui/icons";
+import { AlertTriangle, InfoCircle, XClose } from "@untitledui/icons";
 import { getRuleSummaries } from "../../../lib/constraints";
 import type { EligState } from "@/lib/configurator/use-elig-state";
 import {
@@ -32,17 +32,26 @@ import {
   NOT_OFFERED_LEAD_LINE,
 } from "@/lib/configurator/elig-copy";
 
-export interface EligVerdictCardProps {
-  state: EligState;
-  /** Opens the EligRequestModal (owned by configurator-section) from the Not-yet footer. */
-  onRequest: () => void;
-}
+export type AdvisorySeverity = "info" | "warning";
 
-export function EligVerdictCard({ state, onRequest }: EligVerdictCardProps) {
+/**
+ * Presentation-only derivation of whether the advisory rules card has anything
+ * to show for the current verdict, and at what severity. Pure read of the
+ * already-derived verdict.tier + the existing cardRuleBullets data — no
+ * eligibility logic here. Shared by EligVerdictCard (what to render) and the
+ * configurator setup summary row (the severity-matched reopen icon), so the two
+ * never disagree on whether an advisory exists.
+ *
+ *   🟡 conditional        → "info"    (rules bullets only)
+ *   🟠/⚫ not-yet tiers     → "warning" (rules bullets + "Request it" footer)
+ *   🟢 clear / 🔴 not-our-lane / no sub / no bullets → null (nothing to show)
+ */
+export function getAdvisory(
+  state: EligState,
+): { severity: AdvisorySeverity } | null {
   const tier = state.verdict.tier;
-  // The rules card surfaces wherever a sub-vertical carries customer-facing
-  // bullets: 🟡 Conditional and both Not-yet buckets (🟠/⚫). 🟢 Clear and 🔴
-  // Not-our-lane never carry bullets, so they fall through the empty check below.
+  // 🟡 Conditional and both Not-yet buckets (🟠/⚫) can carry bullets. 🟢 Clear
+  // and 🔴 Not-our-lane never do, so they fall through the empty check below.
   if (
     (tier !== "conditional" &&
       tier !== "not-yet" &&
@@ -51,16 +60,35 @@ export function EligVerdictCard({ state, onRequest }: EligVerdictCardProps) {
   ) {
     return null;
   }
+  // Suppress entirely where no customer-facing bullets exist — no heading-only
+  // tease. (Empty everywhere until the Airtable "Card rule bullets" column
+  // lands via connector regeneration.)
+  if (getRuleSummaries(state.subVerticalSlug).length === 0) return null;
+  return { severity: tier === "conditional" ? "info" : "warning" };
+}
+
+export interface EligVerdictCardProps {
+  state: EligState;
+  /** Opens the EligRequestModal (owned by configurator-section) from the Not-yet footer. */
+  onRequest: () => void;
+  /** Dismisses the card (presentation-only flag owned by configurator-section). */
+  onDismiss: () => void;
+}
+
+export function EligVerdictCard({
+  state,
+  onRequest,
+  onDismiss,
+}: EligVerdictCardProps) {
+  const advisory = getAdvisory(state);
+  // The `!state.subVerticalSlug` re-check is redundant after getAdvisory but
+  // narrows the type for getRuleSummaries without a non-null assertion.
+  if (!advisory || !state.subVerticalSlug) return null;
 
   const bullets = getRuleSummaries(state.subVerticalSlug);
-  // Suppress the card entirely where no customer-facing bullets exist — no
-  // heading-only tease. (Empty everywhere until the Airtable "Card rule bullets"
-  // column lands via connector regeneration.)
-  if (bullets.length === 0) return null;
-
-  // The "Request it" footer renders only for the Not-yet tiers — 🟡 Conditional
-  // shows bullets only.
-  const showRequestFooter = tier === "not-yet" || tier === "not-yet-maybe-not";
+  // The "Request it" footer renders only for the Not-yet tiers (severity
+  // "warning") — 🟡 Conditional shows bullets only.
+  const showRequestFooter = advisory.severity === "warning";
 
   return (
     <RulesCard
@@ -68,6 +96,7 @@ export function EligVerdictCard({ state, onRequest }: EligVerdictCardProps) {
       bullets={bullets}
       showRequestFooter={showRequestFooter}
       onRequest={onRequest}
+      onDismiss={onDismiss}
     />
   );
 }
@@ -81,6 +110,7 @@ interface RulesCardProps {
   bullets: readonly string[];
   showRequestFooter: boolean;
   onRequest: () => void;
+  onDismiss: () => void;
 }
 
 function RulesCard({
@@ -88,9 +118,10 @@ function RulesCard({
   bullets,
   showRequestFooter,
   onRequest,
+  onDismiss,
 }: RulesCardProps) {
   return (
-    <div className="rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs dark:bg-bg-secondary">
+    <div className="rounded-xl border border-border-secondary bg-surface-card p-4 shadow-xs">
       <div className="flex items-start gap-2">
         <InfoCircle className="mt-0.5 size-4 shrink-0 text-fg-quaternary" />
         <div className="flex-1">
@@ -117,7 +148,7 @@ function RulesCard({
                   <button
                     type="button"
                     onClick={onRequest}
-                    className="cursor-pointer font-medium text-text-primary underline transition duration-100 ease-linear hover:text-text-secondary"
+                    className="cursor-pointer font-medium text-text-tertiary underline transition duration-100 ease-linear hover:text-text-secondary"
                   >
                     Request it.
                   </button>
@@ -126,6 +157,14 @@ function RulesCard({
             </div>
           ) : null}
         </div>
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label="Dismiss"
+          className="-m-1 shrink-0 cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
+        >
+          <XClose className="size-4" />
+        </button>
       </div>
     </div>
   );

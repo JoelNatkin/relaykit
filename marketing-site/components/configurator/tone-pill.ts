@@ -15,7 +15,9 @@ export function tonePillClasses(active: boolean): string {
   return active
     ? // Selected tone pill — gold fill + dark ink (D-427, one of the four gold sites).
       `${base} bg-bg-gold text-text-on-gold border border-border-gold`
-    : `${base} bg-bg-primary text-text-secondary border border-border-secondary hover:bg-bg-primary_hover`;
+    : // Non-selected pills sit on the raised surface — the same lifted token
+      // the message cards beside them use (no near-black hole, in rest or hover).
+      `${base} bg-surface-raised text-text-secondary border border-border-secondary`;
 }
 
 /**

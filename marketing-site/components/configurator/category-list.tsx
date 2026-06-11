@@ -38,6 +38,9 @@ function ConfiguratorCheckbox({
 }) {
   const boxSize = size === "category" ? "size-5" : "size-4";
   const glyphSize = size === "category" ? "size-3" : "size-2.5";
+  // Large category boxes get a slightly thicker stroke; sub (message-level)
+  // boxes keep the 1px default untouched.
+  const borderWidth = size === "category" ? "border-[1.5px]" : "border";
   const borderColor = disabled ? "border-border-secondary" : "border-border-primary";
   // Gold marks the selected CATEGORY only (D-427). Message-level (sub) checkboxes
   // keep the neutral D-405 form-control treatment, gold or not.
@@ -50,7 +53,7 @@ function ConfiguratorCheckbox({
         readOnly
         tabIndex={-1}
         disabled={disabled}
-        className={`${boxSize} appearance-none rounded border ${
+        className={`${boxSize} appearance-none rounded ${borderWidth} ${
           goldChecked
             ? "border-border-gold bg-bg-gold"
             : `${borderColor} bg-bg-primary dark:bg-bg-secondary`
@@ -82,18 +85,32 @@ export interface CategoryListProps {
   state: ConfiguratorState;
   onCategoryToggle: (categoryId: string) => void;
   onMessageToggle: (categoryId: string, messageId: string) => void;
+  // The mobile sheet provides its own "Categories" header row, so it
+  // suppresses the column's own h3 to avoid a doubled heading. Desktop
+  // renders with the default (heading visible).
+  showHeading?: boolean;
+  // When false, checked categories do NOT expand their per-message rows —
+  // the panel stays flat. Default true (the live tool expands on check); the
+  // static hero graphic opts out to keep a compact flat panel.
+  expandChecked?: boolean;
 }
 
 export function CategoryList({
   state,
   onCategoryToggle,
   onMessageToggle,
+  showHeading = true,
+  expandChecked = true,
 }: CategoryListProps) {
   return (
     <>
-      <div className="px-4 pt-5">
-        <h3 className="text-base font-semibold text-text-primary">Categories</h3>
-      </div>
+      {showHeading ? (
+        <div className="px-4 pt-5">
+          <h3 className="text-base font-semibold text-text-primary">
+            Categories
+          </h3>
+        </div>
+      ) : null}
 
       {CATEGORIES.map((category) => {
         const catState = state.categories[category.id];
@@ -139,7 +156,7 @@ export function CategoryList({
               </div>
             )}
 
-            {authored && checked ? (
+            {authored && checked && expandChecked ? (
               <div className="mt-3 space-y-2 pl-7">
                 {category.messages.map((message) => {
                   const messageChecked =

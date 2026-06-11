@@ -1,6 +1,14 @@
 "use client";
 
-import { ChevronDown, ChevronUp, Copy01, Plus } from "@untitledui/icons";
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Copy01,
+  Edit01,
+  InfoCircle,
+  Plus,
+} from "@untitledui/icons";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePostHog } from "posthog-js/react";
@@ -19,6 +27,10 @@ import { EditValuesForm } from "@/components/configurator/edit-values-form";
 import { EditValuesModal } from "@/components/configurator/edit-values-modal";
 import { KebabMenu } from "@/components/configurator/kebab-menu";
 import { EligSection } from "@/components/configurator/elig-section";
+import {
+  EligVerdictCard,
+  getAdvisory,
+} from "@/components/configurator/elig-verdict-card";
 import { EligRequestModal } from "@/components/configurator/elig-request-modal";
 import { EligPerCategoryCard } from "@/components/configurator/elig-per-category-card";
 import {
@@ -36,6 +48,9 @@ import {
   isIdentityToken,
 } from "@/lib/message-library";
 import type { Category } from "@/lib/message-library";
+// Read-only constraint lookups (AIRGAP — never written). Used here only to
+// derive display names for the collapsed setup-zone summary line.
+import { findVertical, findSubVertical } from "../../lib/constraints";
 
 const PRESET_VERIFICATION_ONLY = "Verification only";
 
@@ -101,6 +116,55 @@ export function ConfiguratorSection() {
     setVerticalSlug: setEligVerticalSlug,
     setSubVerticalSlug: setEligSubVerticalSlug,
   } = useEligState();
+
+  // Presentation-only collapse for the setup zone (business name + industry +
+  // sub-industry). Local + session-only — NOT added to the elig/configurator
+  // state, never persisted, so the cascade, the relaykit_elig shape, and the
+  // lazy-create rule are untouched. Default expanded; auto-collapses once a
+  // selection completes; Edit re-expands.
+  const [setupEditing, setSetupEditing] = useState(true);
+
+  // Presentation-only dismiss for the eligibility advisory card. Local +
+  // session-only — not persisted, never part of the elig/configurator state.
+  // Defaults open; resets to open on each new vertical/sub selection; the
+  // card's X dismisses it and the summary-row icon reopens it.
+  const [advisoryDismissed, setAdvisoryDismissed] = useState(false);
+
+  const selectedVertical = eligState.verticalSlug
+    ? findVertical(eligState.verticalSlug)
+    : null;
+  const selectedSubVertical = eligState.subVerticalSlug
+    ? findSubVertical(eligState.subVerticalSlug)
+    : null;
+  // A vertical with at least one routing-trigger sub reveals the sub-dropdown;
+  // until a sub is picked the selection is incomplete (stay expanded).
+  const verticalHasSubPrompt = !!selectedVertical?.subVerticals.some(
+    (s) => s.routingTrigger,
+  );
+  const hasSetupSelection =
+    !!eligState.verticalSlug &&
+    (!!eligState.subVerticalSlug || !verticalHasSubPrompt);
+  // Whether an advisory exists for the current verdict (+ its severity) — drives
+  // the persistent card and the severity-matched reopen icon on the summary row.
+  // Pure read of the already-derived verdict; no eligibility logic here.
+  const advisory = getAdvisory(eligState);
+
+  // Wrappers thread the existing elig setters (the cascade lives in
+  // use-elig-state) and add ONLY the presentation collapse flip.
+  function handleVerticalChange(slug: string | null) {
+    setEligVerticalSlug(slug);
+    const v = slug ? findVertical(slug) : null;
+    const completes = !!v && !v.subVerticals.some((s) => s.routingTrigger);
+    setSetupEditing(slug ? !completes : true);
+    setAdvisoryDismissed(false);
+  }
+  function handleSubVerticalChange(slug: string | null) {
+    setEligSubVerticalSlug(slug);
+    if (slug) {
+      setSetupEditing(false);
+      setAdvisoryDismissed(false);
+    }
+  }
 
   // The configurator is a complete free authoring tool for every bucket the
   // user can reach: the message area is never disabled or replaced. 🔴
@@ -311,7 +375,7 @@ export function ConfiguratorSection() {
 
   return (
     <SessionProvider state={{ businessName: state.businessName }}>
-      <section className="bg-bg-primary pt-20">
+      <section className="bg-surface-page pt-20">
         {/* Mobile-only Edit-values surface — full-page modal mounted at
             section level, driven by the same editValuesCategoryId state
             that toggles the desktop inline expander. Above md: the modal
@@ -340,64 +404,133 @@ export function ConfiguratorSection() {
           interestTag={eligInterestTag(eligState)}
         />
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="mb-6 text-2xl font-bold tracking-tight text-text-primary">
-            Write your messages
-          </h2>
-
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
-            {/* Mobile-only categories: collapsed summary row + full-page
-                modal. Both are display:none at md: and above — the desktop
-                panel below takes over the left grid cell there. */}
-            <div className="md:hidden">
-              <MobileCategoriesSummary
-                selected={checkedCategories}
-                onOpen={() => setMobileCategoriesOpen(true)}
-              />
-              <MobileCategoriesModal
-                isOpen={mobileCategoriesOpen}
-                onClose={() => setMobileCategoriesOpen(false)}
-                state={state}
-                onCategoryToggle={handleCategoryToggle}
-                onMessageToggle={handleMessageToggle}
-              />
+          {/* The whole tool lives in one lifted card: surface-card raised off
+              the page, an outer border a step stronger than the interior
+              lines, a soft large shadow, ~22px radius. */}
+          <div className="rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl sm:p-7">
+            {/* Header row — real title + a quiet free-tool pill, divider below. */}
+            <div className="mb-5 flex items-center justify-between gap-3 border-b border-border-secondary pb-5">
+              <h2 className="text-2xl font-bold tracking-tight text-text-primary">
+                Write your messages
+              </h2>
+              <span className="hidden md:inline-block shrink-0 rounded-full border border-border-secondary bg-surface-inset px-3 py-1 text-xs font-medium text-text-tertiary">
+                Free · no account
+              </span>
             </div>
 
-            {/* Desktop categories panel (≥md:). Same content as the modal
-                via the shared CategoryList component. Never disabled — the
-                configurator is a free authoring tool for every reachable
-                bucket. */}
-            <div className="hidden rounded-xl border border-border-secondary bg-bg-primary md:block md:min-w-60">
-              <CategoryList
-                state={state}
-                onCategoryToggle={handleCategoryToggle}
-                onMessageToggle={handleMessageToggle}
-              />
+            {/* Setup zone — a quiet inset block: business name + industry +
+                sub-industry. Collapses to a single summary line once a
+                selection completes (presentation-only; the cascade and the
+                elig state are untouched — see handleVerticalChange). */}
+            <div className="mb-6 rounded-xl border border-border-secondary bg-surface-inset p-4">
+              {hasSetupSelection && !setupEditing ? (
+                <div className="flex items-center justify-between gap-3">
+                  <p className="min-w-0 truncate text-sm text-text-secondary">
+                    {state.businessName.trim() ? (
+                      <span className="font-semibold">
+                        {state.businessName.trim()}
+                      </span>
+                    ) : null}
+                    {state.businessName.trim() &&
+                    (selectedSubVertical ?? selectedVertical)?.name
+                      ? " · "
+                      : null}
+                    {(selectedSubVertical ?? selectedVertical)?.name ?? null}
+                  </p>
+                  <div className="flex shrink-0 items-center gap-0.5">
+                    {/* Severity-matched reopen icon — only when an advisory
+                        exists for the current verdict and has been dismissed. */}
+                    {advisory && advisoryDismissed ? (
+                      <button
+                        type="button"
+                        onClick={() => setAdvisoryDismissed(false)}
+                        aria-label="Show rules"
+                        className="cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
+                      >
+                        {advisory.severity === "warning" ? (
+                          <AlertTriangle className="size-[17px]" />
+                        ) : (
+                          <InfoCircle className="size-[17px]" />
+                        )}
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={() => setSetupEditing(true)}
+                      aria-label="Edit"
+                      className="cursor-pointer p-1 text-fg-quaternary transition duration-100 ease-linear hover:text-fg-secondary"
+                    >
+                      <Edit01 className="size-[17px]" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {/* "Your business name" + the identity dropdowns
+                      (vertical-constraints §9). */}
+                  <input
+                    ref={businessNameInputRef}
+                    type="text"
+                    value={state.businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    placeholder="Your business name"
+                    className="block w-full rounded-lg border border-border-primary bg-surface-card px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
+                  />
+                  <EligSection
+                    state={eligState}
+                    onVerticalChange={handleVerticalChange}
+                    onSubVerticalChange={handleSubVerticalChange}
+                  />
+                </div>
+              )}
             </div>
 
-            {/* Messages column */}
-            <div className="flex flex-col md:max-w-[540px]">
-              {/* The "Your business name" input sits with the identity inputs,
-                  above the industry dropdown (vertical-constraints §9). */}
-              <div className="mb-2">
-                <input
-                  ref={businessNameInputRef}
-                  type="text"
-                  value={state.businessName}
-                  onChange={(e) => setBusinessName(e.target.value)}
-                  placeholder="Your business name"
-                  className="block w-full rounded-lg border border-border-primary bg-bg-primary px-3 py-2.5 text-base text-text-primary placeholder:text-text-placeholder focus:border-border-brand focus:outline-none"
-                />
-              </div>
-              {/* Elig section: identity dropdowns + verdict/rules card
-                  (vertical-constraints §9). Sits above the tone pills. */}
+            {/* Eligibility advisory — hoisted OUT of the setup-zone collapse so
+                it persists in both the editing and the condensed-summary states
+                (it self-gates to nothing when there's no advisory). Dismissed
+                via its X; reopened via the summary-row icon. */}
+            {advisory && !advisoryDismissed ? (
               <div className="mb-6">
-                <EligSection
+                <EligVerdictCard
                   state={eligState}
-                  onVerticalChange={setEligVerticalSlug}
-                  onSubVerticalChange={setEligSubVerticalSlug}
                   onRequest={() => setRequestModalOpen(true)}
+                  onDismiss={() => setAdvisoryDismissed(true)}
                 />
               </div>
+            ) : null}
+
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-[300px_1fr]">
+              {/* Mobile-only categories: collapsed summary row + full-page
+                  modal. Both are display:none at md: and above — the desktop
+                  panel below takes over the left grid cell there. */}
+              <div className="md:hidden">
+                <MobileCategoriesSummary
+                  selected={checkedCategories}
+                  onOpen={() => setMobileCategoriesOpen(true)}
+                />
+                <MobileCategoriesModal
+                  isOpen={mobileCategoriesOpen}
+                  onClose={() => setMobileCategoriesOpen(false)}
+                  state={state}
+                  onCategoryToggle={handleCategoryToggle}
+                  onMessageToggle={handleMessageToggle}
+                />
+              </div>
+
+              {/* Desktop categories panel (≥md:) — inset surface tier. Same
+                  content as the modal via the shared CategoryList component.
+                  Never disabled — free authoring tool for every reachable
+                  bucket. */}
+              <div className="hidden rounded-xl border border-border-secondary bg-surface-inset md:block md:min-w-60">
+                <CategoryList
+                  state={state}
+                  onCategoryToggle={handleCategoryToggle}
+                  onMessageToggle={handleMessageToggle}
+                />
+              </div>
+
+              {/* Messages column */}
+              <div className="flex flex-col md:max-w-[500px]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex flex-wrap gap-2">
                   {PAGE_TONES.map((tone) => (
@@ -421,7 +554,7 @@ export function ConfiguratorSection() {
                     {copyToastVisible ? "Copied" : "Copy"}
                   </button>
                   <KebabMenu
-                    ariaLabel="Configurator options"
+                    ariaLabel="Message options"
                     items={[
                       {
                         label: "Reset all to defaults",
@@ -502,7 +635,7 @@ export function ConfiguratorSection() {
                           previews stay visible while editing. Mobile uses
                           the EditValuesModal mounted at section level. */}
                       {editValuesOpen ? (
-                        <div className="mb-3 hidden rounded-xl border border-border-secondary bg-bg-primary p-4 shadow-xs md:block dark:bg-bg-secondary">
+                        <div className="mb-3 hidden rounded-xl border border-border-secondary bg-surface-inset p-4 shadow-xs md:block">
                           <EditValuesForm
                             category={category}
                             values={cv.variables}
@@ -683,7 +816,7 @@ export function ConfiguratorSection() {
                                 categoryId: category.id,
                               })
                             }
-                            className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-border-secondary bg-bg-primary px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover"
+                            className="inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border border-border-secondary bg-surface-raised px-4 py-3 text-sm font-medium text-text-brand-secondary transition duration-100 ease-linear hover:border-border-brand hover:text-text-brand-secondary_hover"
                           >
                             <Plus className="size-4" />
                             Add message
@@ -721,6 +854,7 @@ export function ConfiguratorSection() {
                 </p>
               </div>
             </div>
+          </div>
           </div>
         </div>
       </section>

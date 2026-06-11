@@ -1,44 +1,57 @@
-# CC_HANDOFF — main current + in-flight design-refresh (2026-06-09)
+# CC_HANDOFF — design-refresh merged to main: dark-only + now/later framing (Session 129 → go-live, 2026-06-10)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Status: 🟢 `main` is live in production at relaykit.ai (HEAD `068c2e5`, in sync with origin).** The marketing-home + `/messages` configurator workstream is shipped; since then, post-launch copy/spacing tweaks and two blog posts landed straight to `main`. One design increment is **in flight on a branch (NOT merged)** — see below. No held canon.
+**Session metrics:** Commits: 33 on `feat/design-refresh` this session (`f28b762` → `dcfaeff`) + the Session 129 close-out + three next-session fast-follows (`4c871a4` now/later copy sync, `819dd72` + `21daf3e` orphan-fix container widths) + the go-live merge | Files modified: hero.tsx, category-rotor.tsx, step-strip.tsx (new), how-it-works.tsx, messages-quickstart.tsx, app/page.tsx, app/messages/page.tsx, top-nav.tsx, layout.tsx, globals.css, final-cta.tsx, paperwork.tsx, pricing.tsx, preview-list-mock.tsx, ai-section.tsx, variables-callout.tsx, configurator-section.tsx, mobile-categories-summary.tsx, bottom-email-capture.tsx; deleted lib/use-theme.ts | Decisions added: 1 (**D-430**, supersedes D-378 partial) | External actions: branch push per commit, Vercel preview per commit, production deploy on the merge push.
+
+**Status: 🟢 `feat/design-refresh` merged to `main` (go-live); production deploy on push — live follows the Vercel build.** The 3-way merge to `main` (base `068c2e5`; picked up main's `5d169e0`/`23f5be5`/`2e8624d` docs commits) auto-merged every code + canon file cleanly; the only conflict was this handoff doc (transient narrative), resolved to the Session 129 content. **Confirm the Vercel production build succeeds at relaykit.ai before treating the design refresh as live.**
 
 ---
 
-## Landed on `main` since `b6fcfb5` (2026-06-08, all live)
+## What shipped this session (themes)
 
-- `b0996d0` — **variables-callout** top margin `mt-10` → `mt-16` (64px above "See exactly what customers will receive.").
-- `7f5d88c` then `b50ac8a` — **recognition card labels** reframed to time-slippage, final copy **"You expected days" / "You got weeks"** (PROTOTYPE_SPEC "Why RelayKit" quote synced).
-- `f0aa1ef` + merge `0cf3ece` + `503b2d6` — **blog post merged:** "We Put Our Best Tool in Front of Everyone" (`worldview` / `worldview`).
-- `1d5c1a8` + `068c2e5` — **blog post straight to `main`:** "The Feature That Serious Scheduling Apps Eventually Build" (`vertical-patterns` / `demand`, dated 2026-06-04). This **replaced and deleted** the old untracked draft `the-feature-serious-scheduling-apps-build.mdx` — the new slug is `the-feature-that-serious-scheduling-apps-eventually-build.mdx`.
-- **REPO_INDEX blog count is now 3 published.**
+- **Single dark theme (D-430).** Light mode removed: `lib/use-theme.ts` deleted, `app/layout.tsx` server-renders `<html className="dark">` (no FOUC script — `.dark` sets `color-scheme: dark`), theme toggle + `ThemeIcon` removed from `top-nav.tsx` (desktop + mobile). `globals.css` light tokens remain as dead base (collapse deferred). Supersedes D-378's switchable mechanism (D-378 marked).
+- **Hero rebuild finish.** Full-width two-tone H1 ("…for your app. **Easier**" via `--color-text-headline-muted`, retuned `#958675`→`#756C61`→`#8B8174`); eyebrow "Free message templates — live now"; `lg:min-h-[820px]` to trim dead space; rotor reworked to a one-pass `FRAMES` list that stops on "Every text your app sends." (NOT CATEGORIES-sourced — see PROTOTYPE_SPEC "Hero rotor note").
+- **Shared `<StepStrip/>`** (`components/step-strip.tsx`) — home How-it-works (now **three** steps PLAN→BUILD→LAUNCH) and the `/messages` quick-start render identically (60px gaps, line-on-top, uppercase labels).
+- **Now/later coherence.** `StatusBand` band on the home (between Hero + Recognition); `/messages` hero live-now framing + top gold "Join the waitlist" `PrimaryCta` + a bottom `#join` waitlist section; final-CTA body sharpened. Post-close fast-follows synced the `/messages` `#join` and home final-CTA now/later bodies, widened the hero subhead + both waitlist-section containers to fix orphan words, and relabelled the `BottomEmailCapture` button "Join the list" → "Join the waitlist".
+- **`/messages` quick-start: dismissible card → permanent home-style section** (static server component; no dismiss/localStorage/X). ⚠ This makes **D-429 stale** (see flags).
+- **Surface dry-out** — home cards to single `surface-card`/`surface-inset` tokens (dropped dead `bg-bg-primary … dark:bg-bg-secondary` pairs); full-bleed home configurator window; mobile categories selector restyle.
+- **Terminology** — user-facing "configurator" → "messages" (component/file/PostHog/state names + `#configurator` anchor kept).
 
-## In flight — `feat/design-refresh` (branch HEAD `34f3b26`, pushed, NOT merged)
+## ⚠ CC-surfaced flags (PM decision needed — NOT fixed)
 
-Design-refresh **increment 1** (visual + one presentation-state only; elig/cascade/AIRGAP untouched):
-- New **`--color-surface-*` 4-tier warm-neutral depth ladder** in `globals.css`. Dark values: **page `#16130F` (the OPEN TUNING VALUE)** < card `#1D1914` < inset `#221D17` < raised `#28221B`. No chromatic accent (extends D-405). Provisionally not a D-number.
-- **Configurator containment/depth restyle:** the whole tool in one lifted card (header row + "Free · no account" pill + divider); 4 legible tiers (page < card < inset panels < message cards as the emphasized `surface-raised` + shadow objects).
-- **Collapsing setup zone:** business name + industry + sub-industry in a quiet inset block that collapses to a "[Business] · [specialty]" summary + Edit once a selection completes — a **local `setupEditing` flag, presentation-only**; the elig cascade, `relaykit_elig` shape, lazy-create, and the constraints data/AIRGAP are untouched (summary derived via read-only `findVertical`/`findSubVertical`).
+1. **D-429 is now stale.** It records the `/messages` quick-start as a *dismissible four-step* strip; this session made it a *permanent three-step* section. Not a phase boundary, so no retirement sweep was run, and the decision ledger is PM-gated — **no ledger change made.** PM to decide: amend/supersede D-429, and then PROTOTYPE_SPEC line ~104 (still describes the dismissible four-step strip) gets reconciled with it.
+2. **Broader PROTOTYPE_SPEC home-spec reconciliation PENDING.** The Session 129 close-out updated only the dark-theme section + added the rotor note. Still stale from the design refresh: three-step How-it-works, configurator→messages terminology in the §"Home page" list, two-tone H1s, `StatusBand`, hero static graphic (vs `PhoneMock`), `/messages` permanent quick-start + `#join`. Needs a scoped PROTOTYPE_SPEC pass.
+3. **Full-bleed window horizontal-scrollbar risk.** The home configurator window uses `mx-[calc(50%-50vw)]`; `100vw` includes the scrollbar width on Windows/Linux (persistent scrollbars), so a ~15px horizontal scrollbar can appear. No `overflow-x` guard exists on `<html>/<body>/<main>`. Fix on tap: add `overflow-x-hidden` to `<body>`. Likely invisible on macOS overlay scrollbars (so it won't show on Joel's preview).
 
-On the Vercel preview, **awaiting Joel's eyeball:** page-bg warmth (tune the one `--color-surface-page` line); the **home-peek framing** (the configurator is a shared component, so the new card renders inside the home's clipped peek window); and whether the **rules/verdict card should stay persistent** rather than collapse with the setup. **PROTOTYPE_SPEC update is pending the branch's close-out** (CC-owned).
+## Carry-forwards
 
-## Untracked carryover — DO NOT COMMIT
+- **`globals.css` light→dark dead-token collapse** — deferred per D-430 (light token values still present as dead base; collapse to a single set is its own task).
+- **Blog `we-put-our-best-tool-in-front-of-everyone.mdx`** still uses user-facing "configurator" (5×, as a named concept) — left out of the mechanical terminology sweep; needs a voice rewrite (`relaykit-writing-prose`), not a find-replace.
+- **Canonize the relaxed per-commit PM-review rule** in PM_PROJECT_INSTRUCTIONS + CLAUDE.md: trivial / fully-specified / visually-verifiable → auto-ship after build+push; logic / shared-component / multi-file / structural → keep PM review (write `.pm-review.md`, wait). This session ran on that cadence informally.
 
-The **only** remaining untracked carryover is **`.claude/settings.local.json`**. (The old `the-feature-serious-scheduling-apps-build.mdx` draft is no longer a do-not-commit file — it was published under the new slug and the old draft deleted.)
+### Pre-launch head-scratcher backlog (surfaced this session)
+- **`workspace_name` vs `business_name`** token inconsistency in `lib/message-library` — affects the live tool *and* copied templates; pick a canonical token + sweep.
+- **"a few days" approval (D-215)** vs the 10–15 business-day reality — revisit the copy/claim.
+- **`ai-section.tsx` code date "Fri, Jun 6"** is actually a Saturday → should be Jun 5.
+- **"Acme Engineering" vs "Acme"** inconsistency across `variables-callout.tsx` rows.
+
+### Pre-existing carry-forwards (not design-refresh)
+- Delete `joel+golive-smoke@gmail.com` (`interest_tag = golive-smoke-test`) from `early_access_subscribers` (Joel) — post-launch cleanup.
+- OG unfurl cache-bust (`/?v=2`) — verify.
+- TFN-path-killed MASTER_PLAN canon close.
+- Claude.ai UI custom-instructions paste-sync.
 
 ## Branch state
 
-`main` is the live production branch (HEAD `068c2e5`, in sync). **`feat/design-refresh`** in flight (pushed, on preview, unmerged). `feat/marketing-home` is merged but not deleted (optional cleanup). No other active branches.
+**`feat/design-refresh` merged to `main`** via the go-live merge commit (3-way; base `068c2e5`). `main` is the live production branch. `feat/design-refresh` is merged but not deleted (optional cleanup). `feat/marketing-home` is also merged-not-deleted from Session 128. No other active branches.
 
-## Cleanup item (carried — Joel)
-
-The go-live smoke-test row in `early_access_subscribers` — email `joel+golive-smoke@gmail.com`, `ctaSource`/`interest_tag` = `golive-smoke-test` — is still pending deletion.
+## Untracked carryover — DO NOT COMMIT
+- Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
-
-- **Finish design-refresh increment 1:** tune per Joel's preview feedback (page-bg warmth first) → merge → close-out (PROTOTYPE_SPEC note + REPO_INDEX surface-token inventory; D-number only if PM locks the warm direction).
-- Then the **hero + other home elements** are later increments on the design-refresh branch, bringing the new surface tokens forward.
+- **Confirm the production deploy** — watch the Vercel build off the `main` push land green at relaykit.ai; the design refresh is "live" only once it does.
+- Resolve the two CC-surfaced flags with PM: the **D-429 staleness** + the **PROTOTYPE_SPEC home-spec reconciliation pass** (now that the refresh is on `main`, the spec should describe shipped reality).
 - **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN remains the parallel substantive product pickup.

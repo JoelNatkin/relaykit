@@ -74,6 +74,8 @@
   --color-text-disabled: var(--color-brand-400);
   --color-text-placeholder: var(--color-brand-500);
   --color-text-placeholder_subtle: var(--color-brand-300);
+  /* Hero H1 muted accent — fixed warm-gray (#8B8174); single value, both modes. */
+  --color-text-headline-muted: rgb(139 129 116);
   --color-text-brand-primary: var(--color-brand-900);
   --color-text-brand-secondary: var(--color-brand-500);
   --color-text-brand-tertiary: var(--color-brand-500);
@@ -161,6 +163,17 @@
   /* Code-block surface — one step lighter than bg-primary so the
      home-page CodeSample reads as a contained, inverted surface. */
   --color-bg-code-surface: var(--color-brand-900);
+
+  /* SEMANTIC SURFACE COLORS — design-refresh depth ladder (warm neutral).
+     A 4-tier elevation scale for the configurator (and later the home):
+     page (deepest) < card < inset panels < message cards (most lifted).
+     Light mode uses conventional light elevation (white cards on a faint
+     page); the warm shift lives in the .dark block below. Extends D-405's
+     Gray Warm system — value carries depth, no chromatic accent. */
+  --color-surface-page: var(--color-brand-50);
+  --color-surface-card: var(--color-brand-25);
+  --color-surface-inset: var(--color-brand-100);
+  --color-surface-raised: var(--color-brand-25);
 
   /* FEATURED ICON COLORS */
   --color-featured-icon-light-fg-brand: var(--color-brand-600);
@@ -258,6 +271,16 @@
   /* Code-block surface stays a lifted dark surface in dark mode too. */
   --color-bg-code-surface: var(--color-brand-900);
 
+  /* SURFACE — warm, "dried-out" two-tone (dark). Flatter than the prior
+     page<card<inset<raised ladder: inset + raised collapse to one tone so the
+     configurator reads as container (#1D1A15) + content (#211E19) over the
+     page. value-not-hue, still within D-405. surface-page is the OPEN TUNING
+     VALUE — dial warmth/darkness on this one line. */
+  --color-surface-page: rgb(22 19 15); /* #16130F — page behind the tool (unchanged) */
+  --color-surface-card: rgb(24 21 17); /* #181511 — tool container + inputs */
+  --color-surface-inset: rgb(30 26 21); /* #1E1A15 — rail, input-group, message cards */
+  --color-surface-raised: rgb(30 26 21); /* #1E1A15 — collapsed to inset (dry-out) */
+
   /* FEATURED ICON */
   --color-featured-icon-light-fg-brand: var(--color-brand-400);
   --color-featured-icon-light-fg-gray: var(--color-brand-400);
@@ -319,4 +342,13 @@
   [role="textbox"] {
     font-size: 16px !important;
   }
+}
+
+/* Flattens the surface depth ladder to the container tone within scope. Used by
+   the hero mock so the shared configurator leaves (message cards, tone pills)
+   render flat (#1D1A15) there, while the real configurator keeps its two-tone
+   depth. Token-only — no hex here. */
+.surface-flat {
+  --color-surface-inset: var(--color-surface-card);
+  --color-surface-raised: var(--color-surface-card);
 }

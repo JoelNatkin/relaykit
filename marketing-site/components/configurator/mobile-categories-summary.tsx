@@ -18,7 +18,7 @@
  * break the row.
  */
 
-import { ChevronRight } from "@untitledui/icons";
+import { Edit01 } from "@untitledui/icons";
 import type { Category } from "@/lib/message-library";
 
 export interface MobileCategoriesSummaryProps {
@@ -39,28 +39,23 @@ export function MobileCategoriesSummary({
 }: MobileCategoriesSummaryProps) {
   const isEmpty = selected.length === 0;
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="flex w-full items-center justify-between gap-3 rounded-xl border border-border-secondary bg-bg-primary px-4 py-4 text-left"
-      aria-label="Edit categories"
-    >
-      <div className="min-w-0 flex-1">
-        <span className="block text-sm font-medium text-text-secondary">
-          Categories
-        </span>
+    <div className="rounded-xl border border-border-secondary bg-surface-inset p-4">
+      <span className="mb-1.5 block text-sm font-medium text-text-secondary">Categories</span>
+      <button
+        type="button"
+        onClick={onOpen}
+        className="flex w-full items-center justify-between gap-3 rounded-lg border border-border-primary bg-surface-card px-3 py-2.5 text-left"
+        aria-label="Edit categories"
+      >
         <span
-          className={`mt-0.5 block truncate text-base ${
-            isEmpty ? "text-text-tertiary" : "text-text-primary"
+          className={`min-w-0 flex-1 truncate text-base ${
+            isEmpty ? "text-text-placeholder" : "text-text-primary"
           }`}
         >
           {summaryText(selected)}
         </span>
-      </div>
-      <span className="flex items-center gap-1.5 text-text-tertiary">
-        <span className="text-sm">Edit</span>
-        <ChevronRight className="size-4" />
-      </span>
-    </button>
+        <Edit01 className="size-[17px] shrink-0 text-fg-quaternary" aria-hidden />
+      </button>
+    </div>
   );
 }

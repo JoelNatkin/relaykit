@@ -86,13 +86,13 @@ export function VariablesCallout() {
             key={i}
             className="grid items-center gap-3 border-t border-dashed border-border-secondary py-5 md:grid-cols-[1fr_2rem_1fr]"
           >
-            <div className="rounded-2xl rounded-bl-sm border border-border-secondary bg-bg-primary px-3.5 py-3 text-sm leading-relaxed text-text-secondary dark:bg-bg-secondary">
+            <div className="rounded-2xl rounded-bl-sm border border-border-secondary bg-surface-inset px-3.5 py-3 text-sm leading-relaxed text-text-secondary">
               <TemplateForm body={ex.body} />
             </div>
             <div className="hidden text-center text-text-tertiary md:block" aria-hidden>
               →
             </div>
-            <div className="rounded-2xl rounded-br-sm border border-border-secondary bg-bg-primary px-3.5 py-3 text-sm leading-relaxed text-text-secondary dark:bg-bg-secondary">
+            <div className="rounded-2xl rounded-br-sm border border-border-secondary bg-surface-inset px-3.5 py-3 text-sm leading-relaxed text-text-secondary">
               <PreviewForm body={ex.body} variables={ex.variables} />
             </div>
           </div>

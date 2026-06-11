@@ -44,7 +44,7 @@ function Recognition() {
         </h2>
       </div>
       <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-border-secondary bg-bg-primary p-7 dark:bg-bg-secondary">
+        <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
             You expected days
           </div>
@@ -62,7 +62,7 @@ function Recognition() {
             ))}
           </ul>
         </div>
-        <div className="rounded-2xl border border-border-secondary bg-bg-primary p-7 dark:bg-bg-secondary">
+        <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
             You got weeks
           </div>
@@ -121,10 +121,22 @@ function Test() {
   );
 }
 
+function StatusBand() {
+  return (
+    <section className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-8 text-center">
+      <p className="text-base text-text-primary">
+        Our free message templates are live.{" "}
+        <span className="text-text-tertiary">Sending arrives Summer 2026.</span>
+      </p>
+    </section>
+  );
+}
+
 export default function MarketingHome() {
   return (
     <div>
       <Hero />
+      <StatusBand />
       <Recognition />
       <HowItWorks />
 
@@ -137,7 +149,7 @@ export default function MarketingHome() {
       >
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-xl">
-            <Eyebrow>The configurator · live today</Eyebrow>
+            <Eyebrow>The messages · live today</Eyebrow>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
               Start with a complete message plan.
             </h2>
@@ -151,7 +163,7 @@ export default function MarketingHome() {
             href="/messages"
             className="text-sm font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
           >
-            Open the configurator <span aria-hidden>→</span>
+            Open Messages <span aria-hidden>→</span>
           </Link>
         </div>
 
@@ -161,7 +173,7 @@ export default function MarketingHome() {
             opens cleanly on its own header — no cut type. One instance only
             (shared localStorage with /messages = continuity of intent). Fully
             interactive; only the height is fixed. */}
-        <div className="relative mt-8 h-[640px] overflow-hidden rounded-2xl border border-border-primary md:mt-10">
+        <div className="relative mt-8 h-[640px] overflow-hidden mx-[calc(50%-50vw)] md:mt-10">
           <div className="-mt-[56px]">
             <ConfiguratorSection />
           </div>

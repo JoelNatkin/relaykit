@@ -82,10 +82,11 @@ export function MobileCategoriesModal({
       />
 
       {/* Modal shell — flex column with NO overflow so the sticky header
-          inside can pin. The body is the scrolling element. */}
-      <div className="fixed inset-0 z-[101] flex flex-col bg-bg-primary md:hidden">
+          inside can pin. The body is the scrolling element. surface-inset
+          matches the desktop Categories column panel. */}
+      <div className="fixed inset-0 z-[101] flex flex-col bg-surface-inset md:hidden">
         {/* Sticky header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border-secondary bg-bg-primary px-4 py-3">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border-secondary bg-surface-inset px-4 py-3">
           <h2 className="text-base font-semibold text-text-primary">
             Categories
           </h2>
@@ -105,6 +106,7 @@ export function MobileCategoriesModal({
             state={state}
             onCategoryToggle={onCategoryToggle}
             onMessageToggle={onMessageToggle}
+            showHeading={false}
           />
         </div>
       </div>

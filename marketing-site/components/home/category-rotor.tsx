@@ -1,31 +1,52 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CATEGORIES } from "@/lib/message-library";
 
-// Canonical category names drive the rotating hero line (plan: CATEGORIES.map
-// (c => c.name) — single source, no hand-kept list). Monochrome by the locked
-// gold rule (the v10 artifact rendered this in the accent; overridden here).
-const WORDS = CATEGORIES.map((c) => `${c.name}.`);
-const INTERVAL_MS = 2200;
-const FADE_MS = 340;
+// Hardcoded one-pass frame sequence. The resting line ("Every text your app
+// sends.") is intentionally NOT a category, so it can't be derived from
+// CATEGORIES — hence a hand-kept list rather than CATEGORIES.map. Animates
+// through these once and STOPS on the final frame (no loop, no further timers).
+// Monochrome by the locked gold rule.
+const FRAMES = [
+  "Appointments.",
+  "Order updates.",
+  "Account events.",
+  "Every text your app sends.",
+];
+const INTERVAL_MS = 1700;
+const FADE_MS = 280;
 
 export function CategoryRotor() {
   const [index, setIndex] = useState(0);
-  const [out, setOut] = useState(false);
+  // Start hidden so the FIRST frame plays the same fade/slide-in as the rest,
+  // rather than mounting static at full opacity. Flipped to shown on first
+  // paint via rAF below.
+  const [out, setOut] = useState(true);
+
+  // First-frame entrance: reveal frame 0 once the initial hidden state has
+  // painted, so the CSS transition actually fires for index 0 too.
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setOut(false));
+    return () => cancelAnimationFrame(raf);
+  }, []);
 
   useEffect(() => {
-    const cycle = setInterval(() => {
+    // Stop on the final frame — one pass, no loop, no further timers.
+    if (index >= FRAMES.length - 1) return;
+    let swap: ReturnType<typeof setTimeout>;
+    const cycle = setTimeout(() => {
       setOut(true);
-      const swap = setTimeout(() => {
-        setIndex((i) => (i + 1) % WORDS.length);
+      swap = setTimeout(() => {
+        setIndex((i) => i + 1);
         setOut(false);
       }, FADE_MS);
-      // Clear the inner timeout if the component unmounts mid-fade.
-      return () => clearTimeout(swap);
     }, INTERVAL_MS);
-    return () => clearInterval(cycle);
-  }, []);
+    // clearTimeout(undefined) is a no-op, so clearing swap pre-assignment is safe.
+    return () => {
+      clearTimeout(cycle);
+      clearTimeout(swap);
+    };
+  }, [index]);
 
   return (
     <div
@@ -37,7 +58,7 @@ export function CategoryRotor() {
           out ? "translate-y-1.5 opacity-0" : "translate-y-0 opacity-100"
         }`}
       >
-        {WORDS[index]}
+        {FRAMES[index]}
       </span>
     </div>
   );
