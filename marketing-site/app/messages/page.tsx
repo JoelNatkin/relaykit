@@ -19,7 +19,7 @@ export default function MessagesPage() {
         <h1 className="max-w-2xl text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
           Text messages for{" "}
           <br className="hidden sm:block" />
-          your app. <span className="text-text-headline-muted">Ready to copy.</span>
+          your app. Ready to copy.
         </h1>
         <p className="mt-4 max-w-[520px] text-lg text-text-tertiary">
           Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026 —{" "}
