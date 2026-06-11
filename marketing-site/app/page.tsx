@@ -27,7 +27,7 @@ const DISCOVERED = [
     title: "Registration",
     body: "Before anything sends, your business gets registered in a central registry that every US carrier checks — legal name, tax ID, website, and what you plan to send. Details have to match your IRS records exactly, or the application bounces.",
     relay:
-      "RelayKit collects this once during setup and files the registration for you.",
+      "RelayKit collects this during setup and files the registration for you.",
   },
   {
     title: "Carrier review",
@@ -49,7 +49,7 @@ const DISCOVERED = [
   },
   {
     title: "STOP and HELP handling",
-    body: "A reply of STOP has to halt messages to that person immediately, and HELP has to get a real answer — automatically, every time. Getting it wrong is one of the fastest ways to get a number shut down.",
+    body: "A reply of STOP has to halt messages to that person immediately, and HELP has to get a real answer — automatically, every time. Getting it wrong is a fast way to get a number shut down.",
     relay:
       "RelayKit handles both at the delivery layer; when someone replies STOP, we stop.",
   },
@@ -78,9 +78,6 @@ function Recognition() {
         </p>
       </div>
       <div className="mt-12 rounded-2xl border border-border-secondary bg-surface-card p-7">
-        <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-          The requirements
-        </div>
         <div>
           {DISCOVERED.map((item) => (
             <details
