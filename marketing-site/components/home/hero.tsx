@@ -15,6 +15,15 @@ const DOT_GRID_STYLE: React.CSSProperties = {
     "radial-gradient(ellipse 60% 70% at 76% 72%, #000, transparent 72%)",
 };
 
+// Soft ambient glow behind the configurator card — brand warm-gray family
+// (rgb 149 134 117), NOT gold — to set the card off from the page. Barely-
+// there (~0.10 center) with a wide radial falloff to transparent so the card's
+// border stays crisp against it. Sits above the dot-grid and below the card.
+const HERO_GLOW_STYLE: React.CSSProperties = {
+  background:
+    "radial-gradient(ellipse at center, rgb(149 134 117 / 0.10) 0%, rgb(149 134 117 / 0.05) 45%, transparent 72%)",
+};
+
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
@@ -68,7 +77,18 @@ export function Hero() {
               h-14 nav) and the hero adds pt-[72px], so the grid top is 72px
               below the appbar; +108px = 180px below it. pt is a visual tunable. */}
           <div className="mx-auto w-full max-w-[560px] min-[940px]:mx-0 min-[940px]:max-w-none min-[940px]:pt-[108px]">
-            <HeroConfiguratorGraphic />
+            {/* relative wrapper hugs the card so the glow sizes to it; the glow
+                is -z-10 (behind the static card, above the section dot-grid)
+                and -inset-16 so it spills a comfortable margin past the card
+                edges as ambient light. */}
+            <div className="relative">
+              <div
+                className="pointer-events-none absolute -inset-16 -z-10"
+                style={HERO_GLOW_STYLE}
+                aria-hidden
+              />
+              <HeroConfiguratorGraphic />
+            </div>
           </div>
         </div>
       </div>
