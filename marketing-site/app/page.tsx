@@ -18,12 +18,10 @@ export const metadata: Metadata = {
     "Pick the messages your app needs. RelayKit handles registration, opt-outs, and the carrier rules behind the scenes. Your AI tool wires up the rest.",
 };
 
-// Recognition — the "expected vs discovered" compare. The simple expected
-// steps get success-green arrows; the discovered requirements get error-red
-// dots and expand (native <details> accordion, one open at a time via the
-// shared name="requirements") to show what each entails. Green/red are D-405
-// semantic colors.
-const EXPECTED = ["Write a message", "Add an API call", "Ship"];
+// Recognition — the requirements the developer didn't expect. Each is an
+// error-red row in a single full-width card that expands (native <details>
+// accordion, one open at a time via the shared name="requirements") to show
+// what it entails. Red is a D-405 semantic color.
 const DISCOVERED = [
   {
     title: "Registration",
@@ -79,54 +77,36 @@ function Recognition() {
           Getting approved can take weeks if not done right.
         </p>
       </div>
-      <div className="mt-12 grid grid-cols-1 items-start gap-4 md:grid-cols-2">
-        <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
-          <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-            The feature
-          </div>
-          <ul className="grid gap-3">
-            {EXPECTED.map((item) => (
-              <li
-                key={item}
-                className="flex items-center gap-3 text-base text-text-primary"
-              >
-                <span className="text-sm text-fg-success-primary" aria-hidden>
-                  →
-                </span>
-                {item}
-              </li>
-            ))}
-          </ul>
+      <div className="mt-12 rounded-2xl border border-border-secondary bg-surface-card p-7">
+        <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
+          The requirements
         </div>
-        <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
-          <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
-            The requirements
-          </div>
-          <div>
-            {DISCOVERED.map((item) => (
-              <details
-                key={item.title}
-                name="requirements"
-                className="group border-b border-border-secondary last:border-b-0"
-              >
-                <summary className="flex cursor-pointer list-none items-center gap-3 py-3 text-base text-text-primary [&::-webkit-details-marker]:hidden">
-                  <span
-                    className="size-1.5 flex-none rounded-full bg-fg-error-primary"
-                    aria-hidden
-                  />
-                  <span className="flex-1">{item.title}</span>
-                  <ChevronDown
-                    className="size-4 flex-none text-text-tertiary transition-transform duration-200 group-open:rotate-180"
-                    aria-hidden
-                  />
-                </summary>
-                <div className="space-y-2.5 pb-4 pl-[18px] text-sm leading-relaxed text-text-secondary">
-                  <p>{item.body}</p>
-                  <p>{item.relay}</p>
-                </div>
-              </details>
-            ))}
-          </div>
+        <div>
+          {DISCOVERED.map((item) => (
+            <details
+              key={item.title}
+              name="requirements"
+              className="group border-b border-border-secondary last:border-b-0"
+            >
+              <summary className="flex cursor-pointer list-none items-center gap-3 py-3 text-base text-text-primary [&::-webkit-details-marker]:hidden">
+                <span
+                  className="size-1.5 flex-none rounded-full bg-fg-error-primary"
+                  aria-hidden
+                />
+                <span className="flex-1">{item.title}</span>
+                <ChevronDown
+                  className="size-4 flex-none text-text-tertiary transition-transform duration-200 group-open:rotate-180"
+                  aria-hidden
+                />
+              </summary>
+              {/* Rows/titles span the full card; only the open body is capped
+                  for readable line length. */}
+              <div className="max-w-[460px] space-y-2.5 pb-4 pl-[18px] text-sm leading-relaxed text-text-secondary">
+                <p>{item.body}</p>
+                <p>{item.relay}</p>
+              </div>
+            </details>
+          ))}
         </div>
       </div>
     </section>

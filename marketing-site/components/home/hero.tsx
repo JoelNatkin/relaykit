@@ -73,11 +73,12 @@ export function Hero() {
               column and clips itself (no absolute window, no scale, no bleed).
               STACKED (below 940px): centered, full width up to 560px, no top
               offset — it sits below the copy. SIDE-BY-SIDE (≥940px): fills the
-              mock track and is pushed down so its top edge sits ~180px below the
-              appbar. Offset chain: <main> has pt-14 (56px, clears the fixed
-              h-14 nav) and the hero adds pt-[72px], so the grid top is 72px
-              below the appbar; +108px = 180px below it. pt is a visual tunable. */}
-          <div className="mx-auto w-full max-w-[560px] min-[940px]:mx-0 min-[940px]:max-w-none min-[940px]:pt-[108px]">
+              mock track and its TOP edge aligns with the H1's first-line cap
+              height. The H1 box top is mt-8 (32px) below the grid top; pt-10
+              (40px) drops the card ~8px further onto the cap height (the
+              ascender gap above the capitals). Visual tunable — verify
+              1440/1200 that the card top and H1 top read as one line. */}
+          <div className="mx-auto w-full max-w-[560px] min-[940px]:mx-0 min-[940px]:max-w-none min-[940px]:pt-10">
             {/* relative wrapper hugs the card so the glow sizes to it; the glow
                 is -z-10 (behind the static card, above the section dot-grid)
                 and -inset-16 so it spills a comfortable margin past the card

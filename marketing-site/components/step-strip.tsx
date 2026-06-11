@@ -25,9 +25,11 @@ export function StepStrip({
   variant?: "open" | "card";
 }) {
   const carded = variant === "card";
+  // Carded variant uses a tighter 40px gutter; open keeps the airy 60px.
+  const gapClasses = carded ? "gap-10" : "gap-x-[60px] gap-y-[60px]";
   return (
     <div
-      className={`grid grid-cols-1 gap-x-[60px] gap-y-[60px] md:grid-cols-3${
+      className={`grid grid-cols-1 ${gapClasses} md:grid-cols-3${
         className ? ` ${className}` : ""
       }`}
     >
