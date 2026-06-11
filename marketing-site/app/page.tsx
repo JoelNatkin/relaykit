@@ -70,7 +70,7 @@ function Recognition() {
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
       <div className="max-w-2xl">
-        <Eyebrow>Why RelayKit</Eyebrow>
+        <Eyebrow>The problem</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
           The rules show up after you start building.
         </h2>
@@ -139,7 +139,7 @@ function Test() {
       id="test"
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
-      <Eyebrow>Prove</Eyebrow>
+      <Eyebrow>The test</Eyebrow>
       <div className="mt-8 grid items-start gap-14 md:mt-10 lg:grid-cols-2">
         <PreviewListMock />
         <div>
@@ -190,7 +190,7 @@ export default function MarketingHome() {
       >
         <div className="flex flex-wrap items-end justify-between gap-6">
           <div className="max-w-xl">
-            <Eyebrow>The messages · live today</Eyebrow>
+            <Eyebrow>The messages</Eyebrow>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
               Start with a complete message plan.
             </h2>

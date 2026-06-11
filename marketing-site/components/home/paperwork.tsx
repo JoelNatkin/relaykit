@@ -29,7 +29,7 @@ export function Paperwork() {
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
       <div className="max-w-2xl">
-        <Eyebrow>What we handle</Eyebrow>
+        <Eyebrow>The paperwork</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
           You build the feature. We handle the bureaucracy.
         </h2>

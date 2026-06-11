@@ -9,7 +9,7 @@ export function FinalCta() {
     >
       <div className="mx-auto max-w-[616px]">
         <div className="flex justify-center">
-          <Eyebrow>Start now</Eyebrow>
+          <Eyebrow>The start</Eyebrow>
         </div>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
           The messages are ready now.{" "}

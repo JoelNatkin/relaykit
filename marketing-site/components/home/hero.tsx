@@ -1,5 +1,5 @@
 import { HeroConfiguratorGraphic } from "@/components/home/hero-configurator-graphic";
-import { Eyebrow, GhostCta, PrimaryCta } from "@/components/home/section-ui";
+import { GhostCta, PrimaryCta } from "@/components/home/section-ui";
 
 // Decorative dot-grid texture behind the hero. Theme-neutral mid-gray at low
 // alpha reads as a subtle texture on both the dark and light page (it is not a
@@ -44,8 +44,9 @@ export function Hero() {
         <div className="grid grid-cols-1 gap-12 min-[940px]:grid-cols-[minmax(400px,1fr)_minmax(360px,420px)] min-[940px]:items-start min-[940px]:gap-x-12 min-[1100px]:gap-x-20">
           {/* Left column — all hero copy (eyebrow, H1, subhead, CTAs, trust). */}
           <div>
-            <Eyebrow>Free message templates — live now</Eyebrow>
-            <h1 className="mt-5 text-balance text-5xl font-bold leading-[0.95] tracking-tight text-text-primary sm:text-6xl lg:text-[64px]">
+            {/* No eyebrow here (removed) — mt-8 gives the H1 breathing room
+                from the top in place of the old eyebrow block. */}
+            <h1 className="mt-8 text-balance text-5xl font-bold leading-[0.95] tracking-tight text-text-primary sm:text-6xl lg:text-[64px]">
               The easiest way to add text messaging to your app.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary">
