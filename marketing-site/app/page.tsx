@@ -169,11 +169,11 @@ export default function MarketingHome() {
           <div className="max-w-xl">
             <Eyebrow>The messages</Eyebrow>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-              Start with a complete message plan.
+              Reminders, order updates, login codes — every job, not just one.
             </h2>
             <p className="mt-4 text-base leading-relaxed text-text-secondary">
-              RelayKit generates the messages most apps need, customized for your
-              industry and use case.
+              Pick your industry; every message adjusts to it. Most apps need a
+              couple — the whole set&apos;s here if you do.
             </p>
           </div>
           {/* Gold text affordance — D-427. */}
