@@ -1,4 +1,3 @@
-import { CategoryRotor } from "@/components/home/category-rotor";
 import { HeroConfiguratorGraphic } from "@/components/home/hero-configurator-graphic";
 import { Eyebrow, GhostCta, PrimaryCta } from "@/components/home/section-ui";
 
@@ -25,15 +24,17 @@ export function Hero() {
         aria-hidden
       />
       <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[820px]">
-        {/* Full-width headline band — the H1 spans the section so "Easier"
-            sits inline after "for your app." The two-column split starts
-            BELOW this band. */}
+        {/* Full-width headline band — three lines with hard breaks at sm+
+            (after "to" and "messaging"); natural balanced wrap below sm. The
+            two-column split starts BELOW this band. */}
         <div className="max-w-4xl">
           <Eyebrow>Free message templates — live now</Eyebrow>
-          <h1 className="mt-5 text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
-            Text messaging{" "}
+          <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
+            The easiest way to{" "}
             <br className="hidden sm:block" />
-            for your app. <span className="text-text-headline-muted">Easier</span>
+            add text messaging{" "}
+            <br className="hidden sm:block" />
+            to your app.
           </h1>
         </div>
 
@@ -43,11 +44,9 @@ export function Hero() {
         <div className="mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
           {/* Hero copy — left column (verbatim). */}
           <div className="max-w-xl">
-            <CategoryRotor />
-            <p className="mt-3 max-w-xl text-lg leading-relaxed text-text-secondary">
-              Pick the messages your app needs. RelayKit handles registration,
-              opt-outs, and the carrier rules behind the scenes. Your AI tool
-              wires up the rest.
+            <p className="max-w-xl text-lg leading-relaxed text-text-secondary">
+              Ready-made texts that cut no-shows, support tickets, and missed
+              codes.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <PrimaryCta href="/messages">
@@ -64,17 +63,20 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Configurator product peek — desktop only. A bounded, rounded,
-              overflow-clipped WINDOW that gives the card its own visible edges:
-              the rounded top-left + bottom-left corners both show and the
-              bottom sits above the hero's bottom (NOT a flat section slice).
-              Positioned lower (negative space above) and scaled to a peek; only
-              the RIGHT side runs off the viewport, clipped by the section's
-              overflow-hidden. Confined to this column → never overlaps the copy.
-              top / height / width / scale are visual tunables. */}
+          {/* Configurator product peek — desktop only. The WINDOW spans the
+              right column (w-full) and clips its inner card at the column's
+              right edge, so nothing bleeds past the content width. The inner
+              stays at its natural ~920px width — the card's right side is what
+              crops. Height is sized to show ~2½ message cards (the 3rd clipped
+              mid-card by the bottom edge). Confined to this column → never
+              overlaps the copy. The rail inside is interactive, so NO
+              pointer-events-none here. top / height / scale are visual
+              tunables. */}
           <div className="relative hidden lg:block">
-            <div className="pointer-events-none absolute left-0 top-[40px] h-[600px] w-[920px] origin-top-left scale-[0.85] overflow-hidden rounded-[22px] shadow-2xl">
-              <HeroConfiguratorGraphic />
+            <div className="absolute left-0 top-[40px] h-[560px] w-full overflow-hidden rounded-[22px] shadow-2xl">
+              <div className="w-[920px] origin-top-left scale-[0.85]">
+                <HeroConfiguratorGraphic />
+              </div>
             </div>
           </div>
         </div>
