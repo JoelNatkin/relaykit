@@ -1,7 +1,14 @@
 "use client";
 
 /**
- * Configurator peek for the home hero — mildly interactive, state-ISOLATED.
+ * Configurator card for the home hero — mildly interactive, state-ISOLATED,
+ * self-clipping.
+ *
+ * Self-contained card: its OWN container is the fixed-height, overflow-hidden,
+ * uniformly-bordered box — there is no external clipping window, no scaled
+ * 920px layout, no gradient/mask/taper. The internals are sized to fit the
+ * card's own (column) width; the bottom edge cleanly cuts the third message
+ * card.
  *
  * NOT a live instance: it owns ONLY local view state (which category is active
  * + a manual-override flag). It calls NO configurator/elig hooks and NEVER
@@ -53,11 +60,12 @@ function nextCategoryId(currentId: string): string {
 // Bespoke rail checkbox — gold filled check when selected, empty rounded square
 // otherwise. Mirrors the live category checkbox visually (D-427 gold for the
 // selected CATEGORY) but is hand-built here; sync if that styling changes.
+// size-4 to suit the compact card rail.
 function RailCheckbox({ checked }: { checked: boolean }) {
   return (
-    <span className="relative inline-flex size-5 shrink-0">
+    <span className="relative inline-flex size-4 shrink-0">
       <span
-        className={`size-5 rounded ${
+        className={`size-4 rounded ${
           checked
             ? "border border-border-gold bg-bg-gold"
             : "border-2 border-border-primary"
@@ -68,7 +76,7 @@ function RailCheckbox({ checked }: { checked: boolean }) {
           viewBox="0 0 10 10"
           fill="none"
           aria-hidden
-          className="pointer-events-none absolute inset-0 m-auto size-3 text-text-on-gold"
+          className="pointer-events-none absolute inset-0 m-auto size-2.5 text-text-on-gold"
         >
           <path
             d="M1.75 5.25 4 7.25 8.25 2.75"
@@ -145,35 +153,36 @@ export function HeroConfiguratorGraphic() {
   const requiresStop = activeCategory.tcrMapping === "MARKETING";
 
   return (
-    <div className="surface-flat rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl sm:p-7">
-      {/* Header row — mirrors ConfiguratorSection. */}
-      <div className="mb-5 flex items-center justify-between gap-3 border-b border-border-secondary pb-5">
-        <h2 className="text-2xl font-bold tracking-tight text-text-primary">
+    // Self-clipping card: fixed height + overflow-hidden + uniform border. The
+    // height shows ~2½ message cards; the 3rd is cut by the card's own bottom
+    // edge (clean clip, no fade). Height is a visual tunable.
+    <div className="surface-flat h-[480px] overflow-hidden rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl">
+      {/* Header row — mirrors ConfiguratorSection, sized down for the card. */}
+      <div className="mb-4 flex items-center justify-between gap-3 border-b border-border-secondary pb-4">
+        <h2 className="text-lg font-bold tracking-tight text-text-primary">
           Choose your messages
         </h2>
-        <span className="shrink-0 rounded-full border border-border-secondary bg-surface-inset px-3 py-1 text-xs font-medium text-text-tertiary">
+        <span className="shrink-0 rounded-full border border-border-secondary bg-surface-inset px-2.5 py-1 text-xs font-medium text-text-tertiary">
           Free · no account
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[240px_1fr]">
+      <div className="grid grid-cols-[156px_1fr] gap-4">
         {/* Hand-built categories rail — the ONLY interactive part. Each row is a
             real button with aria-pressed; clicking sets manual mode. */}
-        <div className="rounded-xl border border-border-secondary bg-surface-inset p-5">
-          <h3 className="text-base font-semibold text-text-primary">
-            Categories
-          </h3>
-          <div className="mt-5 flex flex-col gap-5">
+        <div className="rounded-xl border border-border-secondary bg-surface-inset p-4">
+          <h3 className="text-sm font-semibold text-text-primary">Categories</h3>
+          <div className="mt-4 flex flex-col gap-4">
             {RAIL_CATEGORIES.map((category) => (
               <button
                 key={category.id}
                 type="button"
                 onClick={() => handleSelect(category.id)}
                 aria-pressed={category.id === activeId}
-                className="flex items-center gap-3 text-left"
+                className="flex items-center gap-2.5 text-left"
               >
                 <RailCheckbox checked={category.id === activeId} />
-                <span className="text-base font-medium text-text-primary">
+                <span className="text-sm font-medium text-text-primary">
                   {category.name}
                 </span>
               </button>
@@ -183,7 +192,7 @@ export function HeroConfiguratorGraphic() {
 
         {/* Messages column — decorative (inert): tone pills, the swapping
             category group, and the Copy CTA are all non-interactive. */}
-        <div className="flex flex-col md:max-w-[500px]" inert aria-hidden>
+        <div className="flex flex-col" inert aria-hidden>
           <div className="flex flex-wrap gap-2">
             {PAGE_TONES.map((tone) => (
               <span
@@ -198,17 +207,17 @@ export function HeroConfiguratorGraphic() {
           {/* Swapping content — soft fade + slight translate-y, ~280ms, matching
               the site's existing rotor motion; disabled under reduced motion. */}
           <div
-            className={`mt-8 transition-all duration-300 ease-linear motion-reduce:transition-none ${
+            className={`mt-6 transition-all duration-300 ease-linear motion-reduce:transition-none ${
               out ? "translate-y-1 opacity-0" : "translate-y-0 opacity-100"
             }`}
           >
             <div>
               <div className="mb-3 flex items-center justify-between gap-3">
-                <h4 className="text-base font-semibold text-text-primary">
+                <h4 className="text-sm font-semibold text-text-primary">
                   {activeCategory.name}
                 </h4>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {activeCategory.messages.slice(0, 3).map((message) => (
                   <MessageReadCard
                     key={message.id}
@@ -232,7 +241,8 @@ export function HeroConfiguratorGraphic() {
             </div>
           </div>
 
-          {/* Prominent gold Copy CTA spanning the messages column (D-427). */}
+          {/* Prominent gold Copy CTA spanning the messages column (D-427). Sits
+              below the clip line — cropped by the card's bottom edge. */}
           <div className="mt-7 flex h-12 w-full items-center justify-center rounded-lg bg-bg-gold text-base font-semibold text-text-on-gold">
             Copy messages
           </div>

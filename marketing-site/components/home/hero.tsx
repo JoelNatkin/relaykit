@@ -4,7 +4,7 @@ import { Eyebrow, GhostCta, PrimaryCta } from "@/components/home/section-ui";
 // Decorative dot-grid texture behind the hero. Theme-neutral mid-gray at low
 // alpha reads as a subtle texture on both the dark and light page (it is not a
 // brand color), masked to fade toward the edges — focal point sits lower-right
-// where the configurator peek now lives.
+// where the configurator card lives.
 const DOT_GRID_STYLE: React.CSSProperties = {
   backgroundImage:
     "radial-gradient(circle, rgb(128 128 128 / 0.07) 1px, transparent 1.5px)",
@@ -23,28 +23,26 @@ export function Hero() {
         style={DOT_GRID_STYLE}
         aria-hidden
       />
-      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24 lg:min-h-[820px]">
-        {/* Full-width headline band — three lines with hard breaks at sm+
-            (after "to" and "messaging"); natural balanced wrap below sm. The
-            two-column split starts BELOW this band. */}
-        <div className="max-w-4xl">
-          <Eyebrow>Free message templates — live now</Eyebrow>
-          <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
-            The easiest way to{" "}
-            <br className="hidden sm:block" />
-            add text messaging{" "}
-            <br className="hidden sm:block" />
-            to your app.
-          </h1>
-        </div>
-
-        {/* Two columns on lg: copy left, configurator peek right. items-start
-            keeps both top-aligned; the peek is confined to the right column so
-            it can NEVER overlap the copy at any width. */}
-        <div className="mt-8 lg:grid lg:grid-cols-2 lg:items-start lg:gap-12">
-          {/* Hero copy — left column (verbatim). */}
-          <div className="max-w-xl">
-            <p className="max-w-xl text-lg leading-relaxed text-text-secondary">
+      <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24">
+        {/* Two-column hero. Single column below the custom breakpoint (the mock
+            is hidden); two columns above it. minmax tracks: the LEFT (copy)
+            grows via 1fr; the RIGHT (mock) shrinks first toward its 360px min,
+            then the left shrinks toward its 400px min. Breakpoint math: left
+            400 + gutter 80 + mock 360 = 840 content → ~888px viewport at the
+            absolute minimum; min-[1000px] adds buffer so the columns never
+            render at their cramped edge. 80px gutter = gap-20. */}
+        <div className="grid grid-cols-1 gap-12 min-[1000px]:grid-cols-[minmax(400px,1fr)_minmax(360px,420px)] min-[1000px]:items-start min-[1000px]:gap-20">
+          {/* Left column — all hero copy (eyebrow, H1, subhead, CTAs, trust). */}
+          <div>
+            <Eyebrow>Free message templates — live now</Eyebrow>
+            <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
+              The easiest way to{" "}
+              <br className="hidden sm:block" />
+              add text messaging{" "}
+              <br className="hidden sm:block" />
+              to your app.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary">
               Ready-made texts that cut no-shows, support tickets, and missed
               codes.
             </p>
@@ -63,21 +61,14 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Configurator product peek — desktop only. The WINDOW spans the
-              right column (w-full) and clips its inner card at the column's
-              right edge, so nothing bleeds past the content width. The inner
-              stays at its natural ~920px width — the card's right side is what
-              crops. Height is sized to show ~2½ message cards (the 3rd clipped
-              mid-card by the bottom edge). Confined to this column → never
-              overlaps the copy. The rail inside is interactive, so NO
-              pointer-events-none here. top / height / scale are visual
-              tunables. */}
-          <div className="relative hidden lg:block">
-            <div className="absolute left-0 top-[40px] h-[560px] w-full overflow-hidden rounded-[22px] shadow-2xl">
-              <div className="w-[920px] origin-top-left scale-[0.85]">
-                <HeroConfiguratorGraphic />
-              </div>
-            </div>
+          {/* Right column — the SELF-CONTAINED configurator card. It sizes to
+              this column and clips itself (no absolute window, no scale, no
+              bleed). Pushed down so its top edge sits ~240px below the appbar:
+              the appbar is h-14 (56px), the grid top is pt-[72px] (16px below
+              the appbar), so +224px = 240px below the appbar. Hidden below the
+              two-column breakpoint. pt is a visual tunable. */}
+          <div className="hidden min-[1000px]:block min-[1000px]:pt-[224px]">
+            <HeroConfiguratorGraphic />
           </div>
         </div>
       </div>
