@@ -19,9 +19,9 @@ export function FinalCta() {
           </span>
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          You can start with the messages today. When RelayKit launches,
-          we&apos;ll take care of registration, opt-outs, delivery, and the
-          carrier requirements behind the scenes.
+          You can start with the messages today. When sending launches, your
+          AI tool wires up the integration, you test on real phones, and
+          registration and opt-outs stay handled behind the scenes.
         </p>
         <div className="mt-7 flex justify-center">
           <PrimaryCta href="/messages">
