@@ -75,9 +75,8 @@ function Recognition() {
           The rules show up after you start building.
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          US carriers require these from every business that sends texts,
-          whether it&apos;s a solo app or an enterprise. Getting approved can
-          take weeks if not done right.
+          US carriers require these from every business that sends texts.
+          Getting approved can take weeks if not done right.
         </p>
       </div>
       <div className="mt-12 grid grid-cols-1 items-start gap-4 md:grid-cols-2">
