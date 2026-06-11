@@ -1,5 +1,7 @@
+import Link from "next/link";
+
 import { BottomEmailCapture } from "@/components/bottom-email-capture";
-import { Eyebrow, PrimaryCta } from "@/components/home/section-ui";
+import { Eyebrow } from "@/components/home/section-ui";
 
 export function FinalCta() {
   return (
@@ -19,19 +21,18 @@ export function FinalCta() {
           </span>
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          You can start with the messages today. When sending launches, your
-          AI tool wires up the integration, you test on real phones, and
-          registration and opt-outs stay handled behind the scenes.
+          You can{" "}
+          <Link
+            href="/messages"
+            className="font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
+          >
+            start with the messages today
+          </Link>
+          . When sending launches, your AI tool wires up the integration, you
+          test on real phones, and registration and opt-outs stay handled
+          behind the scenes.
         </p>
-        <div className="mt-7 flex justify-center">
-          <PrimaryCta href="/messages">
-            Open Messages <span aria-hidden>→</span>
-          </PrimaryCta>
-        </div>
-        <p className="mt-8 text-sm text-text-tertiary">
-          Or get an email when sending launches:
-        </p>
-        <div className="flex justify-center">
+        <div className="mt-8 flex justify-center">
           <BottomEmailCapture ctaSource="home-final" />
         </div>
       </div>
