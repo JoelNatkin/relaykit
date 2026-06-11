@@ -36,15 +36,12 @@ export function Hero() {
           <div>
             <Eyebrow>Free message templates — live now</Eyebrow>
             <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
-              The easiest way to{" "}
-              <br className="hidden sm:block" />
-              add text messaging{" "}
-              <br className="hidden sm:block" />
-              to your app.
+              The easiest way to add text messaging to your app.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary">
-              Ready-made texts that cut no-shows, support tickets, and missed
-              codes.
+              Ready-made texts that cut no-shows, support tickets,
+              <br className="hidden sm:block" />
+              and missed codes.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <PrimaryCta href="/messages">
@@ -63,11 +60,11 @@ export function Hero() {
 
           {/* Right column — the SELF-CONTAINED configurator card. It sizes to
               this column and clips itself (no absolute window, no scale, no
-              bleed). Pushed down so its top edge sits ~240px below the appbar:
+              bleed). Pushed down so its top edge sits ~180px below the appbar:
               the appbar is h-14 (56px), the grid top is pt-[72px] (16px below
-              the appbar), so +224px = 240px below the appbar. Hidden below the
+              the appbar), so +164px = 180px below the appbar. Hidden below the
               two-column breakpoint. pt is a visual tunable. */}
-          <div className="hidden min-[1000px]:block min-[1000px]:pt-[224px]">
+          <div className="hidden min-[1000px]:block min-[1000px]:pt-[164px]">
             <HeroConfiguratorGraphic />
           </div>
         </div>

@@ -42,10 +42,9 @@ import { CATEGORIES } from "@/lib/message-library";
 import type { Category } from "@/lib/message-library";
 
 const DEMO_BUSINESS = "Acme";
-// Curated rail set — drop Customer support, Team alerts, Community. The
-// CATEGORIES source is untouched; display order is preserved by filtering.
-const RAIL_EXCLUDED = new Set(["customer-support", "team-alerts", "community"]);
-const RAIL_CATEGORIES = CATEGORIES.filter((c) => !RAIL_EXCLUDED.has(c.id));
+// Full rail — every category in the corpus (all 9), display order preserved.
+// Auto-advance cycles through the whole set.
+const RAIL_CATEGORIES = CATEGORIES;
 
 const INITIAL_CATEGORY = "verification";
 const ADVANCE_MS = 8000;
@@ -167,19 +166,24 @@ export function HeroConfiguratorGraphic() {
         </span>
       </div>
 
-      <div className="grid grid-cols-[156px_1fr] gap-4">
-        {/* Hand-built categories rail — the ONLY interactive part. Each row is a
-            real button with aria-pressed; clicking sets manual mode. */}
-        <div className="rounded-xl border border-border-secondary bg-surface-inset p-4">
+      {/* Fixed tracks: 170px rail + 500px messages. The messages column is
+          intentionally wider than the card — it crops at the card's right edge
+          (overflow-hidden), a deliberate peek, not a shrunk-to-fit column. */}
+      <div className="grid grid-cols-[170px_500px] gap-4">
+        {/* Hand-built categories rail — the ONLY interactive part. All 9
+            categories; each row is a real button with aria-pressed; clicking
+            sets manual mode. Tightened spacing/type to stay comfortable at
+            170px with 9 rows. */}
+        <div className="rounded-xl border border-border-secondary bg-surface-inset p-3">
           <h3 className="text-sm font-semibold text-text-primary">Categories</h3>
-          <div className="mt-4 flex flex-col gap-4">
+          <div className="mt-3 flex flex-col gap-3">
             {RAIL_CATEGORIES.map((category) => (
               <button
                 key={category.id}
                 type="button"
                 onClick={() => handleSelect(category.id)}
                 aria-pressed={category.id === activeId}
-                className="flex items-center gap-2.5 text-left"
+                className="flex items-center gap-2 text-left"
               >
                 <RailCheckbox checked={category.id === activeId} />
                 <span className="text-sm font-medium text-text-primary">
