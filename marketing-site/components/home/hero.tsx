@@ -36,7 +36,7 @@ export function Hero() {
           {/* Left column — all hero copy (eyebrow, H1, subhead, CTAs, trust). */}
           <div>
             <Eyebrow>Free message templates — live now</Eyebrow>
-            <h1 className="mt-5 text-balance text-5xl font-bold leading-[0.95] tracking-tight text-text-primary sm:text-6xl lg:text-7xl">
+            <h1 className="mt-5 text-balance text-5xl font-bold leading-[0.95] tracking-tight text-text-primary sm:text-6xl lg:text-[64px]">
               The easiest way to add text messaging to your app.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary">

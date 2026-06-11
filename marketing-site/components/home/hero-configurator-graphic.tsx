@@ -47,7 +47,7 @@ const DEMO_BUSINESS = "Acme";
 const RAIL_CATEGORIES = CATEGORIES;
 
 const INITIAL_CATEGORY = "verification";
-const ADVANCE_MS = 8000;
+const ADVANCE_MS = 7000;
 const SWAP_MS = 280;
 
 function nextCategoryId(currentId: string): string {
@@ -183,7 +183,7 @@ export function HeroConfiguratorGraphic() {
             170px with 9 rows. */}
         <div className="rounded-xl border border-border-secondary bg-surface-inset p-3">
           <h3 className="text-sm font-semibold text-text-primary">Categories</h3>
-          <div className="mt-3 flex flex-col gap-3">
+          <div className="mt-3 flex flex-col gap-4">
             {RAIL_CATEGORIES.map((category) => (
               <button
                 key={category.id}
