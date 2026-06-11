@@ -10,6 +10,7 @@ import { VariablesCallout } from "@/components/home/variables-callout";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { PreviewListMock } from "@/components/preview-list-mock";
 import Link from "next/link";
+import { ChevronDown } from "@untitledui/icons";
 
 export const metadata: Metadata = {
   title: "RelayKit — The easiest way to add text messaging to your app",
@@ -18,17 +19,36 @@ export const metadata: Metadata = {
 };
 
 // Recognition — the "expected vs discovered" compare. The simple expected
-// steps get success-green arrows; the discovered friction markers get error-red
-// dots; the closing resolve line is gold (D-427 accent system; green/red are
-// D-405 semantic colors).
+// steps get success-green arrows; the discovered requirements get error-red
+// dots and expand (native <details> accordion, one open at a time via the
+// shared name="requirements") to show what each entails. Green/red are D-405
+// semantic colors.
 const EXPECTED = ["Write a message", "Add an API call", "Ship"];
 const DISCOVERED = [
-  "Registration",
-  "Carrier review",
-  "Consent requirements",
-  "Build a compliance website",
-  "STOP and HELP handling",
-  "Message restrictions",
+  {
+    title: "Registration",
+    body: "Before anything sends, your business gets registered in a central registry that every US carrier checks — legal name, tax ID, website, and what you plan to send. Details have to match your IRS records exactly, or the application bounces. RelayKit collects this once during setup and files the registration for you.",
+  },
+  {
+    title: "Carrier review",
+    body: "Reviewers check your registration and your messages against carrier rules before you're allowed to send. Other providers typically take two to three weeks — and every rejection restarts the clock, with no guarantee the next round clears. RelayKit submissions are prepared to pass the first time; approval typically takes a few days.",
+  },
+  {
+    title: "Consent requirements",
+    body: "You have to collect and keep proof that every recipient agreed to get texts from you — how they opted in, when, and which kinds of messages they agreed to. Someone who signed up for appointment reminders hasn't agreed to marketing. RelayKit provides the opt-in language and keeps the consent records automatically.",
+  },
+  {
+    title: "Build a compliance website",
+    body: "Reviewers visit your website looking for a privacy policy with specific mobile-data language, posted terms, and a visible description of your texting program. A missing or half-finished site is the single most common reason registrations get rejected. RelayKit generates and hosts a compliance site for you — privacy policy, terms, and opt-in page included.",
+  },
+  {
+    title: "STOP and HELP handling",
+    body: "A reply of STOP has to halt messages to that person immediately, and HELP has to get a real answer — automatically, every time. Getting it wrong is one of the fastest ways to get a number shut down. RelayKit handles both at the delivery layer; when someone replies STOP, we stop.",
+  },
+  {
+    title: "Message restrictions",
+    body: "Carriers limit what businesses can say over text: entire content categories are banned, links get scrutinized, and messages outside your registered use case can get your number flagged. The rules live across multiple carrier policies, and they change. RelayKit's templates already follow them, and custom messages are checked before they send — not just passed through.",
+  },
 ];
 
 function Recognition() {
@@ -42,8 +62,13 @@ function Recognition() {
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
           The rules show up after you start building.
         </h2>
+        <p className="mt-4 text-base leading-relaxed text-text-secondary">
+          US carriers require these from every business that sends texts,
+          whether it&apos;s a solo app or an enterprise. Getting approved can
+          take weeks if not done right.
+        </p>
       </div>
-      <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="mt-12 grid grid-cols-1 items-start gap-4 md:grid-cols-2">
         <div className="rounded-2xl border border-border-secondary bg-surface-card p-7">
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
             The feature
@@ -66,20 +91,30 @@ function Recognition() {
           <div className="mb-5 font-mono text-xs uppercase tracking-[0.12em] text-text-tertiary">
             The requirements
           </div>
-          <ul className="grid gap-3">
+          <div>
             {DISCOVERED.map((item) => (
-              <li
-                key={item}
-                className="flex items-center gap-3 text-base text-text-primary"
+              <details
+                key={item.title}
+                name="requirements"
+                className="group border-b border-border-secondary last:border-b-0"
               >
-                <span
-                  className="size-1.5 flex-none rounded-full bg-fg-error-primary"
-                  aria-hidden
-                />
-                {item}
-              </li>
+                <summary className="flex cursor-pointer list-none items-center gap-3 py-3 text-base text-text-primary [&::-webkit-details-marker]:hidden">
+                  <span
+                    className="size-1.5 flex-none rounded-full bg-fg-error-primary"
+                    aria-hidden
+                  />
+                  <span className="flex-1">{item.title}</span>
+                  <ChevronDown
+                    className="size-4 flex-none text-text-tertiary transition-transform duration-200 group-open:rotate-180"
+                    aria-hidden
+                  />
+                </summary>
+                <p className="pb-4 pl-[18px] text-sm leading-relaxed text-text-secondary">
+                  {item.body}
+                </p>
+              </details>
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </section>
