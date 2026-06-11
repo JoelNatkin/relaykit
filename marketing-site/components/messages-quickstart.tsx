@@ -35,7 +35,7 @@ export function MessagesQuickstart() {
       <div className="max-w-2xl">
         <Eyebrow>The steps</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          Build your message plan in three steps.
+          It takes just a few minutes.
         </h2>
       </div>
       <StepStrip steps={STEPS} className="mt-14" variant="card" />

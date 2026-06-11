@@ -21,11 +21,14 @@ export default function MessagesPage() {
           <br className="hidden sm:block" />
           your app. <span className="text-text-headline-muted">Ready to copy.</span>
         </h1>
-        <p className="mt-4 max-w-[580px] text-lg text-text-tertiary">
+        <p className="mt-4 max-w-[520px] text-lg text-text-tertiary">
           Free and live right now. Pick your messages and copy them into your code today — RelayKit&apos;s own sending launches Summer 2026 —{" "}
+          {/* whitespace-nowrap keeps the link an unbreakable unit so "join the
+              waitlist" can never split across lines; the narrowed max-w shapes
+              where it lands. */}
           <a
             href="#join"
-            className="font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
+            className="font-medium whitespace-nowrap text-gold transition duration-100 ease-linear hover:opacity-90"
           >
             join the waitlist
           </a>
