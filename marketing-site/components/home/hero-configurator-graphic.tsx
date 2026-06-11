@@ -59,12 +59,12 @@ function nextCategoryId(currentId: string): string {
 // Bespoke rail checkbox — gold filled check when selected, empty rounded square
 // otherwise. Mirrors the live category checkbox visually (D-427 gold for the
 // selected CATEGORY) but is hand-built here; sync if that styling changes.
-// size-5 box (a step up from the prior size-4) for the card rail.
+// 22px box (between the original size-5/20px and size-6/24px) for the rail.
 function RailCheckbox({ checked }: { checked: boolean }) {
   return (
-    <span className="relative inline-flex size-5 shrink-0">
+    <span className="relative inline-flex size-[22px] shrink-0">
       <span
-        className={`size-5 rounded ${
+        className={`size-[22px] rounded ${
           checked
             ? "border border-border-gold bg-bg-gold"
             : "border-2 border-border-primary"
@@ -75,7 +75,7 @@ function RailCheckbox({ checked }: { checked: boolean }) {
           viewBox="0 0 10 10"
           fill="none"
           aria-hidden
-          className="pointer-events-none absolute inset-0 m-auto size-3 text-text-on-gold"
+          className="pointer-events-none absolute inset-0 m-auto size-[13px] text-text-on-gold"
         >
           <path
             d="M1.75 5.25 4 7.25 8.25 2.75"
@@ -156,7 +156,7 @@ export function HeroConfiguratorGraphic() {
     // height shows ~2½ message cards; the 3rd is cut by the card's own bottom
     // edge (clean clip, no fade). The full 9-row rail fits within this height;
     // the bottom edge cuts a MESSAGE card, not the rail. Height is a tunable.
-    <div className="surface-flat h-[450px] overflow-hidden rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl">
+    <div className="surface-flat h-[480px] overflow-hidden rounded-[22px] border border-border-primary bg-surface-card p-5 shadow-xl">
       {/* Header row — mirrors ConfiguratorSection, sized down for the card. */}
       <div className="mb-4 flex items-center justify-between gap-3 border-b border-border-secondary pb-4">
         <h2 className="text-lg font-bold tracking-tight text-text-primary">

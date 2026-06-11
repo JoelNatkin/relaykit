@@ -24,18 +24,19 @@ export function Hero() {
         aria-hidden
       />
       <div className="relative z-10 mx-auto max-w-5xl px-6 pt-[72px] pb-20 sm:pb-24">
-        {/* Two-column hero. Single column below the custom breakpoint (the mock
-            is hidden); two columns above it. minmax tracks: the LEFT (copy)
-            grows via 1fr; the RIGHT (mock) shrinks first toward its 360px min,
-            then the left shrinks toward its 400px min. Breakpoint math: left
-            400 + gutter 80 + mock 360 = 840 content → ~888px viewport at the
-            absolute minimum; min-[1000px] adds buffer so the columns never
-            render at their cramped edge. 80px gutter = gap-20. */}
-        <div className="grid grid-cols-1 gap-12 min-[1000px]:grid-cols-[minmax(400px,1fr)_minmax(360px,420px)] min-[1000px]:items-start min-[1000px]:gap-20">
+        {/* Hero layout. STACKS below the side-by-side threshold (copy on top,
+            mock card centered below) and goes side-by-side above it — the mock
+            never disappears at any width. Side-by-side holds down to ~940px:
+            left 400 + mock 360 + compressed 48px gutter = 808 content → ~856px
+            viewport at the floor; min-[940px] keeps a little buffer. minmax
+            tracks: LEFT (copy) grows via 1fr; RIGHT (mock) shrinks first toward
+            its 360px min, then the left toward 400px. Gutter compresses: 48px
+            (gap-x-12) through the tight range, 80px (gap-x-20) once wide. */}
+        <div className="grid grid-cols-1 gap-12 min-[940px]:grid-cols-[minmax(400px,1fr)_minmax(360px,420px)] min-[940px]:items-start min-[940px]:gap-x-12 min-[1100px]:gap-x-20">
           {/* Left column — all hero copy (eyebrow, H1, subhead, CTAs, trust). */}
           <div>
             <Eyebrow>Free message templates — live now</Eyebrow>
-            <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight text-text-primary sm:text-6xl">
+            <h1 className="mt-5 text-balance text-5xl font-bold tracking-tight text-text-primary sm:text-6xl lg:text-7xl">
               The easiest way to add text messaging to your app.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-text-secondary">
@@ -58,13 +59,15 @@ export function Hero() {
             </div>
           </div>
 
-          {/* Right column — the SELF-CONTAINED configurator card. It sizes to
-              this column and clips itself (no absolute window, no scale, no
-              bleed). Pushed down so its top edge sits ~180px below the appbar:
-              the appbar is h-14 (56px), the grid top is pt-[72px] (16px below
-              the appbar), so +164px = 180px below the appbar. Hidden below the
-              two-column breakpoint. pt is a visual tunable. */}
-          <div className="hidden min-[1000px]:block min-[1000px]:pt-[164px]">
+          {/* Right column — the SELF-CONTAINED configurator card. Sizes to its
+              column and clips itself (no absolute window, no scale, no bleed).
+              STACKED (below 940px): centered, full width up to 560px, no top
+              offset — it sits below the copy. SIDE-BY-SIDE (≥940px): fills the
+              mock track and is pushed down so its top edge sits ~180px below the
+              appbar. Offset chain: <main> has pt-14 (56px, clears the fixed
+              h-14 nav) and the hero adds pt-[72px], so the grid top is 72px
+              below the appbar; +108px = 180px below it. pt is a visual tunable. */}
+          <div className="mx-auto w-full max-w-[560px] min-[940px]:mx-0 min-[940px]:max-w-none min-[940px]:pt-[108px]">
             <HeroConfiguratorGraphic />
           </div>
         </div>
