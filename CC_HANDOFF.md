@@ -6,9 +6,9 @@
 >
 > **NOTE — BRANCH copy.** Reflects `feat/post-launch-polish` (UNMERGED, on Vercel preview). `main` is live in production — the **design-refresh go-live merge happened earlier this session** (`feat/design-refresh` → `main`, `73e2878`); the prior handoff covered that. This session then branched `feat/post-launch-polish` off `main` and did the polish below.
 
-**Session metrics:** Commits: 20 on `feat/post-launch-polish` (`f1309e3` → `4de442c`) + this close-out | Files modified: hero.tsx, hero-configurator-graphic.tsx, step-strip.tsx, messages-quickstart.tsx, app/page.tsx, app/messages/page.tsx, configurator-section.tsx, top-nav.tsx, bottom-email-capture.tsx, final-cta.tsx, how-it-works.tsx, paperwork.tsx, ai-section.tsx, pricing.tsx; **deleted** components/home/category-rotor.tsx | Decisions added: 0 (all copy/visual — no product alternative resolved) | External actions: branch push per commit, Vercel preview per commit; **no merge**.
+**Session metrics:** Commits: 21 on `feat/post-launch-polish` (`f1309e3` → `26b9b00`) + this close-out | Files modified: hero.tsx, hero-configurator-graphic.tsx, step-strip.tsx, messages-quickstart.tsx, app/page.tsx, app/messages/page.tsx, configurator-section.tsx, top-nav.tsx, bottom-email-capture.tsx, final-cta.tsx, how-it-works.tsx, paperwork.tsx, ai-section.tsx, pricing.tsx; **deleted** components/home/category-rotor.tsx | Decisions added: 0 (all copy/visual — no product alternative resolved) | External actions: branch push per commit, Vercel preview per commit; **no merge**.
 
-**Status: 🟡 `feat/post-launch-polish` UNMERGED, on Vercel preview — awaiting cumulative PM review (gg) of the full branch diff before merge to `main`.** HEAD `4de442c`, in sync with `origin/feat/post-launch-polish`. Branched from `main` after the go-live merge (which is live at relaykit.ai). Ran on the relaxed per-commit cadence (trivial/visually-verifiable auto-shipped after build+push; a couple of `.pm-review.md` rounds early on).
+**Status: 🟡 `feat/post-launch-polish` UNMERGED, on Vercel preview — awaiting cumulative PM review (gg) of the full branch diff before merge to `main`.** HEAD `26b9b00`, in sync with `origin/feat/post-launch-polish`. Branched from `main` after the go-live merge (which is live at relaykit.ai). Ran on the relaxed per-commit cadence (trivial/visually-verifiable auto-shipped after build+push; a couple of `.pm-review.md` rounds early on).
 
 ---
 
@@ -28,7 +28,7 @@
 ## ⚠ Pending before merge to `main`
 
 1. **Cumulative PM review (gg) of the full branch diff** — 20 commits accrued on the preview without a single bundled review. PM should review `git diff main...feat/post-launch-polish` before merge.
-2. **Final-CTA body copy revision is OUTSTANDING.** PM has options drafted; **Joel hasn't picked**. When chosen, it must be applied to **`components/home/final-cta.tsx` AND `app/messages/page.tsx` `#join` in lockstep** (the two now/later bodies are kept identical). Do not merge before this lands or it ships the placeholder.
+2. ~~**Final-CTA body copy revision**~~ — **LANDED** (`26b9b00`, 2026-06-11). The body now reads "You can start with the messages today. When sending launches, your AI tool wires up the integration, you test on real phones, and registration and opt-outs stay handled behind the scenes." — rounds out the prior compliance-only second sentence with the AI-build-spec + real-phone-testing virtues. Applied to **`components/home/final-cta.tsx` AND `app/messages/page.tsx` `#join` in lockstep** (verbatim pair, both verified identical). Awaiting Joel's preview eyeball, but no longer a merge blocker.
 
 ## Doc reconciliation owed at merge (deferred — NOT done this session)
 
