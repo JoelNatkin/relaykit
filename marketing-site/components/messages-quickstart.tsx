@@ -38,7 +38,7 @@ export function MessagesQuickstart() {
           Build your message plan in three steps.
         </h2>
       </div>
-      <StepStrip steps={STEPS} className="mt-14" />
+      <StepStrip steps={STEPS} className="mt-14" variant="card" />
     </section>
   );
 }

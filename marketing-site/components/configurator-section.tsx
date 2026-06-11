@@ -411,7 +411,7 @@ export function ConfiguratorSection() {
             {/* Header row — real title + a quiet free-tool pill, divider below. */}
             <div className="mb-5 flex items-center justify-between gap-3 border-b border-border-secondary pb-5">
               <h2 className="text-2xl font-bold tracking-tight text-text-primary">
-                Write your messages
+                Choose your messages
               </h2>
               <span className="hidden md:inline-block shrink-0 rounded-full border border-border-secondary bg-surface-inset px-3 py-1 text-xs font-medium text-text-tertiary">
                 Free · no account
