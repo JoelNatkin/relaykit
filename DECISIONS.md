@@ -2157,6 +2157,8 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 
 ## D-429 — `/messages` opens with a dismissible four-step orientation strip
 
+⚠ Superseded by D-432 (2026-06-12): the `/messages` quick-start is no longer a dismissible four-step card. It is a permanent three-step home-style section rendered by the shared `StepStrip` component (`variant="card"`), with no dismiss control and no `localStorage.relaykit_quickstart_dismissed`.
+
 **Decided:** 2026-06-07 (Session 128)
 
 **Decision:** The free configurator at `/messages` opens with a page-level, dismissible four-step orientation strip — **Details → Select → Personalize → Edit** — shown at rest above the configurator (eyebrow "Quick start", H2 "Build your message plan in four steps.", a 4-step grid reusing the home How-it-works visual language with a cumulative gold progress bar). It is a **page-level** component (`marketing-site/components/messages-quickstart.tsx`), mounted in `app/messages/page.tsx` between the page header and `ConfiguratorSection` — deliberately **not** inside `ConfiguratorSection`, which also renders in the home's embedded peek, so the strip never leaks onto `/`. An X (`aria-label "Dismiss"`) hides it and persists dismissal to `localStorage.relaykit_quickstart_dismissed`; it is hydration-safe (renders nothing on the server and the first client paint, then resolves visibility from localStorage in a `useEffect`).
@@ -2196,3 +2198,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none. Extends D-424 (disclaimer = product-side notice; D-431 = contract-side reach). Executes LEGAL_EXPOSURE_REMEDIATION.md §3.2 + §3.4–§3.6.
 
 **Affects:** marketing-site/components/footer.tsx; marketing-site/app/terms/page.tsx; marketing-site/app/acceptable-use/page.tsx; marketing-site/app/privacy/page.tsx; /explorations/LEGAL_EXPOSURE_REMEDIATION.md; docs/PRODUCT_SUMMARY.md (CC refresh).
+
+## D-432 — `/messages` quick-start is a permanent shared-component section
+
+**Decided:** 2026-06-12 (Session 132)
+
+**Decision:** The `/messages` quick-start is a **permanent, three-step, home-style section** rendered by the shared `StepStrip` component (`marketing-site/components/step-strip.tsx`, `variant="card"`) — identical inner steps to the home How-it-works section — **not** a dismissible orientation card. `messages-quickstart.tsx` is a static server component (no `"use client"`, no dismiss control, no localStorage). The three steps are **Details → Select → Personalize** ("Add your business" / "Pick your messages" / "Make it yours"). The `relaykit_quickstart_dismissed` localStorage key and all dismiss read/write code are removed.
+
+**Why:** The quick-start is page furniture that orients every visitor to the shape of the work; one shared component rendering the same step strip as the home How-it-works section beats a dismissible one-time card whose dismissal state nothing else read. Sharing `StepStrip` keeps the two surfaces in lockstep by construction.
+
+**Rejected alternative:** Keep D-429's dismissible four-step strip (page-level component with an X and `localStorage.relaykit_quickstart_dismissed`). Rejected — the dismissal bought nothing (no downstream surface consulted the flag), and a permanent shared section is simpler and stays visually unified with the home.
+
+**Supersedes:** D-429.
+
+**Affects:** `marketing-site/components/messages-quickstart.tsx` (now a static, permanent, carded three-step section using the shared `StepStrip`); `marketing-site/components/step-strip.tsx` (shared `variant="open" | "card"` component); `marketing-site/app/messages/page.tsx` (renders it permanently).
