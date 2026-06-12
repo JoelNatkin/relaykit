@@ -11,15 +11,15 @@
  * card.
  *
  * NOT a live instance: it owns ONLY local view state (which category is active
- * + a manual-override flag). It calls NO configurator/elig hooks and NEVER
+ * + a paused flag). It calls NO configurator/elig hooks and NEVER
  * touches localStorage — so it can't clobber the home's real embedded
  * ConfiguratorSection or /messages. It reproduces a demo state (business
  * "Acme", one category selected) as a product-forward peek.
  *
- * Behavior: every 8s it auto-advances the active category through
+ * Behavior: every 4s it auto-advances the active category through
  * RAIL_CATEGORIES (wrapping), the checked checkbox + the messages column
  * following along with a soft ~280ms fade/translate swap. Any click on a rail
- * row selects that category and permanently stops the auto-advance for this
+ * row selects that category and pauses the auto-advance for this
  * mount. prefers-reduced-motion disables both the auto-advance and the swap
  * animation.
  *
@@ -47,7 +47,7 @@ const DEMO_BUSINESS = "Acme";
 const RAIL_CATEGORIES = CATEGORIES;
 
 const INITIAL_CATEGORY = "verification";
-const ADVANCE_MS = 6000;
+const ADVANCE_MS = 4000;
 const SWAP_MS = 280;
 
 function nextCategoryId(currentId: string): string {
@@ -94,8 +94,9 @@ export function HeroConfiguratorGraphic() {
   const [activeId, setActiveId] = useState<string>(INITIAL_CATEGORY);
   // `out` drives the swap fade (mirrors the site's existing rotor motion).
   const [out, setOut] = useState(false);
-  const [manual, setManual] = useState(false);
+  const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
+  const togglePaused = () => setPaused((p) => !p);
 
   // Refs so the interval + swap helper read fresh values without re-arming.
   const activeIdRef = useRef(activeId);
@@ -129,20 +130,20 @@ export function HeroConfiguratorGraphic() {
     }, SWAP_MS);
   }, []);
 
-  // Auto-advance every 8s — never under manual override or reduced motion.
+  // Auto-advance every 4s — never under paused or reduced motion.
   useEffect(() => {
-    if (manual || reduced) return;
+    if (paused || reduced) return;
     const interval = setInterval(() => {
       swapTo(nextCategoryId(activeIdRef.current));
     }, ADVANCE_MS);
     return () => clearInterval(interval);
-  }, [manual, reduced, swapTo]);
+  }, [paused, reduced, swapTo]);
 
   // Clear any pending swap timer on unmount.
   useEffect(() => () => clearTimeout(swapTimer.current), []);
 
   function handleSelect(id: string) {
-    setManual(true); // stops auto-advance permanently for this mount
+    setPaused(true); // pauses auto-advance for this mount
     if (id === activeIdRef.current) return;
     swapTo(id);
   }
@@ -179,7 +180,7 @@ export function HeroConfiguratorGraphic() {
       <div className="grid grid-cols-[188px_500px] gap-4">
         {/* Hand-built categories rail — the ONLY interactive part. All 9
             categories; each row is a real button with aria-pressed; clicking
-            sets manual mode. Tightened spacing/type to stay comfortable at
+            pauses. Tightened spacing/type to stay comfortable at
             170px with 9 rows. */}
         <div className="rounded-xl border border-border-secondary bg-surface-inset p-3">
           <h3 className="text-base font-semibold text-text-primary">Categories</h3>
@@ -199,6 +200,26 @@ export function HeroConfiguratorGraphic() {
               </button>
             ))}
           </div>
+          {!reduced && (
+            <button
+              type="button"
+              onClick={togglePaused}
+              aria-pressed={paused}
+              aria-label={paused ? "Resume auto-rotation" : "Pause auto-rotation"}
+              className="mt-4 inline-flex size-5 items-center justify-center text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+            >
+              {paused ? (
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden className="size-5">
+                  <path d="M6 3.5 L16.5 10 L6 16.5 Z" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden className="size-5">
+                  <rect x="5.5" y="3" width="3.5" height="14" rx="1" />
+                  <rect x="11" y="3" width="3.5" height="14" rx="1" />
+                </svg>
+              )}
+            </button>
+          )}
         </div>
 
         {/* Messages column — decorative (inert): tone pills, the swapping
