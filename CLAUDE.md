@@ -42,6 +42,7 @@ SMS compliance + delivery service for indie developers. Prototype-first developm
 - No `any` types without a justifying comment
 - No disabled lint rules without a justifying comment
 - No swallowed errors — explicit handling or explicit re-throw
+- In-file Updated/Last-updated headers are enforced by `.githooks/pre-commit` — a doc edit without its header bump will not commit.
 
 ## DECISIONS ledger stewardship
 

@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+#
+# pre-commit — enforce in-file date headers on staged Markdown files.
+#
+# ─ Activation (one-time per clone) ──────────────────────────────────────────
+#     git config core.hooksPath .githooks
+#   This hook is repo-tracked at .githooks/pre-commit and runs from there once
+#   that config is set. (Set automatically for this clone when the hook landed;
+#   a fresh clone must run the command above.)
+#
+# ─ Behavior ─────────────────────────────────────────────────────────────────
+#   For each staged *.md file, scan its first 15 lines for a date-header line
+#   matching:   ^#{0,4}\s*\**(Updated|Last updated|Last reviewed)\**[:\s]
+#   i.e. Markdown headers like "### Last updated:", "**Updated:**", "# Last
+#   reviewed" — NOT list items such as "- Last updated:" (the leading "- "
+#   defeats the anchor on purpose). If such a header exists and its line does
+#   NOT contain today's date, the commit is BLOCKED (exit 1).
+#   Both date formats in use are accepted: "June 12, 2026" and "2026-06-12".
+#   Files with no such header pass untouched.
+#
+# ─ Escape hatch ─────────────────────────────────────────────────────────────
+#   `git commit --no-verify` bypasses this hook. Deliberate — emergencies only
+#   (e.g. a hotfix where the doc header is genuinely not the change).
+#
+set -u
+
+# Today, both formats. Portable leading-zero strip: GNU's %-d is unavailable on
+# BSD/macOS, so use %e (space-padded day on both BSD and GNU) and trim the pad.
+DAY=$(date +%e | tr -d '[:space:]')
+TODAY_LONG="$(date +%B) ${DAY}, $(date +%Y)"   # e.g. "June 5, 2026"
+TODAY_ISO="$(date +%Y-%m-%d)"                  # e.g. "2026-06-12"
+
+# ERE (grep -E): \s -> [[:space:]], \** -> optional bold markers, [:\s] -> [:[:space:]].
+HEADER_RE='^#{0,4}[[:space:]]*\**(Updated|Last updated|Last reviewed)\**[:[:space:]]'
+
+fail=0
+offenders=""
+
+while IFS= read -r file; do
+  case "$file" in
+    *.md) ;;
+    *) continue ;;
+  esac
+
+  # Check the STAGED content (index blob), first 15 lines.
+  staged=$(git show ":$file" 2>/dev/null | head -n 15) || continue
+
+  # Header lines that do NOT carry today's date (either format) are the bad set.
+  bad=$(printf '%s\n' "$staged" \
+        | grep -niE "$HEADER_RE" \
+        | grep -ivF "$TODAY_LONG" \
+        | grep -ivF "$TODAY_ISO" || true)
+
+  if [ -n "$bad" ]; then
+    fail=1
+    while IFS= read -r hline; do
+      [ -n "$hline" ] || continue
+      # Strip grep -n's "N:" line-number prefix for display.
+      offenders="${offenders}  ${file}: ${hline#*:}
+"
+    done < <(printf '%s\n' "$bad")
+  fi
+done < <(git diff --cached --name-only --diff-filter=ACM)
+
+if [ "$fail" -ne 0 ]; then
+  printf '\n✖ Commit blocked — stale in-file date header(s).\n\n'
+  printf 'Today is "%s" (or "%s"). These headers do not say so:\n\n' "$TODAY_LONG" "$TODAY_ISO"
+  printf '%s\n' "$offenders"
+  printf 'Fix: bump the header to today, restage the file, and commit again.\n'
+  printf 'Escape hatch (emergencies only): git commit --no-verify\n\n'
+  exit 1
+fi
+
+exit 0
