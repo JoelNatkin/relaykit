@@ -69,6 +69,15 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `BRAND_AUDIT_LENS.md` | 2026-05-05 | Stage 1 operating mode for brand audit walks; retires when Stage 2 consumes outputs. |
 | `SECURITY_DRAFT.md` | 2026-05-03 | DRAFT — canonical security posture, threat surface inventory, pumping defense detail (§3). |
 
+## Writing reference (`docs/writing/`)
+
+Writing/marketing reference material — not product canon. Strategy lives in MARKETING_STRATEGY.md; voice in VOICE_AND_PRODUCT_PRINCIPLES_v2.md §3 (STP).
+
+| File | Last touched | Purpose |
+|------|-------------|---------|
+| `writing/MARKETING_RUNBOOK.md` | 2026-06-12 (Session 133 — PM-authored) | Step-by-step runbook for the recurring weekly marketing blocks (`mk:` triggers — replies / post / makerkit / beta / invites); each block's steps + definition of done. |
+| `writing/CAPABILITY_FIRST_BLOG_PLAYBOOK.md` | 2026-06-12 (Session 132 — archived) | Reference framing for capability-first blog/IH posts (capability as hero, product as punchline). Archived idea-inventory, not a recipe; durable rules in VPP §3. |
+
 ## Canonical sources by topic
 
 This index maps each major topic to its single canonical doc. Per the One Source Rule (PM_PROJECT_INSTRUCTIONS.md "Docs Hygiene"), every fact lives in exactly one canonical doc; other docs reference it, never restate it. Use this index to decide where a new fact lives, or where to look when surfaces disagree.

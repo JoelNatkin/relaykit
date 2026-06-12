@@ -28,7 +28,7 @@ CLAUDE.md trim audit per the PM-approved plan (`.pm/plans/mode-plan-claude-md-tr
 ## Carry-forwards (standard backlog)
 - **Per-clone hook activation** — `.githooks` only enforces after `git config core.hooksPath .githooks` is run in each clone (documented in the hook header; no repo-tracked auto-set).
 - **Dead token** `--color-text-headline-muted` (globals.css line 78) — unconsumed since the Session 130 two-tone-H1 removal; safe to delete in a future marketing-site code change.
-- REPO_INDEX row for docs/writing/ (playbook archive) — still owed. (No MD-number — archived reference, not strategy canon; writing skills retired.)
+- ~~REPO_INDEX rows for docs/writing/~~ **DONE** — `## Writing reference (docs/writing/)` subsection added (MARKETING_RUNBOOK.md + CAPABILITY_FIRST_BLOG_PLAYBOOK.md). No MD-number (archived/operational reference, not strategy canon).
 - **`globals.css` light→dark dead-token collapse** (D-430); blog "configurator" voice rewrite; pre-launch head-scratchers (workspace_name vs business_name; "a few days" vs 10–15 business days; ai-section "Fri, Jun 6"→Jun 5; Acme Engineering vs Acme).
 - **Pre-existing:** delete `joel+golive-smoke@gmail.com` from `early_access_subscribers`; OG unfurl cache-bust verify; TFN-path-killed MASTER_PLAN canon close; Claude.ai UI custom-instructions paste-sync.
 
