@@ -1,4 +1,4 @@
-Status: exploring (2026-05-22) — strategy sketch, substantially rewritten from a working session with Joel; NOT decided, NOT canon. Supersedes the prior sla-led-gtm.md sketch (same file, renamed and rewritten — see note below). Do not propagate to MASTER_PLAN, DECISIONS, MARKETING_STRATEGY, or PRODUCT_SUMMARY until promoted via a deliberate pressure-test session.
+Status: exploring (2026-06-12) — strategy sketch, substantially rewritten from a working session with Joel; NOT decided, NOT canon. Supersedes the prior sla-led-gtm.md sketch (same file, renamed and rewritten — see note below). Updated 2026-06-12 (Session 132 working session): added "The kit decision" section (Makerkit as RelayKit's own app shell, kit-agnostic core, brownfield posture); open questions 1 and 3 now carry resolved directions. Do not propagate to MASTER_PLAN, DECISIONS, MARKETING_STRATEGY, or PRODUCT_SUMMARY until promoted via a deliberate pressure-test session.
 
 # Golden-path-led GTM — strategy sketch
 
@@ -74,11 +74,23 @@ The brand sits *above* both categories. RelayKit empowers builders to add SMS; v
 
 ---
 
+## The kit decision — Makerkit as RelayKit's own shell (added 2026-06-12)
+
+From a Session 132 working session. Exploration-grade until the pressure-test; the formal commitment is a D-number at the Phase 5/6 boundary.
+
+**RelayKit builds its own production app shell on Makerkit.** The production customer app (real auth, billing, account/settings, authenticated workspace layout) exists today only as `/prototype` (UI spec per D-163) — there is almost nothing to migrate, because the shell a kit provides is exactly what hasn't been built. Makerkit is the pick on technical fit: Supabase-native (Auth + RLS), Next.js 16, Tailwind v4, TS strict, Stripe billing, Turborepo — our exact stack. A backlog scan (2026-06-12) found nothing precluded: multi-user/team access (D-299) and the multi-project dashboard (PRD_11) are accelerated; the platform/multi-tenant tier (PRD_10) is carrier-side architecture no kit touches, though Makerkit's org primitives are a usable chassis for its eventual dashboard surface. First-party plugins cover real future needs (testimonials, feedback widget, beta-gating waitlist, AI-chatbot scaffold, error monitoring). Scope boundary: shell only — `/api`, the SDK, and the registration pipeline stay RelayKit-proprietary. ShipFast is purchased separately for community membership and the Play 1 dogfood integration, not architecture.
+
+**Dogfooding is the second half of the rationale.** Using Makerkit daily makes RelayKit expert members of one kit ecosystem we market into — the same motion we ask of customers, run on ourselves.
+
+**The kit-agnostic core is a named constraint.** The product thesis is that any good AI coding tool (Claude Code, Cursor, Windsurf, Codex, Cline) can consistently build RelayKit into any major starter kit (ShipFast, Supastarter, Makerkit, Vercel+Supabase, SaaS Pegasus, and others). Therefore the SDK, AGENTS.md, and core integration artifacts are written general-purpose; per-kit quirks live in thin per-kit guides (Play 2), never in the core. Our own Makerkit adoption is an operations/dogfooding decision, not a positioning one — nothing customer-facing privileges it. This is the firewall against the multi-axis quirk matrix.
+
+**Brownfield posture (resolves tension #1 / question #3):** greenfield first — prove clone-kit → integrate → paid live texts across the kit matrix. Brownfield (existing apps) comes after, offered as "your complexity, our guidance": advice-supported via documentation and integration guidance, not a supported automation path. It is its own curve, entered deliberately once greenfield is proven.
+
 ## Open questions for the pressure-test session
 
-1. **Which starter kit is Stage 1?** This is the central bet, not a detail. The original sketch named MakerKit; MASTER_PLAN Phase 9 names KolbySisk and Vercel/Supabase. Lowest-friction + highest-success-probability is the selection criterion. Picking wrong means pounding ground that was never going to hold.
+1. **Which starter kit is Stage 1?** This is the central bet, not a detail. The original sketch named MakerKit; MASTER_PLAN Phase 9 names KolbySisk and Vercel/Supabase. Lowest-friction + highest-success-probability is the selection criterion. Picking wrong means pounding ground that was never going to hold. *→ Resolved direction (2026-06-12): Makerkit — see "The kit decision" above. Stage-1-kit ≠ first-Play-1-integration ordering (KolbySisk-first sequencing in MARKETING_STRATEGY Play 1 may still hold for validation); pressure-test reconciles.*
 2. **How is the golden path messaged?** "Golden path" is internal language. What does the developer-facing story sound like at each stage?
-3. **How far, and when, to deal in brownfield?** Its own curve, per the tension above. Needs a deliberate call.
+3. **How far, and when, to deal in brownfield?** Its own curve, per the tension above. Needs a deliberate call. *→ Resolved direction (2026-06-12): greenfield first across the kit matrix; brownfield after, advice-supported ("your complexity, our guidance"), never an automated path — see "The kit decision" above.*
 4. **What does the pre-launch checklist become?** The current checklist (blog infra, live-site tweaks, configurator refinement, first IH post) was built for a marketing-site-led launch. A starter-kit-led launch front-loads different work: kit selection, integration artifacts (AGENTS.md, per-builder guide), the end-to-end wire-up, a working paid flow. This likely triggers a MASTER_PLAN amendment — but that decision belongs to the pressure-test, not to this exploration.
 5. **The aperture-cost tradeoff** — how slow is too slow, given competitors are not gated.
 
