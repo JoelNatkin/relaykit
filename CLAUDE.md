@@ -1,11 +1,12 @@
 # CLAUDE.md — RelayKit
+### Updated: June 12, 2026
 
-> **Purpose:** Standing instructions for CC — what to read at session start, how to write code, how to maintain the decision ledger, how to close out sessions.
+> **Purpose:** Standing instructions for CC — what to read at session start, how to write code, the rules and hard gates. Step-by-step procedures live in `docs/CC_PROCEDURES.md`; this file carries the gate that sends you there.
 >
-> Not for: PM-side methodology (PM_PROJECT_INSTRUCTIONS), product specifications (spec docs), session narrative.
+> Not for: PM-side methodology (PM_PROJECT_INSTRUCTIONS), product specifications (spec docs), session narrative, procedure detail (CC_PROCEDURES).
 
 ## File size discipline
-Keep this file under 200 lines; target ~120. When adding guidance, also cut. If you can't cut enough to stay under the ceiling, the new guidance probably belongs in a focused spec doc (DECISIONS, PROTOTYPE_SPEC, MESSAGE_PIPELINE_SPEC) with a one-line pointer here instead of inline expansion.
+Keep this file under 200 lines; target ~100. It holds rules and hard gates only. When adding guidance, also cut. Procedures (multi-step, trigger-keyed) belong in `docs/CC_PROCEDURES.md` behind a one-line gate here; other substance belongs in a focused spec doc (DECISIONS, PROTOTYPE_SPEC, MESSAGE_PIPELINE_SPEC) with a pointer here — not inline expansion.
 
 ## Project
 SMS compliance + delivery service for indie developers. Prototype-first development; production code ports from `/prototype` to `/api` + future surfaces once screens stabilize. `/src` is sunset per D-358. Current pricing: $49 registration + $19/mo (or $29/mo with marketing).
@@ -44,156 +45,11 @@ SMS compliance + delivery service for indie developers. Prototype-first developm
 - No swallowed errors — explicit handling or explicit re-throw
 - In-file Updated/Last-updated headers are enforced by `.githooks/pre-commit` — a doc edit without its header bump will not commit.
 
-## DECISIONS ledger stewardship
-
-CC owns the integrity of DECISIONS.md and DECISIONS_ARCHIVE.md on disk. PM gates what becomes a decision; CC handles grep, supersession marks, archive moves, and format compliance. Full rules in PM_PROJECT_INSTRUCTIONS.md; the canonical entry format lives at the top of DECISIONS.md.
-
-Substance-ownership across docs follows the One Source Rule (PM_PROJECT_INSTRUCTIONS.md "Docs Hygiene"); when amending CLAUDE.md, check whether the concept also appears in PM_PROJECT_INSTRUCTIONS.md or DECISIONS.md's header primer and update cross-references in the same commit. Carry-forward visibility rules for PM_HANDOFF live in PM_PROJECT_INSTRUCTIONS.md Session Management.
-
-### Pre-flight ledger scan (every session start)
-After reading DECISIONS.md as part of the opening prompt, scan decisions added since the previous session (use CC_HANDOFF's commit log to identify them) and flag:
-- Any new decisions missing the **Supersedes** field (required — "none" is valid, omission is not)
-- Supersession annotations referencing D-numbers that don't exist in either file
-- New decisions whose language duplicates (not extends) a pre-existing active decision
-
-Report in the opening confirmation:
-```
-DECISIONS ledger scan:
-- Active count: D-### (latest)
-- Archive range: D-01 through D-83
-- New since last session: D-###, D-### (none flagged) OR (flags: ...)
-```
-
-Surface flags before any task work. Do not silently fix — PM decides.
-
-### Inline supersession enforcement (appending a new decision)
-When PM directs a new D-number, follow this sequence without skipping:
-1. **Grep first.** Grep DECISIONS.md and DECISIONS_ARCHIVE.md for terms central to the new decision (title nouns, feature names, the specific subject).
-2. **Identify plausible conflicts.** Decisions that make a claim the new one overturns, OR describe the subject under a model the new one replaces.
-3. **Articulate or confirm.** State each conflict in one sentence. If you can't, it's not real — drop it. If you can, it's a genuine supersession target.
-4. **Fill Supersedes.** Populate the field with real D-numbers OR the explicit string "none" after the grep completes. Never blank. Never "none" without having greped.
-5. **Mark older decisions in the same commit.** For each D-number in Supersedes, append `⚠ Superseded by D-###: [one-line explanation]` to the older decision's body. Same commit — not deferred.
-
-If step 3 surfaces a genuine conflict PM didn't anticipate, **stop and flag before appending**: "Proposed D-### conflicts with D-### in ways PM may not have intended. [One-sentence description.] Should I proceed, revise, or escalate?"
-
-**One-sentence test is the guardrail against over-marking.** Tangential relevance isn't conflict. Evolution isn't supersession unless the earlier approach is no longer operative. When in doubt, Supersedes: none is correct.
-
-### Retirement sweep (phase-boundary close-outs only)
-When a close-out coincides with a MASTER_PLAN phase transition (phase completes, new phase active, or REPO_INDEX `Active plan pointer` changes), include a sweep section in CC_HANDOFF:
-```
-## Retirement sweep — Phase [N] close
-Scanned: D-### through D-### (added during Phase [N])
-Findings:
-- D-###: proposed supersession note — [reason]
-- D-###: proposed archive move — fully superseded + no active reference
-- D-###: proposed orphan annotation — approach no longer in scope per MASTER_PLAN §16
-- Active file size: N decisions (archive threshold: ~100)
-
-No disk changes made — awaiting PM review.
-```
-Sweep produces findings only. No edits to DECISIONS.md or DECISIONS_ARCHIVE.md during close-out. Mid-phase close-outs skip the sweep.
-
-### Drift watch (phase-boundary close-outs only)
-For each canonical doc listed in REPO_INDEX's 'Canonical sources by topic' index, emit a one-line verdict in CC_HANDOFF's 'Drift watch' section: `fresh` (doc's last commit ≥ subject-area commit), `stale: subject moved YYYY-MM-DD, doc last touched YYYY-MM-DD` (flag for PM), or `n/a — no subject movement this phase`. Subject-area reference points: MASTER_PLAN.md, CC_HANDOFF.md, current-phase artifacts, any doc this phase modified. Also verify the canonical-sources index covers every doc listed in REPO_INDEX's docs tables and every topic touched this phase has an entry — flag missing entries. Findings only — no edits. Mid-phase close-outs skip. Pairs with the retirement sweep above.
-
-### Guardrails
-- Never fix without permission. Surface flags; PM directs corrections.
-- Grep both DECISIONS.md and DECISIONS_ARCHIVE.md — archived entries are authoritative unless superseded.
-- Format compliance is non-negotiable. Missing Supersedes is a process failure, not a stylistic preference.
-- Over-marking is as bad as under-marking. The one-sentence conflict test prevents false positives.
-
-### Conflict flag format
-If you're about to build something that contradicts a decision:
-```
-⚠ DECISION CONFLICT: contradicts D-[number]. Confirm override before I continue.
-```
-
-## Explorations tracking
-
-CC maintains four cross-doc surfaces when explorations change state. PM gates entry; CC executes on disk.
-
-**When an exploration is created** (PM says "scaffold as an exploration"):
-- Create `/explorations/[name].md` with status header `Status: exploring` and the substance PM provides
-- Add row to REPO_INDEX "Active explorations" section: `| [name] | exploring | /explorations/[name].md | [one-sentence description] |`
-- If UI-related: add pointer to relevant section in PROTOTYPE_SPEC.md
-- If customer-experience-related: add pointer to relevant section in PRODUCT_SUMMARY.md
-
-**When status changes to paused:**
-- Update file header: `Status: paused (YYYY-MM-DD) — [brief context]`
-- Update REPO_INDEX row status column
-
-**When status changes to killed:**
-- Update file header: `Status: killed (YYYY-MM-DD) — [brief reason]`
-- Remove row from REPO_INDEX "Active explorations" section
-- Remove pointers from PROTOTYPE_SPEC and PRODUCT_SUMMARY (file remains in /explorations/ as graveyard record)
-
-**When status changes to promoted:**
-- A D-number lands in DECISIONS.md per the seven gate tests in PM_PROJECT_INSTRUCTIONS.md
-- Update file header: `Status: promoted to D-XXX (YYYY-MM-DD)`
-- Remove row from REPO_INDEX "Active explorations" section
-- Promote content into canonical docs (PROTOTYPE_SPEC if UI, PRODUCT_SUMMARY if customer-experience, etc.) per the substance of the decision; remove the prior pointer
-- File remains in /explorations/ as historical record of why the canonical decision looks the way it does
-
-## Session start
-At session open, read these five files and confirm each:
-1. REPO_INDEX.md — last-updated date, active phase, decision count
-2. DECISIONS.md — active decision count + archived range
-3. CC_HANDOFF.md — previous session summary
-4. PROTOTYPE_SPEC.md — acknowledged
-5. MASTER_PLAN.md — active phase
-
-Then run the pre-flight ledger scan (above) and report findings.
-
-Do not load DECISIONS_ARCHIVE.md unless Joel points to a specific D-number OR you're greping for supersession candidates before appending a new decision.
-
-## Session close-out
-
-**Canon is maintained ambient — during the session, as the work happens, not saved for close-out:** append decisions to DECISIONS.md the moment one is made (seven gate tests, Supersedes filled, supersession notes same commit); update PROTOTYPE_SPEC.md when a screen changes and PRODUCT_SUMMARY.md when customer-facing behavior changes (bump its "Last reviewed"); bump REPO_INDEX.md Meta + `/docs` rows when files or pointers move (and in-file `Updated` headers on docs that carry them); update CC_HANDOFF.md per the **Per-commit handoff** rule below (in the same commit as substantive work); update MASTER_PLAN.md when PM flags a plan change. Commit working code in atomic, descriptively-messaged commits as you go. Close-out then just verifies and ships:
-
-1. Quality gates (skip for doc-only sessions): `tsc --noEmit` + `eslint` clean on modified dirs; `/api` tests green if touched.
-2. Verify canon is current — DECISIONS, PROTOTYPE_SPEC, PRODUCT_SUMMARY, REPO_INDEX, CC_HANDOFF all reflect this session; close any gap now and finalize the CC_HANDOFF metrics line + suggested next tasks.
-3. Phase-boundary close-outs only: run the retirement sweep + drift watch (see their sections under DECISIONS ledger stewardship) → findings into CC_HANDOFF, no disk edits.
-4. Do NOT push — PM review first (or push per the review bar).
-
-### Per-commit handoff — CC_HANDOFF.md is never stale between close-outs
-
-Any commit that lands **substantive work** — a new component/surface, copy or content of substance, a published blog post, a decision, or an architectural / design-token change — updates `CC_HANDOFF.md` **in the same commit**, authored by CC from its own diff: what landed, current `main` intent, in-flight branches, corrected carryovers, next steps. Keep the metrics line current (`Commits: N | Files modified: N | Decisions added: N | External actions: N`). This binds the cases that used to bypass any handoff update — **straight-to-main commits and branch pushes** (on a branch the update lives on the branch and reconciles at merge) — not just wave/close-out boundaries. **Skip only trivial one-line copy/spacing fixes.** Close-out remains the fuller reconcile; refreshing only then is the failure mode (Session 127: frozen through nine commits, so a mid-build crash or rotation inherits a blind handoff). PM-side counterpart: PM_PROJECT_INSTRUCTIONS.md handoff-discipline.
-
-### Branching for production-facing work
-
-When work touches a production-facing surface (`/marketing-site` today, future `/app` and `/dashboard`), create a feature branch before starting. Naming: `feat/short-name`, `fix/short-name`, `docs/short-name`, `chore/short-name`. Commit on the branch, push to remote, do not merge to main. PM and Joel review the resulting Vercel preview before approving merge.
-
-Trivial changes (typos, comment-only edits, doc reorgs not touching user-facing copy) may go directly to main. When in doubt, branch.
-
-Branch hygiene: at session close-out, surface any unmerged feature branches in CC_HANDOFF so they don't get lost. Do not delete branches until merged.
-
-## PM review cadence (.pm-review.md)
-HARD RULE: the last action of EVERY commit — and of any stop where review could be requested (branch push, pause, close-out) — is to overwrite `.pm-review.md` (gitignored, never committed). Never optional, regardless of review cadence; auto-shipped commits refresh it too, so "gg" always reads current. Header carries the HEAD hash it was generated at; if HEAD moves (amend, follow-up), regenerate before stopping. Content: `## Context` (1–5 lines — what the work is, open questions, deviations), `## Commits` (`git log --oneline` of the unreviewed range), `## Full diff` (`main...branch` for branch work; `<last-reviewed>..HEAD` for direct-to-main). Review cadence itself stays per `PM_PROJECT_INSTRUCTIONS.md` "PM Review Cadence": trivial/visually-verifiable auto-ships after build+push; logic/shared/multi-file/legal/ledger work gets PM gg — per-commit or cumulative as PM directs.
-
-**Plan files:** plan-mode plans write to `.pm/plans/` (set via `plansDirectory` in `.claude/settings.json`) — repo-local and gitignored, so PM can read CC's plans natively via MCP.
-
-**PM_HANDOFF channel.** When a PM prompt contains a delimited `PM_HANDOFF update` block, write its contents to `.pm/PM_HANDOFF.md` as given and do **not** stage it (`.pm/` is gitignored). CC transcribes PM's block to disk; CC does not author or edit PM_HANDOFF content — its substance and carry-forward rules are PM-owned (PM_PROJECT_INSTRUCTIONS.md Session Management).
+## DECISIONS ledger
+CC owns the integrity of DECISIONS.md and DECISIONS_ARCHIVE.md on disk; PM gates what becomes a decision. Full rules in PM_PROJECT_INSTRUCTIONS.md "Docs Hygiene"; the canonical entry format lives at the top of DECISIONS.md; the on-disk procedures (pre-flight scan, supersession sequence, retirement sweep, drift watch) are in `CC_PROCEDURES.md §Ledger` (gated below). Substance-ownership across docs follows the One Source Rule — when amending CLAUDE.md, check whether the concept also lives in PM_PROJECT_INSTRUCTIONS.md or DECISIONS.md's header primer and update cross-references in the same commit.
 
 ## Copy rule
-Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts, modals), read `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` in full and apply the vocabulary table, framing-shift table, emotional-states map, and one-sentence principle. No exceptions for "minor" strings.
-
-## Marketing strategy doc
-Marketing decisions and plays live in `docs/MARKETING_STRATEGY.md`, not DECISIONS.md. Decision sequence is MD-1, MD-2, etc. — independent from D-numbered product decisions. Same gate-test rigor (PM_PROJECT_INSTRUCTIONS.md seven gate tests). Archive at `docs/MARKETING_STRATEGY_ARCHIVE.md`. Product/marketing seam rule: mostly-product decisions live in MASTER_PLAN/DECISIONS with marketing cross-reference; mostly-marketing decisions live in MARKETING_STRATEGY with product cross-reference. Load on demand only — not read at session start.
-
-## Wave-based integration discipline
-PM may direct multi-commit waves spanning multiple canonical docs. CC executes each commit independently per its scoped prompt; each commit is atomic and PM-approved before push. See PM_PROJECT_INSTRUCTIONS.md "Waves" for shape and cadence. Retirement sweep does not run mid-wave; sweep candidacy is determined at phase-boundary close-outs only.
-
-## Prose-sweep verification
-
-When verifying leak terms have been removed from prose docs (legal copy, marketing copy, voice-driven cleanups), use multiline-safe grep:
-
-```bash
-tr '\n' ' ' < file | tr -s ' ' | grep -oE "(pattern1|pattern2|...).{0,80}"
-```
-
-JSX prose wraps long sentences across lines with leading indent; single-line grep misses split phrases. Multiline-safe grep collapses newlines first, so the grep sees the phrase as a single string. Default for end-of-prose-sweep verification. Concrete miss this catches: "compliance artifacts" leak in `marketing-site/app/privacy/page.tsx` survived three single-line greps in Session 56.
-
-For verification of *added* content in commit specs (rather than *removed* terms), prefer "at least N occurrences" over exact integer counts. Exact counts are brittle when surrounding edits add unrelated mentions of the same term; "at least N" still catches the substantive question (did the new content land?) without requiring perfect knowledge of pre-existing occurrences. The Session 70 pumping-defense wave adopted this pattern across all 5 content commits and ran cleanly; the Session 77 methodology reconciliation wave continued it.
+Before writing ANY user-facing string (labels, errors, emails, tooltips, toasts, modals), read `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md`. **Product-surface** strings → apply §2 Product Voice + the §6 kill list (and the one-sentence rule). **Marketing / blog / community** → apply §3 Demand Voice (the Straight-Talking Principles, STP). No exceptions for "minor" strings.
 
 ## Hard platform constraints
 - Never claim guaranteed compliance outcomes. Prohibited: "ensures compliance," "guarantees approval," "fully compliant," "stay compliant automatically"
@@ -212,15 +68,49 @@ For verification of *added* content in commit specs (rather than *removed* terms
 - State switcher dropdowns are allowed (development tools, not user-facing). Style: `text-quaternary text-xs`, right-aligned
 - Before modifying any screen, read its section in PROTOTYPE_SPEC.md. If code and spec disagree, code wins — flag the discrepancy
 
-## PRODUCT_SUMMARY.md maintenance
-`docs/PRODUCT_SUMMARY.md` is the PM-facing customer-experience reference, intended to be loaded into PM browser-chat contexts. Update it when product behavior changes substantively — new screens, new flows, removed features, changed customer journey, new architectural commitments that affect what the customer sees or does. Do NOT update for copy tweaks, layout adjustments, or implementation refactors (those remain a PROTOTYPE_SPEC.md concern). At session close-out, ask: "did this session change what a customer would experience differently?" If yes, update PRODUCT_SUMMARY.md alongside PROTOTYPE_SPEC.md and bump its "Last reviewed" date. If no, leave it alone. The doc lives at ~500 lines max; if a new substantive change pushes it over, prune lower-value content rather than expand the ceiling.
-
 ## Implementation gotchas
 - Wizard uses sessionStorage key `relaykit_wizard` — preserve in all wizard work (see `prototype/lib/wizard-storage.ts`)
 - sessionStorage reads happen in `useEffect`, not `useState` initializers (SSR hydration)
 - `.next` cache corruption is recurring: stop dev server → `rm -rf .next` → restart
 
+## Session start
+At session open, read these five files and confirm each:
+1. REPO_INDEX.md — last-updated date, active phase, decision count
+2. DECISIONS.md — active decision count + archived range
+3. CC_HANDOFF.md — previous session summary
+4. PROTOTYPE_SPEC.md — acknowledged
+5. MASTER_PLAN.md — active phase
+
+Then run the pre-flight ledger scan (`CC_PROCEDURES §Ledger`) and report findings. Do not load DECISIONS_ARCHIVE.md unless Joel points to a specific D-number OR you're greping for supersession candidates before appending a new decision.
+
+## Branching for production-facing work
+When work touches a production-facing surface (`/marketing-site` today, future `/app` and `/dashboard`), create a feature branch before starting. Naming: `feat/short-name`, `fix/short-name`, `docs/short-name`, `chore/short-name`. Commit on the branch, push to remote, do not merge to main. PM and Joel review the resulting Vercel preview before approving merge.
+
+Trivial changes (typos, comment-only edits, doc reorgs not touching user-facing copy) may go directly to main. When in doubt, branch. Branch hygiene: at session close-out, surface any unmerged feature branches in CC_HANDOFF; do not delete branches until merged.
+
+## PM review cadence (.pm-review.md)
+HARD RULE: the last action of EVERY commit — and of any stop where review could be requested (branch push, pause, close-out) — is to overwrite `.pm-review.md` (gitignored, never committed). Never optional, regardless of review cadence; auto-shipped commits refresh it too, so "gg" always reads current. Header carries the HEAD hash it was generated at; if HEAD moves (amend, follow-up), regenerate before stopping. Content: `## Context` (1–5 lines — what the work is, open questions, deviations), `## Commits` (`git log --oneline` of the unreviewed range), `## Full diff` (`main...branch` for branch work; `<last-reviewed>..HEAD` for direct-to-main). Review cadence itself stays per `PM_PROJECT_INSTRUCTIONS.md` "PM Review Cadence": trivial/visually-verifiable auto-ships after build+push; logic/shared/multi-file/legal/ledger work gets PM gg — per-commit or cumulative as PM directs.
+
+**Plan files:** plan-mode plans write to `.pm/plans/` (set via `plansDirectory` in `.claude/settings.json`) — repo-local and gitignored, so PM can read CC's plans natively via MCP.
+
+**PM_HANDOFF channel.** When a PM prompt contains a delimited `PM_HANDOFF update` block, write its contents to `.pm/PM_HANDOFF.md` as given and do **not** stage it (`.pm/` is gitignored). CC transcribes PM's block to disk; CC does not author or edit PM_HANDOFF content — its substance and carry-forward rules are PM-owned (PM_PROJECT_INSTRUCTIONS.md Session Management).
+
+## Procedure gates
+Trigger-keyed procedures live in `docs/CC_PROCEDURES.md` (`§Section` names below). Each line is a gate: at the trigger, read the section and execute it — don't act on a gated trigger without it. Ordered as a session timeline:
+
+1. **Session start** → after reading the five files, run the pre-flight ledger scan (`CC_PROCEDURES §Ledger`); surface flags before any task work, never silently fix.
+2. **Appending a D-number** → read `CC_PROCEDURES §Ledger` and execute the supersession sequence (grep both ledgers → articulate each conflict in one sentence → fill **Supersedes** with real D-#s or "none" → mark older decisions `⚠ Superseded by` in the same commit). Never append without it. PM gates entry; CC never fixes the ledger without permission.
+3. **Exploration state change (create / pause / kill / promote)** → execute `CC_PROCEDURES §Explorations` (file header + REPO_INDEX row + PROTOTYPE_SPEC/PRODUCT_SUMMARY pointers per state).
+4. **Customer-experience behavior change** → update `docs/PRODUCT_SUMMARY.md` + bump its "Last reviewed" — criteria in `CC_PROCEDURES §PRODUCT_SUMMARY`.
+5. **Verifying leak-term removal from prose** → use the multiline-safe grep in `CC_PROCEDURES §Prose-sweep` (single-line grep misses JSX-wrapped phrases).
+6. **Marketing decision** → MD-numbered in `docs/MARKETING_STRATEGY.md`, never DECISIONS.md — see `CC_PROCEDURES §Marketing`.
+7. **Multi-commit wave** → shape/cadence per `PM_PROJECT_INSTRUCTIONS.md "Waves"`; each commit atomic + PM-approved before push (retirement sweep never runs mid-wave — `§Ledger`).
+8. **Every substantive commit** → update `CC_HANDOFF.md` in the same commit — `CC_PROCEDURES §Close-out` (per-commit handoff). Skip only trivial one-line copy/spacing.
+9. **Every session close-out** → execute `CC_PROCEDURES §Close-out` (verify canon current; gates skip for doc-only).
+10. **Phase-boundary close-out** → run the retirement sweep + drift watch (`CC_PROCEDURES §Ledger`); findings into CC_HANDOFF, no disk edits.
+
 ## Key docs (load on demand, not at session start)
+- `docs/CC_PROCEDURES.md` — CC trigger-keyed procedures (ledger, explorations, close-out, prose-sweep, PRODUCT_SUMMARY, marketing)
 - `docs/PRICING_MODEL.md` — tier definitions, costs, pricing logic
 - `docs/VOICE_AND_PRODUCT_PRINCIPLES_v2.md` — mandatory before user-facing copy
 - `docs/UNTITLED_UI_REFERENCE.md` — full design system reference
