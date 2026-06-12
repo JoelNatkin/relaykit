@@ -15,7 +15,7 @@ export default function TermsPage() {
           Terms of Service
         </h1>
         <p className="mt-2 text-sm text-text-tertiary">
-          Effective Date: April 28, 2026 · Last Updated: April 28, 2026
+          Effective Date: April 28, 2026 · Last Updated: June 11, 2026
         </p>
       </div>
 
@@ -26,8 +26,9 @@ export default function TermsPage() {
           agreement between you ("Developer," "you," or "your") and RelayKit
           LLC, a South Carolina limited liability company (formerly Vaulted
           Press LLC) ("RelayKit," "we," "us," or "our"). By creating an
-          account, accessing the RelayKit platform, or using any RelayKit
-          services, you agree to be bound by these Terms, the{" "}
+          Account, or by accessing or using the Website, the Authoring Tool, or
+          any other part of the Service — whether or not you create an Account —
+          you agree to be bound by these Terms, the{" "}
           <Link
             href="/acceptable-use"
             className="text-text-brand-secondary underline hover:text-text-brand-primary"
@@ -125,10 +126,26 @@ export default function TermsPage() {
           </p>
           {/* CAPABILITY CLAIMS: "compliance site generator" and "build spec generator" cut from Service definition — see docs/LEGAL_DOC_DEFERRED_CLAIMS.md entry 20 */}
           <p>
+            <strong className="font-semibold text-text-secondary">"Authoring Tool"</strong>{" "}
+            means the free, public message-authoring tool on the Website that
+            lets Visitors select a use case and generate, preview, and copy
+            sample SMS message text and category guidance, without an Account.
+          </p>
+          <p>
+            <strong className="font-semibold text-text-secondary">"Visitor"</strong>{" "}
+            means any person who accesses the Website or the Authoring Tool,
+            whether or not they have an Account.
+          </p>
+          <p>
+            <strong className="font-semibold text-text-secondary">"Website"</strong>{" "}
+            means relaykit.ai and all pages and tools hosted on it, including
+            pages and tools accessible without an Account.
+          </p>
+          <p>
             <strong className="font-semibold text-text-secondary">"Service"</strong>{" "}
-            means the RelayKit platform, including the dashboard, API,
-            sandbox, message processing infrastructure, and all related
-            tools and documentation.
+            means the RelayKit platform, including the Website, the Authoring
+            Tool, the dashboard, API, sandbox, message processing
+            infrastructure, and all related tools and documentation.
           </p>
         </div>
       </section>
@@ -329,6 +346,65 @@ export default function TermsPage() {
               suspend, or discontinue sandbox access at any time without notice.
               Sandbox availability does not create any obligation to provide
               paid services.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <hr className="my-8 border-border-secondary" />
+
+      {/* 4A. Free Authoring Tool and Website Content */}
+      <section className="mt-8">
+        <h2 className="border-b border-border-secondary pb-2 text-lg font-semibold text-text-primary">
+          4A. Free Authoring Tool and Website Content
+        </h2>
+
+        <div className="mt-6 space-y-6">
+          <div>
+            <h3 className="text-base font-semibold text-text-secondary">
+              4A.1 Purpose
+            </h3>
+            <p className="mt-2 text-base leading-relaxed text-text-tertiary">
+              The Authoring Tool and the category guidance, sample messages, and
+              rule summaries presented on the Website are provided to help
+              Visitors understand common messaging practices and draft message
+              text. They are general information and a starting point only.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-text-secondary">
+              4A.2 No Enforcement
+            </h3>
+            <p className="mt-2 text-base leading-relaxed text-text-tertiary">
+              RelayKit does not review, approve, or enforce compliance on
+              message text created with the Authoring Tool. Compliance
+              enforcement applies only to messages sent through the paid Service
+              after registration.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-text-secondary">
+              4A.3 No Legal Advice or Guarantee
+            </h3>
+            <p className="mt-2 text-base leading-relaxed text-text-tertiary">
+              The sample messages, rule summaries, and guidance are not legal
+              advice and are not a guarantee that any message complies with the
+              TCPA, carrier policies, or any other law or regulation. Sections
+              3.3 and 14 apply in full to all Website and Authoring Tool content.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-text-secondary">
+              4A.4 Your Responsibility
+            </h3>
+            <p className="mt-2 text-base leading-relaxed text-text-tertiary">
+              You are solely responsible for obtaining consent, following
+              applicable law, and ensuring that any message you send — whether
+              drafted with the Authoring Tool or otherwise — complies with all
+              requirements that apply to your business and your recipients.
             </p>
           </div>
         </div>
@@ -1008,7 +1084,8 @@ export default function TermsPage() {
               11.5 Survival
             </h3>
             <p className="mt-2 text-base leading-relaxed text-text-tertiary">
-              Sections 3.3 (What RelayKit Is Not), 6.7 (Refund Policy), 8
+              Sections 3.3 (What RelayKit Is Not), 4A (Free Authoring Tool and
+              Website Content), 6.7 (Refund Policy), 8
               (Developer Responsibilities), 10 (Intellectual Property), 12
               (Limitation of Liability), 13 (Indemnification), 14 (Disclaimer
               of Warranties), and 15 (Dispute Resolution) survive termination
@@ -1337,7 +1414,7 @@ export default function TermsPage() {
       </section>
 
       <p className="mt-12 text-sm text-text-quaternary">
-        These Terms of Service were last updated on April 28, 2026.
+        These Terms of Service were last updated on June 11, 2026.
       </p>
     </div>
   );

@@ -4,7 +4,7 @@ Status: exploring
 
 > **What this is:** A self-contained remediation plan for the legal exposure created when the configurator became a free, public, no-login authoring tool (MD-21) while the published Terms / AUP / Privacy (effective 2026-04-28) were still written only for account-holding, paid/sandbox developers. Feed this whole doc into a future session to execute.
 >
-> **Status:** exploring — not yet executed.
+> **Status:** exploring — §3.1 executed (D-424, point-of-use disclaimer); §3.2 + §3.4–§3.6 executed 2026-06-11 (D-431, browsewrap + Terms/AUP/Privacy reach to anonymous Visitors). §3.3 (marketing-claim narrowing) remains open — Joel's wording call, likely an MD-number.
 >
 > **Caveat (read once):** This is best-effort drafting, not lawyer-reviewed. Joel has decided to proceed without counsel. The composed clauses below match the register of the existing docs and are designed to drop in; treat them as strong candidates to adapt, not as filed legal language. Nothing here can make RelayKit literally immune from suit — the goal is to close the biggest reliance gap and extend existing protections to anonymous visitors.
 
@@ -41,6 +41,8 @@ Voice note: this is Tier-3-style fine print — plain and human, knowledgeable-f
 
 ### 3.2 Site-wide browsewrap footer line (copy-only)
 
+> ✓ **RESOLVED** 2026-06-11 (D-431) — `marketing-site/components/footer.tsx`, commit `ba52a0f`.
+
 Add to the global footer (near "© 2026 RelayKit LLC"):
 > By using this site you agree to our [Terms of Service](https://relaykit.ai/terms), [Acceptable Use Policy](https://relaykit.ai/acceptable-use), and [Privacy Policy](https://relaykit.ai/privacy).
 
@@ -63,6 +65,8 @@ Two exposed claims to revisit, with candidates:
 These are demand-voice surfaces — final wording is Joel's (he leads copy). The job for the future session is to qualify the unbacked guarantee on free output, not to gut the marketing punch.
 
 ### 3.4 Terms of Service — candidate edits
+
+> ✓ **RESOLVED** 2026-06-11 (D-431) — `marketing-site/app/terms/page.tsx`, commit `42278d7`.
 
 **(a) §1 Definitions — add three terms and amend "Service":**
 
@@ -95,6 +99,8 @@ Amend the **"Service"** definition to read:
 
 ### 3.5 Acceptable Use Policy — candidate edits
 
+> ✓ **RESOLVED** 2026-06-11 (D-431) — `marketing-site/app/acceptable-use/page.tsx`, commit `5b635c2`.
+
 **(a) Scope note** (add to the opening, after the first paragraph):
 > This AUP applies to all use of the Service, including message text authored using the free Authoring Tool on the Website. The content and conduct rules below describe what US carriers and applicable law do and do not allow; RelayKit enforces them on messages sent through the paid Service.
 
@@ -104,6 +110,8 @@ Amend the **"Service"** definition to read:
 (Fuller reconciliation — aligning the AUP's industry list with the Airtable taxonomy — is optional and lower priority; the one-line fix removes the "AUP says X, tool implies Y" contradiction.)
 
 ### 3.6 Privacy Policy — candidate edit
+
+> ✓ **RESOLVED** 2026-06-11 (D-431) — `marketing-site/app/privacy/page.tsx`, commit `8829ab8`.
 
 Add coverage for anonymous Website visitors (e.g., new §1.6 or an addition to §8):
 > **Website Visitors and the Authoring Tool.** When you use the free Authoring Tool without an Account, your use-case selections and draft message text are stored locally in your browser and are not transmitted to or stored by RelayKit unless you submit them (for example, by joining a waitlist or creating an Account). We collect standard, aggregated web analytics for the Website as described in Section 8.

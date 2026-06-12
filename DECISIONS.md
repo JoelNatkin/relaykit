@@ -2182,3 +2182,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** D-378 (partial) — D-378's user-switchable light/dark *mechanism* (toggle, `relaykit-theme` persistence, `prefers-color-scheme` first-visit default, FOUC pre-hydration script) is removed; the site is dark-only. D-378's `--color-bg-code-surface` token introduction is a separate concern, not superseded here (its home usage separately moved to `bg-surface-card` this session). D-378 marked with an `⚠ Superseded by D-430` line in the same commit.
 
 **Affects:** `marketing-site/lib/use-theme.ts` (deleted); `marketing-site/app/layout.tsx` (`<html className="dark">`; `themeInitScript` + inline `<head>` script removed); `marketing-site/components/top-nav.tsx` (theme toggle + `ThemeIcon` + `useTheme`/`Moon01`/`Sun` imports removed, on the desktop bar and the mobile menu); `marketing-site/app/globals.css` (light token values remain as dead base; collapse deferred).
+
+## D-431 — Free-tool legal protections extended to anonymous Visitors (browsewrap + Website/Authoring Tool/Visitor definitions + Terms §4A)
+
+**Decided:** 2026-06-11 (Session 131)
+
+**Decision:** The Terms, AUP, and Privacy protections that previously reached only account-holders are extended to anonymous Visitors of the public Website and free Authoring Tool, via: (1) a site-wide browsewrap line in the footer; (2) Terms §1 "Website," "Authoring Tool," and "Visitor" definitions, with the Website + Authoring Tool folded into "Service"; (3) acceptance-by-use in the Terms intro ("whether or not you create an Account"); (4) a new Terms §4A (no enforcement, no legal advice/guarantee cross-referencing §3.3/§14, Visitor responsibility), added to §11.5 survival; (5) an AUP scope note covering tool-authored text; (6) a Privacy §1.6 covering anonymous-Visitor local storage + Website analytics. "Last Updated" bumped on all three docs. Best-effort, no-counsel drafting (Joel's standing decision).
+
+**Why:** MD-21 turned the configurator into a public, no-login tool handing anonymous Visitors message text and rule guidance, while §3.3/§12/§13/§14 were gated behind account creation — a Visitor who relied on the output and got a TCPA suit or carrier penalty was bound by none of it. Folding the Website/Authoring Tool into "Service" plus acceptance-by-use makes the existing protections reach Visitors with no change to §12–§14 substance.
+
+**Rejected alternative:** Rely on the gated ToS plus the D-424 point-of-use disclaimer alone. Rejected because the disclaimer gives notice but does not by itself make Visitors parties to the liability cap, indemnification, or warranty disclaimer.
+
+**Supersedes:** none. Extends D-424 (disclaimer = product-side notice; D-431 = contract-side reach). Executes LEGAL_EXPOSURE_REMEDIATION.md §3.2 + §3.4–§3.6.
+
+**Affects:** marketing-site/components/footer.tsx; marketing-site/app/terms/page.tsx; marketing-site/app/acceptable-use/page.tsx; marketing-site/app/privacy/page.tsx; /explorations/LEGAL_EXPOSURE_REMEDIATION.md; docs/PRODUCT_SUMMARY.md (CC refresh).

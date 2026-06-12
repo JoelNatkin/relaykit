@@ -15,7 +15,7 @@ export default function AcceptableUsePolicyPage() {
           Acceptable Use Policy
         </h1>
         <p className="mt-2 text-sm text-text-tertiary">
-          Effective Date: April 28, 2026 · Last Updated: April 28, 2026
+          Effective Date: April 28, 2026 · Last Updated: June 11, 2026
         </p>
       </div>
 
@@ -40,6 +40,13 @@ export default function AcceptableUsePolicyPage() {
           developer on the platform. This AUP exists to protect the platform,
           your messaging capability, and every other developer building on
           RelayKit.
+        </p>
+        <p className="text-base leading-relaxed text-text-tertiary">
+          This AUP applies to all use of the Service, including message text
+          authored using the free Authoring Tool on the Website. The content and
+          conduct rules below describe what US carriers and applicable law do and
+          do not allow; RelayKit enforces them on messages sent through the paid
+          Service.
         </p>
       </div>
 
@@ -288,6 +295,11 @@ export default function AcceptableUsePolicyPage() {
                 campaigns require a marketing expansion registration.
               </li>
             </ul>
+            <p className="mt-3 text-base leading-relaxed text-text-tertiary">
+              The examples above are illustrative, not exhaustive;
+              category-specific guidance is provided in the message-authoring
+              tool.
+            </p>
           </div>
         </div>
       </section>
@@ -673,7 +685,7 @@ export default function AcceptableUsePolicyPage() {
       </section>
 
       <p className="mt-12 text-sm text-text-quaternary">
-        This Acceptable Use Policy was last updated on April 28, 2026.
+        This Acceptable Use Policy was last updated on June 11, 2026.
       </p>
     </div>
   );

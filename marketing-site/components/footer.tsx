@@ -74,6 +74,12 @@ export function Footer() {
         </div>
         <div className="mt-10 border-t border-border-tertiary pt-6">
           <p className="text-xs text-text-quaternary">&copy; 2026 RelayKit LLC</p>
+          <p className="mt-2 text-xs text-text-quaternary">
+            By using this site you agree to our{" "}
+            <Link href="/terms" className="underline transition duration-100 ease-linear hover:text-text-tertiary">Terms of Service</Link>,{" "}
+            <Link href="/acceptable-use" className="underline transition duration-100 ease-linear hover:text-text-tertiary">Acceptable Use Policy</Link>, and{" "}
+            <Link href="/privacy" className="underline transition duration-100 ease-linear hover:text-text-tertiary">Privacy Policy</Link>.
+          </p>
         </div>
       </div>
     </footer>

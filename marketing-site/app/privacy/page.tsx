@@ -15,7 +15,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="mt-2 text-sm text-text-tertiary">
-          Effective Date: April 28, 2026 · Last Updated: April 28, 2026
+          Effective Date: April 28, 2026 · Last Updated: June 11, 2026
         </p>
       </div>
 
@@ -190,6 +190,22 @@ export default function PrivacyPage() {
               We collect standard technical data including IP address, browser
               type, operating system, device type, and referring URL. This is
               used for security, fraud prevention, and service improvement.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="text-base font-semibold text-text-secondary">
+              1.6 Website Visitors and the Authoring Tool
+            </h3>
+            <p className="mt-2 text-base leading-relaxed text-text-tertiary">
+              When you use the free Authoring Tool on the Website without an
+              Account, your use-case selections and draft message text are
+              stored locally in your browser and are not transmitted to or
+              stored by RelayKit unless you submit them — for example, by joining
+              a waitlist or creating an Account. We collect standard, aggregated
+              web analytics for the Website (such as page views and feature
+              usage) as described in Section 8; this analytics data is not used
+              to build advertising profiles and is not sold.
             </p>
           </div>
         </div>
@@ -866,7 +882,7 @@ export default function PrivacyPage() {
       </section>
 
       <p className="mt-12 text-sm text-text-quaternary">
-        This Privacy Policy was last updated on April 28, 2026.
+        This Privacy Policy was last updated on June 11, 2026.
       </p>
     </div>
   );
