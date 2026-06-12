@@ -1,10 +1,14 @@
 # RelayKit Voice & Product Principles
-**Version 2.0**
-**April 2, 2026**
+**Version 2.1**
+**June 12, 2026**
 
 > **Replaces:** V4_EXPERIENCE_PRINCIPLES_v1.1.md. That document is retired. Remove references to it in CLAUDE.md and other project files.
 >
 > **What this document does:** Gives CC and any contributor the voice to write in, the rules for what not to say, the hierarchy for when to say anything at all, and the emotional register for every word that survives.
+>
+> **v2.1:** §3 (Demand Voice) replaced with the Straight-Talking Principles
+> (STP). Governs all marketing, blog, and community writing. §1–§2 and
+> §4–§6 unchanged.
 
 ---
 
@@ -54,49 +58,47 @@ The one sentence should be a plain fact, not a reframe, not a lesson, not a sale
 
 ## 3. Demand Voice
 
-This is the voice before the product — marketing pages, category landings, use case selection, social media, READMEs, blog posts, email. Everywhere someone hasn't decided yet.
+This is the voice before the product — marketing pages, category landings,
+blog posts, community comments, social media, READMEs, email. Everywhere
+someone hasn't decided yet.
 
-### What it sounds like
+### The Straight-Talking Principles (STP)
 
-Human. Concrete. Grounded. It talks about people and their days, not systems and their features. It's confident without being loud. It never asks for credit. It paints a picture the reader recognizes, then steps back.
+Write like a straight-talking person explaining something to a smart, busy
+peer — the plain truth, in as few words as it takes. No selling, no
+performance.
 
-### The scenario principle
+1. **Say the true thing plainly.** State facts. If a sentence sounds like an
+   ad, rewrite it or cut it.
+2. **Fewest words that carry the meaning.** Cut adjectives that add no
+   information — "complete," "powerful," "seamless," "robust."
+3. **Name concrete, real things.** "Reminders, order updates, login codes" —
+   not "messaging solutions" or any abstraction.
+4. **Don't presume.** "Most apps," "a lot of devs" — not "your app does X."
+   Let people recognize themselves.
+5. **Don't oversell — and undersell if that's the honest version.** "Most
+   apps need a couple" beats "you'll want them all." Understating earns trust.
+6. **Plain words, no jargon or buzzwords.** If a normal person wouldn't say
+   it out loud to a friend, don't write it.
+7. **Confident, not excited.** No exclamation energy, no "game-changing."
+   Say what's true and stop.
+8. **Vary the rhythm.** Don't repeat a sentence shape — dash contrasts,
+   triads, runs of same-length sentences. Don't end by restating the point.
+   If a pattern shows up twice, break it the third time.
 
-The demand voice works by recognition. The reader sees a situation they know — from their own life, their customers' lives, or the life of someone they're building for — and realizes a text message would fix it.
+### Form, not fragments
 
-Rules for scenarios:
+Write in normal, flowing prose — complete sentences, connected paragraphs.
+Vary sentence length naturally: mostly medium, some long, some short.
+Brevity means cutting ideas and words that add nothing — never chopping
+sentences into fragments. No one-line-paragraph staccato.
 
-**Always a person, never a system.** "Your customer is sitting in the parking lot wondering if their appointment is still on." Not "reduce no-show rates with automated appointment reminders."
+### Integrity rules
 
-**Always specific, never categorical.** "The dog walker sending texts one at a time from their personal phone." Not "small businesses with manual communication workflows."
-
-**The text message is the resolution.** The story ends with the text arriving and the problem dissolving. The product is the last sentence, not the first.
-
-**Mundane on purpose.** Haircuts, deliveries, pickups, prescriptions, soccer practice. The power is in the recognition, not the stakes. No transformation language. No "empowering." No drama.
-
-### The rhythm principle
-
-Alternate between the human moment and the quiet fact. Never a wall of scenarios — gets sappy. Never a wall of facts — gets boring. Moment, fact, moment, fact.
-
-> Your customer gets a text when their table is ready. No registration delays, no compliance headaches, no code changes.
-
-> There's a tutoring company where parents don't know if the session is confirmed until they call. One text message, sent automatically, fixes that. We make that trivially easy.
-
-### The grounding principle
-
-The demand voice is warm but never soft. Seriousness comes through in the facts that sit next to the scenarios. Pricing stated plainly. Timeframes stated plainly. What you get, stated plainly. The warmth makes people care. The facts make people trust.
-
-> Build and test for free. No credit card, no time limit.
-> When you're ready to go live: $49 to register. $150 after approval. $19/month.
-> That's it.
-
-### What the demand voice never does
-
-It never explains infrastructure. 10DLC, carrier registration, TCR, consent management, TCPA, SHAFT-C — none of these appear in demand-voice contexts. If someone only ever sees the demand voice, they think sending compliant texts from an app is just... easy. Because it is. For them.
-
-It never describes friction it has eliminated. The old way is obvious to anyone who's tried the old way. If they haven't tried it, they don't need to hear about it. The contrast is experienced, not explained.
-
-It never names competitors.
+Every stat is real and sourced — never invented or rounded for effect. The
+product is the punchline, not the subject. In communities: answer the
+person's actual question first; mention RelayKit only if it genuinely
+answers what they asked.
 
 ---
 
@@ -201,7 +203,7 @@ When building any screen or writing any user-facing text:
 4. Check the voice. Product surface = quiet, confident, short. Marketing surface = human scenarios + quiet facts.
 5. Ask: would removing this text make the screen worse? If the answer is "no" or "maybe not," remove it.
 6. Never explain infrastructure in Tier 1 or Tier 2. If the user needs to understand carrier mechanics, registration details, or compliance rules, that content lives in Tier 3 — documentation, FAQs, or expanded views the user deliberately opens.
-7. For demand voice contexts: lead with a recognizable human moment, ground with a plain fact. Never lead with a feature.
+7. For demand voice / marketing, blog, and community contexts: follow the STP in §3. Explain the product and the problem concretely and honestly; carrier or compliance terms are allowed where they sharpen the explanation (§4 still applies).
 
 ---
 
