@@ -357,7 +357,7 @@ Canon should already be current from ambient maintenance this session (decisions
 ### Prototype quality
 - Production-quality in everything except backend integration (D-163)
 - Component names, data shapes, route structures, semantic color tokens match production
-- All user-facing copy complies with Voice Principles v2.0
+- All user-facing copy complies with Voice Principles v2.1
 
 ### Scope control
 - CC suggests a feature not in the active phase → "Park it in BACKLOG.md or propose a MASTER_PLAN amendment"
