@@ -4,13 +4,17 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 1 (held for PM `gg`, NOT pushed) | Files modified: 4 (CLAUDE.md, REPO_INDEX.md, CC_HANDOFF.md, + new docs/CC_PROCEDURES.md) | Decisions added: 0 | External actions: 0. **Doc-only session.** Mid-phase (active phase stays Phase 2 — Session B).
+**Session metrics (full session):** Commits: 10 to `main` (all pushed, HEAD `d6b1d7e`) | Files created/modified: ~12 (incl. new `docs/CC_PROCEDURES.md`, `.githooks/pre-commit`, `docs/writing/`×2) | Decisions added: 1 (**D-432**) | External actions: 10 pushes to `origin/main` + `core.hooksPath` activation. **Doc-only session — no code touched, quality gates skipped.** Mid-phase (active phase stays Phase 2 — Session B → retirement sweep + drift watch skipped).
 
-**Status: 🟡 Committed locally, HELD for PM `gg` review — do NOT push until approved.** This session continued a run of doc-governance work (Sessions 132–133); the substantive product pickup remains Phase 2 — Session B.
+**Status: 🟢 All pushed — `main` in sync with `origin/main` at `d6b1d7e`.** A long doc-governance session (PM-labeled 132→133); the substantive product pickup remains Phase 2 — Session B.
 
 ---
 
-## What landed this session (one local commit, not pushed)
+## Full session arc (10 commits, all on `main`)
+
+`ad647d1` home-spec reconciliation + **D-432** (quick-start permanent, supersedes D-429) · `1d7ec3d` golden-path-gtm Makerkit kit decision (PM-authored exploration) · `e6d13a1` capability-first playbook archived to `docs/writing/` · `887a5de`+`1204d91` **VPP v2.1** (§3 Demand Voice → Straight-Talking Principles) · `f4ab6a4` **date-header pre-commit hook** (`.githooks/`, `core.hooksPath` set) + PM_PROJECT_INSTRUCTIONS dates · `96b25aa` `.pm-review.md` refresh canonized as a per-commit hard rule · `0c84e1c` **CLAUDE.md trim → `docs/CC_PROCEDURES.md`** (headline, below) · `903586c` voice pointer v2.0→v2.1 · `d6b1d7e` marketing runbook + `docs/writing/` REPO_INDEX rows.
+
+## What landed — headline: the governance refactor (`0c84e1c`)
 
 CLAUDE.md trim audit per the PM-approved plan (`.pm/plans/mode-plan-claude-md-trim-async-lovelace.md`):
 
@@ -33,11 +37,11 @@ CLAUDE.md trim audit per the PM-approved plan (`.pm/plans/mode-plan-claude-md-tr
 - **Pre-existing:** delete `joel+golive-smoke@gmail.com` from `early_access_subscribers`; OG unfurl cache-bust verify; TFN-path-killed MASTER_PLAN canon close; Claude.ai UI custom-instructions paste-sync.
 
 ## Branch state
-**No open feature branches.** This session's commit is local on `main`, **unpushed** — held for PM `gg`.
+**No open feature branches.** All 10 commits are on `main` and pushed; `main` is in sync with `origin/main` at `d6b1d7e`. The five older marketing branches remain merged-not-deleted (optional cleanup).
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
-- **PM `gg`** → review `.pm-review.md` → approve push of the governance-refactor commit.
-- **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN — the substantive product pickup.
+- **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN — the substantive product pickup, and the next session's real work.
+- Optional doc tidy-ups (carry-forwards above): dead-token deletions, blog "configurator" voice rewrite, pre-launch head-scratchers.
