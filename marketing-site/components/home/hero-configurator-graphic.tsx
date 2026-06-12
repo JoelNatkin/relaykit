@@ -209,13 +209,13 @@ export function HeroConfiguratorGraphic() {
               className="mt-4 inline-flex size-5 items-center justify-center text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
             >
               {paused ? (
-                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden className="size-4">
-                  <path d="M5 3.5v9l7-4.5z" />
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden className="size-5">
+                  <path d="M6 3.5 L16.5 10 L6 16.5 Z" />
                 </svg>
               ) : (
-                <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden className="size-4">
-                  <rect x="4.5" y="3.5" width="2.5" height="9" rx="0.75" />
-                  <rect x="9" y="3.5" width="2.5" height="9" rx="0.75" />
+                <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden className="size-5">
+                  <rect x="5.5" y="3" width="3.5" height="14" rx="1" />
+                  <rect x="11" y="3" width="3.5" height="14" rx="1" />
                 </svg>
               )}
             </button>
