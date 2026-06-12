@@ -207,5 +207,5 @@ When building any screen or writing any user-facing text:
 
 ---
 
-*RelayKit LLC — v2.0*
+*RelayKit LLC — v2.1*
 *Supersedes: V4_EXPERIENCE_PRINCIPLES_v1.1.md*
