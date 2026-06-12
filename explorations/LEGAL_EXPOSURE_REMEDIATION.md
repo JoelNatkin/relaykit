@@ -1,10 +1,10 @@
-Status: exploring
+Status: promoted to D-424 + D-431 (2026-06-11) — all remedies done/decided; §3.3 resolved no-action (Joel's call). Retained as historical record.
 
 # Legal Exposure Remediation — Free Authoring Tool
 
 > **What this is:** A self-contained remediation plan for the legal exposure created when the configurator became a free, public, no-login authoring tool (MD-21) while the published Terms / AUP / Privacy (effective 2026-04-28) were still written only for account-holding, paid/sandbox developers. Feed this whole doc into a future session to execute.
 >
-> **Status:** exploring — §3.1 executed (D-424, point-of-use disclaimer); §3.2 + §3.4–§3.6 executed 2026-06-11 (D-431, browsewrap + Terms/AUP/Privacy reach to anonymous Visitors). §3.3 (marketing-claim narrowing) remains open — Joel's wording call, likely an MD-number.
+> **Status:** promoted (2026-06-11) — all remedies done/decided. §3.1 executed (D-424, point-of-use disclaimer); §3.2 + §3.4–§3.6 executed (D-431, browsewrap + Terms/AUP/Privacy reach to anonymous Visitors, live on `main`); §3.3 resolved no-action (Joel's call — keep the present-tense compliance claims, no narrowing, no MD-number). Retained in `/explorations/` as historical record.
 >
 > **Caveat (read once):** This is best-effort drafting, not lawyer-reviewed. Joel has decided to proceed without counsel. The composed clauses below match the register of the existing docs and are designed to drop in; treat them as strong candidates to adapt, not as filed legal language. Nothing here can make RelayKit literally immune from suit — the goal is to close the biggest reliance gap and extend existing protections to anonymous visitors.
 
@@ -49,6 +49,8 @@ Add to the global footer (near "© 2026 RelayKit LLC"):
 Purpose: this is the hook that makes the §3.3 / §12 / §13 / §14 protections reach anonymous visitors (see §3.4 below). Browsewrap is weaker than clickwrap; pairing it with the visible §3.1 disclaimer strengthens the "they were on notice" position.
 
 ### 3.3 Marketing claim narrowing (Joel's call on final wording)
+
+> ✓ **RESOLVED** 2026-06-11 (Joel's call) — **no narrowing, no MD-number.** The present-tense "generates and hosts a compliance site" / compliance claims stay as-is: they will be true at launch and read as forthcoming within the site's "Sending arrives Summer 2026" frame. The free tool's output is already qualified at point-of-use (D-424 disclaimer) and contract-side (D-431 §4A), which carries the reliance-gap concern; the marketing punch is kept. The §3.3 candidates below (hero "compliant-ready", "We know the rules…" softening) are **not** adopted.
 
 Principle: **the compliance *guarantee* attaches to the paid product that actually enforces (the proxy/SDK). The free tool offers a compliant-ready *starting point*, not a guarantee of the output.**
 
