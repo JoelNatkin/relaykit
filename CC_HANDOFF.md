@@ -4,9 +4,9 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 2 (both pushed) — `13b9d18` D-433 hardening + `2a5381c` landing-page-craft PM-edit follow-up | Files modified: 7 (DECISIONS, MASTER_PLAN, BACKLOG, explorations/no-ein-sole-proprietor-path, docs/PRODUCT_SUMMARY, docs/CUSTOMER_ARCHETYPE_FOUNDATION, REPO_INDEX) + CC_HANDOFF + explorations/landing-page-craft | Decisions added: 1 (**D-433**), 2 amended (D-247, D-302) | External actions: 2 pushes to `origin/main`. **Doc-only session — no code touched, quality gates skipped.** Mid-phase (active phase stays Phase 2 — Session B → retirement sweep + drift watch skipped).
+**Session metrics:** Commits: 4 (all pushed) — `13b9d18` D-433 hardening · `2a5381c` landing-page-craft PM-edit follow-up · `0c9d56a` CC_HANDOFF status reconcile · + this close-out handoff commit | Files modified: 7 canon (DECISIONS, MASTER_PLAN, BACKLOG, explorations/no-ein-sole-proprietor-path, docs/PRODUCT_SUMMARY, docs/CUSTOMER_ARCHETYPE_FOUNDATION, REPO_INDEX) + CC_HANDOFF + explorations/landing-page-craft | Decisions added: 1 (**D-433**), 2 amended (D-247, D-302) | External actions: 4 pushes to `origin/main`. **Doc-only session — no code touched, quality gates skipped.** Mid-phase (active phase stays Phase 2 — Session B → retirement sweep + drift watch skipped).
 
-**Status: 🟢 Approved + pushed — `main` in sync with `origin/main` at `2a5381c`.** A scoped doc-only hardening session; the substantive product pickup remains Phase 2 — Session B.
+**Status: 🟢 Approved + pushed — `main` clean and in sync with `origin/main` (close-out HEAD).** A scoped doc-only hardening session; the substantive product pickup remains Phase 2 — Session B.
 
 ---
 
@@ -30,11 +30,12 @@ Converted RelayKit's stance on **sole proprietors without a registered business 
 - "short code" as a product offering: zero pre-existing copy anywhere (confirmed pre-edit); the term now appears only in D-433 / MASTER_PLAN as an explicit "never." (The two non-canon hits — `audits/…EXTRACTION.md`, `blog/clusters.ts` — are unrelated.)
 
 ## Carry-forwards (flagged, not done here)
-- **`/prototype` + `/src` intake copy** — the stale "we'll register you as a sole proprietor (limited to one campaign)" promise still lives in `prototype/components/registration/business-details-form.tsx` (636–639, 647–648, 797) + `review-confirm.tsx:293` and the sunset `/src` FAQ/forms. **Deliberately deferred** to a dedicated `/prototype` UI session: the copy fix must move *with* the `has_ein="no"` flow-gating decision (block/redirect the no-entity path) — fixing copy while the flow still lets a no-entity sole prop click Continue and register would leave the prototype incoherent. `/src` items are sunsetting (D-358) — do not polish; they die with `/src`.
+- **`/prototype` + `/src` sole-prop UI session** — the stale "we'll register you as a sole proprietor (limited to one campaign)" promise still lives in `prototype/components/registration/business-details-form.tsx` (636–639, 647–648, 797) + `review-confirm.tsx:293` and the sunset `/src` FAQ/forms. **Deliberately deferred** to a dedicated `/prototype` UI session: the copy fix must move *with* the `has_ein="no"` flow-gating decision (block/redirect the no-entity path) — fixing copy while the flow still lets a no-entity sole prop click Continue and register would leave the prototype incoherent. `/src` items are sunsetting (D-358) — do not polish; they die with `/src`. **Bundle in this session:** the `docs/PRODUCT_SUMMARY.md` §8 citation nit at **line 120** — "sole-prop registrations and HEALTHCARE-vertical attempts are declined upstream **(D-18)**" should split the citation: D-18 covers the healthcare decline, **D-433** the sole-prop decline (it's the Rejected-state copy reworked in this same surface, so fix it there rather than in isolation).
+- **Landing-page batch** (PM-owned, per `explorations/landing-page-craft.md`) — the sequenced build: **template lock** (the four archetypes — ship-it / honest-no / hub / comparison) → **demand research** (per sub-vertical) → **seed Airtable Pages rows**. The killed sole-prop exploration feeds the new "Legal-entity-required explainer" hub/concept page (added to landing-page-craft's to-build list this session) — the evergreen page the future registration block links to, carrying the truthful form-an-entity → 10DLC route.
 - **Standing (pre-existing):** dead token `--color-text-headline-muted` (globals.css:78); `globals.css` light→dark dead-token collapse (D-430); blog "configurator" voice rewrite; delete `joel+golive-smoke@gmail.com` from `early_access_subscribers`; OG unfurl cache-bust verify; migration `009_early_access_interest_tag.sql` apply-before-deploy; Claude.ai UI custom-instructions paste-sync.
 
 ## Branch state
-**No open feature branches.** Both commits are on `main` and **pushed** (`origin/main` at `2a5381c`). The five older marketing branches remain merged-not-deleted (optional cleanup).
+**No open feature branches.** All session commits are on `main` and **pushed**; `origin/main` is clean. The five older marketing branches remain merged-not-deleted (optional cleanup).
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
