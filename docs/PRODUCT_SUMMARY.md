@@ -8,7 +8,7 @@
 
 > **Maintenance note:** Updated when product behavior changes substantively — new screens, new flows, removed features. Not updated for copy or layout tweaks (those remain a `PROTOTYPE_SPEC.md` concern). `PROTOTYPE_SPEC.md` is the implementation-detail source of truth; this file is the evergreen PM-facing reference.
 >
-> **Last reviewed:** 2026-06-11
+> **Last reviewed:** 2026-06-13
 
 ---
 
@@ -253,7 +253,7 @@ Per MASTER_PLAN §16 and supporting decisions:
 - **BYO Twilio / Sinch.** Managed-only at launch (D-26 and CLAUDE.md hard constraint).
 - **Marketing as a tier "upgrade".** Marketing is a second campaign registration, never an "upgrade" or "plan tier" (D-15, D-37, D-89).
 - **Healthcare / HIPAA.** Declined at intake — RelayKit holds no BAA and routes no PHI through the proxy (D-18).
-- **Sole-prop marketing.** Marketing requires EIN; sole proprietors cannot register marketing campaigns. This is a carrier constraint surfaced honestly, not a RelayKit policy choice.
+- **Sole proprietors (no registered entity).** RelayKit does not serve sole proprietors who have not formed a registered business entity — TCR has no sole-proprietor entity type, so they cannot register at all (D-433). The honest path surfaced is forming a registered entity (LLC/corp + EIN) → 10DLC. (EIN is separately required to add marketing for entities that qualify — D-247/D-302.)
 - **MMS / media attachments.** Not at launch.
 - **RCS, WhatsApp, voice.** Not at launch.
 - **Drip sequences / multi-message workflows.** Not at launch.

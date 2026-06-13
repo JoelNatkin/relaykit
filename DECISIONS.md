@@ -851,6 +851,7 @@ _Affects: Pricing, Stripe checkout, billing dashboard, marketing registration fl
 
 **D-247 — Marketing campaign UI gated on EIN** (Date: 2026-03-27)
 All marketing campaign UI (Overview banner, Messages section, info page) hidden for non-EIN users. Sole proprietor registrations are limited to one campaign. No marketing expansion path shown if no EIN on file.
+⚠ Amended by D-433 (2026-06-13): the "Sole proprietor registrations are limited to one campaign" clause is moot — a sole proprietor without a registered entity cannot register at all (no TCR sole-prop entity type). The EIN-gating of marketing UI stands.
 _Affects: Overview page (marketing upsell), Messages tab, registration pipeline, customer data model._
 
 **D-248 — Marketing consent handled by RelayKit infrastructure** (Date: 2026-03-27)
@@ -1086,6 +1087,7 @@ _Affects: Website message editing UX, SDK type generation, custom message author
 **D-302 — EIN required for marketing messages, verified at sandbox access** (Date: 2026-04-03)
 Marketing messages require an EIN — this is a carrier constraint (sole props are limited to one transactional campaign and cannot register a second marketing campaign). When a developer wants to access marketing messages in the website authoring surface, they enter their EIN. RelayKit verifies the EIN and auto-populates business identity fields (legal name, address, entity type, state of registration) from authoritative sources. Developer confirms or corrects. This catches EIN/business-name mismatches before TCR submission — every prevented rejection saves ~$15 in vetting fees and protects RelayKit's ISV trust score. Transactional-only users are not affected — EIN is only required when marketing messages are accessed. Data sources to investigate: IRS Business Master File, state Secretary of State databases, commercial APIs (Middesk, Enigma) at ~$1-3 per lookup.
 AMENDED: EIN is required for any second campaign of any type, not just marketing. Sole props without EIN are limited to one campaign of any type. A developer wanting appointments + orders needs an EIN just as much as one wanting appointments + marketing.
+⚠ Amended by D-433 (2026-06-13): the "limited to one campaign of any type" clause is moot — no-entity sole proprietors are permanently unsupported (D-433), so they never reach a campaign cap. EIN-required-for-marketing stands.
 _Affects: Website intake flow, sandbox experience, registration pipeline, TCR submission quality._
 
 **D-303 — Business identity pre-validation: auto-populate registration fields from EIN lookup** (Date: 2026-04-03)
@@ -2212,3 +2214,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** D-429.
 
 **Affects:** `marketing-site/components/messages-quickstart.tsx` (now a static, permanent, carded three-step section using the shared `StepStrip`); `marketing-site/components/step-strip.tsx` (shared `variant="open" | "card"` component); `marketing-site/app/messages/page.tsx` (renders it permanently).
+
+## D-433 — Sole proprietors without a registered business entity are permanently unsupported
+
+**Decided:** 2026-06-13 (Session 134)
+
+**Decision:** RelayKit permanently does not serve sole proprietors who have not formed a registered business entity. This is not a launch-time deferral and carries no "revisit if pull warrants" door. The constraint is registry-wide and structural: TCR's 10DLC brand registry has no sole-proprietor entity type and requires an EIN-backed registered entity, and the one hypothetical fallback — Sinch toll-free (TFN) verification — is confirmed permanently blocked (manual-only Verified Sender Form, no API, Business Registration Number mandatory since January 2026 with only a discretionary, not-guaranteed sole-prop carve-out). Short codes are never offered; secondary-carrier, RelayKit-as-CSP, and umbrella-brand routes all hit the same TCR exclusion. The only supported route for these founders is to form a registered entity (an LLC or corporation, which carries an EIN) and onboard through the standard 10DLC path.
+
+**Why:** Every alternative trades away something central — the automated registration engine, or the no-telecom-mechanics experience promise — to serve a narrow segment that has a real, truthful path. The toll-free escape hatch that justified keeping the door open is now closed at the carrier level industry-wide; naming the stance permanent prevents it from drifting back to "maybe someday."
+
+**Rejected alternative:** Keep the segment "deferred at launch, door open via the elig interest-tag, revisit post-launch." Rejected — the toll-free path that made deferral reversible is permanently unavailable on Sinch, so the deferral framing promises a future that cannot arrive.
+
+**Supersedes:** none. The prior stance lived as a MASTER_PLAN scope note + BACKLOG entry + exploration (no D-number) — all hardened in this commit. **Amends D-247 and D-302** — their "sole proprietor registrations are limited to one campaign" clause is moot (a no-entity sole prop cannot register at all); each marked `⚠ Amended by D-433`. Their EIN-gating-for-marketing logic stands.
+
+**Affects:** MASTER_PLAN.md; BACKLOG.md; explorations/no-ein-sole-proprietor-path.md (killed); DECISIONS.md (D-247 + D-302 amended); docs/PRODUCT_SUMMARY.md; docs/CUSTOMER_ARCHETYPE_FOUNDATION.md; REPO_INDEX.md; prototype intake copy (pending the dedicated `/prototype` + `/src` UI session — copy fix bundled with the `has_ein="no"` flow-gating decision).

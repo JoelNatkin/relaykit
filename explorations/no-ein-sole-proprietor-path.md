@@ -1,4 +1,4 @@
-Status: promoted (2026-06-02) — deferred at launch; MASTER_PLAN §Out of scope at launch
+Status: killed (2026-06-13) — TFN path confirmed permanently blocked; sole proprietors without a registered entity permanently unsupported (D-433). Retained as historical record.
 
 # No-EIN / Sole-Proprietor Customer Path
 
@@ -66,6 +66,8 @@ Joel Natkin
 When the Sinch reply lands, append it here. If it resolves the build-cost and approval-rate questions, this exploration promotes — either to a D-number (if it commits RelayKit to building the toll-free path) or a MASTER_PLAN scope note (if no-EIN is deferred or cut from launch). The product story under consideration: 10DLC for EIN'd businesses, toll-free for no-EIN US sole proprietors.
 
 ## Resolution (2026-06-02)
+
+**Update (2026-06-13): superseded by D-433 — this segment is now permanently unsupported, not deferred. The "door open / reversible" framing below is historical.**
 
 **Outcome: deferred at launch.** Sole proprietors without a registered business entity are out of scope at launch (MASTER_PLAN §Out of scope at launch). No D-number — a scope call, not a product-alternative decision.
 

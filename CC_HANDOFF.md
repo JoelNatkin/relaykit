@@ -1,47 +1,45 @@
-# CC_HANDOFF — Session 133 close-out: CC governance refactor (CLAUDE.md trim → CC_PROCEDURES.md) (2026-06-12)
+# CC_HANDOFF — Session 134 close-out: sole-proprietor stance hardened to permanent (D-433) (2026-06-13)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics (full session):** Commits: 10 to `main` (all pushed, HEAD `d6b1d7e`) | Files created/modified: ~12 (incl. new `docs/CC_PROCEDURES.md`, `.githooks/pre-commit`, `docs/writing/`×2) | Decisions added: 1 (**D-432**) | External actions: 10 pushes to `origin/main` + `core.hooksPath` activation. **Doc-only session — no code touched, quality gates skipped.** Mid-phase (active phase stays Phase 2 — Session B → retirement sweep + drift watch skipped).
+**Session metrics:** Commits: 1 (held for PM `gg`, NOT pushed) | Files modified: 7 (DECISIONS, MASTER_PLAN, BACKLOG, explorations/no-ein-sole-proprietor-path, docs/PRODUCT_SUMMARY, docs/CUSTOMER_ARCHETYPE_FOUNDATION, REPO_INDEX) + CC_HANDOFF | Decisions added: 1 (**D-433**), 2 amended (D-247, D-302) | External actions: 0. **Doc-only session — no code touched, quality gates skipped.** Mid-phase (active phase stays Phase 2 — Session B → retirement sweep + drift watch skipped).
 
-**Status: 🟢 All pushed — `main` in sync with `origin/main` at `d6b1d7e`.** A long doc-governance session (PM-labeled 132→133); the substantive product pickup remains Phase 2 — Session B.
+**Status: 🟡 Committed locally, HELD for PM `gg` review — do NOT push until approved.** A scoped doc-only hardening session; the substantive product pickup remains Phase 2 — Session B.
 
 ---
 
-## Full session arc (10 commits, all on `main`)
+## What landed this session (one local commit, not pushed)
 
-`ad647d1` home-spec reconciliation + **D-432** (quick-start permanent, supersedes D-429) · `1d7ec3d` golden-path-gtm Makerkit kit decision (PM-authored exploration) · `e6d13a1` capability-first playbook archived to `docs/writing/` · `887a5de`+`1204d91` **VPP v2.1** (§3 Demand Voice → Straight-Talking Principles) · `f4ab6a4` **date-header pre-commit hook** (`.githooks/`, `core.hooksPath` set) + PM_PROJECT_INSTRUCTIONS dates · `96b25aa` `.pm-review.md` refresh canonized as a per-commit hard rule · `0c84e1c` **CLAUDE.md trim → `docs/CC_PROCEDURES.md`** (headline, below) · `903586c` voice pointer v2.0→v2.1 · `d6b1d7e` marketing runbook + `docs/writing/` REPO_INDEX rows.
+Converted RelayKit's stance on **sole proprietors without a registered business entity** from *deferred-at-launch / revisit-if-pull* to **permanently unsupported**, per Joel's instruction and the PM-approved plan (`.pm/plans/plan-mode-doc-only-session-virtual-lemon.md`). The deferral rested entirely on Sinch toll-free (TFN) verification as the eventual fallback; that path is confirmed permanently blocked (manual-only Verified Sender Form, no API, BRN mandatory since Jan 2026, discretionary not-guaranteed sole-prop carve-out). Short codes: zero existing copy anywhere — clean assertion. The truthful route is preserved everywhere: form a registered entity (LLC/corp + EIN) → standard 10DLC.
 
-## What landed — headline: the governance refactor (`0c84e1c`)
-
-CLAUDE.md trim audit per the PM-approved plan (`.pm/plans/mode-plan-claude-md-trim-async-lovelace.md`):
-
-1. **CLAUDE.md trimmed 231 → 122 lines** — now resident **rules and hard gates only**. Kept: Project, Stack, Design system, Architecture, Code style, Quality gates, Hard platform constraints, Carrier limits, Prototype discipline, Implementation gotchas, Session start, Branching (promoted to its own `##`), PM-review hard rule (+ Plan files + PM_HANDOFF), Copy rule, Key docs, BACKLOG, File-size discipline (target → ~100). Added an in-file `### Updated: June 12, 2026` header (CLAUDE.md is now under the date-header hook).
-2. **New `docs/CC_PROCEDURES.md` (139 lines)** — procedures relocated **verbatim**, sectioned by trigger: `§Ledger` (pre-flight scan, supersession 5-step, retirement sweep, drift watch, guardrails, conflict-flag), `§Explorations` (state machine), `§Close-out` (ambient-canon + steps + per-commit handoff), `§PRODUCT_SUMMARY`, `§Prose-sweep`, `§Marketing`. One mechanical internal-ref fix: `§Close-out` step 3 now says "(see §Ledger)".
-3. **`## Procedure gates` block in CLAUDE.md** — one imperative gate per moved section, ordered as a **session timeline** (1 session-start → 10 phase-boundary close-out). Wave discipline collapsed to a gate pointing at `PM_PROJECT_INSTRUCTIONS "Waves"` (One Source — no CC_PROCEDURES copy).
-4. **Copy-rule fixed** — dropped the dead "vocabulary table / framing-shift table / emotional-states map" refs; now points to VPP v2.1 §2 Product Voice + §6 kill list (product) and §3 STP (marketing/blog/community).
-5. **REPO_INDEX** — new `CC_PROCEDURES.md` row in the `/docs` table; CLAUDE.md row bumped; Process/governance topic-index line added; Meta lead prepended with the Session 133 note.
+1. **D-433 recorded** — sole proprietors without a registered entity are permanently unsupported; TFN / short codes / secondary-carrier / RelayKit-as-CSP all permanently rejected; only route is form-an-entity → 10DLC. **Supersedes: none** — the key finding is that *no prior D-number ever owned the deferral* (it lived as a MASTER_PLAN scope note + BACKLOG entry + exploration).
+2. **D-247 + D-302 amended** (not superseded) — each carries a now-false Twilio-era clause ("sole proprietor registrations are limited to one campaign"). Marked `⚠ Amended by D-433` in the same commit: the one-campaign clause is moot (a no-entity sole prop can't register at all), while their still-operative EIN-gating-for-marketing core stands. Handled as amendments per §Ledger (evolution ≠ supersession unless the earlier approach is no longer operative).
+3. **MASTER_PLAN** out-of-scope bullet → permanent, cross-ref D-433, TFN/short-code hope removed.
+4. **BACKLOG** "Sole Proprietor customer segment" entry → 2026-06-13 update line "PERMANENTLY CLOSED (D-433)"; `### Last updated` bumped to June 13.
+5. **explorations/no-ein-sole-proprietor-path.md killed** — `Status: killed (2026-06-13) … (D-433)`; a dated supersession note added atop §Resolution so the file's "door open" conclusion reads as historical. Not in the REPO_INDEX active-explorations table (retired Session 126), so no row to remove; no PROTOTYPE_SPEC/PRODUCT_SUMMARY pointers existed.
+6. **PRODUCT_SUMMARY §3** sole-prop bullet → permanent non-support; **Last reviewed** bumped (manual — blockquote header not hook-enforced).
+7. **CUSTOMER_ARCHETYPE §4b** "no-EIN builder" → "sole-proprietor builder (no registered entity)", permanent non-support; §4c synthesis line updated. Terminology standardized to "sole proprietor(s)" — wall is registered-entity status, not the EIN.
+8. **REPO_INDEX** — Meta lead (Session 134), count 347→348 / latest D-433, four doc-rows bumped (MASTER_PLAN, DECISIONS, PRODUCT_SUMMARY, CUSTOMER_ARCHETYPE).
 
 ## Verification done
-- `wc -l`: CLAUDE.md 122, CC_PROCEDURES.md 139. No content lost (distinctive phrases — "One-sentence test", "Canon is maintained ambient", "scaffold as an exploration", "did this session change what a customer", "MD-1, MD-2" — all present in CC_PROCEDURES, absent from CLAUDE.md except the prose-sweep gate line).
-- All six `CC_PROCEDURES §X` gates resolve to real `## §X` headings; Wave gate's `PM_PROJECT_INSTRUCTIONS "Waves"` exists.
-- Copy-rule stale refs: 0. Date-header hook: passed on commit (CLAUDE.md + CC_PROCEDURES.md both dated June 12; REPO_INDEX "- Last updated" is a list item, not hook-matched).
+- §Prose-sweep multiline grep across the six edited docs: no surviving "deferred at launch / door open / revisit post-launch / live candidate" framing for this segment; "no-EIN" framing retired from the edited canon. (See verification block in the plan.)
+- Ledger: D-433 present, `Supersedes: none`; D-247 + D-302 each carry the `⚠ Amended by D-433` line; count = 348 / latest D-433.
+- Hook: BACKLOG `### Last updated:` = June 13, 2026. (DECISIONS/MASTER_PLAN/REPO_INDEX carry no hook-enforced in-file header; PRODUCT_SUMMARY blockquote header bumped manually.)
+- "short code" as a product offering: zero pre-existing copy anywhere (confirmed pre-edit); the term now appears only in D-433 / MASTER_PLAN as an explicit "never." (The two non-canon hits — `audits/…EXTRACTION.md`, `blog/clusters.ts` — are unrelated.)
 
-## Carry-forwards (standard backlog)
-- **Per-clone hook activation** — `.githooks` only enforces after `git config core.hooksPath .githooks` is run in each clone (documented in the hook header; no repo-tracked auto-set).
-- **Dead token** `--color-text-headline-muted` (globals.css line 78) — unconsumed since the Session 130 two-tone-H1 removal; safe to delete in a future marketing-site code change.
-- ~~REPO_INDEX rows for docs/writing/~~ **DONE** — `## Writing reference (docs/writing/)` subsection added (MARKETING_RUNBOOK.md + CAPABILITY_FIRST_BLOG_PLAYBOOK.md). No MD-number (archived/operational reference, not strategy canon).
-- **`globals.css` light→dark dead-token collapse** (D-430); blog "configurator" voice rewrite; pre-launch head-scratchers (workspace_name vs business_name; "a few days" vs 10–15 business days; ai-section "Fri, Jun 6"→Jun 5; Acme Engineering vs Acme).
-- **Pre-existing:** delete `joel+golive-smoke@gmail.com` from `early_access_subscribers`; OG unfurl cache-bust verify; TFN-path-killed MASTER_PLAN canon close; Claude.ai UI custom-instructions paste-sync.
+## Carry-forwards (flagged, not done here)
+- **`/prototype` + `/src` intake copy** — the stale "we'll register you as a sole proprietor (limited to one campaign)" promise still lives in `prototype/components/registration/business-details-form.tsx` (636–639, 647–648, 797) + `review-confirm.tsx:293` and the sunset `/src` FAQ/forms. **Deliberately deferred** to a dedicated `/prototype` UI session: the copy fix must move *with* the `has_ein="no"` flow-gating decision (block/redirect the no-entity path) — fixing copy while the flow still lets a no-entity sole prop click Continue and register would leave the prototype incoherent. `/src` items are sunsetting (D-358) — do not polish; they die with `/src`.
+- **Standing (pre-existing):** dead token `--color-text-headline-muted` (globals.css:78); `globals.css` light→dark dead-token collapse (D-430); blog "configurator" voice rewrite; delete `joel+golive-smoke@gmail.com` from `early_access_subscribers`; OG unfurl cache-bust verify; migration `009_early_access_interest_tag.sql` apply-before-deploy; Claude.ai UI custom-instructions paste-sync.
 
 ## Branch state
-**No open feature branches.** All 10 commits are on `main` and pushed; `main` is in sync with `origin/main` at `d6b1d7e`. The five older marketing branches remain merged-not-deleted (optional cleanup).
+**No open feature branches.** This session's commit is local on `main`, **unpushed** — held for PM `gg`. The five older marketing branches remain merged-not-deleted (optional cleanup).
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
-- **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN — the substantive product pickup, and the next session's real work.
-- Optional doc tidy-ups (carry-forwards above): dead-token deletions, blog "configurator" voice rewrite, pre-launch head-scratchers.
+- **PM `gg`** → review `.pm-review.md` → approve push of the D-433 hardening commit.
+- **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN — the substantive product pickup.
+- When a `/prototype` UI session opens: fix the sole-prop intake copy + `has_ein="no"` flow-gating together (carry-forward above).
