@@ -7,6 +7,8 @@ Status: exploring (2026-06-13)
 
 We're building a system of sub-vertical landing pages — one per addressable sub (and per concept/category hub) — that serve a human builder, AI retrieval engines, and Google simultaneously. This doc holds what we've learned about how to write them and how to make them findable without sacrificing readability.
 
+**Scope rule:** a ship-it page maps to exactly one second-dropdown sub-vertical — the configurator's third box (e.g. "Developer tools / API platforms / infrastructure SaaS"), never a whole vertical ("B2B SaaS & developer tooling"). If the dominant story reads generic across a vertical's subs, that's the tell the page is mis-scoped — drop to a specific sub. Dominant category is then that sub's lead category, which can differ sub to sub within one vertical (Identity/SSO → Verification; Customer support/helpdesk → Customer support; Dev tools/API → Account events).
+
 ## The writing rules
 
 1. **One page, one job.** Name the dominant story in a sentence; every section advances or supports it, none restates it. If two sections make the same point, cut or merge. (The first healthcare draft had four sections all arguing "reminders reduce no-shows" — that's the failure mode.)
@@ -86,3 +88,4 @@ Concentrate competitor co-occurrence in dedicated comparison pages and factual F
 - First filled worked example: the healthcare-administrative ship-it page (use the edited version — tightened ~25-30%, builder-framed open).
 - Second worked example: an honest-no page (candidate: crypto / personal investing).
 - Cross-reference with the Airtable Pages base once its schema lands.
+- **Legal-entity-required explainer (hub/concept page)** — content on why RelayKit needs a registered business entity. Needed soon, for when registration starts blocking sign-ups without one: this is the evergreen page that block links to, and that sub / honest-no pages reference. The truthful route for sole proprietors (form a registered entity → 10DLC) lives here. Flip side of the permanently-unsupported sole-proprietor constraint — frame as a clear requirement, not a rejection.
