@@ -4,9 +4,9 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 1 (held for PM `gg`, NOT pushed) | Files modified: 7 (DECISIONS, MASTER_PLAN, BACKLOG, explorations/no-ein-sole-proprietor-path, docs/PRODUCT_SUMMARY, docs/CUSTOMER_ARCHETYPE_FOUNDATION, REPO_INDEX) + CC_HANDOFF | Decisions added: 1 (**D-433**), 2 amended (D-247, D-302) | External actions: 0. **Doc-only session — no code touched, quality gates skipped.** Mid-phase (active phase stays Phase 2 — Session B → retirement sweep + drift watch skipped).
+**Session metrics:** Commits: 2 (both pushed) — `13b9d18` D-433 hardening + `2a5381c` landing-page-craft PM-edit follow-up | Files modified: 7 (DECISIONS, MASTER_PLAN, BACKLOG, explorations/no-ein-sole-proprietor-path, docs/PRODUCT_SUMMARY, docs/CUSTOMER_ARCHETYPE_FOUNDATION, REPO_INDEX) + CC_HANDOFF + explorations/landing-page-craft | Decisions added: 1 (**D-433**), 2 amended (D-247, D-302) | External actions: 2 pushes to `origin/main`. **Doc-only session — no code touched, quality gates skipped.** Mid-phase (active phase stays Phase 2 — Session B → retirement sweep + drift watch skipped).
 
-**Status: 🟡 Committed locally, HELD for PM `gg` review — do NOT push until approved.** A scoped doc-only hardening session; the substantive product pickup remains Phase 2 — Session B.
+**Status: 🟢 Approved + pushed — `main` in sync with `origin/main` at `2a5381c`.** A scoped doc-only hardening session; the substantive product pickup remains Phase 2 — Session B.
 
 ---
 
@@ -34,12 +34,11 @@ Converted RelayKit's stance on **sole proprietors without a registered business 
 - **Standing (pre-existing):** dead token `--color-text-headline-muted` (globals.css:78); `globals.css` light→dark dead-token collapse (D-430); blog "configurator" voice rewrite; delete `joel+golive-smoke@gmail.com` from `early_access_subscribers`; OG unfurl cache-bust verify; migration `009_early_access_interest_tag.sql` apply-before-deploy; Claude.ai UI custom-instructions paste-sync.
 
 ## Branch state
-**No open feature branches.** This session's commit is local on `main`, **unpushed** — held for PM `gg`. The five older marketing branches remain merged-not-deleted (optional cleanup).
+**No open feature branches.** Both commits are on `main` and **pushed** (`origin/main` at `2a5381c`). The five older marketing branches remain merged-not-deleted (optional cleanup).
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
-- **PM `gg`** → review `.pm-review.md` → approve push of the D-433 hardening commit.
 - **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN — the substantive product pickup.
 - When a `/prototype` UI session opens: fix the sole-prop intake copy + `has_ein="no"` flow-gating together (carry-forward above).
