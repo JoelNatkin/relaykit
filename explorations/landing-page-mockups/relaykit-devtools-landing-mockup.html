@@ -12,7 +12,7 @@
     --page: #13120E; --surface-page: #16130F; --surface-card: #181511; --surface-inset: #1E1A15;
     --border: #292524; --border-strong: #44403C; --border-faint: #1C1917;
     --text: #FAFAF9; --text-2: #D7D3D0; --text-3: #A9A29D; --text-4: #79716B;
-    --gold: #E0B010; --ink-on-gold: #13120E; --success: #17B26A;
+    --gold: #E0B010; --ink-on-gold: #13120E; --success: #17B26A; --loss: #E0564D;
     --radius-md: 8px; --radius-lg: 12px; --maxw: 1024px;
     --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -117,23 +117,42 @@
   .whycard { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
   .whycard .pip { width: 7px; height: 7px; border-radius: 2px; background: var(--gold); display: block; margin-bottom: 14px; }
   .whycard p { font-size: 14.5px; color: var(--text-2); line-height: 1.55; }
-  .statgrid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+  .statgrid { display: grid; grid-template-columns: 1fr; gap: 16px; }
   @media (min-width: 720px) { .statgrid { grid-template-columns: repeat(2, 1fr); } }
   .statcard { background: var(--surface-inset); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px; }
-  .statcard .pip { width: 7px; height: 7px; border-radius: 2px; background: var(--gold); display: block; margin-bottom: 14px; }
-  .stat-metric { font-size: 13px; color: var(--text-3); margin-bottom: 16px; }
-  .stat-vals { display: flex; align-items: baseline; gap: 32px; }
-  .stat-col { display: flex; flex-direction: column; }
-  .stat-col .num { font-weight: 600; line-height: 1; }
-  .stat-col .num.text { font-size: 32px; color: var(--text); }
-  .stat-col .num.email { font-size: 24px; color: var(--text-4); font-weight: 500; }
-  .stat-col .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-4); margin-top: 7px; }
+  .stat-label { font-size: 17px; font-weight: 600; color: var(--text); margin-bottom: 22px; }
+  .stat-row + .stat-row { margin-top: 18px; }
+  .stat-rowhead { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+  .stat-row .chan { font-size: 12px; font-weight: 600; letter-spacing: 0; }
+  .stat-row .val { font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat-row.text .chan { color: var(--text); }
+  .stat-row.text .val { font-size: 24px; color: var(--text); }
+  .stat-row.email .chan { color: var(--text-3); }
+  .stat-row.email .val { font-size: 19px; color: var(--text-3); font-weight: 600; }
+  .stat-bar { height: 7px; border-radius: 999px; background: rgba(255,255,255,0.06); overflow: hidden; }
+  .stat-bar .fill { height: 100%; border-radius: 999px; min-width: 5px; }
+  .stat-row.text .fill { background: var(--success); }
+  .stat-row.email .fill { background: var(--loss); }
   .vs-note { margin-top: 14px; font-size: 12.5px; color: var(--text-4); line-height: 1.5; max-width: 46em; }
   .prose { max-width: 720px; }
   .prose > p:first-child { font-size: 17px; color: var(--text-2); line-height: 1.6; }
   .prose h3 { font-size: 17px; font-weight: 600; color: var(--text); margin: 30px 0 9px; }
   .prose p { font-size: 16px; line-height: 1.65; color: var(--text-2); }
   .prose p + p { margin-top: 14px; }
+
+  /* the details — editorial Q&A: verdict leads, reasoning recedes */
+  .qa { max-width: 880px; display: grid; grid-template-columns: 1fr; column-gap: 56px; }
+  .qa-item { padding: 22px 0; border-top: 1px solid var(--border-faint); }
+  .qa-item:first-child { border-top: 0; padding-top: 4px; }
+  .qa-item:last-child { padding-bottom: 0; }
+  @media (min-width: 760px) {
+    .qa { grid-template-columns: 1fr 1fr; }
+    .qa-item:nth-child(-n+2) { border-top: 0; padding-top: 4px; }
+    .qa-item:nth-last-child(-n+2) { padding-bottom: 0; }
+  }
+  .qa-q { font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.4; letter-spacing: -0.01em; margin-bottom: 9px; }
+  .qa-a { font-size: 15px; line-height: 1.62; color: var(--text-3); }
+  .qa-a .lead { color: var(--text); font-weight: 500; }
 
   /* what it takes */
   .twocol { display: grid; grid-template-columns: 1fr; gap: 36px; align-items: start; }
@@ -173,7 +192,7 @@
   #msgTones .cm-tone:hover:not(.active) { color: var(--text); border-color: var(--text-4); }
   .cm-active-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
   .cm-active-head h4 { font-size: 15px; font-weight: 600; }
-  .cm-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; transition: opacity .28s ease; }
+  .cm-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; transition: opacity .28s ease; height: 300px; overflow-y: auto; align-content: start; padding-right: 4px; scrollbar-width: thin; }
   @media (max-width: 900px) { .cm-cards { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 600px) { .cm-cards { grid-template-columns: 1fr; } }
   .cm-cards.swapping { opacity: 0; }
@@ -181,6 +200,8 @@
   .cm-card-name { font-size: 12.5px; font-weight: 600; margin-bottom: 7px; display: flex; align-items: center; gap: 7px; }
   .cm-card-name .pip { width: 5px; height: 5px; border-radius: 2px; background: var(--gold); }
   .cm-card-body { font-size: 12.5px; color: var(--text-2); line-height: 1.45; }
+  .cm-card.cm-add { display: flex; align-items: center; justify-content: center; gap: 8px; border-style: dashed; border-color: var(--border-strong); background: transparent; color: var(--text-4); font-size: 13px; font-weight: 500; }
+  .cm-card.cm-add .cm-add-plus { font-size: 16px; line-height: 1; }
 
   /* faq — left aligned, capped width */
   .faqlist { max-width: 760px; }
@@ -210,6 +231,77 @@
   .footrow .links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 13.5px; color: var(--text-3); }
   .footrow .links a:hover { color: var(--text); }
   .footnote { font-size: 12.5px; color: var(--text-4); }
+
+  /* the problem — requirements accordion */
+  .reqs { border: 1px solid var(--border); background: var(--surface-card); border-radius: var(--radius-lg); padding: 6px 24px; }
+  details.req { border-bottom: 1px solid var(--border-faint); }
+  details.req:last-child { border-bottom: 0; }
+  details.req summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 15px 0; font-size: 15.5px; color: var(--text); }
+  details.req summary::-webkit-details-marker { display: none; }
+  details.req .rdot { width: 7px; height: 7px; border-radius: 50%; background: var(--loss); flex-shrink: 0; }
+  details.req .rlabel { flex: 1; }
+  details.req .chev { color: var(--text-4); font-size: 16px; transition: transform .15s; flex-shrink: 0; }
+  details.req[open] .chev { transform: rotate(180deg); }
+  details.req .rbody { max-width: 470px; padding: 0 0 16px 19px; font-size: 14px; line-height: 1.6; color: var(--text-2); }
+  details.req .rbody p + p { margin-top: 9px; }
+
+  /* the paperwork — handle cards */
+  .handlecards { display: grid; grid-template-columns: 1fr; gap: 24px; }
+  @media (min-width: 760px) { .handlecards { grid-template-columns: repeat(3, 1fr); } }
+  .handlecard { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
+  .handlecard .ficon { width: 34px; height: 34px; border-radius: 9px; background: rgba(224,176,16,0.14); color: var(--gold); display: grid; place-items: center; margin-bottom: 16px; }
+  .handlecard h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+  .handlecard p { font-size: 14px; line-height: 1.55; color: var(--text-2); }
+
+  /* the build — code card */
+  .buildgrid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: start; }
+  @media (min-width: 860px) { .buildgrid { grid-template-columns: 1fr 1fr; gap: 48px; } }
+  .buildcopy h2 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 700; line-height: 1.12; max-width: 14em; }
+  .buildcopy .lead { margin-top: 16px; font-size: 16px; line-height: 1.6; color: var(--text-2); max-width: 34em; }
+  .toolrow { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+  .toolrow span { font-size: 15px; font-weight: 600; color: var(--text-3); }
+  .buildcopy .slots { margin-top: 22px; font-size: 13.5px; color: var(--text-4); }
+  .codecard { border: 1px solid var(--border); background: var(--surface-card); border-radius: var(--radius-lg); overflow: hidden; }
+  .codecard .bar { display: flex; gap: 7px; padding: 13px 16px; border-bottom: 1px solid var(--border-faint); }
+  .codecard .bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--surface-inset); }
+  .codecard pre { margin: 0; padding: 22px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.75; color: var(--text); }
+  .codecard .k { color: var(--text-3); }
+  .codecard .g { color: var(--gold); }
+  .codecard .s { color: var(--success); }
+  .codecaption { margin-top: 13px; font-family: var(--mono); font-size: 13px; color: var(--text-4); }
+
+  /* the test — preview list */
+  .testgrid { display: grid; grid-template-columns: 1fr; gap: 40px; align-items: start; }
+  @media (min-width: 860px) { .testgrid { grid-template-columns: 1fr 1fr; gap: 48px; } }
+  .previewcard { border: 1px solid var(--border); background: var(--surface-card); border-radius: var(--radius-lg); padding: 22px 24px; }
+  .previewcard .pv-title { font-size: 16px; font-weight: 600; }
+  .previewcard .pv-sub { margin-top: 4px; margin-bottom: 6px; font-size: 13px; color: var(--text-3); line-height: 1.5; }
+  .pv-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--border-faint); padding: 13px 0; }
+  .pv-name { font-size: 14.5px; font-weight: 600; color: var(--text); }
+  .pv-phone { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+  .pv-status { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-3); flex-shrink: 0; }
+  .pv-status .sdot { width: 7px; height: 7px; border-radius: 50%; }
+  .pv-status.verified .sdot { background: var(--success); }
+  .pv-status.invited .sdot { background: var(--gold); }
+  .pv-invite { display: inline-block; margin-top: 14px; color: var(--gold); font-size: 14px; font-weight: 600; }
+  .testcopy h2 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 700; line-height: 1.12; max-width: 12em; }
+  .testcopy p { margin-top: 16px; font-size: 16px; line-height: 1.6; color: var(--text-2); max-width: 34em; }
+
+  /* the price */
+  .pricegrid { display: grid; grid-template-columns: 1fr; gap: 36px; align-items: start; }
+  @media (min-width: 860px) { .pricegrid { grid-template-columns: 1.05fr 0.95fr; gap: 48px; } }
+  .pricecard { border: 1px solid var(--border); background: var(--surface-card); border-radius: var(--radius-lg); overflow: hidden; }
+  .pricestage { padding: 24px; }
+  .pricestage + .pricestage { border-top: 1px solid var(--border); }
+  .pricestage .stagelabel { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.13em; color: var(--gold); }
+  .pricestage h3 { margin-top: 12px; font-size: 22px; font-weight: 600; }
+  .pricestage p { margin-top: 10px; font-size: 14px; line-height: 1.55; color: var(--text-2); }
+  .includes h3 { font-size: 22px; font-weight: 600; }
+  .inclist { margin-top: 16px; }
+  .incrow { display: flex; align-items: center; gap: 12px; border-top: 1px dashed var(--border); padding: 13px 0; font-size: 15px; color: var(--text-2); }
+  .incrow:last-child { border-bottom: 1px dashed var(--border); }
+  .incrow .tick { color: var(--gold); flex-shrink: 0; }
+  .includes .fineprint { margin-top: 18px; font-size: 12.5px; line-height: 1.5; color: var(--text-4); max-width: 32em; }
 
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
   :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
@@ -309,15 +401,31 @@
 <section class="sec">
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Why it matters here</span>
-      <h2>Email isn't where these get read.</h2>
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The numbers</span>
+      <h2>Most account emails never get opened.</h2>
     </div>
-    <p class="bridge">Account events are the messages a customer most needs to see — and the ones email is worst at delivering. The gap isn't close.</p>
+    <p class="bridge">Account events are the messages a customer most needs to see — and the ones email is worst at delivering.</p>
     <div class="statgrid">
-      <div class="statcard"><span class="pip" aria-hidden="true"></span><div class="stat-metric">Gets opened</div><div class="stat-vals"><div class="stat-col"><span class="num text">98%</span><span class="lbl">Text</span></div><div class="stat-col"><span class="num email">~20%</span><span class="lbl">Email</span></div></div></div>
-      <div class="statcard"><span class="pip" aria-hidden="true"></span><div class="stat-metric">Time to first open</div><div class="stat-vals"><div class="stat-col"><span class="num text">90 sec</span><span class="lbl">Text</span></div><div class="stat-col"><span class="num email">90 min</span><span class="lbl">Email</span></div></div></div>
-      <div class="statcard"><span class="pip" aria-hidden="true"></span><div class="stat-metric">Gets a reply</div><div class="stat-vals"><div class="stat-col"><span class="num text">45%</span><span class="lbl">Text</span></div><div class="stat-col"><span class="num email">6%</span><span class="lbl">Email</span></div></div></div>
-      <div class="statcard"><span class="pip" aria-hidden="true"></span><div class="stat-metric">Lands in spam</div><div class="stat-vals"><div class="stat-col"><span class="num text">~3%</span><span class="lbl">Text</span></div><div class="stat-col"><span class="num email">up to 85%</span><span class="lbl">Email</span></div></div></div>
+      <div class="statcard">
+        <div class="stat-label">Gets opened</div>
+        <div class="stat-row text"><div class="stat-rowhead"><span class="chan">Text message</span><span class="val">98%</span></div><div class="stat-bar"><div class="fill" style="width:100%"></div></div></div>
+        <div class="stat-row email"><div class="stat-rowhead"><span class="chan">Email</span><span class="val">~20%</span></div><div class="stat-bar"><div class="fill" style="width:20.4%"></div></div></div>
+      </div>
+      <div class="statcard">
+        <div class="stat-label">Time to first open</div>
+        <div class="stat-row text"><div class="stat-rowhead"><span class="chan">Text message</span><span class="val">90 sec</span></div><div class="stat-bar"><div class="fill" style="width:1.7%"></div></div></div>
+        <div class="stat-row email"><div class="stat-rowhead"><span class="chan">Email</span><span class="val">90 min</span></div><div class="stat-bar"><div class="fill" style="width:100%"></div></div></div>
+      </div>
+      <div class="statcard">
+        <div class="stat-label">Gets a reply</div>
+        <div class="stat-row text"><div class="stat-rowhead"><span class="chan">Text message</span><span class="val">45%</span></div><div class="stat-bar"><div class="fill" style="width:100%"></div></div></div>
+        <div class="stat-row email"><div class="stat-rowhead"><span class="chan">Email</span><span class="val">6%</span></div><div class="stat-bar"><div class="fill" style="width:13.3%"></div></div></div>
+      </div>
+      <div class="statcard">
+        <div class="stat-label">Lands in spam</div>
+        <div class="stat-row text"><div class="stat-rowhead"><span class="chan">Text message</span><span class="val">~3%</span></div><div class="stat-bar"><div class="fill" style="width:3.5%"></div></div></div>
+        <div class="stat-row email"><div class="stat-rowhead"><span class="chan">Email</span><span class="val">up to 85%</span></div><div class="stat-bar"><div class="fill" style="width:100%"></div></div></div>
+      </div>
     </div>
     <p class="vs-note">Industry SMS vs. email benchmarks, 2025–26. SMS open is inferred from delivery, not pixel-tracked; email opens are inflated further by tracking-pixel prefetch. For a failed payment or a new-device sign-in, that gap is the difference between a fix and a churned — or compromised — customer.</p>
   </div>
@@ -326,57 +434,35 @@
 <section class="sec">
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>How it fits</span>
-      <h2>Who gets the text — and who doesn't.</h2>
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The details</span>
+      <h2>Account event messages: Q&amp;A</h2>
     </div>
-    <div class="prose">
-      <p>The five events above are the same on every app. Who should receive them is not — and that's the one decision worth making on purpose.</p>
-      <h3>One owner, one number</h3>
-      <p>For a tool with a single account owner — a solo developer's API key, a one-seat dashboard — routing is trivial. The person who pays is the person you text. A declined card, a trial winding down, a sign-in from an unfamiliar city: all of it goes to the one human attached to the account. Choosing the recipient was never the hard part. Making sure the message arrived was — and that's the gap the numbers above describe.</p>
-      <h3>Many seats, one right recipient</h3>
-      <p>Multi-tenant apps are where it gets interesting. A workspace has a billing owner, a couple of admins, and a stack of members, and the five events don't fan out evenly. A failed payment is the billing owner's problem; texting all twelve seats just makes twelve confused people. A new-device sign-in belongs to exactly one user — the one who signed in. A suspension might need every admin at once. Same event, different human, depending on role.</p>
-      <p>This is the quiet thing email gets wrong. Billing alerts land in a shared alias nobody owns, or blast the whole org, and the one person who could fix it hears about it from a churned customer instead. A text forces you to name a recipient — which turns out to be exactly the right constraint.</p>
-      <h3>The same five messages, either way</h3>
-      <p>You don't build two systems. Each event is a single call that carries the recipient and the details — the last four digits, the account link, the device label. RelayKit renders the message and sends it. Single-tenant or multi-tenant is just a question of which user you pass; the library doesn't change, and the routing stays yours.</p>
-      <p>So the work isn't writing the messages or handling delivery — that part's done. It's the one design choice worth your attention: for each event, who needs to know. Get that right, and the account event does its job — reaching the person who can act, somewhere they'll actually see it.</p>
+    <div class="qa">
+      <div class="qa-item">
+        <div class="qa-q">Who should get a failed-payment text in a multi-tenant app?</div>
+        <p class="qa-a"><span class="lead">The billing owner — not every seat.</span> A failed payment is one person's problem to fix, and texting all twelve people on the workspace just makes twelve confused users and one annoyed admin. Send each event to the one human who can act on it.</p>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">Should a new-device sign-in alert go to the account owner or the person who signed in?</div>
+        <p class="qa-a"><span class="lead">The person who signed in.</span> It's their security event, and they're the one who can confirm it was them or lock things down. In a workspace, that means a new-laptop login from an admin shouldn't ping the billing owner — route security events to the person they're actually about.</p>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">Which account events are worth a text?</div>
+        <p class="qa-a"><span class="lead">The ones a customer has to act on, or has to know about right now:</span> a declined payment, a new-device sign-in, an account suspension. Receipts, weekly digests, and "your invoice is ready" can stay in email — texting those just trains people to ignore you. Rule of thumb: if it can wait until they next open the app, it doesn't need a text.</p>
+      </div>
+      <div class="qa-item">
+        <div class="qa-q">What about users who never gave you a phone number?</div>
+        <p class="qa-a"><span class="lead">The event falls back to email.</span> Text is the escalation channel for the messages that matter most, not a replacement for all of them. Most apps collect a number at sign-up, or the first time security matters (a new-device prompt is a natural moment to ask). You decide the fallback; you pass the recipient, and the message goes where you send it.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<section class="sec" id="how">
-  <div class="wrap">
-    <div class="sechead">
-      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>What it takes</span>
-      <h2>Free to build. Days to go live.</h2>
-    </div>
-    <p class="bridge">Nothing to commit up front — you author and test for free, and only pay once you're ready to send to real customers.</p>
-    <div class="twocol">
-      <table class="expect">
-        <thead><tr><th>Step</th><th>Time</th><th>Cost</th></tr></thead>
-        <tbody>
-          <tr><td class="step">Author &amp; test messages</td><td>Now</td><td class="gold">Free</td></tr>
-          <tr><td class="step">Register your business</td><td>~3 Days</td><td>$49 Once</td></tr>
-          <tr><td class="step">Go live</td><td>Instant</td><td>$19/mo</td></tr>
-        </tbody>
-      </table>
-      <div class="handle">
-        <p>We handle carrier registration, opt-out processing, and the compliance rules. You send through one SDK and never read a paragraph about carriers.</p>
-      </div>
-    </div>
-    <div class="sectionlinks">
-      <div class="links">
-        <a class="conceptlink" href="#">How registration works ↗</a>
-        <a class="conceptlink" href="#">Capability status ↗</a>
-      </div>
-      <div class="eeat"><span class="check" aria-hidden="true">✓</span>We've run these registrations ourselves on live carrier infrastructure · updated June 2026</div>
-    </div>
-  </div>
-</section>
 
 <section class="sec">
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Included</span>
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The rest</span>
       <h2>Account events are just the start.</h2>
     </div>
     <p class="bridge">One integration sends every category below. For a developer tool, verification codes and operational alerts pair most naturally with account events — but it's all there when you need it.</p>
@@ -420,27 +506,167 @@
 <section class="sec">
   <div class="wrap">
     <div class="sechead">
-      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Questions</span>
-      <h2>Before you build it in.</h2>
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The problem</span>
+      <h2>The rules show up after you start building.</h2>
     </div>
-    <p class="bridge">Short answers to what developers ask before wiring it into a product.</p>
-    <div class="faqlist">
-      <details class="faq" open>
-        <summary>Does an account-events text need an opt-out?<span class="chev" aria-hidden="true">⌄</span></summary>
-        <div class="ans">Yes. Every account event carries STOP handling, and RelayKit processes opt-outs for you. Verification codes are the one exception — 2FA is carved out of opt-out rules.</div>
+    <p class="bridge">US carriers require these from every business that sends texts. Getting approved can take weeks if not done right.</p>
+    <div class="reqs">
+      <details class="req" name="reqs" open>
+        <summary><span class="rdot" aria-hidden="true"></span><span class="rlabel">Registration</span><span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="rbody">
+          <p>Before anything sends, your business gets registered in a central registry that every US carrier checks — legal name, tax ID, website, and what you plan to send. Details have to match your IRS records exactly, or the application bounces.</p>
+          <p>RelayKit collects this during setup and files the registration for you.</p>
+        </div>
       </details>
-      <details class="faq">
-        <summary>How long does registration take?<span class="chev" aria-hidden="true">⌄</span></summary>
-        <div class="ans">About three days on our carrier, versus the weeks it usually takes elsewhere. You author and test for free first, and only pay the $49 once you're ready to go live.</div>
+      <details class="req" name="reqs">
+        <summary><span class="rdot" aria-hidden="true"></span><span class="rlabel">Carrier review</span><span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="rbody">
+          <p>Reviewers check your registration and your messages against carrier rules before you're allowed to send. Other providers typically take two to three weeks — and every rejection restarts the clock, with no guarantee the next round clears.</p>
+          <p>RelayKit submissions are prepared to pass the first time; approval typically takes a few days.</p>
+        </div>
       </details>
-      <details class="faq">
-        <summary>Can these go out on a free plan?<span class="chev" aria-hidden="true">⌄</span></summary>
-        <div class="ans">You can author and test every message for free, sent to your own phone. Live sending to customers starts at $19/month after the one-time $49 registration.</div>
+      <details class="req" name="reqs">
+        <summary><span class="rdot" aria-hidden="true"></span><span class="rlabel">Consent requirements</span><span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="rbody">
+          <p>You have to collect and keep proof that every recipient agreed to get texts from you — how they opted in, when, and which kinds of messages they agreed to. Someone who signed up for appointment reminders hasn't agreed to marketing.</p>
+          <p>RelayKit provides the opt-in language and keeps the consent records automatically.</p>
+        </div>
       </details>
-      <details class="faq">
-        <summary>How is this different from sending through Twilio yourself?<span class="chev" aria-hidden="true">⌄</span></summary>
-        <div class="ans">With a raw provider you handle carrier registration, opt-out logic, and compliance scanning yourself. RelayKit handles all three behind one SDK. See the <a href="#">full comparison</a>.</div>
+      <details class="req" name="reqs">
+        <summary><span class="rdot" aria-hidden="true"></span><span class="rlabel">Build a compliance website</span><span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="rbody">
+          <p>Reviewers visit your website looking for a privacy policy with specific mobile-data language, posted terms, and a visible description of your texting program. A missing or half-finished site is the single most common reason registrations get rejected.</p>
+          <p>RelayKit generates and hosts a compliance site for you — privacy policy, terms, and opt-in page included.</p>
+        </div>
       </details>
+      <details class="req" name="reqs">
+        <summary><span class="rdot" aria-hidden="true"></span><span class="rlabel">STOP and HELP handling</span><span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="rbody">
+          <p>A reply of STOP has to halt messages to that person immediately, and HELP has to get a real answer — automatically, every time. Getting it wrong is a fast way to get a number shut down.</p>
+          <p>RelayKit handles both at the delivery layer; when someone replies STOP, we stop.</p>
+        </div>
+      </details>
+      <details class="req" name="reqs">
+        <summary><span class="rdot" aria-hidden="true"></span><span class="rlabel">Message restrictions</span><span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="rbody">
+          <p>Carriers limit what businesses can say over text: entire content categories are banned, links get scrutinized, and messages outside your registered use case can get your number flagged. The rules live across multiple carrier policies, and they change.</p>
+          <p>RelayKit's templates already follow them, and custom messages are checked before they send — not just passed through.</p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The paperwork</span>
+      <h2>You build the feature. We handle the bureaucracy.</h2>
+    </div>
+    <p class="bridge">Every text message carries a stack of carrier rules. We've read all of it, so you don't have to.</p>
+    <div class="handlecards">
+      <div class="handlecard">
+        <div class="ficon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 14 2 2 4-4"/></svg></div>
+        <h3>Registration handled</h3>
+        <p>We file your brand and message registration with the carriers and walk it through approval. You stay in your editor.</p>
+      </div>
+      <div class="handlecard">
+        <div class="ficon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4 3 7 7 8 4-1 7-4 7-8V6z"/><path d="m9 11 2 2 4-4"/></svg></div>
+        <h3>Messages compliant</h3>
+        <p>Templates and custom messages are checked against what carriers allow, not just passed through.</p>
+      </div>
+      <div class="handlecard">
+        <div class="ficon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m6 6 12 12"/></svg></div>
+        <h3>Opt-ins &amp; opt-outs covered</h3>
+        <p>When someone replies STOP, we stop. Consent is tracked and enforced at delivery — not something you wire up yourself.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The build</span>
+    </div>
+    <div class="buildgrid">
+      <div class="buildcopy">
+        <h2>Give your AI tool a build spec, not a pile of docs.</h2>
+        <p class="lead">RelayKit generates implementation instructions for your AI tool. Messages, variables, event triggers, testing steps, and integration guidance arrive for smooth integration.</p>
+        <div class="toolrow"><span>Claude</span><span>Cursor</span><span>Windsurf</span><span>Copilot</span><span>Cline</span><span>Codex</span></div>
+        <p class="slots">Slots into ShipFast, Supastarter, MakerKit, and Vercel + Supabase.</p>
+      </div>
+      <div>
+        <div class="codecard">
+          <div class="bar" aria-hidden="true"><i></i><i></i><i></i></div>
+          <pre><span class="k">import</span> { <span class="g">RelayKit</span> } <span class="k">from</span> <span class="s">'relaykit'</span>;
+
+<span class="k">const</span> relaykit = <span class="k">new</span> <span class="g">RelayKit</span>();
+
+<span class="k">await</span> relaykit.accountEvents.<span class="g">paymentFailed</span>(user.phone, {
+  <span class="g">cardLast4</span>: <span class="s">'4242'</span>,
+  <span class="g">link</span>: <span class="s">'yourapp.com/billing'</span>,
+});</pre>
+        </div>
+        <p class="codecaption">That's the send.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The test</span>
+    </div>
+    <div class="testgrid">
+      <div class="previewcard">
+        <div class="pv-title">Preview list</div>
+        <div class="pv-sub">Your safe audience for sending test messages, before and after launch.</div>
+        <div class="pv-row"><div><div class="pv-name">Joel</div><div class="pv-phone">(555) 867-8842</div></div><span class="pv-status verified"><span class="sdot" aria-hidden="true"></span>Verified</span></div>
+        <div class="pv-row"><div><div class="pv-name">Sarah</div><div class="pv-phone">(555) 412-5519</div></div><span class="pv-status verified"><span class="sdot" aria-hidden="true"></span>Verified</span></div>
+        <div class="pv-row"><div><div class="pv-name">Mike</div><div class="pv-phone">(555) 290-3301</div></div><span class="pv-status invited"><span class="sdot" aria-hidden="true"></span>Invited</span></div>
+        <a class="pv-invite" href="#">+ Invite someone</a>
+      </div>
+      <div class="testcopy">
+        <h2>Run test messages through real phones.</h2>
+        <p>Add yourself, your team, your beta testers. Each person verifies once. After that, your app's messages work for them exactly the way they'll work for customers.</p>
+        <p>Trigger your real flows — a payment failure, a sign-in, a code — and see the whole loop land: sent, delivered, your database updated.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The price</span>
+      <h2>Simple pricing.</h2>
+    </div>
+    <div class="pricegrid">
+      <div class="pricecard">
+        <div class="pricestage">
+          <div class="stagelabel">Stage 1</div>
+          <h3>Build for free</h3>
+          <p>Set up your messages. Add the code to your app. Test with real phones. No credit card.</p>
+        </div>
+        <div class="pricestage">
+          <div class="stagelabel">Stage 2</div>
+          <h3>Go live for $49 + $19/mo</h3>
+          <p>We file your registration with carriers. Approval takes a few days. 500 messages included per month, then $8 per additional 500. Full refund if you're not approved.</p>
+        </div>
+      </div>
+      <div class="includes">
+        <h3>What $19/mo includes.</h3>
+        <div class="inclist">
+          <div class="incrow"><span class="tick" aria-hidden="true">✓</span>500 messages a month</div>
+          <div class="incrow"><span class="tick" aria-hidden="true">✓</span>Your own sending number</div>
+          <div class="incrow"><span class="tick" aria-hidden="true">✓</span>Delivery, opt-outs &amp; quiet hours</div>
+          <div class="incrow"><span class="tick" aria-hidden="true">✓</span>A hosted compliance site</div>
+          <div class="incrow"><span class="tick" aria-hidden="true">✓</span>Carrier rule-change tracking</div>
+        </div>
+        <p class="fineprint">Marketing messages add $10/mo. Volume pricing above 5,000 messages. US and Canada at launch. We don't handle HIPAA, healthcare-regulated workflows, or enterprise procurement.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -496,40 +722,72 @@
   var CM = {
     'verification': { name: 'Verification', biz: true, msgs: [
       { n: 'Verification code', b: '{biz}: Verification code: 482910. Expires in 10 minutes.' },
-      { n: 'Login confirmation', b: '{biz}: New login to your account. Not you? Reset your password now.' },
-      { n: 'Password reset', b: '{biz}: Your password reset code is 731902. Expires in 10 minutes.' } ] },
+      { n: 'Confirmation code', b: '{biz}: Confirmation code: 482910. Expires in 10 minutes.' },
+      { n: 'Recovery code', b: '{biz}: Recovery code: 482910. Expires in 10 minutes.' },
+      { n: 'Login code', b: '{biz}: Your login code is 482910. Expires in 10 minutes.' } ] },
     'appointments': { name: 'Appointments', biz: true, msgs: [
       { n: 'Confirmation', b: '{biz}: your appointment with Dr. Chen is confirmed for March 4th, 2:00 PM.' },
-      { n: 'Reminder', b: '{biz}: reminder - your appointment is tomorrow at 2:00 PM. Cancel: yourapp.com/c' },
-      { n: 'Reschedule', b: '{biz}: your appointment moved to March 6th, 2:00 PM.' } ] },
+      { n: 'Reminder - distant', b: '{biz}: reminder - your appointment is tomorrow, March 4th, 2:00 PM. Cancel: yourapp.com/cancel' },
+      { n: 'Reminder - proximate', b: '{biz}: your appointment is in 1 hour, March 4th, 2:00 PM. Cancel: yourapp.com/cancel' },
+      { n: 'Reschedule confirmation', b: '{biz}: your appointment is rescheduled to March 4th, 2:00 PM with Dr. Chen.' },
+      { n: 'Cancellation confirmation', b: '{biz}: your appointment with Dr. Chen is cancelled. Rebook anytime: yourapp.com/reschedule' },
+      { n: 'No-show follow-up', b: '{biz}: we missed you today. Want to rebook with Dr. Chen? yourapp.com/reschedule' },
+      { n: 'Post-appointment', b: '{biz}: thanks for seeing Dr. Chen today. We\u2019d love your feedback: yourapp.com/feedback' } ] },
     'order-updates': { name: 'Order updates', biz: true, msgs: [
-      { n: 'Order confirmed', b: '{biz}: Order ORD-2026-90413 confirmed. Arrives Thursday. We\u2019ll text when it ships.' },
-      { n: 'Order shipped', b: '{biz}: Your order shipped. Track it: track.ups.com/x9k2' },
-      { n: 'Out for delivery', b: '{biz}: Your order is out for delivery today.' } ] },
+      { n: 'Order confirmed', b: '{biz}: Order ORD-2026-90413 confirmed. Arrives Thursday. We\u2019ll text you when it ships.' },
+      { n: 'Order processing', b: '{biz}: Order ORD-2026-90413 is being prepared. We\u2019ll text you when it ships.' },
+      { n: 'Order shipped', b: '{biz}: Order ORD-2026-90413 has shipped. Track it: track.ups.com/x9k2. Arrives Thursday.' },
+      { n: 'Out for delivery', b: '{biz}: Order ORD-2026-90413 is out for delivery today. Track it: track.ups.com/x9k2' },
+      { n: 'Order delivered', b: '{biz}: Order ORD-2026-90413 was delivered. Something wrong? Start here: yourapp.com/returns' },
+      { n: 'Return started', b: '{biz}: Your return for order ORD-2026-90413 is started. Track its status: yourapp.com/returns' },
+      { n: 'Refund processed', b: '{biz}: Refund of $50 for order ORD-2026-90413 is processed to your Visa.' } ] },
     'customer-support': { name: 'Customer support', biz: true, msgs: [
-      { n: 'Ticket received', b: '{biz}: We got your request. We\u2019ll reply within 24 hours.' },
-      { n: 'New reply', b: '{biz}: There\u2019s a new reply on your ticket: yourapp.com/t/4821' },
-      { n: 'Resolved', b: '{biz}: Your ticket is resolved. Reply if you still need help.' } ] },
+      { n: 'Ticket received', b: '{biz} support: ticket T-4821 received. We\u2019ll reply soon.' },
+      { n: 'Agent assigned', b: '{biz} support: Jordan is handling ticket T-4821.' },
+      { n: 'Agent response', b: '{biz} support: ticket T-4821 has a reply. View: yourapp.com/t/4821' },
+      { n: 'Resolution notification', b: '{biz} support: ticket T-4821 is resolved. Still need help? yourapp.com/t/4821' },
+      { n: 'CSAT follow-up', b: '{biz} support: how did we do on ticket T-4821? Rate here: yourapp.com/csat/4821' },
+      { n: 'Proactive outreach', b: '{biz} support: looks like you hit a snag. Want a hand? Reply here and we\u2019ll help.' },
+      { n: 'Service status alert', b: '{biz}: we\u2019re aware of a service issue and working on it. ETA 30 min. Updates to follow.' },
+      { n: 'Account issue resolved', b: '{biz}: we found and fixed an issue on your account. No action needed. Questions? Reply here.' } ] },
     'team-alerts': { name: 'Team alerts', biz: true, msgs: [
+      { n: 'Shift scheduled', b: '{biz}: You\u2019re scheduled Sat 3/15 9am-2pm at Downtown HQ as Shift lead.' },
+      { n: 'Shift reminder', b: '{biz}: Reminder, you\u2019re on Sat 3/15 9am-2pm at Downtown HQ.' },
+      { n: 'Shift change', b: '{biz}: Your shift changed. New: Sat 3/15 9am-2pm at Downtown HQ.' },
+      { n: 'Shift cancellation', b: '{biz}: Your Sat 3/15 9am-2pm shift at Downtown HQ is cancelled.' },
+      { n: 'Shift start', b: '{biz}: Your shift at Downtown HQ starts now. Check in: yourapp.com/checkin' },
       { n: 'System alert', b: '{biz} SEV1: Queue backed up on api-gateway. Details: yourapp.com/inc/9042' },
-      { n: 'On-call page', b: '{biz}: You\u2019re on call. New incident assigned: yourapp.com/inc/9043' },
-      { n: 'SLA breach', b: '{biz}: SLA breach on checkout-api. Response time over threshold.' } ] },
+      { n: 'Escalation ping', b: '{biz} SEV1: api-gateway needs attention. Reply ACK or it goes to Alice.' },
+      { n: 'On-call page', b: '{biz} SEV1: api-gateway down. yourapp.com/inc/9042' },
+      { n: 'Service-level alert', b: '{biz}: api-gateway SLA breach, incident INC-9042. yourapp.com/inc/9042' } ] },
     'community': { name: 'Community', biz: false, msgs: [
       { n: 'Live event reminder', b: 'The Founder Circle: Cohort Kickoff starts in 30 minutes. Join: yourapp.com/live' },
-      { n: 'Event invitation', b: 'The Founder Circle: new event - Founder AMA next Thursday. RSVP: yourapp.com/rsvp' },
-      { n: 'Member milestone', b: 'The Founder Circle: you\u2019ve reached 1 year in the community. Thanks for being here.' } ] },
+      { n: 'Event invitation', b: 'The Founder Circle: new event - Founder AMA on next Thursday. RSVP: yourapp.com/rsvp' },
+      { n: 'Moderation update', b: 'The Founder Circle: an important update for the community. Details here: yourapp.com/update' },
+      { n: 'Member milestone', b: 'The Founder Circle: you\u2019ve reached 1 year in the community. Thanks for being here.' },
+      { n: 'Community announcement', b: 'The Founder Circle: there\u2019s something new in the community. Take a look: yourapp.com/news' },
+      { n: 'Welcome', b: 'The Founder Circle: you\u2019re in. Welcome to the community - glad to have you here.' },
+      { n: 'First action', b: 'The Founder Circle: settling in? A good first step is to introduce yourself in the intros channel.' },
+      { n: 'Resource pointer', b: 'The Founder Circle: here\u2019s the orientation guide to help you find your way around: yourapp.com/start' },
+      { n: 'Week 1 check-in', b: 'The Founder Circle: you\u2019ve been part of the community for a week now. How\u2019s it going so far?' } ] },
     'waitlist': { name: 'Waitlist', biz: true, msgs: [
-      { n: 'Spot opened', b: '{biz}: a spot just opened up. Claim it in the next 30 min: yourapp.com/claim' },
-      { n: 'Position update', b: '{biz}: you\u2019ve moved up - you\u2019re now #3 on the waitlist.' },
-      { n: 'Invite to join', b: '{biz}: you\u2019re off the waitlist. Get started: yourapp.com/welcome' } ] },
+      { n: 'Joined', b: 'You\u2019re on the {biz} waitlist. We\u2019ll text you when it\u2019s your turn.' },
+      { n: 'Position update', b: '{biz} waitlist update: you\u2019re now #4. We\u2019ll text you when you\u2019re up.' },
+      { n: 'Almost up', b: '{biz} waitlist: you\u2019re up in about 15 minutes. Keep an eye on your phone.' },
+      { n: 'Your turn', b: '{biz} is ready for you. Claim your spot: yourapp.com/claim' },
+      { n: 'Grace expiring', b: '{biz}: your spot is still open for 48 hours. Claim it: yourapp.com/claim' },
+      { n: 'Missed', b: 'Your {biz} spot expired. Want back on the list? yourapp.com/waitlist' } ] },
     'account-events': { name: 'Account events', biz: true, msgs: [
       { n: 'Payment failed', b: '{biz}: Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing' },
       { n: 'Trial ending', b: '{biz}: Your trial ends in 3 days. Choose a plan to keep your account: yourapp.com/billing' },
-      { n: 'New-device sign-in', b: '{biz}: New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security' } ] },
+      { n: 'Subscription confirmed', b: '{biz}: Your subscription change is confirmed. View the details in your account: yourapp.com/account' },
+      { n: 'New device sign-in', b: '{biz}: New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security' },
+      { n: 'Account suspended', b: '{biz}: Your account has been suspended. Review the details and next steps here: yourapp.com/account' } ] },
     'marketing': { name: 'Marketing', biz: true, msgs: [
-      { n: 'Promotional offer', b: '{biz}: 20% off this week only. Shop now: yourapp.com/sale' },
-      { n: 'Re-engagement', b: '{biz}: we miss you. Here\u2019s what\u2019s new since your last visit: yourapp.com/new' },
-      { n: 'New feature', b: '{biz}: a new feature just launched. See what\u2019s new: yourapp.com/whats-new' } ] }
+      { n: 'Promotional offer', b: '{biz}: 30% off your first year. Claim it here: yourapp.com/offer' },
+      { n: 'Product launch', b: '{biz}: Brand Studio is live. Take a look: yourapp.com/new' },
+      { n: 'Re-engagement', b: '{biz}: it\u2019s been a while. Here\u2019s what you\u2019ve missed: yourapp.com/whatsnew' },
+      { n: 'Event invitation', b: '{biz}: Founder AMA is coming up Thursday at 2pm ET. RSVP here: yourapp.com/rsvp' } ] }
   };
   var ORDER = ['verification','appointments','order-updates','customer-support','team-alerts','community','waitlist','account-events','marketing'];
 
@@ -550,7 +808,7 @@
     cardsEl.innerHTML = d.msgs.map(function(m){
       var body = d.biz ? m.b.replace(/\{biz\}/g, v) : m.b;
       return '<div class="cm-card"><div class="cm-card-name"><span class="pip" aria-hidden="true"></span>' + esc(m.n) + '</div><div class="cm-card-body">' + esc(body) + '</div></div>';
-    }).join('');
+    }).join('') + '<div class="cm-card cm-add" aria-hidden="true"><span class="cm-add-plus">+</span> Add message</div>';
   }
   function swapCM(id){
     if(reduced || !cardsEl){ renderCM(id); return; }
