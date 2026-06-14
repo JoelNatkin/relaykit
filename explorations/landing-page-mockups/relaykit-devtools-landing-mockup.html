@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RelayKit — User account text messaging for your app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --page: #13120E; --surface-page: #16130F; --surface-card: #181511; --surface-inset: #1E1A15;
+    --border: #292524; --border-strong: #44403C; --border-faint: #1C1917;
+    --text: #FAFAF9; --text-2: #D7D3D0; --text-3: #A9A29D; --text-4: #79716B;
+    --gold: #E0B010; --ink-on-gold: #13120E; --success: #17B26A;
+    --radius-md: 8px; --radius-lg: 12px; --maxw: 1024px;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--page); color: var(--text); font-family: var(--sans); line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.18em; color: var(--text-3); }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: 2px; background: var(--gold); flex-shrink: 0; }
+
+  .cta-gold { display: inline-flex; align-items: center; gap: 8px; background: var(--gold); color: var(--ink-on-gold); font-weight: 600; font-size: 14px; padding: 12px 20px; border-radius: var(--radius-lg); transition: opacity .12s ease; }
+  .cta-gold:hover { opacity: 0.9; }
+  .cta-ghost { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border-strong); color: var(--text-2); font-weight: 600; font-size: 14px; padding: 12px 20px; border-radius: var(--radius-lg); transition: color .12s, border-color .12s; }
+  .cta-ghost:hover { color: var(--text); border-color: var(--text-4); }
+  .goldlink { color: var(--gold); font-weight: 500; display: inline-flex; align-items: center; gap: 5px; }
+  .goldlink:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .conceptlink { color: var(--gold); border-bottom: 1px solid rgba(224,176,16,0.35); transition: border-color .12s; }
+  .conceptlink:hover { border-color: var(--gold); }
+
+  section { border-top: 1px solid var(--border-faint); }
+  section:first-of-type { border-top: 0; }
+  h1, h2, h3 { color: var(--text); letter-spacing: -0.02em; }
+
+  nav { position: sticky; top: 0; z-index: 50; background: rgba(19,18,14,0.82); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-faint); }
+  .navrow { display: flex; align-items: center; justify-content: space-between; height: 60px; }
+  .wordmark { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
+  .navlinks { display: flex; gap: 26px; align-items: center; }
+  .navlinks a { font-size: 14px; color: var(--text-3); transition: color .12s; }
+  .navlinks a:hover { color: var(--text); }
+
+  /* hero */
+  .hero { position: relative; overflow: hidden; }
+  .hero .dotgrid { position: absolute; inset: 0; z-index: 0; pointer-events: none; background-image: radial-gradient(circle, rgba(128,128,128,0.07) 1px, transparent 1.5px); background-size: 26px 26px; -webkit-mask-image: radial-gradient(ellipse 60% 70% at 80% 60%, #000, transparent 72%); mask-image: radial-gradient(ellipse 60% 70% at 80% 60%, #000, transparent 72%); }
+  .herogrid { position: relative; z-index: 1; display: grid; grid-template-columns: 1fr; gap: 56px; padding: 72px 0 92px; align-items: center; justify-items: start; }
+  @media (min-width: 940px) { .herogrid { grid-template-columns: minmax(380px,1fr) 300px; gap: 56px; padding-left: 40px; } }
+  .hero h1 { font-size: clamp(38px, 5.4vw, 58px); font-weight: 700; line-height: 1.02; max-width: 11em; }
+  .hero .sub { margin-top: 22px; max-width: 30em; font-size: 18px; color: var(--text-2); line-height: 1.55; }
+  .hero .ctas { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero .trust { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 10px 14px; font-size: 13.5px; color: var(--text-4); }
+  .hero .trust .sep { color: var(--border-strong); }
+
+  /* full phone */
+  .phonewrap { position: relative; justify-self: center; display: flex; flex-direction: column; align-items: center; }
+  .phoneglow { position: absolute; inset: -56px; z-index: 0; pointer-events: none; background: radial-gradient(ellipse at center, rgba(149,134,117,0.13) 0%, rgba(149,134,117,0.05) 45%, transparent 72%); }
+  .phone { position: relative; z-index: 1; width: 268px; height: 544px; background: var(--surface-card); border: 1px solid var(--border-strong); border-radius: 44px; padding: 11px; }
+  .phone .island { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); width: 86px; height: 25px; background: #000; border-radius: 14px; z-index: 3; }
+  .phone .screen { position: relative; width: 100%; height: 100%; background: linear-gradient(180deg, #1b1811 0%, #141009 100%); border-radius: 34px; overflow: hidden; padding: 20px 16px 22px; display: flex; flex-direction: column; }
+  .phone .lock-time { margin-top: 40px; text-align: center; font-size: 56px; font-weight: 600; letter-spacing: -0.02em; color: var(--text); line-height: 1; }
+  .phone .lock-date { text-align: center; font-size: 13px; color: var(--text-3); margin-top: 8px; }
+  .notif { margin-top: auto; background: rgba(40,36,33,0.72); border: 1px solid var(--border); border-radius: 18px; padding: 12px 13px; backdrop-filter: blur(8px); }
+  .notif .head { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+  .notif .avatar { width: 22px; height: 22px; border-radius: 6px; background: var(--gold); color: var(--ink-on-gold); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .notif .app { font-size: 12px; font-weight: 600; color: var(--text-2); }
+  .notif .ago { font-size: 11px; color: var(--text-4); margin-left: auto; }
+  .notif .body { font-size: 13px; line-height: 1.45; color: var(--text); transition: opacity .28s ease; }
+  .phone-pause { position: relative; z-index: 1; margin-top: 18px; background: none; border: 0; padding: 6px; color: var(--text-4); cursor: pointer; display: inline-flex; transition: color .12s; }
+  .phone-pause:hover { color: var(--text-2); }
+
+  /* status band — left aligned */
+  .statusband { padding: 16px 0; }
+  .statusband .inner { display: inline-flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13.5px; color: var(--text-3); align-items: center; }
+  .statusband .live { color: var(--text-2); display: inline-flex; align-items: center; gap: 7px; }
+  .statusband .livedot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); }
+  .statusband .sep { color: var(--border-strong); }
+
+  /* sections */
+  .sec { padding: 76px 0; }
+  .sechead { margin-bottom: 16px; }
+  .sechead h2 { font-size: clamp(26px, 3.4vw, 34px); font-weight: 700; line-height: 1.12; margin-top: 14px; max-width: 18em; }
+  .bridge { max-width: 38em; font-size: 16px; color: var(--text-2); line-height: 1.6; margin-bottom: 28px; }
+
+  /* moment — left aligned */
+  .moment-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start; }
+  @media (max-width: 720px) { .moment-grid { grid-template-columns: 1fr; gap: 32px; } }
+  .momentcap { max-width: 34em; font-size: 17px; color: var(--text-2); line-height: 1.55; }
+  .thread { max-width: 420px; margin: 0; }
+  .bubble-in { background: var(--surface-inset); border: 1px solid var(--border); border-radius: 18px; border-bottom-left-radius: 5px; padding: 11px 14px; font-size: 14px; line-height: 1.45; color: var(--text); margin-bottom: 10px; }
+  .bubble-out { background: var(--gold); color: var(--ink-on-gold); border-radius: 18px; border-bottom-right-radius: 5px; padding: 9px 14px; font-size: 14px; font-weight: 500; width: fit-content; margin-left: auto; }
+
+  /* message set — single column */
+  .msglinkrow { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin-bottom: 22px; }
+  .bizline { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .bizline label { font-size: 13.5px; color: var(--text-3); }
+  .bizline input { background: var(--surface-inset); border: 1px solid var(--border-strong); border-radius: var(--radius-md); color: var(--text); font-family: var(--sans); font-size: 16px; padding: 13px 18px; width: 340px; max-width: 100%; transition: border-color .12s; }
+  .bizline input:focus { outline: none; border-color: var(--gold); }
+  .bizline input::placeholder { color: var(--text-4); }
+  .msgrid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 720px) { .msgrid { grid-template-columns: 1fr 1fr; } }
+  .msgcard { background: var(--surface-inset); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
+  .msgcard .label { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .msgcard .label .pip { width: 6px; height: 6px; border-radius: 2px; background: var(--gold); }
+  .msgcard .text { font-size: 13.5px; line-height: 1.5; color: var(--text-2); }
+  .addmsg { display: flex; align-items: center; justify-content: center; gap: 9px; border: 1px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 16px 18px; min-height: 96px; color: var(--text-4); font-size: 14px; font-weight: 500; background: transparent; }
+  .addmsg .plus { font-size: 18px; line-height: 1; }
+
+  /* why it matters — cards */
+  .whycards { display: grid; grid-template-columns: 1fr; gap: 28px; }
+  @media (min-width: 760px) { .whycards { grid-template-columns: repeat(3, 1fr); } }
+  .whycard { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; }
+  .whycard .pip { width: 7px; height: 7px; border-radius: 2px; background: var(--gold); display: block; margin-bottom: 14px; }
+  .whycard p { font-size: 14.5px; color: var(--text-2); line-height: 1.55; }
+  .statgrid { display: grid; grid-template-columns: 1fr; gap: 28px; }
+  @media (min-width: 720px) { .statgrid { grid-template-columns: repeat(2, 1fr); } }
+  .statcard { background: var(--surface-inset); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px; }
+  .statcard .pip { width: 7px; height: 7px; border-radius: 2px; background: var(--gold); display: block; margin-bottom: 14px; }
+  .stat-metric { font-size: 13px; color: var(--text-3); margin-bottom: 16px; }
+  .stat-vals { display: flex; align-items: baseline; gap: 32px; }
+  .stat-col { display: flex; flex-direction: column; }
+  .stat-col .num { font-weight: 600; line-height: 1; }
+  .stat-col .num.text { font-size: 32px; color: var(--text); }
+  .stat-col .num.email { font-size: 24px; color: var(--text-4); font-weight: 500; }
+  .stat-col .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-4); margin-top: 7px; }
+  .vs-note { margin-top: 14px; font-size: 12.5px; color: var(--text-4); line-height: 1.5; max-width: 46em; }
+  .prose { max-width: 720px; }
+  .prose > p:first-child { font-size: 17px; color: var(--text-2); line-height: 1.6; }
+  .prose h3 { font-size: 17px; font-weight: 600; color: var(--text); margin: 30px 0 9px; }
+  .prose p { font-size: 16px; line-height: 1.65; color: var(--text-2); }
+  .prose p + p { margin-top: 14px; }
+
+  /* what it takes */
+  .twocol { display: grid; grid-template-columns: 1fr; gap: 36px; align-items: start; }
+  @media (min-width: 820px) { .twocol { grid-template-columns: 1fr 1fr; gap: 56px; } }
+  table.expect { width: 100%; border-collapse: collapse; background: var(--surface-inset); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+  table.expect th { text-align: left; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-4); padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  table.expect td { font-size: 14px; padding: 13px 16px; border-bottom: 1px solid var(--border-faint); color: var(--text-2); }
+  table.expect tr:last-child td { border-bottom: 0; }
+  table.expect td.step { color: var(--text); font-weight: 500; }
+  table.expect td.gold { color: var(--gold); font-weight: 600; }
+  .handle p { font-size: 15px; color: var(--text-2); line-height: 1.65; }
+  .sectionlinks { margin-top: 32px; padding-top: 22px; border-top: 1px solid var(--border-faint); }
+  .sectionlinks .links { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 14px; }
+  .sectionlinks .eeat { margin-top: 14px; font-size: 13px; color: var(--text-4); display: flex; align-items: center; gap: 8px; }
+  .sectionlinks .eeat .check { color: var(--success); font-weight: 700; }
+
+  /* included / and also */
+  .configmock { border: 1px solid var(--border-strong); background: var(--surface-card); border-radius: 22px; padding: 24px; }
+  .cm-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 20px; }
+  .cm-head h3 { font-size: 20px; font-weight: 700; }
+  .cm-pill { flex-shrink: 0; border: 1px solid var(--border); background: var(--surface-inset); color: var(--text-3); font-size: 12px; font-weight: 500; padding: 5px 11px; border-radius: 999px; }
+  .cm-grid { display: grid; grid-template-columns: 220px 1fr; gap: 24px; }
+  @media (max-width: 720px) { .cm-grid { grid-template-columns: 1fr; } }
+  .cm-rail { background: var(--surface-inset); border: 1px solid var(--border); border-radius: 14px; padding: 16px; height: fit-content; }
+  .cm-rail-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+  .cm-cats { display: flex; flex-direction: column; gap: 13px; }
+  .cm-cat { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font: inherit; }
+  .cm-box { width: 20px; height: 20px; border-radius: 5px; border: 2px solid var(--border-strong); flex-shrink: 0; position: relative; transition: background .12s, border-color .12s; }
+  .cm-cat.active .cm-box { background: var(--gold); border-color: var(--gold); }
+  .cm-cat.active .cm-box::after { content: ""; position: absolute; left: 5px; top: 1px; width: 5px; height: 9px; border: solid var(--ink-on-gold); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .cm-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .cm-msgs { min-width: 0; }
+  .cm-tones { display: flex; gap: 8px; margin-bottom: 18px; }
+  .cm-tone { border: 1px solid var(--border-strong); border-radius: 999px; padding: 7px 16px; font-size: 13px; font-weight: 600; color: var(--text-2); background: transparent; font-family: inherit; }
+  .cm-tone.active { background: var(--gold); color: var(--ink-on-gold); border-color: var(--gold); }
+  #msgTones .cm-tone { cursor: pointer; transition: color .12s, border-color .12s; }
+  #msgTones .cm-tone:hover:not(.active) { color: var(--text); border-color: var(--text-4); }
+  .cm-active-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+  .cm-active-head h4 { font-size: 15px; font-weight: 600; }
+  .cm-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; transition: opacity .28s ease; }
+  @media (max-width: 900px) { .cm-cards { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .cm-cards { grid-template-columns: 1fr; } }
+  .cm-cards.swapping { opacity: 0; }
+  .cm-card { background: var(--surface-inset); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px; }
+  .cm-card-name { font-size: 12.5px; font-weight: 600; margin-bottom: 7px; display: flex; align-items: center; gap: 7px; }
+  .cm-card-name .pip { width: 5px; height: 5px; border-radius: 2px; background: var(--gold); }
+  .cm-card-body { font-size: 12.5px; color: var(--text-2); line-height: 1.45; }
+
+  /* faq — left aligned, capped width */
+  .faqlist { max-width: 760px; }
+  details.faq { border: 1px solid var(--border); border-radius: var(--radius-lg); margin-bottom: 10px; background: var(--surface-card); }
+  details.faq summary { list-style: none; cursor: pointer; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 15.5px; font-weight: 500; color: var(--text); }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary .chev { color: var(--text-4); transition: transform .15s; font-size: 16px; flex-shrink: 0; }
+  details.faq[open] summary .chev { transform: rotate(180deg); }
+  details.faq .ans { padding: 0 18px 17px; font-size: 14.5px; color: var(--text-2); line-height: 1.6; }
+  details.faq .ans a { color: var(--gold); }
+
+  /* related */
+  .relgroup + .relgroup { margin-top: 22px; }
+  .rellabel { font-size: 13px; color: var(--text-4); margin-bottom: 10px; }
+  .relchips { display: flex; flex-wrap: wrap; gap: 9px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border-strong); border-radius: var(--radius-md); padding: 7px 13px; font-size: 13.5px; color: var(--text-2); transition: border-color .12s, color .12s; }
+  .chip:hover { border-color: var(--gold); color: var(--text); }
+
+  /* final cta — the one centered block */
+  .finalcta { text-align: center; padding: 92px 0; }
+  .finalcta h2 { font-size: clamp(28px, 3.8vw, 40px); font-weight: 700; line-height: 1.1; max-width: 16em; margin: 0 auto 18px; }
+  .finalcta .lead { max-width: 30em; margin: 0 auto 26px; font-size: 16px; color: var(--text-2); line-height: 1.6; }
+  .finalcta .small { margin-top: 16px; font-size: 13.5px; color: var(--text-4); }
+
+  footer { border-top: 1px solid var(--border-faint); padding: 40px 0; }
+  .footrow { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+  .footrow .links { display: flex; flex-wrap: wrap; gap: 20px; font-size: 13.5px; color: var(--text-3); }
+  .footrow .links a:hover { color: var(--text); }
+  .footnote { font-size: 12.5px; color: var(--text-4); }
+
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap navrow">
+    <div class="wordmark">RelayKit</div>
+    <div class="navlinks"><a href="#">Messages</a><a href="#">Pricing</a><a href="#">Blog</a></div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="dotgrid" aria-hidden="true"></div>
+  <div class="wrap herogrid">
+    <div>
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>For developer tools &amp; API platforms</span>
+      <h1>User account text messaging for your app.</h1>
+      <p class="sub">Payment failures, security alerts, trial endings — the events that decide whether a customer stays, sent where they'll actually see them.</p>
+      <div class="ctas">
+        <a class="cta-gold" href="#">See the messages →</a>
+        <a class="cta-ghost" href="#how">How it works</a>
+      </div>
+      <div class="trust">
+        <span>Free to author &amp; test</span><span class="sep">·</span>
+        <span>No credit card</span><span class="sep">·</span>
+        <span>US &amp; Canada</span>
+      </div>
+    </div>
+    <div class="phonewrap">
+      <div class="phoneglow" aria-hidden="true"></div>
+      <div class="phone">
+        <div class="island" aria-hidden="true"></div>
+        <div class="screen">
+          <div class="lock-time">9:41</div>
+          <div class="lock-date">Saturday, June 13</div>
+          <div class="notif">
+            <div class="head"><span class="avatar bizinitial">A</span><span class="app biz">Acme</span><span class="ago">now</span></div>
+            <div class="body">Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing</div>
+          </div>
+        </div>
+      </div>
+      <button class="phone-pause" id="phonePause" type="button" aria-label="Pause message rotation">
+        <svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true"><rect x="5.5" y="3.5" width="3.5" height="13" rx="1"></rect><rect x="11" y="3.5" width="3.5" height="13" rx="1"></rect></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="statusband">
+  <div class="wrap">
+    <div class="inner">
+      <span class="live"><span class="livedot" aria-hidden="true"></span>Free message templates — live now</span>
+      <span class="sep">·</span>
+      <span>Live sending arrives Summer 2026</span>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead"><span class="eyebrow"><span class="dot" aria-hidden="true"></span>The moment</span><h2>A text can change the outcome.</h2></div>
+    <div class="moment-grid">
+      <p class="momentcap">A failed renewal email lands in a spam folder. The account quietly lapses. One text the customer can't miss fixes it before they churn.</p>
+      <div class="thread">
+        <div class="bubble-in"><span class="biz">Acme</span>: Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing</div>
+        <div class="bubble-out">paid in 10 seconds</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The messages</span>
+      <h2>Account events, ready to send.</h2>
+    </div>
+    <p class="bridge">The events that decide whether a customer stays — and the emails most likely to get buried in an inbox.</p>
+    <div class="bizline">
+      <input id="bizname" type="text" placeholder="Your business name" maxlength="24" autocomplete="off" aria-label="See the messages as your business">
+      <div class="cm-tones" id="msgTones" role="group" aria-label="Message tone">
+        <button class="cm-tone active" type="button" data-tone="Standard">Standard</button>
+        <button class="cm-tone" type="button" data-tone="Friendly">Friendly</button>
+        <button class="cm-tone" type="button" data-tone="Brief">Brief</button>
+      </div>
+    </div>
+    <div class="msgrid" id="msgGrid"></div>
+    <div class="msglinkrow" style="margin-top:24px; margin-bottom:0; justify-content:flex-end;">
+      <a class="goldlink" href="#">About account events →</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Why it matters here</span>
+      <h2>Email isn't where these get read.</h2>
+    </div>
+    <p class="bridge">Account events are the messages a customer most needs to see — and the ones email is worst at delivering. The gap isn't close.</p>
+    <div class="statgrid">
+      <div class="statcard"><span class="pip" aria-hidden="true"></span><div class="stat-metric">Gets opened</div><div class="stat-vals"><div class="stat-col"><span class="num text">98%</span><span class="lbl">Text</span></div><div class="stat-col"><span class="num email">~20%</span><span class="lbl">Email</span></div></div></div>
+      <div class="statcard"><span class="pip" aria-hidden="true"></span><div class="stat-metric">Time to first open</div><div class="stat-vals"><div class="stat-col"><span class="num text">90 sec</span><span class="lbl">Text</span></div><div class="stat-col"><span class="num email">90 min</span><span class="lbl">Email</span></div></div></div>
+      <div class="statcard"><span class="pip" aria-hidden="true"></span><div class="stat-metric">Gets a reply</div><div class="stat-vals"><div class="stat-col"><span class="num text">45%</span><span class="lbl">Text</span></div><div class="stat-col"><span class="num email">6%</span><span class="lbl">Email</span></div></div></div>
+      <div class="statcard"><span class="pip" aria-hidden="true"></span><div class="stat-metric">Lands in spam</div><div class="stat-vals"><div class="stat-col"><span class="num text">~3%</span><span class="lbl">Text</span></div><div class="stat-col"><span class="num email">up to 85%</span><span class="lbl">Email</span></div></div></div>
+    </div>
+    <p class="vs-note">Industry SMS vs. email benchmarks, 2025–26. SMS open is inferred from delivery, not pixel-tracked; email opens are inflated further by tracking-pixel prefetch. For a failed payment or a new-device sign-in, that gap is the difference between a fix and a churned — or compromised — customer.</p>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>How it fits</span>
+      <h2>Who gets the text — and who doesn't.</h2>
+    </div>
+    <div class="prose">
+      <p>The five events above are the same on every app. Who should receive them is not — and that's the one decision worth making on purpose.</p>
+      <h3>One owner, one number</h3>
+      <p>For a tool with a single account owner — a solo developer's API key, a one-seat dashboard — routing is trivial. The person who pays is the person you text. A declined card, a trial winding down, a sign-in from an unfamiliar city: all of it goes to the one human attached to the account. Choosing the recipient was never the hard part. Making sure the message arrived was — and that's the gap the numbers above describe.</p>
+      <h3>Many seats, one right recipient</h3>
+      <p>Multi-tenant apps are where it gets interesting. A workspace has a billing owner, a couple of admins, and a stack of members, and the five events don't fan out evenly. A failed payment is the billing owner's problem; texting all twelve seats just makes twelve confused people. A new-device sign-in belongs to exactly one user — the one who signed in. A suspension might need every admin at once. Same event, different human, depending on role.</p>
+      <p>This is the quiet thing email gets wrong. Billing alerts land in a shared alias nobody owns, or blast the whole org, and the one person who could fix it hears about it from a churned customer instead. A text forces you to name a recipient — which turns out to be exactly the right constraint.</p>
+      <h3>The same five messages, either way</h3>
+      <p>You don't build two systems. Each event is a single call that carries the recipient and the details — the last four digits, the account link, the device label. RelayKit renders the message and sends it. Single-tenant or multi-tenant is just a question of which user you pass; the library doesn't change, and the routing stays yours.</p>
+      <p>So the work isn't writing the messages or handling delivery — that part's done. It's the one design choice worth your attention: for each event, who needs to know. Get that right, and the account event does its job — reaching the person who can act, somewhere they'll actually see it.</p>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="how">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>What it takes</span>
+      <h2>Free to build. Days to go live.</h2>
+    </div>
+    <p class="bridge">Nothing to commit up front — you author and test for free, and only pay once you're ready to send to real customers.</p>
+    <div class="twocol">
+      <table class="expect">
+        <thead><tr><th>Step</th><th>Time</th><th>Cost</th></tr></thead>
+        <tbody>
+          <tr><td class="step">Author &amp; test messages</td><td>Now</td><td class="gold">Free</td></tr>
+          <tr><td class="step">Register your business</td><td>~3 Days</td><td>$49 Once</td></tr>
+          <tr><td class="step">Go live</td><td>Instant</td><td>$19/mo</td></tr>
+        </tbody>
+      </table>
+      <div class="handle">
+        <p>We handle carrier registration, opt-out processing, and the compliance rules. You send through one SDK and never read a paragraph about carriers.</p>
+      </div>
+    </div>
+    <div class="sectionlinks">
+      <div class="links">
+        <a class="conceptlink" href="#">How registration works ↗</a>
+        <a class="conceptlink" href="#">Capability status ↗</a>
+      </div>
+      <div class="eeat"><span class="check" aria-hidden="true">✓</span>We've run these registrations ourselves on live carrier infrastructure · updated June 2026</div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Included</span>
+      <h2>Account events are just the start.</h2>
+    </div>
+    <p class="bridge">One integration sends every category below. For a developer tool, verification codes and operational alerts pair most naturally with account events — but it's all there when you need it.</p>
+    <div class="configmock">
+      <div class="cm-head">
+        <h3>Choose your messages</h3>
+        <span class="cm-pill">Free · no account</span>
+      </div>
+      <div class="cm-grid">
+        <div class="cm-rail">
+          <div class="cm-rail-title">Categories</div>
+          <div class="cm-cats">
+            <button class="cm-cat" data-cat="verification"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Verification</span></button>
+            <button class="cm-cat" data-cat="appointments"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Appointments</span></button>
+            <button class="cm-cat" data-cat="order-updates"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Order updates</span></button>
+            <button class="cm-cat" data-cat="customer-support"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Customer support</span></button>
+            <button class="cm-cat" data-cat="team-alerts"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Team alerts</span></button>
+            <button class="cm-cat" data-cat="community"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Community</span></button>
+            <button class="cm-cat" data-cat="waitlist"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Waitlist</span></button>
+            <button class="cm-cat active" data-cat="account-events"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Account events</span></button>
+            <button class="cm-cat" data-cat="marketing"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Marketing</span></button>
+          </div>
+        </div>
+        <div class="cm-msgs">
+          <div class="cm-tones">
+            <span class="cm-tone active">Standard</span>
+            <span class="cm-tone">Friendly</span>
+            <span class="cm-tone">Brief</span>
+          </div>
+          <div class="cm-active-head">
+            <h4 id="cm-cat-name">Account events</h4>
+            <a class="goldlink" id="cm-hub" href="#">About account events →</a>
+          </div>
+          <div class="cm-cards" id="cm-cards"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>Questions</span>
+      <h2>Before you build it in.</h2>
+    </div>
+    <p class="bridge">Short answers to what developers ask before wiring it into a product.</p>
+    <div class="faqlist">
+      <details class="faq" open>
+        <summary>Does an account-events text need an opt-out?<span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="ans">Yes. Every account event carries STOP handling, and RelayKit processes opt-outs for you. Verification codes are the one exception — 2FA is carved out of opt-out rules.</div>
+      </details>
+      <details class="faq">
+        <summary>How long does registration take?<span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="ans">About three days on our carrier, versus the weeks it usually takes elsewhere. You author and test for free first, and only pay the $49 once you're ready to go live.</div>
+      </details>
+      <details class="faq">
+        <summary>Can these go out on a free plan?<span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="ans">You can author and test every message for free, sent to your own phone. Live sending to customers starts at $19/month after the one-time $49 registration.</div>
+      </details>
+      <details class="faq">
+        <summary>How is this different from sending through Twilio yourself?<span class="chev" aria-hidden="true">⌄</span></summary>
+        <div class="ans">With a raw provider you handle carrier registration, opt-out logic, and compliance scanning yourself. RelayKit handles all three behind one SDK. See the <a href="#">full comparison</a>.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead"><span class="eyebrow"><span class="dot" aria-hidden="true"></span>Related</span></div>
+    <div class="relgroup">
+      <div class="rellabel">Other developer tools</div>
+      <div class="relchips">
+        <a class="chip" href="#">Identity &amp; SSO platforms ↗</a>
+        <a class="chip" href="#">Helpdesk &amp; support SaaS ↗</a>
+      </div>
+    </div>
+    <div class="relgroup">
+      <div class="rellabel">Other apps that text about account events</div>
+      <div class="relchips">
+        <a class="chip" href="#">E-commerce platforms ↗</a>
+        <a class="chip" href="#">Subscription boxes ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="finalcta">
+  <div class="wrap">
+    <h2>The messages are ready now.</h2>
+    <p class="lead">Author and preview every account message today, for free. When sending opens, you're ready to go live in days — not weeks.</p>
+    <a class="cta-gold" href="#">Start free with RelayKit →</a>
+    <div class="small">Free to author now · live sending arrives Summer 2026</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footrow">
+    <div class="footnote">RelayKit — SMS for the apps developers build.</div>
+    <div class="links"><a href="#">Messages</a><a href="#">Pricing</a><a href="#">Blog</a><a href="#">Compare</a></div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var input = document.getElementById('bizname');
+  var names = document.querySelectorAll('.biz');
+  var initials = document.querySelectorAll('.bizinitial');
+  function biz(){ return (input && input.value.trim()) || 'Acme'; }
+  function updateStatic(){
+    var v = biz();
+    names.forEach(function(n){ n.textContent = v; });
+    initials.forEach(function(n){ n.textContent = v.charAt(0).toUpperCase(); });
+  }
+
+  var CM = {
+    'verification': { name: 'Verification', biz: true, msgs: [
+      { n: 'Verification code', b: '{biz}: Verification code: 482910. Expires in 10 minutes.' },
+      { n: 'Login confirmation', b: '{biz}: New login to your account. Not you? Reset your password now.' },
+      { n: 'Password reset', b: '{biz}: Your password reset code is 731902. Expires in 10 minutes.' } ] },
+    'appointments': { name: 'Appointments', biz: true, msgs: [
+      { n: 'Confirmation', b: '{biz}: your appointment with Dr. Chen is confirmed for March 4th, 2:00 PM.' },
+      { n: 'Reminder', b: '{biz}: reminder - your appointment is tomorrow at 2:00 PM. Cancel: yourapp.com/c' },
+      { n: 'Reschedule', b: '{biz}: your appointment moved to March 6th, 2:00 PM.' } ] },
+    'order-updates': { name: 'Order updates', biz: true, msgs: [
+      { n: 'Order confirmed', b: '{biz}: Order ORD-2026-90413 confirmed. Arrives Thursday. We\u2019ll text when it ships.' },
+      { n: 'Order shipped', b: '{biz}: Your order shipped. Track it: track.ups.com/x9k2' },
+      { n: 'Out for delivery', b: '{biz}: Your order is out for delivery today.' } ] },
+    'customer-support': { name: 'Customer support', biz: true, msgs: [
+      { n: 'Ticket received', b: '{biz}: We got your request. We\u2019ll reply within 24 hours.' },
+      { n: 'New reply', b: '{biz}: There\u2019s a new reply on your ticket: yourapp.com/t/4821' },
+      { n: 'Resolved', b: '{biz}: Your ticket is resolved. Reply if you still need help.' } ] },
+    'team-alerts': { name: 'Team alerts', biz: true, msgs: [
+      { n: 'System alert', b: '{biz} SEV1: Queue backed up on api-gateway. Details: yourapp.com/inc/9042' },
+      { n: 'On-call page', b: '{biz}: You\u2019re on call. New incident assigned: yourapp.com/inc/9043' },
+      { n: 'SLA breach', b: '{biz}: SLA breach on checkout-api. Response time over threshold.' } ] },
+    'community': { name: 'Community', biz: false, msgs: [
+      { n: 'Live event reminder', b: 'The Founder Circle: Cohort Kickoff starts in 30 minutes. Join: yourapp.com/live' },
+      { n: 'Event invitation', b: 'The Founder Circle: new event - Founder AMA next Thursday. RSVP: yourapp.com/rsvp' },
+      { n: 'Member milestone', b: 'The Founder Circle: you\u2019ve reached 1 year in the community. Thanks for being here.' } ] },
+    'waitlist': { name: 'Waitlist', biz: true, msgs: [
+      { n: 'Spot opened', b: '{biz}: a spot just opened up. Claim it in the next 30 min: yourapp.com/claim' },
+      { n: 'Position update', b: '{biz}: you\u2019ve moved up - you\u2019re now #3 on the waitlist.' },
+      { n: 'Invite to join', b: '{biz}: you\u2019re off the waitlist. Get started: yourapp.com/welcome' } ] },
+    'account-events': { name: 'Account events', biz: true, msgs: [
+      { n: 'Payment failed', b: '{biz}: Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing' },
+      { n: 'Trial ending', b: '{biz}: Your trial ends in 3 days. Choose a plan to keep your account: yourapp.com/billing' },
+      { n: 'New-device sign-in', b: '{biz}: New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security' } ] },
+    'marketing': { name: 'Marketing', biz: true, msgs: [
+      { n: 'Promotional offer', b: '{biz}: 20% off this week only. Shop now: yourapp.com/sale' },
+      { n: 'Re-engagement', b: '{biz}: we miss you. Here\u2019s what\u2019s new since your last visit: yourapp.com/new' },
+      { n: 'New feature', b: '{biz}: a new feature just launched. See what\u2019s new: yourapp.com/whats-new' } ] }
+  };
+  var ORDER = ['verification','appointments','order-updates','customer-support','team-alerts','community','waitlist','account-events','marketing'];
+
+  var cardsEl = document.getElementById('cm-cards');
+  var nameEl = document.getElementById('cm-cat-name');
+  var hubEl = document.getElementById('cm-hub');
+  var current = 'account-events', paused = false;
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function renderCM(id){
+    var d = CM[id]; if(!d || !cardsEl) return;
+    current = id;
+    document.querySelectorAll('.cm-cat').forEach(function(el){ el.classList.toggle('active', el.getAttribute('data-cat') === id); });
+    nameEl.textContent = d.name;
+    hubEl.textContent = 'About ' + d.name.toLowerCase() + ' \u2192';
+    var v = biz();
+    cardsEl.innerHTML = d.msgs.map(function(m){
+      var body = d.biz ? m.b.replace(/\{biz\}/g, v) : m.b;
+      return '<div class="cm-card"><div class="cm-card-name"><span class="pip" aria-hidden="true"></span>' + esc(m.n) + '</div><div class="cm-card-body">' + esc(body) + '</div></div>';
+    }).join('');
+  }
+  function swapCM(id){
+    if(reduced || !cardsEl){ renderCM(id); return; }
+    cardsEl.classList.add('swapping');
+    setTimeout(function(){ renderCM(id); cardsEl.classList.remove('swapping'); }, 280);
+  }
+
+  document.querySelectorAll('.cm-cat').forEach(function(el){
+    el.addEventListener('click', function(){ paused = true; swapCM(el.getAttribute('data-cat')); });
+  });
+  if(!reduced){
+    setInterval(function(){
+      if(paused) return;
+      var i = ORDER.indexOf(current);
+      swapCM(ORDER[(i + 1) % ORDER.length]);
+    }, 4000);
+  }
+  // The Messages — five account-events cards, tone + business-name aware.
+  var MSG = [
+    { n: 'Payment failed', t: {
+      Standard: '{biz}: Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing',
+      Friendly: 'Your {biz} payment didn\u2019t go through (card ending 4242). Update it here to stay active: yourapp.com/billing',
+      Brief: '{biz}: Card 4242 declined. Update payment: yourapp.com/billing' } },
+    { n: 'Trial ending', t: {
+      Standard: '{biz}: Your trial ends in 3 days. Choose a plan to keep your account: yourapp.com/billing',
+      Friendly: 'Your {biz} trial ends in 3 days. Pick a plan here to keep going: yourapp.com/billing',
+      Brief: '{biz}: Trial ends in 3 days. Choose a plan: yourapp.com/billing' } },
+    { n: 'New-device sign-in', t: {
+      Standard: '{biz}: New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security',
+      Friendly: 'Your {biz} account was just accessed from Chrome on Mac, Denver. Not you? Secure it: yourapp.com/security',
+      Brief: '{biz}: New sign-in, Chrome on Mac, Denver. Not you? yourapp.com/security' } },
+    { n: 'Account suspended', t: {
+      Standard: '{biz}: Your account has been suspended. Review the details and next steps here: yourapp.com/account',
+      Friendly: 'Your {biz} account has been suspended. Here\u2019s what happened and what to do next: yourapp.com/account',
+      Brief: '{biz}: Account suspended. Details and next steps: yourapp.com/account' } },
+    { n: 'Subscription confirmed', t: {
+      Standard: '{biz}: Your subscription change is confirmed. View the details in your account: yourapp.com/account',
+      Friendly: 'Your {biz} subscription is all set. See the details here whenever you like: yourapp.com/account',
+      Brief: '{biz}: Subscription updated. Details: yourapp.com/account' } }
+  ];
+  var msgGrid = document.getElementById('msgGrid');
+  var msgTones = document.getElementById('msgTones');
+  var msgTone = 'Standard';
+  function renderMsgs(){
+    if(!msgGrid) return;
+    var v = biz();
+    var html = MSG.map(function(m){
+      var body = (m.t[msgTone] || m.t.Standard).replace(/\{biz\}/g, v);
+      return '<div class="msgcard"><div class="label"><span class="pip" aria-hidden="true"></span>' + esc(m.n) + '</div><div class="text">' + esc(body) + '</div></div>';
+    }).join('');
+    html += '<div class="addmsg" aria-hidden="true"><span class="plus">+</span> Add message</div>';
+    msgGrid.innerHTML = html;
+  }
+  if(msgTones){
+    msgTones.querySelectorAll('.cm-tone').forEach(function(b){
+      b.addEventListener('click', function(){
+        msgTone = b.getAttribute('data-tone');
+        msgTones.querySelectorAll('.cm-tone').forEach(function(x){ x.classList.toggle('active', x === b); });
+        renderMsgs();
+      });
+    });
+  }
+
+  if(input){ input.addEventListener('input', function(){ updateStatic(); renderMsgs(); renderCM(current); }); }
+
+  // Hero phone — rotate the notification body every 3s, with a pause toggle.
+  var heroBodies = [
+    'Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing',
+    'Your trial ends in 3 days. Choose a plan to keep your account: yourapp.com/billing',
+    'New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security',
+    'Your account has been suspended. Review the details and next steps here: yourapp.com/account',
+    'Your subscription change is confirmed. View the details in your account: yourapp.com/account'
+  ];
+  var heroBody = document.querySelector('.notif .body');
+  var pauseBtn = document.getElementById('phonePause');
+  var hi = 0, heroPaused = false;
+  var ICON_PAUSE = '<svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true"><rect x="5.5" y="3.5" width="3.5" height="13" rx="1"></rect><rect x="11" y="3.5" width="3.5" height="13" rx="1"></rect></svg>';
+  var ICON_PLAY = '<svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M6 4 L16 10 L6 16 Z"></path></svg>';
+  function rotateHero(){
+    if(!heroBody) return;
+    heroBody.style.opacity = '0';
+    setTimeout(function(){ hi = (hi + 1) % heroBodies.length; heroBody.textContent = heroBodies[hi]; heroBody.style.opacity = '1'; }, 280);
+  }
+  if(pauseBtn){
+    if(reduced){ pauseBtn.style.display = 'none'; }
+    else {
+      pauseBtn.addEventListener('click', function(){
+        heroPaused = !heroPaused;
+        pauseBtn.innerHTML = heroPaused ? ICON_PLAY : ICON_PAUSE;
+        pauseBtn.setAttribute('aria-label', heroPaused ? 'Resume message rotation' : 'Pause message rotation');
+      });
+    }
+  }
+  if(!reduced){ setInterval(function(){ if(!heroPaused) rotateHero(); }, 4500); }
+
+  updateStatic();
+  renderMsgs();
+  renderCM('account-events');
+})();
+</script>
+</body>
+</html>
