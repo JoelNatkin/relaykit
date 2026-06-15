@@ -114,14 +114,14 @@
   /* the variables — edit + preview with your data, insert your own */
   .varcards { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 44px; }
   @media (min-width: 760px) { .varcards { grid-template-columns: repeat(2, 1fr); } }
-  .varcard { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
+  .varcard { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 22px 38px; }
   .varcard h3 { font-size: 17px; font-weight: 600; margin: 0 0 7px; }
   .varcard p { font-size: 14px; line-height: 1.55; color: var(--text-2); margin-bottom: 24px; }
   .vfields { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
   .vfields:last-child { margin-bottom: 0; }
   .vf-label { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--text); margin-bottom: 7px; }
   .vf-box { border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; color: var(--text-3); background: var(--page); }
-  .vf-box.active { color: var(--text); font-weight: 500; }
+  .vf-box.active { color: var(--text); font-weight: 500; border-color: var(--text-4); }
   .veditor { background: var(--surface-inset); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
   .vedit-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 11px; }
   .vedit-head .nm { font-size: 13px; font-weight: 600; color: var(--text); }
@@ -132,6 +132,7 @@
   .vmsgbox { border: 1px solid var(--border-strong); border-radius: 9px; padding: 12px 13px; font-size: 14px; line-height: 1.55; color: var(--text-2); background: var(--page); }
   .vmsgbox .filled { color: var(--gold); font-weight: 500; }
   .vmsgbox .v { color: var(--text); font-weight: 500; }
+  .vmsgbox .vhl { background: rgba(224,176,16,0.16); border-radius: 5px; padding: 1px 5px; }
   .vedit-actions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin-top: 12px; }
   .vedit-actions .cancel { font-size: 13px; font-weight: 500; color: var(--text-3); }
   .vedit-actions .save { font-size: 13px; font-weight: 600; color: var(--text); background: var(--surface-inset); border: 1px solid var(--border-strong); border-radius: 7px; padding: 7px 17px; }
@@ -142,15 +143,19 @@
   .vtone.active { background: var(--border); color: var(--text); }
   .vinsert { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text-2); }
   .vinsert .chev { color: var(--text-3); font-size: 12px; }
-  .vdropwrap { position: absolute; top: calc(100% + 8px); right: 0; width: 82%; z-index: 10; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface-inset); overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
-  .vdrop { max-height: 170px; overflow-y: auto; scrollbar-width: none; }
+  .vdim { opacity: 0.6; }
+  .vdropwrap { position: absolute; top: calc(100% + 8px); right: 0; width: calc(100% - 16px); z-index: 10; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface-inset); overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
+  .vdrop { max-height: 134px; overflow-y: hidden; scrollbar-width: none; padding-top: 8px; }
   .vdrop::-webkit-scrollbar { display: none; }
   .vscroll { position: absolute; top: 7px; bottom: 7px; right: 5px; width: 5px; border-radius: 999px; background: rgba(255,255,255,0.06); pointer-events: none; }
   .vscroll .vthumb { position: absolute; left: 0; top: 0; width: 100%; height: 68%; border-radius: 999px; background: var(--border-strong); }
   .vdrop .vrow { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 22px 4px 16px; font-size: 13px; }
   .vdrop .vrow + .vrow { border-top: 1px solid var(--border-faint); }
   .vdrop .vrow .vname { font-family: var(--mono); font-size: 12px; color: var(--text-3); white-space: nowrap; }
-  .vdrop .vrow .vval { color: var(--text); white-space: nowrap; }
+  .vdrop .vrow .vval { color: var(--text); white-space: nowrap; opacity: 0.6; }
+  .vdrop .vrow.sel { background: rgba(255,255,255,0.06); position: relative; }
+  .vdrop .vrow.sel .vval { opacity: 1; }
+  .vcursor { position: absolute; left: 40%; top: 11px; z-index: 2; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
 
   /* why it matters — cards */
   .whycards { display: grid; grid-template-columns: 1fr; gap: 28px; }
@@ -461,44 +466,44 @@
       <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The variables</span>
       <h2>Make it yours — without breaking it.</h2>
     </div>
-    <p class="bridge">Every message previews with your real data, and you can edit the words or drop in more of your own — while the parts that keep it compliant stay locked.</p>
+    <p class="bridge">Preview every message, edit the wording, or add your own fields — the parts that keep you compliant stay locked.</p>
     <div class="varcards">
 
       <div class="varcard">
-        <h3>Preview messages with your data</h3>
-        <p>Add your details once and they fill in across every message — the preview reads exactly like the text your customer receives.</p>
+        <h3>Fill in your details</h3>
+        <p>Add your details once. They fill in across every message.</p>
         <div class="vfields">
-          <div class="vf"><div class="vf-label">provider_name</div><div class="vf-box active">Dr. Sarah Chen<span class="vcaret" aria-hidden="true"></span></div></div>
+          <div class="vf"><div class="vf-label">provider_name</div><div class="vf-box active">Jordan Lee<span class="vcaret" aria-hidden="true"></span></div></div>
         </div>
         <div class="veditor">
           <div class="vedit-head"><span class="nm">Confirmation</span><span class="act"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</span></div>
-          <div class="vmsgbox">Acme: your appointment with <span class="v">Dr. Sarah Chen</span><span class="vcaret" aria-hidden="true"></span> is confirmed for Tue, March 4th, 2:00 PM. Reply STOP to opt out.</div>
+          <div class="vmsgbox"><span class="v">Summit Fitness</span>: your appointment with <span class="v vhl">Jordan Lee</span><span class="vcaret" aria-hidden="true"></span> is confirmed for <span class="v">Tue, March 4th, 2:00 PM</span>. Reply STOP to opt out.</div>
           <div class="vedit-foot">
-            <div class="vtones"><span class="vtone active">Standard</span><span class="vtone">Friendly</span><span class="vtone">Brief</span></div>
-            <span class="vinsert">Insert variable <span class="chev" aria-hidden="true">⌄</span></span>
+            <div class="vtones vdim"><span class="vtone active">Standard</span><span class="vtone">Friendly</span><span class="vtone">Brief</span></div>
+            <span class="vinsert vdim">Insert variable <span class="chev" aria-hidden="true">⌄</span></span>
           </div>
-          <div class="vedit-actions"><span class="cancel">Cancel</span><span class="save">Save</span></div>
+          <div class="vedit-actions vdim"><span class="cancel">Cancel</span><span class="save">Save</span></div>
         </div>
       </div>
 
       <div class="varcard">
-        <h3>Insert your own data</h3>
-        <p>Need a field a message doesn't use yet? Open the variable list and drop it in anywhere — it fills with your real value.</p>
+        <h3>Add a field</h3>
+        <p>Need another field? Open the variable list and drop it in</p>
         <div class="veditor">
           <div class="vedit-head"><span class="nm">Confirmation</span><span class="act"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</span></div>
-          <div class="vmsgbox">Acme: your appointment with <span class="v">Dr. Sarah Chen</span> is confirmed for Tue, March 4th, 2:00 PM. Reply STOP to opt out.</div>
+          <div class="vmsgbox"><span class="v">Summit Fitness</span>: your appointment with <span class="v">Jordan Lee</span> is confirmed for <span class="v">Tue, March 4th, 2:00 PM</span>. Reschedule <span class="v vhl">summitfitness.com/reschedule</span><span class="vcaret" aria-hidden="true"></span> Reply STOP to opt out.</div>
           <div class="vedit-foot">
-            <div class="vtones"><span class="vtone active">Standard</span><span class="vtone">Friendly</span><span class="vtone">Brief</span></div>
+            <div class="vtones vdim"><span class="vtone active">Standard</span><span class="vtone">Friendly</span><span class="vtone">Brief</span></div>
             <span class="vinsert">Insert variable <span class="chev" aria-hidden="true">⌄</span></span>
             <div class="vdropwrap">
               <div class="vdrop">
-                <div class="vrow"><span class="vname">workspace_name</span><span class="vval">Acme</span></div>
-                <div class="vrow"><span class="vname">customer_name</span><span class="vval">Olivia Rhye</span></div>
+                <div class="vrow"><span class="vname">workspace_name</span><span class="vval">Summit Fitness</span></div>
+                <div class="vrow"><span class="vname">provider_name</span><span class="vval">Jordan Lee</span></div>
+                <div class="vrow sel"><span class="vname">reschedule_link</span><span class="vval">summitfitness.com/reschedule</span><svg class="vcursor" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5.5 2.5 L5.5 19.4 L9.6 15.3 L12.4 21.6 L15 20.4 L12.2 14.2 L18.2 14.2 Z" fill="#F5F5F4" stroke="#13120E" stroke-width="1.2" stroke-linejoin="round"/></svg></div>
                 <div class="vrow"><span class="vname">appointment_time</span><span class="vval">Tue, March 4th, 2:00 PM</span></div>
-                <div class="vrow"><span class="vname">provider_name</span><span class="vval">Dr. Sarah Chen</span></div>
-                <div class="vrow"><span class="vname">reschedule_link</span><span class="vval">yourapp.com/reschedule</span></div>
-                <div class="vrow"><span class="vname">cancel_link</span><span class="vval">yourapp.com/cancel</span></div>
-                <div class="vrow"><span class="vname">feedback_link</span><span class="vval">yourapp.com/feedback</span></div>
+                <div class="vrow"><span class="vname">customer_name</span><span class="vval">Olivia Rhye</span></div>
+                <div class="vrow"><span class="vname">cancel_link</span><span class="vval">summitfitness.com/cancel</span></div>
+                <div class="vrow"><span class="vname">feedback_link</span><span class="vval">summitfitness.com/feedback</span></div>
               </div>
               <div class="vscroll" aria-hidden="true"><div class="vthumb"></div></div>
             </div>
