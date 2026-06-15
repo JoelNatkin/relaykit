@@ -174,7 +174,7 @@ export function VariablesSection() {
       <div className="max-w-2xl">
         <Eyebrow>The variables</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          Make it yours — without breaking it.
+          Make the messages yours, without breaking them.
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
           Preview every message, edit the wording, or add your own fields — the
@@ -186,18 +186,23 @@ export function VariablesSection() {
         {/* Card 1 — Fill in your details */}
         <div className="rounded-2xl border border-border-secondary bg-surface-card p-5 pb-9">
           <h3 className="text-[17px] font-semibold text-text-primary">
-            Fill in your details
+            Preview with your data
           </h3>
           <p className="mb-6 mt-2 text-sm leading-relaxed text-text-secondary">
-            Add your details once. They fill in across every message.
+            Enter a value once and it shows in every message.
           </p>
 
           {/* Active field — always shown in its active state, so the border is
               the lighter quaternary tone (#79716B = fg-quaternary), not the
               stronger resting border. */}
           <div className="mb-5">
-            <div className="mb-[7px] font-mono text-[11px] text-text-primary">
-              provider_name
+            <div className="mb-[7px] flex items-baseline justify-between gap-2">
+              <span className="text-[11px] text-text-secondary">
+                Provider name preview
+              </span>
+              <span className="font-mono text-[11px] text-text-tertiary">
+                provider_name
+              </span>
             </div>
             <div className="rounded-lg border border-fg-quaternary bg-bg-primary px-3 py-2.5 text-[13.5px] font-medium text-text-primary">
               Jordan Lee

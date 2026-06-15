@@ -119,7 +119,9 @@
   .varcard p { font-size: 14px; line-height: 1.55; color: var(--text-2); margin-bottom: 24px; }
   .vfields { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
   .vfields:last-child { margin-bottom: 0; }
-  .vf-label { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--text); margin-bottom: 7px; }
+  .vf-label { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 7px; }
+  .vf-label .vf-human { font-size: 11px; color: var(--text-2); }
+  .vf-label .vf-slug { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--text-3); }
   .vf-box { border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; color: var(--text-3); background: var(--page); }
   .vf-box.active { color: var(--text); font-weight: 500; border-color: var(--text-4); }
   .veditor { background: var(--surface-inset); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
@@ -464,16 +466,16 @@
   <div class="wrap">
     <div class="sechead">
       <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The variables</span>
-      <h2>Make it yours — without breaking it.</h2>
+      <h2>Make the messages yours, without breaking them.</h2>
     </div>
     <p class="bridge">Preview every message, edit the wording, or add your own fields — the parts that keep you compliant stay locked.</p>
     <div class="varcards">
 
       <div class="varcard">
-        <h3>Fill in your details</h3>
-        <p>Add your details once. They fill in across every message.</p>
+        <h3>Preview with your data</h3>
+        <p>Enter a value once and it shows in every message.</p>
         <div class="vfields">
-          <div class="vf"><div class="vf-label">provider_name</div><div class="vf-box active">Jordan Lee<span class="vcaret" aria-hidden="true"></span></div></div>
+          <div class="vf"><div class="vf-label"><span class="vf-human">Provider name preview</span><span class="vf-slug">provider_name</span></div><div class="vf-box active">Jordan Lee<span class="vcaret" aria-hidden="true"></span></div></div>
         </div>
         <div class="veditor">
           <div class="vedit-head"><span class="nm">Confirmation</span><span class="act"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</span></div>
