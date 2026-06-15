@@ -7,6 +7,7 @@ import { Pricing } from "@/components/home/pricing";
 import { FinalCta } from "@/components/home/final-cta";
 import { Eyebrow } from "@/components/home/section-ui";
 import { VariablesSection } from "@/components/home/variables-section";
+import { NumbersSection } from "@/components/home/numbers-section";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { PreviewListMock } from "@/components/preview-list-mock";
 import Link from "next/link";
@@ -155,8 +156,6 @@ export default function MarketingHome() {
     <div>
       <Hero />
       <StatusBand />
-      <Recognition />
-      <HowItWorks />
 
       {/* Configurator — the REAL <ConfiguratorSection/> (the exact component
           /messages renders) shown through a fixed-height clipped window; trust
@@ -206,9 +205,12 @@ export default function MarketingHome() {
       </section>
 
       <VariablesSection />
+      <NumbersSection />
       <Paperwork />
+      <HowItWorks />
       <AiSection />
       <Test />
+      <Recognition />
       <Pricing />
       <FinalCta />
     </div>
