@@ -6,7 +6,7 @@
 
 **Session metrics:** Commits: 2 so far — `4aa184d` dev-tools mockup design-source refine (straight to `main`, pushed) + the branch build commit (this close-out, on `feat/home-variables-section`). Files: 1 new component, 1 deleted component, `app/page.tsx`, DECISIONS, PROTOTYPE_SPEC, REPO_INDEX, CC_HANDOFF. Decisions added: 1 (**D-434**, Supersedes none). Quality gates: tsc ✅ / eslint ✅ / clean build ✅. Mid-phase (active phase stays Phase 2 — Session B; this is a marketing-surface artifact). Branch **unmerged, pushed** — pending PM review of the Vercel preview.
 
-**Status: 🟡 Built + pushed to branch, awaiting PM review.** Production-facing surface → feature branch per CLAUDE.md; do **not** self-merge. PM + Joel review the Vercel preview before merge to `main`.
+**Status: 🟢 Merged to `main`, live.** PM approved; `feat/home-variables-section` fast-forward-merged to `main` (HEAD `40c535d`) and pushed, branch deleted (local + remote). A follow-up direct-to-`main` `style:` pass (`96a6812`) tightened the cards (−16px bottom padding, looser menu rows, softer menu shadow). `main` clean and in sync with `origin/main`.
 
 ---
 
@@ -31,7 +31,7 @@ Lifted the finished **"The variables"** section from the dev-tools landing mocku
 - Prerendered home HTML (`.next/server/app/index.html`) contains "The variables" / "Make it yours — without breaking it." / both card titles / the `reschedule_link` menu row; "See exactly what customers will receive" = 0 hits (old block gone).
 
 ## Branch state
-**Open: `feat/home-variables-section`** (unmerged, pushed). `main` carries `4aa184d` (mockup design source). Do not self-merge — PM reviews the Vercel preview. The five older marketing branches remain merged-not-deleted.
+**No open feature branches.** `feat/home-variables-section` was fast-forward-merged to `main` and **deleted** (local + remote); the post-merge `style:` tweaks (`96a6812`) went direct to `main`. All Session 135 work is on `main` and pushed; `origin/main` clean. The five older marketing branches remain merged-not-deleted (optional cleanup).
 
 ## Carry-forwards (flagged, not done here)
 - **Dev-tools mockup orphaned CSS** (`.vinput`/`.vlabel`/`.vfield`, `.vmsg2`) — fold-back sweep, not this session.
