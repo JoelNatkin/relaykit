@@ -114,12 +114,12 @@ function CursorGlyph() {
 // always-on fake scrollbar, cursor on the reschedule_link row.
 function VariableMenu() {
   return (
-    <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-[calc(100%-16px)] overflow-hidden rounded-[10px] border border-border-primary bg-surface-inset shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
+    <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-[calc(100%-16px)] overflow-hidden rounded-[10px] border border-border-primary bg-surface-inset shadow-[0_8px_20px_rgba(0,0,0,0.35)]">
       <div className="max-h-[134px] overflow-hidden pt-2">
         {MENU_ROWS.map((row) => (
           <div
             key={row.name}
-            className={`relative flex items-center justify-between gap-4 py-1 pl-4 pr-[22px] text-[13px] [&+&]:border-t [&+&]:border-border-tertiary ${
+            className={`relative flex items-center justify-between gap-4 py-[5px] pl-4 pr-[22px] text-[13px] [&+&]:border-t [&+&]:border-border-tertiary ${
               row.selected ? "bg-white/[0.06]" : ""
             }`}
           >
@@ -168,7 +168,7 @@ export function VariablesSection() {
 
       <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Card 1 — Fill in your details */}
-        <div className="rounded-2xl border border-border-secondary bg-surface-card p-5 pb-9">
+        <div className="rounded-2xl border border-border-secondary bg-surface-card p-5">
           <h3 className="text-[17px] font-semibold text-text-primary">
             Preview with your data
           </h3>
@@ -212,7 +212,7 @@ export function VariablesSection() {
         </div>
 
         {/* Card 2 — Add a field */}
-        <div className="rounded-2xl border border-border-secondary bg-surface-card p-5 pb-9">
+        <div className="rounded-2xl border border-border-secondary bg-surface-card p-5">
           <h3 className="text-[17px] font-semibold text-text-primary">
             Customize any message
           </h3>
