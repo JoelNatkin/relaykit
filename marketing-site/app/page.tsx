@@ -156,6 +156,7 @@ export default function MarketingHome() {
     <div>
       <Hero />
       <StatusBand />
+      <Paperwork />
 
       {/* Configurator — the REAL <ConfiguratorSection/> (the exact component
           /messages renders) shown through a fixed-height clipped window; trust
@@ -205,11 +206,10 @@ export default function MarketingHome() {
       </section>
 
       <VariablesSection />
-      <NumbersSection />
-      <Paperwork />
-      <HowItWorks />
       <AiSection />
       <Test />
+      <HowItWorks />
+      <NumbersSection />
       <Recognition />
       <Pricing />
       <FinalCta />
