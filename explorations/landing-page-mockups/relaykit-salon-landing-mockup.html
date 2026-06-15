@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RelayKit — User account text messaging for your app</title>
+<title>RelayKit — Appointment text messaging for your booking app</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -110,47 +110,6 @@
   .msgcard .text { font-size: 13.5px; line-height: 1.5; color: var(--text-2); }
   .addmsg { display: flex; align-items: center; justify-content: center; gap: 9px; border: 1px dashed var(--border-strong); border-radius: var(--radius-lg); padding: 16px 18px; min-height: 96px; color: var(--text-4); font-size: 14px; font-weight: 500; background: transparent; }
   .addmsg .plus { font-size: 18px; line-height: 1; }
-
-  /* the variables — edit + preview with your data, insert your own */
-  .varcards { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 44px; }
-  @media (min-width: 760px) { .varcards { grid-template-columns: repeat(2, 1fr); } }
-  .varcard { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px; }
-  .varcard h3 { font-size: 17px; font-weight: 600; margin: 0 0 7px; }
-  .varcard p { font-size: 14px; line-height: 1.55; color: var(--text-2); margin-bottom: 24px; }
-  .vfields { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-  .vfields:last-child { margin-bottom: 0; }
-  .vf-label { font-family: var(--mono); font-size: 11px; font-weight: 400; color: var(--text); margin-bottom: 7px; }
-  .vf-box { border: 1px solid var(--border-strong); border-radius: 8px; padding: 10px 12px; font-size: 13.5px; color: var(--text-3); background: var(--page); }
-  .vf-box.active { color: var(--text); font-weight: 500; }
-  .veditor { background: var(--surface-inset); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
-  .vedit-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 11px; }
-  .vedit-head .nm { font-size: 13px; font-weight: 600; color: var(--text); }
-  .vedit-head .act { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text-4); }
-  .vinput { display: flex; align-items: center; gap: 9px; margin-bottom: 11px; }
-  .vinput .vlabel { font-family: var(--mono); font-size: 10.5px; color: var(--text-4); white-space: nowrap; }
-  .vinput .vfield { flex: 1; background: var(--page); border: 1px solid var(--gold); border-radius: 7px; padding: 7px 10px; font-size: 13px; color: var(--text); }
-  .vmsgbox { border: 1px solid var(--border-strong); border-radius: 9px; padding: 12px 13px; font-size: 14px; line-height: 1.55; color: var(--text-2); background: var(--page); }
-  .vmsgbox .filled { color: var(--gold); font-weight: 500; }
-  .vmsgbox .v { color: var(--text); font-weight: 500; }
-  .vedit-actions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin-top: 12px; }
-  .vedit-actions .cancel { font-size: 13px; font-weight: 500; color: var(--text-3); }
-  .vedit-actions .save { font-size: 13px; font-weight: 600; color: var(--text); background: var(--surface-inset); border: 1px solid var(--border-strong); border-radius: 7px; padding: 7px 17px; }
-  .vcaret { display: inline-block; width: 1.5px; height: 1.05em; background: var(--gold); vertical-align: -2px; margin: 0 1px; }
-  .vedit-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; position: relative; }
-  .vtones { display: flex; gap: 7px; }
-  .vtone { border: 1px solid var(--border-strong); border-radius: 999px; padding: 5px 13px; font-size: 12.5px; font-weight: 500; color: var(--text-3); }
-  .vtone.active { background: var(--border); color: var(--text); }
-  .vinsert { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text-2); }
-  .vinsert .chev { color: var(--text-3); font-size: 12px; }
-  .vdropwrap { position: absolute; top: calc(100% + 8px); right: 0; width: 82%; z-index: 10; border: 1px solid var(--border-strong); border-radius: 10px; background: var(--surface-inset); overflow: hidden; box-shadow: 0 12px 32px rgba(0,0,0,0.5); }
-  .vdrop { max-height: 170px; overflow-y: auto; scrollbar-width: none; }
-  .vdrop::-webkit-scrollbar { display: none; }
-  .vscroll { position: absolute; top: 7px; bottom: 7px; right: 5px; width: 5px; border-radius: 999px; background: rgba(255,255,255,0.06); pointer-events: none; }
-  .vscroll .vthumb { position: absolute; left: 0; top: 0; width: 100%; height: 68%; border-radius: 999px; background: var(--border-strong); }
-  .vdrop .vrow { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 4px 22px 4px 16px; font-size: 13px; }
-  .vdrop .vrow + .vrow { border-top: 1px solid var(--border-faint); }
-  .vdrop .vrow .vname { font-family: var(--mono); font-size: 12px; color: var(--text-3); white-space: nowrap; }
-  .vdrop .vrow .vval { color: var(--text); white-space: nowrap; }
 
   /* why it matters — cards */
   .whycards { display: grid; grid-template-columns: 1fr; gap: 28px; }
@@ -377,9 +336,9 @@
   <div class="dotgrid" aria-hidden="true"></div>
   <div class="wrap herogrid">
     <div>
-      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>For developer tools &amp; API platforms</span>
-      <h1>User account text messaging for your app.</h1>
-      <p class="sub">Payment failures, security alerts, trial endings — the events that decide whether a customer stays, sent where they'll actually see them.</p>
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>For salon &amp; spa booking apps</span>
+      <h1>Appointment text messaging for your booking app.</h1>
+      <p class="sub">Confirmations, reminders, no-show follow-ups — the messages that keep chairs full, sent where clients will actually see them.</p>
       <div class="ctas">
         <a class="cta-gold" href="#">See the messages →</a>
         <a class="cta-ghost" href="#how">How it works</a>
@@ -398,8 +357,8 @@
           <div class="lock-time">9:41</div>
           <div class="lock-date">Saturday, June 13</div>
           <div class="notif">
-            <div class="head"><span class="avatar bizinitial">A</span><span class="app biz">Acme</span><span class="ago">now</span></div>
-            <div class="body">Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing</div>
+            <div class="head"><span class="avatar bizinitial">G</span><span class="app biz">Glow Studio</span><span class="ago">now</span></div>
+            <div class="body">Reminder — your appointment with Maya is tomorrow, 2:00 PM. Change it: yourapp.com/reschedule</div>
           </div>
         </div>
       </div>
@@ -422,12 +381,12 @@
 
 <section class="sec">
   <div class="wrap">
-    <div class="sechead"><span class="eyebrow"><span class="dot" aria-hidden="true"></span>The moment</span><h2>A text can change the outcome.</h2></div>
+    <div class="sechead"><span class="eyebrow"><span class="dot" aria-hidden="true"></span>The moment</span><h2>A reminder keeps the chair full.</h2></div>
     <div class="moment-grid">
-      <p class="momentcap">A renewal email lands in a spam folder. The account quietly lapses. One text the customer can't miss, fixes it before they churn.</p>
+      <p class="momentcap">Most no-shows aren't flakes — they forgot. The booking was made weeks ago and never made it onto the calendar. One reminder the client can't miss turns an empty chair into a kept appointment.</p>
       <div class="thread">
-        <div class="bubble-in"><span class="biz">Acme</span>: Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing</div>
-        <div class="bubble-out">Paid in minutes</div>
+        <div class="bubble-in"><span class="biz">Glow Studio</span>: reminder — your appointment with Maya is tomorrow, 2:00 PM. Need to change it? yourapp.com/reschedule</div>
+        <div class="bubble-out">See you then</div>
       </div>
     </div>
   </div>
@@ -437,9 +396,9 @@
   <div class="wrap">
     <div class="sechead">
       <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The messages</span>
-      <h2>Account messages, ready to send.</h2>
+      <h2>Appointment messages, ready to send.</h2>
     </div>
-    <p class="bridge">The events that decide whether a customer stays.</p>
+    <p class="bridge">The texts that keep clients showing up.</p>
     <div class="bizline">
       <input id="bizname" type="text" placeholder="Add your business name" maxlength="24" autocomplete="off" aria-label="See the messages as your business">
       <div class="cm-tones" id="msgTones" role="group" aria-label="Message tone">
@@ -450,63 +409,7 @@
     </div>
     <div class="msgrid" id="msgGrid"></div>
     <div class="msglinkrow" style="margin-top:24px; margin-bottom:0; justify-content:flex-end;">
-      <a class="goldlink" href="#">About account events →</a>
-    </div>
-  </div>
-</section>
-
-<section class="sec">
-  <div class="wrap">
-    <div class="sechead">
-      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The variables</span>
-      <h2>Make it yours — without breaking it.</h2>
-    </div>
-    <p class="bridge">Every message previews with your real data, and you can edit the words or drop in more of your own — while the parts that keep it compliant stay locked.</p>
-    <div class="varcards">
-
-      <div class="varcard">
-        <h3>Preview messages with your data</h3>
-        <p>Add your details once and they fill in across every message — the preview reads exactly like the text your customer receives.</p>
-        <div class="vfields">
-          <div class="vf"><div class="vf-label">provider_name</div><div class="vf-box active">Dr. Sarah Chen<span class="vcaret" aria-hidden="true"></span></div></div>
-        </div>
-        <div class="veditor">
-          <div class="vedit-head"><span class="nm">Confirmation</span><span class="act"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</span></div>
-          <div class="vmsgbox">Acme: your appointment with <span class="v">Dr. Sarah Chen</span><span class="vcaret" aria-hidden="true"></span> is confirmed for Tue, March 4th, 2:00 PM. Reply STOP to opt out.</div>
-          <div class="vedit-foot">
-            <div class="vtones"><span class="vtone active">Standard</span><span class="vtone">Friendly</span><span class="vtone">Brief</span></div>
-            <span class="vinsert">Insert variable <span class="chev" aria-hidden="true">⌄</span></span>
-          </div>
-          <div class="vedit-actions"><span class="cancel">Cancel</span><span class="save">Save</span></div>
-        </div>
-      </div>
-
-      <div class="varcard">
-        <h3>Insert your own data</h3>
-        <p>Need a field a message doesn't use yet? Open the variable list and drop it in anywhere — it fills with your real value.</p>
-        <div class="veditor">
-          <div class="vedit-head"><span class="nm">Confirmation</span><span class="act"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</span></div>
-          <div class="vmsgbox">Acme: your appointment with <span class="v">Dr. Sarah Chen</span> is confirmed for Tue, March 4th, 2:00 PM. Reply STOP to opt out.</div>
-          <div class="vedit-foot">
-            <div class="vtones"><span class="vtone active">Standard</span><span class="vtone">Friendly</span><span class="vtone">Brief</span></div>
-            <span class="vinsert">Insert variable <span class="chev" aria-hidden="true">⌄</span></span>
-            <div class="vdropwrap">
-              <div class="vdrop">
-                <div class="vrow"><span class="vname">workspace_name</span><span class="vval">Acme</span></div>
-                <div class="vrow"><span class="vname">customer_name</span><span class="vval">Olivia Rhye</span></div>
-                <div class="vrow"><span class="vname">appointment_time</span><span class="vval">Tue, March 4th, 2:00 PM</span></div>
-                <div class="vrow"><span class="vname">provider_name</span><span class="vval">Dr. Sarah Chen</span></div>
-                <div class="vrow"><span class="vname">reschedule_link</span><span class="vval">yourapp.com/reschedule</span></div>
-                <div class="vrow"><span class="vname">cancel_link</span><span class="vval">yourapp.com/cancel</span></div>
-                <div class="vrow"><span class="vname">feedback_link</span><span class="vval">yourapp.com/feedback</span></div>
-              </div>
-              <div class="vscroll" aria-hidden="true"><div class="vthumb"></div></div>
-            </div>
-          </div>
-          <div class="vedit-actions"><span class="cancel">Cancel</span><span class="save">Save</span></div>
-        </div>
-      </div>
-
+      <a class="goldlink" href="#">About appointments →</a>
     </div>
   </div>
 </section>
@@ -515,9 +418,9 @@
   <div class="wrap">
     <div class="sechead">
       <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The numbers</span>
-      <h2>Most account emails never get opened.</h2>
+      <h2>Most reminder emails never get read in time.</h2>
     </div>
-    <p class="bridge">Account events are the messages a customer most needs to see — and the ones email is worst at delivering.</p>
+    <p class="bridge">An appointment reminder is the message a client most needs to see in time — and the one email is worst at delivering.</p>
     <div class="statgrid">
       <div class="statcard">
         <div class="stat-label">Gets opened</div>
@@ -548,30 +451,30 @@
   <div class="wrap">
     <div class="sechead">
       <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The details</span>
-      <h2>Q&amp;A: Account event messages</h2>
+      <h2>Q&amp;A: Appointment messages</h2>
     </div>
     <div class="qa">
       <div class="qa-item">
-        <div class="qa-q">Who should get a failed-payment text in a multi-seat app?</div>
-        <p class="qa-a"><span class="lead">The billing owner — not every seat.</span> A failed payment is one workspace's problem to fix, and texting all twelve seats just makes twelve confused users and one annoyed admin. Send each event to the one human who can act on it.</p>
+        <div class="qa-q">When should appointment reminders go out?</div>
+        <p class="qa-a"><span class="lead">A day before, and again about an hour out.</span> The day-before reminder is the most-opened message in the sequence — it gives a client time to reschedule instead of just not showing. The hour-before nudge catches the ones who still forgot. Sending five reminders doesn't help; it trains people to ignore them.</p>
       </div>
       <div class="qa-item">
-        <div class="qa-q">Should a new-device sign-in alert go to the account owner or the person who signed in?</div>
-        <p class="qa-a"><span class="lead">The person who signed in.</span> It's their security event, and they're the one who can confirm it was them or lock things down. In a workspace, that means a new-laptop login from an admin shouldn't ping the billing owner — route security events to the person they're actually about.</p>
+        <div class="qa-q">Who gets the text — the client or the stylist?</div>
+        <p class="qa-a"><span class="lead">The client.</span> The reminder is for the person who has to show up. The stylist already has their book open in the app — they don't need a text about their own day. Route each message to the one person who acts on it.</p>
       </div>
       <div class="qa-item">
-        <div class="qa-q">Which account events are worth a text?</div>
-        <p class="qa-a"><span class="lead">The ones a customer has to act on, or has to know about right now.</span></p>
+        <div class="qa-q">Which messages in the lifecycle are worth sending?</div>
+        <p class="qa-a"><span class="lead">The ones that keep the appointment, or recover it.</span></p>
         <ul class="qa-list">
-          <li>A declined payment</li>
-          <li>A new-device sign-in</li>
-          <li>An account suspension</li>
+          <li>A booking confirmation</li>
+          <li>A day-before reminder</li>
+          <li>A no-show follow-up</li>
         </ul>
-        <p class="qa-a">Receipts, weekly digests, and "your invoice is ready" can stay in email — texting those just trains people to ignore you. Rule of thumb: if it can wait until they next open the app, it doesn't need a text.</p>
+        <p class="qa-a">The cancellation receipt and the post-visit thank-you are nice to have. The one thing that isn't a reminder is a promo — "book your next cut, 20% off" is marketing, and it belongs in a campaign the client opted into, not stapled onto a reminder.</p>
       </div>
       <div class="qa-item">
-        <div class="qa-q">What about users who never gave you a phone number?</div>
-        <p class="qa-a"><span class="lead">The event falls back to email.</span> Text is the escalation channel for the messages that matter most, not a replacement for all of them. Most apps collect a number at sign-up, or the first time security matters (a new-device prompt is a natural moment to ask). You decide the fallback; you pass the recipient, and the message goes where you send it.</p>
+        <div class="qa-q">What about clients who booked by phone and never gave a number?</div>
+        <p class="qa-a"><span class="lead">The reminder falls back to your other channel.</span> Text is the reminder that gets seen in time, not the only one. Most booking flows capture a mobile number at checkout — it's where people expect a reminder anyway. You decide the fallback; you pass the recipient, and the message goes where you send it.</p>
       </div>
     </div>
   </div>
@@ -582,9 +485,9 @@
   <div class="wrap">
     <div class="sechead">
       <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The rest</span>
-      <h2>Account events are just the start.</h2>
+      <h2>Appointments are just the start.</h2>
     </div>
-    <p class="bridge">One integration sends every category below. For a developer tool, verification codes and operational alerts pair most naturally with account events — but it's all there when you need it.</p>
+    <p class="bridge">One integration sends every category below. For a salon or spa app, marketing and waitlist messages pair most naturally with appointments — but it's all there when you need it.</p>
     <div class="configmock">
       <div class="cm-head">
         <h3>Choose your messages</h3>
@@ -595,13 +498,13 @@
           <div class="cm-rail-title">Categories</div>
           <div class="cm-cats">
             <button class="cm-cat" data-cat="verification"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Verification</span></button>
-            <button class="cm-cat" data-cat="appointments"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Appointments</span></button>
+            <button class="cm-cat active" data-cat="appointments"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Appointments</span></button>
             <button class="cm-cat" data-cat="order-updates"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Order updates</span></button>
             <button class="cm-cat" data-cat="customer-support"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Customer support</span></button>
             <button class="cm-cat" data-cat="team-alerts"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Team alerts</span></button>
             <button class="cm-cat" data-cat="community"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Community</span></button>
             <button class="cm-cat" data-cat="waitlist"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Waitlist</span></button>
-            <button class="cm-cat active" data-cat="account-events"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Account events</span></button>
+            <button class="cm-cat" data-cat="account-events"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Account events</span></button>
             <button class="cm-cat" data-cat="marketing"><span class="cm-box" aria-hidden="true"></span><span class="cm-name">Marketing</span></button>
           </div>
         </div>
@@ -612,8 +515,8 @@
             <span class="cm-tone">Brief</span>
           </div>
           <div class="cm-active-head">
-            <h4 id="cm-cat-name">Account events</h4>
-            <a class="goldlink" id="cm-hub" href="#">About account events →</a>
+            <h4 id="cm-cat-name">Appointments</h4>
+            <a class="goldlink" id="cm-hub" href="#">About appointments →</a>
           </div>
           <div class="cm-cards" id="cm-cards"></div>
         </div>
@@ -722,9 +625,10 @@
 
 <span class="k">const</span> relaykit = <span class="k">new</span> <span class="g">RelayKit</span>();
 
-<span class="k">await</span> relaykit.accountEvents.<span class="g">paymentFailed</span>(user.phone, {
-  <span class="g">cardLast4</span>: <span class="s">'4242'</span>,
-  <span class="g">link</span>: <span class="s">'yourapp.com/billing'</span>,
+<span class="k">await</span> relaykit.appointments.<span class="g">reminder</span>(client.phone, {
+  <span class="g">provider</span>: <span class="s">'Maya'</span>,
+  <span class="g">time</span>: <span class="s">'Tue, 2:00 PM'</span>,
+  <span class="g">link</span>: <span class="s">'yourapp.com/reschedule'</span>,
 });</pre>
         </div>
         <p class="codecaption">That's the send.</p>
@@ -749,8 +653,8 @@
       </div>
       <div class="testcopy">
         <h2>Run test messages through real phones.</h2>
-        <p>Add yourself, your team, your beta testers. Each person verifies once. After that, your app's messages work for them exactly the way they'll work for customers.</p>
-        <p>Trigger your real flows — a payment failure, a sign-in, a code — and see the whole loop land: sent, delivered, your database updated.</p>
+        <p>Add yourself, your team, your beta testers. Each person verifies once. After that, your app's messages work for them exactly the way they'll work for clients.</p>
+        <p>Trigger your real flows — a booking, a reminder, a no-show — and see the whole loop land: sent, delivered, your database updated.</p>
       </div>
     </div>
   </div>
@@ -795,10 +699,10 @@
     <div class="relgroup">
       <div class="rellabel">Building a different app? Find yours.</div>
       <div class="relchips">
-        <a class="chip" href="#">Identity &amp; SSO platforms ↗</a>
-        <a class="chip" href="#">Helpdesk &amp; support SaaS ↗</a>
-        <a class="chip" href="#">E-commerce platforms ↗</a>
-        <a class="chip" href="#">Subscription boxes ↗</a>
+        <a class="chip" href="#">Gyms &amp; fitness studios ↗</a>
+        <a class="chip" href="#">Pet grooming &amp; boarding ↗</a>
+        <a class="chip" href="#">Home services dispatch ↗</a>
+        <a class="chip" href="#">Coaching &amp; lessons ↗</a>
       </div>
     </div>
   </div>
@@ -830,7 +734,7 @@
   var input = document.getElementById('bizname');
   var names = document.querySelectorAll('.biz');
   var initials = document.querySelectorAll('.bizinitial');
-  function biz(){ return (input && input.value.trim()) || 'Acme'; }
+  function biz(){ return (input && input.value.trim()) || 'Glow Studio'; }
   function updateStatic(){
     var v = biz();
     names.forEach(function(n){ n.textContent = v; });
@@ -844,13 +748,13 @@
       { n: 'Recovery code', b: '{biz}: Recovery code: 482910. Expires in 10 minutes.' },
       { n: 'Login code', b: '{biz}: Your login code is 482910. Expires in 10 minutes.' } ] },
     'appointments': { name: 'Appointments', biz: true, msgs: [
-      { n: 'Confirmation', b: '{biz}: your appointment with Dr. Chen is confirmed for March 4th, 2:00 PM.' },
+      { n: 'Confirmation', b: '{biz}: your appointment with Maya is confirmed for March 4th, 2:00 PM.' },
       { n: 'Reminder - distant', b: '{biz}: reminder - your appointment is tomorrow, March 4th, 2:00 PM. Cancel: yourapp.com/cancel' },
       { n: 'Reminder - proximate', b: '{biz}: your appointment is in 1 hour, March 4th, 2:00 PM. Cancel: yourapp.com/cancel' },
-      { n: 'Reschedule confirmation', b: '{biz}: your appointment is rescheduled to March 4th, 2:00 PM with Dr. Chen.' },
-      { n: 'Cancellation confirmation', b: '{biz}: your appointment with Dr. Chen is cancelled. Rebook anytime: yourapp.com/reschedule' },
-      { n: 'No-show follow-up', b: '{biz}: we missed you today. Want to rebook with Dr. Chen? yourapp.com/reschedule' },
-      { n: 'Post-appointment', b: '{biz}: thanks for seeing Dr. Chen today. We\u2019d love your feedback: yourapp.com/feedback' } ] },
+      { n: 'Reschedule confirmation', b: '{biz}: your appointment is rescheduled to March 4th, 2:00 PM with Maya.' },
+      { n: 'Cancellation confirmation', b: '{biz}: your appointment with Maya is cancelled. Rebook anytime: yourapp.com/reschedule' },
+      { n: 'No-show follow-up', b: '{biz}: we missed you today. Want to rebook with Maya? yourapp.com/reschedule' },
+      { n: 'Post-appointment', b: '{biz}: thanks for seeing Maya today. We\u2019d love your feedback: yourapp.com/feedback' } ] },
     'order-updates': { name: 'Order updates', biz: true, msgs: [
       { n: 'Order confirmed', b: '{biz}: Order ORD-2026-90413 confirmed. Arrives Thursday. We\u2019ll text you when it ships.' },
       { n: 'Order processing', b: '{biz}: Order ORD-2026-90413 is being prepared. We\u2019ll text you when it ships.' },
@@ -902,17 +806,17 @@
       { n: 'New device sign-in', b: '{biz}: New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security' },
       { n: 'Account suspended', b: '{biz}: Your account has been suspended. Review the details and next steps here: yourapp.com/account' } ] },
     'marketing': { name: 'Marketing', biz: true, msgs: [
-      { n: 'Promotional offer', b: '{biz}: 30% off your first year. Claim it here: yourapp.com/offer' },
-      { n: 'Product launch', b: '{biz}: Brand Studio is live. Take a look: yourapp.com/new' },
-      { n: 'Re-engagement', b: '{biz}: it\u2019s been a while. Here\u2019s what you\u2019ve missed: yourapp.com/whatsnew' },
-      { n: 'Event invitation', b: '{biz}: Founder AMA is coming up Thursday at 2pm ET. RSVP here: yourapp.com/rsvp' } ] }
+      { n: 'Promotional offer', b: '{biz}: 30% off your next visit. Claim it here: yourapp.com/offer' },
+      { n: 'Product launch', b: '{biz}: new services just added. Take a look: yourapp.com/new' },
+      { n: 'Re-engagement', b: '{biz}: it\u2019s been a while. Ready to book again? yourapp.com/book' },
+      { n: 'Event invitation', b: '{biz}: open house this Thursday at 2pm. RSVP here: yourapp.com/rsvp' } ] }
   };
   var ORDER = ['verification','appointments','order-updates','customer-support','team-alerts','community','waitlist','account-events','marketing'];
 
   var cardsEl = document.getElementById('cm-cards');
   var nameEl = document.getElementById('cm-cat-name');
   var hubEl = document.getElementById('cm-hub');
-  var current = 'account-events', paused = false;
+  var current = 'appointments', paused = false;
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
@@ -944,28 +848,32 @@
       swapCM(ORDER[(i + 1) % ORDER.length]);
     }, 4000);
   }
-  // The Messages — five account-events cards, tone + business-name aware.
+  // The Messages — appointment-lifecycle cards, tone + business-name aware.
   var MSG = [
-    { n: 'Payment failed', t: {
-      Standard: '{biz}: Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing',
-      Friendly: 'Your {biz} payment didn\u2019t go through (card ending 4242). Update it here to stay active: yourapp.com/billing',
-      Brief: '{biz}: Card 4242 declined. Update payment: yourapp.com/billing' } },
-    { n: 'Trial ending', t: {
-      Standard: '{biz}: Your trial ends in 3 days. Choose a plan to keep your account: yourapp.com/billing',
-      Friendly: 'Your {biz} trial ends in 3 days. Pick a plan here to keep going: yourapp.com/billing',
-      Brief: '{biz}: Trial ends in 3 days. Choose a plan: yourapp.com/billing' } },
-    { n: 'New-device sign-in', t: {
-      Standard: '{biz}: New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security',
-      Friendly: 'Your {biz} account was just accessed from Chrome on Mac, Denver. Not you? Secure it: yourapp.com/security',
-      Brief: '{biz}: New sign-in, Chrome on Mac, Denver. Not you? yourapp.com/security' } },
-    { n: 'Account suspended', t: {
-      Standard: '{biz}: Your account has been suspended. Review the details and next steps here: yourapp.com/account',
-      Friendly: 'Your {biz} account has been suspended. Here\u2019s what happened and what to do next: yourapp.com/account',
-      Brief: '{biz}: Account suspended. Details and next steps: yourapp.com/account' } },
-    { n: 'Subscription confirmed', t: {
-      Standard: '{biz}: Your subscription change is confirmed. View the details in your account: yourapp.com/account',
-      Friendly: 'Your {biz} subscription is all set. See the details here whenever you like: yourapp.com/account',
-      Brief: '{biz}: Subscription updated. Details: yourapp.com/account' } }
+    { n: 'Confirmation', t: {
+      Standard: '{biz}: your appointment with Maya is confirmed for Tue, March 4th, 2:00 PM.',
+      Friendly: 'You\u2019re booked! Maya will see you Tue, March 4th, 2:00 PM. We\u2019ll send a reminder. - {biz}',
+      Brief: '{biz}: confirmed with Maya, Tue, March 4th, 2:00 PM.' } },
+    { n: 'Reminder - day before', t: {
+      Standard: '{biz}: reminder - your appointment is tomorrow, Tue, March 4th, 2:00 PM. Cancel: yourapp.com/cancel',
+      Friendly: 'See you tomorrow! Maya at Tue, March 4th, 2:00 PM. Change or cancel: yourapp.com/reschedule',
+      Brief: '{biz}: tomorrow with Maya, Tue, March 4th, 2:00 PM.' } },
+    { n: 'Reminder - 1 hour', t: {
+      Standard: '{biz}: your appointment is in 1 hour, Tue, March 4th, 2:00 PM. Cancel: yourapp.com/cancel',
+      Friendly: 'Almost time - Maya sees you in about an hour, Tue, March 4th, 2:00 PM. - {biz}',
+      Brief: '{biz}: in 1 hour - Maya, Tue, March 4th, 2:00 PM.' } },
+    { n: 'Reschedule confirmation', t: {
+      Standard: '{biz}: your appointment is rescheduled to Tue, March 4th, 2:00 PM with Maya.',
+      Friendly: 'Got it - you\u2019re now set for Tue, March 4th, 2:00 PM with Maya. See you then! - {biz}',
+      Brief: '{biz}: moved to Tue, March 4th, 2:00 PM, Maya.' } },
+    { n: 'No-show follow-up', t: {
+      Standard: '{biz}: we missed you today. Want to rebook with Maya? yourapp.com/reschedule',
+      Friendly: 'Sorry we missed you! Happy to find a new time - rebook here: yourapp.com/reschedule - {biz}',
+      Brief: '{biz}: missed you. Rebook: yourapp.com/reschedule' } },
+    { n: 'Post-visit feedback', t: {
+      Standard: '{biz}: thanks for seeing Maya today. We\u2019d love your feedback: yourapp.com/feedback',
+      Friendly: 'Thanks for coming in today! How did it go with Maya? Tell us: yourapp.com/feedback - {biz}',
+      Brief: '{biz}: thanks for visiting. Feedback: yourapp.com/feedback' } }
   ];
   var msgGrid = document.getElementById('msgGrid');
   var msgTones = document.getElementById('msgTones');
@@ -992,13 +900,13 @@
 
   if(input){ input.addEventListener('input', function(){ updateStatic(); renderMsgs(); renderCM(current); }); }
 
-  // Hero phone — rotate the notification body every 3s, with a pause toggle.
+  // Hero phone — rotate the notification body every few seconds, with a pause toggle.
   var heroBodies = [
-    'Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing',
-    'Your trial ends in 3 days. Choose a plan to keep your account: yourapp.com/billing',
-    'New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security',
-    'Your account has been suspended. Review the details and next steps here: yourapp.com/account',
-    'Your subscription change is confirmed. View the details in your account: yourapp.com/account'
+    'Reminder \u2014 your appointment with Maya is tomorrow, 2:00 PM. Change it: yourapp.com/reschedule',
+    'You\u2019re booked with Maya, Tue 2:00 PM. We\u2019ll send a reminder the day before.',
+    'Your appointment is in 1 hour \u2014 Maya, 2:00 PM. See you soon.',
+    'Rescheduled \u2014 you\u2019re set for Tue, 2:00 PM with Maya. See you then.',
+    'We missed you today. Want to rebook with Maya? yourapp.com/reschedule'
   ];
   var heroBody = document.querySelector('.notif .body');
   var pauseBtn = document.getElementById('phonePause');
@@ -1024,7 +932,7 @@
 
   updateStatic();
   renderMsgs();
-  renderCM('account-events');
+  renderCM('appointments');
 })();
 </script>
 </body>
