@@ -112,7 +112,7 @@
   .addmsg .plus { font-size: 18px; line-height: 1; }
 
   /* the variables — edit + preview with your data, insert your own */
-  .varcards { display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 44px; }
+  .varcards { display: grid; grid-template-columns: 1fr; gap: 32px; margin-top: 44px; }
   @media (min-width: 760px) { .varcards { grid-template-columns: repeat(2, 1fr); } }
   .varcard { background: var(--surface-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 22px 38px; }
   .varcard h3 { font-size: 17px; font-weight: 600; margin: 0 0 7px; }
@@ -139,7 +139,7 @@
   .vedit-actions .cancel { font-size: 13px; font-weight: 500; color: var(--text-3); }
   .vedit-actions .save { font-size: 13px; font-weight: 600; color: var(--text); background: var(--surface-inset); border: 1px solid var(--border-strong); border-radius: 7px; padding: 7px 17px; }
   .vcaret { display: inline-block; width: 1.5px; height: 1.05em; background: var(--gold); vertical-align: -2px; margin: 0 1px; }
-  .vedit-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; position: relative; }
+  .vedit-foot { display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 12px; position: relative; }
   .vtones { display: flex; gap: 7px; }
   .vtone { border: 1px solid var(--border-strong); border-radius: 999px; padding: 5px 13px; font-size: 12.5px; font-weight: 500; color: var(--text-3); }
   .vtone.active { background: var(--border); color: var(--text); }
@@ -468,7 +468,7 @@
       <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The variables</span>
       <h2>Make the messages yours, without breaking them.</h2>
     </div>
-    <p class="bridge">Preview every message, edit the wording, or add your own fields — the parts that keep you compliant stay locked.</p>
+    <p class="bridge">Preview every message, edit the wording, or add your own fields.<br>The parts that keep you compliant stay locked.</p>
     <div class="varcards">
 
       <div class="varcard">
@@ -481,7 +481,6 @@
           <div class="vedit-head"><span class="nm">Confirmation</span><span class="act"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</span></div>
           <div class="vmsgbox"><span class="v">Summit Fitness</span>: your appointment with <span class="v vhl">Jordan Lee</span><span class="vcaret" aria-hidden="true"></span> is confirmed for <span class="v">Tue, March 4th, 2:00 PM</span>. Reply STOP to opt out.</div>
           <div class="vedit-foot">
-            <div class="vtones vdim"><span class="vtone active">Standard</span><span class="vtone">Friendly</span><span class="vtone">Brief</span></div>
             <span class="vinsert vdim">Insert variable <span class="chev" aria-hidden="true">⌄</span></span>
           </div>
           <div class="vedit-actions vdim"><span class="cancel">Cancel</span><span class="save">Save</span></div>
@@ -495,7 +494,6 @@
           <div class="vedit-head"><span class="nm">Confirmation</span><span class="act"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>Edit</span></div>
           <div class="vmsgbox"><span class="v">Summit Fitness</span>: your appointment with <span class="v">Jordan Lee</span> is confirmed for <span class="v">Tue, March 4th, 2:00 PM</span>. Reschedule <span class="v vhl">summitfitness.com/reschedule</span><span class="vcaret" aria-hidden="true"></span> Reply STOP to opt out.</div>
           <div class="vedit-foot">
-            <div class="vtones vdim"><span class="vtone active">Standard</span><span class="vtone">Friendly</span><span class="vtone">Brief</span></div>
             <span class="vinsert">Insert variable <span class="chev" aria-hidden="true">⌄</span></span>
             <div class="vdropwrap">
               <div class="vdrop">

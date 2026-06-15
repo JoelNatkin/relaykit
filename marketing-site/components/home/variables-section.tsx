@@ -48,23 +48,6 @@ function EditorHead() {
   );
 }
 
-// Tone pills (mockup `.vtones`/`.vtone`). Always shown dimmed via the parent.
-function TonePills() {
-  return (
-    <div className="flex gap-[7px]">
-      <span className="rounded-full border border-border-primary bg-border-secondary px-[13px] py-[5px] text-[12.5px] font-medium text-text-primary">
-        Standard
-      </span>
-      <span className="rounded-full border border-border-primary px-[13px] py-[5px] text-[12.5px] font-medium text-text-tertiary">
-        Friendly
-      </span>
-      <span className="rounded-full border border-border-primary px-[13px] py-[5px] text-[12.5px] font-medium text-text-tertiary">
-        Brief
-      </span>
-    </div>
-  );
-}
-
 // "Insert variable ⌄" affordance (mockup `.vinsert`).
 function InsertVariable() {
   return (
@@ -177,12 +160,13 @@ export function VariablesSection() {
           Make the messages yours, without breaking them.
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          Preview every message, edit the wording, or add your own fields — the
-          parts that keep you compliant stay locked.
+          Preview every message, edit the wording, or add your own fields.{" "}
+          <br className="hidden md:block" />
+          The parts that keep you compliant stay locked.
         </p>
       </div>
 
-      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Card 1 — Fill in your details */}
         <div className="rounded-2xl border border-border-secondary bg-surface-card p-5 pb-9">
           <h3 className="text-[17px] font-semibold text-text-primary">
@@ -218,8 +202,7 @@ export function VariablesSection() {
               <Caret /> is confirmed for <V>Tue, March 4th, 2:00 PM</V>. Reply
               STOP to opt out.
             </div>
-            <div className="relative mt-3 flex items-center justify-between gap-2.5 opacity-60">
-              <TonePills />
+            <div className="mt-3 flex items-center justify-end opacity-60">
               <InsertVariable />
             </div>
             <div className="opacity-60">
@@ -245,10 +228,7 @@ export function VariablesSection() {
               <Vhl>summitfitness.com/reschedule</Vhl>
               <Caret /> Reply STOP to opt out.
             </div>
-            <div className="relative mt-3 flex items-center justify-between gap-2.5">
-              <div className="opacity-60">
-                <TonePills />
-              </div>
+            <div className="relative mt-3 flex items-center justify-end">
               <InsertVariable />
               <VariableMenu />
             </div>
