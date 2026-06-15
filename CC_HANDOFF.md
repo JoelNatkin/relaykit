@@ -6,7 +6,7 @@
 
 **Session metrics:** Commits: 1 (branch build + docs, this close-out) on `feat/home-reorder`. Files: 1 new component (`numbers-section.tsx`), `app/page.tsx` (reorder), PROTOTYPE_SPEC, REPO_INDEX, CC_HANDOFF. Decisions added: 0 (no D-number — see below). Quality gates: tsc ✅ / eslint ✅ / clean build ✅. Mid-phase (active phase stays Phase 2 — Session B; marketing-surface work). Branch **unmerged, pushed** — pending PM review of the Vercel preview.
 
-**Status: 🟡 Built + pushed to branch, awaiting PM review.** Production-facing surface → feature branch per CLAUDE.md; do **not** self-merge. PM + Joel review the Vercel preview before merge to `main`.
+**Status: 🟢 Merged to `main` (`200d459`), live.** PM approved; `feat/home-reorder` fast-forward-merged to `main` and pushed, branch deleted (local + remote). `main` clean and in sync with `origin/main`.
 
 ---
 
@@ -42,7 +42,7 @@ New order — Hero · StatusBand · `#rules` (Paperwork) · `#configurator` (Mes
 - **Sole-prop `/prototype` + `/src` UI session** (from Session 134) — stale "register you as a sole proprietor" copy + `has_ein="no"` flow-gating + the PRODUCT_SUMMARY §8 line-120 D-18→D-433 citation split; still owed.
 
 ## Branch state
-**Open: `feat/home-reorder`** (unmerged, pushed). `main` is current at `96a6812` (Session 135's variables work). Do not self-merge — PM reviews the Vercel preview. The five older marketing branches remain merged-not-deleted.
+**No open feature branches.** `feat/home-reorder` was fast-forward-merged to `main` (`200d459`) and **deleted** (local + remote). All Session 136 work is on `main` and pushed; `origin/main` clean. The five older marketing branches remain merged-not-deleted (optional cleanup).
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
