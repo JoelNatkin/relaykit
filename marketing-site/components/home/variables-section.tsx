@@ -214,10 +214,10 @@ export function VariablesSection() {
         {/* Card 2 — Add a field */}
         <div className="rounded-2xl border border-border-secondary bg-surface-card p-5 pb-9">
           <h3 className="text-[17px] font-semibold text-text-primary">
-            Add a field
+            Customize any message
           </h3>
           <p className="mb-6 mt-2 text-sm leading-relaxed text-text-secondary">
-            Need another field? Open the variable list and drop it in
+            Open the variable list and drop one in.
           </p>
 
           <div className="rounded-xl border border-border-secondary bg-surface-inset p-3.5">
