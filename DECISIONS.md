@@ -2228,3 +2228,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none. The prior stance lived as a MASTER_PLAN scope note + BACKLOG entry + exploration (no D-number) — all hardened in this commit. **Amends D-247 and D-302** — their "sole proprietor registrations are limited to one campaign" clause is moot (a no-entity sole prop cannot register at all); each marked `⚠ Amended by D-433`. Their EIN-gating-for-marketing logic stands.
 
 **Affects:** MASTER_PLAN.md; BACKLOG.md; explorations/no-ein-sole-proprietor-path.md (killed); DECISIONS.md (D-247 + D-302 amended); docs/PRODUCT_SUMMARY.md; docs/CUSTOMER_ARCHETYPE_FOUNDATION.md; REPO_INDEX.md; prototype intake copy (pending the dedicated `/prototype` + `/src` UI session — copy fix bundled with the `has_ein="no"` flow-gating decision).
+
+## D-434 — Home "The variables" section replaces the VariablesCallout / "See exactly" block
+
+**Decided:** 2026-06-15 (Session 135)
+
+**Decision:** The home page (`/`) gets a dedicated top-level **"The variables"** section — eyebrow "The variables", H2 "Make it yours — without breaking it.", two illustrative cards ("Fill in your details" + "Add a field") that *show* the authoring experience (an active field with a caret, gold-tint values, an open variable menu with a mouse cursor over the selected row). It replaces the prior `VariablesCallout` ("See exactly what customers will receive.") before→after template/preview block, which is removed from the `#configurator` section and deleted. The new section is **presentational-static** — no live editor, no state, no client directive; every interactive-looking element is illustrative. It renders between `#configurator` and `#rules` (Paperwork). The standalone landing-mockup design source generalizes to the home with no token changes (the existing `bg-bg-gold/15` tint carries the highlight; no new utility).
+
+**Why:** A worked, editorial demonstration of "edit the wording / add your own fields / the compliant parts stay locked" communicates the authoring promise better than a side-by-side `{{token}}` → resolved diff, which read as a mechanical detail rather than a benefit.
+
+**Rejected alternative:** Keep the `VariablesCallout` before→after block. Rejected — it demonstrated substitution mechanics, not the "make it yours without breaking compliance" value the section is meant to land.
+
+**Supersedes:** none. No prior D-number established the `VariablesCallout` / "See exactly" block — it shipped inside D-428's v10 home rebuild from an external design artifact, never owned by a decision; nothing to mark.
+
+**Affects:** `marketing-site/components/home/variables-section.tsx` (new, static); `marketing-site/components/home/variables-callout.tsx` (deleted); `marketing-site/app/page.tsx` (import + render swap; `VariablesCallout` usage removed from `#configurator`, "Copy the templates…" paragraph kept); PROTOTYPE_SPEC.md; REPO_INDEX.md.

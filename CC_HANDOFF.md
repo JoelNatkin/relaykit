@@ -1,45 +1,46 @@
-# CC_HANDOFF — Session 134 close-out: sole-proprietor stance hardened to permanent (D-433) (2026-06-13)
+# CC_HANDOFF — Session 135 close-out: home "The variables" section, replaces VariablesCallout (D-434) (2026-06-15)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 4 (all pushed) — `13b9d18` D-433 hardening · `2a5381c` landing-page-craft PM-edit follow-up · `0c9d56a` CC_HANDOFF status reconcile · + this close-out handoff commit | Files modified: 7 canon (DECISIONS, MASTER_PLAN, BACKLOG, explorations/no-ein-sole-proprietor-path, docs/PRODUCT_SUMMARY, docs/CUSTOMER_ARCHETYPE_FOUNDATION, REPO_INDEX) + CC_HANDOFF + explorations/landing-page-craft | Decisions added: 1 (**D-433**), 2 amended (D-247, D-302) | External actions: 4 pushes to `origin/main`. **Doc-only session — no code touched, quality gates skipped.** Mid-phase (active phase stays Phase 2 — Session B → retirement sweep + drift watch skipped).
+**Session metrics:** Commits: 2 so far — `4aa184d` dev-tools mockup design-source refine (straight to `main`, pushed) + the branch build commit (this close-out, on `feat/home-variables-section`). Files: 1 new component, 1 deleted component, `app/page.tsx`, DECISIONS, PROTOTYPE_SPEC, REPO_INDEX, CC_HANDOFF. Decisions added: 1 (**D-434**, Supersedes none). Quality gates: tsc ✅ / eslint ✅ / clean build ✅. Mid-phase (active phase stays Phase 2 — Session B; this is a marketing-surface artifact). Branch **unmerged, pushed** — pending PM review of the Vercel preview.
 
-**Status: 🟢 Approved + pushed — `main` clean and in sync with `origin/main` (close-out HEAD).** A scoped doc-only hardening session; the substantive product pickup remains Phase 2 — Session B.
+**Status: 🟡 Built + pushed to branch, awaiting PM review.** Production-facing surface → feature branch per CLAUDE.md; do **not** self-merge. PM + Joel review the Vercel preview before merge to `main`.
 
 ---
 
-## What landed this session (one local commit, not pushed)
+## What landed this session
 
-Converted RelayKit's stance on **sole proprietors without a registered business entity** from *deferred-at-launch / revisit-if-pull* to **permanently unsupported**, per Joel's instruction and the PM-approved plan (`.pm/plans/plan-mode-doc-only-session-virtual-lemon.md`). The deferral rested entirely on Sinch toll-free (TFN) verification as the eventual fallback; that path is confirmed permanently blocked (manual-only Verified Sender Form, no API, BRN mandatory since Jan 2026, discretionary not-guaranteed sole-prop carve-out). Short codes: zero existing copy anywhere — clean assertion. The truthful route is preserved everywhere: form a registered entity (LLC/corp + EIN) → standard 10DLC.
+Lifted the finished **"The variables"** section from the dev-tools landing mockup into the relaykit.ai home, replacing the prior `VariablesCallout` ("See exactly what customers will receive.") before→after block.
 
-1. **D-433 recorded** — sole proprietors without a registered entity are permanently unsupported; TFN / short codes / secondary-carrier / RelayKit-as-CSP all permanently rejected; only route is form-an-entity → 10DLC. **Supersedes: none** — the key finding is that *no prior D-number ever owned the deferral* (it lived as a MASTER_PLAN scope note + BACKLOG entry + exploration).
-2. **D-247 + D-302 amended** (not superseded) — each carries a now-false Twilio-era clause ("sole proprietor registrations are limited to one campaign"). Marked `⚠ Amended by D-433` in the same commit: the one-campaign clause is moot (a no-entity sole prop can't register at all), while their still-operative EIN-gating-for-marketing core stands. Handled as amendments per §Ledger (evolution ≠ supersession unless the earlier approach is no longer operative).
-3. **MASTER_PLAN** out-of-scope bullet → permanent, cross-ref D-433, TFN/short-code hope removed.
-4. **BACKLOG** "Sole Proprietor customer segment" entry → 2026-06-13 update line "PERMANENTLY CLOSED (D-433)"; `### Last updated` bumped to June 13.
-5. **explorations/no-ein-sole-proprietor-path.md killed** — `Status: killed (2026-06-13) … (D-433)`; a dated supersession note added atop §Resolution so the file's "door open" conclusion reads as historical. Not in the REPO_INDEX active-explorations table (retired Session 126), so no row to remove; no PROTOTYPE_SPEC/PRODUCT_SUMMARY pointers existed.
-6. **PRODUCT_SUMMARY §3** sole-prop bullet → permanent non-support; **Last reviewed** bumped (manual — blockquote header not hook-enforced).
-7. **CUSTOMER_ARCHETYPE §4b** "no-EIN builder" → "sole-proprietor builder (no registered entity)", permanent non-support; §4c synthesis line updated. Terminology standardized to "sole proprietor(s)" — wall is registered-entity status, not the EIN.
-8. **REPO_INDEX** — Meta lead (Session 134), count 347→348 / latest D-433, four doc-rows bumped (MASTER_PLAN, DECISIONS, PRODUCT_SUMMARY, CUSTOMER_ARCHETYPE).
+1. **Step 0 — mockup to `main`** (`4aa184d`, pushed): committed the uncommitted dev-tools mockup refinements (the design source) straight to `main`. Orphaned CSS (`.vinput`/`.vlabel`/`.vfield`, `.vmsg2`) left untouched for the fold-back sweep.
+2. **`marketing-site/components/home/variables-section.tsx`** (new) — presentational-static server component (no `"use client"`, no state). Owns its own `<section id="variables">` with the standard home wrapper + `Eyebrow` "The variables" + H2 "Make it yours — without breaking it." + bridge, then two illustrative cards: **"Fill in your details"** (active `provider_name` field + static gold caret, Confirmation editor mock with `Jordan Lee` gold-tinted, dimmed controls) and **"Add a field"** (same mock with `summitfitness.com/reschedule` gold-tinted + an **open** "Insert variable" menu — exact mockup geometry: right-anchored `w-[calc(100%-16px)]`, `max-h-[134px]` overflow-hidden, 7 rows with `reschedule_link` selected under a decorative cursor, always-on fake scrollbar). Geometry ported 1:1.
+3. **`app/page.tsx`** — swapped the import; removed `<VariablesCallout/>` from `#configurator` (kept the "Copy the templates…" paragraph); rendered `<VariablesSection/>` between `#configurator` and `<Paperwork/>`.
+4. **Deleted** `marketing-site/components/home/variables-callout.tsx` (no other importer).
+5. **D-434 recorded** (Supersedes none — no D ever owned the replaced block). PROTOTYPE_SPEC (new #6 section, renumber 6–10→7–11, Last-updated → June 15) + REPO_INDEX (count 349/D-434, branch state, doc-rows, file inventory) updated.
+
+## Token translation notes (for the next reader / fold-back)
+- All mockup tokens mapped to real dark+gold tokens with **no new utility**. The gold-tint highlight reuses the existing `bg-bg-gold/15` (the established home pattern).
+- **The always-active input border uses `border-fg-quaternary`** (= brand-500 = `#79716B` in dark mode), per Joel's explicit call — `border-border-primary` (= border-strong) reads as inactive; the field is always shown active so it needs the lighter neutral. Resting/message-box/dropdown borders stay `border-border-primary`.
+- The decorative mouse-cursor SVG carries literal hex (`#F5F5F4` fill / `#13120E` outline) with a justifying comment — it's an OS-cursor glyph, not a themed surface, so it's exempt from the no-raw-colors rule.
 
 ## Verification done
-- §Prose-sweep multiline grep across the six edited docs: no surviving "deferred at launch / door open / revisit post-launch / live candidate" framing for this segment; "no-EIN" framing retired from the edited canon. (See verification block in the plan.)
-- Ledger: D-433 present, `Supersedes: none`; D-247 + D-302 each carry the `⚠ Amended by D-433` line; count = 348 / latest D-433.
-- Hook: BACKLOG `### Last updated:` = June 13, 2026. (DECISIONS/MASTER_PLAN/REPO_INDEX carry no hook-enforced in-file header; PRODUCT_SUMMARY blockquote header bumped manually.)
-- "short code" as a product offering: zero pre-existing copy anywhere (confirmed pre-edit); the term now appears only in D-433 / MASTER_PLAN as an explicit "never." (The two non-canon hits — `audits/…EXTRACTION.md`, `blog/clusters.ts` — are unrelated.)
-
-## Carry-forwards (flagged, not done here)
-- **`/prototype` + `/src` sole-prop UI session** — the stale "we'll register you as a sole proprietor (limited to one campaign)" promise still lives in `prototype/components/registration/business-details-form.tsx` (636–639, 647–648, 797) + `review-confirm.tsx:293` and the sunset `/src` FAQ/forms. **Deliberately deferred** to a dedicated `/prototype` UI session: the copy fix must move *with* the `has_ein="no"` flow-gating decision (block/redirect the no-entity path) — fixing copy while the flow still lets a no-entity sole prop click Continue and register would leave the prototype incoherent. `/src` items are sunsetting (D-358) — do not polish; they die with `/src`. **Bundle in this session:** the `docs/PRODUCT_SUMMARY.md` §8 citation nit at **line 120** — "sole-prop registrations and HEALTHCARE-vertical attempts are declined upstream **(D-18)**" should split the citation: D-18 covers the healthcare decline, **D-433** the sole-prop decline (it's the Rejected-state copy reworked in this same surface, so fix it there rather than in isolation).
-- **Landing-page batch** (PM-owned, per `explorations/landing-page-craft.md`) — the sequenced build: **template lock** (the four archetypes — ship-it / honest-no / hub / comparison) → **demand research** (per sub-vertical) → **seed Airtable Pages rows**. The killed sole-prop exploration feeds the new "Legal-entity-required explainer" hub/concept page (added to landing-page-craft's to-build list this session) — the evergreen page the future registration block links to, carrying the truthful form-an-entity → 10DLC route.
-- **Standing (pre-existing):** dead token `--color-text-headline-muted` (globals.css:78); `globals.css` light→dark dead-token collapse (D-430); blog "configurator" voice rewrite; delete `joel+golive-smoke@gmail.com` from `early_access_subscribers`; OG unfurl cache-bust verify; migration `009_early_access_interest_tag.sql` apply-before-deploy; Claude.ai UI custom-instructions paste-sync.
+- `npx tsc --noEmit` → exit 0; `npx eslint components/home/variables-section.tsx app/page.tsx` → exit 0.
+- `rm -rf .next && npm run build` → "✓ Compiled successfully", exit 0 (only the pre-existing dual-lockfile workspace-root warning).
+- Prerendered home HTML (`.next/server/app/index.html`) contains "The variables" / "Make it yours — without breaking it." / both card titles / the `reschedule_link` menu row; "See exactly what customers will receive" = 0 hits (old block gone).
 
 ## Branch state
-**No open feature branches.** All session commits are on `main` and **pushed**; `origin/main` is clean. The five older marketing branches remain merged-not-deleted (optional cleanup).
+**Open: `feat/home-variables-section`** (unmerged, pushed). `main` carries `4aa184d` (mockup design source). Do not self-merge — PM reviews the Vercel preview. The five older marketing branches remain merged-not-deleted.
+
+## Carry-forwards (flagged, not done here)
+- **Dev-tools mockup orphaned CSS** (`.vinput`/`.vlabel`/`.vfield`, `.vmsg2`) — fold-back sweep, not this session.
+- **Standing (pre-existing):** dead token `--color-text-headline-muted` (globals.css:78); `globals.css` light→dark dead-token collapse (D-430); blog "configurator" voice rewrite; delete `joel+golive-smoke@gmail.com` from `early_access_subscribers`; OG unfurl cache-bust verify; migration `009_early_access_interest_tag.sql` apply-before-deploy; Claude.ai UI custom-instructions paste-sync.
+- **Sole-prop `/prototype` + `/src` UI session** (from Session 134) — stale "register you as a sole proprietor" copy + `has_ein="no"` flow-gating + the PRODUCT_SUMMARY §8 line-120 D-18→D-433 citation split; still owed.
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
+- **PM review of the Vercel preview** for `feat/home-variables-section`; merge to `main` on approval.
 - **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN — the substantive product pickup.
-- When a `/prototype` UI session opens: fix the sole-prop intake copy + `has_ein="no"` flow-gating together (carry-forward above).

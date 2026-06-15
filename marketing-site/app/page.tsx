@@ -6,7 +6,7 @@ import { Paperwork } from "@/components/home/paperwork";
 import { Pricing } from "@/components/home/pricing";
 import { FinalCta } from "@/components/home/final-cta";
 import { Eyebrow } from "@/components/home/section-ui";
-import { VariablesCallout } from "@/components/home/variables-callout";
+import { VariablesSection } from "@/components/home/variables-section";
 import { ConfiguratorSection } from "@/components/configurator-section";
 import { PreviewListMock } from "@/components/preview-list-mock";
 import Link from "next/link";
@@ -203,9 +203,9 @@ export default function MarketingHome() {
           Twilio, Sinch, Telnyx, custom infrastructure, whatever you&apos;re
           already using.
         </p>
-        <VariablesCallout />
       </section>
 
+      <VariablesSection />
       <Paperwork />
       <AiSection />
       <Test />
