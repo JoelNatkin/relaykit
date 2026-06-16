@@ -3,11 +3,21 @@ import { Eyebrow } from "@/components/home/section-ui";
 
 // "The variables" — a presentational, STATIC illustration of the message
 // authoring experience (D-434). It replaces the prior VariablesCallout
-// before→after block. Nothing here is interactive: the active input,
+// before→after block. Nothing here is interactive: the active input + caret,
 // gold-tint values, the open variable menu, the mouse cursor, and the dimmed
 // controls are all illustrative. Geometry is ported
 // 1:1 from explorations/landing-page-mockups/relaykit-devtools-landing-mockup.html
 // (the design source) translated to the real dark+gold tokens.
+
+// Static gold text-cursor — illustrative only (no blink). Card-1 input only.
+function Caret() {
+  return (
+    <span
+      aria-hidden
+      className="mx-px inline-block h-[1.05em] w-[1.5px] bg-gold align-[-2px]"
+    />
+  );
+}
 
 // Bold, identity-tone value span (mockup `.v`).
 function V({ children }: { children: React.ReactNode }) {
@@ -17,7 +27,7 @@ function V({ children }: { children: React.ReactNode }) {
 // `.v` value carrying the gold-tint highlight (mockup `.vhl`).
 function Vhl({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-[5px] bg-bg-gold/25 px-1.5 py-px font-medium text-text-primary">
+    <span className="rounded-[5px] bg-bg-gold/20 px-1.5 pb-[3px] pt-px font-medium text-text-primary">
       {children}
     </span>
   );
@@ -147,11 +157,11 @@ export function VariablesSection() {
 
       <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
         {/* Card 1 — Fill in your details */}
-        <div className="rounded-2xl border border-border-secondary bg-surface-card p-5">
+        <div className="rounded-2xl border border-border-secondary bg-surface-card p-5 pb-7">
           <h3 className="text-[17px] font-semibold text-text-primary">
             Preview with your data
           </h3>
-          <p className="mb-10 mt-2 text-sm leading-relaxed text-text-secondary">
+          <p className="mb-7 mt-2 text-sm leading-relaxed text-text-secondary">
             Enter a value once and it shows in every message.
           </p>
 
@@ -161,6 +171,7 @@ export function VariablesSection() {
           <div className="mb-5">
             <div className="rounded-lg border border-fg-quaternary bg-bg-primary px-3 py-2.5 text-[13.5px] font-medium text-text-primary">
               Jordan Lee
+              <Caret />
             </div>
           </div>
 
@@ -181,11 +192,11 @@ export function VariablesSection() {
         </div>
 
         {/* Card 2 — Add a field */}
-        <div className="rounded-2xl border border-border-secondary bg-surface-card p-5">
+        <div className="rounded-2xl border border-border-secondary bg-surface-card p-5 pb-7">
           <h3 className="text-[17px] font-semibold text-text-primary">
             Customize any message
           </h3>
-          <p className="mb-10 mt-2 text-sm leading-relaxed text-text-secondary">
+          <p className="mb-7 mt-2 text-sm leading-relaxed text-text-secondary">
             Open the variable list and drop one in.
           </p>
 
