@@ -118,8 +118,10 @@ function Test() {
     >
       <Eyebrow>The test</Eyebrow>
       <div className="mt-8 grid items-start gap-14 md:mt-10 lg:grid-cols-2">
-        <PreviewListMock />
-        <div>
+        <div className="order-last lg:order-first">
+          <PreviewListMock />
+        </div>
+        <div className="order-first lg:order-last">
           <h2 className="text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
             Run test messages through real phones.
           </h2>
