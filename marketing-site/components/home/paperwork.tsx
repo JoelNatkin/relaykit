@@ -13,19 +13,19 @@ const CARDS: {
     Icon: FileCheck02,
     title: "Registration handled",
     problem: "Getting approved on your own can take weeks.",
-    body: "We file your brand and message registration with the carriers and walk it through approval. You stay in your editor.",
+    body: "We get you approved in 2–3 days and handle the filing, so you can keep building your app.",
   },
   {
     Icon: ShieldTick,
     title: "Messages compliant",
     problem: "Send the wrong kind of message and carriers block it — silently.",
-    body: "Templates and custom messages are checked against what carriers allow, not just passed through.",
+    body: "Every message is checked against carrier rules before it sends, not just passed through.",
   },
   {
     Icon: SlashCircle01,
     title: "Opt-ins & opt-outs covered",
     problem: "Miss a single STOP and the fines add up fast.",
-    body: "When someone replies STOP, we stop. Consent is tracked and enforced at delivery — not something you wire up yourself.",
+    body: "We stop instantly. Consent is tracked and enforced at delivery, not wired up by you.",
   },
 ];
 
