@@ -3,21 +3,11 @@ import { Eyebrow } from "@/components/home/section-ui";
 
 // "The variables" — a presentational, STATIC illustration of the message
 // authoring experience (D-434). It replaces the prior VariablesCallout
-// before→after block. Nothing here is interactive: the active input + caret,
-// gold-tint values, the open variable menu, the mouse cursor, the dimmed
-// controls, and the fake scrollbar are all illustrative. Geometry is ported
+// before→after block. Nothing here is interactive: the active input,
+// gold-tint values, the open variable menu, the mouse cursor, and the dimmed
+// controls are all illustrative. Geometry is ported
 // 1:1 from explorations/landing-page-mockups/relaykit-devtools-landing-mockup.html
 // (the design source) translated to the real dark+gold tokens.
-
-// Static gold text-cursor — illustrative only (no blink).
-function Caret() {
-  return (
-    <span
-      aria-hidden
-      className="mx-px inline-block h-[1.05em] w-[1.5px] bg-gold align-[-2px]"
-    />
-  );
-}
 
 // Bold, identity-tone value span (mockup `.v`).
 function V({ children }: { children: React.ReactNode }) {
@@ -27,7 +17,7 @@ function V({ children }: { children: React.ReactNode }) {
 // `.v` value carrying the gold-tint highlight (mockup `.vhl`).
 function Vhl({ children }: { children: React.ReactNode }) {
   return (
-    <span className="rounded-[5px] bg-bg-gold/15 px-1.5 py-px font-medium text-text-primary">
+    <span className="rounded-[5px] bg-bg-gold/25 px-1.5 py-px font-medium text-text-primary">
       {children}
     </span>
   );
@@ -81,9 +71,6 @@ const MENU_ROWS: { name: string; value: string; selected?: boolean }[] = [
     selected: true,
   },
   { name: "appointment_time", value: "Tue, March 4th, 2:00 PM" },
-  { name: "customer_name", value: "Olivia Rhye" },
-  { name: "cancel_link", value: "summitfitness.com/cancel" },
-  { name: "feedback_link", value: "summitfitness.com/feedback" },
 ];
 
 // Decorative OS-style pointer glyph parked over the selected menu row.
@@ -109,17 +96,16 @@ function CursorGlyph() {
   );
 }
 
-// The open "Insert variable" menu (mockup `.vdropwrap`) — exact geometry:
-// right-anchored, width calc(100% - 16px), max-height 134px, overflow hidden,
-// always-on fake scrollbar, cursor on the reschedule_link row.
+// The open "Insert variable" menu (mockup `.vdropwrap`) — right-anchored,
+// width calc(100% - 16px), four rows, cursor on the reschedule_link row.
 function VariableMenu() {
   return (
     <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-[calc(100%-16px)] overflow-hidden rounded-[10px] border border-border-primary bg-surface-inset shadow-[0_8px_20px_rgba(0,0,0,0.35)]">
-      <div className="max-h-[134px] overflow-hidden pt-2">
+      <div className="pt-2">
         {MENU_ROWS.map((row) => (
           <div
             key={row.name}
-            className={`relative flex items-center justify-between gap-4 py-[5px] pl-4 pr-[22px] text-[13px] [&+&]:border-t [&+&]:border-border-tertiary ${
+            className={`relative flex items-center justify-between gap-4 py-[5px] pl-4 pr-4 text-[13px] [&+&]:border-t [&+&]:border-border-tertiary ${
               row.selected ? "bg-white/[0.06]" : ""
             }`}
           >
@@ -136,13 +122,6 @@ function VariableMenu() {
             {row.selected ? <CursorGlyph /> : null}
           </div>
         ))}
-      </div>
-      {/* Always-on fake scrollbar (mockup `.vscroll`/`.vthumb`). */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute bottom-[7px] right-[5px] top-[7px] w-[5px] rounded-full bg-white/[0.06]"
-      >
-        <div className="absolute left-0 top-0 h-[68%] w-full rounded-full bg-border-primary" />
       </div>
     </div>
   );
@@ -172,7 +151,7 @@ export function VariablesSection() {
           <h3 className="text-[17px] font-semibold text-text-primary">
             Preview with your data
           </h3>
-          <p className="mb-6 mt-2 text-sm leading-relaxed text-text-secondary">
+          <p className="mb-10 mt-2 text-sm leading-relaxed text-text-secondary">
             Enter a value once and it shows in every message.
           </p>
 
@@ -180,17 +159,8 @@ export function VariablesSection() {
               the lighter quaternary tone (#79716B = fg-quaternary), not the
               stronger resting border. */}
           <div className="mb-5">
-            <div className="mb-[7px] flex items-baseline justify-between gap-2">
-              <span className="text-[11px] text-text-secondary">
-                Provider name preview
-              </span>
-              <span className="font-mono text-[11px] text-text-tertiary">
-                provider_name
-              </span>
-            </div>
             <div className="rounded-lg border border-fg-quaternary bg-bg-primary px-3 py-2.5 text-[13.5px] font-medium text-text-primary">
               Jordan Lee
-              <Caret />
             </div>
           </div>
 
@@ -198,9 +168,8 @@ export function VariablesSection() {
             <EditorHead />
             <div className="rounded-[9px] border border-border-primary bg-bg-primary px-[13px] py-3 text-sm leading-relaxed text-text-secondary">
               <V>Summit Fitness</V>: your appointment with{" "}
-              <Vhl>Jordan Lee</Vhl>
-              <Caret /> is confirmed for <V>Tue, March 4th, 2:00 PM</V>. Reply
-              STOP to opt out.
+              <Vhl>Jordan Lee</Vhl> is confirmed for{" "}
+              <V>Tue, March 4th, 2:00 PM</V>. Reply STOP to opt out.
             </div>
             <div className="mt-3 flex items-center justify-end opacity-60">
               <InsertVariable />
@@ -216,7 +185,7 @@ export function VariablesSection() {
           <h3 className="text-[17px] font-semibold text-text-primary">
             Customize any message
           </h3>
-          <p className="mb-6 mt-2 text-sm leading-relaxed text-text-secondary">
+          <p className="mb-10 mt-2 text-sm leading-relaxed text-text-secondary">
             Open the variable list and drop one in.
           </p>
 
@@ -225,8 +194,7 @@ export function VariablesSection() {
             <div className="rounded-[9px] border border-border-primary bg-bg-primary px-[13px] py-3 text-sm leading-relaxed text-text-secondary">
               <V>Summit Fitness</V>: your appointment with <V>Jordan Lee</V> is
               confirmed for <V>Tue, March 4th, 2:00 PM</V>. Reschedule{" "}
-              <Vhl>summitfitness.com/reschedule</Vhl>
-              <Caret /> Reply STOP to opt out.
+              <Vhl>summitfitness.com/reschedule</Vhl> Reply STOP to opt out.
             </div>
             <div className="relative mt-3 flex items-center justify-end">
               <InsertVariable />
