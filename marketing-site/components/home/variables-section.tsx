@@ -127,7 +127,7 @@ function VariableMenu() {
               {row.name}
             </span>
             <span
-              className={`whitespace-nowrap text-text-primary ${
+              className={`min-w-0 truncate text-text-primary ${
                 row.selected ? "opacity-100" : "opacity-60"
               }`}
             >

@@ -1,10 +1,10 @@
-# CC_HANDOFF — Session 138: paperwork cards — problem lines + tightened body copy (2026-06-16)
+# CC_HANDOFF — Session 138: paperwork copy + variable-menu truncation fix (2026-06-16)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 2 | Files modified: 3 (cumulative) | Decisions added: 0 | External actions: 2 (push ×2). Two straight-to-`main` commits — `2bfa55d feat: add plain-language problem line to paperwork cards`, then `<hash> refactor: tighten paperwork card body copy`. Quality gates each commit: tsc ✅ / eslint ✅ (`marketing-site`) / clean build ✅ (`.next` cleared first). No `/api` changes. Mid-phase (active phase stays Phase 2 — Session B).
+**Session metrics:** Commits: 3 | Files modified: 3 (cumulative) | Decisions added: 0 | External actions: 3 (push ×3). Three straight-to-`main` commits — `2bfa55d feat: add plain-language problem line to paperwork cards`, `56a99e7 refactor: tighten paperwork card body copy`, `<hash> fix: prevent variable-menu value text from colliding with scrollbar on narrow widths`. Quality gates each commit: tsc ✅ / eslint ✅ (`marketing-site`) / clean build ✅ (`.next` cleared first). Commit 3 visually verified via headless-Chrome CDP screenshots at 375px (values truncate with ellipsis, clear of scrollbar) and 640px (values fit, no overflow). No `/api` changes. Mid-phase (active phase stays Phase 2 — Session B).
 
 **Status: 🟢 Shipped to `main`, pushed. Working tree clean, in sync with `origin/main`.** No open branches.
 
@@ -20,15 +20,16 @@ It is **live on relaykit.ai**. This is intentional, not drift. **PM action wante
 
 ## What shipped this session
 
-`marketing-site/components/home/paperwork.tsx`, two commits:
+`marketing-site/components/home/paperwork.tsx` (commits 1–2) + `variables-section.tsx` (commit 3):
 1. **`2bfa55d`** — added a red plain-language **problem line** to each "The paperwork" card (`#rules`), between title and body (`text-fg-error-secondary font-medium`; `<h3>` `mb-2`→`mb-1.5`). Strings unchanged this session.
-2. **`<hash>`** — tightened the three card **body** strings (problem lines/icons/layout untouched):
+2. **`56a99e7`** — tightened the three card **body** strings (problem lines/icons/layout untouched):
    - Registration handled → "We get you approved in 2–3 days and handle the filing, so you can keep building your app." *(the D-215 override above; en-dash in "2–3")*
    - Messages compliant → "Every message is checked against carrier rules before it sends, not just passed through."
    - Opt-ins & opt-outs covered → "We stop instantly. Consent is tracked and enforced at delivery, not wired up by you."
+3. **`<hash>`** — `variables-section.tsx` `VariableMenu`: the row value `<span>` className `whitespace-nowrap` → `min-w-0 truncate` so long values shrink/ellipsis inside the flex row instead of overflowing into the fake scrollbar on narrow widths. Name span, row padding (`pr-[22px]`), fake scrollbar, and menu width (`w-[calc(100%-16px)]`) untouched. Verified at 375px + 640px.
 
 ## Canon — current
-- **PROTOTYPE_SPEC `#3`** — notes the red problem line (from commit 1). The body-copy strings are not quoted verbatim in the spec, so no spec edit was needed for commit 2 (the spec describes structure, not the body wording).
+- **PROTOTYPE_SPEC `#3`** — notes the red problem line (from commit 1). The body-copy strings are not quoted verbatim in the spec, so no spec edit was needed for commit 2. Commit 3 is a CSS overflow fix to the existing open-menu mock — no spec change (the `#5 The variables` description already describes the menu's overflow/scrollbar geometry without pinning the value-span overflow class).
 - **DECISIONS / REPO_INDEX** — unchanged. **But see the D-215 override flag above** — the live copy now contradicts D-215; PM decides the reconciliation.
 
 ## Carry-forwards (flagged, not done)
