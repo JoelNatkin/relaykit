@@ -8,9 +8,8 @@ import { FinalCta } from "@/components/home/final-cta";
 import { Eyebrow } from "@/components/home/section-ui";
 import { VariablesSection } from "@/components/home/variables-section";
 import { NumbersSection } from "@/components/home/numbers-section";
-import { ConfiguratorSection } from "@/components/configurator-section";
+import { MessagesSection } from "@/components/home/messages-section";
 import { PreviewListMock } from "@/components/preview-list-mock";
-import Link from "next/link";
 import { ChevronDown } from "@untitledui/icons";
 
 export const metadata: Metadata = {
@@ -158,52 +157,7 @@ export default function MarketingHome() {
       <StatusBand />
       <Paperwork />
 
-      {/* Configurator — the REAL <ConfiguratorSection/> (the exact component
-          /messages renders) shown through a fixed-height clipped window; trust
-          line + variables callout below. */}
-      <section
-        id="configurator"
-        className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
-      >
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-xl">
-            <Eyebrow>The messages</Eyebrow>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-              Messages for every job.
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-text-secondary">
-              Pick your industry; every message adjusts to it. Most apps need a
-              couple of categories — the whole set&apos;s here for you.
-            </p>
-          </div>
-          {/* Gold text affordance — D-427. */}
-          <Link
-            href="/messages"
-            className="text-sm font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
-          >
-            Open Messages <span aria-hidden>→</span>
-          </Link>
-        </div>
-
-        {/* Clipped viewport into the live tool. overflow-hidden clips the lower
-            categories (team alerts / login codes). The -mt offset trims the
-            configurator's 80px pt-20 (deterministic) to ~24px so the window
-            opens cleanly on its own header — no cut type. One instance only
-            (shared localStorage with /messages = continuity of intent). Fully
-            interactive; only the height is fixed. */}
-        <div className="relative mt-8 h-[640px] overflow-hidden mx-[calc(50%-50vw)] md:mt-10">
-          <div className="-mt-[56px]">
-            <ConfiguratorSection />
-          </div>
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-b from-transparent to-bg-primary md:h-20" />
-        </div>
-
-        <p className="mt-5 max-w-3xl text-sm leading-relaxed text-text-tertiary">
-          Copy the templates and use them anywhere today — no signup required.
-          Twilio, Sinch, Telnyx, custom infrastructure, whatever you&apos;re
-          already using.
-        </p>
-      </section>
+      <MessagesSection />
 
       <VariablesSection />
       <AiSection />
