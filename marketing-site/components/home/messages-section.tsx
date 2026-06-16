@@ -143,14 +143,14 @@ export function MessagesSection() {
 
       {/* Controls — business name + tone. Below md: name (2/3) + tone select (1/3)
           in one row; md+: name (md:w-80) + the three tone pills. Hug the cards. */}
-      <div className="mb-4 mt-8 flex items-center gap-5 md:flex-wrap md:justify-between md:gap-4">
+      <div className="mb-4 mt-8 flex items-center gap-3 md:flex-wrap md:justify-between md:gap-4">
         {/* Business name — relative wrapper for the clear (X) button. */}
         <div className="relative min-w-0 grow-[2] basis-0 md:grow-0 md:basis-auto">
           <input
             type="text"
             value={state.businessName}
             onChange={(e) => setBusinessName(e.target.value)}
-            placeholder="Add your business name"
+            placeholder="Your business name"
             maxLength={24}
             autoComplete="off"
             aria-label="See the messages as your business"
