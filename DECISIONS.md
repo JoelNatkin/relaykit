@@ -2155,6 +2155,8 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 
 **Supersedes:** D-379 (partial) — narrows D-379's home-page *placement* claim ("the home page is not a sample or teaser; it is the full product") to: the full tool lives at `/messages`, the home shows the real configurator in a clipped window (a sample view of the full tool). D-379's one-source / no-drift *principle* carries forward unchanged and is in fact strengthened — the home embeds the same `<ConfiguratorSection/>` component. D-379 marked with an `⚠ Partially superseded by D-428` line in the same commit.
 
+⚠ Partially superseded by D-435 (2026-06-16): the **home embed** is removed — the home `#configurator` section no longer clips the live `<ConfiguratorSection/>`; it uses a lightweight category-pills message browser (`messages-section.tsx`). The `/` marketing-home ↔ `/messages` tool split — the core of D-428 — stands; `/messages` + `ConfiguratorSection` are unchanged, and D-379's one-source principle still holds (the browser renders from the same `lib/message-library` corpus).
+
 **Affects:** `marketing-site/app/page.tsx` (home; v10 build Wave 3; embeds the real `ConfiguratorSection` in a clipped window in Wave 3 review — the interim `configurator-peek.tsx` was removed); `marketing-site/app/messages/page.tsx` (new — configurator tool); `marketing-site/components/top-nav.tsx` + `marketing-site/components/footer.tsx` (Messages link); `marketing-site/components/configurator-section.tsx` (consumed by `/messages` and embedded on the home).
 
 ## D-429 — `/messages` opens with a dismissible four-step orientation strip
@@ -2242,3 +2244,17 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 **Supersedes:** none. No prior D-number established the `VariablesCallout` / "See exactly" block — it shipped inside D-428's v10 home rebuild from an external design artifact, never owned by a decision; nothing to mark.
 
 **Affects:** `marketing-site/components/home/variables-section.tsx` (new, static); `marketing-site/components/home/variables-callout.tsx` (deleted); `marketing-site/app/page.tsx` (import + render swap; `VariablesCallout` usage removed from `#configurator`, "Copy the templates…" paragraph kept); PROTOTYPE_SPEC.md; REPO_INDEX.md.
+
+## D-435 — Home "The messages" section is a category-pills message browser, not an embedded configurator clip
+
+**Decided:** 2026-06-16 (Session 137)
+
+**Decision:** The home `#configurator` section uses a lightweight **category-pills message browser** (`marketing-site/components/home/messages-section.tsx`), not a clipped, fixed-height window onto the live `<ConfiguratorSection/>`. The browser shows the selected category's real corpus messages as clean cards (title + body, every `{{token}}` value bolded) in a fixed-height dot-paginated carousel, with a category selector (two pill rows desktop / native `<select>` mobile), a business-name input, and tone pills. Personalization on the home is **business-name + tone only**; the business name binds to the shared `useConfiguratorState` store (carry-forward with `/messages`). The full configurator stays at `/messages` and is reached via an "Open Messages →" link. The "Copy the templates… Twilio, Sinch, Telnyx…" trust paragraph that sat under the old peek is removed from the home.
+
+**Why:** The embedded peek surfaced tool-complexity (categories sidebar, checkboxes, eligibility dropdown, Copy button, kebab menus, the in-card Variables dropdown) before a visitor understood the product — two chrome-heavy sections (Messages + Variables) back to back. Clean example messages read as "here are the messages," not "here is a tool to learn"; the full tool is one click away at `/messages`.
+
+**Rejected alternative:** Keep the clipped live-configurator embed on the home (D-428). Rejected — it led with complexity instead of the product; a presentational browser communicates the breadth and personalization faster, and `/messages` already gives the live tool a clean home.
+
+**Supersedes:** D-428 (partial) — removes the "home embeds the real `<ConfiguratorSection/>` in a clipped window" claim; the `/` ↔ `/messages` split (the core of D-428) and D-379's one-source / no-drift principle (the browser renders from the same `lib/message-library` corpus) both stand. The `/messages` route, `ConfiguratorSection`, and its authoring behaviors (D-380 / D-403 / D-404) are unaffected — those live at `/messages`, not the home. D-428 marked with an `⚠ Partially superseded by D-435` line in the same commit.
+
+**Affects:** `marketing-site/components/home/messages-section.tsx` (new client component); `marketing-site/app/page.tsx` (replaced the `#configurator` `<section>` block — clipped peek + bridge + trust paragraph — with `<MessagesSection/>`; removed unused `ConfiguratorSection` + `Link` imports; `id="configurator"` anchor kept); `lib/configurator/use-configurator-state.ts` (reused for the shared business name; unchanged); PROTOTYPE_SPEC.md; REPO_INDEX.md. Promotes the `home-messages-redesign` exploration. `/messages` + `ConfiguratorSection` untouched.

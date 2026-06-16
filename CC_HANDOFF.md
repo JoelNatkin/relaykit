@@ -1,4 +1,4 @@
-# CC_HANDOFF — Session 137 close-out: home Messages browser — exploration committed (Part 1) + component built (Part 2) (2026-06-15)
+# CC_HANDOFF — Session 137 close-out: home Messages browser shipped + merged (D-435) (2026-06-16)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
@@ -6,7 +6,7 @@
 
 **Session metrics:** Part 1 — 1 commit to `main` (`d4d67f8`, docs, pushed). Part 2 — 1 commit on branch `feat/home-messages-section` (this close-out; new component + wire-in + docs). Decisions added: 0 (no D-number — see below). Quality gates: tsc ✅ / eslint ✅ / clean build ✅. Mid-phase (active phase stays Phase 2 — Session B; marketing-surface work).
 
-**Status: 🟡 Part 1 merged to `main`, live. Part 2 built + pushed to `feat/home-messages-section`, held for review.** Original code → **review required**: PM `gg` + a Vercel-preview screenshot before merge. Do **not** self-merge.
+**Status: 🟢 Merged to `main`, live.** PM reviewed the Vercel preview and approved (surface-card kept as built); **D-435** recorded (Supersedes D-428 partial); the `home-messages-redesign` exploration is **promoted**; `feat/home-messages-section` fast-forward-merged to `main` and deleted (local + remote). Part 1 (exploration registration) landed earlier at `d4d67f8`. `main` clean and in sync with `origin/main`.
 
 ---
 
@@ -25,12 +25,12 @@
 - Category pill active = `bg-bg-gold text-text-on-gold`; tone active = `bg-border-primary text-text-primary` (neutral); dots active = `bg-text-secondary`, inactive `bg-border-primary`; bolded variable = `font-medium text-text-primary`; line-clamp-3 bodies.
 
 ## Decision-ledger note
-**No D-number.** Replacing the embedded peek with a lightweight browser is an alternative-resolving UX call (peek vs. browser) — **flag for PM** whether to record it at merge; proceeding without one unless PM wants it.
+**D-435 recorded** (PM-gated): home "The messages" is a category-pills browser, not an embedded configurator clip. **Supersedes D-428 (partial)** — removes the home-embed claim; the `/` ↔ `/messages` split + D-379's one-source principle stand; D-428 marked `⚠ Partially superseded by D-435` in the same commit. Count 349 → 350.
 
-## Owed at merge (not done on the branch)
-- **PROTOTYPE_SPEC `#4`** still carries the "Exploration in flight" pointer — rewrite it to the real `MessagesSection` spec (and drop the embedded-peek/trust-line description) **when the branch merges**.
-- **REPO_INDEX** — flip branch-state + the exploration row to "merged/promoted"; consider promoting the exploration (and whether a D-number lands).
-- **CC_HANDOFF / `.pm-review.md`** refresh at merge.
+## Owed at merge — DONE
+- **PROTOTYPE_SPEC `#4`** rewritten from the embedded-peek description to the real `MessagesSection` (category-pills browser, business-name + tone, fixed-height dot carousel, links to `/messages`); Last-updated → June 16.
+- **REPO_INDEX** — branch-state → merged; `home-messages-redesign` exploration row removed + count 5→4 + a "promoted Session 137" note; Meta lead + decision count + doc-rows + `messages-section.tsx` inventory row.
+- **Exploration file header** → `Status: promoted to D-435`.
 
 ## Verification done
 - `npx tsc --noEmit` → 0; `npx eslint components/home/messages-section.tsx app/page.tsx` → 0.
@@ -38,11 +38,11 @@
 - Prerendered home (`index.html`): `#configurator` anchor present (1); new section content + "Acme"-resolved Account-events cards present; old peek bridge + "Copy the templates… Twilio, Sinch, Telnyx…" trust line = 0 (gone).
 
 ## Branch state
-**Open: `feat/home-messages-section`** (unmerged, pushed), held for review. `main` is current at `d4d67f8` (Part 1). The five older marketing branches remain merged-not-deleted.
+**No open feature branches.** `feat/home-messages-section` (D-435) was fast-forward-merged to `main` and **deleted** (local + remote); `origin/main` clean. The five older marketing branches remain merged-not-deleted (optional cleanup).
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
-- **PM `gg` + Vercel-preview screenshot review** of `feat/home-messages-section`; on approval, merge + do the "owed at merge" doc updates above.
 - **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN — the substantive product pickup.
+- Standing carry-forwards (unchanged): the sole-prop `/prototype` + `/src` UI session (D-433 copy + `has_ein="no"` flow-gating + PRODUCT_SUMMARY §8 D-18→D-433 citation split); dead `--color-text-headline-muted` token + globals.css light→dark dead-token collapse; migration `009_early_access_interest_tag.sql` apply-before-deploy; blog "configurator" voice rewrite.

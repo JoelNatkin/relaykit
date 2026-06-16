@@ -1,8 +1,6 @@
 # Home Messages section redesign — category-pills message browser
 
-**Status:** exploring (2026-06-15) — mockup approved by screenshot; building as a real component (`feat/home-messages-section`).
-
-> Sandbox exploration. Not canon. Registered in REPO_INDEX "Active explorations" with a PROTOTYPE_SPEC pointer (per `CC_PROCEDURES §Explorations`). The approved design is `explorations/home-mockups/relaykit-home-messages-mockup.html`.
+**Status:** promoted to D-435 (2026-06-16) — shipped as `marketing-site/components/home/messages-section.tsx`, replacing the home configurator peek. Canonical spec now lives in PROTOTYPE_SPEC.md (home `#4`). This file remains as the historical record of why the section looks the way it does; the approved design source is `explorations/home-mockups/relaykit-home-messages-mockup.html`.
 
 ## The problem
 
