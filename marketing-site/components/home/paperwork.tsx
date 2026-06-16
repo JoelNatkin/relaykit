@@ -3,24 +3,31 @@ import type { FC } from "react";
 import { Eyebrow } from "@/components/home/section-ui";
 
 // Featured-icon backgrounds are a gold tint (D-427 accent system).
-const CARDS: { Icon: FC<{ className?: string }>; title: string; body: string }[] =
-  [
-    {
-      Icon: FileCheck02,
-      title: "Registration handled",
-      body: "We file your brand and message registration with the carriers and walk it through approval. You stay in your editor.",
-    },
-    {
-      Icon: ShieldTick,
-      title: "Messages compliant",
-      body: "Templates and custom messages are checked against what carriers allow, not just passed through.",
-    },
-    {
-      Icon: SlashCircle01,
-      title: "Opt-ins & opt-outs covered",
-      body: "When someone replies STOP, we stop. Consent is tracked and enforced at delivery — not something you wire up yourself.",
-    },
-  ];
+const CARDS: {
+  Icon: FC<{ className?: string }>;
+  title: string;
+  problem: string;
+  body: string;
+}[] = [
+  {
+    Icon: FileCheck02,
+    title: "Registration handled",
+    problem: "Getting approved on your own can take weeks.",
+    body: "We file your brand and message registration with the carriers and walk it through approval. You stay in your editor.",
+  },
+  {
+    Icon: ShieldTick,
+    title: "Messages compliant",
+    problem: "Send the wrong kind of message and carriers block it — silently.",
+    body: "Templates and custom messages are checked against what carriers allow, not just passed through.",
+  },
+  {
+    Icon: SlashCircle01,
+    title: "Opt-ins & opt-outs covered",
+    problem: "Miss a single STOP and the fines add up fast.",
+    body: "When someone replies STOP, we stop. Consent is tracked and enforced at delivery — not something you wire up yourself.",
+  },
+];
 
 export function Paperwork() {
   return (
@@ -39,7 +46,7 @@ export function Paperwork() {
         </p>
       </div>
       <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
-        {CARDS.map(({ Icon, title, body }) => (
+        {CARDS.map(({ Icon, title, problem, body }) => (
           <div
             key={title}
             className="rounded-2xl border border-border-secondary bg-surface-card p-6 transition duration-150 ease-linear hover:-translate-y-0.5 hover:border-border-primary"
@@ -47,9 +54,12 @@ export function Paperwork() {
             <div className="mb-4 grid size-8 place-items-center rounded-lg bg-bg-gold/15 text-gold">
               <Icon className="size-4" />
             </div>
-            <h3 className="mb-2 text-lg font-semibold text-text-primary">
+            <h3 className="mb-1.5 text-lg font-semibold text-text-primary">
               {title}
             </h3>
+            <p className="mb-2.5 text-sm font-medium leading-snug text-fg-error-secondary">
+              {problem}
+            </p>
             <p className="text-sm leading-relaxed text-text-secondary">{body}</p>
           </div>
         ))}
