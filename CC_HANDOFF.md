@@ -1,10 +1,10 @@
-# CC_HANDOFF — Session 138: paperwork copy + variables-section simplification (2026-06-16)
+# CC_HANDOFF — Session 138: home-section copy + variables simplification (2026-06-16)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 4 | Files modified: 4 (cumulative) | Decisions added: 0 | External actions: 4 (push ×4). Four straight-to-`main` commits — `2bfa55d feat: add plain-language problem line to paperwork cards`, `56a99e7 refactor: tighten paperwork card body copy`, `d48da94 fix: prevent variable-menu value text from colliding with scrollbar on narrow widths`, `<hash> fix: simplify variables section — brighter token, no caret/scrollbar/label, more spacing`. Quality gates each commit: tsc ✅ / eslint ✅ (`marketing-site`) / clean build ✅ (`.next` cleared first). No `/api` changes. Mid-phase (active phase stays Phase 2 — Session B).
+**Session metrics:** Commits: 5 | Files modified: 5 (cumulative) | Decisions added: 0 | External actions: 5 (push ×5). Five straight-to-`main` commits — `2bfa55d feat: add plain-language problem line to paperwork cards`, `56a99e7 refactor: tighten paperwork card body copy`, `d48da94 fix: prevent variable-menu value text from colliding with scrollbar on narrow widths`, `0272019 fix: simplify variables section — brighter token, no caret/scrollbar/label, more spacing`, `<hash> refactor: tighten numbers-section copy (h2, subhead, card-4 label)`. Quality gates each commit: tsc ✅ / eslint ✅ (`marketing-site`) / clean build ✅ (`.next` cleared first). No `/api` changes. Mid-phase (active phase stays Phase 2 — Session B).
 
 **Status: 🟢 Shipped to `main`, pushed. Working tree clean, in sync with `origin/main`.** No open branches.
 
@@ -27,11 +27,13 @@ It is **live on relaykit.ai**. This is intentional, not drift. **PM action wante
    - Messages compliant → "Every message is checked against carrier rules before it sends, not just passed through."
    - Opt-ins & opt-outs covered → "We stop instantly. Consent is tracked and enforced at delivery, not wired up by you."
 3. **`d48da94`** — `variables-section.tsx` `VariableMenu`: the row value `<span>` className `whitespace-nowrap` → `min-w-0 truncate` so long values shrink/ellipsis inside the flex row instead of overflowing into the fake scrollbar on narrow widths. Verified at 375px + 640px.
-4. **`<hash>`** — `variables-section.tsx` simplification (D-434 mock, presentational-static): (a) removed the illustrative gold insertion caret — deleted all 3 `<Caret/>` usages + the `Caret()` fn; (b) brightened the `Vhl` token highlight `bg-bg-gold/15` → `bg-bg-gold/25`; (c) `VariableMenu` — deleted the fake-scrollbar block, trimmed `MENU_ROWS` 7→4 (workspace_name / provider_name / reschedule_link / appointment_time), removed `max-h-[134px] overflow-hidden` from the inner container (kept `pt-2`; outer keeps `overflow-hidden`), row padding `pr-[22px]`→`pr-4`, kept CursorGlyph on reschedule_link; (d) removed Card-1's field label row ("Provider name preview" / `provider_name`), kept the `mb-5` wrapper + `Jordan Lee` input; (e) both card description `<p>` `mb-6`→`mb-10`.
+4. **`0272019`** — `variables-section.tsx` simplification (D-434 mock, presentational-static): (a) removed the illustrative gold insertion caret — deleted all 3 `<Caret/>` usages + the `Caret()` fn; (b) brightened the `Vhl` token highlight `bg-bg-gold/15` → `bg-bg-gold/25`; (c) `VariableMenu` — deleted the fake-scrollbar block, trimmed `MENU_ROWS` 7→4 (workspace_name / provider_name / reschedule_link / appointment_time), removed `max-h-[134px] overflow-hidden` from the inner container (kept `pt-2`; outer keeps `overflow-hidden`), row padding `pr-[22px]`→`pr-4`, kept CursorGlyph on reschedule_link; (d) removed Card-1's field label row ("Provider name preview" / `provider_name`), kept the `mb-5` wrapper + `Jordan Lee` input; (e) both card description `<p>` `mb-6`→`mb-10`.
+5. **`<hash>`** — `numbers-section.tsx` copy: H2 "People read their texts." → "When a message can't wait, send a text."; subhead dropped the trailing " on getting there" ("…how text and email compare."); STATS card-4 label "Reaches the inbox" → "Gets through" (rows/values/fills unchanged).
 
 ## Canon — current
 - **PROTOTYPE_SPEC `#3`** — notes the red problem line (commit 1). Paperwork body-copy strings (commit 2) aren't quoted verbatim in the spec, so no spec edit there.
 - **PROTOTYPE_SPEC `#5 The variables`** — rewritten for commit 4: label-less active field, no caret, `bg-bg-gold/25` highlight, four-row scrollbar-less menu, `mb-10` body spacing. (Commit 3's truncation fix folded in — value text truncates with ellipsis on narrow widths.)
+- **PROTOTYPE_SPEC `#9 The numbers`** — updated for commit 5: new H2, trimmed intro, card-4 label "Gets through".
 - **DECISIONS / REPO_INDEX** — unchanged. **But see the D-215 override flag above** — the live copy now contradicts D-215; PM decides the reconciliation.
 
 ## Carry-forwards (flagged, not done)

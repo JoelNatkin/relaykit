@@ -43,7 +43,7 @@ const STATS: StatCard[] = [
     ],
   },
   {
-    label: "Reaches the inbox",
+    label: "Gets through",
     rows: [
       { channel: "Text message", value: "~98%", fill: 98, strong: true },
       { channel: "Email", value: "~84%", fill: 84, strong: false },
@@ -96,12 +96,12 @@ export function NumbersSection() {
       <div className="max-w-2xl">
         <Eyebrow>The numbers</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          People read their texts.
+          When a message can&apos;t wait, send a text.
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
           The messages an app sends — login codes, order updates, reminders —
           only do their job when someone sees them. Here&apos;s how text and
-          email compare on getting there.
+          email compare.
         </p>
       </div>
 
