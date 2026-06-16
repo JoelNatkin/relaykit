@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { X } from "@untitledui/icons";
 import { Eyebrow } from "@/components/home/section-ui";
 import { CATEGORIES, interpolateBody } from "@/lib/message-library";
 import type { Category, VariantTone } from "@/lib/message-library";
@@ -84,20 +85,32 @@ export function MessagesSection() {
         </p>
       </div>
 
-      {/* Category selector — native select on mobile, two pill rows on desktop. */}
+      {/* Category selector — horizontal-scroll pill row on mobile, two pill rows on desktop. */}
       <div className="mt-10">
-        <select
+        <div
+          className="flex flex-nowrap gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
+          role="group"
           aria-label="Message category"
-          value={selCat}
-          onChange={(e) => selectCategory(e.target.value)}
-          className="w-full rounded-lg border border-border-primary bg-surface-card px-3.5 py-3 text-base text-text-primary md:hidden"
         >
-          {ORDERED.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          {ORDERED.map((c) => {
+            const active = c.id === selCat;
+            return (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => selectCategory(c.id)}
+                aria-pressed={active}
+                className={`shrink-0 cursor-pointer rounded-full border px-4 py-2.5 text-sm font-medium transition duration-100 ease-linear ${
+                  active
+                    ? "border-bg-gold bg-bg-gold text-text-on-gold"
+                    : "border-border-secondary text-text-tertiary hover:border-border-primary hover:text-text-secondary"
+                }`}
+              >
+                {c.name}
+              </button>
+            );
+          })}
+        </div>
         <div
           className="hidden flex-col gap-2 md:flex"
           role="group"
@@ -128,19 +141,51 @@ export function MessagesSection() {
         </div>
       </div>
 
-      {/* Controls — business name (left) + tone pills (right). Hug the cards. */}
-      <div className="mb-4 mt-8 flex flex-wrap items-center justify-between gap-4">
-        <input
-          type="text"
-          value={state.businessName}
-          onChange={(e) => setBusinessName(e.target.value)}
-          placeholder="Add your business name"
-          maxLength={24}
-          autoComplete="off"
-          aria-label="See the messages as your business"
-          className="w-full rounded-lg border border-border-primary bg-surface-card px-4 py-3 text-base text-text-primary transition duration-100 ease-linear placeholder:text-text-quaternary focus:border-border-gold focus:outline-none sm:w-80"
-        />
-        <div className="flex gap-1.5" role="group" aria-label="Message tone">
+      {/* Controls — business name + tone. Below md: name (2/3) + tone select (1/3)
+          in one row; md+: name (md:w-80) + the three tone pills. Hug the cards. */}
+      <div className="mb-4 mt-8 flex items-center gap-5 md:flex-wrap md:justify-between md:gap-4">
+        {/* Business name — relative wrapper for the clear (X) button. */}
+        <div className="relative min-w-0 grow-[2] basis-0 md:grow-0 md:basis-auto">
+          <input
+            type="text"
+            value={state.businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
+            placeholder="Add your business name"
+            maxLength={24}
+            autoComplete="off"
+            aria-label="See the messages as your business"
+            className="w-full rounded-lg border border-border-primary bg-surface-card py-3 pl-4 pr-10 text-base text-text-primary transition duration-100 ease-linear placeholder:text-text-quaternary focus:border-border-gold focus:outline-none md:w-80"
+          />
+          {state.businessName && (
+            <button
+              type="button"
+              onClick={() => setBusinessName("")}
+              aria-label="Clear business name"
+              className="absolute right-2.5 top-1/2 inline-flex size-7 -translate-y-1/2 cursor-pointer items-center justify-center rounded-md text-text-quaternary transition duration-100 ease-linear hover:text-text-secondary"
+            >
+              <X className="size-4" aria-hidden />
+            </button>
+          )}
+        </div>
+
+        {/* Tone — native select below md, pills at md+. Same `tone` state either way. */}
+        <select
+          aria-label="Message tone"
+          value={tone}
+          onChange={(e) => setTone(e.target.value as VariantTone)}
+          className="min-w-0 grow basis-0 rounded-lg border border-border-primary bg-surface-card px-3 py-3 text-base text-text-primary md:hidden"
+        >
+          {TONES.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+        <div
+          className="hidden gap-1.5 md:flex"
+          role="group"
+          aria-label="Message tone"
+        >
           {TONES.map((t) => {
             const active = t === tone;
             return (
