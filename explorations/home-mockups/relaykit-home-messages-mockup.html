@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RelayKit — Home Messages section (category-pills browser) — MOCKUP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* Real dark+gold tokens from marketing-site/app/globals.css (dark mode). */
+  :root{
+    --page:#13120E; --surface-page:#16130F; --surface-card:#181511; --surface-inset:#1E1A15;
+    --border:#292524; --border-strong:#44403C; --border-faint:#1C1917;
+    --text:#FAFAF9; --text-2:#D7D3D0; --text-3:#A9A29D; --text-4:#79716B;
+    --gold:#E0B010; --ink-on-gold:#13120E; --success:#17B26A; --loss:#E0564D;
+    --radius-md:8px; --radius-lg:12px; --maxw:1024px;
+    --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{background:var(--page); color:var(--text); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased;}
+  .sec{padding:76px 0; border-top:1px solid var(--border);}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  .eyebrow{display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:12px; font-weight:500; text-transform:uppercase; letter-spacing:0.18em; color:var(--text-3);}
+  .eyebrow .dot{width:6px; height:6px; border-radius:2px; background:var(--gold); flex-shrink:0;}
+  .sechead{margin-bottom:14px;}
+  .sechead h2{font-size:clamp(26px,3.4vw,34px); font-weight:700; line-height:1.12; margin:14px 0 0; max-width:18em;}
+  .bridge{max-width:40em; font-size:16px; color:var(--text-2); line-height:1.6; margin:0 0 26px;}
+
+  /* Controls row: business-name input + tone pills */
+  .bizline{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px;}
+  .bizline input{background:var(--surface-inset); border:1px solid var(--border-strong); border-radius:var(--radius-md); color:var(--text); font-family:var(--sans); font-size:16px; padding:12px 16px; width:320px; max-width:100%; transition:border-color .12s;}
+  .bizline input:focus{outline:none; border-color:var(--gold);}
+  .bizline input::placeholder{color:var(--text-4);}
+  .tones{display:flex; gap:7px;}
+  .tone{font-family:var(--sans); font-size:12.5px; font-weight:500; padding:7px 14px; border-radius:999px; cursor:pointer; background:transparent; color:var(--text-3); border:1px solid var(--border-strong); transition:background .12s,color .12s;}
+  /* Selected tone = MONOCHROMATIC neutral fill (NOT gold) */
+  .tone.active{background:var(--border-strong); color:var(--text); border-color:var(--border-strong);}
+
+  /* Category selector — desktop: two pill rows (4 + 5); mobile (<=640): a dropdown */
+  .catpills{display:flex; flex-direction:column; gap:8px; margin-bottom:32px;}
+  .catrow{display:flex; flex-wrap:wrap; gap:8px;}
+  .cat{font-family:var(--sans); font-size:13px; font-weight:500; padding:8px 15px; border-radius:999px; cursor:pointer; background:transparent; color:var(--text-3); border:1px solid var(--border); transition:background .12s,color .12s,border-color .12s;}
+  .cat:hover{color:var(--text-2); border-color:var(--border-strong);}
+  /* Selected category = PRIMARY YELLOW (yellow is reserved for category selection) */
+  .cat.active{background:var(--gold); color:var(--ink-on-gold); border-color:var(--gold);}
+  .cat.active:hover{color:var(--ink-on-gold);}
+  .catselect{display:none; width:100%; margin-bottom:32px; background:var(--surface-inset); border:1px solid var(--border-strong); border-radius:var(--radius-md); color:var(--text); font-family:var(--sans); font-size:16px; padding:12px 14px;}
+  @media(max-width:640px){ .catpills{display:none;} .catselect{display:block;} }
+
+  /* Carousel — fixed height fitting exactly 6 cards (2 cols x 3 rows), paginated. No gradient. */
+  .msgrid{display:grid; grid-template-columns:1fr; gap:14px; align-content:start;}
+  @media(min-width:720px){ .msgrid{grid-template-columns:1fr 1fr; grid-auto-rows:122px; height:394px; overflow:hidden;} }
+  .msgcard{background:var(--surface-inset); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 18px; overflow:hidden;}
+  .msgcard .label{font-size:13px; font-weight:600; color:var(--text); margin-bottom:8px; display:flex; align-items:center; gap:8px;}
+  .msgcard .label .pip{width:6px; height:6px; border-radius:2px; background:var(--gold); flex:none;}
+  .msgcard .text{font-size:13.5px; line-height:1.5; color:var(--text-2); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;}
+  .msgcard .text .v{color:var(--text); font-weight:500;}
+
+  /* Footer: centered page dots + bottom-right Open Messages link */
+  .msgfoot{position:relative; display:flex; align-items:center; justify-content:center; min-height:26px; margin-top:20px;}
+  .dots{display:flex; gap:9px;}
+  .dot{width:8px; height:8px; border-radius:999px; background:var(--border-strong); border:none; padding:0; cursor:pointer; transition:background .12s;}
+  .dot.active{background:var(--text-2);}
+  .goldlink{position:absolute; right:0; top:50%; transform:translateY(-50%); color:var(--gold); font-weight:500; font-size:14px; text-decoration:none;}
+  .goldlink:hover{opacity:.9;}
+
+  .note{max-width:var(--maxw); margin:0 auto; padding:18px 24px 40px; font-family:var(--mono); font-size:11px; color:var(--text-4); letter-spacing:.04em;}
+</style>
+</head>
+<body>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sechead">
+      <span class="eyebrow"><span class="dot" aria-hidden="true"></span>The messages</span>
+      <h2>Messages for every job.</h2>
+    </div>
+    <p class="bridge">From login codes to event invites, every message your app sends is ready to use.</p>
+
+    <select class="catselect" id="catselect" aria-label="Message category"></select>
+    <div class="catpills" id="catpills" role="group" aria-label="Message category">
+      <div class="catrow" id="catrow1"></div>
+      <div class="catrow" id="catrow2"></div>
+    </div>
+
+    <div class="bizline">
+      <input id="bizname" type="text" placeholder="Add your business name" maxlength="24" autocomplete="off" aria-label="See the messages as your business">
+      <div class="tones" id="tones" role="group" aria-label="Message tone">
+        <button class="tone active" type="button" data-tone="Standard">Standard</button>
+        <button class="tone" type="button" data-tone="Friendly">Friendly</button>
+        <button class="tone" type="button" data-tone="Brief">Brief</button>
+      </div>
+    </div>
+
+    <div class="msgrid" id="msgGrid"></div>
+
+    <div class="msgfoot">
+      <div class="dots" id="dots" role="tablist" aria-label="Message pages"></div>
+      <a class="goldlink" href="/messages">Open Messages →</a>
+    </div>
+  </div>
+</section>
+
+<p class="note">MOCKUP — explorations/home-mockups · presentational only, not production · real message copy from lib/message-library</p>
+
+<script>
+// Example values for non-identity tokens (the identity tokens — business_name /
+// workspace_name / community_name — are driven by the business-name input).
+const EX = {
+  code:"729104", expiry_minutes:"10",
+  card_last4:"4242", account_link:"yourapp.com/billing", days_remaining:"3", device_context:"Chrome, San Diego",
+  order_number:"#10432", estimated_delivery:"Fri, May 9", tracking_link:"ups.com/track", return_link:"yourapp.com/returns", refund_amount:"$42.00", card_type:"Visa",
+  provider_name:"Jordan Lee", appointment_time:"Tue, Mar 4, 2:00 PM", cancel_link:"yourapp.com/cancel", reschedule_link:"yourapp.com/reschedule", feedback_link:"yourapp.com/feedback",
+  ticket_number:"#4821", agent_name:"Maya", ticket_link:"yourapp.com/ticket", csat_link:"yourapp.com/rate", eta:"2:00 PM", customer_name:"Olivia",
+  shift_date:"Sat May 10", shift_time:"9:00 AM", location:"Downtown", role:"Barista", action_link:"yourapp.com/go", severity:"P1", alert_type:"High CPU", system_name:"api-prod", incident_id:"INC-204", escalation_to:"on-call lead",
+  queue_position:"#7", wait_estimate:"15 min", claim_link:"yourapp.com/claim", grace_window:"10 min", rejoin_link:"yourapp.com/rejoin",
+  event_name:"Office Hours", event_time:"Thu 6pm", join_link:"yourapp.com/join", rsvp_link:"yourapp.com/rsvp", update_link:"yourapp.com/update", milestone:"100 posts", announcement_link:"yourapp.com/news", resource_link:"yourapp.com/guide",
+  offer:"20% off this week", offer_link:"yourapp.com/offer", launch_name:"the new app", launch_link:"yourapp.com/new", reengagement_link:"yourapp.com/back",
+};
+const IDENTITY = ["business_name","workspace_name","community_name"];
+
+// Real message corpus (9 categories, 3 tones each) — pulled verbatim from
+// marketing-site/lib/message-library/*. Order per the redesign spec.
+const CATS = [
+  { id:"verification", name:"Verification", messages:[
+    { t:"Verification code", S:"{{business_name}}: Verification code: {{code}}. Expires in {{expiry_minutes}} minutes.", F:"Your {{business_name}} code is {{code}}, good for {{expiry_minutes}} minutes.", B:"{{business_name}}: {{code}}" },
+    { t:"Confirmation code", S:"{{business_name}}: Confirmation code: {{code}}. Expires in {{expiry_minutes}} minutes.", F:"Your {{business_name}} confirmation code is {{code}}, good for {{expiry_minutes}} minutes.", B:"{{business_name}}: Confirmation code {{code}}" },
+    { t:"Recovery code", S:"{{business_name}}: Recovery code: {{code}}. Expires in {{expiry_minutes}} minutes.", F:"Your {{business_name}} recovery code is {{code}}, good for {{expiry_minutes}} minutes.", B:"{{business_name}}: Recovery code {{code}}" },
+    { t:"Login code", S:"{{business_name}}: Your login code is {{code}}. Expires in {{expiry_minutes}} minutes.", F:"Your {{business_name}} sign-in code is {{code}}, good for {{expiry_minutes}} minutes.", B:"{{business_name}}: Sign-in code {{code}}" },
+  ]},
+  { id:"account-events", name:"Account events", messages:[
+    { t:"Payment failed", S:"{{workspace_name}}: Card ending {{card_last4}} was declined. Update payment to keep your account active: {{account_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} payment didn't go through (card ending {{card_last4}}). Update it here to stay active: {{account_link}} Reply STOP to opt out.", B:"{{workspace_name}}: Card {{card_last4}} declined. Update payment: {{account_link}} STOP to opt out." },
+    { t:"Trial ending", S:"{{workspace_name}}: Your trial ends in {{days_remaining}} days. Choose a plan to keep your account: {{account_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} trial ends in {{days_remaining}} days. Pick a plan here to keep going: {{account_link}} Reply STOP to opt out.", B:"{{workspace_name}}: Trial ends in {{days_remaining}} days. Choose a plan: {{account_link}} STOP to opt out." },
+    { t:"Subscription confirmed", S:"{{workspace_name}}: Your subscription change is confirmed. View the details in your account: {{account_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} subscription is all set. See the details here whenever you like: {{account_link}} Reply STOP to opt out.", B:"{{workspace_name}}: Subscription updated. Details: {{account_link}} STOP to opt out." },
+    { t:"New device sign-in", S:"{{workspace_name}}: New sign-in from {{device_context}}. Not you? Secure your account: {{account_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} account was just accessed from {{device_context}}. Not you? Secure it: {{account_link}} Reply STOP to opt out.", B:"{{workspace_name}}: New sign-in, {{device_context}}. Not you? {{account_link}} STOP to opt out." },
+    { t:"Account suspended", S:"{{workspace_name}}: Your account has been suspended. Review the details and next steps here: {{account_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} account has been suspended. Here's what happened and what to do next: {{account_link}} Reply STOP to opt out.", B:"{{workspace_name}}: Account suspended. Details and next steps: {{account_link}} STOP to opt out." },
+  ]},
+  { id:"order-updates", name:"Order updates", messages:[
+    { t:"Order confirmed", S:"{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}. We'll text you when it ships. Reply STOP to opt out.", F:"Your {{workspace_name}} order {{order_number}} is in. Arriving {{estimated_delivery}}, we'll let you know when it's on the way. Reply STOP to opt out.", B:"{{workspace_name}}: Order {{order_number}} confirmed. Arrives {{estimated_delivery}}. STOP to opt out." },
+    { t:"Order processing", S:"{{workspace_name}}: Order {{order_number}} is being prepared. We'll text you when it ships. Reply STOP to opt out.", F:"Good news, your {{workspace_name}} order {{order_number}} is being put together now. Shipping update coming soon. Reply STOP to opt out.", B:"{{workspace_name}}: Order {{order_number}} in preparation. STOP to opt out." },
+    { t:"Order shipped", S:"{{workspace_name}}: Order {{order_number}} has shipped. Track it: {{tracking_link}}. Arrives {{estimated_delivery}}. Reply STOP to opt out.", F:"Your {{workspace_name}} order {{order_number}} is on the way. Follow it here: {{tracking_link}}. Should arrive {{estimated_delivery}}. Reply STOP to opt out.", B:"{{workspace_name}}: Order {{order_number}} shipped. Track: {{tracking_link}} STOP to opt out." },
+    { t:"Out for delivery", S:"{{workspace_name}}: Order {{order_number}} is out for delivery today. Track it: {{tracking_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} order {{order_number}} is out for delivery, it should reach you today. Track: {{tracking_link}} Reply STOP to opt out.", B:"{{workspace_name}}: Order {{order_number}} out for delivery. {{tracking_link}} STOP to opt out." },
+    { t:"Order delivered", S:"{{workspace_name}}: Order {{order_number}} was delivered. Something wrong? Start here: {{return_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} order {{order_number}} has been delivered. If anything's off, you can sort it here: {{return_link}} Reply STOP to opt out.", B:"{{workspace_name}}: Order {{order_number}} delivered. Issue? {{return_link}} STOP to opt out." },
+    { t:"Return started", S:"{{workspace_name}}: Your return for order {{order_number}} is started. Track its status: {{return_link}} Reply STOP to opt out.", F:"We've started the return for your {{workspace_name}} order {{order_number}}. Check its status anytime: {{return_link}} Reply STOP to opt out.", B:"{{workspace_name}}: Return started for order {{order_number}}. Status: {{return_link}} STOP to opt out." },
+    { t:"Refund processed", S:"{{workspace_name}}: Refund of {{refund_amount}} for order {{order_number}} is processed to your {{card_type}}. Reply STOP to opt out.", F:"Your {{workspace_name}} refund of {{refund_amount}} for order {{order_number}} is on its way back to your {{card_type}}. Reply STOP to opt out.", B:"{{workspace_name}}: {{refund_amount}} refunded for order {{order_number}} to your {{card_type}}. STOP to opt out." },
+  ]},
+  { id:"appointments", name:"Appointments", messages:[
+    { t:"Confirmation", S:"{{workspace_name}}: your appointment with {{provider_name}} is confirmed for {{appointment_time}}. Reply STOP to opt out.", F:"You're booked! {{provider_name}} will see you {{appointment_time}}. We'll send a reminder. Reply STOP to opt out. - {{workspace_name}}", B:"{{workspace_name}}: confirmed with {{provider_name}}, {{appointment_time}}. STOP to opt out." },
+    { t:"Reminder - distant", S:"{{workspace_name}}: reminder - your appointment is tomorrow, {{appointment_time}}. Cancel: {{cancel_link}} Reply STOP to opt out.", F:"See you tomorrow! {{provider_name}} at {{appointment_time}}. Change or cancel: {{reschedule_link}} Reply STOP to opt out.", B:"{{workspace_name}}: tomorrow with {{provider_name}}, {{appointment_time}}. STOP to opt out." },
+    { t:"Reminder - proximate", S:"{{workspace_name}}: your appointment is in 1 hour, {{appointment_time}}. Cancel: {{cancel_link}} Reply STOP to opt out.", F:"Almost time - {{provider_name}} sees you in about an hour, {{appointment_time}}. Reply STOP to opt out. - {{workspace_name}}", B:"{{workspace_name}}: in 1 hour - {{provider_name}}, {{appointment_time}}. STOP to opt out." },
+    { t:"Reschedule confirmation", S:"{{workspace_name}}: your appointment is rescheduled to {{appointment_time}} with {{provider_name}}. Reply STOP to opt out.", F:"Got it - you're now set for {{appointment_time}} with {{provider_name}}. See you then! Reply STOP to opt out. - {{workspace_name}}", B:"{{workspace_name}}: moved to {{appointment_time}}, {{provider_name}}. STOP to opt out." },
+    { t:"Cancellation confirmation", S:"{{workspace_name}}: your appointment with {{provider_name}} is cancelled. Rebook anytime: {{reschedule_link}} Reply STOP to opt out.", F:"Your appointment is cancelled - no problem. Want to rebook? {{reschedule_link}} Reply STOP to opt out. - {{workspace_name}}", B:"{{workspace_name}}: cancelled. Rebook: {{reschedule_link}} STOP to opt out." },
+    { t:"No-show follow-up", S:"{{workspace_name}}: we missed you today. Want to rebook with {{provider_name}}? {{reschedule_link}} Reply STOP to opt out.", F:"Sorry we missed you! Happy to find a new time - rebook here: {{reschedule_link}} Reply STOP to opt out. - {{workspace_name}}", B:"{{workspace_name}}: missed you. Rebook: {{reschedule_link}} STOP to opt out." },
+    { t:"Post-appointment", S:"{{workspace_name}}: thanks for seeing {{provider_name}} today. We'd love your feedback: {{feedback_link}} Reply STOP to opt out.", F:"Thanks for coming in today! How did it go with {{provider_name}}? Tell us: {{feedback_link}} Reply STOP to opt out. - {{workspace_name}}", B:"{{workspace_name}}: thanks for visiting. Feedback: {{feedback_link}} STOP to opt out." },
+  ]},
+  { id:"customer-support", name:"Customer support", messages:[
+    { t:"Ticket received", S:"{{workspace_name}} support: ticket {{ticket_number}} received. We'll reply soon. Reply STOP to opt out.", F:"Got your message - {{workspace_name}} support is on it. Ticket {{ticket_number}}. We'll be in touch soon. Reply STOP to opt out.", B:"{{workspace_name}}: ticket {{ticket_number}} received. Reply soon. STOP to opt out." },
+    { t:"Agent assigned", S:"{{workspace_name}} support: {{agent_name}} is handling ticket {{ticket_number}}. Reply STOP to opt out.", F:"Good news - {{agent_name}} has picked up your ticket {{ticket_number}} at {{workspace_name}}. Reply STOP to opt out.", B:"{{workspace_name}}: {{agent_name}} has ticket {{ticket_number}}. STOP to opt out." },
+    { t:"Agent response", S:"{{workspace_name}} support: ticket {{ticket_number}} has a reply. View: {{ticket_link}} Reply STOP to opt out.", F:"Your ticket {{ticket_number}} got a reply from {{workspace_name}} support. Read it here: {{ticket_link}} Reply STOP to opt out.", B:"{{workspace_name}}: reply on {{ticket_number}}. {{ticket_link}} STOP to opt out." },
+    { t:"Resolution notification", S:"{{workspace_name}} support: ticket {{ticket_number}} is resolved. Still need help? {{ticket_link}} Reply STOP to opt out.", F:"Ticket {{ticket_number}} is resolved. Still off? Reopen here: {{ticket_link}} Thanks for your patience - {{workspace_name}}. Reply STOP to opt out.", B:"{{workspace_name}}: {{ticket_number}} resolved. Reopen: {{ticket_link}} STOP to opt out." },
+    { t:"CSAT follow-up", S:"{{workspace_name}} support: how did we do on ticket {{ticket_number}}? Rate here: {{csat_link}} Reply STOP to opt out.", F:"How did {{workspace_name}} support do on ticket {{ticket_number}}? Rate us here: {{csat_link}} Reply STOP to opt out.", B:"{{workspace_name}}: rate ticket {{ticket_number}}? {{csat_link}} STOP to opt out." },
+    { t:"Proactive outreach", S:"{{workspace_name}} support: looks like you hit a snag. Want a hand? Reply here and we'll help. Reply STOP to opt out.", F:"Hi {{customer_name}}, we noticed you got stuck. {{workspace_name}} support is happy to help - just reply. Reply STOP to opt out.", B:"{{workspace_name}}: stuck on something? Reply and we'll help. STOP to opt out." },
+    { t:"Service status alert", S:"{{workspace_name}}: we're aware of a service issue and working on it. ETA {{eta}}. Updates to follow. Reply STOP to opt out.", F:"Heads up - {{workspace_name}} has a service issue, and we're on it. ETA {{eta}}. We'll tell you when it clears. Reply STOP to opt out.", B:"{{workspace_name}}: service issue, working on it. ETA {{eta}}. STOP to opt out." },
+    { t:"Account issue resolved", S:"{{workspace_name}}: we found and fixed an issue on your account. No action needed. Questions? Reply here. Reply STOP to opt out.", F:"{{workspace_name}}: we found an issue on your account and fixed it. Nothing for you to do. Questions? Reply here. Reply STOP to opt out.", B:"{{workspace_name}}: account issue fixed. No action needed. STOP to opt out." },
+  ]},
+  { id:"team-alerts", name:"Team alerts", messages:[
+    { t:"Shift scheduled", S:"{{workspace_name}}: You're scheduled {{shift_date}} {{shift_time}} at {{location}} as {{role}}. Reply STOP to opt out.", F:"Your {{workspace_name}} schedule: {{shift_date}}, {{shift_time}} at {{location}}, {{role}}. See you then. Reply STOP to opt out.", B:"{{workspace_name}}: {{shift_date}} {{shift_time}}, {{location}}, {{role}}. STOP to opt out." },
+    { t:"Shift reminder", S:"{{workspace_name}}: Reminder, you're on {{shift_date}} {{shift_time}} at {{location}}. Reply STOP to opt out.", F:"Your {{workspace_name}} shift is coming up: {{shift_date}}, {{shift_time}} at {{location}}. Reply STOP to opt out.", B:"{{workspace_name}}: Shift {{shift_date}} {{shift_time}}, {{location}}. STOP to opt out." },
+    { t:"Shift change", S:"{{workspace_name}}: Your shift changed. New: {{shift_date}} {{shift_time}} at {{location}}. Reply STOP to opt out.", F:"Heads up, your {{workspace_name}} shift moved to {{shift_date}}, {{shift_time}} at {{location}}. Reply STOP to opt out.", B:"{{workspace_name}}: Shift now {{shift_date}} {{shift_time}}, {{location}}. STOP to opt out." },
+    { t:"Shift cancellation", S:"{{workspace_name}}: Your {{shift_date}} {{shift_time}} shift at {{location}} is cancelled. Reply STOP to opt out.", F:"Your {{workspace_name}} shift on {{shift_date}} at {{location}} has been cancelled. Reply STOP to opt out.", B:"{{workspace_name}}: {{shift_date}} {{shift_time}} shift cancelled. STOP to opt out." },
+    { t:"Shift start", S:"{{workspace_name}}: Your shift at {{location}} starts now. Check in: {{action_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} shift at {{location}} is starting. Check in here: {{action_link}} Reply STOP to opt out.", B:"{{workspace_name}}: Shift started. Check in: {{action_link}} STOP to opt out." },
+    { t:"System alert", S:"{{workspace_name}} {{severity}}: {{alert_type}} on {{system_name}}. Details: {{action_link}} Reply STOP to opt out.", F:"{{workspace_name}} heads up, {{severity}}: {{alert_type}} on {{system_name}}. {{action_link}} Reply STOP to opt out.", B:"{{workspace_name}} {{severity}}: {{alert_type}}, {{system_name}}. {{action_link}} STOP to opt out." },
+    { t:"Escalation ping", S:"{{workspace_name}} {{severity}}: {{system_name}} needs attention. Reply ACK or it goes to {{escalation_to}}. Reply STOP to opt out.", F:"{{workspace_name}}: {{severity}} on {{system_name}}, can you take it? Reply ACK to claim. Reply STOP to opt out.", B:"{{workspace_name}} {{severity}}: {{system_name}}. Reply ACK. {{action_link}} STOP to opt out." },
+    { t:"On-call page", S:"{{workspace_name}} {{severity}}: {{system_name}} down. {{action_link}} Reply STOP to opt out.", F:"{{workspace_name}} {{severity}}: {{system_name}} needs you now. {{action_link}} Reply STOP to opt out.", B:"{{workspace_name}} {{severity}}: {{system_name}}. {{action_link}} STOP to opt out." },
+    { t:"Service-level alert", S:"{{workspace_name}}: {{system_name}} SLA breach, incident {{incident_id}}. {{action_link}} Reply STOP to opt out.", F:"{{workspace_name}} notice: {{system_name}} is below its service level. {{action_link}} Reply STOP to opt out.", B:"{{workspace_name}}: {{system_name}} SLA breach. {{action_link}} STOP to opt out." },
+  ]},
+  { id:"waitlist", name:"Waitlist", messages:[
+    { t:"Joined", S:"You're on the {{workspace_name}} waitlist. We'll text you when it's your turn. Reply STOP to opt out.", F:"You're on the list for {{workspace_name}}. We'll text the moment your spot opens up. Reply STOP to opt out.", B:"On the {{workspace_name}} waitlist. We'll text when it's your turn. STOP to opt out." },
+    { t:"Position update", S:"{{workspace_name}} waitlist update: you're now {{queue_position}}. We'll text you when you're up. Reply STOP to opt out.", F:"Your spot on the {{workspace_name}} waitlist just moved up. You're {{queue_position}} now. Reply STOP to opt out.", B:"{{workspace_name}} waitlist: you're {{queue_position}}. STOP to opt out." },
+    { t:"Almost up", S:"{{workspace_name}} waitlist: you're up in about {{wait_estimate}}. Keep an eye on your phone. Reply STOP to opt out.", F:"Almost your turn on {{workspace_name}}. We'll text you in about {{wait_estimate}} when your spot is ready. Reply STOP to opt out.", B:"{{workspace_name}}: you're up in about {{wait_estimate}}. STOP to opt out." },
+    { t:"Your turn", S:"{{workspace_name}} is ready for you. Claim your spot: {{claim_link}} Reply STOP to opt out.", F:"Your turn on {{workspace_name}}. Claim your spot here: {{claim_link}} Reply STOP to opt out.", B:"{{workspace_name}}: you're up. {{claim_link}} STOP to opt out." },
+    { t:"Grace expiring", S:"{{workspace_name}}: your spot is still open for {{grace_window}}. Claim it: {{claim_link}} Reply STOP to opt out.", F:"Your {{workspace_name}} spot is waiting. It's yours for the next {{grace_window}}: {{claim_link}} Reply STOP to opt out.", B:"{{workspace_name}}: {{grace_window}} left to claim. {{claim_link}} STOP to opt out." },
+    { t:"Missed", S:"Your {{workspace_name}} spot expired. Want back on the list? {{rejoin_link}} Reply STOP to opt out.", F:"Looks like your {{workspace_name}} spot timed out. You can rejoin anytime: {{rejoin_link}} Reply STOP to opt out.", B:"{{workspace_name}} spot expired. Rejoin: {{rejoin_link}} STOP to opt out." },
+  ]},
+  { id:"community", name:"Community", messages:[
+    { t:"Live event reminder", S:"{{community_name}}: {{event_name}} starts {{event_time}}. Join: {{join_link}} Reply STOP to opt out.", F:"Your {{community_name}} community has {{event_name}} starting {{event_time}}: {{join_link}} Reply STOP to opt out.", B:"{{community_name}}: {{event_name}} {{event_time}}. {{join_link}} STOP to opt out." },
+    { t:"Event invitation", S:"{{community_name}}: new event - {{event_name}} on {{event_time}}. RSVP: {{rsvp_link}} Reply STOP to opt out.", F:"Your {{community_name}} has a new event - {{event_name}}, {{event_time}}. RSVP: {{rsvp_link}} Reply STOP to opt out.", B:"{{community_name}} event: {{event_name}}, {{event_time}}. RSVP: {{rsvp_link}} STOP to opt out." },
+    { t:"Moderation update", S:"{{community_name}}: an important update for the community. Details here: {{update_link}} Reply STOP to opt out.", F:"Your {{community_name}} community has an update that needs your attention: {{update_link}} Reply STOP to opt out.", B:"{{community_name}}: important community update. {{update_link}} STOP to opt out." },
+    { t:"Member milestone", S:"{{community_name}}: you've reached {{milestone}} in the community. Thanks for being here. Reply STOP to opt out.", F:"Your time in {{community_name}} just hit a milestone - {{milestone}}. Glad you're part of it. Reply STOP to opt out.", B:"{{community_name}}: {{milestone}} reached. Thanks for being here. STOP to opt out." },
+    { t:"Community announcement", S:"{{community_name}}: there's something new in the community. Take a look: {{announcement_link}} Reply STOP to opt out.", F:"Your {{community_name}} community has something new to share: {{announcement_link}} Reply STOP to opt out.", B:"{{community_name}}: something new in the community. {{announcement_link}} STOP to opt out." },
+    { t:"Welcome", S:"{{community_name}}: you're in. Welcome to the community - glad to have you here. Reply STOP to opt out.", F:"Welcome to your new community, {{community_name}}. We're really glad you joined. Reply STOP to opt out.", B:"Welcome to {{community_name}}. Glad you're here. STOP to opt out." },
+    { t:"First action", S:"{{community_name}}: settling in? A good first step is to introduce yourself in the intros channel. Reply STOP to opt out.", F:"Your {{community_name}} community is waiting - introduce yourself in the intros channel. Reply STOP to opt out.", B:"{{community_name}}: introduce yourself in the intros channel when you get a chance. STOP to opt out." },
+    { t:"Resource pointer", S:"{{community_name}}: here's the orientation guide to help you find your way around: {{resource_link}} Reply STOP to opt out.", F:"Still finding your way around {{community_name}}? The orientation guide helps: {{resource_link}} Reply STOP to opt out.", B:"{{community_name}}: your orientation guide is here. {{resource_link}} STOP to opt out." },
+    { t:"Week 1 check-in", S:"{{community_name}}: you've been part of the community for a week now. How's it going so far? Reply STOP to opt out.", F:"Your first week in {{community_name}} is done - how's it going so far? Reply STOP to opt out.", B:"{{community_name}}: one week in. How's it going? STOP to opt out." },
+  ]},
+  { id:"marketing", name:"Marketing", messages:[
+    { t:"Promotional offer", S:"{{business_name}}: {{offer}}. Claim it here: {{offer_link}} Reply STOP to opt out.", F:"Your {{business_name}} offer: {{offer}}. Grab it here: {{offer_link}} Reply STOP to opt out.", B:"{{business_name}}: {{offer}}. {{offer_link}} STOP to opt out." },
+    { t:"Product launch", S:"{{business_name}}: {{launch_name}} is live. Take a look: {{launch_link}} Reply STOP to opt out.", F:"Your {{business_name}} update: {{launch_name}} just launched. See it here: {{launch_link}} Reply STOP to opt out.", B:"{{business_name}}: {{launch_name}}, now live. {{launch_link}} STOP to opt out." },
+    { t:"Re-engagement", S:"{{business_name}}: it's been a while. Here's what you've missed: {{reengagement_link}} Reply STOP to opt out.", F:"Your {{business_name}} account has been quiet - here's what's new since you left: {{reengagement_link}} Reply STOP to opt out.", B:"{{business_name}}: it's been a while. What's new: {{reengagement_link}} STOP to opt out." },
+    { t:"Event invitation", S:"{{business_name}}: {{event_name}} is coming up {{event_time}}. RSVP here: {{rsvp_link}} Reply STOP to opt out.", F:"Your invite from {{business_name}}: {{event_name}}, {{event_time}}. RSVP: {{rsvp_link}} Reply STOP to opt out.", B:"{{business_name}}: {{event_name}}, {{event_time}}. RSVP: {{rsvp_link}} STOP to opt out." },
+  ]},
+];
+
+// Display order (Verification is 4th, not 1st). Top row = first 4, bottom row = next 5.
+const ORDER = ["account-events","order-updates","appointments","verification","customer-support","team-alerts","waitlist","community","marketing"];
+const ORDERED = ORDER.map(id => CATS.find(c => c.id === id));
+const PER_PAGE = 6;
+const DEFAULT_CAT = "account-events"; // default selection (5 messages → 1 page, no dots)
+let selCat = DEFAULT_CAT, selTone = "Standard", curPage = 0;
+function curCat(){ return CATS.find(c => c.id === selCat); }
+function pages(){ const m = curCat().messages, out = []; for(let i=0;i<m.length;i+=PER_PAGE) out.push(m.slice(i, i+PER_PAGE)); return out; }
+
+const esc = (s) => s.replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+function render(body){
+  const biz = (document.getElementById("bizname").value.trim()) || "Acme";
+  // Split on tokens, keep them, substitute. Every {{token}} value (identity AND
+  // all others) gets the .v bold/bright treatment; literal copy stays plain.
+  return body.split(/(\{\{\w+\}\})/g).filter(Boolean).map(part => {
+    const m = part.match(/^\{\{(\w+)\}\}$/);
+    if(!m) return esc(part);
+    const key = m[1];
+    const val = IDENTITY.includes(key) ? biz : (EX[key] !== undefined ? EX[key] : key);
+    return '<span class="v">' + esc(val) + '</span>';
+  }).join("");
+}
+
+function paintCats(){
+  const pill = c => `<button class="cat${c.id===selCat?" active":""}" type="button" data-cat="${c.id}" aria-pressed="${c.id===selCat}">${esc(c.name)}</button>`;
+  document.getElementById("catrow1").innerHTML = ORDERED.slice(0,4).map(pill).join("");
+  document.getElementById("catrow2").innerHTML = ORDERED.slice(4).map(pill).join("");
+  document.getElementById("catselect").innerHTML = ORDERED.map(c =>
+    `<option value="${c.id}"${c.id===selCat?" selected":""}>${esc(c.name)}</option>`).join("");
+}
+
+function paintGrid(){
+  const pg = pages();
+  if(curPage > pg.length - 1) curPage = 0;
+  const cards = (pg[curPage] || []).map(msg => {
+    const body = msg[selTone[0]]; // S / F / B
+    return `<div class="msgcard"><div class="label"><span class="pip" aria-hidden="true"></span>${esc(msg.t)}</div><div class="text">${render(body)}</div></div>`;
+  });
+  document.getElementById("msgGrid").innerHTML = cards.join("");
+  paintDots(pg.length);
+}
+
+function paintDots(n){
+  const dots = document.getElementById("dots");
+  if(n <= 1){ dots.innerHTML = ""; return; } // dots only when there's more than one page
+  dots.innerHTML = Array.from({length:n}, (_,i) =>
+    `<button class="dot${i===curPage?" active":""}" type="button" data-page="${i}" aria-label="Page ${i+1} of ${n}" aria-selected="${i===curPage}"></button>`
+  ).join("");
+}
+
+function setCat(id){ selCat = id; curPage = 0; paintCats(); paintGrid(); }
+function setPage(i){ const n = pages().length; curPage = Math.max(0, Math.min(n-1, i)); paintGrid(); }
+
+document.getElementById("catpills").addEventListener("click", e => { const b = e.target.closest(".cat"); if(b) setCat(b.dataset.cat); });
+document.getElementById("catselect").addEventListener("change", e => setCat(e.target.value));
+document.getElementById("dots").addEventListener("click", e => { const b = e.target.closest(".dot"); if(b) setPage(+b.dataset.page); });
+document.getElementById("tones").addEventListener("click", e => {
+  const b = e.target.closest(".tone"); if(!b) return;
+  selTone = b.dataset.tone;
+  document.querySelectorAll("#tones .tone").forEach(t => t.classList.toggle("active", t === b));
+  paintGrid();
+});
+document.getElementById("bizname").addEventListener("input", paintGrid);
+
+// swipe to advance pages
+const grid = document.getElementById("msgGrid");
+let tx = 0;
+grid.addEventListener("touchstart", e => { tx = e.changedTouches[0].clientX; }, {passive:true});
+grid.addEventListener("touchend", e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if(Math.abs(dx) > 40) setPage(curPage + (dx < 0 ? 1 : -1));
+}, {passive:true});
+
+paintCats();
+paintGrid();
+</script>
+</body>
+</html>
