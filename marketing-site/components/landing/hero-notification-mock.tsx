@@ -2,25 +2,32 @@
 
 /**
  * Animated phone-notification visual for the Developer-tools landing hero
- * (D-436). Adapts the dev-tools mockup's rotating-notification into React: the
- * five account-event messages cross-fade through the notification body on an
- * interval, with a pause toggle.
+ * (D-436). The account-event messages "arrive & settle" like real notifications:
+ * each card enters from just above its resting spot, holds, then drops away
+ * before the next arrives — never two on screen at once.
  *
- * State-ISOLATED like HeroConfiguratorGraphic — it owns only local view state
- * (index + paused + reduced), calls no store/configurator hooks, and never
- * touches localStorage. The business name is the static demo "Acme" (the hero
- * is not bound to the shared business-name store).
+ * State-ISOLATED like HeroConfiguratorGraphic — it owns only local view state,
+ * calls no store/configurator hooks, and never touches localStorage. The
+ * business name is the static demo "Acme".
  *
- * Motion: every 4s the body swaps with a ~280ms opacity cross-fade (not an
- * abrupt swap). prefers-reduced-motion holds the first frame — no auto-advance,
- * no fade — and hides the pause toggle.
+ * Motion (per phase, one lead transform = translate + a touch of scale):
+ *   ENTER  ~420ms ease-out — from translateY(-16px) scale(0.98) opacity 0 → rest.
+ *   REST   ~4.5s hold (pausable).
+ *   EXIT   ~240ms ease-in  — drift to translateY(8px) scale(0.98) opacity 0.
+ * The card HEIGHT transitions between messages of different lengths (measured),
+ * so short↔long swaps grow/shrink gracefully instead of snapping.
+ *
+ * prefers-reduced-motion: a plain body opacity crossfade — no transforms, no
+ * height animation — and the pause toggle is hidden.
  */
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const DEMO_BUSINESS = "Acme";
-const ADVANCE_MS = 4000;
-const FADE_MS = 280;
+const ENTER_MS = 420;
+const EXIT_MS = 240;
+const REST_MS = 4500;
+const REDUCED_FADE_MS = 220;
 
 // Account-event notification bodies, in rotation order (from the dev-tools
 // mockup). Business name is rendered separately as the notification app label.
@@ -32,17 +39,17 @@ const BODIES = [
   "Your subscription change is confirmed. View the details in your account: yourapp.com/account",
 ];
 
+type Phase = "preEnter" | "enter" | "rest" | "exit";
+
 export function HeroNotificationMock() {
   const [index, setIndex] = useState(0);
-  const [out, setOut] = useState(false);
+  const [phase, setPhase] = useState<Phase>("preEnter");
   const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
+  const [bodyH, setBodyH] = useState<number>();
+  const [fade, setFade] = useState(false); // reduced-motion crossfade only
 
-  const indexRef = useRef(index);
-  indexRef.current = index;
-  const reducedRef = useRef(reduced);
-  reducedRef.current = reduced;
-  const fadeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const bodyRef = useRef<HTMLParagraphElement>(null);
 
   // Track prefers-reduced-motion (client-only → no SSR mismatch).
   useEffect(() => {
@@ -53,30 +60,81 @@ export function HeroNotificationMock() {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  // Advance to the next body with the opacity cross-fade. Under reduced motion,
-  // swap instantly (the fade classes are disabled too).
-  const advance = useCallback(() => {
-    const next = (indexRef.current + 1) % BODIES.length;
-    clearTimeout(fadeTimer.current);
-    if (reducedRef.current) {
-      setIndex(next);
-      setOut(false);
-      return;
-    }
-    setOut(true);
-    fadeTimer.current = setTimeout(() => {
-      setIndex(next);
-      setOut(false);
-    }, FADE_MS);
-  }, []);
+  // Measure the current body's natural height so the card height can transition
+  // between messages of different lengths. (Margin lives on the wrapper, not the
+  // <p>, so offsetHeight is the exact content height.)
+  useEffect(() => {
+    if (reduced) return;
+    if (bodyRef.current) setBodyH(bodyRef.current.offsetHeight);
+  }, [index, reduced]);
+
+  // ── Phase machine (skipped under reduced motion) ──────────────────────────
+  // preEnter → enter: flip on the next frame so the enter transition runs from
+  // the above/scaled/transparent start state rather than snapping.
+  useEffect(() => {
+    if (reduced || phase !== "preEnter") return;
+    const raf = requestAnimationFrame(() =>
+      setPhase((p) => (p === "preEnter" ? "enter" : p)),
+    );
+    return () => cancelAnimationFrame(raf);
+  }, [phase, reduced, index]);
 
   useEffect(() => {
-    if (paused || reduced) return;
-    const interval = setInterval(advance, ADVANCE_MS);
-    return () => clearInterval(interval);
-  }, [paused, reduced, advance]);
+    if (reduced || phase !== "enter") return;
+    const t = setTimeout(() => setPhase("rest"), ENTER_MS);
+    return () => clearTimeout(t);
+  }, [phase, reduced]);
 
-  useEffect(() => () => clearTimeout(fadeTimer.current), []);
+  // rest → exit, held while paused (resume restarts the dwell).
+  useEffect(() => {
+    if (reduced || phase !== "rest" || paused) return;
+    const t = setTimeout(() => setPhase("exit"), REST_MS);
+    return () => clearTimeout(t);
+  }, [phase, reduced, paused]);
+
+  // exit → next message (back to preEnter). Sequenced so the next card only
+  // begins entering after this one has fully left — never both at once.
+  useEffect(() => {
+    if (reduced || phase !== "exit") return;
+    const t = setTimeout(() => {
+      setIndex((i) => (i + 1) % BODIES.length);
+      setPhase("preEnter");
+    }, EXIT_MS);
+    return () => clearTimeout(t);
+  }, [phase, reduced]);
+
+  // ── Reduced motion: plain body crossfade, no transforms / no height anim ───
+  useEffect(() => {
+    if (!reduced) return;
+    const interval = setInterval(() => {
+      if (paused) return;
+      setFade(true);
+      setTimeout(() => {
+        setIndex((i) => (i + 1) % BODIES.length);
+        setFade(false);
+      }, REDUCED_FADE_MS);
+    }, REST_MS);
+    return () => clearInterval(interval);
+  }, [reduced, paused]);
+
+  // Card transform/opacity for the current phase (one lead transform).
+  const transform =
+    phase === "preEnter"
+      ? "translateY(-16px) scale(0.98)"
+      : phase === "exit"
+        ? "translateY(8px) scale(0.98)"
+        : "translateY(0) scale(1)";
+  const visible = phase === "enter" || phase === "rest";
+  const transition =
+    phase === "preEnter"
+      ? "none"
+      : phase === "exit"
+        ? `transform ${EXIT_MS}ms ease-in, opacity ${EXIT_MS}ms ease-in`
+        : `transform ${ENTER_MS}ms cubic-bezier(0.16, 1, 0.3, 1), opacity ${ENTER_MS}ms ease-out`;
+
+  const cardStyle = reduced
+    ? undefined
+    : { transform, opacity: visible ? 1 : 0, transition };
 
   return (
     <div className="relative mx-auto w-full max-w-[360px]">
@@ -109,8 +167,12 @@ export function HeroNotificationMock() {
             </div>
           </div>
 
-          {/* Notification — pinned to the bottom of the screen. */}
-          <div className="mt-auto rounded-[18px] border border-border-secondary bg-surface-card/80 p-3.5 backdrop-blur">
+          {/* Notification — pinned to the bottom; the whole card carries the
+              per-phase enter/exit transform. */}
+          <div
+            style={cardStyle}
+            className="mt-auto rounded-[18px] border border-border-secondary bg-surface-card/80 p-3.5 backdrop-blur"
+          >
             <div className="flex items-center gap-2">
               <span className="flex size-[22px] items-center justify-center rounded-md bg-bg-gold text-[11px] font-bold text-text-on-gold">
                 {DEMO_BUSINESS.charAt(0)}
@@ -122,13 +184,27 @@ export function HeroNotificationMock() {
                 now
               </span>
             </div>
-            <p
-              className={`mt-2 text-[13px] leading-relaxed text-text-primary transition-opacity duration-300 ease-linear motion-reduce:transition-none ${
-                out ? "opacity-0" : "opacity-100"
-              }`}
+            {/* Height-animated body region — margin on the wrapper so the
+                measured <p> height is exact. */}
+            <div
+              className="mt-2 overflow-hidden transition-[height] duration-[420ms] ease-out motion-reduce:transition-none"
+              style={{ height: reduced ? undefined : bodyH }}
             >
-              {BODIES[index]}
-            </p>
+              <p
+                ref={bodyRef}
+                className="text-[13px] leading-relaxed text-text-primary"
+                style={
+                  reduced
+                    ? {
+                        opacity: fade ? 0 : 1,
+                        transition: `opacity ${REDUCED_FADE_MS}ms ease`,
+                      }
+                    : undefined
+                }
+              >
+                {BODIES[index]}
+              </p>
+            </div>
           </div>
         </div>
       </div>
