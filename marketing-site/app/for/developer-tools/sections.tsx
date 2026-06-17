@@ -177,55 +177,8 @@ export function Details() {
   );
 }
 
-// The secondaries — "feature becomes platform" (craft rule #4). Authored
-// editorial framing of the honest pairs for dev tools (Verification + Team
-// alerts), NOT a second interactive browser; the breadth lives one click away
-// at /messages.
-const PAIRS = [
-  {
-    name: "Verification",
-    body: "Login codes, step-up confirmation, device verification — the same SDK, no separate auth vendor.",
-  },
-  {
-    name: "Team alerts",
-    body: "System alerts, on-call pages, escalation pings — operational messages your own team needs to see fast.",
-  },
-];
-
-export function Rest() {
-  return (
-    <section className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28">
-      <div className="max-w-2xl">
-        <Eyebrow>The rest</Eyebrow>
-        <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          Account events are just the start.
-        </h2>
-        <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          One integration sends every category. For a developer tool,
-          verification codes and operational alerts pair most naturally with
-          account events — but it&apos;s all there when you need it.
-        </p>
-      </div>
-      <div className="mt-10 grid gap-6 md:grid-cols-2">
-        {PAIRS.map((pair) => (
-          <div
-            key={pair.name}
-            className="rounded-2xl border border-border-secondary bg-surface-card p-6"
-          >
-            <h3 className="text-lg font-semibold text-text-primary">
-              {pair.name}
-            </h3>
-            <p className="mt-2 text-base leading-relaxed text-text-secondary">
-              {pair.body}
-            </p>
-          </div>
-        ))}
-      </div>
-      {/* No forward CTA here — funnel CTAs live only at Hero, Messages, and the
-          Closing CTA (Funnel/Fork/Farm link model). */}
-    </section>
-  );
-}
+// (The authored "Rest" secondaries section was removed — the full home
+// MessagesSection now renders in that slot, showing all 9 categories.)
 
 // ── Fork: a single landing-OWNED link rendered AFTER the verbatim <Paperwork />
 // (the shared home component is never modified — home stays byte-identical). It

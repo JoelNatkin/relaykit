@@ -17,7 +17,6 @@ import {
   DevToolsHero,
   Moment,
   Details,
-  Rest,
   PaperworkFork,
   Farm,
   DEVTOOLS_VARIABLES_EXAMPLE,
@@ -51,9 +50,12 @@ export default function DeveloperToolsLanding() {
       <StatusBand />
       <Moment />
 
-      {/* Messages locked to the sub's dominant category (account events). */}
+      {/* Messages locked to the sub's dominant category (account events).
+          Eyebrow overridden to "Account messages" so it doesn't collide with
+          the full home Messages browser further down ("The messages"). */}
       <MessagesSection
         lockedCategory="account-events"
+        eyebrow="Account messages"
         heading="Account messages, ready to send."
         bridge="The events that decide whether a customer stays."
       />
@@ -74,7 +76,9 @@ export default function DeveloperToolsLanding() {
           mirroring the home's Test→How adjacency. */}
       <HowItWorks />
       <Pricing />
-      <Rest />
+      {/* The full home Messages browser, verbatim (all 9 category pills, default
+          Account events, home copy) — replaces the authored "Rest" secondaries. */}
+      <MessagesSection />
       <FinalCta />
       {/* Farm — quiet directory below the Closing CTA (replaces the Related rack). */}
       <Farm />
