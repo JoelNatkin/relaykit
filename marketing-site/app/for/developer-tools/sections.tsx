@@ -83,7 +83,7 @@ export function Moment() {
           A text can change the outcome.
         </h2>
       </div>
-      <div className="mt-10 grid items-center gap-10 md:grid-cols-2">
+      <div className="mt-10 grid items-start gap-10 md:grid-cols-2">
         <p className="text-lg leading-relaxed text-text-secondary">
           A renewal email lands in a spam folder. The account quietly lapses.
           One text the customer can&apos;t miss, fixes it before they churn.

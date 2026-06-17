@@ -90,8 +90,8 @@ export function HeroNotificationMock() {
         }}
       />
 
-      {/* Phone frame — realistic ~9:19.5 portrait aspect (taller than wide). */}
-      <div className="mx-auto h-[620px] w-[300px] overflow-hidden rounded-[44px] border border-border-primary bg-surface-card p-3 shadow-xl">
+      {/* Phone frame — realistic ~9:18 portrait aspect (taller than wide). */}
+      <div className="mx-auto h-[560px] w-[300px] overflow-hidden rounded-[44px] border border-border-primary bg-surface-card p-3 shadow-xl">
         <div className="relative flex h-full flex-col rounded-[30px] border border-border-secondary bg-bg-primary px-5 pb-6 pt-9">
           {/* Dynamic-island pill. */}
           <div

@@ -4,7 +4,7 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 5 (4 + 1 polish) | Decisions added: 1 (**D-436**) | Branch: `feat/landing-developer-tools` (**UNMERGED — pushed for Vercel preview**). Built the first production React sub-vertical landing page (`/for/developer-tools`) by reusing the live home components, per the PM-approved plan (`.pm/plans/plan-only-no-unified-lantern.md`). Quality gates clean every code commit: tsc ✅ / eslint ✅ (`marketing-site`) / build ✅ (`.next` cleared). No `/api` changes. Mid-phase (active phase stays Phase 2 — Session B).
+**Session metrics:** Commits: 6 (4 build + 2 polish) | Decisions added: 1 (**D-436**) | Branch: `feat/landing-developer-tools` (**UNMERGED — pushed for Vercel preview**). Built the first production React sub-vertical landing page (`/for/developer-tools`) by reusing the live home components, per the PM-approved plan (`.pm/plans/plan-only-no-unified-lantern.md`). Quality gates clean every code commit: tsc ✅ / eslint ✅ (`marketing-site`) / build ✅ (`.next` cleared). No `/api` changes. Mid-phase (active phase stays Phase 2 — Session B).
 
 **Status: 🟡 On branch, pushed, awaiting PM review on the Vercel preview. Do NOT merge to `main` until approved.**
 
@@ -17,7 +17,7 @@
 3. **`20d6e34` refactor** — optional sub-data props: `VariablesSection` gains `example` (+ `DEFAULT_EXAMPLE`); `MessagesSection` gains `lockedCategory`/`eyebrow`/`heading`/`bridge` (lockedCategory hides the pill rows). Both default to current home behavior — home unchanged.
 4. **`feat` (this commit)** — the page. `app/for/developer-tools/{page.tsx,sections.tsx}` + `components/landing/hero-notification-mock.tsx` (animated cross-fade, `prefers-reduced-motion`-aware, pause toggle). Self-canonical metadata; sitemap entry (`LANDING_ROUTES`). Build verified: `/for/developer-tools` prerenders **static**; `<link rel="canonical">` = `https://relaykit.ai/for/developer-tools` (never `/`); Messages pills hidden (locked to account-events); Variables shows the account-events example.
 
-5. **`style` polish** (post-review fixes) — hero phone frame taller/realistic (`h-[620px]`, ~9:19.5); pause toggle made quiet (smaller `size-5`, `text-text-quaternary` + `opacity-60`, brightens on hover); dev-tools hero eyebrow drops the leading "For " → "Developer tools & API platforms" (home eyebrow untouched); Moment "Paid in minutes" bubble now `w-fit` so it hugs its text. tsc/eslint/build clean.
+5. **`style` polish** (post-review fixes, two commits) — hero phone frame realistic portrait (`h-[560px]` after a 620→560 trim); pause toggle made quiet (smaller `size-5`, `text-text-quaternary` + `opacity-60`, brightens on hover); dev-tools hero eyebrow drops the leading "For " → "Developer tools & API platforms" (home eyebrow untouched); Moment "Paid in minutes" bubble `w-fit` so it hugs its text; Moment columns top-aligned (`items-start`). tsc/eslint/build clean.
 
 ## Decisions made in build that need PM eyes on the preview
 - **HowItWorks (`#how`) placement.** The approved 15-row order table inadvertently omitted "How it works" even though bucket-1 lists it as reused chrome AND the hero "How it works" ghost CTA targets `#how`. To avoid a dead anchor, `HowItWorks` is rendered in the process cluster (Test → **How** → Price), mirroring the home's Test→How adjacency. **PM: confirm placement (or drop the CTA) on the preview.**
