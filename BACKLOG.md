@@ -5,7 +5,7 @@
 > Not for: active workstream items (MASTER_PLAN phase scope), recorded decisions (DECISIONS), active prototypes (`/explorations/`).
 
 ## Ideas, Deferred Work, and Future Features
-### Last updated: June 13, 2026
+### Last updated: June 16, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -369,6 +369,11 @@
 - **Message scheduling** — "Send this at 9 AM recipient local time." Currently developers handle their own scheduling. (Origin: general)
 
 - **A/B testing for messages** — Send variant A to half, variant B to half, measure response rates. Far future. (Origin: general)
+
+- **A/B test: home hero copy** — test the current hero against a "name the problem" variant. Future test, not scheduled.
+  - Control (current): H1 "The easiest way to add text messaging to your app." / sub "Ready-made texts that cut no-shows, support tickets, and missed codes."
+  - Variant: H1 "Skip the SMS registration slog." / sub "Add SMS to your app without the registration paperwork. Build and test free today. Go live this summer."
+  (Origin: Session 139, 2026-06-16)
 
 ---
 
