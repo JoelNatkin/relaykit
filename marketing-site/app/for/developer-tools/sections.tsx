@@ -220,43 +220,114 @@ export function Rest() {
           </div>
         ))}
       </div>
-      <div className="mt-8">
-        <Link
-          href="/messages"
-          className="text-sm font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
-        >
-          See all nine categories <span aria-hidden>→</span>
-        </Link>
-      </div>
+      {/* No forward CTA here — funnel CTAs live only at Hero, Messages, and the
+          Closing CTA (Funnel/Fork/Farm link model). */}
     </section>
   );
 }
 
-// Sibling-sub chips. The target pages don't exist yet, so v1 points them at
-// /messages; wire real /for/{slug} cross-links as sibling pages ship (D-436).
-const RELATED = [
-  "Identity & SSO platforms",
-  "Helpdesk & support SaaS",
-  "E-commerce platforms",
-  "Subscription boxes",
+// ── Fork: a single landing-OWNED link rendered AFTER the verbatim <Paperwork />
+// (the shared home component is never modified — home stays byte-identical). It
+// forks the reader who wants the registration detail off the funnel.
+export function PaperworkFork() {
+  return (
+    // Pulled up under Paperwork's bottom padding so the link reads as attached
+    // to the paperwork cards rather than a new section.
+    <div className="mx-auto -mt-8 max-w-5xl px-6 pb-20 sm:-mt-12 sm:pb-28">
+      {/* v1 → /messages. Intended target: /10dlc-registration pain-point page
+          (not built yet). */}
+      <Link
+        href="/messages"
+        className="text-sm font-medium text-gold transition duration-100 ease-linear hover:opacity-90"
+      >
+        What registration actually involves <span aria-hidden>→</span>
+      </Link>
+    </div>
+  );
+}
+
+// ── Farm: a quiet directory below the Closing CTA — a directory, not a CTA.
+// Low-contrast; links route to /messages for v1 (real targets noted inline).
+const FARM_TYPES = [
+  {
+    name: "Identity & SSO platforms",
+    desc: "login codes, new-device alerts, password resets",
+    href: "/messages", // intended: /for/identity-sso
+  },
+  {
+    name: "Helpdesk & support SaaS",
+    desc: "ticket updates, agent replies, CSAT asks",
+    href: "/messages", // intended: /for/helpdesk-support
+  },
+  {
+    name: "E-commerce platforms",
+    desc: "order, shipping, and delivery texts",
+    href: "/messages", // intended: /for/ecommerce
+  },
 ];
 
-export function Related() {
+const FARM_QUESTIONS = [
+  {
+    label: "What 10DLC registration actually involves",
+    href: "/messages", // intended: /10dlc-registration
+  },
+  {
+    label: "How opt-outs and consent stay handled for you",
+    href: "/messages", // intended: /consent-and-opt-outs
+  },
+];
+
+export function Farm() {
   return (
-    <section className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28">
-      <div className="text-sm font-medium uppercase tracking-[0.14em] text-text-tertiary">
-        Building a different app? Find yours.
-      </div>
-      <div className="mt-5 flex flex-wrap gap-3">
-        {RELATED.map((label) => (
-          <Link
-            key={label}
-            href="/messages"
-            className="rounded-full border border-border-secondary px-4 py-2 text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:border-border-primary hover:text-text-primary"
-          >
-            {label} <span aria-hidden>↗</span>
-          </Link>
-        ))}
+    <section className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-16 sm:py-20">
+      <Eyebrow>Keep exploring</Eyebrow>
+      <div className="mt-8 grid gap-10 md:grid-cols-2">
+        <div>
+          <h3 className="text-sm font-semibold text-text-secondary">
+            RelayKit for other business types
+          </h3>
+          <ul className="mt-4 space-y-3">
+            {FARM_TYPES.map((t) => (
+              <li key={t.name}>
+                <Link
+                  href={t.href}
+                  className="group text-sm text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                >
+                  <span className="text-text-secondary group-hover:text-text-primary">
+                    {t.name}
+                  </span>{" "}
+                  — {t.desc}
+                </Link>
+              </li>
+            ))}
+            <li>
+              {/* intended: the b2b-saas vertical hub */}
+              <Link
+                href="/messages"
+                className="text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
+              >
+                All B2B SaaS <span aria-hidden>→</span>
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold text-text-secondary">
+            Common questions
+          </h3>
+          <ul className="mt-4 space-y-3">
+            {FARM_QUESTIONS.map((q) => (
+              <li key={q.label}>
+                <Link
+                  href={q.href}
+                  className="text-sm text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+                >
+                  {q.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 # Landing Page Craft
-Status: exploring (2026-06-16)
+Status: exploring (2026-06-17)
 
 > **Scope:** Working reference for the sub-vertical landing page system — writing rules, page archetypes, reader/page JTBD, optimization findings, and capability-tracking. This is an exploration, not canon: it informs the pages but isn't load-bearing. The writing rules and research are settled thinking; templates and worked examples fill in over subsequent sessions. Graduates to a skill only if it earns it through use.
 
@@ -83,6 +83,19 @@ The production fold-back of a ship-it page (D-436). A page is built by **reusing
 | 15 | Closing CTA | B1 |
 
 **Routing / canonical (D-436):** URL = `/for/{short-slug}` (short, human-curated kebab — e.g. `/for/developer-tools`), NOT the long `/lib/constraints` data slug. The page resolves its sub data (`name`/`bucket`/rules) from `/lib/constraints` by the canonical data slug separately. Each page is self-canonical (`canonical` → its own path, never `/`).
+
+### Link model — Funnel / Fork / Farm
+
+Three jobs for outbound links; keep them distinct so the page has exactly one spine and the rest reads as a quiet directory.
+
+- **Funnel** — the forward CTAs that move a convinced reader into the tool. **Only three on a ship-it page:** Hero, the Messages section ("Open messages →"), and the Closing CTA. Do NOT add forward CTAs to Build, Test, How, Price, or Rest — extra funnels dilute the spine. (Funnels that are part of a verbatim home component stay; we neither add to nor strip the shared chrome — home must remain byte-identical. A landing-specific funnel is a landing-OWNED element composed *around* the component.)
+- **Fork** — one sideways link for the reader who needs a specific detail before committing (e.g. Paperwork → "What registration actually involves →" to the 10DLC pain-point page). Rendered as a landing-owned element placed AFTER the verbatim component, never inside it. At most one per page.
+- **Farm** — a quiet directory at the FOOT of the page (below the Closing CTA): sibling subs, the parent vertical hub, and a couple of common-question/concept pages. Low-contrast, link-list styling — a directory, not a CTA. It distributes authority across the cluster (internal-linking / topical-authority play) without competing with the funnel.
+
+**Page-type rule for the Farm:**
+- **Sub page** (ship-it / honest-no) → a *light* Farm: a few sibling subs + the vertical hub + 1–2 concept/question pages.
+- **Vertical hub** → the hub's primary body IS the down-links to its subs (those read as Funnel links, not Farm); a Farm is redundant.
+- **Topic / keyword page** → route to the single best-fit sub (or `/messages`); don't sprout a Farm of its own.
 
 ## Optimization findings
 

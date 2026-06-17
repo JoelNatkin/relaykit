@@ -18,7 +18,8 @@ import {
   Moment,
   Details,
   Rest,
-  Related,
+  PaperworkFork,
+  Farm,
   DEVTOOLS_VARIABLES_EXAMPLE,
 } from "./sections";
 import { findSubVertical } from "../../../../lib/constraints";
@@ -64,6 +65,8 @@ export default function DeveloperToolsLanding() {
       <NumbersSection />
       <Recognition />
       <Paperwork />
+      {/* Fork — landing-owned link composed AFTER the verbatim <Paperwork />. */}
+      <PaperworkFork />
       <AiSection />
       <Prove />
       {/* HowItWorks (#how) — bucket-1 chrome; the hero "How it works" CTA
@@ -72,8 +75,9 @@ export default function DeveloperToolsLanding() {
       <HowItWorks />
       <Pricing />
       <Rest />
-      <Related />
       <FinalCta />
+      {/* Farm — quiet directory below the Closing CTA (replaces the Related rack). */}
+      <Farm />
     </div>
   );
 }
