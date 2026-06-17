@@ -231,9 +231,10 @@ export function Rest() {
 // forks the reader who wants the registration detail off the funnel.
 export function PaperworkFork() {
   return (
-    // Pulled up under Paperwork's bottom padding so the link reads as attached
-    // to the paperwork cards rather than a new section.
-    <div className="mx-auto -mt-8 max-w-5xl px-6 pb-20 sm:-mt-12 sm:pb-28">
+    // Pulled up tight under Paperwork's bottom padding (so the link sits close
+    // to the cards) and right-aligned to the card grid's right edge. Same
+    // max-w-5xl px-6 container as Paperwork → matching right edge.
+    <div className="mx-auto -mt-14 max-w-5xl px-6 pb-20 text-right sm:-mt-20 sm:pb-28">
       {/* v1 → /messages. Intended target: /10dlc-registration pain-point page
           (not built yet). */}
       <Link
