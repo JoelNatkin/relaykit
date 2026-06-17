@@ -183,27 +183,16 @@ export function HeroNotificationMock() {
             </div>
           </div>
 
-          {/* Notification — pinned to the bottom; the whole card carries the
-              per-phase enter/exit transform. */}
+          {/* SMS bubble — just the text (no push-notification header); the
+              sender is inline ("Acme: ..."), like a real business text. The
+              whole bubble carries the per-phase enter/exit transform. */}
           <div
             style={cardStyle}
             className="mt-auto rounded-[18px] border border-white/10 bg-white/[0.08] p-3.5 backdrop-blur-xl"
           >
-            <div className="flex items-center gap-2">
-              <span className="flex size-[22px] items-center justify-center rounded-md bg-bg-gold text-[11px] font-bold text-text-on-gold">
-                {DEMO_BUSINESS.charAt(0)}
-              </span>
-              <span className="text-xs font-semibold text-text-secondary">
-                {DEMO_BUSINESS}
-              </span>
-              <span className="ml-auto text-[11px] text-text-quaternary">
-                now
-              </span>
-            </div>
-            {/* Height-animated body region — margin on the wrapper so the
-                measured <p> height is exact. */}
+            {/* Height-animated body region. */}
             <div
-              className="mt-2 overflow-hidden transition-[height] duration-[420ms] ease-out motion-reduce:transition-none"
+              className="overflow-hidden transition-[height] duration-[420ms] ease-out motion-reduce:transition-none"
               style={{ height: reduced ? undefined : bodyH }}
             >
               <p
@@ -218,7 +207,7 @@ export function HeroNotificationMock() {
                     : undefined
                 }
               >
-                {renderBody(BODIES[index])}
+                {renderBody(`${DEMO_BUSINESS}: ${BODIES[index]}`)}
               </p>
             </div>
           </div>
