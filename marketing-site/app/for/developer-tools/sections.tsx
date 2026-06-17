@@ -44,7 +44,7 @@ export function DevToolsHero() {
     <section className="mx-auto max-w-5xl px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
       <div className="grid items-center gap-12 lg:grid-cols-2">
         <div>
-          <Eyebrow>For developer tools &amp; API platforms</Eyebrow>
+          <Eyebrow>Developer tools &amp; API platforms</Eyebrow>
           {/* H1 is a placeholder draft — refined on the preview. */}
           <h1 className="mt-5 text-4xl font-bold tracking-tight text-text-primary text-balance sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
             User account text messaging for your app.
@@ -94,7 +94,7 @@ export function Moment() {
             declined. Update payment to keep your account active:
             yourapp.com/billing
           </div>
-          <div className="ml-auto max-w-[70%] rounded-2xl rounded-br-md bg-bg-gold px-4 py-3 text-right text-sm font-medium text-text-on-gold">
+          <div className="ml-auto w-fit max-w-[80%] rounded-2xl rounded-br-md bg-bg-gold px-4 py-2.5 text-sm font-medium text-text-on-gold">
             Paid in minutes
           </div>
         </div>

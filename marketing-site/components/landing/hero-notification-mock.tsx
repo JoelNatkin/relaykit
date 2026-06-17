@@ -90,8 +90,8 @@ export function HeroNotificationMock() {
         }}
       />
 
-      {/* Phone frame. */}
-      <div className="mx-auto h-[480px] w-[300px] overflow-hidden rounded-[40px] border border-border-primary bg-surface-card p-3 shadow-xl">
+      {/* Phone frame — realistic ~9:19.5 portrait aspect (taller than wide). */}
+      <div className="mx-auto h-[620px] w-[300px] overflow-hidden rounded-[44px] border border-border-primary bg-surface-card p-3 shadow-xl">
         <div className="relative flex h-full flex-col rounded-[30px] border border-border-secondary bg-bg-primary px-5 pb-6 pt-9">
           {/* Dynamic-island pill. */}
           <div
@@ -140,14 +140,14 @@ export function HeroNotificationMock() {
           onClick={() => setPaused((p) => !p)}
           aria-pressed={paused}
           aria-label={paused ? "Resume message rotation" : "Pause message rotation"}
-          className="mx-auto mt-4 flex size-7 items-center justify-center text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
+          className="mx-auto mt-3 flex size-5 items-center justify-center text-text-quaternary opacity-60 transition duration-100 ease-linear hover:text-text-tertiary hover:opacity-100"
         >
           {paused ? (
-            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden className="size-5">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden className="size-3.5">
               <path d="M6 3.5 L16.5 10 L6 16.5 Z" />
             </svg>
           ) : (
-            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden className="size-5">
+            <svg viewBox="0 0 20 20" fill="currentColor" aria-hidden className="size-3.5">
               <rect x="5.5" y="3" width="3.5" height="14" rx="1" />
               <rect x="11" y="3" width="3.5" height="14" rx="1" />
             </svg>
