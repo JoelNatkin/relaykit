@@ -105,12 +105,12 @@ export function Moment() {
 
 const QA = [
   {
-    q: "Who should get a failed-payment text in a multi-seat app?",
+    q: "Who should get the failed payment text?",
     lead: "The billing owner — not every seat.",
     body: "A failed payment is one workspace's problem to fix, and texting all twelve seats just makes twelve confused users and one annoyed admin. Send each event to the one human who can act on it.",
   },
   {
-    q: "Should a new-device sign-in alert go to the account owner or the person who signed in?",
+    q: "Who should get a new-device alert?",
     lead: "The person who signed in.",
     body: "It's their security event, and they're the one who can confirm it was them or lock things down. In a workspace, that means a new-laptop login from an admin shouldn't ping the billing owner — route security events to the person they're actually about.",
   },
@@ -121,9 +121,9 @@ const QA = [
     body: "Receipts, weekly digests, and “your invoice is ready” can stay in email — texting those just trains people to ignore you. Rule of thumb: if it can wait until they next open the app, it doesn't need a text.",
   },
   {
-    q: "What about users who never gave you a phone number?",
+    q: "What if we don't have a user's phone number?",
     lead: "The event falls back to email.",
-    body: "Text is the escalation channel for the messages that matter most, not a replacement for all of them. Most apps collect a number at sign-up, or the first time security matters (a new-device prompt is a natural moment to ask). You decide the fallback; you pass the recipient, and the message goes where you send it.",
+    body: "Text is the escalation channel for the messages that matter most, not a replacement for all of them. You pass the recipient and decide the fallback — the message goes where you send it.",
   },
 ];
 
@@ -136,9 +136,14 @@ export function Details() {
           Q&amp;A: Account event messages
         </h2>
       </div>
-      <div className="mt-10 grid gap-x-12 gap-y-10 md:grid-cols-2">
+      {/* Each Q&A is its own card; items-start so a card sizes to its own
+          content height — no forced equal heights across a row. */}
+      <div className="mt-10 grid items-start gap-6 md:grid-cols-2">
         {QA.map((item) => (
-          <div key={item.q}>
+          <div
+            key={item.q}
+            className="rounded-2xl border border-border-secondary bg-surface-card p-6"
+          >
             <h3 className="text-lg font-semibold text-text-primary">
               {item.q}
             </h3>
