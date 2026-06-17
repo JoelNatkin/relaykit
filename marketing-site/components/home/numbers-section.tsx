@@ -99,9 +99,8 @@ export function NumbersSection() {
           When a message can&apos;t wait, send a text.
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          The messages an app sends — login codes, order updates, reminders —
-          only do their job when someone sees them. Here&apos;s how text and
-          email compare.
+          Messages from an app only work when someone sees them. Here&apos;s how
+          text and email compare.
         </p>
       </div>
 

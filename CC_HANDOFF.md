@@ -4,7 +4,7 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 8 (4 build + 4 polish/feat) | Decisions added: 1 (**D-436**) | Branch: `feat/landing-developer-tools` (**UNMERGED — pushed for Vercel preview**). Built the first production React sub-vertical landing page (`/for/developer-tools`) by reusing the live home components, per the PM-approved plan (`.pm/plans/plan-only-no-unified-lantern.md`). Quality gates clean every code commit: tsc ✅ / eslint ✅ (`marketing-site`) / build ✅ (`.next` cleared). No `/api` changes. Mid-phase (active phase stays Phase 2 — Session B).
+**Session metrics:** Commits: 9 (4 build + 5 polish/feat/copy) | Decisions added: 1 (**D-436**). **Note — one deliberate SHARED-component copy edit:** `numbers-section.tsx` intro shortened ("Messages from an app only work when someone sees them. Here's how text and email compare.", no em dash) — this updates **both `/` and every landing**; verified both render it. (Every other landing change is composed around the verbatim home components; this is the one intentional change to a shared component.) | Branch: `feat/landing-developer-tools` (**UNMERGED — pushed for Vercel preview**). Built the first production React sub-vertical landing page (`/for/developer-tools`) by reusing the live home components, per the PM-approved plan (`.pm/plans/plan-only-no-unified-lantern.md`). Quality gates clean every code commit: tsc ✅ / eslint ✅ (`marketing-site`) / build ✅ (`.next` cleared). No `/api` changes. Mid-phase (active phase stays Phase 2 — Session B).
 
 **Status: 🟡 On branch, pushed, awaiting PM review on the Vercel preview. Do NOT merge to `main` until approved.**
 
