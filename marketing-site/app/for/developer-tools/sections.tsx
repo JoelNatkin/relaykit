@@ -85,8 +85,9 @@ export function Moment() {
       </div>
       <div className="mt-10 grid items-start gap-10 md:grid-cols-2">
         <p className="text-lg leading-relaxed text-text-secondary">
-          A renewal email lands in a spam folder. The account quietly lapses.
-          One text the customer can&apos;t miss, fixes it before they churn.
+          A developer&apos;s card fails, the renewal email goes unread, and their
+          integration starts erroring in production. A text reaches them before a
+          billing lapse turns into your support ticket.
         </p>
         <div className="space-y-3">
           <div className="max-w-[88%] rounded-2xl rounded-bl-md border border-border-secondary bg-surface-card px-4 py-3 text-sm leading-relaxed text-text-primary">
