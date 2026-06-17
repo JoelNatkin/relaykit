@@ -6,10 +6,19 @@ import { absoluteUrl } from "@/lib/blog/site";
 /** Stable marketing routes that always belong in the sitemap. */
 const STATIC_ROUTES = ["/", "/privacy", "/terms", "/acceptable-use", "/blog"];
 
+/**
+ * Sub-vertical landing pages (D-436). Listed explicitly for v1; once the
+ * dynamic page registry lands this becomes a `subVerticalSlugs()` lookup.
+ */
+const LANDING_ROUTES = ["/for/developer-tools"];
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
+  const staticEntries: MetadataRoute.Sitemap = [
+    ...STATIC_ROUTES,
+    ...LANDING_ROUTES,
+  ].map((route) => ({
     url: absoluteUrl(route),
     lastModified: now,
   }));
