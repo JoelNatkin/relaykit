@@ -106,24 +106,24 @@ export function Moment() {
 const QA = [
   {
     q: "Who should get the failed payment text?",
-    lead: "The billing owner — not every seat.",
-    body: "A failed payment is one workspace's problem to fix, and texting all twelve seats just makes twelve confused users and one annoyed admin. Send each event to the one human who can act on it.",
+    lead: "The billing owner, not every seat.",
+    body: "Texting all twelve seats makes twelve confused users and one annoyed admin. The person who can fix it is the one who needs the text.",
   },
   {
     q: "Who should get a new-device alert?",
     lead: "The person who signed in.",
-    body: "It's their security event, and they're the one who can confirm it was them or lock things down. In a workspace, that means a new-laptop login from an admin shouldn't ping the billing owner — route security events to the person they're actually about.",
+    body: "It's their security event; they confirm it or lock things down. Don't ping anyone else.",
   },
   {
     q: "Which account events are worth a text?",
-    lead: "The ones a customer has to act on, or has to know about right now.",
+    lead: "The ones a customer has to act on right now.",
     list: ["A declined payment", "A new-device sign-in", "An account suspension"],
-    body: "Receipts, weekly digests, and “your invoice is ready” can stay in email — texting those just trains people to ignore you. Rule of thumb: if it can wait until they next open the app, it doesn't need a text.",
+    body: "If it can wait until they next open the app, it doesn't need a text. Receipts and digests can stay in email; texting those only trains people to ignore them.",
   },
   {
     q: "What if we don't have a user's phone number?",
-    lead: "The event falls back to email.",
-    body: "Text is the escalation channel for the messages that matter most, not a replacement for all of them. You pass the recipient and decide the fallback — the message goes where you send it.",
+    lead: "They still get the email.",
+    body: "Account messages matter enough to send as both a text and an email: the text reaches whoever will see it right away, the email is the record everyone gets.",
   },
 ];
 
