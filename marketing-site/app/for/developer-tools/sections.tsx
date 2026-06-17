@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowUpRight } from "@untitledui/icons";
 import { Eyebrow, PrimaryCta, GhostCta } from "@/components/home/section-ui";
 import type { VariablesExample } from "@/components/home/variables-section";
 import { HeroNotificationMock } from "@/components/landing/hero-notification-mock";
@@ -204,21 +205,9 @@ export function PaperworkFork() {
 // ── Farm: a quiet directory below the Closing CTA — a directory, not a CTA.
 // Low-contrast; links route to /messages for v1 (real targets noted inline).
 const FARM_TYPES = [
-  {
-    name: "Identity & SSO platforms",
-    desc: "login codes, new-device alerts, password resets",
-    href: "/messages", // intended: /for/identity-sso
-  },
-  {
-    name: "Helpdesk & support SaaS",
-    desc: "ticket updates, agent replies, CSAT asks",
-    href: "/messages", // intended: /for/helpdesk-support
-  },
-  {
-    name: "E-commerce platforms",
-    desc: "order, shipping, and delivery texts",
-    href: "/messages", // intended: /for/ecommerce
-  },
+  { name: "Identity & SSO platforms", href: "/messages" }, // intended: /for/identity-sso
+  { name: "Helpdesk & support SaaS", href: "/messages" }, // intended: /for/helpdesk-support
+  { name: "E-commerce platforms", href: "/messages" }, // intended: /for/ecommerce
 ];
 
 const FARM_QUESTIONS = [
@@ -232,53 +221,53 @@ const FARM_QUESTIONS = [
   },
 ];
 
+// A Farm directory link: label + a trailing northeast arrow that nudges
+// up-right on hover (Supabase style). Arrow is inline so the label wraps
+// naturally and the arrow trails the last word.
+function FarmLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="group text-sm text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
+    >
+      {children}
+      <ArrowUpRight
+        aria-hidden
+        className="ml-0.5 inline-block size-3.5 align-[-2px] text-text-quaternary transition-transform duration-100 ease-linear group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+      />
+    </Link>
+  );
+}
+
 export function Farm() {
   return (
     <section className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-16 sm:py-20">
       <Eyebrow>Keep exploring</Eyebrow>
       <div className="mt-8 grid gap-10 md:grid-cols-2">
         <div>
-          <h3 className="text-sm font-semibold text-text-secondary">
+          <h3 className="text-lg font-semibold text-text-primary">
             RelayKit for other business types
           </h3>
           <ul className="mt-4 space-y-3">
             {FARM_TYPES.map((t) => (
               <li key={t.name}>
-                <Link
-                  href={t.href}
-                  className="group text-sm text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-                >
-                  <span className="text-text-secondary group-hover:text-text-primary">
-                    {t.name}
-                  </span>{" "}
-                  — {t.desc}
-                </Link>
+                <FarmLink href={t.href}>{t.name}</FarmLink>
               </li>
             ))}
             <li>
               {/* intended: the b2b-saas vertical hub */}
-              <Link
-                href="/messages"
-                className="text-sm font-medium text-text-secondary transition duration-100 ease-linear hover:text-text-primary"
-              >
-                All B2B SaaS <span aria-hidden>→</span>
-              </Link>
+              <FarmLink href="/messages">All B2B SaaS</FarmLink>
             </li>
           </ul>
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-text-secondary">
+          <h3 className="text-lg font-semibold text-text-primary">
             Common questions
           </h3>
           <ul className="mt-4 space-y-3">
             {FARM_QUESTIONS.map((q) => (
               <li key={q.label}>
-                <Link
-                  href={q.href}
-                  className="text-sm text-text-tertiary transition duration-100 ease-linear hover:text-text-secondary"
-                >
-                  {q.label}
-                </Link>
+                <FarmLink href={q.href}>{q.label}</FarmLink>
               </li>
             ))}
           </ul>
