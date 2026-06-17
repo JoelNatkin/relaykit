@@ -39,6 +39,22 @@ const BODIES = [
   "Your subscription change is confirmed. View the details in your account: yourapp.com/account",
 ];
 
+// Split a notification body so any URL renders as an iOS-style system-blue
+// link. The hex is an intentional literal — a platform link color, not a theme
+// token (same rationale as the OS cursor glyph elsewhere).
+const URL_RE = /([a-z0-9.-]+\.[a-z]{2,}\/[^\s]+)/i;
+function renderBody(text: string) {
+  return text.split(URL_RE).map((part, i) =>
+    URL_RE.test(part) ? (
+      <span key={i} style={{ color: "#0A84FF" }}>
+        {part}
+      </span>
+    ) : (
+      part
+    ),
+  );
+}
+
 type Phase = "preEnter" | "enter" | "rest" | "exit";
 
 export function HeroNotificationMock() {
@@ -171,7 +187,7 @@ export function HeroNotificationMock() {
               per-phase enter/exit transform. */}
           <div
             style={cardStyle}
-            className="mt-auto rounded-[18px] border border-border-secondary bg-surface-card/80 p-3.5 backdrop-blur"
+            className="mt-auto rounded-[18px] border border-white/10 bg-white/[0.08] p-3.5 backdrop-blur-xl"
           >
             <div className="flex items-center gap-2">
               <span className="flex size-[22px] items-center justify-center rounded-md bg-bg-gold text-[11px] font-bold text-text-on-gold">
@@ -192,7 +208,7 @@ export function HeroNotificationMock() {
             >
               <p
                 ref={bodyRef}
-                className="text-[13px] leading-relaxed text-text-primary"
+                className="text-[13px] leading-snug text-text-primary"
                 style={
                   reduced
                     ? {
@@ -202,7 +218,7 @@ export function HeroNotificationMock() {
                     : undefined
                 }
               >
-                {BODIES[index]}
+                {renderBody(BODIES[index])}
               </p>
             </div>
           </div>
