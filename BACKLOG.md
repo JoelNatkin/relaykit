@@ -5,7 +5,7 @@
 > Not for: active workstream items (MASTER_PLAN phase scope), recorded decisions (DECISIONS), active prototypes (`/explorations/`).
 
 ## Ideas, Deferred Work, and Future Features
-### Last updated: June 16, 2026
+### Last updated: June 17, 2026
 
 > **How this file works:**
 > - This is a parking lot, not a commitment list. Nothing here is scheduled.
@@ -261,6 +261,8 @@
 - **"Your AI tool builds your test surface, with our help" as differentiator angle** — Marketing positioning that follows from the architectural posture entry under Likely → Product Features (test surface lives in developer's app, RelayKit ships the prompt-shaped guide). Frames RelayKit's testing story as native to the developer's app, in their style, against their data — not a hosted dashboard living elsewhere. Distinguishes from Twilio / MessageBird / Plivo / Sinch direct, all of whom either ship a hosted console or expect the developer to roll their own. The "with our help" half is the AGENTS.md-style guide doing the heavy lifting. Promote to MD-number in `docs/MARKETING_STRATEGY.md` after the TESTING_GUIDE_DRAFT.md prototype validation entry passes — if AI tools produce bad surfaces from the guide, the positioning evaporates and this entry retires unused. (Origin: PM Session 67, 2026-05-01)
 
 - **Marketing-site message catalog depth parity** — Marketing-site configurator currently has ~2–3 stubs per vertical; prototype/dashboard has ~6 per vertical (Appointments depth: Booking confirmation, Appointment reminder, Pre-visit instructions, Reschedule notice, No-show follow-up, Cancellation notice). Decision: expand marketing-site stubs to match prototype depth so the configurator demonstrates real depth out of the gate and users commit to a path. Two open sub-questions: (a) port the prototype's MESSAGES data wholesale, or author marketing-side stubs that align with prototype titles; (b) when promoted from BACKLOG, do this work alongside Friendly/Brief variant content polish (currently YOLO stubs per Session 74 plan), since both touch the same template files. Defer behind page-architecture work and dark mode unless the home-page configurator feels too thin in early user testing or beta feedback. (Origin: Session 74 close, 2026-05-09)
+
+- **Public roadmap page** — A public-facing roadmap, possibly a top-level nav item, that gets ahead of "can it do X?" expectations honestly: describe what's coming so prospects dream about it instead of hitting a wall in onboarding. Candidate items: multi-tenant (sending on behalf of your customers, not just your own app), two-way messaging, starter-kit integrations (ShipFast / Supastarter / MakerKit / Vercel+Supabase), and brownfield adoption (adding RelayKit to an existing app). Near-term build candidate. Source items from the actual roadmap (MASTER_PLAN) so the page can't drift, and prefer soft "coming / on the roadmap" over hard public dates unless a date is de-risked — a public date is a commitment. Also the honest home for the multi-tenant expectation-setting problem (see the "Multi-tenant support" entry above + D-426 dormant multi-tenant machinery). (Origin: Session 139, 2026-06-17)
 
 ### Content & Marketing
 
