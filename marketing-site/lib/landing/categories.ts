@@ -128,7 +128,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Account messages",
     messagesHeading: "Account messages, ready to send.",
-    messagesBridge: "The events that decide whether a customer stays.",
+    messagesBridge: "Every account message your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "4242",
       card1Body: [
@@ -206,7 +206,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Order messages",
     messagesHeading: "Order messages, ready to send.",
-    messagesBridge: "The updates a customer checks for after they buy.",
+    messagesBridge: "Every order message your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "1024",
       card1Body: [
@@ -281,7 +281,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Appointment messages",
     messagesHeading: "Appointment messages, ready to send.",
-    messagesBridge: "The reminders that decide whether someone shows up.",
+    messagesBridge: "Every appointment message your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "2:00 PM",
       card1Body: [
@@ -355,7 +355,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Verification messages",
     messagesHeading: "Verification messages, ready to send.",
-    messagesBridge: "The codes a customer needs the second they ask.",
+    messagesBridge: "Every verification message your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "480913",
       card1Body: [
@@ -428,7 +428,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Support messages",
     messagesHeading: "Support messages, ready to send.",
-    messagesBridge: "The replies a customer is waiting on.",
+    messagesBridge: "Every support message your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "318",
       card1Body: [
@@ -504,7 +504,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Team alert messages",
     messagesHeading: "Team alert messages, ready to send.",
-    messagesBridge: "The alerts your team needs before a dashboard.",
+    messagesBridge: "Every team alert your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "checkout",
       card1Body: [
@@ -579,7 +579,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Waitlist messages",
     messagesHeading: "Waitlist messages, ready to send.",
-    messagesBridge: "The alerts that only matter if they arrive in time.",
+    messagesBridge: "Every waitlist message your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "7:30",
       card1Body: [
@@ -652,7 +652,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Community messages",
     messagesHeading: "Community messages, ready to send.",
-    messagesBridge: "The nudges that bring members back to something they joined.",
+    messagesBridge: "Every community message your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "6:30",
       card1Body: [
@@ -726,7 +726,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     ],
     messagesEyebrow: "Marketing messages",
     messagesHeading: "Marketing messages, ready to send.",
-    messagesBridge: "The offers a customer agreed to hear about.",
+    messagesBridge: "Every marketing message your app sends. Copy them, customize them, or write your own.",
     variablesExample: {
       inputValue: "new plan",
       card1Body: [
