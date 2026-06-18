@@ -94,7 +94,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Account events",
     h1: "User account text messaging for your app.",
     heroBody:
-      "Payment failures, security alerts, trial endings, the events that decide whether a customer stays, sent where they'll actually see them.",
+      "Payment failures, security alerts, trial endings — the messages a customer needs to see before the damage is done.",
     heroExamples: ACCOUNT_EVENTS_HERO_EXAMPLES,
     moment: {
       body: "A payment fails on a Friday evening. The customer fixes it from their phone before the account lapses.",
@@ -167,7 +167,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Orders",
     h1: "Order and shipping texts for your app.",
     heroBody:
-      "Order confirmations, shipping updates, delivery alerts, the messages a customer looks for the moment they place an order.",
+      "Order confirmations, shipping updates, delivery alerts — the messages a customer looks for after they buy.",
     heroExamples: [
       "Your order #1024 is out for delivery today. Track it: yourapp.com/track",
       "Your order #1024 has shipped. Follow it here: yourapp.com/track",
@@ -243,7 +243,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Appointments",
     h1: "Appointment text messaging for your app.",
     heroBody:
-      "Booking confirmations, reminders, reschedule links, the messages that decide whether someone shows up for the slot they booked.",
+      "Booking confirmations, reminders, reschedule links — the messages that keep time slots booked.",
     heroExamples: [
       "Reminder, you have an appointment tomorrow at 2:00 PM. Reschedule: yourapp.com/reschedule",
       "Your appointment is confirmed for Thursday at 2:00 PM: yourapp.com/booking",
@@ -318,7 +318,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Verification",
     h1: "Verification code texts for your app.",
     heroBody:
-      "One-time codes and sign-in confirmations, the messages a customer needs in the few seconds they're waiting to get in.",
+      "One-time codes and sign-in confirmations — the messages a customer needs for access.",
     heroExamples: [
       "Your verification code is 480913. It expires in 10 minutes.",
       "Your sign-in code is 215704. Enter it to continue.",
@@ -389,7 +389,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Customer support",
     h1: "Support update texts for your app.",
     heroBody:
-      "Ticket replies, status changes, agent responses, the messages that let a customer stop refreshing their inbox and get on with their day.",
+      "Ticket replies, status updates, agent responses — the messages that tell a customer their problem is moving.",
     heroExamples: [
       "We've replied to your support request #318. Read it: yourapp.com/tickets/318",
       "Your ticket #318 has been resolved. View the details: yourapp.com/tickets/318",
@@ -465,7 +465,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Team alerts",
     h1: "Team alert text messaging for your app.",
     heroBody:
-      "On-call pages, new signups, things that broke, the messages your own team needs to see before they check a dashboard.",
+      "On-call pages, new signups, things that broke — the messages your team needs before they open a dashboard.",
     heroExamples: [
       "Error rate spiked on checkout 3 min ago. View: yourapp.com/alerts",
       "A background job failed and needs attention: yourapp.com/jobs",
@@ -541,7 +541,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Waitlist",
     h1: "Waitlist text messaging for your app.",
     heroBody:
-      "Spot-available alerts, table-ready pings, back-in-stock notices, the messages that only matter if they arrive while the chance is still open.",
+      "Spot-available alerts, table-ready pings, back-in-stock notices — the messages that expire if they're late.",
     heroExamples: [
       "A spot just opened for tonight at 7:30. Reply YES in 10 minutes to claim it.",
       "You're next on the waitlist. Reply YES to take the spot: yourapp.com/claim",
@@ -614,7 +614,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Community",
     h1: "Community text messaging for your app.",
     heroBody:
-      "Event reminders, new-post alerts, member announcements, the messages that bring people back to something they chose to be part of.",
+      "Event reminders, new-post alerts, member announcements — the messages that keep a community active.",
     heroExamples: [
       "Tonight's meetup starts at 6:30. Join here: yourapp.com/live",
       "Someone replied to your post. Read it: yourapp.com/thread",
@@ -689,7 +689,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     heroEyebrow: "Marketing",
     h1: "Marketing text messaging for your app.",
     heroBody:
-      "Promotions, launches, offers, the messages a customer agreed to receive and is glad to see when they're timed well.",
+      "Promotions, launches, limited offers — the SMS channel that drives sales.",
     heroExamples: [
       "Early access to our new plan opens today. Take a look: yourapp.com/new",
       "Your offer ends tonight. Claim it before it's gone: yourapp.com/offer",
