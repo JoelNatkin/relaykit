@@ -7,11 +7,9 @@ import { categorySlugs } from "@/lib/landing/categories";
 /** Stable marketing routes that always belong in the sitemap. */
 const STATIC_ROUTES = ["/", "/privacy", "/terms", "/acceptable-use", "/blog"];
 
-/**
- * Sub-vertical landing page (D-436). The deferred `/for/{slug}` page stays
- * listed explicitly; the message-category pages are derived from the registry.
- */
-const LANDING_ROUTES = ["/for/developer-tools"];
+// The deferred /for/developer-tools page is intentionally NOT listed — it's a
+// noindex near-twin of /messages/account-events (reachable, but out of search
+// and the sitemap until the /for/{slug} program ships).
 
 /** Message-category landing pages — one per registry entry (extends D-436). */
 const CATEGORY_ROUTES = categorySlugs().map((slug) => `/messages/${slug}`);
@@ -21,7 +19,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticEntries: MetadataRoute.Sitemap = [
     ...STATIC_ROUTES,
-    ...LANDING_ROUTES,
     ...CATEGORY_ROUTES,
   ].map((route) => ({
     url: absoluteUrl(route),

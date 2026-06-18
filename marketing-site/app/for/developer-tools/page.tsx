@@ -41,6 +41,9 @@ export const metadata: Metadata = {
     "Add account-event text messages — payment failures, security alerts, trial endings — to your developer tool or API platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
   // Self-canonical (D-436) — points to this page's own path, never to `/`.
   alternates: { canonical: `/for/${URL_SLUG}` },
+  // Deferred near-twin of /messages/account-events — reachable, but kept out of
+  // search and the sitemap (noindex) until the /for/{slug} program ships.
+  robots: { index: false, follow: true },
 };
 
 export default function DeveloperToolsLanding() {
