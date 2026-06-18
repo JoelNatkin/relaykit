@@ -1,0 +1,50 @@
+import { Eyebrow } from "@/components/home/section-ui";
+import type { CategoryLanding } from "@/lib/landing/categories";
+
+// "The details" Q&A section (bucket 2a). Heading + the rich Q&A (bold lead +
+// body + optional bullet list) come from the registry. Each Q&A is its own
+// card; items-start so a card sizes to its own content height.
+export function CategoryDetails({ entry }: { entry: CategoryLanding }) {
+  return (
+    <section className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28">
+      <div className="max-w-2xl">
+        <Eyebrow>The details</Eyebrow>
+        <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+          {entry.detailsHeading}
+        </h2>
+      </div>
+      <div className="mt-10 grid items-start gap-6 md:grid-cols-2">
+        {entry.qa.map((item) => (
+          <div
+            key={item.q}
+            className="rounded-2xl border border-border-secondary bg-surface-card p-6"
+          >
+            <h3 className="text-lg font-semibold text-text-primary">{item.q}</h3>
+            <p className="mt-3 text-base leading-relaxed text-text-secondary">
+              <span className="font-semibold text-text-primary">
+                {item.lead}
+              </span>{" "}
+              {item.body}
+            </p>
+            {item.list ? (
+              <ul className="mt-3 space-y-1.5">
+                {item.list.map((li) => (
+                  <li
+                    key={li}
+                    className="flex items-center gap-2.5 text-base text-text-secondary"
+                  >
+                    <span
+                      className="size-1.5 flex-none rounded-sm bg-bg-gold"
+                      aria-hidden
+                    />
+                    {li}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

@@ -1,14 +1,18 @@
 "use client";
 
 /**
- * Animated phone-notification visual for the Developer-tools landing hero
- * (D-436). The account-event messages "arrive & settle" like real notifications:
- * each card enters from just above its resting spot, holds, then drops away
- * before the next arrives — never two on screen at once.
+ * Animated phone-notification visual for the message-category landing heroes.
+ * The example messages "arrive & settle" like real notifications: each card
+ * enters from just above its resting spot, holds, then drops away before the
+ * next arrives — never two on screen at once.
+ *
+ * Category-agnostic: the example bodies and business name come in as props
+ * (`examples` / `businessName`) from the per-category registry. With a single
+ * example the card simply arrives and rests (no rotation, no pause toggle);
+ * with 2+ it cycles through them.
  *
  * State-ISOLATED like HeroConfiguratorGraphic — it owns only local view state,
- * calls no store/configurator hooks, and never touches localStorage. The
- * business name is the static demo "Acme".
+ * calls no store/configurator hooks, and never touches localStorage.
  *
  * Motion (per phase, one lead transform = translate + a touch of scale):
  *   ENTER  ~420ms ease-out — from translateY(-16px) scale(0.98) opacity 0 → rest.
@@ -23,21 +27,29 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const DEMO_BUSINESS = "Acme";
+const DEFAULT_BUSINESS = "Acme";
 const ENTER_MS = 420;
 const EXIT_MS = 240;
 const REST_MS = 4500;
 const REDUCED_FADE_MS = 220;
 
-// Account-event notification bodies, in rotation order (from the dev-tools
-// mockup). Business name is rendered separately as the notification app label.
-const BODIES = [
+// Fallback bodies for the legacy dev-tools landing hero, which renders the mock
+// with no props (`app/for/developer-tools/sections.tsx`, left untouched).
+// Category pages pass explicit `examples` from the registry.
+const DEFAULT_EXAMPLES = [
   "Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing",
   "Your trial ends in 3 days. Choose a plan to keep your account: yourapp.com/billing",
   "New sign-in from Chrome on Mac, Denver. Not you? Secure your account: yourapp.com/security",
   "Your account has been suspended. Review the details and next steps here: yourapp.com/account",
   "Your subscription change is confirmed. View the details in your account: yourapp.com/account",
 ];
+
+interface HeroNotificationMockProps {
+  /** One or more example notification bodies. Rotates when >1, static when 1. */
+  examples?: string[];
+  /** Demo business name rendered inline ("Acme: ..."). */
+  businessName?: string;
+}
 
 // Split a notification body so any URL renders as an iOS-style system-blue
 // link. The hex is an intentional literal — a platform link color, not a theme
@@ -57,7 +69,10 @@ function renderBody(text: string) {
 
 type Phase = "preEnter" | "enter" | "rest" | "exit";
 
-export function HeroNotificationMock() {
+export function HeroNotificationMock({
+  examples = DEFAULT_EXAMPLES,
+  businessName = DEFAULT_BUSINESS,
+}: HeroNotificationMockProps = {}) {
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>("preEnter");
   const [paused, setPaused] = useState(false);
@@ -66,6 +81,9 @@ export function HeroNotificationMock() {
   const [fade, setFade] = useState(false); // reduced-motion crossfade only
 
   const bodyRef = useRef<HTMLParagraphElement>(null);
+
+  // A single example just arrives and rests — nothing to rotate or pause.
+  const rotates = examples.length > 1;
 
   // Track prefers-reduced-motion (client-only → no SSR mismatch).
   useEffect(() => {
@@ -101,37 +119,38 @@ export function HeroNotificationMock() {
     return () => clearTimeout(t);
   }, [phase, reduced]);
 
-  // rest → exit, held while paused (resume restarts the dwell).
+  // rest → exit, held while paused (resume restarts the dwell). A lone example
+  // never leaves — it just stays at rest.
   useEffect(() => {
-    if (reduced || phase !== "rest" || paused) return;
+    if (reduced || !rotates || phase !== "rest" || paused) return;
     const t = setTimeout(() => setPhase("exit"), REST_MS);
     return () => clearTimeout(t);
-  }, [phase, reduced, paused]);
+  }, [phase, reduced, paused, rotates]);
 
   // exit → next message (back to preEnter). Sequenced so the next card only
   // begins entering after this one has fully left — never both at once.
   useEffect(() => {
     if (reduced || phase !== "exit") return;
     const t = setTimeout(() => {
-      setIndex((i) => (i + 1) % BODIES.length);
+      setIndex((i) => (i + 1) % examples.length);
       setPhase("preEnter");
     }, EXIT_MS);
     return () => clearTimeout(t);
-  }, [phase, reduced]);
+  }, [phase, reduced, examples.length]);
 
   // ── Reduced motion: plain body crossfade, no transforms / no height anim ───
   useEffect(() => {
-    if (!reduced) return;
+    if (!reduced || !rotates) return;
     const interval = setInterval(() => {
       if (paused) return;
       setFade(true);
       setTimeout(() => {
-        setIndex((i) => (i + 1) % BODIES.length);
+        setIndex((i) => (i + 1) % examples.length);
         setFade(false);
       }, REDUCED_FADE_MS);
     }, REST_MS);
     return () => clearInterval(interval);
-  }, [reduced, paused]);
+  }, [reduced, paused, rotates, examples.length]);
 
   // Card transform/opacity for the current phase (one lead transform).
   const transform =
@@ -207,15 +226,15 @@ export function HeroNotificationMock() {
                     : undefined
                 }
               >
-                {renderBody(`${DEMO_BUSINESS}: ${BODIES[index]}`)}
+                {renderBody(`${businessName}: ${examples[index]}`)}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Pause / play toggle — hidden under reduced motion (nothing to pause). */}
-      {!reduced && (
+      {/* Pause / play toggle — only when rotating (>1 example) and motion is on. */}
+      {!reduced && rotates && (
         <button
           type="button"
           onClick={() => setPaused((p) => !p)}
