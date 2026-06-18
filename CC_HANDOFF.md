@@ -4,7 +4,7 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 1 (this close-out commit — `feat:`) | Decisions added: 1 (**D-437**) + 1 cross-ref on D-436 | `main` changes: 0 (all work on `feat/landing-developer-tools`, UNMERGED). Close-out gates: tsc ✅ / eslint ✅ / build ✅ (`marketing-site`, `.next` cleared). Branch: `feat/landing-developer-tools` (pushed). Mid-phase (active phase stays Phase 2 — Session B).
+**Session metrics:** Commits: the feature shipped as `404c274` (`feat:` — route + registry + components) + a mechanical follow-up `4d71368` (`chore:` — sitemap + canon docs that a staging slip left out of `404c274`); both pushed | Decisions added: 1 (**D-437**) + 1 cross-ref on D-436 | `main` changes: 0 (all work on `feat/landing-developer-tools`, UNMERGED). Close-out gates: tsc ✅ / eslint ✅ / build ✅ (`marketing-site`, `.next` cleared). Branch: `feat/landing-developer-tools` (pushed). Mid-phase (active phase stays Phase 2 — Session B).
 
 **Status: 🟡 On branch `feat/landing-developer-tools`, pushed. The full message-category landing system is built + verified but UNMERGED. Do NOT merge until PM approves the Vercel preview.**
 
