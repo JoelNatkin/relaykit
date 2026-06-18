@@ -2,15 +2,19 @@ import type { MetadataRoute } from "next";
 import { clusterSlugs } from "@/lib/blog/clusters";
 import { getAllPosts } from "@/lib/blog/posts";
 import { absoluteUrl } from "@/lib/blog/site";
+import { categorySlugs } from "@/lib/landing/categories";
 
 /** Stable marketing routes that always belong in the sitemap. */
 const STATIC_ROUTES = ["/", "/privacy", "/terms", "/acceptable-use", "/blog"];
 
 /**
- * Sub-vertical landing pages (D-436). Listed explicitly for v1; once the
- * dynamic page registry lands this becomes a `subVerticalSlugs()` lookup.
+ * Sub-vertical landing page (D-436). The deferred `/for/{slug}` page stays
+ * listed explicitly; the message-category pages are derived from the registry.
  */
-const LANDING_ROUTES = ["/for/developer-tools", "/messages/account-events"];
+const LANDING_ROUTES = ["/for/developer-tools"];
+
+/** Message-category landing pages — one per registry entry (extends D-436). */
+const CATEGORY_ROUTES = categorySlugs().map((slug) => `/messages/${slug}`);
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
@@ -18,6 +22,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries: MetadataRoute.Sitemap = [
     ...STATIC_ROUTES,
     ...LANDING_ROUTES,
+    ...CATEGORY_ROUTES,
   ].map((route) => ({
     url: absoluteUrl(route),
     lastModified: now,

@@ -1,5 +1,5 @@
 # Landing Page Craft
-Status: exploring (2026-06-17)
+Status: exploring (2026-06-18)
 
 > **Scope:** Working reference for the sub-vertical landing page system — writing rules, page archetypes, reader/page JTBD, optimization findings, and capability-tracking. This is an exploration, not canon: it informs the pages but isn't load-bearing. The writing rules and research are settled thinking; templates and worked examples fill in over subsequent sessions. Graduates to a skill only if it earns it through use.
 
@@ -96,6 +96,18 @@ Three jobs for outbound links; keep them distinct so the page has exactly one sp
 - **Sub page** (ship-it / honest-no) → a *light* Farm: a few sibling subs + the vertical hub + 1–2 concept/question pages.
 - **Vertical hub** → the hub's primary body IS the down-links to its subs (those read as Funnel links, not Farm); a Farm is redundant.
 - **Topic / keyword page** → route to the single best-fit sub (or `/messages`); don't sprout a Farm of its own.
+
+## Category-page type (D-437)
+
+A **second** page type, distinct from the `/for/{slug}` sub-vertical ship-it page above. Where a ship-it page is one-per-sub (built from one mockup, routed `/for/{short-slug}`, sub data resolved from `/lib/constraints`), a **category page** is one-per-message-category, and all nine are generated from a single template + a data registry — nine same-shape pages from data, not nine forks.
+
+- **Route:** one dynamic route `marketing-site/app/messages/[category]/page.tsx` — `generateStaticParams` over the registry, `dynamicParams=false` (unknown slug 404s), per-category `generateMetadata`, self-canonical to `/messages/{urlSlug}` (never `/`). The `/messages` hub (the configurator) is the segment index and does not collide.
+- **Registry:** `marketing-site/lib/landing/categories.ts` — one `CategoryLanding` entry per category, authored by PM as a data block. The public **`urlSlug`** is split from the corpus key **`lockedCategory`**: equal for 7, differing for Orders (`orders`/`order-updates`) and Customer support (`support`/`customer-support`). The route param, canonical, sitemap, and Farm links key off `urlSlug`; `MessagesSection` + the corpus key off `lockedCategory`. Categories are **not** `/lib/constraints` sub-verticals — no constraints coupling.
+- **Three reuse buckets** (same idea as the ship-it skeleton): **B1** shared chrome imported verbatim (status band, problem, paperwork, build, test, process, price, closing CTA, plus the bottom full `MessagesSection` with all 9 pills); **2b** same home component fed registry data (`MessagesSection` locked via `lockedCategory`; `VariablesSection` given the entry's `variablesExample`; `NumbersSection` verbatim); **2a** authored-from-registry sections — Hero, Moment, Details/Q&A — rendered by prop-driven components in `marketing-site/components/landing/*`. Section order mirrors the ship-it page.
+- **Hero notification:** `hero-notification-mock.tsx` takes the entry's `heroExamples: string[]` — it rotates (with the pause toggle) when there are 2+ examples and renders a single static notification (no toggle) when there's one. One-vs-animated is data-driven by length, not a flag.
+- **Farm:** the foot directory lists the **other 8 category pages** (`/messages/{urlSlug}` — real targets, all 9 are generated) plus the 2 standing concept/question links. (On a category page the Farm's "siblings" are the other categories, not other subs.)
+
+The `/for/{slug}` ship-it skeleton above stays operative for the deferred dev-tools sub-vertical page; the two page types coexist (D-436 scoping cross-ref).
 
 ## Optimization findings
 

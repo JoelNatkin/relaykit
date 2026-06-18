@@ -2271,4 +2271,16 @@ Community ships at launch as a category with TCR mapping ACCOUNT_NOTIFICATION. T
 
 **Supersedes:** none. Extends D-379's single-canonical-source principle (the chrome components and the message corpus are reused, not re-authored) and is consistent with the D-428/D-435 `/` ↔ `/messages` split (the landing reuses the same `MessagesSection` and corpus). D-106 / D-230 describe the retired prototype `/sms/[category]` category-landing surface (archived in the 2026-05-14 marketing-surface migration); they make no claim this overturns — the `/for/{slug}` system is a distinct, new marketing-site surface, not a re-architecture of that removed one.
 
+**Scoping (D-437):** Category pages use D-437's `/messages/{category}` model; D-436's `/for/{slug}` sub-vertical recipe stays operative for the deferred dev-tools page.
+
 **Affects:** `marketing-site/app/for/developer-tools/{page.tsx,sections.tsx}` (first page); `marketing-site/components/landing/hero-notification-mock.tsx` (new animated visual); `marketing-site/components/home/{status-band,recognition,prove}.tsx` (extracted from `app/page.tsx` to become importable); `marketing-site/components/home/{variables-section,messages-section}.tsx` (optional sub-data props, defaults = current home behavior); `marketing-site/app/page.tsx` (inline sections → imports); `marketing-site/app/sitemap.ts` (route added); `explorations/landing-page-craft.md` (ship-it skeleton + bucket architecture); `/lib/constraints/` (future `urlSlug` field, deferred); PROTOTYPE_SPEC.md (future, when the surface stabilizes); REPO_INDEX.md.
+
+## D-437 — Message-category landing pages as a page type
+
+**Decided:** 2026-06-18 (Session 140)
+
+D-437: Message-category landing pages are a page type: one dynamic route (app/messages/[category]/page.tsx) plus a per-category registry (lib/landing/categories.ts) composing the shared home components (chrome + data-fed sections) around authored Hero/Moment/Details. URL scheme /messages/{urlSlug}, self-canonical. Public urlSlug is split from the corpus key lockedCategory: equal for 7, differing for Orders (orders/order-updates) and Customer support (support/customer-support). Decoupled from /lib/constraints, since categories are not sub-verticals.
+Why: nine same-shape category pages from one template plus data, not nine forks.
+Supersedes: none; extends D-436 (same home-component-reuse architecture).
+
+**Affects:** `marketing-site/app/messages/[category]/page.tsx` (new dynamic route); `marketing-site/lib/landing/categories.ts` (new registry, 9 entries); `marketing-site/components/landing/{category-hero,category-moment,category-details,category-farm,paperwork-fork}.tsx` (new prop-driven sections); `marketing-site/components/landing/hero-notification-mock.tsx` (generalized to an `examples`/`businessName` prop); `marketing-site/app/sitemap.ts` (category routes derived from the registry); `marketing-site/app/messages/account-events/{page,sections}.tsx` (the static fork — deleted, now served by the dynamic route); `explorations/landing-page-craft.md`; REPO_INDEX.md. D-436 marked with a `Scoping (D-437)` cross-ref (no superseded flag) in the same commit.
