@@ -10,7 +10,7 @@ const STATIC_ROUTES = ["/", "/privacy", "/terms", "/acceptable-use", "/blog"];
  * Sub-vertical landing pages (D-436). Listed explicitly for v1; once the
  * dynamic page registry lands this becomes a `subVerticalSlugs()` lookup.
  */
-const LANDING_ROUTES = ["/for/developer-tools"];
+const LANDING_ROUTES = ["/for/developer-tools", "/messages/account-events"];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
