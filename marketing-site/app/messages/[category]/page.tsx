@@ -74,8 +74,6 @@ export default async function CategoryLandingPage({
       <VariablesSection example={entry.variablesExample} />
 
       <CategoryDetails entry={entry} />
-      <NumbersSection />
-      <Recognition />
       <Paperwork />
       {/* Fork — landing-owned link composed AFTER the verbatim <Paperwork />. */}
       <PaperworkFork />
@@ -87,6 +85,11 @@ export default async function CategoryLandingPage({
       <Pricing />
       {/* The full home Messages browser, verbatim (all 9 category pills). */}
       <MessagesSection />
+      {/* Numbers + Problem sit at the tail on the category template (unlike the
+          home / ship-it order) — the page leads on product, then closes with
+          the case and the compliance reality right before the CTA. */}
+      <NumbersSection />
+      <Recognition />
       <FinalCta />
       {/* Farm — quiet sibling-category directory below the Closing CTA. */}
       <CategoryFarm currentSlug={entry.urlSlug} />

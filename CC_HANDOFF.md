@@ -8,6 +8,9 @@
 
 **Status: 🟡 On branch `feat/landing-developer-tools`, pushed. The full message-category landing system is built + verified but UNMERGED. Do NOT merge until PM approves the Vercel preview.**
 
+### Follow-up — preview-review pass (2026-06-18, separate `feat:` commit)
+Five preview-review refinements (no new D-number — data/copy/layout): (1) the 8 non-account-events `variablesExample` card2 bodies now highlight the **same** value as card1 + the menu (orders 1024, appointments 2:00 PM, verification 480913, support 318 + link `/tickets/318`, team-alerts checkout, waitlist 7:30, community 6:30, marketing "new plan") — they previously highlighted a mismatched second value; (2) `category-details.tsx` now packs **two independent flex columns** (left = Q1/Q3, right = Q2/Q4) instead of a 2-row grid, killing the dead gap a tall bullet-list card left beside a short one (desktop reading order stays Q1–Q4; **note:** on mobile the two columns stack as Q1,Q3,Q2,Q4 — intrinsic to the two-column approach; cards are independent Q&A); (3) `numbers-section.tsx` subhead got `max-w-md` to stop the "compare." orphan (shared component — also improves the home); (4) **category-template section order** moved Numbers + Problem to the tail (… Pricing → Messages(full) → Numbers → Problem → FinalCta → Farm) — category template only, home untouched; craft-doc compose order updated; (5) all 8 non-account-events `heroExamples` expanded to **4 each** so the hero mock rotates + the pause toggle returns (gated on `length > 1`). account-events unchanged. tsc/eslint/build clean; verified in prerendered HTML.
+
 ---
 
 ## What shipped — 9 message-category landing pages as one dynamic route + registry + template (D-437)

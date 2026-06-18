@@ -170,6 +170,9 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "Order confirmations, shipping updates, delivery alerts, the messages a customer looks for the moment they place an order.",
     heroExamples: [
       "Your order #1024 is out for delivery today. Track it: yourapp.com/track",
+      "Your order #1024 has shipped. Follow it here: yourapp.com/track",
+      "Your order is ready for pickup at the front desk: yourapp.com/orders",
+      "We couldn't complete your order. Update your payment to finish: yourapp.com/checkout",
     ],
     moment: {
       body: "A package is out for delivery and no one is home to receive it. A text gives the customer the chance to reschedule before it heads back to the depot.",
@@ -216,7 +219,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       card2Body: [
         { t: "Acme", kind: "value" },
         { t: ": Your order #" },
-        { t: "2087", kind: "highlight" },
+        { t: "1024", kind: "highlight" },
         { t: " is out for delivery today. Track it: " },
         { t: "yourapp.com/track", kind: "value" },
       ],
@@ -243,6 +246,9 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "Booking confirmations, reminders, reschedule links, the messages that decide whether someone shows up for the slot they booked.",
     heroExamples: [
       "Reminder, you have an appointment tomorrow at 2:00 PM. Reschedule: yourapp.com/reschedule",
+      "Your appointment is confirmed for Thursday at 2:00 PM: yourapp.com/booking",
+      "Need to move your appointment? Reschedule here: yourapp.com/reschedule",
+      "Your appointment starts in 1 hour. See the details: yourapp.com/booking",
     ],
     moment: {
       body: "A booking made three weeks ago has slipped someone's mind, and the slot is about to go to waste. A reminder the day before gives them the chance to confirm it or move it.",
@@ -288,7 +294,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       card2Body: [
         { t: "Acme", kind: "value" },
         { t: ": Reminder, you have an appointment tomorrow at " },
-        { t: "9:30 AM", kind: "highlight" },
+        { t: "2:00 PM", kind: "highlight" },
         { t: ". Reschedule: " },
         { t: "yourapp.com/reschedule", kind: "value" },
       ],
@@ -313,7 +319,12 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     h1: "Verification code texts for your app.",
     heroBody:
       "One-time codes and sign-in confirmations, the messages a customer needs in the few seconds they're waiting to get in.",
-    heroExamples: ["Your verification code is 480913. It expires in 10 minutes."],
+    heroExamples: [
+      "Your verification code is 480913. It expires in 10 minutes.",
+      "Your sign-in code is 215704. Enter it to continue.",
+      "New sign-in from a new device. Confirm it was you: yourapp.com/security",
+      "Your password reset code is 736204. It expires in 10 minutes.",
+    ],
     moment: {
       body: "Someone is trying to log in, and the code is the only thing between them and their account. A text delivers it in seconds, while they're still on the screen waiting for it.",
       exampleSms: "Your verification code is 480913. It expires in 10 minutes.",
@@ -356,7 +367,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       card2Body: [
         { t: "Acme", kind: "value" },
         { t: ": Your verification code is " },
-        { t: "215704", kind: "highlight" },
+        { t: "480913", kind: "highlight" },
         { t: ". It expires in 10 minutes." },
       ],
       menuRows: [
@@ -381,6 +392,9 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "Ticket replies, status changes, agent responses, the messages that let a customer stop refreshing their inbox and get on with their day.",
     heroExamples: [
       "We've replied to your support request #318. Read it: yourapp.com/tickets/318",
+      "Your ticket #318 has been resolved. View the details: yourapp.com/tickets/318",
+      "An agent is ready to help with your request: yourapp.com/support",
+      "Your callback is scheduled for 3:00 PM today: yourapp.com/support",
     ],
     moment: {
       body: "A customer files a ticket and then waits, checking email, unsure if anyone saw it. A text when the reply lands tells them they've been heard and brings them back exactly when it matters.",
@@ -427,9 +441,9 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       card2Body: [
         { t: "Acme", kind: "value" },
         { t: ": We've replied to your support request #" },
-        { t: "742", kind: "highlight" },
+        { t: "318", kind: "highlight" },
         { t: ". Read it: " },
-        { t: "yourapp.com/tickets/742", kind: "value" },
+        { t: "yourapp.com/tickets/318", kind: "value" },
       ],
       menuRows: [
         { name: "workspace_name", value: "Acme" },
@@ -452,7 +466,12 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     h1: "Team alert text messaging for your app.",
     heroBody:
       "On-call pages, new signups, things that broke, the messages your own team needs to see before they check a dashboard.",
-    heroExamples: ["Error rate spiked on checkout 3 min ago. View: yourapp.com/alerts"],
+    heroExamples: [
+      "Error rate spiked on checkout 3 min ago. View: yourapp.com/alerts",
+      "A background job failed and needs attention: yourapp.com/jobs",
+      "New high-value signup just landed. See the account: yourapp.com/admin",
+      "API latency is above threshold. Check the dashboard: yourapp.com/status",
+    ],
     moment: {
       body: "Something goes down at 2 a.m. and the dashboard turns red, but no one is watching it. A text reaches the person on call while there's still time to fix it before customers notice.",
       exampleSms:
@@ -498,7 +517,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       card2Body: [
         { t: "Acme", kind: "value" },
         { t: ": Error rate spiked on " },
-        { t: "signups", kind: "highlight" },
+        { t: "checkout", kind: "highlight" },
         { t: " 3 min ago. View: " },
         { t: "yourapp.com/alerts", kind: "value" },
       ],
@@ -525,6 +544,9 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "Spot-available alerts, table-ready pings, back-in-stock notices, the messages that only matter if they arrive while the chance is still open.",
     heroExamples: [
       "A spot just opened for tonight at 7:30. Reply YES in 10 minutes to claim it.",
+      "You're next on the waitlist. Reply YES to take the spot: yourapp.com/claim",
+      "The item you wanted is back in stock. Get it here: yourapp.com/shop",
+      "A table is ready for you now. Reply YES to confirm: yourapp.com/claim",
     ],
     moment: {
       body: "A spot opens up and the next person in line has a few minutes to claim it. A text reaches them while they can still say yes, instead of finding out too late by email.",
@@ -569,7 +591,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       card2Body: [
         { t: "Acme", kind: "value" },
         { t: ": A spot just opened for tonight at " },
-        { t: "8:15", kind: "highlight" },
+        { t: "7:30", kind: "highlight" },
         { t: ". Reply YES in 10 minutes to claim it." },
       ],
       menuRows: [
@@ -593,7 +615,12 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     h1: "Community text messaging for your app.",
     heroBody:
       "Event reminders, new-post alerts, member announcements, the messages that bring people back to something they chose to be part of.",
-    heroExamples: ["Tonight's meetup starts at 6:30. Join here: yourapp.com/live"],
+    heroExamples: [
+      "Tonight's meetup starts at 6:30. Join here: yourapp.com/live",
+      "Someone replied to your post. Read it: yourapp.com/thread",
+      "Voting closes in 1 hour. Cast your vote: yourapp.com/vote",
+      "A new event was added near you. See the details: yourapp.com/events",
+    ],
     moment: {
       body: "An event a member signed up for weeks ago is starting tonight, and it's slipped off their calendar. A reminder a few hours before brings them back to something they wanted to attend.",
       exampleSms: "Tonight's meetup starts at 6:30. Here's the link to join: yourapp.com/live",
@@ -638,7 +665,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       card2Body: [
         { t: "Acme", kind: "value" },
         { t: ": Tonight's meetup starts at " },
-        { t: "7:00", kind: "highlight" },
+        { t: "6:30", kind: "highlight" },
         { t: ". Join here: " },
         { t: "yourapp.com/live", kind: "value" },
       ],
@@ -663,7 +690,12 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
     h1: "Marketing text messaging for your app.",
     heroBody:
       "Promotions, launches, offers, the messages a customer agreed to receive and is glad to see when they're timed well.",
-    heroExamples: ["Early access to our new plan opens today. Take a look: yourapp.com/new"],
+    heroExamples: [
+      "Early access to our new plan opens today. Take a look: yourapp.com/new",
+      "Your offer ends tonight. Claim it before it's gone: yourapp.com/offer",
+      "Just launched: something we think you'll like: yourapp.com/new",
+      "A members-only perk, this week only: yourapp.com/perks",
+    ],
     moment: {
       body: "A customer who opted in to hear about offers gets the launch text the morning it goes live. Because they asked for it, it reads as something they wanted, not something to clear out.",
       exampleSms: "Early access to our new plan opens today. Take a look: yourapp.com/new",
@@ -707,7 +739,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       card2Body: [
         { t: "Acme", kind: "value" },
         { t: ": Early access to our " },
-        { t: "summer sale", kind: "highlight" },
+        { t: "new plan", kind: "highlight" },
         { t: " opens today. Take a look: " },
         { t: "yourapp.com/new", kind: "value" },
       ],
