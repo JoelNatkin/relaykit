@@ -45,7 +45,7 @@ export function DevToolsHero() {
     <section className="mx-auto max-w-5xl px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
       <div className="grid items-center gap-12 lg:grid-cols-2">
         <div>
-          <Eyebrow>Developer tools &amp; API platforms</Eyebrow>
+          <Eyebrow>Account events</Eyebrow>
           {/* H1 is a placeholder draft — refined on the preview. */}
           <h1 className="mt-5 text-4xl font-bold tracking-tight text-text-primary text-balance sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
             User account text messaging for your app.
@@ -86,9 +86,9 @@ export function Moment() {
       </div>
       <div className="mt-10 grid items-start gap-10 md:grid-cols-2">
         <p className="text-lg leading-relaxed text-text-secondary">
-          A developer&apos;s card fails, the renewal email goes unread, and their
-          integration starts erroring in production. A text message reaches them
-          before a billing lapse turns into a support ticket.
+          A customer&apos;s card fails, the renewal email sits unread, and their
+          account lapses. A text reaches them in time to fix it, before a missed
+          payment turns into a cancelled account.
         </p>
         <div className="space-y-3">
           <div className="max-w-[88%] rounded-2xl rounded-bl-md border border-border-secondary bg-surface-card px-4 py-3 text-sm leading-relaxed text-text-primary">
