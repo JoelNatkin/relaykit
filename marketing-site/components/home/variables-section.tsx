@@ -8,6 +8,59 @@ import { Eyebrow } from "@/components/home/section-ui";
 // controls are all illustrative. Geometry is ported
 // 1:1 from explorations/landing-page-mockups/relaykit-devtools-landing-mockup.html
 // (the design source) translated to the real dark+gold tokens.
+//
+// The example DATA is parameterized via the optional `example` prop (D-436) so
+// sub-vertical landing pages can show a sub-matched message; the home passes
+// nothing and gets DEFAULT_EXAMPLE (the appointment example). The eyebrow / H2 /
+// bridge copy stay static — only the data varies.
+
+// One run of editor-body text. `kind` undefined = literal copy; "value" = a
+// bold identity-tone value (mockup `.v`); "highlight" = a gold-tinted value
+// (mockup `.vhl`). Bake surrounding spaces into the literal segments.
+export type VarSeg = { t: string; kind?: "value" | "highlight" };
+
+export interface VariablesExample {
+  // Card-1 active field value (shown with the static caret).
+  inputValue: string;
+  // Card-1 editor body (one highlighted value).
+  card1Body: VarSeg[];
+  // Card-2 editor body (one highlighted value) — the "drop one in" target.
+  card2Body: VarSeg[];
+  // Card-2 open "Insert variable" menu rows.
+  menuRows: { name: string; value: string; selected?: boolean }[];
+}
+
+const DEFAULT_EXAMPLE: VariablesExample = {
+  inputValue: "Jordan Lee",
+  card1Body: [
+    { t: "Summit Fitness", kind: "value" },
+    { t: ": your appointment with " },
+    { t: "Jordan Lee", kind: "highlight" },
+    { t: " is confirmed for " },
+    { t: "Tue, March 4th, 2:00 PM", kind: "value" },
+    { t: ". Reply STOP to opt out." },
+  ],
+  card2Body: [
+    { t: "Summit Fitness", kind: "value" },
+    { t: ": your appointment with " },
+    { t: "Jordan Lee", kind: "value" },
+    { t: " is confirmed for " },
+    { t: "Tue, March 4th, 2:00 PM", kind: "value" },
+    { t: ". Reschedule " },
+    { t: "summitfitness.com/reschedule", kind: "highlight" },
+    { t: " Reply STOP to opt out." },
+  ],
+  menuRows: [
+    { name: "workspace_name", value: "Summit Fitness" },
+    { name: "provider_name", value: "Jordan Lee" },
+    {
+      name: "reschedule_link",
+      value: "summitfitness.com/reschedule",
+      selected: true,
+    },
+    { name: "appointment_time", value: "Tue, March 4th, 2:00 PM" },
+  ],
+};
 
 // Static gold text-cursor — illustrative only (no blink). Card-1 input only.
 function Caret() {
@@ -30,6 +83,19 @@ function Vhl({ children }: { children: React.ReactNode }) {
     <span className="rounded-[5px] bg-bg-gold/20 px-1.5 pb-[3px] pt-px font-medium text-text-primary">
       {children}
     </span>
+  );
+}
+
+// Render an editor body from its segment list.
+function Body({ segments }: { segments: VarSeg[] }) {
+  return (
+    <>
+      {segments.map((seg, i) => {
+        if (seg.kind === "value") return <V key={i}>{seg.t}</V>;
+        if (seg.kind === "highlight") return <Vhl key={i}>{seg.t}</Vhl>;
+        return <span key={i}>{seg.t}</span>;
+      })}
+    </>
   );
 }
 
@@ -72,17 +138,6 @@ function EditorActions() {
   );
 }
 
-const MENU_ROWS: { name: string; value: string; selected?: boolean }[] = [
-  { name: "workspace_name", value: "Summit Fitness" },
-  { name: "provider_name", value: "Jordan Lee" },
-  {
-    name: "reschedule_link",
-    value: "summitfitness.com/reschedule",
-    selected: true,
-  },
-  { name: "appointment_time", value: "Tue, March 4th, 2:00 PM" },
-];
-
 // Decorative OS-style pointer glyph parked over the selected menu row.
 // Literal hex is intentional: it is a near-white cursor with a page-ink
 // outline (an OS cursor, not a themed surface) — not a Tailwind color class.
@@ -107,12 +162,16 @@ function CursorGlyph() {
 }
 
 // The open "Insert variable" menu (mockup `.vdropwrap`) — right-anchored,
-// width calc(100% - 16px), four rows, cursor on the reschedule_link row.
-function VariableMenu() {
+// width calc(100% - 16px), rows from `menuRows`, cursor on the selected row.
+function VariableMenu({
+  rows,
+}: {
+  rows: VariablesExample["menuRows"];
+}) {
   return (
     <div className="absolute right-0 top-[calc(100%+8px)] z-10 w-[calc(100%-16px)] overflow-hidden rounded-[10px] border border-border-primary bg-surface-inset shadow-[0_8px_20px_rgba(0,0,0,0.35)]">
       <div className="pt-2">
-        {MENU_ROWS.map((row) => (
+        {rows.map((row) => (
           <div
             key={row.name}
             className={`relative flex items-center justify-between gap-4 py-[5px] pl-4 pr-4 text-[13px] [&+&]:border-t [&+&]:border-border-tertiary ${
@@ -137,7 +196,11 @@ function VariableMenu() {
   );
 }
 
-export function VariablesSection() {
+export function VariablesSection({
+  example = DEFAULT_EXAMPLE,
+}: {
+  example?: VariablesExample;
+} = {}) {
   return (
     <section
       id="variables"
@@ -170,7 +233,7 @@ export function VariablesSection() {
               stronger resting border. */}
           <div className="mb-5">
             <div className="rounded-lg border border-fg-quaternary bg-bg-primary px-3 py-2.5 text-[13.5px] font-medium text-text-primary">
-              Jordan Lee
+              {example.inputValue}
               <Caret />
             </div>
           </div>
@@ -178,9 +241,7 @@ export function VariablesSection() {
           <div className="rounded-xl border border-border-secondary bg-surface-inset p-3.5">
             <EditorHead />
             <div className="rounded-[9px] border border-border-primary bg-bg-primary px-[13px] py-3 text-sm leading-relaxed text-text-secondary">
-              <V>Summit Fitness</V>: your appointment with{" "}
-              <Vhl>Jordan Lee</Vhl> is confirmed for{" "}
-              <V>Tue, March 4th, 2:00 PM</V>. Reply STOP to opt out.
+              <Body segments={example.card1Body} />
             </div>
             <div className="mt-3 flex items-center justify-end opacity-60">
               <InsertVariable />
@@ -203,13 +264,11 @@ export function VariablesSection() {
           <div className="rounded-xl border border-border-secondary bg-surface-inset p-3.5">
             <EditorHead />
             <div className="rounded-[9px] border border-border-primary bg-bg-primary px-[13px] py-3 text-sm leading-relaxed text-text-secondary">
-              <V>Summit Fitness</V>: your appointment with <V>Jordan Lee</V> is
-              confirmed for <V>Tue, March 4th, 2:00 PM</V>. Reschedule{" "}
-              <Vhl>summitfitness.com/reschedule</Vhl> Reply STOP to opt out.
+              <Body segments={example.card2Body} />
             </div>
             <div className="relative mt-3 flex items-center justify-end">
               <InsertVariable />
-              <VariableMenu />
+              <VariableMenu rows={example.menuRows} />
             </div>
             <EditorActions />
           </div>

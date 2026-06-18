@@ -1,5 +1,5 @@
 # Landing Page Craft
-Status: exploring (2026-06-13)
+Status: exploring (2026-06-18)
 
 > **Scope:** Working reference for the sub-vertical landing page system — writing rules, page archetypes, reader/page JTBD, optimization findings, and capability-tracking. This is an exploration, not canon: it informs the pages but isn't load-bearing. The writing rules and research are settled thinking; templates and worked examples fill in over subsequent sessions. Graduates to a skill only if it earns it through use.
 
@@ -51,6 +51,64 @@ Each template opens with its reader's job (why they landed) and the page's job (
 - **Comparison:** factual table of what each platform requires the developer to do; no combative framing, no dismissiveness.
 
 Converge on layout WITHIN an archetype (predictable structure helps parsing, throughput, and reader trust); diverge BETWEEN archetypes (different reader-jobs justify different shapes). Substance varies enough per sub on its own — don't manufacture cosmetic layout variation.
+
+## Ship-it page skeleton (component map)
+
+The production fold-back of a ship-it page (D-436). A page is built by **reusing the live home section components**, not cloning the mockup HTML. Three reuse buckets:
+
+- **B1 — shared chrome, imported as-is** from `marketing-site/components/home/*` (home copy verbatim, no per-page change): status band · problem (Recognition) · paperwork · build (AiSection) · test (Prove) · process (HowItWorks) · price (Pricing) · closing CTA (FinalCta). A chrome change lands once and propagates to every page.
+- **2a — authored fresh each page** (the sub's dominant story; content sourced from the sub's mockup): hero · moment · details/Q&A · "rest"/secondaries · related.
+- **2b — same home component, sub-specific DATA only** (optional props that default to the home's current behavior): **Messages** = the home `MessagesSection` locked to the sub's dominant category; **Variables** = the home `VariablesSection` fed a sub-matched example. **Numbers** is used verbatim (no per-sub stats yet — defer a stats-override mechanism until a sub needs different numbers).
+
+**Invariant:** Build, Test, and Numbers do **not** vary per sub. If a mockup tailored them (e.g. an account-events code snippet, "a payment failure, a sign-in" test copy), that reverts to the home copy on the production page.
+
+**Locked section order** (first applied on the Developer-tools page; Variables sits right after Messages, mirroring the home, now that it carries sub-matched data):
+
+| # | Section | Bucket |
+|---|---------|--------|
+| 1 | Hero | 2a authored (animated phone notification, reduced-motion-aware) |
+| 2 | Status band | B1 |
+| 3 | Moment | 2a authored |
+| 4 | Messages | 2b (locked to dominant category) |
+| 5 | Variables | 2b (sub-matched example) |
+| 6 | Details / Q&A | 2a authored |
+| 7 | Numbers | 2b verbatim |
+| 8 | Problem | B1 |
+| 9 | Paperwork | B1 |
+| 10 | Build | B1 |
+| 11 | Test | B1 |
+| 12 | Price | B1 |
+| 13 | Rest (secondaries) | 2a authored — the honest secondary categories, named and framed editorially (NOT a second interactive browser) |
+| 14 | Related | 2a authored — sibling-sub chips (live cross-links once sibling pages exist) |
+| 15 | Closing CTA | B1 |
+
+**Routing / canonical (D-436):** URL = `/for/{short-slug}` (short, human-curated kebab — e.g. `/for/developer-tools`), NOT the long `/lib/constraints` data slug. The page resolves its sub data (`name`/`bucket`/rules) from `/lib/constraints` by the canonical data slug separately. Each page is self-canonical (`canonical` → its own path, never `/`).
+
+### Link model — Funnel / Fork / Farm
+
+Three jobs for outbound links; keep them distinct so the page has exactly one spine and the rest reads as a quiet directory.
+
+- **Funnel** — the forward CTAs that move a convinced reader into the tool. **Only three on a ship-it page:** Hero, the Messages section ("Open messages →"), and the Closing CTA. Do NOT add forward CTAs to Build, Test, How, Price, or Rest — extra funnels dilute the spine. (Funnels that are part of a verbatim home component stay; we neither add to nor strip the shared chrome — home must remain byte-identical. A landing-specific funnel is a landing-OWNED element composed *around* the component.)
+- **Fork** — one sideways link for the reader who needs a specific detail before committing (e.g. Paperwork → "What registration actually involves →" to the 10DLC pain-point page). Rendered as a landing-owned element placed AFTER the verbatim component, never inside it. At most one per page.
+- **Farm** — a quiet directory at the FOOT of the page (below the Closing CTA): sibling subs, the parent vertical hub, and a couple of common-question/concept pages. Low-contrast, link-list styling — a directory, not a CTA. It distributes authority across the cluster (internal-linking / topical-authority play) without competing with the funnel.
+
+**Page-type rule for the Farm:**
+- **Sub page** (ship-it / honest-no) → a *light* Farm: a few sibling subs + the vertical hub + 1–2 concept/question pages.
+- **Vertical hub** → the hub's primary body IS the down-links to its subs (those read as Funnel links, not Farm); a Farm is redundant.
+- **Topic / keyword page** → route to the single best-fit sub (or `/messages`); don't sprout a Farm of its own.
+
+## Category-page type (D-437)
+
+A **second** page type, distinct from the `/for/{slug}` sub-vertical ship-it page above. Where a ship-it page is one-per-sub (built from one mockup, routed `/for/{short-slug}`, sub data resolved from `/lib/constraints`), a **category page** is one-per-message-category, and all nine are generated from a single template + a data registry — nine same-shape pages from data, not nine forks.
+
+- **Route:** one dynamic route `marketing-site/app/messages/[category]/page.tsx` — `generateStaticParams` over the registry, `dynamicParams=false` (unknown slug 404s), per-category `generateMetadata`, self-canonical to `/messages/{urlSlug}` (never `/`). The `/messages` hub (the configurator) is the segment index and does not collide.
+- **Registry:** `marketing-site/lib/landing/categories.ts` — one `CategoryLanding` entry per category, authored by PM as a data block. The public **`urlSlug`** is split from the corpus key **`lockedCategory`**: equal for 7, differing for Orders (`orders`/`order-updates`) and Customer support (`support`/`customer-support`). The route param, canonical, sitemap, and Farm links key off `urlSlug`; `MessagesSection` + the corpus key off `lockedCategory`. Categories are **not** `/lib/constraints` sub-verticals — no constraints coupling.
+- **Three reuse buckets** (same idea as the ship-it skeleton): **B1** shared chrome imported verbatim (status band, problem, paperwork, build, test, process, price, closing CTA, plus the bottom full `MessagesSection` with all 9 pills); **2b** same home component fed registry data (`MessagesSection` locked via `lockedCategory`; `VariablesSection` given the entry's `variablesExample`; `NumbersSection` verbatim); **2a** authored-from-registry sections — Hero, Moment, Details/Q&A — rendered by prop-driven components in `marketing-site/components/landing/*`.
+- **Compose order** (category template — diverges from the ship-it skeleton: Numbers + Problem sit at the TAIL so the page leads on product and closes with the case + compliance reality before the CTA): Hero → Status band → Moment → Messages (locked) → Variables → Details/Q&A → Paperwork → Fork → Build → Test → How → Price → **Messages (full, all 9 pills)** → **Numbers** → **Problem (Recognition)** → Closing CTA → Farm.
+- **Hero notification:** `hero-notification-mock.tsx` takes the entry's `heroExamples: string[]` — it rotates (with the pause toggle) when there are 2+ examples and renders a single static notification (no toggle) when there's one. One-vs-animated is data-driven by length, not a flag.
+- **Farm:** the foot directory lists the **other 8 category pages** (`/messages/{urlSlug}` — real targets, all 9 are generated) plus the 2 standing concept/question links. (On a category page the Farm's "siblings" are the other categories, not other subs.)
+
+The `/for/{slug}` ship-it skeleton above stays operative for the deferred dev-tools sub-vertical page; the two page types coexist (D-436 scoping cross-ref).
 
 ## Optimization findings
 

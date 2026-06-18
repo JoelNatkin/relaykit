@@ -44,12 +44,27 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
-export function MessagesSection() {
+interface MessagesSectionProps {
+  // When set, the browser is locked to one category and the pill rows are
+  // hidden — used by sub-vertical landing pages to pin the dominant category
+  // (D-436). Defaults to the full pill browser (home behavior).
+  lockedCategory?: string;
+  eyebrow?: string;
+  heading?: string;
+  bridge?: string;
+}
+
+export function MessagesSection({
+  lockedCategory,
+  eyebrow = "The messages",
+  heading = "Messages for every job.",
+  bridge = "From login codes to event invites, every message your app sends is ready to use.",
+}: MessagesSectionProps = {}) {
   // Business name is the only field that carries forward — bound to the shared
   // configurator store so home and /messages stay in sync. "Acme" is shown as
   // the empty-state example only; it is never written to the store.
   const { state, setBusinessName } = useConfiguratorState();
-  const [selCat, setSelCat] = useState(DEFAULT_CATEGORY);
+  const [selCat, setSelCat] = useState(lockedCategory ?? DEFAULT_CATEGORY);
   const [tone, setTone] = useState<VariantTone>("Standard");
   const [page, setPage] = useState(0);
   const touchX = useRef(0);
@@ -75,17 +90,18 @@ export function MessagesSection() {
       className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
     >
       <div className="max-w-2xl">
-        <Eyebrow>The messages</Eyebrow>
+        <Eyebrow>{eyebrow}</Eyebrow>
         <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          Messages for every job.
+          {heading}
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          From login codes to event invites, every message your app sends is
-          ready to use.
+          {bridge}
         </p>
       </div>
 
-      {/* Category selector — horizontal-scroll pill row on mobile, two pill rows on desktop. */}
+      {/* Category selector — horizontal-scroll pill row on mobile, two pill rows
+          on desktop. Hidden when locked to a single category (D-436). */}
+      {!lockedCategory && (
       <div className="mt-10">
         <div
           className="flex flex-nowrap gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
@@ -140,6 +156,7 @@ export function MessagesSection() {
           ))}
         </div>
       </div>
+      )}
 
       {/* Controls — business name + tone. Below md: name (2/3) + tone select (1/3)
           in one row; md+: name (md:w-80) + the three tone pills. Hug the cards. */}
