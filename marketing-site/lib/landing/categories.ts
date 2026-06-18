@@ -97,7 +97,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "Payment failures, security alerts, trial endings, the events that decide whether a customer stays, sent where they'll actually see them.",
     heroExamples: ACCOUNT_EVENTS_HERO_EXAMPLES,
     moment: {
-      body: "A customer's card fails, the renewal email sits unread, and their account lapses. A text reaches them in time to fix it, before a missed payment turns into a cancelled account.",
+      body: "A payment fails on a Friday evening. The customer fixes it from their phone before the account lapses.",
       exampleSms:
         "Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing",
       exampleReply: "Paid in minutes",
@@ -175,7 +175,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "We couldn't complete your order. Update your payment to finish: yourapp.com/checkout",
     ],
     moment: {
-      body: "A package is out for delivery and no one is home to receive it. A text gives the customer the chance to reschedule before it heads back to the depot.",
+      body: "A package needs a signature and the customer is at work. The delivery text gets there in time to redirect it, before the driver leaves.",
       exampleSms:
         "Your order #1024 is out for delivery today. Track it or reschedule: yourapp.com/track",
       exampleReply: "Caught it in time",
@@ -326,7 +326,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "Your password reset code is 736204. It expires in 10 minutes.",
     ],
     moment: {
-      body: "Someone is trying to log in, and the code is the only thing between them and their account. A text delivers it in seconds, while they're still on the screen waiting for it.",
+      body: "A customer tries to log in from a new device and hits a code prompt. The code lands before they give up and reset their password.",
       exampleSms: "Your verification code is 480913. It expires in 10 minutes.",
       exampleReply: "Logged in",
     },
@@ -397,7 +397,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "Your callback is scheduled for 3:00 PM today: yourapp.com/support",
     ],
     moment: {
-      body: "A customer files a ticket and then waits, checking email, unsure if anyone saw it. A text when the reply lands tells them they've been heard and brings them back exactly when it matters.",
+      body: "A customer files a ticket and assumes it disappeared into a queue. The reply text brings them back the moment there's something to read.",
       exampleSms:
         "We've replied to your support request #318. Read it here: yourapp.com/tickets/318",
       exampleReply: "Sorted in one reply",
@@ -473,7 +473,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "API latency is above threshold. Check the dashboard: yourapp.com/status",
     ],
     moment: {
-      body: "Something goes down at 2 a.m. and the dashboard turns red, but no one is watching it. A text reaches the person on call while there's still time to fix it before customers notice.",
+      body: "The checkout error rate spikes at 2 a.m. and no one is watching the dashboard. The on-call engineer gets the page so the problem doesn't sit until morning.",
       exampleSms:
         "Error rate spiked on checkout 3 min ago. View the incident: yourapp.com/alerts",
       exampleReply: "Fixed in time",
@@ -549,7 +549,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "A table is ready for you now. Reply YES to confirm: yourapp.com/claim",
     ],
     moment: {
-      body: "A spot opens up and the next person in line has a few minutes to claim it. A text reaches them while they can still say yes, instead of finding out too late by email.",
+      body: "A restaurant gets a cancellation for tonight at 7:30. The next person on the list claims the table; before it would have sat empty.",
       exampleSms:
         "A spot just opened for tonight at 7:30. Reply YES in the next 10 minutes to claim it.",
       exampleReply: "YES",
@@ -622,7 +622,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "A new event was added near you. See the details: yourapp.com/events",
     ],
     moment: {
-      body: "An event a member signed up for weeks ago is starting tonight, and it's slipped off their calendar. A reminder a few hours before brings them back to something they wanted to attend.",
+      body: "Members booked a spot at your event months ago and haven't thought about it since. A text that morning puts it back on their radar.",
       exampleSms: "Tonight's meetup starts at 6:30. Here's the link to join: yourapp.com/live",
       exampleReply: "Almost forgot, thanks",
     },
@@ -697,7 +697,7 @@ export const CATEGORY_LANDINGS: CategoryLanding[] = [
       "A members-only perk, this week only: yourapp.com/perks",
     ],
     moment: {
-      body: "A customer who opted in to hear about offers gets the launch text the morning it goes live. Because they asked for it, it reads as something they wanted, not something to clear out.",
+      body: "A customer signed up for launch notifications six months ago. The morning the feature ships, the text is the first place they hear about it.",
       exampleSms: "Early access to our new plan opens today. Take a look: yourapp.com/new",
       exampleReply: "Been waiting for this",
     },
