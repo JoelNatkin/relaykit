@@ -1,59 +1,56 @@
-# CC_HANDOFF — Session 140: 9 message-category landing pages (dynamic route + registry + template); D-437 (2026-06-18)
+# CC_HANDOFF — Session 141: landing-page copy pass (categories.ts), no D-numbers (2026-06-18)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: the feature shipped as `404c274` (`feat:` — route + registry + components) + a mechanical follow-up `4d71368` (`chore:` — sitemap + canon docs that a staging slip left out of `404c274`); both pushed | Decisions added: 1 (**D-437**) + 1 cross-ref on D-436 | `main` changes: 0 (all work on `feat/landing-developer-tools`, UNMERGED). Close-out gates: tsc ✅ / eslint ✅ / build ✅ (`marketing-site`, `.next` cleared). Branch: `feat/landing-developer-tools` (pushed). Mid-phase (active phase stays Phase 2 — Session B).
+**Session metrics:** Commits: 4 | Files modified: 1 (`marketing-site/lib/landing/categories.ts`) | Decisions added: 0 | External actions: 0 (4 pushes to `origin/main`, all internal git). Close-out gates: tsc ✅ / eslint ✅ (modified file). `/api` untouched. Branch: `main` (all four commits pushed, in sync with `origin/main`). Mid-phase (active phase stays Phase 2 — Session B).
 
-**Status: ✅ MERGED. `feat/landing-developer-tools` squash-merged to `main` (`459d8a2`) and pushed; post-merge build green, all 9 `/messages/{category}` pages prerender static. The deferred `/for/developer-tools` page shipped `noindex, follow` + out of the sitemap. Branch not yet deleted (squash-merge isn't auto-detected by `git branch -d`; optional manual cleanup).**
-
-### Follow-up — preview-review pass (2026-06-18, separate `feat:` commit)
-Five preview-review refinements (no new D-number — data/copy/layout): (1) the 8 non-account-events `variablesExample` card2 bodies now highlight the **same** value as card1 + the menu (orders 1024, appointments 2:00 PM, verification 480913, support 318 + link `/tickets/318`, team-alerts checkout, waitlist 7:30, community 6:30, marketing "new plan") — they previously highlighted a mismatched second value; (2) `category-details.tsx` now packs **two independent flex columns** (left = Q1/Q3, right = Q2/Q4) instead of a 2-row grid, killing the dead gap a tall bullet-list card left beside a short one (desktop reading order stays Q1–Q4; **note:** on mobile the two columns stack as Q1,Q3,Q2,Q4 — intrinsic to the two-column approach; cards are independent Q&A); (3) `numbers-section.tsx` subhead got `max-w-md` to stop the "compare." orphan (shared component — also improves the home); (4) **category-template section order** moved Numbers + Problem to the tail (… Pricing → Messages(full) → Numbers → Problem → FinalCta → Farm) — category template only, home untouched; craft-doc compose order updated; (5) all 8 non-account-events `heroExamples` expanded to **4 each** so the hero mock rotates + the pause toggle returns (gated on `length > 1`). account-events unchanged. tsc/eslint/build clean; verified in prerendered HTML.
+**Status: ✅ ALL PUSHED. Four atomic copy commits on `main`, all live on `origin/main` (`b1e4ab0`→`f594f3d` range plus the two before it). No code/structure/type change — string-value edits only inside the 9 `CATEGORY_LANDINGS` entries. tsc + eslint clean.**
 
 ---
 
-## What shipped — 9 message-category landing pages as one dynamic route + registry + template (D-437)
+## What shipped — a four-commit copy pass on the 9 category-landing entries
 
-Generalized the Session-139 single account-events page into **all 9 message categories** from one template + a per-category data registry. Built per the PM-approved plan (`.pm/plans/plan-only-no-lucky-lovelace.md`); content from PM's data block (`.pm/category-data-block.md`).
+All edits are confined to `marketing-site/lib/landing/categories.ts` (the per-category landing registry behind `app/messages/[category]/page.tsx`, D-437). Each commit edited one field across all 9 entries; nothing else touched. PM directed each field's new text verbatim; CC applied, ran tsc, wrote `git show HEAD` to `.pm-review.md`, and pushed on the follow-up "git push".
 
-- **`marketing-site/app/messages/[category]/page.tsx`** (new dynamic route) — `generateStaticParams` over the registry, `dynamicParams=false` (unknown slug 404s), per-category async `generateMetadata`, self-canonical to `/messages/{urlSlug}`. Composes B1 chrome + 2b data-fed (`MessagesSection` locked / `VariablesSection` / `NumbersSection`) + 2a authored (Hero/Moment/Details) + Farm, in the Session-139 order.
-- **`marketing-site/lib/landing/categories.ts`** (new registry) — `CategoryLanding` type + 9 entries + `findCategoryLanding(urlSlug)` / `categorySlugs()`. **`urlSlug` (public) split from `lockedCategory` (corpus key):** equal for 7; **Orders** = `orders`/`order-updates`, **Customer support** = `support`/`customer-support`. No `/lib/constraints` import.
-- **`marketing-site/components/landing/{category-hero,category-moment,category-details,category-farm,paperwork-fork}.tsx`** (new, prop-driven) — rendering lifted from the Session-139 account-events `sections.tsx`. `category-details` renders the rich Q&A (bold lead + optional bullet list). `category-farm` lists the other 8 category pages (real `/messages/{urlSlug}` targets) + 2 standing question links.
-- **`marketing-site/components/landing/hero-notification-mock.tsx`** (generalized) — now takes `{ examples?: string[]; businessName? }`. Rotates + pause toggle when >1 example; single static notification (no toggle) when 1. Default = the original 5 account-events bodies, so the **untouched** `/for/developer-tools` hero (calls it prop-less) renders identically.
-- **`marketing-site/app/sitemap.ts`** — category routes derived from the registry (`categorySlugs()`); `/for/developer-tools` kept; the hand-listed `/messages/account-events` dropped.
-- **Deleted** `marketing-site/app/messages/account-events/{page,sections}.tsx` — the static Session-139 fork. The dynamic route now serves `/messages/account-events` (entry #1). Removal is required (a static file shadows the dynamic route).
+| Commit | Field | Change |
+|--------|-------|--------|
+| `eb10968` | `moment.body` | All 9 rewritten as concrete scene vignettes (specific moment + outcome). **Appointments (#3) already matched** the target text — 8 entries actually changed. |
+| `604f35c` | `heroBody` | All 9 tightened to an em-dash "list — payoff" shape with a shorter payoff clause. |
+| `b1e4ab0` | `messagesBridge` | All 9 standardized to the uniform line: "Every {category} message your app sends. Copy them, customize them, or write your own." |
+| `f594f3d` | `qa` (full array) | All 9 `qa` arrays replaced with new four-question builder-guidance sets (consent / transactional-vs-marketing classification, channel choice, cost, common mistakes). **New sets use no `list` field** (the prior arrays did on several entries; `list` is optional on `CategoryQA`, so no type impact). 107 insertions / 112 deletions. |
 
-**Account-events #1 migration is intentionally NOT byte-identical in text** — its Q&A + Moment text come from PM's data block (corrected/neutralized), not the fork. Only the 5 hero bodies, the `VariablesExample` object, and the section rendering were lifted from code. Parity is structural (verified below).
+## Verification
+- tsc ✅ run after every commit (clean each time); eslint ✅ on `lib/landing/categories.ts` at close-out.
+- No structural, import, or type change — `CategoryLanding` / `CategoryQA` shapes untouched; `findCategoryLanding` / `categorySlugs` untouched.
+- `git status` clean except the standing untracked `.claude/settings.local.json`.
 
-## Verification (all green)
-- tsc ✅ / eslint ✅ / `next build` ✅ — 41 pages; `/messages/[category]` prerenders **9 static**.
-- Canonicals: all 9 self-canonical to `https://relaykit.ai/messages/{urlSlug}` (never `/`); titles per registry.
-- **Slug↔corpus split:** `/messages/orders` renders the order-updates corpus + "Order messages, ready to send."; `/messages/support` renders the customer-support corpus + "Support messages, ready to send." (proves `urlSlug`≠`lockedCategory` resolves correctly).
-- Routing: `/messages/orders|support|account-events` + hub `/messages` → 200; `/messages/order-updates` (bare corpus id, not a public slug) + `/messages/nope` → 404 (`dynamicParams=false`).
-- Sitemap: `/for/developer-tools` + all 9 `/messages/{urlSlug}` (incl. `/orders`, `/support`), no duplicate.
-- `app/for/developer-tools/` byte-identical (`git diff --stat` empty).
+## Two content flags raised to PM (copy applied verbatim as directed — content judgments, not blockers)
+- **verification Q3** cites a specific competitor price: "Twilio Verify charges $0.0575 per successful verification." Hard factual claim about a competitor's pricing — worth confirming it's current before broad promotion.
+- The new `qa` copy leans harder into compliance framing ("compliance violation," transactional→marketing reclassification across several categories). Checked against CLAUDE.md hard constraints: **no** prohibited guarantee language ("ensures/guarantees compliance," "fully compliant," "stay compliant automatically") and **no** carrier-review day counts. Claims are about the customer's own obligations, not RelayKit guaranteeing an outcome — clean on that axis.
 
 ## Canon — current
-- **DECISIONS.md** — **D-437** appended (Supersedes none; extends D-436); **D-436** has a `Scoping (D-437)` cross-ref line (no superseded flag).
-- **REPO_INDEX** — Meta lead + decision count (352/D-437) + branch state + DECISIONS/REPO_INDEX doc rows.
-- **landing-page-craft.md** — new "Category-page type (D-437)" section; Status date → 2026-06-18.
-- **PROTOTYPE_SPEC** — NOT updated (surface new + unmerged; spec the `/messages/{category}` surface when it stabilizes/merges, per the doc's rule — owed at merge).
+- **DECISIONS.md** — no change. All four commits are string-level copy (gate test → PROTOTYPE_SPEC/no-decision); no alternative resolved. Latest still D-437.
+- **REPO_INDEX** — Meta lead prepended with the S141 copy-pass summary; counts (352/D-437), branch state, and explorations unchanged (nothing moved — `categories.ts` already inventoried).
+- **PROTOTYPE_SPEC / PRODUCT_SUMMARY** — not updated. No screen-structure or customer-experience-behavior change (copy refinement on existing pages); the spec doesn't quote these strings.
+- **CC_HANDOFF** — this file (rewritten for S141).
 
-## Carry-forwards (flagged, not done)
-- **PROTOTYPE_SPEC** entry for the `/messages/{category}` category-page surface once it merges/stabilizes.
-- **D-436's deferred dev-tools page** (`/for/developer-tools`) is still unmerged and untouched — its disposition (ship as the first `/for/{slug}` sub-vertical page, or fold away) is a separate PM call. The `/for/{slug}` sub-vertical recipe + its `landing-page-craft.md` ship-it skeleton stay operative per the D-436 scoping cross-ref.
-- **Pre-existing (not introduced this session):** two `id="configurator"` per category page (locked + full `MessagesSection`) — the hero `#configurator` anchor jumps to the first/locked one; fixable only by touching the shared `MessagesSection` (out of scope here). H1s/Farm question-links carry the same v1 placeholders as the Session-139 page.
-- **Still open from Session 138 — D-215 override** ("We get you approved in 2–3 days" on the home `#rules`): PM still owes a reconciliation. Unrelated to this branch.
+## Carry-forwards (flagged, not done — unchanged from S140 unless noted)
+- **PROTOTYPE_SPEC** entry for the `/messages/{category}` category-page surface, owed once it stabilizes (the surface merged in S140; copy is still settling, as this session shows).
+- **D-436's `/for/developer-tools` page** — still merged-but-`noindex` + out of the sitemap; its disposition (ship as first `/for/{slug}` sub-vertical page or fold away) is a separate PM call.
+- **PM content review** of the two flags above (Twilio price; compliance-framing tone).
+- **Pre-existing:** two `id="configurator"` per category page (locked + full `MessagesSection`); H1s / Farm question-links carry v1 placeholders.
+- **Still open from Session 138 — D-215 override** ("We get you approved in 2–3 days" on the home `#rules`): PM still owes a reconciliation.
 - **Standing:** sole-prop `/prototype`+`/src` UI session (D-433); dead `--color-text-headline-muted` token + globals.css light→dark dead-token collapse; migration `009_early_access_interest_tag.sql` apply-before-deploy; blog "configurator" voice rewrite; older merged-not-deleted `feat/*` branches.
 
 ## Branch state
-**`feat/landing-developer-tools`** — pushed, **unmerged**. Now hosts the category-page system (9 pages + registry + template) AND the deferred `/for/developer-tools` page. `main` untouched by this branch. No merge until PM approves the Vercel preview.
+`main` only — all four S141 commits pushed and in sync with `origin/main`. No feature branch this session (copy edits routed direct-to-`main` with `.pm-review.md` capture per Joel's per-commit workflow). Older merged-not-deleted `feat/*` branches remain (optional cleanup).
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
-- **PM:** review the Vercel preview (all 9 `/messages/{category}` pages, esp. `/orders` + `/support` slug↔corpus split). On approval, decide merge + the `/for/developer-tools` disposition.
-- When the surface merges/stabilizes: add the PROTOTYPE_SPEC `/messages/{category}` section.
+- **PM:** review the two content flags (verification Twilio price; qa compliance-framing tone) on the live pages if a tweak is wanted.
+- When the `/messages/{category}` surface stabilizes: add its PROTOTYPE_SPEC section (S140 carry-forward).
 - Unrelated standing item: **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN remains the substantive product pickup.
