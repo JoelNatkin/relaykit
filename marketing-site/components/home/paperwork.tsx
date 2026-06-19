@@ -13,7 +13,7 @@ const CARDS: {
     Icon: FileCheck02,
     title: "Registration handled",
     problem: "Getting approved on your own can take weeks.",
-    body: "We get you approved in 2–3 days and handle the filing, so you can keep building your app.",
+    body: "Most registrations clear in about three days. We handle the filing, so you can keep building your app.",
   },
   {
     Icon: ShieldTick,
