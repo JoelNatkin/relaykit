@@ -1,56 +1,61 @@
-# CC_HANDOFF — Session 141: landing-page copy pass (categories.ts), no D-numbers (2026-06-18)
+# CC_HANDOFF — Session 142: landing-Messages consolidation + D-215 fix + S140/S141 doc-debt cleared (2026-06-19)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Session metrics:** Commits: 4 | Files modified: 1 (`marketing-site/lib/landing/categories.ts`) | Decisions added: 0 | External actions: 0 (4 pushes to `origin/main`, all internal git). Close-out gates: tsc ✅ / eslint ✅ (modified file). `/api` untouched. Branch: `main` (all four commits pushed, in sync with `origin/main`). Mid-phase (active phase stays Phase 2 — Session B).
+**Session metrics:** Commits: 10 to `main` (HEAD `97a167b`) | Decisions added: 0 | MD added: 1 (MD-22) | Branches: 1 created + merged + deleted (`feat/messages-section-defaultcategory`) | External actions: Airtable writes (PM-lane — see below). Close-out gates: tsc ✅ / eslint ✅ / build ✅ (41 pages) on the merged `main`. `/api` untouched. Active phase unchanged: Phase 2 — Session B (Sinch outbound delivery).
 
-**Status: ✅ ALL PUSHED. Four atomic copy commits on `main`, all live on `origin/main` (`b1e4ab0`→`f594f3d` range plus the two before it). No code/structure/type change — string-value edits only inside the 9 `CATEGORY_LANDINGS` entries. tsc + eslint clean.**
+**Status: ✅ ALL PUSHED to `origin/main`.** Ten commits this session, all live. The doc-only close-out commit (REPO_INDEX + CC_HANDOFF) is the last; `.pm-review.md` refreshed at HEAD.
 
 ---
 
-## What shipped — a four-commit copy pass on the 9 category-landing entries
+## What shipped (main, in order)
 
-All edits are confined to `marketing-site/lib/landing/categories.ts` (the per-category landing registry behind `app/messages/[category]/page.tsx`, D-437). Each commit edited one field across all 9 entries; nothing else touched. PM directed each field's new text verbatim; CC applied, ran tsc, wrote `git show HEAD` to `.pm-review.md`, and pushed on the follow-up "git push".
+| Commit | What |
+|--------|------|
+| `7ce491e` | **D-215 fix** — `paperwork.tsx` first card: dropped the approval *guarantee* "We get you approved in 2–3 days" (violated D-38; stale day-count) → "Most registrations clear in about three days. We handle the filing, so you can keep building your app." per **D-376** body register. Resolves the long-open **S138 `#rules` reconciliation**. |
+| `ccf4c21` | **PROTOTYPE_SPEC `/messages/{category}` section** authored (S140 doc debt) — route mechanics, urlSlug↔lockedCategory split, D-436 three-bucket model, render order. ⚠ See carry-forward: written against the *two-MessagesSection* shape, superseded same session. |
+| `29a06d5` | **MD-22** appended to `docs/MARKETING_STRATEGY.md` — 9-page category family as an AI/SEO retrieval bet (extends MD-9 + D-387/388; Supersedes none). |
+| `e3c1834` | `defaultCategory?: string` prop on `MessagesSection` (seeds initial pill when not locked; pills stay switchable). |
+| `e57928e` | **Collapse to ONE `MessagesSection`** on both landing page types (`/messages/[category]` + `/for/developer-tools`): full browser opened on the category via `defaultCategory`, locked instance + bottom full-browser removed. `landing-page-craft.md` updated. |
+| `191f774`/`2cb8299` | Category-page heading/bridge copy finalized → "{Category} messages, included." / "All nine message categories are included — one registration." |
+| `816a7dd` | Home `MessagesSection` default copy → "Every message category, included." / "Author and test free. One registration when you're ready to send." |
+| `d1d54ba` | **Merge** `feat/messages-section-defaultcategory` (`--no-ff`); branch deleted (local+remote). Auto-merge of `messages-section.tsx` verified semantically (home copy + `defaultCategory` both survived). |
+| `97a167b` | **Optional `CategoryQA.category?` tag** (gold-dot render in `category-details.tsx`) — additive infra for a future sub-vertical Details section; no entry sets it, all 9 pages byte-identical. |
 
-| Commit | Field | Change |
-|--------|-------|--------|
-| `eb10968` | `moment.body` | All 9 rewritten as concrete scene vignettes (specific moment + outcome). **Appointments (#3) already matched** the target text — 8 entries actually changed. |
-| `604f35c` | `heroBody` | All 9 tightened to an em-dash "list — payoff" shape with a shorter payoff clause. |
-| `b1e4ab0` | `messagesBridge` | All 9 standardized to the uniform line: "Every {category} message your app sends. Copy them, customize them, or write your own." |
-| `f594f3d` | `qa` (full array) | All 9 `qa` arrays replaced with new four-question builder-guidance sets (consent / transactional-vs-marketing classification, channel choice, cost, common mistakes). **New sets use no `list` field** (the prior arrays did on several entries; `list` is optional on `CategoryQA`, so no type impact). 107 insertions / 112 deletions. |
+## Airtable (PM-lane — performed this session, NOT a repo change)
+- Added **Dominant category** (`fldrUlh1BFZ7OQ9PP`) + **Secondary categories** (`fldRBz7N9AQmJ4YNc`) population to the Constraints Sub-verticals table (`tblsTgbqncUJLtIqb`, base `appxThB8UWmNulAMt`).
+- Populated **all 89 Clear + Conditional** sub-verticals with dominant + 2–3 secondary categories. Verified: 89 rows now non-empty, all in-scope buckets, none of the other 48 touched. dev-tools = **account-events** dominant (PM-confirmed at the gate despite `vertical-buckets-research.md` signalling team-alerts).
+- **Governance (per Joel): Airtable writes are PM-lane only going forward — CC is not to be given direct Airtable write instructions.**
 
 ## Verification
-- tsc ✅ run after every commit (clean each time); eslint ✅ on `lib/landing/categories.ts` at close-out.
-- No structural, import, or type change — `CategoryLanding` / `CategoryQA` shapes untouched; `findCategoryLanding` / `categorySlugs` untouched.
-- `git status` clean except the standing untracked `.claude/settings.local.json`.
-
-## Two content flags raised to PM (copy applied verbatim as directed — content judgments, not blockers)
-- **verification Q3** cites a specific competitor price: "Twilio Verify charges $0.0575 per successful verification." Hard factual claim about a competitor's pricing — worth confirming it's current before broad promotion.
-- The new `qa` copy leans harder into compliance framing ("compliance violation," transactional→marketing reclassification across several categories). Checked against CLAUDE.md hard constraints: **no** prohibited guarantee language ("ensures/guarantees compliance," "fully compliant," "stay compliant automatically") and **no** carrier-review day counts. Claims are about the customer's own obligations, not RelayKit guaranteeing an outcome — clean on that axis.
+- Merged `main`: tsc ✅ / eslint ✅ / `next build` ✅ — 41 pages; 9 `/messages/[category]` prerender SSG, `/for/developer-tools` static; exactly one `id="configurator"` per landing page; default pill pre-selects correctly.
+- Airtable: `isNotEmpty` query → `totalRecordCount: 89`, all Clear/Conditional.
 
 ## Canon — current
-- **DECISIONS.md** — no change. All four commits are string-level copy (gate test → PROTOTYPE_SPEC/no-decision); no alternative resolved. Latest still D-437.
-- **REPO_INDEX** — Meta lead prepended with the S141 copy-pass summary; counts (352/D-437), branch state, and explorations unchanged (nothing moved — `categories.ts` already inventoried).
-- **PROTOTYPE_SPEC / PRODUCT_SUMMARY** — not updated. No screen-structure or customer-experience-behavior change (copy refinement on existing pages); the spec doesn't quote these strings.
-- **CC_HANDOFF** — this file (rewritten for S141).
+- **DECISIONS.md** — no change (no new D this session). Latest still **D-437**, 352 active.
+- **REPO_INDEX** — Meta lead (S142), decision-count note, doc-row dates (REPO_INDEX, PROTOTYPE_SPEC, CC_HANDOFF, MARKETING_STRATEGY) all updated.
+- **PROTOTYPE_SPEC** — `/messages/{category}` section added (`ccf4c21`); needs a re-sync (carry-forward below).
+- **MARKETING_STRATEGY** — MD-22 recorded.
+- **CLAUDE.md / MASTER_PLAN / PRODUCT_SUMMARY** — untouched.
 
-## Carry-forwards (flagged, not done — unchanged from S140 unless noted)
-- **PROTOTYPE_SPEC** entry for the `/messages/{category}` category-page surface, owed once it stabilizes (the surface merged in S140; copy is still settling, as this session shows).
-- **D-436's `/for/developer-tools` page** — still merged-but-`noindex` + out of the sitemap; its disposition (ship as first `/for/{slug}` sub-vertical page or fold away) is a separate PM call.
-- **PM content review** of the two flags above (Twilio price; compliance-framing tone).
-- **Pre-existing:** two `id="configurator"` per category page (locked + full `MessagesSection`); H1s / Farm question-links carry v1 placeholders.
-- **Still open from Session 138 — D-215 override** ("We get you approved in 2–3 days" on the home `#rules`): PM still owes a reconciliation.
-- **Standing:** sole-prop `/prototype`+`/src` UI session (D-433); dead `--color-text-headline-muted` token + globals.css light→dark dead-token collapse; migration `009_early_access_interest_tag.sql` apply-before-deploy; blog "configurator" voice rewrite; older merged-not-deleted `feat/*` branches.
+## Carry-forwards (flagged, not done)
+1. **PROTOTYPE_SPEC `/messages/{category}` re-sync** — the section authored in `ccf4c21` describes the *pre-consolidation* two-MessagesSection render order (Messages locked high + Messages full at the tail). The same-session merge `d1d54ba` collapsed that to ONE full browser opened via `defaultCategory`. The spec section is now stale on that point — update the structure + render order on next touch.
+2. **CLAUDE.md hard-constraints reconciliation (PM-gated)** — two resident lines are stale: (a) "Never write specific day counts… Use 'a few days' (D-215)" — superseded by **D-376** ("about three days"); (b) "Marketing capability = second campaign registration (D-15, D-37, D-89)" — superseded by **D-294** (marketing auto-submits under one registration). Both surfaced as live copy was written against current canon this session.
+3. **`Pages` table Dominant/Secondary fields redundant** — the Sub-verticals table now carries the authoritative values; delete the `Pages`-table duplicates when convenient (PM-lane).
+4. **`verticals.ts` regeneration from Airtable** — the D-421 AIRGAP step to surface the new dominant/secondary data in code; PM-gated, separate session.
+5. **Unused `messagesEyebrow` / `messagesHeading` / `messagesBridge`** on `CategoryLanding` (`lib/landing/categories.ts`) — no longer read by the template after the consolidation; safe to delete in a cleanup pass (left in place this session).
+6. **Dev-tools page content (next-session pickup)** — hero H1 (PM leading candidate: "The text messages your developer tool should already be sending." — sub-vertical named, no category in the line, recognition/pull), moment scenario, Q&A cards. Not yet in code.
+7. **Standing (unchanged):** sole-prop `/prototype`+`/src` UI session (D-433); dead `--color-text-headline-muted` token + globals.css light→dark dead-token collapse; migration `009_early_access_interest_tag.sql` apply-before-deploy; blog "configurator" voice rewrite; Twilio $0.0575 price sanity-check (verification Q3); older merged-not-deleted `feat/*` branches + `sketch/configurator-polish` + `feat/blog-scheduling-apps-post`.
 
 ## Branch state
-`main` only — all four S141 commits pushed and in sync with `origin/main`. No feature branch this session (copy edits routed direct-to-`main` with `.pm-review.md` capture per Joel's per-commit workflow). Older merged-not-deleted `feat/*` branches remain (optional cleanup).
+`main` only for active work (HEAD `97a167b`, in sync with origin). `feat/messages-section-defaultcategory` merged + deleted. Stale undeleted branches remain (optional cleanup): `feat/blog-scheduling-apps-post`, `feat/design-refresh`, `feat/hero-mock-tweaks`, `feat/landing-developer-tools`, `feat/legal-exposure`, `feat/marketing-home`, `feat/post-launch-polish`, `sketch/configurator-polish`.
 
 ## Untracked carryover — DO NOT COMMIT
 - Only `.claude/settings.local.json` remains untracked.
 
 ## Next steps
-- **PM:** review the two content flags (verification Twilio price; qa compliance-framing tone) on the live pages if a tweak is wanted.
-- When the `/messages/{category}` surface stabilizes: add its PROTOTYPE_SPEC section (S140 carry-forward).
-- Unrelated standing item: **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN remains the substantive product pickup.
+- **Dev-tools page content** — finalize the hero H1 (candidate above), moment, and Q&A; first real `/for/{slug}` content pass.
+- When PROTOTYPE_SPEC `/messages/{category}` is re-synced, fold in the single-browser shape (carry-forward #1).
+- Unrelated standing product pickup: **Phase 2 — Session B (Sinch outbound delivery)** per MASTER_PLAN.
