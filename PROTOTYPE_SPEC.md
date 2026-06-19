@@ -5,7 +5,7 @@
 > Not for: backend implementation (MESSAGE_PIPELINE_SPEC, SDK_BUILD_PLAN), customer-experience narrative (PRODUCT_SUMMARY), decisions that resolve alternatives (DECISIONS). If code disagrees with spec, code wins — flag the discrepancy.
 
 ## Screen-Level Prototype Specifications
-### Last updated: June 16, 2026
+### Last updated: June 19, 2026
 
 > **How this file works:**
 > - This document captures what each prototype screen looks like, how it behaves, and why — at a level of detail that lets CC rebuild any screen from this spec alone.
@@ -273,6 +273,54 @@ The blog is part of the `marketing-site/` app, not the prototype. Posts are MDX 
 **Frontmatter schema** (`lib/blog/types.ts`): `title`, `slug` (must equal filename stem), `date` (ISO), `cluster` (one of 11), `lane` (demand/supply/retrospective/worldview), `status` (draft/ready/published), `description`, optional `canonical_url`, optional `og_image`. Only `status: published` posts appear anywhere in V1 — index, cluster pages, sitemap, RSS, and static params all filter to published; draft/ready posts 404 on direct URL.
 
 **Discoverability.** Linked from the marketing-site footer ("Resources" column). Not in the top nav (V1 scope decision). Reachable also via sitemap and RSS.
+
+---
+
+### Message-category landing pages — `/messages/{category}` (D-437, extends D-436; Session 140)
+
+**File:** `marketing-site/app/messages/[category]/page.tsx` (one dynamic route) + `marketing-site/lib/landing/categories.ts` (the per-category registry) + `marketing-site/components/landing/*` (the authored sections).
+**Status:** Live on `main` (squash-merge `459d8a2`). Nine pages prerendered static. Copy still settling (a four-commit copy pass landed Session 141); structure is stable.
+
+A **page type**, not nine hand-built pages: one template (the route) composes the shared home components around a small set of authored, per-category sections, with all per-category text supplied by a registry entry. There is exactly one route file and one registry; adding a category is a registry-entry edit, not a new page.
+
+**Route mechanics.** `dynamicParams = false` — `generateStaticParams()` returns one param per registry entry (`categorySlugs()`), so the nine known slugs prerender as static HTML and any unknown slug 404s. `generateMetadata` is per-category: `title`/`description` from the entry's `metaTitle`/`metaDescription`, and the page is **self-canonical** — `alternates.canonical = /messages/{urlSlug}`, never `/`. The route resolves its entry with `findCategoryLanding(category)` and calls `notFound()` on a miss. Verified at build: `/messages/orders`, `/messages/support`, `/messages/account-events`, and the hub `/messages` → 200; `/messages/order-updates` (a bare corpus id, not a public slug) and `/messages/nope` → 404.
+
+**The urlSlug ↔ lockedCategory split.** Each registry entry (`CategoryLanding` in `lib/landing/categories.ts`) carries two distinct identifiers:
+- **`urlSlug`** — the public route segment. The canonical link, the sitemap entry, and the Farm sibling-links all key off this. Resolution is keyed on it (`BY_SLUG` map → `findCategoryLanding`; `categorySlugs()` returns urlSlugs).
+- **`lockedCategory`** — the message-library category id, passed to `MessagesSection` to lock the browser and used as the corpus key.
+
+They are **equal for 7 of 9** categories and **differ for two**: Orders (`urlSlug: "orders"` / `lockedCategory: "order-updates"`) and Customer support (`urlSlug: "support"` / `lockedCategory: "customer-support"`). The nine entries in order: account-events, orders, appointments, verification, support, team-alerts, waitlist, community, marketing. The system is **decoupled from `/lib/constraints`** — categories are message types, not sub-verticals (this is what scopes D-437 apart from D-436's `/for/{slug}` sub-vertical recipe, which stays operative for the deferred dev-tools page). All entry *text* is PM-authored (the `.pm/category-data-block.md` data block); from existing code only structured shapes were lifted (the heroExamples bodies, the `VariablesExample` object, the section rendering).
+
+**Composed structure (the D-436 bucket model).** The page assembles three kinds of section:
+- **Bucket 1 — shared home chrome, imported as-is, home copy verbatim:** `StatusBand`, `Paperwork`, `AiSection`, `Prove`, `HowItWorks`, `Pricing`, `Recognition`, `FinalCta` (all from `components/home/*`). A change to any of these lands once and propagates to every category page.
+- **Bucket 2b — the same home component fed per-category data:** `MessagesSection` (locked to `lockedCategory`, with `eyebrow`/`heading`/`bridge` overrides from the entry — see the home "The messages" spec, D-435), `VariablesSection` (fed the entry's category-matched `variablesExample` — see the home "The variables" spec, D-434), and `NumbersSection` (verbatim today; the entry's `numbersOverride` field is reserved and unused).
+- **Bucket 2a — authored, per-category sections** (`components/landing/*`): `CategoryHero`, `CategoryMoment`, `CategoryDetails`, `PaperworkFork`, `CategoryFarm`.
+
+**Render order** (top → bottom), which differs from the home order — the page leads on product and moves Numbers + Problem to the tail, closing on the case and the compliance reality right before the CTA:
+
+1. **CategoryHero** (`category-hero.tsx`) — `max-w-5xl px-6 pb-20 pt-16 sm:pb-28 sm:pt-24`, two-column at `lg`. Left: `<Eyebrow>` `heroEyebrow` · H1 `entry.h1` (`text-balance`, up to `lg:text-[56px]`) · body `heroBody` (`max-w-xl`) · **constant** CTAs (a `PrimaryCta` "See the messages →" → `#configurator` + a `GhostCta` "How it works" → `#how`) · **constant** trust line "Free to author & test · No credit card · US & Canada". Right: `<HeroNotificationMock examples={entry.heroExamples} />` — rotates the examples when >1, static when 1.
+2. **StatusBand** (bucket 1).
+3. **CategoryMoment** (`category-moment.tsx`) — border-t, `py-20 sm:py-28`. **Constant** eyebrow "The moment" + H2 "A text can change the outcome." Two-column at `md`: left = `moment.body`; right = an example SMS card ("**Acme**: {moment.exampleSms}" — `DEMO_BUSINESS` is the constant "Acme") above a gold reply bubble (`moment.exampleReply`, `bg-bg-gold text-text-on-gold`).
+4. **MessagesSection** — locked to this category (`lockedCategory` + the three `messages*` overrides).
+5. **VariablesSection** — fed `variablesExample`.
+6. **CategoryDetails** (`category-details.tsx`) — "The details" Q&A. **Constant** eyebrow "The details" + H2 `entry.detailsHeading`. Renders `entry.qa` (`CategoryQA[]`) as cards: a bold `lead` + `body`, plus an optional gold-dot bullet `list`. Laid out as **two independently-packed flex columns** at `md`+ (left = items 0 & 2, right = 1 & 3) so a tall card doesn't force a dead gap beside a short one; desktop reading order stays Q1 · Q2 · Q3 · Q4.
+7. **Paperwork** (bucket 1, verbatim).
+8. **PaperworkFork** (`paperwork-fork.tsx`) — a single **landing-owned** gold link "What registration actually involves →", composed *after* the verbatim `<Paperwork />` (the shared component is never modified). Constant across categories; right-aligned and pulled up tight under Paperwork's padding (`-mt-14 sm:-mt-20`). Forks the reader who wants registration detail off the funnel. v1 → `/messages` (intended target: a `/10dlc-registration` page).
+9. **AiSection** (bucket 1).
+10. **Prove** (bucket 1).
+11. **HowItWorks** (`#how`, bucket 1) — the hero "How it works" CTA targets this; placed in the process cluster (Prove → How → Pricing).
+12. **Pricing** (bucket 1).
+13. **MessagesSection** — **second instance**, no props: the full home browser with all nine category pills, verbatim.
+14. **NumbersSection** (bucket 2b, verbatim).
+15. **Recognition** (`#why`, bucket 1) — the compliance-requirements accordion, at the tail.
+16. **FinalCta** (`#join`, bucket 1).
+17. **CategoryFarm** (`category-farm.tsx`) — a quiet sibling directory below the closing CTA (a directory, not a CTA). Border-t, `py-16 sm:py-20`, eyebrow "Keep exploring", two columns at `md`. Left ("Other messages RelayKit sends") links to the **other 8** category pages (`/messages/{urlSlug}`, real targets, current slug filtered out). Right ("Common questions") carries 2 standing `FARM_QUESTIONS` links — v1 placeholders → `/messages` (intended `/10dlc-registration` and `/consent-and-opt-outs`). Each `FarmLink` is a label + a trailing northeast arrow that nudges up-right on hover.
+
+**Sitemap.** `app/sitemap.ts` derives `CATEGORY_ROUTES` from `categorySlugs()` (`/messages/{slug}`) and includes all nine. (The deferred `/for/developer-tools` page is intentionally *excluded* — a `noindex` near-twin of `/messages/account-events`.)
+
+**Account-events provenance.** The old static `/messages/account-events` fork (`app/messages/account-events/{page,sections}.tsx`) was **deleted**; the dynamic route serves it as registry entry #1. Its `heroExamples` reuse the original five mock notification bodies (`ACCOUNT_EVENTS_HERO_EXAMPLES`).
+
+**Known carry-forwards.** Two `MessagesSection` instances render per page (the locked one + the full browser), so there are **two `id="configurator"` anchors** — the hero's `#configurator` CTA jumps to the first (locked) one. H1s and the Farm question-links carry v1 placeholders pending the concept pages.
 
 ---
 
