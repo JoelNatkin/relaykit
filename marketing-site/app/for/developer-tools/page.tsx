@@ -59,8 +59,8 @@ export default function DeveloperToolsLanding() {
       <MessagesSection
         defaultCategory="account-events"
         eyebrow="The messages"
-        heading="Developer tools & API platforms messages, ready to send."
-        bridge="Every message your app sends. Copy them, customize them, or write your own."
+        heading="Developer tools & API platforms messages. And all of the others."
+        bridge="All nine message categories are included — one registration."
       />
       {/* Variables sits right after Messages (D-436 placement) with a
           sub-matched account-events example. */}

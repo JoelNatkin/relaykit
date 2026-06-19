@@ -68,8 +68,8 @@ export default async function CategoryLandingPage({
       <MessagesSection
         defaultCategory={entry.lockedCategory}
         eyebrow="The messages"
-        heading={`${entry.name} messages — and every other kind.`}
-        bridge="Every message your app sends. Copy them, customize them, or write your own."
+        heading={`${entry.name} messages. And all of the others.`}
+        bridge="All nine message categories are included — one registration."
       />
       {/* Variables right after Messages, with a category-matched example. */}
       <VariablesSection example={entry.variablesExample} />
