@@ -28,6 +28,8 @@ export interface CategoryQA {
   body: string;
   /** Optional gold-dot bullet list under the body. */
   list?: string[];
+  /** Optional category tag — shown on sub-vertical pages where Q&As span multiple categories. Absent on category pages (redundant there). */
+  category?: string;
 }
 
 export interface CategoryLanding {

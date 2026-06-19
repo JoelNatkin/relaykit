@@ -5,6 +5,12 @@ import type { CategoryLanding, CategoryQA } from "@/lib/landing/categories";
 function QaCard({ item }: { item: CategoryQA }) {
   return (
     <div className="rounded-2xl border border-border-secondary bg-surface-card p-6">
+      {item.category ? (
+        <p className="mb-2 flex items-center gap-1.5 text-xs font-medium uppercase tracking-widest text-text-tertiary">
+          <span className="size-1.5 rounded-full bg-gold" />
+          {item.category}
+        </p>
+      ) : null}
       <h3 className="text-lg font-semibold text-text-primary">{item.q}</h3>
       <p className="mt-3 text-base leading-relaxed text-text-secondary">
         <span className="font-semibold text-text-primary">{item.lead}</span>{" "}
