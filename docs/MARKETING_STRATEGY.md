@@ -217,6 +217,16 @@ The marketing home is reframed around what exists today: a free, no-signup, univ
 
 **Trigger to revisit:** the free tool draws strong usage but conversion to the paid integration is weak once it ships (the cannibalization failure mode materializes); OR the integration ships and the page evolves to its post-launch state (remove "Shipping Summer 2026" + waitlist, add "Build with RelayKit" CTA beside "Copy messages," flip the lower sections to present tense — already scoped).
 
+**MD-22 — The 9-page message-category family is a deliberate AI/SEO retrieval bet** (Date: 2026-06-19)
+
+The nine /messages/{category} landing pages (account-events, orders, appointments, verification, support, team-alerts, waitlist, community, marketing) are authored as a retrieval surface, not a navigation convenience. Each page answers the developer questions a real builder searches — consent classification, transactional-vs-marketing, channel choice, cost, common mistakes — in the page's own words, so the page is the kind of source an LLM or search engine returns when a developer asks "how do I send order update texts." The bet: AI coding tools and search are the dominant discovery path for the launch audience, and owning a credible, specific answer per message category is cheaper and more durable than paid acquisition.
+
+Extends MD-9 (indie SaaS founders as the launch audience) and the blog corpus thesis (D-387/D-388 — relaykit.ai as the canonical retrieval home). The category pages and the blog are the same play at different altitudes: blog posts answer topic-level questions, category pages answer category-level ones.
+
+Rejected alternative: thin category stubs that exist only to route into the configurator. Rejected because a stub adds nothing an LLM would surface or a developer would trust — the retrieval value is the specific, research-backed content, not the routing.
+
+**Supersedes:** none.
+
 ## Tools and Force Multipliers
 
 ### AI roles
