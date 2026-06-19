@@ -57,8 +57,8 @@ interface MessagesSectionProps {
 export function MessagesSection({
   lockedCategory,
   eyebrow = "The messages",
-  heading = "Messages for every job.",
-  bridge = "From login codes to event invites, every message your app sends is ready to use.",
+  heading = "Every message category, included.",
+  bridge = "Author and test free. One registration when you're ready to send.",
 }: MessagesSectionProps = {}) {
   // Business name is the only field that carries forward — bound to the shared
   // configurator store so home and /messages stay in sync. "Acme" is shown as
