@@ -53,14 +53,14 @@ export default function DeveloperToolsLanding() {
       <StatusBand />
       <Moment />
 
-      {/* Messages locked to the sub's dominant category (account events).
-          Eyebrow overridden to "Account messages" so it doesn't collide with
-          the full home Messages browser further down ("The messages"). */}
+      {/* The full message browser, opened on the sub's dominant category
+          (account events) — the visitor can switch to any of the 9. This single
+          instance replaces the former locked-here + full-browser-at-bottom pair. */}
       <MessagesSection
-        lockedCategory="account-events"
-        eyebrow="Account messages"
-        heading="Account messages, ready to send."
-        bridge="The events that decide whether a customer stays."
+        defaultCategory="account-events"
+        eyebrow="The messages"
+        heading="Developer tools & API platforms messages, ready to send."
+        bridge="Every message your app sends. Copy them, customize them, or write your own."
       />
       {/* Variables sits right after Messages (D-436 placement) with a
           sub-matched account-events example. */}
@@ -79,9 +79,6 @@ export default function DeveloperToolsLanding() {
           mirroring the home's Test→How adjacency. */}
       <HowItWorks />
       <Pricing />
-      {/* The full home Messages browser, verbatim (all 9 category pills, default
-          Account events, home copy) — replaces the authored "Rest" secondaries. */}
-      <MessagesSection />
       <FinalCta />
       {/* Farm — quiet directory below the Closing CTA (replaces the Related rack). */}
       <Farm />
