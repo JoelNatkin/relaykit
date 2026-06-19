@@ -62,13 +62,14 @@ export default async function CategoryLandingPage({
       <StatusBand />
       <CategoryMoment entry={entry} />
 
-      {/* Messages locked to this category. Eyebrow overridden so it doesn't
-          collide with the full home Messages browser further down. */}
+      {/* The full message browser, opened on this category's pill — the visitor
+          can switch to any of the 9. This single instance replaces the former
+          locked-here + full-browser-at-bottom pair. */}
       <MessagesSection
-        lockedCategory={entry.lockedCategory}
-        eyebrow={entry.messagesEyebrow}
-        heading={entry.messagesHeading}
-        bridge={entry.messagesBridge}
+        defaultCategory={entry.lockedCategory}
+        eyebrow="The messages"
+        heading={`${entry.name} messages, included.`}
+        bridge="All nine message categories are included — one registration."
       />
       {/* Variables right after Messages, with a category-matched example. */}
       <VariablesSection example={entry.variablesExample} />
@@ -83,8 +84,6 @@ export default async function CategoryLandingPage({
           targets #how. Placed in the process cluster (Test → How → Price). */}
       <HowItWorks />
       <Pricing />
-      {/* The full home Messages browser, verbatim (all 9 category pills). */}
-      <MessagesSection />
       {/* Numbers + Problem sit at the tail on the category template (unlike the
           home / ship-it order) — the page leads on product, then closes with
           the case and the compliance reality right before the CTA. */}

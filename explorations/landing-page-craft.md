@@ -1,5 +1,5 @@
 # Landing Page Craft
-Status: exploring (2026-06-18)
+Status: exploring (2026-06-19)
 
 > **Scope:** Working reference for the sub-vertical landing page system — writing rules, page archetypes, reader/page JTBD, optimization findings, and capability-tracking. This is an exploration, not canon: it informs the pages but isn't load-bearing. The writing rules and research are settled thinking; templates and worked examples fill in over subsequent sessions. Graduates to a skill only if it earns it through use.
 
@@ -58,7 +58,7 @@ The production fold-back of a ship-it page (D-436). A page is built by **reusing
 
 - **B1 — shared chrome, imported as-is** from `marketing-site/components/home/*` (home copy verbatim, no per-page change): status band · problem (Recognition) · paperwork · build (AiSection) · test (Prove) · process (HowItWorks) · price (Pricing) · closing CTA (FinalCta). A chrome change lands once and propagates to every page.
 - **2a — authored fresh each page** (the sub's dominant story; content sourced from the sub's mockup): hero · moment · details/Q&A · "rest"/secondaries · related.
-- **2b — same home component, sub-specific DATA only** (optional props that default to the home's current behavior): **Messages** = the home `MessagesSection` locked to the sub's dominant category; **Variables** = the home `VariablesSection` fed a sub-matched example. **Numbers** is used verbatim (no per-sub stats yet — defer a stats-override mechanism until a sub needs different numbers).
+- **2b — same home component, sub-specific DATA only** (optional props that default to the home's current behavior): **Messages** = the home `MessagesSection` as the full browser, opened on the sub's dominant category via `defaultCategory` (all 9 pills stay switchable — a single instance, no separate locked + bottom-browser pair); **Variables** = the home `VariablesSection` fed a sub-matched example. **Numbers** is used verbatim (no per-sub stats yet — defer a stats-override mechanism until a sub needs different numbers).
 
 **Invariant:** Build, Test, and Numbers do **not** vary per sub. If a mockup tailored them (e.g. an account-events code snippet, "a payment failure, a sign-in" test copy), that reverts to the home copy on the production page.
 
@@ -69,7 +69,7 @@ The production fold-back of a ship-it page (D-436). A page is built by **reusing
 | 1 | Hero | 2a authored (animated phone notification, reduced-motion-aware) |
 | 2 | Status band | B1 |
 | 3 | Moment | 2a authored |
-| 4 | Messages | 2b (locked to dominant category) |
+| 4 | Messages | 2b (full browser, `defaultCategory` = dominant category) |
 | 5 | Variables | 2b (sub-matched example) |
 | 6 | Details / Q&A | 2a authored |
 | 7 | Numbers | 2b verbatim |
@@ -78,9 +78,10 @@ The production fold-back of a ship-it page (D-436). A page is built by **reusing
 | 10 | Build | B1 |
 | 11 | Test | B1 |
 | 12 | Price | B1 |
-| 13 | Rest (secondaries) | 2a authored — the honest secondary categories, named and framed editorially (NOT a second interactive browser) |
-| 14 | Related | 2a authored — sibling-sub chips (live cross-links once sibling pages exist) |
-| 15 | Closing CTA | B1 |
+| 13 | Related | 2a authored — sibling-sub chips (live cross-links once sibling pages exist) |
+| 14 | Closing CTA | B1 |
+
+**Single Messages instance (2026-06-19).** The page renders exactly **one** `MessagesSection` — the full browser at position 4 (row above), opened on the dominant category via `defaultCategory`. The earlier shape (a *locked* instance high on the page + a verbatim full browser near the foot, the latter standing in for an authored "Rest" secondaries section) is retired: one full browser does both jobs — leads on the dominant category and lets the reader explore all 9. There is no bottom Messages browser and no separate "Rest" row. Applied to `/for/developer-tools` and to every `/messages/{category}` page.
 
 **Routing / canonical (D-436):** URL = `/for/{short-slug}` (short, human-curated kebab — e.g. `/for/developer-tools`), NOT the long `/lib/constraints` data slug. The page resolves its sub data (`name`/`bucket`/rules) from `/lib/constraints` by the canonical data slug separately. Each page is self-canonical (`canonical` → its own path, never `/`).
 
@@ -103,8 +104,8 @@ A **second** page type, distinct from the `/for/{slug}` sub-vertical ship-it pag
 
 - **Route:** one dynamic route `marketing-site/app/messages/[category]/page.tsx` — `generateStaticParams` over the registry, `dynamicParams=false` (unknown slug 404s), per-category `generateMetadata`, self-canonical to `/messages/{urlSlug}` (never `/`). The `/messages` hub (the configurator) is the segment index and does not collide.
 - **Registry:** `marketing-site/lib/landing/categories.ts` — one `CategoryLanding` entry per category, authored by PM as a data block. The public **`urlSlug`** is split from the corpus key **`lockedCategory`**: equal for 7, differing for Orders (`orders`/`order-updates`) and Customer support (`support`/`customer-support`). The route param, canonical, sitemap, and Farm links key off `urlSlug`; `MessagesSection` + the corpus key off `lockedCategory`. Categories are **not** `/lib/constraints` sub-verticals — no constraints coupling.
-- **Three reuse buckets** (same idea as the ship-it skeleton): **B1** shared chrome imported verbatim (status band, problem, paperwork, build, test, process, price, closing CTA, plus the bottom full `MessagesSection` with all 9 pills); **2b** same home component fed registry data (`MessagesSection` locked via `lockedCategory`; `VariablesSection` given the entry's `variablesExample`; `NumbersSection` verbatim); **2a** authored-from-registry sections — Hero, Moment, Details/Q&A — rendered by prop-driven components in `marketing-site/components/landing/*`.
-- **Compose order** (category template — diverges from the ship-it skeleton: Numbers + Problem sit at the TAIL so the page leads on product and closes with the case + compliance reality before the CTA): Hero → Status band → Moment → Messages (locked) → Variables → Details/Q&A → Paperwork → Fork → Build → Test → How → Price → **Messages (full, all 9 pills)** → **Numbers** → **Problem (Recognition)** → Closing CTA → Farm.
+- **Three reuse buckets** (same idea as the ship-it skeleton): **B1** shared chrome imported verbatim (status band, problem, paperwork, build, test, process, price, closing CTA); **2b** same home component fed registry data (a single `MessagesSection` as the full browser, opened on the category via `defaultCategory` — all 9 pills switchable, no locked instance and no second bottom browser; `VariablesSection` given the entry's `variablesExample`; `NumbersSection` verbatim); **2a** authored-from-registry sections — Hero, Moment, Details/Q&A — rendered by prop-driven components in `marketing-site/components/landing/*`.
+- **Compose order** (category template — diverges from the ship-it skeleton: Numbers + Problem sit at the TAIL so the page leads on product and closes with the case + compliance reality before the CTA): Hero → Status band → Moment → **Messages (full browser, `defaultCategory` = category)** → Variables → Details/Q&A → Paperwork → Fork → Build → Test → How → Price → **Numbers** → **Problem (Recognition)** → Closing CTA → Farm. (One Messages section only — the former bottom full-browser instance is removed.)
 - **Hero notification:** `hero-notification-mock.tsx` takes the entry's `heroExamples: string[]` — it rotates (with the pause toggle) when there are 2+ examples and renders a single static notification (no toggle) when there's one. One-vs-animated is data-driven by length, not a flag.
 - **Farm:** the foot directory lists the **other 8 category pages** (`/messages/{urlSlug}` — real targets, all 9 are generated) plus the 2 standing concept/question links. (On a category page the Farm's "siblings" are the other categories, not other subs.)
 

@@ -49,6 +49,10 @@ interface MessagesSectionProps {
   // hidden — used by sub-vertical landing pages to pin the dominant category
   // (D-436). Defaults to the full pill browser (home behavior).
   lockedCategory?: string;
+  // When set (and not locked), seeds the initially-selected pill — the full
+  // browser still shows all pills and the visitor can switch freely. Used by
+  // landing pages to open on their category while keeping all 9 explorable.
+  defaultCategory?: string;
   eyebrow?: string;
   heading?: string;
   bridge?: string;
@@ -56,6 +60,7 @@ interface MessagesSectionProps {
 
 export function MessagesSection({
   lockedCategory,
+  defaultCategory,
   eyebrow = "The messages",
   heading = "Every message category, included.",
   bridge = "Author and test free. One registration when you're ready to send.",
@@ -64,7 +69,9 @@ export function MessagesSection({
   // configurator store so home and /messages stay in sync. "Acme" is shown as
   // the empty-state example only; it is never written to the store.
   const { state, setBusinessName } = useConfiguratorState();
-  const [selCat, setSelCat] = useState(lockedCategory ?? DEFAULT_CATEGORY);
+  const [selCat, setSelCat] = useState(
+    lockedCategory ?? defaultCategory ?? DEFAULT_CATEGORY,
+  );
   const [tone, setTone] = useState<VariantTone>("Standard");
   const [page, setPage] = useState(0);
   const touchX = useRef(0);
