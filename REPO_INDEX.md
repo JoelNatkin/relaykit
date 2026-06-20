@@ -62,6 +62,7 @@ Sandbox space for product, strategy, and design ideas being prototyped before ca
 | `MARKETING_STRATEGY.md` | 2026-06-19 (Session 142 — **MD-22** appended: the 9-page `/messages/{category}` family as a deliberate AI/SEO retrieval bet (extends MD-9 + the D-387/388 blog corpus thesis; Supersedes none). Prior Session 122 — MD-21.) | Marketing strategy: plays, MD-numbered decisions, channels, tools, sequencing. |
 | `MARKETING_STRATEGY_ARCHIVE.md` | 2026-05-01 | Deprecated marketing approaches with deprecation triggers and revisit conditions. |
 | `MESSAGE_AUTHORING_GUIDE.md` | 2026-05-22 (Session 103 — §7 STOP posture sharpened per D-412) | Canonical procedure for authoring a message-library category — method, message-shape rules, tone variants, technical disciplines, compliance baseline. |
+| `RELAYKIT_MESSAGE_CORPUS.md` | 2026-06-20 (Session 143 — created) | Plain-language reference of the full SMS corpus (all 9 categories, every message's Standard/Friendly/Brief variants), mirrored from `marketing-site/lib/message-library/`; the mapping source for sub-vertical research. Update in the same commit as any corpus name/body change. |
 | `TESTING_GUIDE_DRAFT.md` | 2026-05-01 | DRAFT — Phase 8 guide for AI tools building integration test/debug surfaces inside customer apps. |
 | `VERTICAL_TAXONOMY_DRAFT.md` | 2026-05-17 (v0.4) | DRAFT — vertical-taxonomy thinking from Experiments 3a/3b; Phase 5 design prerequisite. |
 | `AIRTABLE_SCHEMA.md` | 2026-05-31 (Session 123 — "Card rule bullets" column documented on the Sub-verticals table, D-423) | RelayKit Constraints Airtable base structure and connector reference. |
@@ -77,6 +78,15 @@ Writing/marketing reference material — not product canon. Strategy lives in MA
 |------|-------------|---------|
 | `writing/MARKETING_RUNBOOK.md` | 2026-06-12 (Session 133 — PM-authored) | Step-by-step runbook for the recurring weekly marketing blocks (`mk:` triggers — replies / post / makerkit / beta / invites); each block's steps + definition of done. |
 | `writing/CAPABILITY_FIRST_BLOG_PLAYBOOK.md` | 2026-06-12 (Session 132 — archived) | Reference framing for capability-first blog/IH posts (capability as hero, product as punchline). Archived idea-inventory, not a recipe; durable rules in VPP §3. |
+
+## Sub-vertical research (`docs/sub-verticals/`)
+
+Research library mapping software sub-verticals to RelayKit message-workflow coverage + corpus gaps. **PM-review-pending research, not product canon** — do not build product surface from an entry until PM approves it. Process in `sub-verticals/RESEARCH_PROCESS.md`; corpus mapping source is `RELAYKIT_MESSAGE_CORPUS.md`.
+
+| Path | Last touched | Purpose |
+|------|-------------|---------|
+| `sub-verticals/RESEARCH_PROCESS.md` | 2026-06-20 (Session 143 — PM-authored) | End-to-end process for researching, documenting, and maintaining the sub-vertical library — sub-agent prompts, run instructions, review checklist, corpus-expansion workflow. |
+| `sub-verticals/b2b-saas/` | 2026-06-20 (Session 143 — 18 entries, one file per `/for/<slug>` + `README.md` index; split from a monolith) | B2B SaaS & developer tooling family: 18 sub-vertical entries (12 Clear, 5 Conditional, 1 Not-yet). First of ~8 planned families. |
 
 ## Canonical sources by topic
 
