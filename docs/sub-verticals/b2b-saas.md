@@ -1188,3 +1188,1112 @@ https://www.zoho.com/sign/features-and-benefits/esign-sms-signing.html
 https://www.esignglobal.com/blog/use-sms-otp-verify-signer-identity-authentication-methods
 https://boldsign.com/blogs/signer-authentication-methods-boldsign/
 https://help.twilio.com/articles/4408675845019-SMS-Compliance-and-A2P-10DLC-in-the-US
+
+---
+
+## CRM / sales SaaS
+**Vertical:** B2B SaaS & developer tooling
+**Bucket:** Conditional
+**URL slug:** /for/crm-saas
+
+### What this builder is making
+A "HubSpot-for-X" platform where sales teams track leads, contacts, and deals through a pipeline of stages — capturing inbound leads, assigning them to reps, logging activity, and pushing deals from new to closed-won/lost. The market spans broad horizontal CRMs (HubSpot, Pipedrive, Zoho, Salesforce Starter, Capsule) and vertical/indie niche CRMs that wrap the same pipeline model around one industry's data shape. The builder's job is moving a contact through a deal pipeline fast and keeping the rep and the prospect in sync at each stage transition.
+
+### Why they need SMS
+The moment that matters is the inbound lead landing: a lead contacted within 5 minutes is up to 21x more likely to enter the sales process, but the assigned rep is rarely watching the CRM tab when the form fires. An internal SMS that pings the rep the instant a lead is assigned — and escalates to a manager if no response logs in 15 minutes — wins because phone alerts beat email/in-app for sub-5-minute speed-to-lead, where every minute of delay is a measurable conversion loss.
+
+### Message categories
+1. team-alerts — primary; the speed-to-lead rep ping, deal-stage and deal-won internal alerts, and manager escalation are all internal team notifications, the highest-volume RelayKit-eligible traffic here
+2. account-events — the CRM is itself a subscription SaaS; billing/trial/security alerts to the builder's own paying account-holders
+3. verification — phone-ownership at rep signup and step-up confirmation for sensitive CRM actions (export, ownership transfer)
+4. customer-support — ticket lifecycle when the CRM vendor supports its own users
+5. appointments — demo/discovery-call confirmations and reminders the rep books with a consenting prospect
+6. marketing — only via a separate EIN-gated campaign with explicit marketing consent; never the default path
+Excluded: order-updates (no physical fulfillment), community (not a community product), waitlist (CRMs don't gate access by queue)
+
+### Workflows
+
+**Speed-to-lead rep alert**
+Notify the assigned rep the instant a new lead lands so they make contact inside the 5-minute window.
+Sequence:
+1. team-alerts:system-alert — "New lead assigned" — fires the moment a lead is routed to a rep
+2. team-alerts:escalation-ping — "Lead unworked — claim or it escalates" — ACK-required ping if no rep response logs
+3. team-alerts:on-call-page — "Manager escalation" — urgent re-route to manager/backup rep after the grace window lapses
+Variable aliases (only where default would feel wrong):
+- severity: "Hot lead"
+- system_name: "Acme Corp — inbound demo request"
+- alert_type: "New lead assigned"
+- escalation_to: "your sales manager"
+
+**Deal-stage internal alert**
+Tell the deal owner and manager when a deal advances, stalls, or needs approval.
+Sequence:
+1. team-alerts:system-alert — "Deal moved stage" — fires on stage change or a high-value deal going quiet
+2. team-alerts:escalation-ping — "Approval needed" — ACK-required when a discount/deal needs manager sign-off
+Variable aliases (only where default would feel wrong):
+- severity: "Deal update"
+- system_name: "Globex — $40k renewal"
+- alert_type: "Moved to Negotiation"
+
+**Deal-won internal alert**
+Broadcast a closed-won deal to the rep and team.
+Sequence:
+1. team-alerts:system-alert — "Deal won" — fires when a deal moves to closed-won
+Variable aliases (only where default would feel wrong):
+- severity: "Closed won"
+- system_name: "Initech — $12k/yr"
+- alert_type: "Deal won"
+
+**CRM account lifecycle**
+Keep the builder's own paying customers (the sales teams) active and secure.
+Sequence:
+1. account-events:trial-ending — "Trial ending" — a few days before the CRM trial lapses
+2. account-events:payment-failed — "Card declined" — when the seat-based subscription card fails
+3. account-events:subscription-confirmed — "Plan updated" — on renewal, seat change, or cancellation
+4. account-events:new-device-sign-in — "New sign-in" — security alert on new-device access to the CRM
+5. account-events:account-suspended — "Account suspended" — on suspension for non-payment or policy
+
+**Rep onboarding security**
+Verify a new rep's phone and gate sensitive CRM actions.
+Sequence:
+1. verification:verification-code — "Verify your phone" — at rep signup
+2. verification:login-code — "Sign-in code" — SMS second factor
+3. verification:confirmation-code — "Confirm action" — before export, ownership transfer, or bulk delete
+
+**Demo & discovery scheduling**
+Confirm and remind on calls the rep books with a consenting prospect.
+Sequence:
+1. appointments:confirmation — "Demo confirmed" — when the prospect books
+2. appointments:reminder-distant — "Demo tomorrow" — day-before nudge
+3. appointments:reminder-proximate — "Demo in 1 hour" — hour-before nudge
+4. appointments:no-show-follow-up — "Missed demo — rebook" — after a missed call
+Variable aliases (only where default would feel wrong):
+- provider_name: "your account exec"
+
+**CRM vendor support**
+Run the support ticket lifecycle for the CRM's own users.
+Sequence:
+1. customer-support:ticket-received — "Ticket logged"
+2. customer-support:agent-response — "Reply on your ticket"
+3. customer-support:resolution-notification — "Ticket resolved"
+4. customer-support:csat-follow-up — "Rate our support"
+
+### Message gaps
+
+**STRETCH:team-alerts:system-alert**
+- **Classification:** Stretch
+- **Proposed corpus home:** stretch — system-alert carries the "New lead assigned / deal moved / deal won" payload, but it is framed as an infra/anomaly threshold breach (severity + alert_type + system_name on a system), and reframing it as a sales-pipeline event leans hard on variable aliasing; the fit gap is that a sales rep alert is an opportunity event, not a system-health event
+- **Proposed universal name:** Pipeline event alert (display alias for sales)
+- **Why:** the corpus has no sales-pipeline-native internal alert; system-alert is the closest structural match but reads as monitoring, not selling
+
+**GAP:lead-reply-notification**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** team-alerts:lead-reply
+- **Proposed universal name:** "Prospect replied" (display alias for sales)
+- **Why:** a core speed-to-lead loop is notifying the rep when the prospect texts back; no corpus message covers an inbound-reply ping to an internal user
+
+### Content constraints
+- Customer-facing sales SMS to prospects requires prior express consent per recipient; cold-outreach/prospecting texts without consent are prohibited and routinely rejected at registration (industry-wide 10DLC standard) — this is the gate that makes the sub-vertical Conditional
+- Generic campaign descriptions ("notifications," "customer updates") get rejected; the campaign use-case must be specific
+- Internal team-alert traffic (rep-to-rep, rep-to-manager) is standard and low-risk — the recipients are the builder's own employees who consented as users
+- Marketing/promotional sales blasts are a separate EIN-gated campaign with explicit marketing consent, never folded into the transactional/internal path
+- "Reply STOP to opt out" required on every transactional/internal body; SHAFT-C content prohibited
+- Unregistered A2P traffic on 10-digit numbers is carrier-blocked (AT&T, T-Mobile, Verizon) with no sender notification
+
+### Disambiguation
+This entry covers CRM/sales SaaS where the builder operates a pipeline product and the primary RelayKit fit is internal sales-team alerting plus the standard SaaS transactional layer — not a service business using a CRM to text its own customers. The customer-facing prospect-outreach layer is real but is the consent-gated, easily-mis-registered surface that drives the Conditional bucket; route those to marketing (consented) or appointments (booked, consenting) rather than treating prospect texting as a default transactional path. Where a vertical CRM also fulfills physical goods or runs a community, layer the relevant sub-vertical's workflows on top.
+
+### Sources
+https://www.salesforce.com/crm/crm-for-small-business/best-crm/
+https://www.g2.com/categories/crm/small-business
+https://capsulecrm.com/blog/saas-crm-for-small-business/
+https://pipelinecrm.com/blog/how-call-sms-leads/
+https://www.textline.com/blog/crm-sms-integration
+https://www.ringy.com/articles/crm-with-text-messaging
+https://www.gorattle.com/blog/salesforce-lead-assignment-notification-slack
+https://www.momentum.io/notifications
+https://aloware.com/blog/speed-to-lead
+https://callingly.com/blog/the-5-minute-rule-why-300-more-leads-convert-when-you-call-within-5-minutes/
+https://www.chilipiper.com/article/speed-to-lead-statistics
+https://help.twilio.com/articles/4408675845019-SMS-Compliance-and-A2P-10DLC-in-the-US
+https://justcall.io/blog/10dlc-compliance-guide.html
+https://callhub.io/blog/compliance/10dlc-2025-registration-callhub/
+
+---
+
+## Marketing automation / email-marketing SaaS
+**Vertical:** B2B SaaS & developer tooling
+**Bucket:** Conditional
+**URL slug:** /for/marketing-automation-saas
+
+### What this builder is making
+A "Mailchimp-for-X" platform: software that lets its own customers build, send, and automate email and SMS campaigns to *their* audiences — subscriber lists, segments, drip sequences, broadcasts. Examples span horizontal ESPs (general email/SMS marketing tools), niche creator-list tools (newsletter platforms for writers, coaches, course-sellers), and e-commerce-flavored campaign builders. The defining shape is two-sided: the developer runs a sending platform, and every customer is themselves a sender.
+
+### Why they need SMS
+When a customer's account crosses a deliverability cliff — bounce spike, sending suspension, sending-quota exhaustion mid-broadcast — the developer needs to reach that customer in seconds, because a suspended account means stalled campaigns and a churn risk that an email (sent through the very system that's degraded) may never surface. SMS wins because the alert is operationally urgent and the email channel is exactly the thing in doubt. The developer's *own* billing, trial, login, and account-health texts are standard transactional B2B SaaS messaging — the kind RelayKit serves cleanly.
+
+### Message categories
+1. account-events — primary: the developer-to-customer relationship is a paid SaaS subscription; payment, trial, and lifecycle texts are the load-bearing churn-critical sends.
+2. team-alerts — deliverability degradation, sending-suspension, and bounce-spike alerts are threshold/anomaly pings the customer must act on fast.
+3. verification — phone-ownership at signup plus step-up confirmation before sensitive actions (sender-domain changes, large-broadcast sends, payment-method changes).
+4. customer-support — ticket lifecycle when a customer hits a sending block or compliance hold and opens a case.
+5. waitlist — relevant only for closed-beta / invite-gated launches; many of these products gate early access.
+Excluded: appointments (no scheduling surface), order-updates (no physical fulfillment), community (no member-community layer in the core product), marketing (the developer's *own* promo-to-customers is possible but the second-layer end-customer marketing — see Disambiguation — is where TCPA risk concentrates and is out of RelayKit's served scope).
+
+### Workflows
+
+**Subscription lifecycle (developer → customer)**
+Keep the paying customer's account active across billing and plan events.
+Sequence:
+1. account-events:trial-ending — "Trial ending" — sent a few days before the free plan converts.
+2. account-events:payment-failed — "Payment failed" — card declined on renewal; account at risk of pause.
+3. account-events:subscription-confirmed — "Subscription confirmed" — renewal, upgrade to a higher send tier, or downgrade goes through.
+4. account-events:account-suspended — "Account suspended" — non-payment or policy hold suspends sending.
+Variable aliases (only where default feels wrong):
+- account_link: "your billing page"
+
+**Account security (developer → customer)**
+Protect the customer's sending account, which controls their entire audience list.
+Sequence:
+1. verification:verification-code — "Verification code" — phone-ownership proof at signup.
+2. account-events:new-device-sign-in — "New sign-in" — login from an unrecognized device.
+3. verification:confirmation-code — "Confirmation code" — step-up before a sensitive action (sender-domain change, payment-method edit, large broadcast).
+
+**Deliverability / sending-health alerts (developer → customer)**
+Warn the customer the moment their sending is degrading or blocked.
+Sequence:
+1. team-alerts:system-alert — "Sending alert" — bounce-rate or complaint-rate threshold crossed on the customer's account.
+2. team-alerts:service-level-alert — "Sending paused" — account-level send suspension triggered by the protection system.
+3. GAP:sending-quota-reached — "Send limit reached" — customer hit their plan's monthly/segment send cap mid-flight.
+Variable aliases (only where default feels wrong):
+- system_name: "your account"
+- severity: "Warning"
+- action_link: "your account health page"
+
+**Support escalation (developer → customer)**
+Move a blocked customer through a support case when sending is held.
+Sequence:
+1. customer-support:ticket-received — "Ticket received" — customer opens a case on a sending block.
+2. customer-support:agent-response — "Reply ready" — support responds with next steps.
+3. customer-support:resolution-notification — "Resolved" — hold lifted, sending restored.
+
+### Message gaps
+
+**GAP:sending-quota-reached**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer (a usage/quota-threshold message; close to team-alerts but it's a plan-limit event, not an incident)
+- **Proposed universal name:** plain English: "you've reached your sending limit" | display alias: "Send limit reached"
+- **Why:** quota exhaustion mid-broadcast is the highest-frequency operational alert for a sending platform and isn't an incident-style team-alert.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: You've reached your {{plan_limit}} send limit. Upgrade to keep sending: {{account_link}} Reply STOP to opt out.`
+  - Friendly: `Heads up - your {{workspace_name}} account hit its {{plan_limit}} send limit. Upgrade to keep going: {{account_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{plan_limit}} send limit reached. Upgrade: {{account_link}} STOP to opt out.`
+- **New variables:** `{{plan_limit}}` (e.g. "10,000/mo")
+
+**STRETCH:team-alerts:service-level-alert**
+- **Classification:** Stretch
+- **Proposed corpus home:** stretch: message fits an SLA/maintenance breach frame; here it's repurposed as a "your sending is paused" customer-facing block notice, which reads as infra-ops rather than account-state.
+- **Proposed universal name:** plain English: "your sending has been paused" | display alias: "Sending paused"
+- **Why:** the existing copy ("SLA breach, incident {{incident_id}}") is internal-ops phrasing; a customer whose account got auto-suspended needs account-state language, not incident-ID language.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Sending on your account is paused after a deliverability issue. Review and restore: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `Your {{workspace_name}} sending is paused after a deliverability flag. Here's how to restore it: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: Sending paused. Review: {{action_link}} STOP to opt out.`
+
+### Content constraints
+- Since Feb 1, 2025, carriers block 100% of unregistered A2P 10DLC traffic — the developer must register a brand + campaign for its own operational SMS regardless of volume.
+- The developer's own operational alerts (billing, sending-health, security) are transactional/ACCOUNT_NOTIFICATION — keep them factual; account-state alerts that prompt a paid upgrade drift toward promotional and draw stricter carrier filtering, so frame upgrade prompts as account-continuity, not offers.
+- Honor opt-outs from any reasonable method, not only "STOP" (FCC, April 2025), with removal required promptly — relevant to the developer's own send list.
+- TCPA liability does not transfer to a vendor: the developer remains liable for its own operational sends; eligibility here covers only that first layer.
+
+### Disambiguation
+The served surface is the developer's *own* operational SMS to its paying customers — billing, security, deliverability alerts — which is ordinary transactional B2B SaaS messaging and is Clear. The Conditional flag is the second layer: messages the developer's *customers* send to *their* audiences through the platform are marketing campaigns at scale, concentrating TCPA/PEWC exposure across thousands of downstream senders the developer doesn't control. RelayKit serves the platform's first-party operational messaging, not the multi-tenant campaign-sending layer; a builder asking RelayKit to power end-customer broadcast SMS is outside served scope and should register campaigns per-customer through a CPaaS sub-account model. Standard eligibility applies to the operational layer; the campaign-sending layer is the reason this sub-vertical is Conditional rather than Clear.
+
+### Sources
+https://mailchimp.com/solutions/sms-marketing-tools/
+https://www.brevo.com/
+https://www.attentive.com/blog/sms-and-email-marketing
+https://mytcrplus.com/solutions/saas-sms-compliance/
+https://sakari.io/blog/meeting-10dlc-compliance-with-opt-ins
+https://messageiq.io/blogs/avoid-costly-fines-a-guide-to-tcpa-and-can-spam-for-sms-marketing/
+https://activeprospect.com/blog/tcpa-text-messages/
+https://www.text-em-all.com/blog/sms-compliance-checklist-for-tcpa-safe-business-messaging
+https://knowledge.hubspot.com/marketing-email/why-is-my-email-suspended
+https://help.brevo.com/hc/en-us/articles/8603145402514-Best-practices-for-SMS-deliverability
+https://textus.com/blog/sms-for-saas
+
+---
+
+## Applicant tracking / recruiting platforms
+**Vertical:** B2B SaaS & developer tooling
+**Bucket:** Conditional
+**URL slug:** /for/applicant-tracking-saas
+
+### What this builder is making
+A "Greenhouse-for-X" applicant tracking system: software that moves candidates through a defined hiring pipeline (applied → screened → interviewed → offer → hired/rejected), centralizing applications, interview scheduling, and recruiter-candidate communication. The builder's customers are employers and their recruiters, but the message recipients are job candidates. Distinct from recruiting-agency operations software — this is the SaaS platform that hosts the pipeline, not an agency's own outbound desk.
+
+### Why they need SMS
+The moment is a stage transition a candidate is anxiously waiting on — interview confirmed, interview tomorrow, "you're moving forward," offer extended. The consequence of missing it is a no-show interview or a stalled top candidate who takes another offer, which is the platform's core conversion metric (time-to-hire, interview no-show rate). SMS wins because candidates ignore recruiting email but reliably read texts, and interview reminders measurably cut no-shows.
+
+### Message categories
+1. appointments — interview scheduling is the workflow heart: confirmation, day-before and hour-before reminders, reschedule, cancellation, and no-show follow-up map directly onto interviews.
+2. account-events — candidate-account lifecycle on the careers portal (new-device sign-in, suspended) and the verification-adjacent signup moment.
+3. verification — phone-ownership proof when a candidate creates a portal account or claims an application.
+4. waitlist — "talent pool"/silver-medalist queueing where a candidate is held for a future req; position/availability semantics fit loosely (Stretch territory).
+Excluded: order-updates (no physical fulfillment), marketing (cold candidate outreach is exactly the prohibited pattern — EIN-gated promo consent does not cover recruiting solicitation; keep status texts transactional), community (no member-community surface), team-alerts (internal ops, not candidate-facing), customer-support (candidate is not a support ticket).
+
+### Workflows
+
+**Interview scheduling and reminders**
+Get the candidate booked, confirmed, and present for a scheduled interview.
+Sequence:
+1. appointments:confirmation — "Interview confirmed" — sent when an interview slot is booked
+2. appointments:reminder-distant — "Interview tomorrow" — day-before nudge with reschedule link
+3. appointments:reminder-proximate — "Interview in 1 hour" — final no-show guard
+4. appointments:reschedule-confirmation — "Interview moved" — when the slot changes
+5. appointments:cancellation-confirmation — "Interview cancelled" — when the interview is called off
+6. appointments:no-show-follow-up — "We missed you — rebook?" — recover a candidate who missed
+7. appointments:post-appointment — "Thanks — feedback" — post-interview pulse (Stretch: candidate-experience survey, not provider feedback)
+Variable aliases (only where default feels wrong):
+- provider_name: "Maria Chen (Hiring Manager)" — the interviewer, not a clinician
+- appointment_time: "Thu Jun 25, 2:00pm (video)"
+- feedback_link: candidate-experience survey URL
+
+**Application and pipeline status progression**
+Keep the candidate informed as they move (or don't) through hiring stages.
+Sequence:
+1. GAP:application-received — "Application received" — acknowledge a submitted application
+2. GAP:status-advanced — "You're moving forward" — candidate advanced to the next stage
+3. GAP:action-needed — "Next step needed" — assessment/availability/documents requested with link
+4. GAP:not-moving-forward — "Update on your application" — respectful rejection notice
+Variable aliases (only where default feels wrong):
+- (uses new variables below)
+
+**Offer stage**
+Surface the time-sensitive offer the moment it's extended.
+Sequence:
+1. GAP:offer-extended — "Offer ready" — notify candidate an offer is available to review/sign
+Variable aliases:
+- (uses new variables below)
+
+**Candidate portal account**
+Stand up and secure the candidate's careers-portal login.
+Sequence:
+1. verification:verification-code — "Verification code" — phone-ownership proof at portal signup
+2. account-events:new-device-sign-in — "New sign-in" — portal accessed from a new device
+Variable aliases (only where default feels wrong):
+- workspace_name / business_name: the careers-site brand (e.g. "Acme Careers")
+
+**Talent-pool hold** (Stretch)
+Hold a strong-but-not-now candidate for a future opening.
+Sequence:
+1. waitlist:joined — "Added to talent pool" — Stretch: queue framing applied to candidate pool
+2. waitlist:your-turn — "A matching role opened" — Stretch: spot-open framing applied to a new req
+Variable aliases (only where default feels wrong):
+- claim_link: link to the newly-opened requisition
+
+### Message gaps
+
+**GAP:application-received**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer (recruiting status set)
+- **Proposed universal name:** Application received | "Application received"
+- **Why:** Acknowledging a submitted application has no corpus analog; order-confirmed is fulfillment-shaped, not candidacy-shaped.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: We received your application for {{job_title}}. We'll be in touch with next steps. Reply STOP to opt out.`
+  - Friendly: `Thanks for applying to {{job_title}} at {{workspace_name}} — we've got your application and will be in touch. Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: Application received for {{job_title}}. STOP to opt out.`
+- **New variables:** {{job_title}}
+
+**GAP:status-advanced**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer (recruiting status set)
+- **Proposed universal name:** Moved to next stage | "You're moving forward"
+- **Why:** A neutral stage-advance notification is the core ATS event and has no transactional corpus equivalent.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Good news on your {{job_title}} application — you're moving to {{next_stage}}. Details: {{status_link}} Reply STOP to opt out.`
+  - Friendly: `Update from {{workspace_name}}: your {{job_title}} application is moving forward to {{next_stage}}. More here: {{status_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{job_title}} advanced to {{next_stage}}. {{status_link}} STOP to opt out.`
+- **New variables:** {{next_stage}}, {{status_link}}
+
+**GAP:action-needed**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer (recruiting status set)
+- **Proposed universal name:** Next step needed | "Action needed"
+- **Why:** Candidate-side tasks (assessment, availability, documents) are a distinct prompt; no corpus message asks a recipient to complete a gated hiring step.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: One step left on your {{job_title}} application — {{action_needed}}. Complete it: {{status_link}} Reply STOP to opt out.`
+  - Friendly: `Quick step on your {{job_title}} application at {{workspace_name}}: {{action_needed}}. Here: {{status_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{job_title}} needs {{action_needed}}. {{status_link}} STOP to opt out.`
+- **New variables:** {{action_needed}}
+
+**GAP:offer-extended**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer (recruiting status set)
+- **Proposed universal name:** Offer ready | "Offer ready"
+- **Why:** The offer moment is the highest-stakes candidate notification and has no corpus home; it is not promotional and must stay transactional.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Your offer for {{job_title}} is ready to review. See it here: {{status_link}} Reply STOP to opt out.`
+  - Friendly: `Great news from {{workspace_name}} — your {{job_title}} offer is ready. Review it here: {{status_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{job_title}} offer ready. {{status_link}} STOP to opt out.`
+- **New variables:** none
+
+**GAP:not-moving-forward**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer (recruiting status set)
+- **Proposed universal name:** Not moving forward | "Application update"
+- **Why:** A respectful rejection is a real, frequent candidate text with EEOC-adjacent language sensitivity; no neutral "closed without success" corpus message exists.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: An update on your {{job_title}} application — we won't be moving forward this time. Thank you for applying. Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: Thank you for your interest in {{job_title}}. We won't be moving forward, but we appreciate your time. Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{job_title}} — not moving forward. Thank you. STOP to opt out.`
+- **New variables:** none
+
+**STRETCH:appointments:post-appointment**
+- **Classification:** Stretch
+- **Proposed corpus home:** stretch — appointments:post-appointment used for candidate-experience feedback; fit gap is "feedback on {{provider_name}}" frames the interviewer as a service provider rather than the process.
+- **Proposed universal name:** Post-interview pulse | "How was your interview?"
+- **Why:** Works for a candidate-experience survey but the provider-feedback framing reads oddly for an interview panel.
+
+**STRETCH:waitlist:joined**
+- **Classification:** Stretch
+- **Proposed corpus home:** stretch — waitlist:joined reused for talent-pool/silver-medalist holds; fit gap is queue/"your turn" semantics imply a first-come ordering, whereas talent-pool selection is req-match-based, not positional.
+- **Proposed universal name:** Added to talent pool | "Added to talent pool"
+- **Why:** Captures the "held for later" moment but the positional-queue language misrepresents how candidates are actually pulled from a pool.
+
+### Content constraints
+- Candidate consent must be captured at application/career-page/event — not cold-acquired; cold recruiting texts violate CTIA/carrier policy and TCPA regardless of delivery method (autodialer rules still apply to recruiting even where DNC does not).
+- TCPA exposure is $500–$1,500 per message with no cap; high-volume unconsented sends are the core risk.
+- Use a separate, specific SMS opt-in checkbox ("I consent to SMS about job opportunities and interview scheduling") distinct from the application submit action.
+- Register the 10DLC use case to match recruiting status/scheduling consent; status texts are transactional (ACCOUNT_NOTIFICATION-style), never MARKETING — do not route candidate solicitation through the marketing category.
+- EEOC-adjacent language hygiene: rejection and status texts must stay neutral and non-discriminatory; no references to protected characteristics, no implied reasons.
+- No aggressive outreach cadence — 2–4 candidate texts/week max before opt-outs spike; honor STOP immediately.
+- Identify the employer/brand in every message and disclose message frequency at opt-in.
+
+### Disambiguation
+ATS software (this entry) is the SaaS product that hosts an employer's hiring pipeline; the builder's customer is the employer and the recipient is a candidate who applied to a known req, so consent is naturally captured at application. Recruiting-agency operations software is a different product shape: an agency's outbound desk works passive, often un-opted-in candidates, where cold-outreach and aggressive-cadence risk is much higher and a marketing-consent posture may creep in. The distinction matters for RelayKit because the ATS pattern is cleanly transactional (status + scheduling on consented applicants) and qualifies under standard eligibility, whereas agency outbound sourcing trends toward prohibited cold-solicitation patterns. Keep this entry scoped to applicant-tracking platforms where the candidate has affirmatively applied or opted in.
+
+### Sources
+https://www.greenhouse.com/
+https://www.selectsoftwarereviews.com/buyer-guide/applicant-tracking-systems
+https://www.selectsoftwarereviews.com/blog/lever-vs-greenhouse
+https://textellent.com/blog/texting-platforms-for-recruiting/
+https://gohire.com/text-recruiting-software/
+https://goodtime.io/products/hire/text-recruiting/
+https://www.textline.com/blog/text-recruiting-templates
+https://emitrr.com/blog/recruiting-text-templates/
+https://textus.com/blog/101-text-message-templates-for-sales-and-recruiting-professionals
+https://gohire.com/text-recruiting-tcpa-compliance/
+https://www.text-em-all.com/blog/cold-recruiting-texts-violation-blocked
+https://www.sensehq.com/blog/candidate-text-messaging-best-practices-for-compliance-deliverability-and-engagement
+https://mytcrplus.com/solutions/staffing-recruiting-messaging-compliance/
+https://www.socialtalent.com/glossary/pipeline-stage
+
+---
+
+## Compliance / Legal-Ops / GRC tooling
+**Vertical:** B2B SaaS & developer tooling
+**Bucket:** Clear
+**URL slug:** /for/compliance-grc-saas
+
+### What this builder is making
+A "Vanta-for-X" compliance-automation platform that continuously monitors a customer's infrastructure against frameworks like SOC 2, ISO 27001, and HIPAA, auto-collecting evidence and surfacing failing controls. It manages the human side too: employee security training, policy acceptance, device/MDM checks, access reviews, and reviewer/approver sign-offs on a cadence. The product's value is catching drift and chasing deadlines before an audit window closes.
+
+### Why they need SMS
+The moment is a control falling out of compliance or an access-review/approval deadline arriving — and email digests are exactly where these alerts go unread, which the GRC tools themselves cite as a structural gap. The consequence is a missed remediation window or a gap in a Type 2 audit period that can't be undone. SMS wins because control owners, on-call security staff, and approvers act on a buzz in seconds where an "overdue review digest" sits unopened for days.
+
+### Message categories
+1. team-alerts — primary: failing-control alerts, severity-cued anomalies, ACK-required approvals, and SLA/audit-window breaches are the product's core notification surface and map directly to this category.
+2. customer-support — proactive outreach and service-status messaging fit when the platform itself flags friction or has an outage affecting compliance data sync.
+3. account-events — billing/lifecycle/security alerts for the customer's own account on the GRC platform (sign-in, suspension, trial).
+4. verification — phone-ownership and step-up confirmation at signup and before sensitive config changes.
+Excluded: appointments (no scheduled provider visits), order-updates (no physical/digital goods shipping), marketing (separate consent lane, not workflow-driven), community (no member community), waitlist (no queued-access model).
+
+### Workflows
+
+**Failing control / drift alert**
+Notify the responsible control owner the moment a continuous test detects a control out of compliance.
+Sequence:
+1. team-alerts:system-alert — "Control failing" — fires when an hourly/continuous test detects drift on a monitored control.
+2. team-alerts:escalation-ping — "Owner ACK" — requires the control owner to claim remediation or it escalates server-side.
+3. team-alerts:on-call-page — "Critical control down" — for high-severity controls (e.g., public S3 bucket, MFA disabled) needing immediate action.
+Variable aliases (only where default feels wrong):
+- severity: "Critical"
+- alert_type: "Control failing"
+- system_name: "MFA enforcement"
+- escalation_to: "security lead"
+
+**Reviewer / approval deadline**
+Push approvers and control owners toward an access-review or control-approval deadline before it lapses.
+Sequence:
+1. team-alerts:service-level-alert — "Review due soon" — informational notice when an approval deadline enters its window (e.g., 14 days prior).
+2. team-alerts:escalation-ping — "Approval needed" — ACK-required ping as the deadline approaches with no sign-off.
+3. team-alerts:on-call-page — "Deadline today" — final urgent nudge on the day a review/approval lapses.
+Variable aliases (only where default feels wrong):
+- severity: "Action needed"
+- system_name: "Q3 access review"
+
+**Audit-window / SLA breach**
+Alert the compliance owner when a control's evidence gap threatens the audit observation period.
+Sequence:
+1. team-alerts:service-level-alert — "Audit-window gap" — SLA-style breach tied to an incident/evidence reference.
+2. team-alerts:escalation-ping — "Owner ACK" — claim the remediation before the observation window is compromised.
+Variable aliases (only where default feels wrong):
+- system_name: "SOC 2 evidence — change mgmt"
+- incident_id: "GAP-4417"
+
+**Employee compliance task**
+Get an individual employee to complete an assigned security task (training, policy acceptance, device enrollment) on cadence.
+Sequence:
+1. GAP:employee-task-assigned — "Task assigned" — notify a person their security task is due.
+2. GAP:employee-task-reminder — "Task overdue" — recurring (weekly/daily) nudge until completion.
+Variable aliases (only where default feels wrong): none
+
+**Platform account lifecycle**
+Keep the customer's own GRC-platform account secure and active.
+Sequence:
+1. verification:verification-code — "Verify phone" — phone-ownership proof at signup.
+2. account-events:new-device-sign-in — "New sign-in" — alert on access from a new device (security-conscious buyer).
+3. account-events:trial-ending — "Trial ending" — lifecycle nudge before trial lapse.
+4. verification:confirmation-code — "Confirm change" — step-up before sensitive config (e.g., framework or integration scope change).
+Variable aliases (only where default feels wrong):
+- device_context: "Chrome on a new Mac"
+
+### Message gaps
+
+**GAP:employee-task-assigned**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** team-alerts:task-assigned
+- **Proposed universal name:** Compliance task assigned | "Task assigned"
+- **Why:** GRC platforms assign per-person security tasks (training, policy acceptance, device enrollment) that no existing message frames as an individual to-do.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: You have a security task due {{due_date}}: {{task_name}}. Complete it: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: a quick security task for you - {{task_name}}, due {{due_date}}: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{task_name}} due {{due_date}}. {{action_link}} STOP to opt out.`
+- **New variables:** task_name, due_date
+
+**GAP:employee-task-reminder**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** team-alerts:task-reminder
+- **Proposed universal name:** Compliance task overdue | "Task overdue"
+- **Why:** The reminder cadence (weekly/daily nudges until a task is done) is a distinct recurring message, not a one-time assignment.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Your security task {{task_name}} is still open. Finish it here: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: still need a minute for {{task_name}}? Wrap it up here: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{task_name}} still open. {{action_link}} STOP to opt out.`
+- **New variables:** task_name
+
+### Content constraints
+- Standard carrier rules apply (A2P 10DLC, TCR ACCOUNT_NOTIFICATION for the alert traffic). No vertical-specific restrictions.
+- Keep alert bodies factual and reference-based — link to the control/review rather than embedding evidence, credentials, or system internals.
+- Employee-task and reviewer messages are operational (transactional), not marketing; route any product-promotion to the consent-gated marketing lane.
+
+### Disambiguation
+Distinct from legal practice tools (professional services) such as matter management, case/docketing, or e-billing software; this is GRC/security-compliance automation software (Vanta, Drata, Secureframe, Sprinto, Scytale) whose users are security/compliance owners and the employees they govern, not attorneys serving clients. It is also distinct from generic incident/observability tooling: the alerts here are framework-control and audit-deadline driven, not raw infrastructure telemetry. The shared SMS surface with team-alerts is real but the triggers are compliance-state changes, not operational outages alone.
+
+### Sources
+https://www.vanta.com/resources/best-grc-software-solutions-for-enterprises
+https://drata.com/learn/compare/secureframe-vs-vanta-vs-drata
+https://help.drata.com/en/articles/8564234-controls-notifications-for-required-approvals-and-control-updates
+https://help.drata.com/en/articles/8564204-controls-required-approvals-stages-control-readiness-and-faq
+https://help.vanta.com/en/articles/11345841-security-awareness-trainings
+https://help.vanta.com/en/articles/11345363-getting-started-with-policies
+https://www.vanta.com/products/personnel-access
+https://help.vanta.com/en/articles/11345407-getting-started-with-the-vanta-device-monitor
+https://www.trustcloud.ai/grc/navigating-soc-2-automation-a-modern-approach-to-continuous-compliance/
+https://watchdogsecurity.io/soc2/evaluate-and-communicate-internal-control-deficiencies
+https://mytcrplus.com/solutions/saas-sms-compliance/
+
+---
+
+## HR / HRIS / payroll-adjacent SaaS
+**Vertical:** B2B SaaS & developer tooling
+**Bucket:** Conditional
+**URL slug:** /for/hr-hris-saas
+
+### What this builder is making
+A "Gusto-for-X" HR platform — an HRIS, payroll engine, or workforce-management tool that stores employee records and runs the lifecycle events around them: onboarding, time-off, payroll runs, benefits enrollment, and scheduling. Buyers are SMBs with hourly or deskless staff who don't live in email, so the product's value depends on reaching employees the moment an HR event fires. The builder is a developer wiring SMS into HRIS triggers, not an HR department texting by hand.
+
+### Why they need SMS
+The breakpoint is the gap between an HR event firing (offer countersigned, timesheet due, PTO approved, enrollment window open) and the employee acting on it — deskless and hourly workers miss email entirely, producing Day-1 no-shows, late timesheets, and lapsed enrollments. The consequence is operational: an unsigned I-9 blocks payroll, a missed timesheet delays a paycheck, an unfilled shift is uncovered. SMS wins because it reaches a phone the employee carries on the floor, with a 98% open rate where the HR inbox sits unread.
+
+### Message categories
+1. team-alerts — primary: scheduling and shift lifecycle (assign, remind, change, cancel, start) is the workhorse for the hourly/deskless workforce these tools serve, mapping one-to-one onto the corpus shift lifecycle.
+2. account-events — payroll, billing, and lifecycle alerts (timesheet/payroll deadlines, account/security) are churn- and pay-critical and get missed in email.
+3. verification — phone-ownership proof at onboarding and step-up confirmation for sensitive actions like direct-deposit changes (2FA carve-out).
+4. customer-support — employee HR-helpdesk tickets and proactive outreach map onto the ticket lifecycle when the platform offers an HR-support desk.
+Excluded: marketing (no promotional content to employees; SHAFT-C/EIN-gated marketing consent is the wrong frame for internal HR comms), order-updates (no physical fulfillment), appointments (provider-booking model doesn't fit recurring HR events), community (member-community framing doesn't fit an employer-employee relationship), waitlist (no queue-for-a-spot model).
+
+### Workflows
+
+**New-hire onboarding sequence**
+Drive a new hire from countersigned offer through first-day readiness so unsigned paperwork never blocks payroll.
+Sequence:
+1. verification:verification-code — "Verify your number" — confirm the new hire's phone at onboarding start.
+2. GAP:onboarding-task-due — "Action needed: paperwork" — prompt I-9 / W-4 / direct-deposit completion with a portal link.
+3. GAP:onboarding-task-due — "Reminder: paperwork" — escalating reminder as the start date nears.
+4. team-alerts:shift-scheduled — "First shift scheduled" — deliver Day-1 date, time, location, role.
+5. team-alerts:shift-reminder — "First-day reminder" — remind ahead of Day-1 start.
+Variable aliases (only where default feels wrong):
+- {{action_link}}: "your onboarding checklist"
+- {{role}}: "your first day"
+
+**Payroll & timesheet cycle**
+Keep the pay cycle on time by chasing timesheet submission and confirming pay events without exposing pay amounts.
+Sequence:
+1. GAP:timesheet-deadline — "Timesheet due" — remind employee to submit before the payroll cutoff.
+2. GAP:payroll-run-notice — "Payday confirmed" — confirm a pay run processed, no amount in body.
+Variable aliases (only where default feels wrong):
+- {{workspace_name}}: "Acme Payroll"
+
+**Scheduling & shift lifecycle**
+Assign, remind, change, and start shifts for an hourly workforce to cut no-shows and cover gaps.
+Sequence:
+1. team-alerts:shift-scheduled — "Shift assigned" — deliver date, time, location, role.
+2. team-alerts:shift-reminder — "Shift reminder" — remind ahead of shift start.
+3. team-alerts:shift-change — "Shift changed" — notify a swap, move, or reassignment.
+4. team-alerts:shift-cancellation — "Shift cancelled" — notify a cancelled shift.
+5. team-alerts:shift-start — "Shift starting / check in" — prompt clock-in at start.
+
+**Time-off (PTO) request lifecycle**
+Move a PTO request from submitted to a decision the employee can plan around.
+Sequence:
+1. GAP:timeoff-status — "Time-off request: received" — acknowledge a submitted request.
+2. GAP:timeoff-status — "Time-off request: decision" — confirm approved or declined with dates.
+Variable aliases (only where default feels wrong):
+- (none)
+
+**Benefits open-enrollment window**
+Drive enrollment completion before the window closes across an announcement-to-deadline sequence.
+Sequence:
+1. GAP:enrollment-window — "Enrollment open" — announce the window with a portal link.
+2. GAP:enrollment-window — "Enrollment reminder" — mid-window and 48-hour reminders.
+3. GAP:enrollment-window — "Enrollment closes today" — day-of deadline nudge.
+Variable aliases (only where default feels wrong):
+- {{action_link}}: "your benefits portal"
+
+**Sensitive-change confirmation**
+Confirm a high-risk account change (direct-deposit edit, banking update) before it takes effect.
+Sequence:
+1. verification:confirmation-code — "Confirm this change" — step-up code before a direct-deposit or banking change.
+
+**Account & security alerts**
+Keep employees informed on account access and lifecycle events on their self-service profile.
+Sequence:
+1. account-events:new-device-sign-in — "New sign-in" — flag a new-device login to the employee portal.
+2. account-events:account-suspended — "Account access change" — notify a deactivated/suspended profile.
+
+**Employee HR-helpdesk (when platform offers a support desk)**
+Run an employee HR question through the standard ticket lifecycle.
+Sequence:
+1. customer-support:ticket-received — "HR request received" — acknowledge a logged HR question.
+2. customer-support:agent-assigned — "HR rep assigned" — route to a specific HR rep.
+3. customer-support:agent-response — "HR reply" — notify a reply is waiting.
+4. customer-support:resolution-notification — "Request resolved" — close the request.
+
+### Message gaps
+
+**GAP:onboarding-task-due**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** account-events:onboarding-task-due
+- **Proposed universal name:** Required action pending / "Action needed"
+- **Why:** the onboarding paperwork chase (I-9, W-4, direct-deposit, policy ack) is the core HR-event that blocks payroll and has no corpus equivalent — it is a deadline-bound task prompt, not a billing or shift message.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Action needed - {{task_name}} is due by {{due_date}}. Complete it here: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: quick one - please finish {{task_name}} by {{due_date}}: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{task_name}} due {{due_date}}. {{action_link}} STOP to opt out.`
+- **New variables:** {{task_name}}, {{due_date}}
+
+**GAP:timesheet-deadline**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** account-events:timesheet-deadline
+- **Proposed universal name:** Submission deadline reminder / "Timesheet due"
+- **Why:** a missed timesheet delays a paycheck; this recurring cutoff reminder has no home in shift or billing categories.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Your timesheet is due by {{due_date}}. Submit it here to be paid on time: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: timesheet time - submit by {{due_date}} so payroll runs on time: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: Timesheet due {{due_date}}. {{action_link}} STOP to opt out.`
+- **New variables:** {{due_date}}
+
+**GAP:payroll-run-notice**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** account-events:payroll-run-notice
+- **Proposed universal name:** Payday confirmation / "Payday confirmed"
+- **Why:** confirming a pay run processed is a distinct, high-value HR event, and the constraint forbids putting an amount in the body — so it cannot reuse refund/subscription messages.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Your {{pay_date}} pay has been processed. View your pay stub: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: payday - your {{pay_date}} pay is processed. See your stub here: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{pay_date}} pay processed. Stub: {{action_link}} STOP to opt out.`
+- **New variables:** {{pay_date}}
+
+**GAP:timeoff-status**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** account-events:timeoff-status
+- **Proposed universal name:** Time-off request update / "Time-off update"
+- **Why:** PTO request acknowledgment and approve/decline is a defining HRIS event with no analog in any corpus category.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Your time-off request for {{date_range}} is {{request_status}}. Details: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: update on your time off ({{date_range}}) - it's {{request_status}}: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: Time off {{date_range}} {{request_status}}. {{action_link}} STOP to opt out.`
+- **New variables:** {{date_range}}, {{request_status}}
+
+**GAP:enrollment-window**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** account-events:enrollment-window
+- **Proposed universal name:** Enrollment window reminder / "Enrollment open"
+- **Why:** benefits open-enrollment is a deadline-bound, recurring HR event with measurable completion lift from SMS, and has no corpus equivalent; it is informational (link to portal), not promotional.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Benefits enrollment is open through {{deadline}}. Enroll here: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: open enrollment is on - choose your benefits by {{deadline}}: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: Enrollment closes {{deadline}}. Enroll: {{action_link}} STOP to opt out.`
+- **New variables:** {{deadline}}
+
+### Content constraints
+- No salary or compensation figures in the SMS body — payday and pay-run notices confirm the event and link to a stub; they never state an amount.
+- No termination, discipline, layoff, demotion, or adverse-action notices via SMS — these require documented, non-SMS channels; route to email/portal only.
+- EEOC-adjacent hygiene for recruiting/onboarding flows — no protected-class references (age, race, disability, family status); keep onboarding texts to logistics and task prompts.
+- TCPA applies even to employees — work-related automated texts still require opt-in (captured in onboarding paperwork or portal), with honored STOP on every transactional body.
+- Quiet-hours discipline: send within 8am–9pm local; defer non-urgent HR notices outside that window.
+- No PHI in benefits/enrollment texts — link to the portal; never name a condition, plan detail, or claim in the body (avoids HIPAA-adjacent exposure).
+- No direct-deposit or banking numbers in the body — confirm the change happened, gate the change itself behind a verification:confirmation-code.
+
+### Disambiguation
+This sub-vertical is the SaaS platform that employers buy to run HR — the HRIS/payroll/scheduling product itself — not a staffing agency, a recruiting-marketing tool, or an internal HR department texting by hand. It overlaps with general team-alerts (scheduling) but is broader: the payroll, onboarding-paperwork, PTO, and benefits events are its defining surface and are what generate the gaps above. Distinguish it from "appointment-based" verticals (no provider-booking model) and from "marketing-to-customers" verticals (audience is the employer's own staff, internal and non-promotional, so the marketing category and its consent regime do not apply).
+
+### Sources
+https://www.hubengage.com/employee-communications/sms-for-hr/
+https://textus.com/blog/workforce-management-strategy-sms-examples
+https://www.yourco.io/blog/shift-scheduling-via-text-message
+https://www.yourco.io/blog/pre-onboaring-sms-sequence
+https://www.udext.com/blog/sms-solutions-manufacturing-teams-hris-integration
+https://www.udext.com/blog/employee-text-messaging-types-usage
+https://gohire.com/text-messaging-for-hr/
+https://gohire.com/text-recruiting-for-employee-onboarding/
+https://gohire.com/text-recruiting-tcpa-compliance/
+https://www.txtimpact.com/blog/text-messaging-for-employees
+https://www.contactmonkey.com/blog/sms-compliance-guide
+https://www.text-em-all.com/sms-compliance
+https://www.text-em-all.com/blog/sms-compliance-for-staffing-agency
+https://flimp.net/can-you-mass-text-employees-rules-and-regulations-tcpa/
+https://gusto.com/resources/best-hris-systems
+https://www.rippling.com/blog/bamboohr-competitors
+https://www.joinhomebase.com/blog/best-hr-software
+
+---
+
+## Logistics / supply-chain / fleet management SaaS
+**Vertical:** B2B SaaS & developer tooling
+**Bucket:** Clear
+**URL slug:** /for/logistics-fleet-saas
+
+### What this builder is making
+A "Samsara-for-X" operations platform — TMS, dispatch software, last-mile delivery, fleet telematics, vehicle-maintenance tracking, or supply-chain visibility — sold to carriers, brokers, couriers, and fleet operators. The product tracks vehicles and shipments through a lifecycle (dispatch → in-transit → arrival → delivery → POD) and fires events off GPS geofences, route progress, and device diagnostics. It is two-sided: it coordinates the operator's own drivers and dispatchers while also keeping the end recipient informed about their delivery.
+
+### Why they need SMS
+The end recipient is waiting on a physical delivery and the "out for delivery / arriving in ~20 min" moment decides whether they're home to receive it — a missed delivery means a failed attempt, a redelivery cost, and a WISMO support ticket. SMS wins because the recipient never installed the operator's app and an email won't be seen in the 20-minute arrival window, while drivers and dispatchers need a reply-keyword channel (CONFIRM/ACK) that works from the cab without opening a dashboard. Geofence and route-progress events fire automatically, so a text is the only channel that reaches an app-less recipient at the exact moment the package is near.
+
+### Message categories
+1. order-updates — primary; the delivery-status lifecycle (confirmed → shipped → out-for-delivery → delivered) is the highest-volume traffic and the core consumer-facing job
+2. appointments — delivery-window booking/confirmation, the day-before and arrival reminders that mirror a scheduled delivery slot
+3. team-alerts — driver/dispatcher operational layer: dispatch assignment, exception/delay pings with ACK, vehicle maintenance and fault-code alerts
+4. verification — driver/dispatcher app login and phone verification at onboarding
+Excluded: marketing (delivery status is transactional; any promo/review-ask reclassifies it and breaks the consent lane — keep it out), community (no member community), customer-support (WISMO is real but handled inline by status texts here, not a ticket lifecycle), waitlist (no queue/availability model), account-events (operator billing is generic SaaS, not vertical-shaping)
+
+### Workflows
+
+**Last-mile delivery status (end recipient)**
+Keep the recipient informed from dispatch through proof-of-delivery so they're present at arrival.
+Sequence:
+1. order-updates:order-confirmed — "Delivery scheduled" — recipient's delivery is booked with an estimated window
+2. order-updates:order-shipped — "On the way / loaded" — shipment loaded and route assigned, tracking link issued
+3. order-updates:out-for-delivery — "Out for delivery" — driver starts the route, live tracking link sent
+4. GAP:driver-approaching — "Arriving soon / X stops away" — geofence/stops-away proximity fires the final heads-up
+5. order-updates:order-delivered — "Delivered + POD" — task completed at the stop, proof-of-delivery link attached
+Variable aliases (only where default feels wrong):
+- order_number: "Delivery #4471"
+- estimated_delivery: "today, 2-4pm"
+- tracking_link: "live map link"
+- return_link: "report a delivery issue"
+
+**Delivery-window scheduling (end recipient)**
+Let the recipient lock and be reminded of a delivery appointment slot.
+Sequence:
+1. appointments:confirmation — "Delivery window confirmed" — recipient's chosen delivery window is booked
+2. appointments:reminder-distant — "Delivery tomorrow" — day-before reminder of the window
+3. appointments:reminder-proximate — "Delivery in 1 hour" — same-day heads-up before the slot
+4. GAP:failed-delivery-reschedule — "Missed you / reschedule" — delivery attempt failed, reschedule link sent
+Variable aliases (only where default feels wrong):
+- provider_name: "your courier"
+- appointment_time: "Tue 2-4pm window"
+- reschedule_link: "pick a new window"
+
+**Dispatch coordination (driver / dispatcher)**
+Assign work and confirm route/exception changes with the operator's own drivers.
+Sequence:
+1. GAP:dispatch-assignment — "New load assigned" — a load/route is assigned to a driver, reply to accept
+2. team-alerts:shift-scheduled — "Route scheduled" — driver's route/shift for the day is published
+3. team-alerts:escalation-ping — "Delay — reply ACK" — exception/delay on an active route needs driver acknowledgment
+4. team-alerts:system-alert — "Route change" — route re-sequenced or pickup window moved
+Variable aliases (only where default feels wrong):
+- severity: "Delay"
+- alert_type: "Route disruption"
+- system_name: "Load #4471"
+- shift_date / shift_time / location: "Mon, 6am, Dock 3"
+
+**Fleet maintenance & diagnostics (fleet manager)**
+Surface service-due and fault-code events to whoever keeps the vehicles running.
+Sequence:
+1. GAP:maintenance-due — "Service due" — odometer/engine-hours/time threshold crossed for a vehicle
+2. GAP:vehicle-fault-code — "Fault code / check engine" — telematics device reports an active DTC
+3. team-alerts:system-alert — "Inspection/DVIR defect" — a driver inspection logs a failed item
+Variable aliases (only where default feels wrong):
+- severity: "Maintenance"
+- alert_type: "Service due"
+- system_name: "Truck 12"
+
+**Driver onboarding (driver)**
+Verify a new driver's phone and let them into the dispatch app.
+Sequence:
+1. verification:verification-code — "Verify your phone" — driver verifies phone at app signup
+2. verification:login-code — "Login code" — driver signs in to the dispatch app with SMS
+Variable aliases (only where default feels wrong):
+- business_name: "the dispatch app's name"
+
+### Message gaps
+
+**GAP:driver-approaching**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** order-updates:driver-approaching
+- **Proposed universal name:** Arriving soon / driver approaching — "Arriving soon"
+- **Why:** the geofence proximity "X stops away / arriving in ~20 min" moment is the single decision point for recipient presence, and order-updates has out-for-delivery but no proximity step
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Order {{order_number}} is arriving soon, about {{wait_estimate}} away. Track it: {{tracking_link}} Reply STOP to opt out.`
+  - Friendly: `Your {{workspace_name}} order {{order_number}} is almost there, about {{wait_estimate}} out. Track: {{tracking_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: Order {{order_number}} arriving in {{wait_estimate}}. {{tracking_link}} STOP to opt out.`
+- **New variables:** `{{wait_estimate}}` (reused from waitlist category)
+
+**GAP:failed-delivery-reschedule**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** order-updates:delivery-failed
+- **Proposed universal name:** Delivery attempt failed — reschedule — "Delivery missed"
+- **Why:** a failed delivery attempt is a distinct lifecycle branch (not a return) that needs a reschedule path, and no corpus message covers it
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: We missed you on order {{order_number}}. Reschedule delivery here: {{reschedule_link}} Reply STOP to opt out.`
+  - Friendly: `We tried to deliver your {{workspace_name}} order {{order_number}} but missed you. Pick a new time: {{reschedule_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: Order {{order_number}} delivery missed. Reschedule: {{reschedule_link}} STOP to opt out.`
+- **New variables:** none (`{{reschedule_link}}` reused from appointments)
+
+**GAP:dispatch-assignment**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** team-alerts:dispatch-assignment
+- **Proposed universal name:** Job/load assigned to driver — "New assignment"
+- **Why:** assigning a load/route to a driver with a reply-to-accept loop is the core dispatch action, and team-alerts covers shifts and incidents but not work assignment
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: New assignment {{system_name}}, pickup {{shift_time}} at {{location}}. Reply ACK to accept. Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: You've got a new load, {{system_name}}, pickup {{shift_time}} at {{location}}. Reply ACK to take it. Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: New load {{system_name}}, {{shift_time}}, {{location}}. Reply ACK. STOP to opt out.`
+- **New variables:** none (reuses team-alerts `{{system_name}}`, `{{shift_time}}`, `{{location}}`)
+
+**GAP:maintenance-due**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** team-alerts:maintenance-due
+- **Proposed universal name:** Vehicle service due — "Service due"
+- **Why:** odometer/engine-hours service reminders are a named, recurring fleet feature and the corpus has no maintenance-threshold message
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Service due on {{system_name}}, {{alert_type}}. Details: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}} heads up: {{system_name}} is due for service, {{alert_type}}. Details: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{system_name}} service due, {{alert_type}}. {{action_link}} STOP to opt out.`
+- **New variables:** none (reuses team-alerts `{{system_name}}`, `{{alert_type}}`, `{{action_link}}`)
+
+**GAP:vehicle-fault-code**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** team-alerts:vehicle-fault-code
+- **Proposed universal name:** Vehicle fault code / check-engine alert — "Fault code"
+- **Why:** an active DTC from the telematics device is a real-time diagnostic event distinct from a scheduled service reminder
+- **Draft variants:**
+  - Standard: `{{workspace_name}} {{severity}}: Fault code on {{system_name}}, {{alert_type}}. Details: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}} {{severity}}: {{system_name}} reported a fault, {{alert_type}}. Details: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}} {{severity}}: {{system_name}} fault, {{alert_type}}. {{action_link}} STOP to opt out.`
+- **New variables:** none (reuses team-alerts `{{severity}}`, `{{system_name}}`, `{{alert_type}}`, `{{action_link}}`)
+
+### Content constraints
+- TCR use case is DELIVERY_NOTIFICATION for the consumer status lane; driver/dispatcher coordination rides ACCOUNT_NOTIFICATION (Mixed) — both registrable, neither requires marketing consent.
+- Hard line: status texts must stay transactional. No discount codes, upsells, or "rate us / leave a review" asks inside a delivery message — promo content reclassifies it as marketing and breaks the implied-consent lane.
+- Deliverability: "package could not be delivered + link" is the most-impersonated smishing pattern in the US; carriers scrutinize public URL shorteners on this traffic. Favor branded/dedicated links over generic shorteners.
+- Recipient consent is implied/transactional when the phone number is provided for the delivery; marketing to that list still needs separate express written opt-in.
+- Driver/contractor messaging still needs a STOP path; 1099 drivers are a softer consent case than W-2 and should be treated like external contacts.
+- HOS/ELD regulatory alerts belong on the in-cab device, not 10DLC SMS — don't position SMS as the compliance-alert channel.
+- Standard carrier rules otherwise apply.
+
+### Disambiguation
+This sub-vertical is the operator-facing logistics *platform* (TMS, dispatch, telematics, last-mile), not a single merchant texting its own customers — the delivery-status messages here are sent on behalf of many carriers/couriers, and the same product also texts its own drivers and dispatchers. Distinguish it from generic e-commerce order-updates: an online store fires order-confirmed → shipped → delivered, but a logistics platform adds the geofence-driven proximity step, driver dispatch loops, and fleet-maintenance alerts that a merchant never touches. Also distinct from field-service/home-services dispatch: the unit of work here is a *shipment/vehicle* moving through space, not a technician visiting a fixed address, so the consumer lane is delivery-tracking rather than appointment-booking (though delivery-window scheduling overlaps).
+
+### Sources
+https://www.samsara.com/guides/geofencing
+https://developers.samsara.com/reference/getconfigurations
+https://onfleet.com/assignment-and-dispatching
+https://support.onfleet.com/hc/en-us/articles/360023669392-Notification-Set-Up-Triggers
+https://docs.onfleet.com/reference/webhooks
+https://www.fleetio.com/features/fleet-management-notifications
+https://www.fleetio.com/blog/auto-service-reminders-a-proactive-approach-to-fleet-maintenance
+https://helpcenter.gomotive.com/hc/en-us/articles/31053547120413-Maintenance-Reports-and-Alerts
+https://developers.project44.com/guides/shippers/visibility/ftl/get-tracking-updates
+https://developers.tive.com/docs/triggers
+https://www.messagedesk.com/blog/sms-text-dispatch-logistics-trucking-transportation
+https://textus.com/texting-guides/sms-templates-for-logistics-transportation-companies
+https://smartroutes.io/blogs/delivery-notifications/
+https://www.descartes.com/resources/knowledge-center/elevating-last-mile-customer-experience-real-time-communication
+https://route4me.com/platform/marketplace/notifications-and-alerts/notification-geofence-entered
+https://www.upperinc.com/blog/geofence-based-driver-tracking/
+https://www.ship24.com/help/how-to-handle-failed-delivery-attempts-from-couriers
+https://help.twilio.com/articles/4408675845019-SMS-Compliance-and-A2P-10DLC-in-the-US
+https://activeprospect.com/blog/sms-consent/
+https://www.infobip.com/blog/tcpa-compliance-sms
+
+---
+
+## Childcare / preschool / after-school program operational SaaS
+**Vertical:** B2B SaaS & developer tooling
+**Bucket:** Conditional
+**URL slug:** /for/childcare-saas
+
+### What this builder is making
+A "Brightwheel-for-X" operations platform for daycares, preschools, and after-school programs — handling check-in/check-out, attendance, tuition billing, daily reports, enrollment, and parent communication in one tool. The product's customers are center directors and staff; the SMS recipients are always the enrolled children's parents and guardians (adults), never the children. It sits between the front desk and the family phone, automating the moments a parent needs to know about now.
+
+### Why they need SMS
+A parent who hasn't dropped their child off by the scheduled time, or whose tuition just failed, needs to know within minutes — not whenever they next open the app or check email. The consequence of a missed daily-attendance or closure alert is a safety gap or a frantic afternoon; the consequence of a missed billing notice is involuntary churn for the center. SMS wins because parents juggling work and pickup don't live in a childcare app, but they read texts within minutes.
+
+### Message categories
+1. account-events — tuition/billing failures and lifecycle alerts are the churn-critical core; payment-failed and the family-account states map cleanly.
+2. appointments — check-in confirmations, late-arrival/absence follow-ups, and pickup reminders map to confirmation/reminder/no-show shapes.
+3. waitlist — enrollment is explicitly waitlist-driven (spot opens, claim, grace, missed); a near-exact fit.
+4. community — center-wide closure announcements, event invitations (conferences, open houses), and family onboarding map to community broadcasts.
+5. customer-support — incident-acknowledgment and "needs your attention" follow-ups map loosely to ticket/proactive shapes.
+6. verification — phone-ownership proof when a guardian registers their number on the family account.
+Excluded: order-updates (no physical fulfillment), team-alerts (staff-facing, not the parent recipient this product texts), marketing (promotional, EIN-gated — center comms are transactional/operational only).
+
+### Workflows
+
+**Daily attendance — check-in, late arrival, check-out**
+Confirm a child's arrival, chase a no-show, and confirm pickup so the parent always knows where their child is.
+Sequence:
+1. appointments:confirmation — "Checked in" — fires when the child is signed in at the kiosk/staff device.
+2. appointments:no-show-follow-up — "Hasn't arrived yet" — fires when a scheduled child is past the arrival window (the iCare "10-minutes-late" alert).
+3. appointments:confirmation — "Checked out" — re-used to confirm an authorized pickup/sign-out.
+Variable aliases (only where default feels wrong):
+- provider_name: "Sunny Days Preschool" (the center/classroom, not a clinician)
+- appointment_time: "today by 9:00 AM"
+
+**Tuition and family-account billing**
+Keep tuition collected and the family account active without the center chasing invoices.
+Sequence:
+1. account-events:payment-failed — "Autopay declined" — fires when a tuition autopay charge is declined.
+2. account-events:subscription-confirmed — "Payment received" — re-used to confirm a successful tuition payment or plan change.
+3. account-events:account-suspended — "Enrollment on hold" — fires when an unpaid balance puts the family account on hold.
+Variable aliases (only where default feels wrong):
+- workspace_name: "Sunny Days Preschool"
+- account_link: "your family billing page"
+
+**Enrollment and waitlist**
+Move a prospective family from the waitlist into an open spot before it lapses.
+Sequence:
+1. waitlist:joined — "On the enrollment waitlist" — fires when a family applies and joins the list.
+2. waitlist:position-update — "Moved up the list" — fires when the family advances in the queue.
+3. waitlist:almost-up — "A spot's opening soon" — fires as a slot nears availability.
+4. waitlist:your-turn — "A spot is open" — fires when an enrollment slot opens for the family.
+5. waitlist:grace-expiring — "Spot still held" — fires when the held spot is about to lapse.
+6. waitlist:missed — "Spot released" — fires when the family doesn't claim in time.
+Variable aliases (only where default feels wrong):
+- workspace_name: "Sunny Days Preschool"
+- claim_link: "confirm enrollment"
+
+**Center broadcasts — closures, events, conferences**
+Reach every enrolled family at once for a closure, emergency, or event.
+Sequence:
+1. community:moderation-update — "Center closure / urgent notice" — re-used for weather closures, early-pickup, or emergency alerts needing immediate attention.
+2. community:event-invitation — "Conference / open house invite" — fires when a parent-teacher conference, open house, or field trip is posted with an RSVP.
+3. community:live-event-reminder — "Event starting soon" — fires shortly before the scheduled event.
+Variable aliases (only where default feels wrong):
+- community_name: "Sunny Days Preschool"
+- event_name: "parent-teacher conferences"
+
+**Family onboarding and account setup**
+Verify a new guardian's number and welcome them onto the family account.
+Sequence:
+1. verification:verification-code — "Verify your number" — fires when a guardian adds their phone to the family account.
+2. community:welcome — "Welcome to the center" — re-used to greet a newly enrolled family.
+Variable aliases (only where default feels wrong):
+- business_name: "Sunny Days Preschool"
+
+### Message gaps
+
+**GAP:daily-report-ready**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer
+- **Proposed universal name:** daily report ready | "Daily report ready"
+- **Why:** The signature childcare moment — "today's report (meals, naps, activities) is ready" — has no transactional analog; it's a recurring digest pointer, not an appointment or order event.
+- **Draft variants:** [registry layer — not a universal/stretch corpus add]
+
+**GAP:incident-acknowledgment-required**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer
+- **Proposed universal name:** acknowledgment required | "Please acknowledge"
+- **Why:** An incident/health notice that requires a parent to confirm receipt is a real childcare trigger, but the content rules forbid putting the incident detail in the SMS body, so it can only ever be a content-free "log in and acknowledge" pointer — distinct from a support ticket.
+- **Draft variants:** [registry layer — not a universal/stretch corpus add]
+
+**STRETCH:appointments:no-show-follow-up**
+- **Classification:** Stretch
+- **Proposed corpus home:** stretch: message + fit gap — no-show-follow-up is framed as "we missed you, want to rebook?" (a post-miss feedback/rebook nudge), but the childcare need is a real-time safety alert ("your child hasn't arrived") that wants no rebook link and a more urgent tone.
+- **Proposed universal name:** non-arrival alert | "Child hasn't arrived"
+- **Why:** Reframing the rebook copy into a present-tense non-arrival safety alert is a significant shift, not a drop-in reuse.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: {{child_first_name}} isn't signed in yet for {{appointment_time}}. Please confirm with us. Reply STOP to opt out.`
+  - Friendly: `{{workspace_name}}: we don't have {{child_first_name}} signed in yet ({{appointment_time}}). Let us know? Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{child_first_name}} not signed in, {{appointment_time}}. Confirm? STOP to opt out.`
+- **New variables:** child_first_name (first name only — never a photo, medical, or behavioral detail)
+
+### Content constraints
+- No behavioral incident details in the SMS body — incident notices point to the app to view, never describe what happened.
+- No photo-of-child references without explicit consent framing; never attach or link a child's image in a text.
+- No medical, allergy, immunization, or dietary information in the body — health items become content-free "log in to view" pointers.
+- Recipients are parents/guardians (adults); the product never texts a minor — consent is the guardian's, captured per-number.
+- Child references stay minimal (first name at most); no full names, room/location-tracking specifics, or schedules that expose a child's whereabouts.
+- All bodies stay transactional/operational (TCR ACCOUNT_NOTIFICATION / DELIVERY tier); no promotional tuition-discount or referral content rides these flows.
+- Separate explicit SMS consent per guardian number, with STOP honored — distinct from the center's app/email consent.
+
+### Disambiguation
+Distinct from institutional K-12 software (SIS, LMS, district-wide gradebooks), where the recipient is often the student and messaging is academic; here the recipient is always a young child's parent and the content is care/operations, not coursework. Distinct from administrative healthcare/pediatric systems: although health items (allergies, immunizations, incidents) appear, this product is not a clinical or HIPAA system — health data must stay out of the SMS body entirely rather than be transmitted under a BAA. The conditional bucket reflects that the parent-consent and minors-adjacent content rules are an industry-wide standard the builder must already meet, so eligibility is standard provided those content constraints are enforced.
+
+### Sources
+https://mybrightwheel.com/childcare-centers/
+https://mybrightwheel.com/blog/9-essential-features-of-child-care-manager-software
+https://mybrightwheel.com/communication/
+https://sinch.com/engage/resources/business-messaging/sms-for-childcare/
+https://www.icaresoftware.com/features/email-text/
+https://completesms.com/industries/childcare/
+https://beetexting.com/childcare/
+https://childpilot.com/parent-engagement-parent-portal/
+https://mykidreports.com/childcare-attendance-tracking-software
+https://www.checkinkids.com/features/daycare-check-in-software
+https://help.twilio.com/articles/4408675845019-SMS-Compliance-and-A2P-10DLC-in-the-US
+https://talk-q.com/sms-messaging-regulation-in-the-us
+https://www.apten.ai/blog/a2p-dlc-compliance-2026
+
+---
+
+## IoT / connected-device platforms (consumer-facing)
+**Vertical:** B2B SaaS & developer tooling
+**Bucket:** Not yet, maybe not ever
+**URL slug:** /for/iot-saas
+> ⚠️ FUTURE REFERENCE ONLY — this sub-vertical is not currently served. Workflows and corpus additions documented here are for future use. Do not build into product surface until bucket changes to Clear or Conditional.
+
+### What this builder is making
+A consumer-facing IoT platform — the app and cloud behind a smart-home device line such as water-leak and door/window sensors, security cameras and doorbells, power-fail and environmental monitors. The builder owns the device firmware-to-cloud pipeline and the homeowner-facing app, and needs to push the device's physical-world events (leak detected, motion at the door, hub offline, battery low) to a person who may not have the app open. The recipient is the device owner — a consumer who bought hardware, not a B2B operator monitoring a fleet.
+
+### Why they need SMS
+The moment is a real-world event with a closing window — water on the floor, a door opened at 2am, the monitoring hub dropping offline. The consequence of a missed alert is property damage, a security gap, or silent loss of all monitoring, and a backgrounded push notification or unopened email routinely fails to land. SMS wins because it reaches the owner's lock screen with no app dependency and the highest open-and-read rate of any channel, which is exactly why leak and security vendors (YoLink, Elertus, iSocket) already sell SMS as the escalation tier.
+
+### Message categories
+1. team-alerts — primary: the leak/motion/offline/threshold events are severity-cued device alerts that map directly onto System alert, Escalation ping, On-call page, and Service-level alert framings.
+2. account-events — device-account lifecycle and security: New device sign-in (new app login to the home account), Account suspended, plus the security-status framing of a new device pairing.
+3. verification — phone-ownership proof when the owner adds their number to the device account to enable SMS alerts at all.
+4. customer-support — Service status alert (the vendor cloud is down, so alerts may not fire) and ticket lifecycle when an owner reports a malfunctioning device.
+Excluded: appointments (no scheduled-visit model), order-updates (hardware-purchase shipping is a one-time pre-account event, not the recurring product), community (no member community), marketing (the entire reason this is gated — promotional device-tied or geofenced messaging is the abuse vector to keep out), waitlist (no queue model in the device-alert product).
+
+### Workflows
+
+**Critical sensor event alert**
+Notify the owner the instant a sensor crosses a physical-world threshold (water, smoke/CO, open door, power loss).
+Sequence:
+1. team-alerts:system-alert — "Sensor triggered" — first-fire alert naming the sensor and condition
+2. team-alerts:escalation-ping — "Acknowledge or we escalate" — if unacknowledged, prompt the owner before notifying a secondary contact
+3. team-alerts:on-call-page — "Urgent: leak/intrusion now" — shortest, highest-severity form for an active emergency
+Variable aliases (only where default feels wrong):
+- system_name: "Kitchen Leak Sensor"
+- alert_type: "Water detected"
+- severity: "URGENT"
+- escalation_to: "your emergency contact"
+- action_link: "live view / device status link"
+
+**Device health / connectivity**
+Tell the owner when a device or hub goes offline or its battery is dying, because a dead sensor means silent loss of protection.
+Sequence:
+1. team-alerts:system-alert — "Device offline" — hub or sensor lost connectivity; monitoring is down
+2. team-alerts:service-level-alert — "Monitoring degraded" — informational notice that coverage is below normal until resolved
+3. GAP:device-battery-low — "Battery low" — recurring low-battery warning has no clean corpus home (see gaps).
+
+**Account security on the device account**
+Confirm and protect the home account that controls the devices.
+Sequence:
+1. verification:verification-code — "Verify your number" — owner adds phone to enable SMS alerts
+2. account-events:new-device-sign-in — "New app sign-in" — someone logged into the home account from a new device
+3. account-events:account-suspended — "Account suspended" — billing lapse or policy issue that would stop alerts
+Variable aliases (only where default feels wrong):
+- device_context: "a new phone in Austin, TX"
+
+**Cloud service status**
+Tell owners when the vendor cloud — not their device — is the problem, so a quiet system isn't mistaken for safety.
+Sequence:
+1. customer-support:service-status-alert — "Service issue" — vendor cloud outage; alerts may be delayed or not fire
+2. customer-support:account-issue-resolved — "Resolved, no action needed" — service restored
+
+### Message gaps
+
+**GAP:device-battery-low**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer (consumer-IoT device-health namespace) — or team-alerts:device-battery-low if generalized
+- **Proposed universal name:** Low battery warning | "Battery low"
+- **Why:** a dying sensor battery silently ends protection, and no corpus message frames a maintenance-action-needed device-health prompt distinct from a connectivity outage.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: {{device_name}} battery is low ({{battery_level}}). Replace it to keep monitoring active: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `Heads up - your {{workspace_name}} {{device_name}} battery is low ({{battery_level}}). Swap it soon so you stay covered: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: {{device_name}} battery low. Replace soon: {{action_link}} STOP to opt out.`
+- **New variables:** {{device_name}}, {{battery_level}}
+- **Status:** FUTURE — do not add to corpus until bucket changes.
+
+**GAP:armed-state-change**
+- **Classification:** Vertical-specific
+- **Proposed corpus home:** sub-vertical registry layer (consumer-IoT security namespace)
+- **Proposed universal name:** Security mode changed | "System armed/disarmed"
+- **Why:** a confirmation that the home security system switched armed/disarmed state (a security-relevant event owners want verified) has no analog in the corpus, which has no home-security mode concept.
+- **Draft variants:**
+  - Standard: `{{workspace_name}}: Your system was set to {{armed_state}} at {{event_time}}. Not you? Review: {{action_link}} Reply STOP to opt out.`
+  - Friendly: `Your {{workspace_name}} system is now {{armed_state}} (as of {{event_time}}). Wasn't you? Check here: {{action_link}} Reply STOP to opt out.`
+  - Brief: `{{workspace_name}}: System {{armed_state}} at {{event_time}}. Not you? {{action_link}} STOP to opt out.`
+- **New variables:** {{armed_state}}, {{event_time}}
+- **Status:** FUTURE — do not add to corpus until bucket changes.
+
+**STRETCH:team-alerts:escalation-ping**
+- **Classification:** Stretch
+- **Proposed corpus home:** stretch: team-alerts:escalation-ping reused for consumer emergency-contact escalation — fit gap is the ACK/on-call frame, which assumes a workplace responder owning a system, not a homeowner being asked to confirm an alarm before a secondary household/emergency contact is pinged.
+- **Proposed universal name:** Acknowledge before we escalate | "Acknowledge alert"
+- **Why:** the mechanic (require ACK, else escalate) fits, but "{{escalation_to}}" and the on-call/incident voice read as B2B ops and need reframing to a consumer household context.
+- **Status:** FUTURE — do not add to corpus until bucket changes.
+
+### Content constraints
+- TCR Special-category gate: consumer device alerts straddle Account Notification / Security Alert and, for hub-to-cloud traffic, Machine-to-Machine — all of which can require MNO vetting or pre/post approval and are not immediately available like Standard use cases. This vetting overhead and approval uncertainty is the core reason for the "Not yet, maybe not ever" bucket.
+- Device-alert manipulation is an abuse vector: a sender frame that lets an attacker spoof "leak detected / door open / system disarmed" can be weaponized to cause panic or to lure an owner home/away. Bodies must carry a clear {{workspace_name}} sender frame and never embed credentials or one-tap state-change links that act without re-auth.
+- Geofencing-based marketing is the disqualifying abuse vector: tying SMS to a device owner's location or presence (away-mode promotions, "you just left home" offers) is exactly the consumer-location-marketing pattern carriers and TCR treat as high-risk. No marketing category for this sub-vertical; alerts stay transactional and event-triggered only.
+- Consent must come from the device owner's verified number (opt-in at the account), not inherited from hardware purchase; alerts must honor STOP even though a safety-critical leak/intrusion alert losing SMS reach is a real UX tension to flag at design time.
+- Verification 2FA carve-out applies only to the verification-code path; all alert/account/support bodies carry "Reply STOP to opt out." (Brief: "STOP to opt out.").
+- Never frame any alert as a guaranteed-safety or guaranteed-detection outcome (platform constraint): a sensor or cloud failure can suppress an alert, so copy must not imply the owner will always be warned.
+
+### Disambiguation
+Consumer-facing IoT is distinct from B2B IoT operational/fleet monitoring: here the recipient is an individual homeowner who bought hardware and receives alerts about their own property, whereas B2B IoT pushes machine telemetry and threshold breaches to operators monitoring an industrial or commercial fleet (closer to the existing team-alerts operational use). The two share the device-alert mechanic but differ entirely on consent model, recipient, and abuse surface. This sub-vertical is gated "Not yet, maybe not ever" because consumer device alerts fall into TCR Special use-case territory (Security Alert / M2M) that requires carrier vetting and carries an inherent location-and-presence marketing abuse vector (geofencing) plus device-alert spoofing risk — a compliance and trust-and-safety burden that a single-project indie-developer product is not currently positioned to carry. If the bucket ever opens, the device-health and armed-state gaps and the consumer escalation stretch above are the corpus work to revisit.
+
+### Sources
+https://2smart.com/docs-resources/platform-features/how-to-use-notifications-in-iot-to-improve-your-smart-product-s-user-experience
+https://notify.events/en/smart-home
+https://www.amazon.com/YoLink-Sensors-Detection-Compatible-Assistant/dp/B084WYB8PM
+https://blues.com/blog/build-an-iot-smart-leak-detector-with-sms-alerts/
+https://mobiusa.com/products/smart-wifi-water-leak-sensor
+http://www.elertus.com/
+https://www.isocketworld.com/en/iSocket-Water-Sensor-ISWSNO1/
+https://support.yosmart.com/hc/en-001/articles/17988570459161-YoLink-App-Q-As
+https://shop.yosmart.com/products/ys7106
+https://support.simplisafe.com/conversations/product-requests-and-suggestions/outdoor-camera-motion-tied-to-alarm-system-armed-state-homeawayoff/6190c6828ea41ebb062412df
+https://ring.com/support/articles/478aj/set-up-motion-warning
+https://www.infobip.com/docs/essentials/usa-and-canada-compliance/us-messaging-use-cases
+https://www.tsgglobal.com/10dlc-what-you-need-to-know/
+https://help.twilio.com/articles/4408675845019-SMS-Compliance-and-A2P-10DLC-in-the-US
+https://telnyx.com/resources/sms-compliance
