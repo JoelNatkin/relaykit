@@ -15,3 +15,7 @@
 | Appliance repair | /for/appliance-repair | Clear |
 | Storage facilities (self-storage SaaS) | /for/self-storage | Clear |
 | Solar installation dispatch | /for/solar-installation | Clear |
+| Pet services (grooming, walking, boarding, training) | /for/pet-services | Clear |
+| Locksmith / emergency services | /for/locksmith | Conditional |
+| Moving services brokerages / aggregators | /for/moving-brokerages | Not yet maybe not ever |
+| Solar lead-generation | /for/solar-lead-gen | Not yet |
