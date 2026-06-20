@@ -14,3 +14,9 @@
 | Notary services / mobile notaries (in-person) | /for/notary-services | Clear |
 | Coaching / executive coaching (non-clinical) | /for/coaching | Clear |
 | Property management (rental ops) | /for/property-management | Conditional |
+| Legal practice tools (law-firm CRM, intake, case mgmt) | /for/legal-practice | Conditional |
+| Recruiting / staffing agencies | /for/recruiting-staffing | Conditional |
+| Real estate agents / brokerages (operations) | /for/real-estate-ops | Conditional |
+| Remote online notarization (RON) | /for/remote-notarization | Conditional |
+| Immigration services (visa/document prep, non-attorney) | /for/immigration-services | Not yet maybe not ever |
+| Private investigation / security services | /for/private-investigation | Not yet maybe not ever |
