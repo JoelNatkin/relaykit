@@ -16,3 +16,9 @@
 | Fan engagement / fan club platforms | /for/fan-engagement | Clear |
 | Nonprofit / charity / fundraising platforms (SaaS) | /for/nonprofit-platforms | Conditional |
 | Influencer marketplaces / brand-creator matchmaking | /for/influencer-marketplaces | Conditional |
+| Dating / matchmaking apps | /for/dating-apps | Not yet, maybe not ever |
+| Adult dating / hookup apps | /for/adult-dating | Not yet, maybe not ever |
+| Social discovery / friendship apps (non-dating) | /for/social-discovery | Not yet, maybe not ever |
+| Political / advocacy / cause-based organizing (platform SaaS) | /for/political-advocacy-platforms | Not yet, maybe not ever |
+| Religious / faith-based community tools (platform SaaS) | /for/faith-based-platforms | Not yet, maybe not ever |
+| Web3 / DAO governance & coordination tooling | /for/web3-dao | Not yet, maybe not ever |
