@@ -44,8 +44,6 @@ export default function DeveloperToolsLanding() {
       <MessagesWorkflowsSection />
 
       <Details />
-      <NumbersSection />
-      <Recognition />
       <Paperwork />
       {/* Fork — landing-owned link composed AFTER the verbatim <Paperwork />. */}
       <PaperworkFork />
@@ -56,6 +54,8 @@ export default function DeveloperToolsLanding() {
           mirroring the home's Test→How adjacency. */}
       <HowItWorks />
       <Pricing />
+      <NumbersSection />
+      <Recognition />
       <FinalCta />
       {/* Farm — quiet directory below the Closing CTA (replaces the Related rack). */}
       <Farm />

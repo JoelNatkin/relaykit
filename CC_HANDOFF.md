@@ -4,7 +4,7 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Status: on branch `feat/sub-vertical-registry` — four CC commits + a merge of `main`, NOT pushed (awaiting PM `gg`).** `.pm-review.md` holds `git show HEAD`. No new D-numbers (additive Phase 1C work; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This branch is **Phase 1C / A1–A3** work: the registry data + the Workflows display layer, now wired into the (noindex) `/for/developer-tools` page as the pattern A2 will generalize.
+**Status: on branch `feat/sub-vertical-registry` — five CC commits + a merge of `main`, NOT pushed (awaiting PM `gg`).** (Commit 5 — `fix: align developer-tools section order with category landing template`: pure JSX reorder in `page.tsx` moving `NumbersSection` + `Recognition` to after `Pricing` (before `FinalCta`), matching `app/messages/[category]/page.tsx`; no imports/logic change, tsc+eslint clean.)** `.pm-review.md` holds `git show HEAD`. No new D-numbers (additive Phase 1C work; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This branch is **Phase 1C / A1–A3** work: the registry data + the Workflows display layer, now wired into the (noindex) `/for/developer-tools` page as the pattern A2 will generalize.
 
 ---
 
