@@ -300,5 +300,31 @@ export const CUSTOMER_SUPPORT: Category = {
         },
       ],
     },
+    {
+      id: "request-received",
+      name: "Request received",
+      tooltip:
+        "Sent to acknowledge an inbound inquiry, lead, or application before a ticket number is assigned.",
+      description:
+        "An inbound-acknowledgment for lead-gen and intake flows — 'we got your request, we'll be in touch.' Fires before a ticket number exists, unlike ticket-received.",
+      variables: ["workspace_name"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: We got your request and will reach out shortly. Reply STOP to opt out.",
+          charCount: 102,
+        },
+        {
+          tone: "Friendly",
+          body: "Thanks for reaching out to {{workspace_name}} - we got it and will be in touch soon. Reply STOP to opt out.",
+          charCount: 119,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: request received, we'll be in touch. STOP to opt out.",
+          charCount: 85,
+        },
+      ],
+    },
   ],
 };
