@@ -201,7 +201,7 @@ export function WorkflowsSection({
                       />
                       {!isLast && (
                         <span
-                          className="w-px flex-1 bg-border-secondary"
+                          className="mt-[5px] w-px flex-1 bg-border-primary"
                           aria-hidden
                         />
                       )}
