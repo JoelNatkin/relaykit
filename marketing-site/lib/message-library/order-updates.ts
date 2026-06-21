@@ -80,6 +80,14 @@ const ORDER_UPDATES_VARIABLES: Variable[] = [
     source: "SDK call payload",
     example: "Visa credit",
   },
+  {
+    name: "action_link",
+    description:
+      "Link to the order action surface on the developer's own domain — quote review/approval, or delivery reschedule. RelayKit does not shorten or host this URL.",
+    budgetChars: 24,
+    source: "SDK call payload",
+    example: "yourapp.com/orders",
+  },
 ];
 
 export const ORDER_UPDATES: Category = {
@@ -297,6 +305,82 @@ export const ORDER_UPDATES: Category = {
           tone: "Brief",
           body: "{{workspace_name}}: {{refund_amount}} refunded for order {{order_number}} to your {{card_type}}. STOP to opt out.",
           charCount: 115,
+        },
+      ],
+    },
+    {
+      id: "order-ready-for-pickup",
+      name: "Order ready for pickup",
+      tooltip:
+        "Sent when a BOPIS, click-and-collect, or counter order is ready to collect.",
+      description:
+        "A 'it's ready, come get it' terminal state for any retailer or service offering pickup — distinct from the shipping/delivery arc.",
+      variables: ["workspace_name", "order_number"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: Order {{order_number}} is ready for pickup. Reply STOP to opt out.",
+          charCount: 96,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} order {{order_number}} is ready - come grab it. Reply STOP to opt out.",
+          charCount: 104,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Order {{order_number}} ready for pickup. STOP to opt out.",
+          charCount: 87,
+        },
+      ],
+    },
+    {
+      id: "quote-ready",
+      name: "Quote ready",
+      tooltip: "Sent when an estimate or quote is ready to review and approve.",
+      description:
+        "A pre-confirmation 'your quote is ready to review and approve' step common to every quote-driven order or service.",
+      variables: ["workspace_name", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: Your quote is ready. Review and approve here: {{action_link}} Reply STOP to opt out.",
+          charCount: 125,
+        },
+        {
+          tone: "Friendly",
+          body: "Good news - your {{workspace_name}} quote is ready. Take a look and approve: {{action_link}} Reply STOP to opt out.",
+          charCount: 136,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Quote ready. Review: {{action_link}} STOP to opt out.",
+          charCount: 94,
+        },
+      ],
+    },
+    {
+      id: "delivery-attempt-failed",
+      name: "Delivery attempt failed",
+      tooltip: "Sent when a delivery attempt could not be completed.",
+      description:
+        "Sent when a delivery attempt could not be completed, with a path to reschedule — sits between out-for-delivery and delivered.",
+      variables: ["workspace_name", "order_number", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: We couldn't deliver order {{order_number}} today. Reschedule here: {{action_link}} Reply STOP to opt out.",
+          charCount: 144,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} order {{order_number}} couldn't be delivered today. Let's find another time: {{action_link}} Reply STOP to opt out.",
+          charCount: 158,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Order {{order_number}} delivery failed. Reschedule: {{action_link}} STOP to opt out.",
+          charCount: 123,
         },
       ],
     },
