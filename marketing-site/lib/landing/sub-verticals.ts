@@ -1,4 +1,5 @@
 import type { CategoryQA } from "@/lib/landing/categories";
+import type { VariablesExample } from "@/components/home/variables-section";
 
 // Sub-vertical landing registry (Phase 1C / A3). Each entry describes one
 // `/for/{slug}` page: its SEO/hero copy, the Q&A set, the default configurator
@@ -40,6 +41,7 @@ export interface SubVerticalLanding {
   qa: CategoryQA[];
   defaultCategory: string;
   workflows: Workflow[];
+  variablesExample?: VariablesExample;
 }
 
 export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
@@ -289,6 +291,154 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
           {
             corpusId: "customer-support:resolution-notification",
             displayName: "Ticket resolved",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "customer-support-saas",
+    dataSlug: "customer-support-helpdesk-saas",
+    name: "Customer support SaaS",
+
+    metaTitle: "SMS for customer support & helpdesk SaaS — RelayKit",
+    metaDescription:
+      "Add ticket-lifecycle text messages — logged, replied, resolved — to your helpdesk or shared-inbox product. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Customer support SaaS",
+    h1: "Text messaging for customer support apps.",
+    heroBody:
+      "Ticket updates, service alerts, billing saves — the messages that keep a support conversation moving.",
+    heroExamples: [
+      "Acme support: ticket #48213 has a reply from Jordan. View it: help.acme.app/t/48213",
+      "Acme support: we're aware of a service issue and working on it. ETA around 3pm ET.",
+      "Acme: card ending 4242 was declined. Update payment to keep your account active: acme.app/billing",
+      "Acme support: ticket #48213 is resolved. Still need help? help.acme.app/t/48213",
+    ],
+
+    moment: {
+      body: "A customer opens a ticket, gets a reply four hours later, and never sees it. The ticket sits unanswered, the customer files a duplicate, and the agent queue doubles. A text closes that loop in seconds.",
+      exampleSms: "Acme support: ticket #48213 has a reply from Jordan. View it: help.acme.app/t/48213",
+      exampleReply: "Just saw it, thanks",
+    },
+
+    qa: [
+      {
+        q: "How do I route inbound replies from a ticket-update text back into the ticketing system?",
+        lead: "You set up a webhook in RelayKit that forwards inbound MO messages to your backend.",
+        body: "When a customer replies to a ticket-update text, the reply hits RelayKit's inbound handler, which fires a webhook to your endpoint. From there:\n- Match the sender's phone number to an open ticket\n- Append the message as a customer reply in your normal agent queue\n- STOP replies are flagged opted-out by RelayKit before your webhook sees them",
+      },
+      {
+        q: "Should the ticket-update texts come from the helpdesk platform's brand or from the end customer's workspace name?",
+        lead: "From the end customer's workspace — the one who owns the ticket.",
+        body: "The sender frame in each message should be the business the end customer opened a ticket with, not the name of your helpdesk software. If you're powering Acme's support inbox, the message says \"Acme support: ticket #48213 has a reply.\" This is also how the TCR registration works — the workspace registering with RelayKit is Acme, not your platform.",
+      },
+      {
+        q: "Should the ticket-update text fire on every internal agent reassignment, or only on customer-visible updates?",
+        lead: "Only on customer-visible updates — reassignments are internal routing, not customer events.",
+        body: "Firing on every reassignment trains customers to ignore the thread. The right triggers are: ticket received, first substantive agent reply, and resolved. Agent-assigned is worth sending once if your product emphasizes named accountability — but only the first assignment, not every handoff. Internal escalations, queue moves, and tag changes never warrant a customer text.",
+      },
+      {
+        q: "How many ticket-lifecycle texts is too many for a single ticket?",
+        lead: "Four is the natural ceiling — logged, agent assigned, agent replied, resolved.",
+        body: "Beyond four, customers start ignoring the thread or opting out. CSAT belongs in email, not a fifth text — by the time a ticket is resolved, a satisfaction rating via SMS feels like noise. If a ticket bounces between agents or takes multiple reply cycles, only send the \"agent replied\" text once per substantive update, not once per internal reassignment.",
+      },
+    ],
+
+    defaultCategory: "customer-support",
+
+    workflows: [
+      {
+        id: "ticket-lifecycle",
+        displayName: "Ticket lifecycle",
+        description: "Keeps a customer informed from open to close without making them check the portal.",
+        steps: [
+          {
+            corpusId: "customer-support:ticket-received",
+            displayName: "Ticket logged",
+            variableAliases: {
+              ticket_number: "48213",
+            },
+          },
+          {
+            corpusId: "customer-support:agent-assigned",
+            displayName: "Agent assigned",
+            variableAliases: {
+              ticket_number: "48213",
+              agent_name: "Jordan",
+            },
+          },
+          {
+            corpusId: "customer-support:agent-response",
+            displayName: "Agent replied",
+            variableAliases: {
+              ticket_number: "48213",
+              ticket_link: "help.acme.app/t/48213",
+            },
+          },
+          {
+            corpusId: "customer-support:resolution-notification",
+            displayName: "Ticket resolved",
+            variableAliases: {
+              ticket_number: "48213",
+              ticket_link: "help.acme.app/t/48213",
+            },
+          },
+        ],
+      },
+      {
+        id: "service-incident",
+        displayName: "Service incident broadcast",
+        description: "Tells affected users about a live outage and confirms when it clears.",
+        steps: [
+          {
+            corpusId: "customer-support:service-status-alert",
+            displayName: "Service issue",
+            variableAliases: {
+              eta: "around 3pm ET",
+            },
+          },
+          {
+            corpusId: "customer-support:account-issue-notification",
+            displayName: "Issue resolved",
+          },
+        ],
+      },
+      {
+        id: "billing-lifecycle-save",
+        displayName: "Billing & lifecycle save",
+        description: "Catches churn-critical billing events the customer would miss in email.",
+        steps: [
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Card declined",
+          },
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Plan confirmed",
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Account suspended",
+          },
+        ],
+      },
+      {
+        id: "account-security",
+        displayName: "Account security",
+        description: "Proves phone ownership at signup and gates sensitive account actions behind a confirmation code.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Signup code",
+          },
+          {
+            corpusId: "verification:confirmation-code",
+            displayName: "Action confirmation",
           },
         ],
       },
