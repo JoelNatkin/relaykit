@@ -1,38 +1,37 @@
-# CC_HANDOFF — Session 144: sub-vertical research program complete + corpus expansion merged (2026-06-21)
+# CC_HANDOFF — Session 145: sub-vertical registry + WorkflowsSection scaffolding (2026-06-21)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Status: ✅ all merged + pushed to `origin/main`.** Working tree clean except untracked `.claude/settings.local.json` (do not commit). No new D-numbers; decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B (Sinch outbound delivery). The sub-vertical work runs as **MASTER_PLAN Phase 1C** (parallel stream, not a launch gate).
+**Status: on branch `feat/sub-vertical-registry`, ONE commit, NOT pushed — awaiting PM `gg`.** Per the task spec, `.pm-review.md` holds `git show HEAD`; do not push until PM approves the Vercel preview. No new D-numbers (additive Phase 1C scaffolding; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This is **Phase 1C / A3 (workflow definitions)** groundwork — the first registry data + the component the A2 dynamic `/for/[slug]` route will consume.
 
 ---
 
-## What this session did (three arcs, all on `main`)
+## What this session did (one commit, three tasks)
 
-**1. Sub-vertical research program — COMPLETE (all 8 families).**
-130 entries across `docs/sub-verticals/{family}/`, one file per `/for/<slug>` + a README index per family: b2b-saas (18), financial-services (13), healthcare (14), home-local-services (15), professional-services (16), retail-hospitality (18), creator-community (18), civic-public-sector (18). Civic & Creator families + the report were authored this session (general-purpose research sub-agents, one per sub-vertical, batched; each validated against the corpus before commit). Process doc: `sub-verticals/RESEARCH_PROCESS.md`. **PM-review-pending research, not product canon.**
+`feat: sub-vertical registry types, developer-tools entry, WorkflowsSection component`
 
-**2. `UNIVERSAL_MISS_REPORT.md` — dedup of corpus gaps.**
-Extracted all **146 Universal-miss + 136 Stretch** flags across the 8 families (8 parallel per-family extraction agents), grouped into **~46 semantic patterns**: 26 recommended corpus additions, 2 refinements, 1 new-category candidate (Documents), 19 demoted to vertical-specific. This report is the spec the corpus expansion was built from.
+**1. `marketing-site/lib/landing/sub-verticals.ts` (new).** The sub-vertical landing registry: `WorkflowStep` / `Workflow` / `SubVerticalLanding` interfaces + `SUB_VERTICAL_LANDINGS` (one entry — **developer-tools**, PM-authored, with 9 curated workflows) + helpers `findSubVerticalLanding(urlSlug)` / `subVerticalSlugs()`. Workflows are a display layer over the universal corpus: each step either points at a corpus message via `corpusId` (`"category-id:message-id"`) or carries its own `customVariants`; `variableAliases` supply contextual placeholder text.
 
-**3. Corpus expansion — MERGED to `main`** (`feat/corpus-expansion`, merge `160316e`, build-verified, pushed).
-New **Documents** category (`documents.ts`, 5 msgs) + **23** messages across account-events (+12), appointments (+4), order-updates (+3), customer-support (+1), team-alerts (+3) = **28 new messages, 10 categories / 83 messages total**. Two metadata-only refinements (appointments:confirmation optional `provider_name`; team-alerts:system-alert generalized beyond infra). `index.ts` wired (Documents in `CATEGORIES` after Account events, before Marketing). `RELAYKIT_MESSAGE_CORPUS.md` in lockstep (261/261 bodies verified). tsc + eslint + production build all clean.
+**2. `marketing-site/app/for/developer-tools/page.tsx` (edit).** Removed the broken `import { findSubVertical } from "../../../../lib/constraints"` (that module doesn't exist under `marketing-site/lib`) plus the unused `SUB` resolve block and the now-orphaned `DATA_SLUG` const. `SUB` was never consumed by any rendered component. `URL_SLUG` kept (canonical). Page still prerenders static — constraints-data resolution is deferred to the A2 dynamic route.
 
-**Plus:** PM added **MASTER_PLAN Phase 1C — Sub-vertical system** (`585f036`) — the 88-page `/for/{slug}` distribution engine, sub-phases A1–A6. This close-out also brought REPO_INDEX's doc inventory current (8 family rows + UNIVERSAL_MISS_REPORT + Documents category + corpus-expansion summary).
+**3. `marketing-site/components/home/workflows-section.tsx` (new).** Presentational `WorkflowsSection({ workflows, businessName, tone })` — two-column stepped cards matching the home MessagesSection card chrome (`rounded-xl border-border-secondary bg-surface-card px-[18px] py-4`). Each step: gold dot + connector rail + step name + always-visible body. Body resolved from `CATEGORIES` by `corpusId` (or `customVariants[tone.toLowerCase()]`), then `{{workspace_name}}`→businessName (`"Acme"` fallback) + `variableAliases` substitutions. No expand/copy/GAP-badge; parent owns controls.
 
-## ⚠ Carry-forwards / known deviations (also in `.pm-review.md` history)
-- **Corpus-expansion commit-message counts** read "14 messages to account-events" / "4 to order-updates" (dictated strings) where **12 / 3** actually landed (the itemized spec; total still 28). Bodies + diff are correct. PM may want those two messages amended (history rewrite; already pushed, so would need force-push — likely not worth it).
-- **Em-dashes → ASCII hyphens** normalized in all new message bodies (em-dash isn't GSM-7; would trip `compliance.ts`). Same length, char math unchanged.
-- **task-reminder Friendly = 159 chars** worst-case (tight but valid single segment); a few others 157–158. All <160.
-- **No `/messages/documents` landing page** — `lib/landing/categories.ts` keeps an independent 9-entry registry; Documents surfaces in the **configurator** only (intended). If PM wants a Documents category landing page, add a `CATEGORY_LANDINGS` entry (needs PM-authored copy: H1, hero body, moment, Q&A ×4).
-- **UNIVERSAL_MISS_REPORT residue:** the report's New-Category note (split billing out of account-events) was NOT taken — billing additions live in account-events per its stated scope. Revisit only if PM wants a dedicated Billing category.
+**Verification:** tsc clean, eslint clean, `npm run build` green (41 pages; `/for/developer-tools` static). All 20 non-null `corpusId`s validated against the corpus (0 MISS).
 
-## Next task — Phase 1C **A3: workflow definitions** (PM-led authoring, start with developer-tools)
-Per MASTER_PLAN Phase 1C, A3 is the prerequisite for the A2 dynamic `/for/[slug]` build. For each sub-vertical (start with **developer-tools**): which workflows exist + the corpus message IDs in each (in order), the display alias per message in that vertical's context, variable aliases (contextual placeholders), and which categories to exclude from the browser. PM authors from the research library + the now-expanded corpus; CC writes the registry to the repo (CC never touches Airtable — D-421 AIRGAP). The `/for/developer-tools` page already exists (D-436, currently `noindex`) as the pattern to generalize.
+## ⚠ Deviations from the pasted spec / PM-review flags (in `.pm-review.md`)
+1. **Two corpusIds corrected** (PM-approved this session — corpus is source-of-truth for IDs): `account-events:new-device-sign-in`→`new-device-signin`; `customer-support:account-issue-resolved`→`account-issue-notification`. The pasted registry pointed at non-existent messages.
+2. **Dropped the unused `VariantTone` import** from `sub-verticals.ts` — the pasted interface block imported it but no interface references it (`customVariants` uses literal `standard/friendly/brief` keys); eslint-clean gate required removal. `WorkflowsSection` imports `VariantTone` independently where it IS used.
+3. **`WorkflowsSection` gold dot uses raw `#c9a84c`** per the spec — deviates from the home's "gold flows through tokens" convention (`bg-bg-gold` = `#E0B010`). Confirm before the component is mounted by A2.
+4. **Quota custom variants leave `{{account_link}}` literal** — the two `quota-breach` steps' `customVariants` reference `{{account_link}}` with no alias, so per the literal spec (substitute `workspace_name` + `variableAliases` only) it renders raw. Latent (component not yet routed); resolve before A2 mounts it.
+
+## Next task — Phase 1C continues
+- **A3 expansion:** author more sub-vertical entries into `SUB_VERTICAL_LANDINGS` (PM authors from the research library in `docs/sub-verticals/`; CC writes the registry — never Airtable, D-421 AIRGAP).
+- **A2 (engineering):** generalize `/for/developer-tools` into the dynamic `app/for/[slug]/page.tsx` consuming this registry; that route is where `WorkflowsSection` gets mounted (and where flags #3/#4 above must be resolved). Also build `/messages/documents` category page.
 
 ## Branch state
-`main` only (HEAD is the Session 144 close-out commit; in sync with `origin/main`). No open branches — `feat/corpus-expansion` merged + deleted (local + remote ref pushed). Other stale `feat/*` + `sketch/*` branches from prior sessions remain (optional cleanup), unchanged.
+`feat/sub-vertical-registry` (branched from `main` HEAD = Session 144 close-out). One commit, unpushed. Prior session's `feat/corpus-expansion` already merged + deleted. Other stale `feat/*` / `sketch/*` branches remain (optional cleanup), unchanged.
 
 ## Untracked — DO NOT COMMIT
-- `.claude/settings.local.json` (untracked); `.pm-review.md` (gitignored, regenerated this close-out).
+- `.claude/settings.local.json` (untracked); `.pm-review.md` (gitignored, holds `git show HEAD`).

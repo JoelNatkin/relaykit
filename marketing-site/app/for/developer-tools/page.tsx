@@ -21,19 +21,10 @@ import {
   Farm,
   DEVTOOLS_VARIABLES_EXAMPLE,
 } from "./sections";
-import { findSubVertical } from "../../../../lib/constraints";
-
-// Two decoupled slugs (D-436): the short, human-curated URL slug, and the
-// canonical constraints data slug used to resolve the sub-vertical's data.
+// The short, human-curated URL slug (D-436). Constraints-data resolution is
+// deferred to the dynamic /for/[slug] route (Phase 1C A2); this static page only
+// needs its own canonical path.
 const URL_SLUG = "developer-tools";
-const DATA_SLUG = "developer-tools-api-platforms-infrastructure-saas";
-
-// Resolve the sub from /lib/constraints by its data slug — keeps the URL and
-// the data aligned, and fails the build loudly if the constraints slug drifts.
-const SUB = findSubVertical(DATA_SLUG);
-if (!SUB) {
-  throw new Error(`Unknown sub-vertical data slug: ${DATA_SLUG}`);
-}
 
 export const metadata: Metadata = {
   title: "SMS for developer tools & API platforms — RelayKit",
