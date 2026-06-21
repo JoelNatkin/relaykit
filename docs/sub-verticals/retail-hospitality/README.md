@@ -10,3 +10,9 @@
 | Salons / spas / personal grooming | /for/salons-spas | Clear |
 | Subscription boxes / recurring physical goods | /for/subscription-boxes | Clear |
 | Grocery / specialty food retail | /for/grocery-retail | Clear |
+| Hotels / boutique accommodations | /for/hotels | Clear |
+| Short-term rental management (Airbnb-host tooling) | /for/short-term-rentals | Clear |
+| Restaurant chains / multi-location ops | /for/restaurant-chains | Clear |
+| Pet retail / specialty pet goods | /for/pet-retail | Clear |
+| Tattoo / piercing studios | /for/tattoo-piercing | Clear |
+| Food delivery / ghost kitchens | /for/food-delivery | Clear |
