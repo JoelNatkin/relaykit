@@ -4,7 +4,9 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Status: branch `feat/corpus-expansion` — 8 commits, UNMERGED, NOT pushed.** PM reviews the Vercel preview before merge. Working tree clean except untracked `.claude/settings.local.json` (do not commit).
+**Status: MERGED to `main` and PUSHED to `origin/main`.** `feat/corpus-expansion` (9 commits) pushed, merged `--no-ff` (merge commit `160316e`), branch deleted (local + remote branch ref pushed earlier). The same push also published the 21 prior session research commits (Civic sub-vertical batches 1–3 + Universal Miss Report) per Joel's explicit go-ahead. Production build verified clean (`npm run build` exit 0, "Compiled successfully"; `/messages` + 9 category pages prerender). `origin/main` now in sync.
+
+**⚠ Untracked/uncommitted in the working tree (NOT mine, left untouched):** `MASTER_PLAN.md` carries an uncommitted PM/Joel edit adding a "Phase 1C — Sub-vertical system" roadmap section (CC reads-only file — do not commit or revert; it's PM's to land). Plus untracked `.claude/settings.local.json` (do not commit).
 
 ---
 
