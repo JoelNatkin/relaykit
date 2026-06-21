@@ -49,7 +49,16 @@
 - **A3 expansion:** author more `SUB_VERTICAL_LANDINGS` entries (PM authors from `docs/sub-verticals/`; CC writes the registry — never Airtable, D-421 AIRGAP).
 
 ## Branch state
-`feat/sub-vertical-registry` (branched from `main` Session 144 close-out). Three CC commits + one merge of `main` (the copy update), unpushed at write time. When this merges to main, `main`'s copy update is already there → clean. Other stale `feat/*` / `sketch/*` branches unchanged.
+`feat/sub-vertical-registry` (branched from `main` Session 144 close-out). **Five CC commits** (`4b20ac0` registry → `d5125f3` wiring → `f599905` fallbacks+gold → `4380ed8` collapsible cards → `a45f1e4` section reorder) + one merge of `main` (the copy update), all pushed to `origin`. **UNMERGED — awaiting PM preview sign-off.** When this merges to main, `main`'s copy update + the MASTER_PLAN A4 commit (below) are already there → clean (branch never touched those files). Other stale `feat/*` / `sketch/*` branches unchanged.
+
+## Close-out (Session 145, mid-phase)
+- **Metrics:** Commits: 5 on branch + 2 direct-to-main (`27b16c8` dev-tools copy, `1047bcd` MASTER_PLAN A4) + 1 merge | Files: 8 (3 new: `sub-verticals.ts`, `workflows-section.tsx`, `messages-workflows-section.tsx`; edited: `messages-section.tsx`, dev-tools `page.tsx`/`sections.tsx`, `MASTER_PLAN.md`, `CC_HANDOFF.md`) | Decisions added: 0 | External actions: 0 (git pushes only).
+- **Quality gates:** `tsc --noEmit` + eslint clean across all session-touched files; `/api` untouched.
+- **Decisions:** none added — the work implements existing **D-436/D-437** + Phase 1C; registry data is PM-authored. Ledger unchanged (352 active, latest D-437); pre-flight scan was clean at session open.
+- **MASTER_PLAN A4** (PM-authored, found uncommitted in the branch tree) was committed **direct to main** (`1047bcd`, pushed) per PM call — a planning doc with no preview value, ungated by the branch review.
+- **Phase boundary:** none (Phase 1C is a parallel stream; active product phase still Phase 2 Session B) → **retirement sweep + drift watch skipped** (mid-phase).
+- **Canon owed AT MERGE** (surface is unmerged + noindex + still iterating — not "stabilized," so not written now): (1) **PROTOTYPE_SPEC** — a `/for/developer-tools` section (MessagesWorkflowsSection toggle, collapsible WorkflowsSection cards) + the new `MessagesSection` `chromeless`/controlled-`tone` props; (2) **REPO_INDEX** — Meta lead + doc/file rows for the 3 new files + branch state. **PRODUCT_SUMMARY:** n/a (no production customer-facing change — page is noindex/unmerged).
+- **Standing PM-review flags** (in `.pm-review.md`): WorkflowsSection step dot still raw `#c9a84c`; FALLBACKS display values CC-chosen; `messages-section.tsx` chromeless prop = PM-approved 3rd file; `DEVTOOLS_VARIABLES_EXAMPLE` now an unused export in `sections.tsx`; Commit-4 literal-instruction notes (grid `gap-3.5` kept, dot `pt-[2px]` ≈ no-op, toggle `mb-4` stacks with `mt-8`).
 
 ## Untracked — DO NOT COMMIT
 - `.claude/settings.local.json` (untracked); `.pm-review.md` (gitignored, holds `git show HEAD`).
