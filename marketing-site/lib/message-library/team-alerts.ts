@@ -77,7 +77,7 @@ const TEAM_ALERTS_VARIABLES: Variable[] = [
   {
     name: "alert_type",
     description:
-      "Short description of the alert condition ('CPU 95%', 'Disk full', 'Queue backed up').",
+      "Short description of the alert condition. Works for infrastructure ('CPU 95%', 'Disk full', 'Queue backed up') and equally for non-infra thresholds — a business metric, a price target hit, a device going offline, or a pipeline threshold crossed ('Revenue -20%', 'AAPL > $190', 'Sensor offline').",
     budgetChars: 24,
     source: "SDK call payload",
     example: "Queue backed up",
@@ -85,7 +85,7 @@ const TEAM_ALERTS_VARIABLES: Variable[] = [
   {
     name: "system_name",
     description:
-      "Name of the system, service, or component the alert is about ('api-gateway', 'orders-db', 'checkout-svc').",
+      "Name of whatever the alert is about — not only infrastructure. A system/service/component ('api-gateway', 'orders-db'), or equally a metric, asset, device, or pipeline the developer watches ('Signups', 'AAPL', 'Front-door sensor').",
     budgetChars: 16,
     source: "SDK call payload",
     example: "api-gateway",
@@ -115,6 +115,22 @@ const TEAM_ALERTS_VARIABLES: Variable[] = [
     budgetChars: 14,
     source: "SDK call payload",
     example: "Alice",
+  },
+  {
+    name: "item_name",
+    description:
+      "Title of the assigned task, lead, deal, or work item ('Task #248', 'Acme renewal').",
+    budgetChars: 40,
+    source: "SDK call payload",
+    example: "Task #248",
+  },
+  {
+    name: "due_time",
+    description:
+      "Short deadline for a task or deliverable ('tomorrow 5pm', 'Fri EOD'). Longer formats would not fit the budget.",
+    budgetChars: 19,
+    source: "SDK call payload",
+    example: "tomorrow 5pm",
   },
 ];
 
@@ -274,9 +290,10 @@ export const TEAM_ALERTS: Category = {
     {
       id: "system-alert",
       name: "System alert",
-      tooltip: "Severity-cued threshold or anomaly notification.",
+      tooltip:
+        "Severity-cued threshold or anomaly notification — infrastructure or any watched metric, price, device, or pipeline.",
       description:
-        "Severity-cued notification of a threshold breach, error spike, or anomaly.",
+        "Severity-cued notification of a threshold breach, error spike, or anomaly. Not limited to infrastructure: the same shape carries business-metric thresholds, price-target hits, device-state changes, and pipeline thresholds — {{system_name}} and {{alert_type}} name whatever is being watched.",
       groupNote:
         "Alert event - discrete trigger, not part of the shift sequence.",
       variables: ["workspace_name", "severity", "alert_type", "system_name", "action_link"],
@@ -376,6 +393,82 @@ export const TEAM_ALERTS: Category = {
           tone: "Brief",
           body: "{{workspace_name}}: {{system_name}} SLA breach. {{action_link}} STOP to opt out.",
           charCount: 102,
+        },
+      ],
+    },
+    {
+      id: "incident-resolved",
+      name: "Incident resolved",
+      tooltip: "Sent when an incident, outage, or service disruption is resolved.",
+      description:
+        "The all-clear that closes an incident — team-alerts opens incidents (system-alert, on-call-page, escalation-ping) but never closed one.",
+      variables: ["workspace_name", "system_name", "incident_id", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{system_name}} incident {{incident_id}} resolved. {{action_link}} Reply STOP to opt out.",
+          charCount: 126,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: all clear - {{system_name}} incident {{incident_id}} is resolved. {{action_link}} Reply STOP to opt out.",
+          charCount: 141,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{system_name}} {{incident_id}} resolved. {{action_link}} STOP to opt out.",
+          charCount: 111,
+        },
+      ],
+    },
+    {
+      id: "task-assigned",
+      name: "Task assigned",
+      tooltip: "Sent when a task, lead, deal, or work item is assigned to a team member.",
+      description:
+        "A person-to-person work-item assignment notification — a task, lead, deal, or item routed to a specific team member.",
+      variables: ["workspace_name", "item_name", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{item_name}} was assigned to you. View: {{action_link}} Reply STOP to opt out.",
+          charCount: 147,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: {{item_name}} is yours now - take a look: {{action_link}} Reply STOP to opt out.",
+          charCount: 148,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{item_name}} assigned to you. {{action_link}} STOP to opt out.",
+          charCount: 131,
+        },
+      ],
+    },
+    {
+      id: "task-reminder",
+      name: "Task reminder",
+      tooltip:
+        "Sent to remind a team member of an upcoming task or deliverable deadline.",
+      description:
+        "An upcoming-task deadline nudge to a team member. Distinguished from account-events:deadline-reminder by audience — an internal worker's task, not an external recipient's deadline.",
+      variables: ["workspace_name", "item_name", "due_time", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{item_name}} is due {{due_time}}. View: {{action_link}} Reply STOP to opt out.",
+          charCount: 154,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: heads up - {{item_name}} is due {{due_time}}. {{action_link}} Reply STOP to opt out.",
+          charCount: 159,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{item_name}} due {{due_time}}. {{action_link}} STOP to opt out.",
+          charCount: 139,
         },
       ],
     },

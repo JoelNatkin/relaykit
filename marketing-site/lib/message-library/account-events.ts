@@ -47,6 +47,94 @@ const ACCOUNT_EVENTS_VARIABLES: Variable[] = [
     source: "SDK call payload",
     example: "Chrome on Mac, Denver",
   },
+  {
+    name: "action_link",
+    description:
+      "Link to the in-app action surface on the developer's own domain (streak, habit, or activity). RelayKit does not shorten or host this URL.",
+    budgetChars: 24,
+    source: "SDK call payload",
+    example: "yourapp.com/today",
+  },
+  {
+    name: "amount_due",
+    description:
+      "Amount owed, formatted with currency by the developer ('$129.00'). Passed by the SDK from the billing event.",
+    budgetChars: 8,
+    source: "SDK call payload",
+    example: "$129.00",
+  },
+  {
+    name: "amount_paid",
+    description:
+      "Amount received, formatted with currency by the developer ('$240.00'). Passed by the SDK from the payment event.",
+    budgetChars: 8,
+    source: "SDK call payload",
+    example: "$240.00",
+  },
+  {
+    name: "due_date",
+    description:
+      "Short due date in SMS form ('Jun 28'). A long date string works but reads worse in SMS and shrinks the room for other tokens under D-402.",
+    budgetChars: 12,
+    source: "SDK call payload",
+    example: "Jun 28",
+  },
+  {
+    name: "invoice_number",
+    description:
+      "The developer's own invoice identifier — passed by the SDK from the billing event. RelayKit does not generate or format it.",
+    budgetChars: 10,
+    source: "SDK call payload",
+    example: "INV-2043",
+  },
+  {
+    name: "deadline_item",
+    description:
+      "Short name of the thing with a non-payment deadline ('Aid acceptance', 'Q3 filing'). The load-bearing token in the deadline reminder.",
+    budgetChars: 28,
+    source: "SDK call payload",
+    example: "Aid acceptance",
+  },
+  {
+    name: "item_label",
+    description:
+      "Short label for what changed in a status update ('application', 'case', 'return', 'project').",
+    budgetChars: 20,
+    source: "SDK call payload",
+    example: "application",
+  },
+  {
+    name: "amount",
+    description:
+      "Payout / transfer amount, formatted with currency by the developer ('$450'). Passed by the SDK from the payout event.",
+    budgetChars: 10,
+    source: "SDK call payload",
+    example: "$450",
+  },
+  {
+    name: "destination",
+    description:
+      "Short label for where a payout is going ('bank account', 'pay card'). Not an account number — no PII in the body (D-393).",
+    budgetChars: 14,
+    source: "SDK call payload",
+    example: "bank account",
+  },
+  {
+    name: "streak_count",
+    description:
+      "The gamified streak length as the developer phrases it ('12-day', '30'). Passed by the SDK from the streak event.",
+    budgetChars: 10,
+    source: "SDK call payload",
+    example: "12-day",
+  },
+  {
+    name: "habit_name",
+    description:
+      "Short name of the habit, routine, or daily action being nudged ('your morning run').",
+    budgetChars: 24,
+    source: "SDK call payload",
+    example: "your morning run",
+  },
 ];
 
 export const ACCOUNT_EVENTS: Category = {
@@ -189,6 +277,308 @@ export const ACCOUNT_EVENTS: Category = {
           tone: "Brief",
           body: "{{workspace_name}}: Account suspended. Details and next steps: {{account_link}} STOP to opt out.",
           charCount: 111,
+        },
+      ],
+    },
+    {
+      id: "payment-due-reminder",
+      name: "Payment due reminder",
+      tooltip: "Sent proactively before a payment is due.",
+      description:
+        "A forward-looking 'amount X is due by date Y' nudge — distinct from the reactive payment-failed decline.",
+      variables: ["workspace_name", "amount_due", "due_date", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{amount_due}} is due {{due_date}}. Pay or review: {{account_link}} Reply STOP to opt out.",
+          charCount: 119,
+        },
+        {
+          tone: "Friendly",
+          body: "Heads up from {{workspace_name}}: {{amount_due}} is due {{due_date}}. Pay here: {{account_link}} Reply STOP to opt out.",
+          charCount: 128,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{amount_due}} due {{due_date}}. {{account_link}} STOP to opt out.",
+          charCount: 95,
+        },
+      ],
+    },
+    {
+      id: "payment-received",
+      name: "Payment received",
+      tooltip: "Sent when a payment or donation is successfully received.",
+      description:
+        "Confirms money arrived — a receipt / thank-you. Covers donation and gift receipts as the nonprofit flavor of the same message.",
+      variables: ["workspace_name", "amount_paid", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: Payment of {{amount_paid}} received. Thank you. Receipt: {{account_link}} Reply STOP to opt out.",
+          charCount: 124,
+        },
+        {
+          tone: "Friendly",
+          body: "Thanks! {{workspace_name}} received your {{amount_paid}} payment. Receipt: {{account_link}} Reply STOP to opt out.",
+          charCount: 122,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{amount_paid}} received. Receipt: {{account_link}} STOP to opt out.",
+          charCount: 96,
+        },
+      ],
+    },
+    {
+      id: "invoice-ready",
+      name: "Invoice ready",
+      tooltip: "Sent when a new invoice is issued and ready to view and pay.",
+      description:
+        "The first-issuance 'your invoice is ready, view and pay' event — distinct from the payment-due reminder.",
+      variables: ["workspace_name", "invoice_number", "amount_due", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: Invoice {{invoice_number}} for {{amount_due}} is ready. View and pay: {{account_link}} Reply STOP to opt out.",
+          charCount: 130,
+        },
+        {
+          tone: "Friendly",
+          body: "Your {{workspace_name}} invoice {{invoice_number}} ({{amount_due}}) is ready. Pay here: {{account_link}} Reply STOP to opt out.",
+          charCount: 128,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Invoice {{invoice_number}}, {{amount_due}}. {{account_link}} STOP to opt out.",
+          charCount: 98,
+        },
+      ],
+    },
+    {
+      id: "payment-past-due",
+      name: "Payment past due",
+      tooltip: "Sent when a payment has not been received after the due date.",
+      description:
+        "The overdue escalation — factual only, no threats or fee-escalation language (FDCPA-adjacent). Closes the billing lifecycle.",
+      variables: ["workspace_name", "amount_due", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{amount_due}} is now past due. Pay or review your balance: {{account_link}} Reply STOP to opt out.",
+          charCount: 128,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: your balance of {{amount_due}} is past due. You can take care of it here: {{account_link}} Reply STOP to opt out.",
+          charCount: 142,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{amount_due}} past due. Pay: {{account_link}} STOP to opt out.",
+          charCount: 92,
+        },
+      ],
+    },
+    {
+      id: "deadline-reminder",
+      name: "Deadline reminder",
+      tooltip:
+        "Sent when a non-payment action window is approaching its close.",
+      description:
+        "A non-payment 'action window closes on date Y' nudge — filings, registrations, enrollments, signing deadlines. Not a booked-appointment reminder.",
+      variables: ["workspace_name", "deadline_item", "due_date", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{deadline_item}} closes {{due_date}}. Take action here: {{account_link}} Reply STOP to opt out.",
+          charCount: 142,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: heads up - {{deadline_item}} closes {{due_date}}. Don't miss it: {{account_link}} Reply STOP to opt out.",
+          charCount: 150,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{deadline_item}} closes {{due_date}}. {{account_link}} STOP to opt out.",
+          charCount: 118,
+        },
+      ],
+    },
+    {
+      id: "status-update",
+      name: "Status update",
+      tooltip: "Sent when an application, case, return, or project status changes.",
+      description:
+        "A generic 'your application / case / return / project status changed — view details' message.",
+      variables: ["workspace_name", "item_label", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: There's an update on your {{item_label}}. View the details: {{account_link}} Reply STOP to opt out.",
+          charCount: 140,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: your {{item_label}} just moved forward - take a look: {{account_link}} Reply STOP to opt out.",
+          charCount: 134,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{item_label}} updated. Details: {{account_link}} STOP to opt out.",
+          charCount: 107,
+        },
+      ],
+    },
+    {
+      id: "new-message-waiting",
+      name: "New message waiting",
+      tooltip: "Sent when a new message is waiting in a secure inbox or client portal.",
+      description:
+        "'You have a new message — open the app/portal to read it.' For consumer inboxes and professional client portals where the body stays out of band.",
+      variables: ["workspace_name", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: You have a new message. Read and reply here: {{account_link}} Reply STOP to opt out.",
+          charCount: 119,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: you've got a new message waiting. Read it here: {{account_link}} Reply STOP to opt out.",
+          charCount: 122,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: New message. {{account_link}} STOP to opt out.",
+          charCount: 81,
+        },
+      ],
+    },
+    {
+      id: "payout-sent",
+      name: "Payout sent",
+      tooltip: "Sent when an earned payout, withdrawal, or transfer leaves the platform.",
+      description:
+        "Outbound money movement — a payout / withdrawal / transfer leaving the platform to the recipient's destination. Distinct from a refund reversal.",
+      variables: ["workspace_name", "amount", "destination", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: Your {{amount}} is on its way to your {{destination}}. Details: {{account_link}} Reply STOP to opt out.",
+          charCount: 137,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: {{amount}} is on the way to your {{destination}}. Reply STOP to opt out.",
+          charCount: 103,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{amount}} sent to your {{destination}}. STOP to opt out.",
+          charCount: 88,
+        },
+      ],
+    },
+    {
+      id: "payout-failed",
+      name: "Payout failed",
+      tooltip: "Sent when an outbound payout or transfer cannot be completed.",
+      description:
+        "The outbound counterpart to payment-failed — 'we couldn't send your payout, fix your details to get paid.' Not an inbound card decline.",
+      variables: ["workspace_name", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: We couldn't send your payout. Check your details: {{account_link}} Reply STOP to opt out.",
+          charCount: 124,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: your payout didn't go through. Update your details here: {{account_link}} Reply STOP to opt out.",
+          charCount: 131,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Payout failed. Fix details: {{account_link}} STOP to opt out.",
+          charCount: 96,
+        },
+      ],
+    },
+    {
+      id: "balance-low",
+      name: "Balance low",
+      tooltip: "Sent when a prepaid balance, credit pack, or usage quota is running low.",
+      description:
+        "A 'your prepaid balance / credit pack / usage quota is running low — top up' nudge.",
+      variables: ["workspace_name", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: Your balance is running low. Top up to stay active: {{account_link}} Reply STOP to opt out.",
+          charCount: 126,
+        },
+        {
+          tone: "Friendly",
+          body: "Heads up from {{workspace_name}} - your balance is getting low. Top up here: {{account_link}} Reply STOP to opt out.",
+          charCount: 131,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Balance low. Top up: {{account_link}} STOP to opt out.",
+          charCount: 89,
+        },
+      ],
+    },
+    {
+      id: "streak-ending",
+      name: "Streak ending",
+      tooltip: "Sent when a gamified streak is about to break.",
+      description:
+        "A gamified 'your N-day streak ends soon — keep it going' nudge.",
+      variables: ["workspace_name", "streak_count", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: your {{streak_count}} streak ends soon. Keep it going: {{action_link}} Reply STOP to opt out.",
+          charCount: 128,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: don't lose your {{streak_count}} streak - one quick check-in keeps it alive: {{action_link}} Reply STOP to opt out.",
+          charCount: 150,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{streak_count}} streak ends soon. {{action_link}} STOP to opt out.",
+          charCount: 102,
+        },
+      ],
+    },
+    {
+      id: "recurring-reminder",
+      name: "Recurring reminder",
+      tooltip:
+        "Sent on a recurring schedule to prompt a habit, routine, or daily action.",
+      description:
+        "A scheduled nudge to prompt a habit, routine, or daily action ('time for your morning run').",
+      variables: ["workspace_name", "habit_name", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: time for {{habit_name}}. Mark it done: {{action_link}} Reply STOP to opt out.",
+          charCount: 128,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}} nudge: {{habit_name}} is due today. Knock it out: {{action_link}} Reply STOP to opt out.",
+          charCount: 138,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{habit_name}} due. {{action_link}} STOP to opt out.",
+          charCount: 103,
         },
       ],
     },

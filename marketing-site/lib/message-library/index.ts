@@ -14,6 +14,7 @@ import { TEAM_ALERTS } from "./team-alerts";
 import { COMMUNITY } from "./community";
 import { WAITLIST } from "./waitlist";
 import { ACCOUNT_EVENTS } from "./account-events";
+import { DOCUMENTS } from "./documents";
 
 export type {
   TCRMapping,
@@ -46,6 +47,7 @@ export {
   COMMUNITY,
   WAITLIST,
   ACCOUNT_EVENTS,
+  DOCUMENTS,
 };
 
 /**
@@ -62,6 +64,7 @@ export const CATEGORIES: Category[] = [
   COMMUNITY,
   WAITLIST,
   ACCOUNT_EVENTS,
+  DOCUMENTS,
   MARKETING,
 ];
 
