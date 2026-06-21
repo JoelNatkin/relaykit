@@ -4,7 +4,7 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Status: on branch `feat/sub-vertical-registry` — three CC commits + a merge of `main`, NOT pushed (awaiting PM `gg`).** `.pm-review.md` holds `git show HEAD`. No new D-numbers (additive Phase 1C work; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This branch is **Phase 1C / A1–A3** work: the registry data + the Workflows display layer, now wired into the (noindex) `/for/developer-tools` page as the pattern A2 will generalize.
+**Status: on branch `feat/sub-vertical-registry` — four CC commits + a merge of `main`, NOT pushed (awaiting PM `gg`).** `.pm-review.md` holds `git show HEAD`. No new D-numbers (additive Phase 1C work; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This branch is **Phase 1C / A1–A3** work: the registry data + the Workflows display layer, now wired into the (noindex) `/for/developer-tools` page as the pattern A2 will generalize.
 
 ---
 
@@ -29,7 +29,13 @@
 - **`app/for/developer-tools/messages-workflows-section.tsx`.** View toggle selected pill → **gold** (`border-bg-gold bg-bg-gold text-text-on-gold`, matching the category pills) per PM direction (resolves flag #4). Comment updated.
 - tsc + eslint clean (no build — no new files/routes).
 
+**Commit 4 — `feat: collapsible workflow cards, 3-col grid, larger dots, visible connectors`** (`workflows-section.tsx` + a 1-line toggle-spacing edit in `messages-workflows-section.tsx`)
+- WorkflowsSection is now `"use client"`. Cards are **collapsed by default** (step names only) and expand **independently** (per-card `useState<Set<string>>`) to reveal step bodies; chevron (`ChevronDown`) rotates 180°. Grid → `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3`. Step dots `size-[7px]`; connectors `bg-border-secondary` (more visible); expanded step body `text-[13px] leading-relaxed`. Workflows now render **sorted by step count desc** (copy, never mutating the prop).
+- `messages-workflows-section.tsx`: added `mb-4` to the toggle container (item 6).
+- tsc + eslint clean.
+
 ## ⚠ PM-review flags (in `.pm-review.md`)
+0. **Commit 4 literal-instruction notes:** (a) kept `gap-3.5` on the grid — the spec's "to" class string omitted a gap, but dropping it would butt the cards together; (b) the dot got `pt-[2px]` as instructed, but on a border-box `size-[7px]` circle that padding has ~no visual effect — eyeball the dot/type centering on the preview; (c) `mb-4` was added to the toggle though the controls row already carries `mt-8`, so the gap grows rather than becoming exactly 16px — added verbatim per item 6.
 1. **`messages-section.tsx` chromeless prop is a 3rd file beyond the original "two files only" scope** — PM-approved in-session (the clean way to avoid a duplicate heading/controls/`id="configurator"`).
 2. **`#c9a84c` gold dot** (WorkflowsSection step rail) is still raw hex, not a token (`bg-bg-gold`). Live on the noindex preview. Tokenize if desired. *(The toggle now uses the `bg-bg-gold` token — only the step dots remain raw.)*
 3. ✅ **Resolved (Commit 3)** — `{{account_link}}` and other unaliased tokens now render real display values via the `FALLBACKS` table.

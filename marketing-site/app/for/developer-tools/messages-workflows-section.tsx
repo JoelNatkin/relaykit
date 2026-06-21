@@ -48,7 +48,7 @@ export function MessagesWorkflowsSection() {
       {/* View toggle — two adjacent pills sharing one border (segmented control).
           Selected pill = gold, matching the category pills (PM-directed). */}
       <div
-        className="mt-8 inline-flex rounded-lg border border-border-primary p-0.5"
+        className="mb-4 mt-8 inline-flex rounded-lg border border-border-primary p-0.5"
         role="group"
         aria-label="Message view"
       >
