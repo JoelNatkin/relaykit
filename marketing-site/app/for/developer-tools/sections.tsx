@@ -45,15 +45,13 @@ export function DevToolsHero() {
     <section className="mx-auto max-w-5xl px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
       <div className="grid items-center gap-12 lg:grid-cols-2">
         <div>
-          <Eyebrow>Developer tools &amp; API platforms</Eyebrow>
-          {/* H1 is a placeholder draft — refined on the preview. */}
+          <Eyebrow>Developer tools</Eyebrow>
           <h1 className="mt-5 text-4xl font-bold tracking-tight text-text-primary text-balance sm:text-5xl lg:text-[56px] lg:leading-[1.05]">
-            User account text messaging for your app.
+            Text messaging for developer tools apps.
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-text-secondary">
-            Payment failures, security alerts, trial endings — the events that
-            decide whether a customer stays, sent where they&apos;ll actually
-            see them.
+            Deploy alerts, quota warnings, payment failures — the messages that
+            keep a production platform running.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <PrimaryCta href="#configurator">See the messages →</PrimaryCta>
@@ -68,7 +66,14 @@ export function DevToolsHero() {
           </p>
         </div>
         <div className="lg:pl-6">
-          <HeroNotificationMock />
+          <HeroNotificationMock
+            examples={[
+              "prod deploy #4821 failed. Roll back or fix: yourapp.com/deploys/4821",
+              "API calls at 80% of your monthly quota. Upgrade before requests start failing: yourapp.com/billing",
+              "Card ending 4242 was declined. Update payment to keep your account active: yourapp.com/billing",
+              "New sign-in from a new device in Berlin. Not you? Secure your account: yourapp.com/security",
+            ]}
+          />
         </div>
       </div>
     </section>
@@ -86,18 +91,16 @@ export function Moment() {
       </div>
       <div className="mt-10 grid items-start gap-10 md:grid-cols-2">
         <p className="text-lg leading-relaxed text-text-secondary">
-          A developer&apos;s card fails, the renewal email goes unread, and their
-          integration starts erroring in production. A text message reaches them
-          before a billing lapse turns into a support ticket.
+          A production deploy fails at 2am. The on-call engineer gets a text
+          before the first customer opens a support ticket.
         </p>
         <div className="space-y-3">
           <div className="max-w-[88%] rounded-2xl rounded-bl-md border border-border-secondary bg-surface-card px-4 py-3 text-sm leading-relaxed text-text-primary">
-            <span className="font-semibold">Acme</span>: Card ending 4242 was
-            declined. Update payment to keep your account active:
-            yourapp.com/billing
+            <span className="font-semibold">BuildKit</span>: CRITICAL — prod
+            deploy #4821 failed. Roll back or fix: yourapp.com/deploys/4821
           </div>
           <div className="ml-auto w-fit max-w-[80%] rounded-2xl rounded-br-md bg-bg-gold px-4 py-2.5 text-sm font-medium text-text-on-gold">
-            Paid in minutes
+            Fixed before anyone noticed
           </div>
         </div>
       </div>
@@ -105,27 +108,26 @@ export function Moment() {
   );
 }
 
-const QA = [
+const QA: { q: string; lead: string; body: string; list?: string[] }[] = [
   {
-    q: "Who should get the failed payment text?",
-    lead: "The billing owner, not every seat.",
-    body: "Texting all twelve seats makes twelve confused users and one annoyed admin. The person who can fix it is the one who needs the text.",
+    q: "Can I send deploy alerts from a CI/CD pipeline directly, or does it need to go through my app's backend?",
+    lead: "Either works — RelayKit is an API call, not a platform integration.",
+    body: "You can call the RelayKit API from a GitHub Actions step, a build hook, or any webhook your pipeline fires. The message goes out the same way regardless of where the call originates. Most teams start with a direct pipeline call and move it behind their backend when they want delivery tracking or per-user routing.",
   },
   {
-    q: "Who should get a new-device alert?",
-    lead: "The person who signed in.",
-    body: "It's their security event; they confirm it or lock things down. Don't ping anyone else.",
+    q: "What's the difference between a system alert and an on-call page for deploy failures?",
+    lead: "Urgency and what you expect the recipient to do.",
+    body: "An on-call page fires when something is down and needs human attention now — it's the shortest message in the library and links straight to the incident. A system alert is for informational threshold events: quota at 80%, latency above baseline, a job that finished. Both use the same channel; the difference is the action you're asking for.",
   },
   {
-    q: "Which account events are worth a text?",
-    lead: "The ones a customer has to act on right now.",
-    list: ["A declined payment", "A new-device sign-in", "An account suspension"],
-    body: "If it can wait until they next open the app, it doesn't need a text. Receipts and digests can stay in email; texting those only trains people to ignore them.",
+    q: "Do verification texts for API key rotation need a STOP line?",
+    lead: "No — step-up confirmation codes are 2FA traffic and carry the same carve-out as signup codes.",
+    body: "The 2FA TCR exemption covers any code sent to verify a specific action, not just signup. Key rotation, ownership transfer, payment method changes — all qualify. No STOP language in the body.",
   },
   {
-    q: "What if we don't have a user's phone number?",
-    lead: "They still get the email.",
-    body: "Account messages matter enough to send as both a text and an email: the text reaches whoever will see it right away, the email is the record everyone gets.",
+    q: "What's the right message for an API key rotation or ownership transfer?",
+    lead: "A confirmation code sent to the account owner before the action completes.",
+    body: "High-stakes actions — key rotation, billing-owner transfer, team permission changes — should require a step-up code. It's a one-time code sent to the verified number on the account, confirming the action before it goes through. Never put the key itself in the message body; link to the dashboard instead.",
   },
 ];
 
