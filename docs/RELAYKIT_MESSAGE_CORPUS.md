@@ -42,6 +42,78 @@ Sent when an account is suspended.
 - **Friendly:** `Your {{workspace_name}} account has been suspended. Here's what happened and what to do next: {{account_link}} Reply STOP to opt out.`
 - **Brief:** `{{workspace_name}}: Account suspended. Details and next steps: {{account_link}} STOP to opt out.`
 
+### Payment due reminder
+Sent proactively before a payment is due.
+- **Standard:** `{{workspace_name}}: {{amount_due}} is due {{due_date}}. Pay or review: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `Heads up from {{workspace_name}}: {{amount_due}} is due {{due_date}}. Pay here: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{amount_due}} due {{due_date}}. {{account_link}} STOP to opt out.`
+
+### Payment received
+Sent when a payment or donation is successfully received.
+- **Standard:** `{{workspace_name}}: Payment of {{amount_paid}} received. Thank you. Receipt: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `Thanks! {{workspace_name}} received your {{amount_paid}} payment. Receipt: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{amount_paid}} received. Receipt: {{account_link}} STOP to opt out.`
+
+### Invoice ready
+Sent when a new invoice is issued and ready to view and pay.
+- **Standard:** `{{workspace_name}}: Invoice {{invoice_number}} for {{amount_due}} is ready. View and pay: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `Your {{workspace_name}} invoice {{invoice_number}} ({{amount_due}}) is ready. Pay here: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Invoice {{invoice_number}}, {{amount_due}}. {{account_link}} STOP to opt out.`
+
+### Payment past due
+Sent when a payment has not been received after the due date. Factual only — no threats, no fee-escalation language.
+- **Standard:** `{{workspace_name}}: {{amount_due}} is now past due. Pay or review your balance: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: your balance of {{amount_due}} is past due. You can take care of it here: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{amount_due}} past due. Pay: {{account_link}} STOP to opt out.`
+
+### Deadline reminder
+Sent when a non-payment action window (filing, registration, enrollment, signing) is approaching its close.
+- **Standard:** `{{workspace_name}}: {{deadline_item}} closes {{due_date}}. Take action here: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: heads up - {{deadline_item}} closes {{due_date}}. Don't miss it: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{deadline_item}} closes {{due_date}}. {{account_link}} STOP to opt out.`
+
+### Status update
+Sent when an application, case, return, or project status changes.
+- **Standard:** `{{workspace_name}}: There's an update on your {{item_label}}. View the details: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: your {{item_label}} just moved forward - take a look: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{item_label}} updated. Details: {{account_link}} STOP to opt out.`
+
+### New message waiting
+Sent when a new message is waiting in a secure inbox or client portal.
+- **Standard:** `{{workspace_name}}: You have a new message. Read and reply here: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: you've got a new message waiting. Read it here: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: New message. {{account_link}} STOP to opt out.`
+
+### Payout sent
+Sent when an earned payout, withdrawal, or transfer leaves the platform.
+- **Standard:** `{{workspace_name}}: Your {{amount}} is on its way to your {{destination}}. Details: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: {{amount}} is on the way to your {{destination}}. Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{amount}} sent to your {{destination}}. STOP to opt out.`
+
+### Payout failed
+Sent when an outbound payout or transfer cannot be completed.
+- **Standard:** `{{workspace_name}}: We couldn't send your payout. Check your details: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: your payout didn't go through. Update your details here: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Payout failed. Fix details: {{account_link}} STOP to opt out.`
+
+### Balance low
+Sent when a prepaid balance, credit pack, or usage quota is running low.
+- **Standard:** `{{workspace_name}}: Your balance is running low. Top up to stay active: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `Heads up from {{workspace_name}} - your balance is getting low. Top up here: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Balance low. Top up: {{account_link}} STOP to opt out.`
+
+### Streak ending
+Sent when a gamified streak is about to break.
+- **Standard:** `{{workspace_name}}: your {{streak_count}} streak ends soon. Keep it going: {{action_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: don't lose your {{streak_count}} streak - one quick check-in keeps it alive: {{action_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{streak_count}} streak ends soon. {{action_link}} STOP to opt out.`
+
+### Recurring reminder
+Sent on a recurring schedule to prompt a habit, routine, or daily action.
+- **Standard:** `{{workspace_name}}: time for {{habit_name}}. Mark it done: {{action_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}} nudge: {{habit_name}} is due today. Knock it out: {{action_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{habit_name}} due. {{action_link}} STOP to opt out.`
+
 ---
 
 ## Appointments
@@ -50,7 +122,7 @@ Confirmations, reminders, reschedules, cancellations, no-show follow-ups.
 Sender frame: `{{workspace_name}}` in every body.
 
 ### Confirmation
-Sent when a booking is confirmed.
+Sent when a booking is confirmed. `{{provider_name}}` is optional — for venue bookings, reservations, and date-range stays with no named provider, omit it and the confirmation reads as a booking with the workspace itself.
 - **Standard:** `{{workspace_name}}: your appointment with {{provider_name}} is confirmed for {{appointment_time}}. Reply STOP to opt out.`
 - **Friendly:** `You're booked! {{provider_name}} will see you {{appointment_time}}. We'll send a reminder. Reply STOP to opt out. - {{workspace_name}}`
 - **Brief:** `{{workspace_name}}: confirmed with {{provider_name}}, {{appointment_time}}. STOP to opt out.`
@@ -90,6 +162,30 @@ Sent after the appointment to collect feedback.
 - **Standard:** `{{workspace_name}}: thanks for seeing {{provider_name}} today. We'd love your feedback: {{feedback_link}} Reply STOP to opt out.`
 - **Friendly:** `Thanks for coming in today! How did it go with {{provider_name}}? Tell us: {{feedback_link}} Reply STOP to opt out. - {{workspace_name}}`
 - **Brief:** `{{workspace_name}}: thanks for visiting. Feedback: {{feedback_link}} STOP to opt out.`
+
+### On the way
+Sent when a mobile provider, technician, or driver is en route to the customer.
+- **Standard:** `{{workspace_name}}: {{provider_name}} is on the way, ETA about {{eta}}. Reply STOP to opt out.`
+- **Friendly:** `Heads up - {{provider_name}} is headed your way, ETA about {{eta}}. Reply STOP to opt out. - {{workspace_name}}`
+- **Brief:** `{{workspace_name}}: {{provider_name}} on the way, ETA {{eta}}. STOP to opt out.`
+
+### Service complete
+Sent when an on-site job or service visit is finished.
+- **Standard:** `{{workspace_name}}: your service is complete. Details: {{feedback_link}} Reply STOP to opt out.`
+- **Friendly:** `All done! Your {{workspace_name}} service is complete. Tell us how it went: {{feedback_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: service complete. {{feedback_link}} STOP to opt out.`
+
+### Time to rebook
+Sent when a recurring service is due and no appointment has been booked yet.
+- **Standard:** `{{workspace_name}}: Your next visit is due. Pick a time: {{reschedule_link}} Reply STOP to opt out.`
+- **Friendly:** `Time for your next {{workspace_name}} visit. Grab a slot here: {{reschedule_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Next visit due. Book: {{reschedule_link}} STOP to opt out.`
+
+### Pre-visit form request
+Sent ahead of an appointment when intake, consent, or check-in forms need to be completed.
+- **Standard:** `{{workspace_name}}: please complete your forms before your visit {{appointment_time}}: {{form_link}} Reply STOP to opt out.`
+- **Friendly:** `Before we see you {{appointment_time}}, please fill out your forms here: {{form_link}} Reply STOP to opt out. - {{workspace_name}}`
+- **Brief:** `{{workspace_name}}: complete your forms before {{appointment_time}}: {{form_link}} STOP to opt out.`
 
 ---
 
@@ -207,6 +303,49 @@ Sent when an account issue is found and resolved.
 - **Friendly:** `{{workspace_name}}: we found an issue on your account and fixed it. Nothing for you to do. Questions? Reply here. Reply STOP to opt out.`
 - **Brief:** `{{workspace_name}}: account issue fixed. No action needed. STOP to opt out.`
 
+### Request received
+Sent to acknowledge an inbound inquiry, lead, or application before a ticket number is assigned.
+- **Standard:** `{{workspace_name}}: We got your request and will reach out shortly. Reply STOP to opt out.`
+- **Friendly:** `Thanks for reaching out to {{workspace_name}} - we got it and will be in touch soon. Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: request received, we'll be in touch. STOP to opt out.`
+
+---
+
+## Documents
+`id: documents` · TCR: ACCOUNT_NOTIFICATION
+Document requests, signature workflows, and deliverable-ready notices — the paperwork lifecycle from request to completion.
+Sender frame: `{{workspace_name}}` in every body.
+
+### Document needed
+Sent when the recipient needs to supply a document to continue.
+- **Standard:** `{{workspace_name}}: We need a document from you to continue. Upload it here: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: One thing left - we need a document from you. Upload it here: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Document needed. Upload: {{account_link}} STOP to opt out.`
+
+### Signature requested
+Sent when a document is ready for the recipient's e-signature.
+- **Standard:** `{{workspace_name}}: A document is ready for your signature. Review and sign: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: you have a document ready to sign - it only takes a minute: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Document ready to sign: {{account_link}} STOP to opt out.`
+
+### Signature received
+Sent when all required signatures are in and the document is executed.
+- **Standard:** `{{workspace_name}}: We received your signed document. Nothing more needed for now. Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: got it - your document is signed and in. Thanks! Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Signed document received. STOP to opt out.`
+
+### Documents received
+Sent when the recipient's submitted documents have been received and logged.
+- **Standard:** `{{workspace_name}}: Your documents have been received. We'll be in touch with next steps. Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: got your documents - we'll review them and reach out soon. Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Documents received. Next steps coming. STOP to opt out.`
+
+### Item ready
+Sent when a digital deliverable (document, file, plan, ticket) is generated and ready to access.
+- **Standard:** `{{workspace_name}}: Your {{item_label}} is ready. Access it here: {{action_link}} Reply STOP to opt out.`
+- **Friendly:** `Your {{workspace_name}} {{item_label}} is ready: {{action_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{item_label}} ready: {{action_link}} STOP to opt out.`
+
 ---
 
 ## Marketing
@@ -288,6 +427,24 @@ Sent when a refund is returned to the customer's card. (Order lifecycle step 7 o
 - **Friendly:** `Your {{workspace_name}} refund of {{refund_amount}} for order {{order_number}} is on its way back to your {{card_type}}. Reply STOP to opt out.`
 - **Brief:** `{{workspace_name}}: {{refund_amount}} refunded for order {{order_number}} to your {{card_type}}. STOP to opt out.`
 
+### Order ready for pickup
+Sent when a BOPIS, click-and-collect, or counter order is ready to collect.
+- **Standard:** `{{workspace_name}}: Order {{order_number}} is ready for pickup. Reply STOP to opt out.`
+- **Friendly:** `Your {{workspace_name}} order {{order_number}} is ready - come grab it. Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Order {{order_number}} ready for pickup. STOP to opt out.`
+
+### Quote ready
+Sent when an estimate or quote is ready to review and approve.
+- **Standard:** `{{workspace_name}}: Your quote is ready. Review and approve here: {{action_link}} Reply STOP to opt out.`
+- **Friendly:** `Good news - your {{workspace_name}} quote is ready. Take a look and approve: {{action_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Quote ready. Review: {{action_link}} STOP to opt out.`
+
+### Delivery attempt failed
+Sent when a delivery attempt could not be completed.
+- **Standard:** `{{workspace_name}}: We couldn't deliver order {{order_number}} today. Reschedule here: {{action_link}} Reply STOP to opt out.`
+- **Friendly:** `Your {{workspace_name}} order {{order_number}} couldn't be delivered today. Let's find another time: {{action_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Order {{order_number}} delivery failed. Reschedule: {{action_link}} STOP to opt out.`
+
 ---
 
 ## Team alerts
@@ -326,7 +483,7 @@ Sent at shift start; check-in action optional. (Shift lifecycle step 5 of 5)
 - **Brief:** `{{workspace_name}}: Shift started. Check in: {{action_link}} STOP to opt out.`
 
 ### System alert
-Severity-cued threshold or anomaly notification.
+Severity-cued threshold or anomaly notification. Not limited to infrastructure — the same shape carries business-metric thresholds, price-target hits, device-state changes, and pipeline thresholds; `{{system_name}}` and `{{alert_type}}` name whatever is being watched.
 - **Standard:** `{{workspace_name}} {{severity}}: {{alert_type}} on {{system_name}}. Details: {{action_link}} Reply STOP to opt out.`
 - **Friendly:** `{{workspace_name}} heads up, {{severity}}: {{alert_type}} on {{system_name}}. {{action_link}} Reply STOP to opt out.`
 - **Brief:** `{{workspace_name}} {{severity}}: {{alert_type}}, {{system_name}}. {{action_link}} STOP to opt out.`
@@ -348,6 +505,24 @@ Informational SLA breach or maintenance notice.
 - **Standard:** `{{workspace_name}}: {{system_name}} SLA breach, incident {{incident_id}}. {{action_link}} Reply STOP to opt out.`
 - **Friendly:** `{{workspace_name}} notice: {{system_name}} is below its service level. {{action_link}} Reply STOP to opt out.`
 - **Brief:** `{{workspace_name}}: {{system_name}} SLA breach. {{action_link}} STOP to opt out.`
+
+### Incident resolved
+Sent when an incident, outage, or service disruption is resolved.
+- **Standard:** `{{workspace_name}}: {{system_name}} incident {{incident_id}} resolved. {{action_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: all clear - {{system_name}} incident {{incident_id}} is resolved. {{action_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{system_name}} {{incident_id}} resolved. {{action_link}} STOP to opt out.`
+
+### Task assigned
+Sent when a task, lead, deal, or work item is assigned to a team member.
+- **Standard:** `{{workspace_name}}: {{item_name}} was assigned to you. View: {{action_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: {{item_name}} is yours now - take a look: {{action_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{item_name}} assigned to you. {{action_link}} STOP to opt out.`
+
+### Task reminder
+Sent to remind a team member of an upcoming task or deliverable deadline.
+- **Standard:** `{{workspace_name}}: {{item_name}} is due {{due_time}}. View: {{action_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: heads up - {{item_name}} is due {{due_time}}. {{action_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: {{item_name}} due {{due_time}}. {{action_link}} STOP to opt out.`
 
 ---
 
