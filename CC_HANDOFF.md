@@ -1,37 +1,43 @@
-# CC_HANDOFF — Session 145: sub-vertical registry + WorkflowsSection scaffolding (2026-06-21)
+# CC_HANDOFF — Session 145: sub-vertical registry + WorkflowsSection wired into developer-tools (2026-06-21)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Status: on branch `feat/sub-vertical-registry`, ONE commit, NOT pushed — awaiting PM `gg`.** Per the task spec, `.pm-review.md` holds `git show HEAD`; do not push until PM approves the Vercel preview. No new D-numbers (additive Phase 1C scaffolding; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This is **Phase 1C / A3 (workflow definitions)** groundwork — the first registry data + the component the A2 dynamic `/for/[slug]` route will consume.
+**Status: on branch `feat/sub-vertical-registry` — two CC commits + a merge of `main`, NOT pushed (awaiting PM `gg`).** `.pm-review.md` holds `git show HEAD`. No new D-numbers (additive Phase 1C work; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This branch is **Phase 1C / A1–A3** work: the registry data + the Workflows display layer, now wired into the (noindex) `/for/developer-tools` page as the pattern A2 will generalize.
 
 ---
 
-## What this session did (one commit, three tasks)
+## What this branch contains (in commit order)
 
-`feat: sub-vertical registry types, developer-tools entry, WorkflowsSection component`
+**Commit 1 — `feat: sub-vertical registry types, developer-tools entry, WorkflowsSection component`**
+- **`lib/landing/sub-verticals.ts` (new).** `WorkflowStep`/`Workflow`/`SubVerticalLanding` interfaces + `SUB_VERTICAL_LANDINGS` (one entry — **developer-tools**, 9 curated workflows) + `findSubVerticalLanding`/`subVerticalSlugs`. Workflows are a display layer over the universal corpus: each step points at a corpus message via `corpusId` (`"category-id:message-id"`) or carries `customVariants`; `variableAliases` give contextual placeholders.
+- **`app/for/developer-tools/page.tsx` (edit).** Removed the broken `findSubVertical` import + unused `SUB`/`DATA_SLUG` resolve block.
+- **`components/home/workflows-section.tsx` (new).** Presentational `WorkflowsSection({ workflows, businessName, tone })` — two-column stepped cards (corpus lookup + tone/alias substitution), MessagesSection card chrome.
 
-**1. `marketing-site/lib/landing/sub-verticals.ts` (new).** The sub-vertical landing registry: `WorkflowStep` / `Workflow` / `SubVerticalLanding` interfaces + `SUB_VERTICAL_LANDINGS` (one entry — **developer-tools**, PM-authored, with 9 curated workflows) + helpers `findSubVerticalLanding(urlSlug)` / `subVerticalSlugs()`. Workflows are a display layer over the universal corpus: each step either points at a corpus message via `corpusId` (`"category-id:message-id"`) or carries its own `customVariants`; `variableAliases` supply contextual placeholder text.
+**Merge — `main` merged in** to bring the developer-tools **copy update** (`27b16c8`, sections.tsx hero/Moment/Q&A/HeroNotificationMock examples) onto the branch so the preview is coherent.
 
-**2. `marketing-site/app/for/developer-tools/page.tsx` (edit).** Removed the broken `import { findSubVertical } from "../../../../lib/constraints"` (that module doesn't exist under `marketing-site/lib`) plus the unused `SUB` resolve block and the now-orphaned `DATA_SLUG` const. `SUB` was never consumed by any rendered component. `URL_SLUG` kept (canonical). Page still prerenders static — constraints-data resolution is deferred to the A2 dynamic route.
+**Commit 2 — `feat: wire WorkflowsSection into developer-tools page with Workflows / All messages toggle`**
+- **`app/for/developer-tools/messages-workflows-section.tsx` (new, client).** Owns one heading + a **Workflows / All messages** segmented toggle (Workflows default) + the shared business-name + tone controls. Reads the entry from `findSubVerticalLanding("developer-tools")`. Workflows view → `<WorkflowsSection …>`; All messages view → `<MessagesSection chromeless tone … defaultCategory>`. Business name is the shared configurator store (drives both views automatically); tone is local and passed to both.
+- **`components/home/messages-section.tsx` (edit).** Added a **`chromeless`** prop (renders only pills + cards — no `<section>`/`id`, no heading block, no controls) + a **controlled `tone`** prop (`activeTone = toneProp ?? internal`). Standalone/home behavior unchanged (both new props default off/undefined). This is the third file — **PM-approved in-session** (the only clean way to nest the browser under a shared heading without a duplicate `id="configurator"`, duplicate heading, and duplicate controls).
+- **`app/for/developer-tools/page.tsx` (edit).** Replaced the standalone `<MessagesSection …>` + `<VariablesSection …>` pair with `<MessagesWorkflowsSection />`; dropped the now-unused `MessagesSection`/`VariablesSection`/`DEVTOOLS_VARIABLES_EXAMPLE` imports. (`DEVTOOLS_VARIABLES_EXAMPLE` is still exported from `sections.tsx`, now unused — see flags.)
 
-**3. `marketing-site/components/home/workflows-section.tsx` (new).** Presentational `WorkflowsSection({ workflows, businessName, tone })` — two-column stepped cards matching the home MessagesSection card chrome (`rounded-xl border-border-secondary bg-surface-card px-[18px] py-4`). Each step: gold dot + connector rail + step name + always-visible body. Body resolved from `CATEGORIES` by `corpusId` (or `customVariants[tone.toLowerCase()]`), then `{{workspace_name}}`→businessName (`"Acme"` fallback) + `variableAliases` substitutions. No expand/copy/GAP-badge; parent owns controls.
+**Verification:** tsc clean, eslint clean, `npm run build` green; `/for/developer-tools` prerenders **static** (4.71 kB).
 
-**Verification:** tsc clean, eslint clean, `npm run build` green (41 pages; `/for/developer-tools` static). All 20 non-null `corpusId`s validated against the corpus (0 MISS).
-
-## ⚠ Deviations from the pasted spec / PM-review flags (in `.pm-review.md`)
-1. **Two corpusIds corrected** (PM-approved this session — corpus is source-of-truth for IDs): `account-events:new-device-sign-in`→`new-device-signin`; `customer-support:account-issue-resolved`→`account-issue-notification`. The pasted registry pointed at non-existent messages.
-2. **Dropped the unused `VariantTone` import** from `sub-verticals.ts` — the pasted interface block imported it but no interface references it (`customVariants` uses literal `standard/friendly/brief` keys); eslint-clean gate required removal. `WorkflowsSection` imports `VariantTone` independently where it IS used.
-3. **`WorkflowsSection` gold dot uses raw `#c9a84c`** per the spec — deviates from the home's "gold flows through tokens" convention (`bg-bg-gold` = `#E0B010`). Confirm before the component is mounted by A2.
-4. **Quota custom variants leave `{{account_link}}` literal** — the two `quota-breach` steps' `customVariants` reference `{{account_link}}` with no alias, so per the literal spec (substitute `workspace_name` + `variableAliases` only) it renders raw. Latent (component not yet routed); resolve before A2 mounts it.
+## ⚠ PM-review flags (in `.pm-review.md`)
+1. **Added a 3rd file (`messages-section.tsx`) beyond the "two files only" task scope** — PM-approved in-session via the chromeless-prop option (nesting the full self-contained MessagesSection would have duplicated heading/controls and the `id="configurator"`).
+2. **`#c9a84c` gold dot is now LIVE** on `/for/developer-tools` (Workflows view) — still raw hex, not a token (`bg-bg-gold`). Page is noindex, but it's visible on the preview now. Tokenize if desired.
+3. **`{{account_link}}` renders literally** in the two `quota-breach` workflow steps (Workflows view) — no alias for that token, per the registry/spec substitution rule. Visible on the preview now. Needs an alias (or a global account-link default) before this goes indexable.
+4. **View toggle selected-state uses neutral** (`bg-border-primary`), not gold — gold is reserved for category selection (D-405/D-427). Flagging the choice.
+5. **`DEVTOOLS_VARIABLES_EXAMPLE`** is now an unused export in `sections.tsx` (VariablesSection no longer rendered on this page). Left in place (out of task scope); remove when convenient.
+6. Earlier flags still standing: 2 corpusIds were corrected on insert (`new-device-signin`, `account-issue-notification`); the unused `VariantTone` import was dropped from `sub-verticals.ts`.
 
 ## Next task — Phase 1C continues
-- **A3 expansion:** author more sub-vertical entries into `SUB_VERTICAL_LANDINGS` (PM authors from the research library in `docs/sub-verticals/`; CC writes the registry — never Airtable, D-421 AIRGAP).
-- **A2 (engineering):** generalize `/for/developer-tools` into the dynamic `app/for/[slug]/page.tsx` consuming this registry; that route is where `WorkflowsSection` gets mounted (and where flags #3/#4 above must be resolved). Also build `/messages/documents` category page.
+- **A2 (engineering):** generalize `/for/developer-tools` into the dynamic `app/for/[slug]/page.tsx` over the registry; resolve flags #2/#3 before lifting noindex; build `/messages/documents`.
+- **A3 expansion:** author more `SUB_VERTICAL_LANDINGS` entries (PM authors from `docs/sub-verticals/`; CC writes the registry — never Airtable, D-421 AIRGAP).
 
 ## Branch state
-`feat/sub-vertical-registry` (branched from `main` HEAD = Session 144 close-out). One commit, unpushed. Prior session's `feat/corpus-expansion` already merged + deleted. Other stale `feat/*` / `sketch/*` branches remain (optional cleanup), unchanged.
+`feat/sub-vertical-registry` (branched from `main` Session 144 close-out). Two CC commits + one merge of `main` (the copy update), unpushed at write time. When this merges to main, `main`'s copy update is already there → clean. Other stale `feat/*` / `sketch/*` branches unchanged.
 
 ## Untracked — DO NOT COMMIT
 - `.claude/settings.local.json` (untracked); `.pm-review.md` (gitignored, holds `git show HEAD`).

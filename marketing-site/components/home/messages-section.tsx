@@ -56,6 +56,14 @@ interface MessagesSectionProps {
   eyebrow?: string;
   heading?: string;
   bridge?: string;
+  // Embedded mode: render only the category pills + cards (no <section>
+  // wrapper/id, no heading block, no business-name/tone controls). The host
+  // owns those and supplies `tone`. Used by the sub-vertical Messages+Workflows
+  // toggle so the browser nests under one shared heading without duplicate chrome.
+  chromeless?: boolean;
+  // Controlled tone — when set (chromeless host), overrides the internal tone
+  // state; the in-section tone control isn't rendered.
+  tone?: VariantTone;
 }
 
 export function MessagesSection({
@@ -64,6 +72,8 @@ export function MessagesSection({
   eyebrow = "The messages",
   heading = "Every message category, included.",
   bridge = "Author and test free. One registration when you're ready to send.",
+  chromeless = false,
+  tone: toneProp,
 }: MessagesSectionProps = {}) {
   // Business name is the only field that carries forward — bound to the shared
   // configurator store so home and /messages stay in sync. "Acme" is shown as
@@ -73,6 +83,7 @@ export function MessagesSection({
     lockedCategory ?? defaultCategory ?? DEFAULT_CATEGORY,
   );
   const [tone, setTone] = useState<VariantTone>("Standard");
+  const activeTone = toneProp ?? tone;
   const [page, setPage] = useState(0);
   const touchX = useRef(0);
 
@@ -91,25 +102,12 @@ export function MessagesSection({
     setPage(Math.max(0, Math.min(pages.length - 1, i)));
   }
 
-  return (
-    <section
-      id="configurator"
-      className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
-    >
-      <div className="max-w-2xl">
-        <Eyebrow>{eyebrow}</Eyebrow>
-        <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          {heading}
-        </h2>
-        <p className="mt-4 text-base leading-relaxed text-text-secondary">
-          {bridge}
-        </p>
-      </div>
-
+  const browser = (
+    <>
       {/* Category selector — horizontal-scroll pill row on mobile, two pill rows
           on desktop. Hidden when locked to a single category (D-436). */}
       {!lockedCategory && (
-      <div className="mt-10">
+      <div className={chromeless ? "" : "mt-10"}>
         <div
           className="flex flex-nowrap gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
           role="group"
@@ -166,7 +164,9 @@ export function MessagesSection({
       )}
 
       {/* Controls — business name + tone. Below md: name (2/3) + tone select (1/3)
-          in one row; md+: name (md:w-80) + the three tone pills. Hug the cards. */}
+          in one row; md+: name (md:w-80) + the three tone pills. Hug the cards.
+          Hidden in chromeless mode — the host supplies these. */}
+      {!chromeless && (
       <div className="mb-4 mt-8 flex items-center gap-3 md:flex-wrap md:justify-between md:gap-4">
         {/* Business name — relative wrapper for the clear (X) button. */}
         <div className="relative min-w-0 grow-[2] basis-0 md:grow-0 md:basis-auto">
@@ -232,10 +232,15 @@ export function MessagesSection({
           })}
         </div>
       </div>
+      )}
 
-      {/* Cards — fixed area sized to exactly 6 (2×3) at md+; stacked on mobile. */}
+      {/* Cards — fixed area sized to exactly 6 (2×3) at md+; stacked on mobile.
+          In chromeless mode the controls above are omitted, so the cards take a
+          top margin to sit clear of the category pills. */}
       <div
-        className="grid grid-cols-1 gap-3.5 md:h-[394px] md:auto-rows-[122px] md:grid-cols-2 md:content-start md:overflow-hidden"
+        className={`grid grid-cols-1 gap-3.5 md:h-[394px] md:auto-rows-[122px] md:grid-cols-2 md:content-start md:overflow-hidden${
+          chromeless ? " mt-7" : ""
+        }`}
         onTouchStart={(e) => {
           touchX.current = e.changedTouches[0].clientX;
         }}
@@ -248,7 +253,7 @@ export function MessagesSection({
       >
         {visible.map((msg) => {
           const variant =
-            msg.variants.find((v) => v.tone === tone) ?? msg.variants[0];
+            msg.variants.find((v) => v.tone === activeTone) ?? msg.variants[0];
           const segments = interpolateBody(variant.body, category.variables, {
             businessName: displayName,
           });
@@ -307,6 +312,28 @@ export function MessagesSection({
           Open Messages <span aria-hidden>→</span>
         </Link>
       </div>
+    </>
+  );
+
+  // Chromeless: the host (e.g. the sub-vertical Messages+Workflows toggle)
+  // provides the section wrapper, heading, and shared controls.
+  if (chromeless) return browser;
+
+  return (
+    <section
+      id="configurator"
+      className="mx-auto max-w-5xl border-t border-border-secondary px-6 py-20 sm:py-28"
+    >
+      <div className="max-w-2xl">
+        <Eyebrow>{eyebrow}</Eyebrow>
+        <h2 className="mt-4 text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+          {heading}
+        </h2>
+        <p className="mt-4 text-base leading-relaxed text-text-secondary">
+          {bridge}
+        </p>
+      </div>
+      {browser}
     </section>
   );
 }

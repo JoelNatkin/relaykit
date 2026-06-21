@@ -9,18 +9,12 @@ import { HowItWorks } from "@/components/home/how-it-works";
 import { Pricing } from "@/components/home/pricing";
 import { FinalCta } from "@/components/home/final-cta";
 // Same component, sub-specific data (bucket 2b).
-import { MessagesSection } from "@/components/home/messages-section";
-import { VariablesSection } from "@/components/home/variables-section";
 import { NumbersSection } from "@/components/home/numbers-section";
-// Authored, per-sub sections (bucket 2a) + the dev-tools Variables example.
-import {
-  DevToolsHero,
-  Moment,
-  Details,
-  PaperworkFork,
-  Farm,
-  DEVTOOLS_VARIABLES_EXAMPLE,
-} from "./sections";
+// Authored, per-sub sections (bucket 2a).
+import { DevToolsHero, Moment, Details, PaperworkFork, Farm } from "./sections";
+// Messages + Workflows toggle (Phase 1C) — owns the heading + shared controls
+// and swaps the curated workflows view with the full chromeless category browser.
+import { MessagesWorkflowsSection } from "./messages-workflows-section";
 // The short, human-curated URL slug (D-436). Constraints-data resolution is
 // deferred to the dynamic /for/[slug] route (Phase 1C A2); this static page only
 // needs its own canonical path.
@@ -44,18 +38,10 @@ export default function DeveloperToolsLanding() {
       <StatusBand />
       <Moment />
 
-      {/* The full message browser, opened on the sub's dominant category
-          (account events) — the visitor can switch to any of the 9. This single
-          instance replaces the former locked-here + full-browser-at-bottom pair. */}
-      <MessagesSection
-        defaultCategory="account-events"
-        eyebrow="The messages"
-        heading="Developer tools & API platforms messages. And all of the others."
-        bridge="All nine message categories are included — one registration."
-      />
-      {/* Variables sits right after Messages (D-436 placement) with a
-          sub-matched account-events example. */}
-      <VariablesSection example={DEVTOOLS_VARIABLES_EXAMPLE} />
+      {/* Messages + Workflows toggle — Workflows (curated, default) / All
+          messages (full 9-category browser). Replaces the standalone
+          MessagesSection + VariablesSection pair. */}
+      <MessagesWorkflowsSection />
 
       <Details />
       <NumbersSection />
