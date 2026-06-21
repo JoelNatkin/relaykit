@@ -16,3 +16,9 @@
 | Pet retail / specialty pet goods | /for/pet-retail | Clear |
 | Tattoo / piercing studios | /for/tattoo-piercing | Clear |
 | Food delivery / ghost kitchens | /for/food-delivery | Clear |
+| Cafés / coffee shops (single location) | /for/cafes | Clear |
+| Event ticketing (primary sales — venues, organizers) | /for/event-ticketing | Clear |
+| Ticket resale / secondary marketplace | /for/ticket-resale | Conditional |
+| Alcohol delivery / alcohol retail | /for/alcohol-retail | Conditional |
+| Gambling / sportsbooks / casino apps | /for/gambling | Not yet maybe not ever |
+| Sweepstakes / contest platforms | /for/sweepstakes | Not yet maybe not ever |
