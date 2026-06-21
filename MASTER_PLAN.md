@@ -93,14 +93,29 @@ For each sub-vertical:
 
 PM authors from research library. CC writes to repo registry. This is a PM-led authoring session, not a CC build session.
 
-**A4 — Configurator evolution (design-first, then build)**
-Requires UX/UI design work before build:
-- Sub-vertical selector drives what the user sees in the configurator
-- Workflows section appears above Categories when a sub-vertical is selected
-- Display aliases translate canonical message names to sub-vertical context
-- Variable aliases provide contextual placeholder text
-- "See all categories" always accessible — power-user escape hatch
-- Design session required; do not build until design is approved
+**A4 — Configurator evolution (design solved, build when B2B SaaS registry is complete)**
+Design is resolved (Session 145, 2026-06-21). Spec below. Build trigger: B2B SaaS family workflow definitions authored into `sub-verticals.ts`.
+
+The home configurator (`/messages` and home hero) gets progressive disclosure and a workflows layer. Conservative build — most of the existing configurator stays untouched.
+
+**Progressive disclosure (new):**
+- Step 1: show only three inputs — business name, vertical selector, sub-vertical selector (sub-vertical appears after vertical chosen). Nothing else visible. No empty states.
+- Step 2: once sub-vertical is selected, the full configurator reveals below with a brief notice: "Workflows loaded for [sub-vertical]. Uncheck anything you don't need."
+
+**Left rail changes:**
+- Toggle at top of rail: Workflows / Categories. Workflows is default when a sub-vertical is active; Categories is always accessible as the power-user escape hatch.
+- Workflows view: workflow groups with checkboxes at group level and message level, collapsed by default (same interaction as category groups — no new patterns). Group names are workflow display names. Message names are display aliases.
+- Categories view: unchanged from current implementation.
+- Both views are independent selection pools. No sync between them.
+
+**Content area changes:**
+- Workflow sections render first, then category sections. Each section has a titled header (workflow name or category name) + tag ("workflow" / "category").
+- Workflow message groups may show connector dots between steps in the content area — consider during build, not a hard requirement.
+- Two independent selection pools output into one content area. Silent dedup on "Copy messages" export if the same message body appears in both (low priority — user intent is respected).
+
+**What does not change:**
+- Existing category checkbox interaction, card rendering, tone switcher, business name input, copy/send CTAs — all unchanged.
+- The configurator component structure stays conservative — progressive disclosure wraps the existing component, it does not replace it.
 
 **A5 — Workspace integration (post-launch)**
 - Workspace configurator inherits sub-vertical context from onboarding
