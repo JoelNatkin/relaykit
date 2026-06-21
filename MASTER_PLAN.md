@@ -54,7 +54,74 @@ Phase 1 (Sinch Proving Ground) is the active phase by the numbered sequence belo
 
 The Phase 1 downstream experiments (2b inbound MO, 3c brand upgrade, 4 STOP/START/HELP) and the Phase 2 Session B kickoff are no longer gated. This section is retained as historical record of what sequenced in front of Phase 1 experiment pickup; it does not renumber the phase list below.
 
-## The phases
+## Phase 1C — Sub-vertical system
+
+A parallel marketing and product stream running alongside the numbered product phases. Not a launch gate — Phase 2 onward proceeds independently. But this is the distribution engine: 88 sub-vertical landing pages, each speaking fluently to a specific builder's context, are RelayKit's primary AI retrieval surface and long-tail SEO strategy.
+
+### What it is
+
+A system of sub-vertical landing pages at `/for/{slug}` (e.g. `/for/restaurants`, `/for/legal-practice`, `/for/developer-tools`) that present RelayKit through the lens of a specific industry rather than a generic SMS category. Each page shows the workflows a builder in that vertical would actually recognize — named for their world, sequenced for their product, with message copy that reads like it was written for them specifically.
+
+Underneath, the pages are powered by the universal message corpus. The sub-vertical layer is display aliases and workflow curation on top of the same canonical messages — no new message infrastructure per sub-vertical.
+
+### The six phases of the sub-vertical system
+
+**A1 — Content & data (in progress)**
+- Sub-vertical research library: web-researched entries for all Clear/Conditional/Not yet sub-verticals across 8 vertical families. Lives in `docs/sub-verticals/[family]/[slug].md`. Complete.
+- Message corpus expansion: 28 new messages + Documents category added based on Universal miss findings from the research. Complete.
+- `docs/RELAYKIT_MESSAGE_CORPUS.md`: PM reference copy of the full corpus. In sync.
+- Sub-vertical landing page copy: 88 Airtable rows with skeleton columns. Hero body ~27 rows populated. Paused pending workflow definitions.
+- Sub-vertical workflow definitions: the registry data (workflow sequences, display aliases, variable aliases) that makes A2 possible. Not started. PM-led authoring from the research library.
+- Documents category page copy: not started. Needs H1, hero body, moment, Q&A ×4. PM authors in Airtable Category Pages table, CC writes to `categories.ts`.
+- `explorations/vertical-buckets-research.md`: deprecate. Per-row data superseded by the research library. Strip to methodology header only.
+
+**A2 — Sub-vertical landing pages (engineering)**
+- Generalize `/for/developer-tools` into a dynamic route `app/for/[slug]/page.tsx`
+- Build sub-vertical registry file from Airtable data + workflow definitions
+- Messages section leads with workflows (named, sequenced, display-aliased) — not the generic category browser
+- "See all messages" toggle always accessible for power users
+- 88 pages generated via `generateStaticParams()`
+- `/messages/documents` category page built
+- Sitemap updated, noindex lifted
+
+**A3 — Workflow definitions (content + data, prerequisite for A2)**
+For each sub-vertical:
+- Which workflows exist and which corpus message IDs are in each, in order
+- Display alias per message in this vertical context ("Confirmation" → "Court date confirmed")
+- Variable aliases (contextual placeholder text — `provider_name` → "Attorney James Park")
+- Which categories to exclude from the category browser for this sub-vertical
+
+PM authors from research library. CC writes to repo registry. This is a PM-led authoring session, not a CC build session.
+
+**A4 — Configurator evolution (design-first, then build)**
+Requires UX/UI design work before build:
+- Sub-vertical selector drives what the user sees in the configurator
+- Workflows section appears above Categories when a sub-vertical is selected
+- Display aliases translate canonical message names to sub-vertical context
+- Variable aliases provide contextual placeholder text
+- "See all categories" always accessible — power-user escape hatch
+- Design session required; do not build until design is approved
+
+**A5 — Workspace integration (post-launch)**
+- Workspace configurator inherits sub-vertical context from onboarding
+- Workflow sequences as activatable objects
+- Sub-vertical context persists; SMS_GUIDELINES.md generation reflects chosen workflows
+- Sending layer (Phase 2 Session B) enables workflows to become live automations
+
+**A6 — Go-to-market**
+- 88 sub-vertical pages are the primary AI retrieval surface — structured, specific, original content that AI search surfaces when a builder is mid-problem
+- Starter kit program: RelayKit as the SMS module embedded in Makerkit, ShipFast, Supastarter
+- Message reference page as lead magnet: pick use case, get full copyable reference, no signup required
+- AI retrieval optimization: original statistics, structured content, comprehensive coverage
+
+### Key architectural decisions
+
+- **Airtable is the authoring source of truth** for all copy (category pages, sub-vertical pages). PM authors and approves in Airtable. PM compiles data blocks and hands to CC. CC writes to repo. CC never touches Airtable.
+- **The corpus is the single source for messages.** Sub-vertical pages reference corpus messages via display aliases — no new message copy per sub-vertical.
+- **D-421 AIRGAP holds.** CC never reads Airtable. The repo is always the enforcement source.
+- **Workflows are a display layer.** The workflow registry (display aliases, variable aliases, sequence order) sits on top of the corpus without touching it. No new message infrastructure needed per sub-vertical.
+
+---
 
 1. **Phase 0 — Doc reconciliation + architectural decisions.** Clean up docs, record `/src` sunset, align ground truth before building.
 2. **Phase 1 — Sinch proving ground.** Experiments confirming Sinch's registration timing and webhook behavior.
