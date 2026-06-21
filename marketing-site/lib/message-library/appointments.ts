@@ -36,7 +36,7 @@ const APPOINTMENTS_VARIABLES: Variable[] = [
   {
     name: "provider_name",
     description:
-      "Name of the provider, host, or staff member the appointment is with ('Dr. Sarah Chen', 'Coach Mike').",
+      "Name of the provider, host, or staff member the appointment is with ('Dr. Sarah Chen', 'Coach Mike'). Optional — for venue bookings, reservations, and date-range stays with no named provider, the developer may omit it; when the value is empty the confirmation copy is adapted to read naturally without a provider (the variable is optional in the template, not removed).",
     budgetChars: 18,
     source: "SDK call payload",
     example: "Dr. Sarah Chen",
@@ -106,7 +106,7 @@ export const APPOINTMENTS: Category = {
       name: "Confirmation",
       tooltip: "Sent when a booking is confirmed.",
       description:
-        "Confirms a newly booked appointment with provider and time — the 'your appointment is locked in' moment.",
+        "Confirms a newly booked appointment with provider and time — the 'your appointment is locked in' moment. {{provider_name}} is optional: for venue bookings, reservations, and date-range stays with no named provider, omit it and the confirmation reads as a booking with the workspace itself.",
       groupNote:
         "Appointment lifecycle - step 1 of 7: sent immediately after booking is confirmed in the developer's system.",
       variables: ["workspace_name", "provider_name", "appointment_time"],

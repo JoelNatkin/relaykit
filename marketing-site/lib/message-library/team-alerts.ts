@@ -77,7 +77,7 @@ const TEAM_ALERTS_VARIABLES: Variable[] = [
   {
     name: "alert_type",
     description:
-      "Short description of the alert condition ('CPU 95%', 'Disk full', 'Queue backed up').",
+      "Short description of the alert condition. Works for infrastructure ('CPU 95%', 'Disk full', 'Queue backed up') and equally for non-infra thresholds — a business metric, a price target hit, a device going offline, or a pipeline threshold crossed ('Revenue -20%', 'AAPL > $190', 'Sensor offline').",
     budgetChars: 24,
     source: "SDK call payload",
     example: "Queue backed up",
@@ -85,7 +85,7 @@ const TEAM_ALERTS_VARIABLES: Variable[] = [
   {
     name: "system_name",
     description:
-      "Name of the system, service, or component the alert is about ('api-gateway', 'orders-db', 'checkout-svc').",
+      "Name of whatever the alert is about — not only infrastructure. A system/service/component ('api-gateway', 'orders-db'), or equally a metric, asset, device, or pipeline the developer watches ('Signups', 'AAPL', 'Front-door sensor').",
     budgetChars: 16,
     source: "SDK call payload",
     example: "api-gateway",
@@ -290,9 +290,10 @@ export const TEAM_ALERTS: Category = {
     {
       id: "system-alert",
       name: "System alert",
-      tooltip: "Severity-cued threshold or anomaly notification.",
+      tooltip:
+        "Severity-cued threshold or anomaly notification — infrastructure or any watched metric, price, device, or pipeline.",
       description:
-        "Severity-cued notification of a threshold breach, error spike, or anomaly.",
+        "Severity-cued notification of a threshold breach, error spike, or anomaly. Not limited to infrastructure: the same shape carries business-metric thresholds, price-target hits, device-state changes, and pipeline thresholds — {{system_name}} and {{alert_type}} name whatever is being watched.",
       groupNote:
         "Alert event - discrete trigger, not part of the shift sequence.",
       variables: ["workspace_name", "severity", "alert_type", "system_name", "action_link"],
