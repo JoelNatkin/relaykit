@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { CATEGORIES } from "@/lib/message-library";
 import type { VariantTone } from "@/lib/message-library/types";
 import type { Workflow, WorkflowStep } from "@/lib/landing/sub-verticals";
@@ -15,12 +16,47 @@ interface WorkflowsSectionProps {
   tone: VariantTone;
 }
 
-// Resolve a step to its final, personalized SMS body.
+// Global fallback table — display values for corpus tokens that aren't aliased
+// per-step, so an unresolved {{token}} never renders literally on the page.
+// Module-level so it isn't recreated on every call.
+const FALLBACKS: Record<string, string> = {
+  action_link: "yourapp.com/alerts",
+  account_link: "yourapp.com/billing",
+  escalation_to: "your teammate",
+  card_last4: "4242",
+  code: "480913",
+  expiry_minutes: "10",
+  ticket_number: "318",
+  ticket_link: "yourapp.com/tickets/318",
+  days_remaining: "3",
+  queue_position: "#4 in line",
+  grace_window: "24 hours",
+  claim_link: "yourapp.com/claim",
+  rejoin_link: "yourapp.com/waitlist",
+  provider_name: "your provider",
+  agent_name: "Sam",
+  eta: "30 min",
+  incident_id: "INC-4821",
+  system_name: "prod",
+  alert_type: "threshold exceeded",
+  severity: "CRITICAL",
+  resource_name: "API calls",
+  usage_percent: "80",
+  quota_period: "monthly",
+};
+
+// Escape a string for literal use inside a RegExp.
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Resolve a step to its final body plus the list of values that were
+// substituted in (so the renderer can bold them).
 function resolveStepBody(
   step: WorkflowStep,
   businessName: string,
   tone: VariantTone,
-): string {
+): { body: string; values: string[] } {
   const name = businessName.trim() || "Acme";
 
   let body: string;
@@ -40,14 +76,55 @@ function resolveStepBody(
     body = "";
   }
 
-  // Identity frame first, then the step's contextual aliases on top.
-  body = body.replaceAll("{{workspace_name}}", name);
+  // Substitute in order — identity frame, step aliases, then the global
+  // fallback table. Each pass records the value it injected (only when the
+  // token was actually present) so the renderer can bold the substituted text.
+  const values: string[] = [];
+  const sub = (token: string, value: string) => {
+    const needle = `{{${token}}}`;
+    if (body.includes(needle)) {
+      body = body.replaceAll(needle, value);
+      values.push(value);
+    }
+  };
+
+  // 1. Identity frame
+  sub("workspace_name", name);
+  sub("business_name", name);
+
+  // 2. Step-specific aliases
   if (step.variableAliases) {
     for (const [token, value] of Object.entries(step.variableAliases)) {
-      body = body.replaceAll(`{{${token}}}`, value);
+      sub(token, value);
     }
   }
-  return body;
+
+  // 3. Global fallback table — covers corpus tokens not aliased per-step
+  for (const [token, value] of Object.entries(FALLBACKS)) {
+    sub(token, value);
+  }
+
+  return { body, values };
+}
+
+// Render the substituted body, bolding the injected variable values. Splits the
+// string on those values (longest first, so a shorter value can't partial-match
+// inside a longer one) and wraps each match in <strong>.
+function renderBody(body: string, values: string[]): ReactNode {
+  const unique = [...new Set(values)].filter(Boolean);
+  if (unique.length === 0) return body;
+  unique.sort((a, b) => b.length - a.length);
+  const re = new RegExp(`(${unique.map(escapeRegExp).join("|")})`, "g");
+  const matched = new Set(unique);
+  return body.split(re).map((part, i) =>
+    matched.has(part) ? (
+      <strong key={i} className="font-medium text-text-primary">
+        {part}
+      </strong>
+    ) : (
+      part
+    ),
+  );
 }
 
 export function WorkflowsSection({
@@ -72,6 +149,7 @@ export function WorkflowsSection({
           <div className="mt-4">
             {workflow.steps.map((step, i) => {
               const isLast = i === workflow.steps.length - 1;
+              const { body, values } = resolveStepBody(step, businessName, tone);
               return (
                 <div key={i} className="flex gap-2.5">
                   {/* Left rail: gold dot + connector line down to the next step. */}
@@ -90,7 +168,7 @@ export function WorkflowsSection({
                       {step.displayName}
                     </div>
                     <p className="mt-0.5 text-[11px] text-text-secondary">
-                      {resolveStepBody(step, businessName, tone)}
+                      {renderBody(body, values)}
                     </p>
                   </div>
                 </div>

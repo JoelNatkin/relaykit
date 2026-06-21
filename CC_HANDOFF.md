@@ -4,7 +4,7 @@
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Status: on branch `feat/sub-vertical-registry` — two CC commits + a merge of `main`, NOT pushed (awaiting PM `gg`).** `.pm-review.md` holds `git show HEAD`. No new D-numbers (additive Phase 1C work; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This branch is **Phase 1C / A1–A3** work: the registry data + the Workflows display layer, now wired into the (noindex) `/for/developer-tools` page as the pattern A2 will generalize.
+**Status: on branch `feat/sub-vertical-registry` — three CC commits + a merge of `main`, NOT pushed (awaiting PM `gg`).** `.pm-review.md` holds `git show HEAD`. No new D-numbers (additive Phase 1C work; registry data is PM-authored). Decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B. This branch is **Phase 1C / A1–A3** work: the registry data + the Workflows display layer, now wired into the (noindex) `/for/developer-tools` page as the pattern A2 will generalize.
 
 ---
 
@@ -24,20 +24,26 @@
 
 **Verification:** tsc clean, eslint clean, `npm run build` green; `/for/developer-tools` prerenders **static** (4.71 kB).
 
+**Commit 3 — `fix: global token fallback table in WorkflowsSection + gold active toggle`**
+- **`components/home/workflows-section.tsx`.** Added a module-level **`FALLBACKS`** table (display values for ~23 corpus tokens) as a final substitution pass after `workspace_name`/`business_name` + per-step `variableAliases` — so an unresolved `{{token}}` never renders literally (resolves flag #3, incl. `{{account_link}}`). `resolveStepBody` now returns `{ body, values }` (the values it injected, gated on token presence); a new **`renderBody`** bolds those values via a longest-first regex split into `<strong className="font-medium text-text-primary">`.
+- **`app/for/developer-tools/messages-workflows-section.tsx`.** View toggle selected pill → **gold** (`border-bg-gold bg-bg-gold text-text-on-gold`, matching the category pills) per PM direction (resolves flag #4). Comment updated.
+- tsc + eslint clean (no build — no new files/routes).
+
 ## ⚠ PM-review flags (in `.pm-review.md`)
-1. **Added a 3rd file (`messages-section.tsx`) beyond the "two files only" task scope** — PM-approved in-session via the chromeless-prop option (nesting the full self-contained MessagesSection would have duplicated heading/controls and the `id="configurator"`).
-2. **`#c9a84c` gold dot is now LIVE** on `/for/developer-tools` (Workflows view) — still raw hex, not a token (`bg-bg-gold`). Page is noindex, but it's visible on the preview now. Tokenize if desired.
-3. **`{{account_link}}` renders literally** in the two `quota-breach` workflow steps (Workflows view) — no alias for that token, per the registry/spec substitution rule. Visible on the preview now. Needs an alias (or a global account-link default) before this goes indexable.
-4. **View toggle selected-state uses neutral** (`bg-border-primary`), not gold — gold is reserved for category selection (D-405/D-427). Flagging the choice.
-5. **`DEVTOOLS_VARIABLES_EXAMPLE`** is now an unused export in `sections.tsx` (VariablesSection no longer rendered on this page). Left in place (out of task scope); remove when convenient.
-6. Earlier flags still standing: 2 corpusIds were corrected on insert (`new-device-signin`, `account-issue-notification`); the unused `VariantTone` import was dropped from `sub-verticals.ts`.
+1. **`messages-section.tsx` chromeless prop is a 3rd file beyond the original "two files only" scope** — PM-approved in-session (the clean way to avoid a duplicate heading/controls/`id="configurator"`).
+2. **`#c9a84c` gold dot** (WorkflowsSection step rail) is still raw hex, not a token (`bg-bg-gold`). Live on the noindex preview. Tokenize if desired. *(The toggle now uses the `bg-bg-gold` token — only the step dots remain raw.)*
+3. ✅ **Resolved (Commit 3)** — `{{account_link}}` and other unaliased tokens now render real display values via the `FALLBACKS` table.
+4. ✅ **Resolved (Commit 3)** — view toggle selected-state is now gold (PM-directed).
+5. **`DEVTOOLS_VARIABLES_EXAMPLE`** is an unused export in `sections.tsx` (VariablesSection no longer rendered here). Left in place (out of scope); remove when convenient.
+6. **`FALLBACKS` display values** are CC-chosen sensible defaults (e.g. `code` → `480913`, `eta` → `30 min`, `severity` → `CRITICAL`) — PM may want to review the copy. Bolding keys off the *substituted value strings*, so a value that also appears as literal body text could over-bold (low risk; "keep it simple" per task).
+7. Earlier flags still standing: 2 corpusIds corrected on insert (`new-device-signin`, `account-issue-notification`); unused `VariantTone` import dropped from `sub-verticals.ts`.
 
 ## Next task — Phase 1C continues
 - **A2 (engineering):** generalize `/for/developer-tools` into the dynamic `app/for/[slug]/page.tsx` over the registry; resolve flags #2/#3 before lifting noindex; build `/messages/documents`.
 - **A3 expansion:** author more `SUB_VERTICAL_LANDINGS` entries (PM authors from `docs/sub-verticals/`; CC writes the registry — never Airtable, D-421 AIRGAP).
 
 ## Branch state
-`feat/sub-vertical-registry` (branched from `main` Session 144 close-out). Two CC commits + one merge of `main` (the copy update), unpushed at write time. When this merges to main, `main`'s copy update is already there → clean. Other stale `feat/*` / `sketch/*` branches unchanged.
+`feat/sub-vertical-registry` (branched from `main` Session 144 close-out). Three CC commits + one merge of `main` (the copy update), unpushed at write time. When this merges to main, `main`'s copy update is already there → clean. Other stale `feat/*` / `sketch/*` branches unchanged.
 
 ## Untracked — DO NOT COMMIT
 - `.claude/settings.local.json` (untracked); `.pm-review.md` (gitignored, holds `git show HEAD`).

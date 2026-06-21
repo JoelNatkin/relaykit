@@ -46,8 +46,7 @@ export function MessagesWorkflowsSection() {
       </div>
 
       {/* View toggle — two adjacent pills sharing one border (segmented control).
-          Selected = monochromatic neutral; gold stays reserved for category
-          selection (D-405/D-427). */}
+          Selected pill = gold, matching the category pills (PM-directed). */}
       <div
         className="mt-8 inline-flex rounded-lg border border-border-primary p-0.5"
         role="group"
@@ -68,7 +67,7 @@ export function MessagesWorkflowsSection() {
               aria-pressed={active}
               className={`cursor-pointer rounded-md px-4 py-2 text-sm font-medium transition duration-100 ease-linear ${
                 active
-                  ? "bg-border-primary text-text-primary"
+                  ? "border-bg-gold bg-bg-gold text-text-on-gold"
                   : "text-text-tertiary hover:text-text-secondary"
               }`}
             >
