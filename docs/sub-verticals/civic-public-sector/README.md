@@ -10,3 +10,9 @@
 | Public transit / mass transit operational | /for/public-transit | Clear |
 | Municipal utilities (water, power, gas) | /for/municipal-utilities | Conditional |
 | Housing assistance / public-housing administration | /for/housing-assistance | Conditional |
+| Nonprofit / charity / fundraising platforms (institutional, not SaaS) | /for/nonprofit-institutional | Conditional |
+| Faith-based institutional administration (church, mosque, synagogue ops) | /for/faith-institutions | Conditional |
+| 311 / non-emergency civic services | /for/311-civic-services | Conditional |
+| Court / judicial system communications | /for/court-communications | Not yet |
+| Public defender / legal aid operational tooling | /for/legal-aid | Not yet |
+| Public health / community health communications (non-clinical) | /for/public-health | Conditional |
