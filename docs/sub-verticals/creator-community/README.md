@@ -10,3 +10,9 @@
 | Podcast hosting / podcaster tools | /for/podcast-hosting | Clear |
 | Live streaming / video creator tools | /for/live-streaming | Clear |
 | Patreon-style recurring patronage (non-adult) | /for/patronage-platforms | Clear |
+| Online community for affinity groups (hobby, professional, support) | /for/affinity-communities | Clear |
+| Audience-growth / follower-management tools | /for/audience-growth | Clear |
+| Creator monetization tools (tip jars, paid DMs, fan-club tooling) | /for/creator-monetization | Clear |
+| Fan engagement / fan club platforms | /for/fan-engagement | Clear |
+| Nonprofit / charity / fundraising platforms (SaaS) | /for/nonprofit-platforms | Conditional |
+| Influencer marketplaces / brand-creator matchmaking | /for/influencer-marketplaces | Conditional |
