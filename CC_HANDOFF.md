@@ -1,50 +1,38 @@
-# CC_HANDOFF — Corpus expansion (Documents category + 23 messages + 2 refinements) (2026-06-21)
+# CC_HANDOFF — Session 144: sub-vertical research program complete + corpus expansion merged (2026-06-21)
 
 > **Purpose:** Transient summary at the end of each CC session to orient the next. Overwritten each close-out.
 >
 > Not for: long-term state (REPO_INDEX), decision rationale (DECISIONS), product behavior (PRODUCT_SUMMARY). Write for the next reader.
 
-**Status: MERGED to `main` and PUSHED to `origin/main`.** `feat/corpus-expansion` (9 commits) pushed, merged `--no-ff` (merge commit `160316e`), branch deleted (local + remote branch ref pushed earlier). The same push also published the 21 prior session research commits (Civic sub-vertical batches 1–3 + Universal Miss Report) per Joel's explicit go-ahead. Production build verified clean (`npm run build` exit 0, "Compiled successfully"; `/messages` + 9 category pages prerender). `origin/main` now in sync.
-
-**⚠ Untracked/uncommitted in the working tree (NOT mine, left untouched):** `MASTER_PLAN.md` carries an uncommitted PM/Joel edit adding a "Phase 1C — Sub-vertical system" roadmap section (CC reads-only file — do not commit or revert; it's PM's to land). Plus untracked `.claude/settings.local.json` (do not commit).
+**Status: ✅ all merged + pushed to `origin/main`.** Working tree clean except untracked `.claude/settings.local.json` (do not commit). No new D-numbers; decision count unchanged (352 active, latest D-437). Active product phase unchanged: Phase 2 — Session B (Sinch outbound delivery). The sub-vertical work runs as **MASTER_PLAN Phase 1C** (parallel stream, not a launch gate).
 
 ---
 
-## What this branch does (production-facing: `marketing-site/lib/message-library/`)
-First production-quality corpus expansion driven by the sub-vertical research program's `UNIVERSAL_MISS_REPORT.md`. Adds a new category + 28 new messages + 2 metadata refinements, with `docs/RELAYKIT_MESSAGE_CORPUS.md` kept in lockstep.
+## What this session did (three arcs, all on `main`)
 
-| Commit | What |
-|--------|------|
-| `1ceaf32` | **New `documents.ts` category** (Documents, TCR ACCOUNT_NOTIFICATION) — 5 msgs: document-needed, signature-requested, signature-received, documents-received, item-ready. `index.ts` wired: import + export + inserted in `CATEGORIES` after ACCOUNT_EVENTS, before MARKETING. |
-| `c3ac633` | **account-events +12 msgs** (payment-due-reminder, payment-received, invoice-ready, payment-past-due, deadline-reminder, status-update, new-message-waiting, payout-sent, payout-failed, balance-low, streak-ending, recurring-reminder) + 11 new vars + new `action_link` token in this category. |
-| `ad02c74` | **order-updates +3 msgs** (order-ready-for-pickup, quote-ready, delivery-attempt-failed) + new `action_link` token. |
-| `78e63ce` | **customer-support +1** (request-received). |
-| `f8868fa` | **appointments +4 msgs** (on-the-way, service-complete, time-to-rebook, pre-visit-form-request) + new `eta`, `form_link` tokens. |
-| `45acb80` | **team-alerts +3 msgs** (incident-resolved, task-assigned, task-reminder) + new `item_name`, `due_time` tokens. |
-| `39dd1e5` | **Refinements** — appointments:confirmation `provider_name` documented optional (venue/reservation/no-provider); team-alerts:system-alert tooltip/description + `system_name`/`alert_type` var descriptions generalized beyond infra. Bodies unchanged. |
-| `a344e6a` | **`docs/RELAYKIT_MESSAGE_CORPUS.md`** — Documents section (alphabetical, between Customer support and Marketing) + all 28 new messages in their category sections + both refinement notes. |
+**1. Sub-vertical research program — COMPLETE (all 8 families).**
+130 entries across `docs/sub-verticals/{family}/`, one file per `/for/<slug>` + a README index per family: b2b-saas (18), financial-services (13), healthcare (14), home-local-services (15), professional-services (16), retail-hospitality (18), creator-community (18), civic-public-sector (18). Civic & Creator families + the report were authored this session (general-purpose research sub-agents, one per sub-vertical, batched; each validated against the corpus before commit). Process doc: `sub-verticals/RESEARCH_PROCESS.md`. **PM-review-pending research, not product canon.**
 
-## Verification (all green)
-- `tsc --noEmit` clean; `eslint lib/message-library/` clean.
-- Programmatic check (all 261 variants, 10 categories): **0 problems** — every body's worst-case (sum of token `budgetChars` + literal) ≤160 and example-resolved ≤160; no orphan tokens. Caught + fixed one `charCount` typo (documents:item-ready Brief 122→105).
-- Corpus-doc sync: **261/261** code bodies present verbatim in `RELAYKIT_MESSAGE_CORPUS.md`, zero drift.
-- All message bodies are ASCII/GSM-7 clean (no em-dashes — see deviation below).
+**2. `UNIVERSAL_MISS_REPORT.md` — dedup of corpus gaps.**
+Extracted all **146 Universal-miss + 136 Stretch** flags across the 8 families (8 parallel per-family extraction agents), grouped into **~46 semantic patterns**: 26 recommended corpus additions, 2 refinements, 1 new-category candidate (Documents), 19 demoted to vertical-specific. This report is the spec the corpus expansion was built from.
 
-## ⚠ Deviations flagged for PM (also in `.pm-review.md`)
-1. **Em-dashes → ASCII hyphens in BODIES.** Spec Friendly bodies used `—`; em-dash isn't GSM-7 and would trip `compliance.ts`'s "not SMS-safe" blocker on these new corpus messages + force UCS-2. Normalized to `" - "` (same length → charCounts unchanged); matches existing corpus convention. Descriptions/tooltips keep em-dashes (not sent).
-2. **Subheader counts vs itemized.** STEP 2 header said "14" but listed 12; STEP 4 said "4" but listed 3. Itemized lists sum to 28 = overview's "28 across 6 categories", so I added exactly the itemized set (account-events +12, order-updates +3). **Commit messages use the dictated strings verbatim** — so commit `c3ac633` says "14 messages" though 12 landed, and `ad02c74` says "4 messages" though 3 landed. PM may want those two messages amended for accuracy (would require history rewrite on the unpushed branch).
-3. **task-reminder Friendly = 159 worst-case** (set `due_time` budgetChars=19, within spec "~20", to stay strictly <160). A few others are tight (intake-form Friendly 157, delivery-attempt-failed Friendly 158) — all <160, all valid single segments.
-4. **No `/messages/documents` landing page** — `lib/landing/categories.ts` keeps its own independent 9-entry `CATEGORY_LANDINGS` registry (not derived from `CATEGORIES`), so adding the 10th category surfaces it in the **configurator** (intended) without creating/breaking a landing route. Not requested.
+**3. Corpus expansion — MERGED to `main`** (`feat/corpus-expansion`, merge `160316e`, build-verified, pushed).
+New **Documents** category (`documents.ts`, 5 msgs) + **23** messages across account-events (+12), appointments (+4), order-updates (+3), customer-support (+1), team-alerts (+3) = **28 new messages, 10 categories / 83 messages total**. Two metadata-only refinements (appointments:confirmation optional `provider_name`; team-alerts:system-alert generalized beyond infra). `index.ts` wired (Documents in `CATEGORIES` after Account events, before Marketing). `RELAYKIT_MESSAGE_CORPUS.md` in lockstep (261/261 bodies verified). tsc + eslint + production build all clean.
 
-## Next steps
-- PM reviews the Vercel preview of `feat/corpus-expansion` → approve merge (or request the commit-message count fix in #2).
-- The Documents category will appear as a 10th category in the `/messages` configurator and the home Messages browser once merged — worth a visual check on the preview (pill row wrapping, default-unchecked behavior).
-- Remaining `UNIVERSAL_MISS_REPORT.md` items not built this round: the "Documents vs account-events" home was resolved by creating the category; the report's demoted/2-sub patterns and the `system-alert`/`confirmation` *refinements-only* items are addressed. Future corpus rounds could revisit the report's New-Category note if PM wants billing split out of account-events.
+**Plus:** PM added **MASTER_PLAN Phase 1C — Sub-vertical system** (`585f036`) — the 88-page `/for/{slug}` distribution engine, sub-phases A1–A6. This close-out also brought REPO_INDEX's doc inventory current (8 family rows + UNIVERSAL_MISS_REPORT + Documents category + corpus-expansion summary).
+
+## ⚠ Carry-forwards / known deviations (also in `.pm-review.md` history)
+- **Corpus-expansion commit-message counts** read "14 messages to account-events" / "4 to order-updates" (dictated strings) where **12 / 3** actually landed (the itemized spec; total still 28). Bodies + diff are correct. PM may want those two messages amended (history rewrite; already pushed, so would need force-push — likely not worth it).
+- **Em-dashes → ASCII hyphens** normalized in all new message bodies (em-dash isn't GSM-7; would trip `compliance.ts`). Same length, char math unchanged.
+- **task-reminder Friendly = 159 chars** worst-case (tight but valid single segment); a few others 157–158. All <160.
+- **No `/messages/documents` landing page** — `lib/landing/categories.ts` keeps an independent 9-entry registry; Documents surfaces in the **configurator** only (intended). If PM wants a Documents category landing page, add a `CATEGORY_LANDINGS` entry (needs PM-authored copy: H1, hero body, moment, Q&A ×4).
+- **UNIVERSAL_MISS_REPORT residue:** the report's New-Category note (split billing out of account-events) was NOT taken — billing additions live in account-events per its stated scope. Revisit only if PM wants a dedicated Billing category.
+
+## Next task — Phase 1C **A3: workflow definitions** (PM-led authoring, start with developer-tools)
+Per MASTER_PLAN Phase 1C, A3 is the prerequisite for the A2 dynamic `/for/[slug]` build. For each sub-vertical (start with **developer-tools**): which workflows exist + the corpus message IDs in each (in order), the display alias per message in that vertical's context, variable aliases (contextual placeholders), and which categories to exclude from the browser. PM authors from the research library + the now-expanded corpus; CC writes the registry to the repo (CC never touches Airtable — D-421 AIRGAP). The `/for/developer-tools` page already exists (D-436, currently `noindex`) as the pattern to generalize.
 
 ## Branch state
-- `feat/corpus-expansion` (HEAD `a344e6a`) off `main`. **8 commits, not pushed.**
-- `main` itself is **~21 commits ahead of `origin/main`** from earlier this session (Civic & Public Sector sub-vertical research batches 1–3 + `UNIVERSAL_MISS_REPORT.md`) plus the prior post-S143 research families — all doc-only, all awaiting PM approval to push. None pushed.
-- Stale undeleted branches remain (optional cleanup), unchanged from S143.
+`main` only (HEAD is the Session 144 close-out commit; in sync with `origin/main`). No open branches — `feat/corpus-expansion` merged + deleted (local + remote ref pushed). Other stale `feat/*` + `sketch/*` branches from prior sessions remain (optional cleanup), unchanged.
 
-## Untracked carryover — DO NOT COMMIT
-- `.claude/settings.local.json` (untracked); `.pm-review.md` (gitignored, regenerated this stop at HEAD `a344e6a`).
+## Untracked — DO NOT COMMIT
+- `.claude/settings.local.json` (untracked); `.pm-review.md` (gitignored, regenerated this close-out).
