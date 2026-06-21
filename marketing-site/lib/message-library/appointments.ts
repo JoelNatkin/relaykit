@@ -65,6 +65,22 @@ const APPOINTMENTS_VARIABLES: Variable[] = [
     source: "SDK call payload",
     example: "yourapp.com/feedback",
   },
+  {
+    name: "eta",
+    description:
+      "Short estimated time until a mobile provider, technician, or driver arrives ('25 min', '10:15 AM'). Longer formats would not fit the budget.",
+    budgetChars: 12,
+    source: "SDK call payload",
+    example: "25 min",
+  },
+  {
+    name: "form_link",
+    description:
+      "Link to the pre-visit intake, consent, or check-in form on the developer's own domain. RelayKit does not shorten or host this URL.",
+    budgetChars: 24,
+    source: "SDK call payload",
+    example: "yourapp.com/forms",
+  },
 ];
 
 export const APPOINTMENTS: Category = {
@@ -282,6 +298,109 @@ export const APPOINTMENTS: Category = {
           tone: "Brief",
           body: "{{workspace_name}}: thanks for visiting. Feedback: {{feedback_link}} STOP to opt out.",
           charCount: 104,
+        },
+      ],
+    },
+    {
+      id: "on-the-way",
+      name: "On the way",
+      tooltip:
+        "Sent when a mobile provider, technician, or driver is en route to the customer.",
+      description:
+        "The provider-en-route ping for mobile and field service — the provider travels to the customer, the inverse of the proximate reminder.",
+      variables: ["workspace_name", "provider_name", "eta"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{provider_name}} is on the way, ETA about {{eta}}. Reply STOP to opt out.",
+          charCount: 112,
+        },
+        {
+          tone: "Friendly",
+          body: "Heads up - {{provider_name}} is headed your way, ETA about {{eta}}. Reply STOP to opt out. - {{workspace_name}}",
+          charCount: 129,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{provider_name}} on the way, ETA {{eta}}. STOP to opt out.",
+          charCount: 97,
+        },
+      ],
+    },
+    {
+      id: "service-complete",
+      name: "Service complete",
+      tooltip: "Sent when an on-site job or service visit is finished.",
+      description:
+        "A field-service terminal state — the on-site job or visit is done, often carrying a recap or feedback link.",
+      variables: ["workspace_name", "feedback_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: your service is complete. Details: {{feedback_link}} Reply STOP to opt out.",
+          charCount: 114,
+        },
+        {
+          tone: "Friendly",
+          body: "All done! Your {{workspace_name}} service is complete. Tell us how it went: {{feedback_link}} Reply STOP to opt out.",
+          charCount: 135,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: service complete. {{feedback_link}} STOP to opt out.",
+          charCount: 91,
+        },
+      ],
+    },
+    {
+      id: "time-to-rebook",
+      name: "Time to rebook",
+      tooltip:
+        "Sent when a recurring service is due and no appointment has been booked yet.",
+      description:
+        "A recurring-cadence 'you're due for your next visit — book a time' nudge where no appointment exists yet. Distinct from a confirmed-appointment reminder.",
+      variables: ["workspace_name", "reschedule_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: Your next visit is due. Pick a time: {{reschedule_link}} Reply STOP to opt out.",
+          charCount: 116,
+        },
+        {
+          tone: "Friendly",
+          body: "Time for your next {{workspace_name}} visit. Grab a slot here: {{reschedule_link}} Reply STOP to opt out.",
+          charCount: 122,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Next visit due. Book: {{reschedule_link}} STOP to opt out.",
+          charCount: 95,
+        },
+      ],
+    },
+    {
+      id: "pre-visit-form-request",
+      name: "Pre-visit form request",
+      tooltip:
+        "Sent ahead of an appointment when intake, consent, or check-in forms need completing.",
+      description:
+        "A pre-appointment step — complete intake, consent, or check-in forms before the visit. Universal across intake / waiver / check-in flows.",
+      variables: ["workspace_name", "appointment_time", "form_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: please complete your forms before your visit {{appointment_time}}: {{form_link}} Reply STOP to opt out.",
+          charCount: 150,
+        },
+        {
+          tone: "Friendly",
+          body: "Before we see you {{appointment_time}}, please fill out your forms here: {{form_link}} Reply STOP to opt out. - {{workspace_name}}",
+          charCount: 157,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: complete your forms before {{appointment_time}}: {{form_link}} STOP to opt out.",
+          charCount: 126,
         },
       ],
     },
