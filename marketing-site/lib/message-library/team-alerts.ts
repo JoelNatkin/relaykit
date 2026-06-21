@@ -116,6 +116,22 @@ const TEAM_ALERTS_VARIABLES: Variable[] = [
     source: "SDK call payload",
     example: "Alice",
   },
+  {
+    name: "item_name",
+    description:
+      "Title of the assigned task, lead, deal, or work item ('Task #248', 'Acme renewal').",
+    budgetChars: 40,
+    source: "SDK call payload",
+    example: "Task #248",
+  },
+  {
+    name: "due_time",
+    description:
+      "Short deadline for a task or deliverable ('tomorrow 5pm', 'Fri EOD'). Longer formats would not fit the budget.",
+    budgetChars: 19,
+    source: "SDK call payload",
+    example: "tomorrow 5pm",
+  },
 ];
 
 export const TEAM_ALERTS: Category = {
@@ -376,6 +392,82 @@ export const TEAM_ALERTS: Category = {
           tone: "Brief",
           body: "{{workspace_name}}: {{system_name}} SLA breach. {{action_link}} STOP to opt out.",
           charCount: 102,
+        },
+      ],
+    },
+    {
+      id: "incident-resolved",
+      name: "Incident resolved",
+      tooltip: "Sent when an incident, outage, or service disruption is resolved.",
+      description:
+        "The all-clear that closes an incident — team-alerts opens incidents (system-alert, on-call-page, escalation-ping) but never closed one.",
+      variables: ["workspace_name", "system_name", "incident_id", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{system_name}} incident {{incident_id}} resolved. {{action_link}} Reply STOP to opt out.",
+          charCount: 126,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: all clear - {{system_name}} incident {{incident_id}} is resolved. {{action_link}} Reply STOP to opt out.",
+          charCount: 141,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{system_name}} {{incident_id}} resolved. {{action_link}} STOP to opt out.",
+          charCount: 111,
+        },
+      ],
+    },
+    {
+      id: "task-assigned",
+      name: "Task assigned",
+      tooltip: "Sent when a task, lead, deal, or work item is assigned to a team member.",
+      description:
+        "A person-to-person work-item assignment notification — a task, lead, deal, or item routed to a specific team member.",
+      variables: ["workspace_name", "item_name", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{item_name}} was assigned to you. View: {{action_link}} Reply STOP to opt out.",
+          charCount: 147,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: {{item_name}} is yours now - take a look: {{action_link}} Reply STOP to opt out.",
+          charCount: 148,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{item_name}} assigned to you. {{action_link}} STOP to opt out.",
+          charCount: 131,
+        },
+      ],
+    },
+    {
+      id: "task-reminder",
+      name: "Task reminder",
+      tooltip:
+        "Sent to remind a team member of an upcoming task or deliverable deadline.",
+      description:
+        "An upcoming-task deadline nudge to a team member. Distinguished from account-events:deadline-reminder by audience — an internal worker's task, not an external recipient's deadline.",
+      variables: ["workspace_name", "item_name", "due_time", "action_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: {{item_name}} is due {{due_time}}. View: {{action_link}} Reply STOP to opt out.",
+          charCount: 154,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: heads up - {{item_name}} is due {{due_time}}. {{action_link}} Reply STOP to opt out.",
+          charCount: 159,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: {{item_name}} due {{due_time}}. {{action_link}} STOP to opt out.",
+          charCount: 139,
         },
       ],
     },
