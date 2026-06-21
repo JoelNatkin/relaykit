@@ -16,3 +16,9 @@
 | Court / judicial system communications | /for/court-communications | Not yet |
 | Public defender / legal aid operational tooling | /for/legal-aid | Not yet |
 | Public health / community health communications (non-clinical) | /for/public-health | Conditional |
+| Government agency communications (federal/state/local operational) | /for/government-agencies | Not yet, maybe not ever |
+| Emergency alerts / public safety notifications | /for/emergency-alerts | Not yet, maybe not ever |
+| Veterans services / military-family support | /for/veterans-services | Not yet, maybe not ever |
+| Voter registration / civic engagement (nonpartisan) | /for/voter-registration | Not yet, maybe not ever |
+| Political campaigns / partisan organizing (single-campaign ops) | /for/political-campaigns | Not yet, maybe not ever |
+| Correctional / probation / parole communications | /for/correctional-services | Not yet, maybe not ever |
