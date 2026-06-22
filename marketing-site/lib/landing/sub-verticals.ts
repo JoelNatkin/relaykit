@@ -444,6 +444,877 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
       },
     ],
   },
+  {
+    urlSlug: "project-management-saas",
+    dataSlug: "project-management-productivity-saas",
+    name: "Project management SaaS",
+
+    metaTitle: "SMS for project management & productivity SaaS — RelayKit",
+    metaDescription:
+      "Add task assignment, deadline, and mention texts to your project management app. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Project management SaaS",
+    h1: "Text messaging for project management apps.",
+    heroBody:
+      "Task assignments, deadline nudges, @-mentions — the texts that keep work moving when nobody's watching the app.",
+    heroExamples: [
+      "Acme Project Hub: Task #248: Ship onboarding flow was assigned to you. View: acme.app/t/248",
+      "Acme Project Hub: heads up — Task: Finalize Q3 roadmap is due tomorrow 5pm. acme.app/t/312",
+      "Acme Project Hub: Dana mentioned you on Task #248. Take a look: acme.app/t/248",
+      "Acme Project Hub: card ending 4242 was declined. Update payment to keep your account active: acme.app/billing",
+    ],
+
+    moment: {
+      body: "A task gets assigned at 4pm. The assignee is heads-down in a meeting. The in-app notification sits unread. The deadline slips on a Tuesday afternoon because nobody saw the ping. A text changes that.",
+      exampleSms: "Acme Project Hub: Task #248: Ship onboarding flow was assigned to you. View: acme.app/t/248",
+      exampleReply: "On it",
+    },
+
+    qa: [
+      {
+        q: "Should I send a text for every task status change, or only for certain events?",
+        lead: "Only for events that require a specific person to act right now.",
+        body: "A task moving from \"In Progress\" to \"In Review\" is useful to see in the app — it doesn't need to interrupt anyone's phone. Save SMS for the moments that matter: someone was just assigned work, their name was mentioned directly, or a deadline is hours away. If you text on every status change, people stop reading them.",
+      },
+      {
+        q: "Who gets the text when a task is assigned?",
+        lead: "The person the task was just given to — no one else by default.",
+        body: "When someone gets assigned a task, they're the one who needs to know. Watchers and teammates don't need a text every time something moves — that's what the in-app feed is for. SMS is for the one person who has to act. A project manager might want an overdue escalation after a grace period, but make that something they opt into rather than a default.",
+      },
+      {
+        q: "What's the difference between a \"due soon\" text and an \"overdue\" text?",
+        lead: "One is a heads-up with time to act; the other is a direct statement that the deadline passed.",
+        body: "For \"due soon,\" keep the tone informational — the owner still has time. For overdue, say it plainly: the deadline passed. Don't soften an overdue notice into \"coming up soon\" — that's confusing when the work is already late. Two separate messages, two separate triggers in your app.",
+      },
+      {
+        q: "Can I trigger task texts from a webhook, or does it need more setup than that?",
+        lead: "A webhook is fine — it's just an API call.",
+        body: "Whenever your app fires an event (task assigned, deadline approaching), you make one API call to RelayKit with the recipient's number and the message. It can come from a webhook, a background job, or anywhere else in your code. Your AI tool can wire this up from a description of what you want to happen.",
+      },
+    ],
+
+    defaultCategory: "team-alerts",
+
+    workflows: [
+      {
+        id: "task-events",
+        displayName: "Task events",
+        description: "Keeps an owner in the loop when something changes on their work.",
+        steps: [
+          {
+            corpusId: "team-alerts:task-assigned",
+            displayName: "Task assigned",
+            variableAliases: {
+              item_name: "Task #248: Ship onboarding flow",
+              action_link: "acme.app/t/248",
+            },
+          },
+          {
+            corpusId: "team-alerts:task-assigned",
+            displayName: "You were mentioned",
+            variableAliases: {
+              item_name: "Task #248: Ship onboarding flow",
+              action_link: "acme.app/t/248",
+            },
+          },
+          {
+            corpusId: "team-alerts:incident-resolved",
+            displayName: "Blocker cleared",
+            variableAliases: {
+              system_name: "Task #312",
+              incident_id: "blocker",
+              action_link: "acme.app/t/312",
+            },
+          },
+        ],
+      },
+      {
+        id: "deadline-pressure",
+        displayName: "Deadline pressure",
+        description: "Nudges the owner as a task approaches or crosses its due date.",
+        steps: [
+          {
+            corpusId: "team-alerts:task-reminder",
+            displayName: "Due soon",
+            variableAliases: {
+              item_name: "Task: Finalize Q3 roadmap",
+              due_time: "tomorrow 5pm",
+              action_link: "acme.app/t/312",
+            },
+          },
+          {
+            corpusId: "team-alerts:service-level-alert",
+            displayName: "Overdue",
+            variableAliases: {
+              system_name: "Task: Finalize Q3 roadmap",
+              incident_id: "overdue",
+              action_link: "acme.app/t/312",
+            },
+          },
+        ],
+      },
+      {
+        id: "subscription-lifecycle",
+        displayName: "Subscription & account lifecycle",
+        description: "Keeps the workspace owner ahead of billing and access events.",
+        steps: [
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Payment failed",
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Plan updated",
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Account suspended",
+          },
+        ],
+      },
+      {
+        id: "account-security",
+        displayName: "Account security",
+        description: "Proves phone ownership at signup and gates sensitive actions.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verify phone",
+          },
+          {
+            corpusId: "verification:login-code",
+            displayName: "Login code",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "identity-auth-saas",
+    dataSlug: "identity-authentication-sso-saas",
+    name: "Identity & auth SaaS",
+
+    metaTitle: "SMS for identity, authentication & SSO SaaS — RelayKit",
+    metaDescription:
+      "Add phone verification, login codes, recovery codes, and step-up confirmation to your auth product. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Identity & auth SaaS",
+    h1: "Text messaging for authentication apps.",
+    heroBody:
+      "Verification codes, login codes, recovery codes, step-up confirmation — the texts your SDK sends so users can get in.",
+    heroExamples: [
+      "Acme: Verification code: 847291. Expires in 10 minutes.",
+      "Acme: Your login code is 512847. Expires in 5 minutes.",
+      "Acme: Recovery code: 204819. Expires in 10 minutes.",
+      "Acme: Confirmation code: 937164. Expires in 10 minutes.",
+    ],
+
+    moment: {
+      body: "The user submits their phone number and stares at a code field. The code has to land in seconds — not minutes. If it doesn't, they refresh, try again, or give up. SMS is the only channel fast enough to carry a time-boxed code to a phone the user is already holding.",
+      exampleSms: "Acme: Your login code is 512847. Expires in 5 minutes.",
+      exampleReply: "",
+    },
+
+    qa: [
+      {
+        q: "Which code type should I use for a password reset — recovery code or confirmation code?",
+        lead: "Recovery code if the user is locked out; confirmation code if they're already logged in.",
+        body: "Recovery code is for getting back into an account — the user can't sign in and needs an SMS code to regain access. Confirmation code is for a sensitive action an already-logged-in user is about to take, like changing their password or swapping an MFA device. The names in the message match what the user is experiencing, so pick the one that fits the moment.",
+      },
+      {
+        q: "What name appears in the verification text — my product's name or something else?",
+        lead: "Your product's name — whatever the recipient signed up for.",
+        body: "The person receiving the code doesn't know what auth library you used to build your app. They signed up for your product, and that's what should appear in the text. You pass your app's name in when you send the message. If it says something unfamiliar, people assume it's spam.",
+      },
+      {
+        q: "Do I need a STOP line in my verification texts?",
+        lead: "No — verification codes are a special case that don't need opt-out language.",
+        body: "One-time codes for signup, login, recovery, and sensitive-action confirmation are exempt from the \"Reply STOP to opt out\" requirement. Every other message type needs it — but not these. Don't add it to OTP messages; the absence of opt-out language is part of what tells carriers the message is genuinely a verification code.",
+      },
+      {
+        q: "Do I need a separate setup for each type of verification code — signup, login, recovery?",
+        lead: "No — one registration covers all of them.",
+        body: "You register once with RelayKit under the verification use case. From there, you choose which message type fits each moment in your app: verification code for signup, login code for MFA, recovery code for account recovery, confirmation code for sensitive actions. They're all part of the same registration.",
+      },
+    ],
+
+    defaultCategory: "verification",
+
+    workflows: [
+      {
+        id: "phone-verification",
+        displayName: "Phone verification at signup",
+        description: "Proves a new user controls the number they entered.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verification code",
+            variableAliases: {
+              business_name: "Acme",
+              expiry_minutes: "10",
+            },
+          },
+        ],
+      },
+      {
+        id: "mfa-login",
+        displayName: "SMS second factor (MFA)",
+        description: "Delivers the step-up code when a returning user logs in with SMS 2FA enabled.",
+        steps: [
+          {
+            corpusId: "verification:login-code",
+            displayName: "Login code",
+            variableAliases: {
+              business_name: "Acme",
+              expiry_minutes: "5",
+            },
+          },
+        ],
+      },
+      {
+        id: "step-up-confirmation",
+        displayName: "Sensitive-action step-up",
+        description: "Re-verifies the user before a high-risk action — password change, MFA device swap, billing update.",
+        steps: [
+          {
+            corpusId: "verification:confirmation-code",
+            displayName: "Confirmation code",
+            variableAliases: {
+              business_name: "Acme",
+            },
+          },
+        ],
+      },
+      {
+        id: "account-recovery",
+        displayName: "Account recovery",
+        description: "Lets a locked-out user back in via SMS.",
+        steps: [
+          {
+            corpusId: "verification:recovery-code",
+            displayName: "Recovery code",
+            variableAliases: {
+              business_name: "Acme",
+              expiry_minutes: "10",
+            },
+          },
+        ],
+      },
+      {
+        id: "new-device-alert",
+        displayName: "New-device security alert",
+        description: "Flags unrecognized device access with a secure-it path.",
+        steps: [
+          {
+            corpusId: "account-events:new-device-signin",
+            displayName: "New sign-in",
+            variableAliases: {
+              device_context: "Chrome on Windows, Austin TX",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "team-chat-saas",
+    dataSlug: "internal-communications-team-chat-saas",
+    name: "Team chat SaaS",
+
+    metaTitle: "SMS for team chat & internal communications SaaS — RelayKit",
+    metaDescription:
+      "Add mention notifications, DM catch-up, workspace invites, and urgent broadcasts to your team chat app. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Team chat SaaS",
+    h1: "Text messaging for team chat apps.",
+    heroBody:
+      "Mention notifications, unread DMs, workspace invites, urgent broadcasts — the texts that reach members when they're away from the app.",
+    heroExamples: [
+      "Teamflow: Dana mentioned you in #ops-critical. Take a look: teamflow.app/t/4821",
+      "Teamflow: Jordan sent you a direct message. Here it is: teamflow.app/dm/Jordan",
+      "Teamflow: Alex invited you to join the team. Join here: teamflow.app/join/abc123",
+      "Teamflow Urgent: Company-wide notice in #ops-critical. teamflow.app/c/ops-critical",
+    ],
+
+    moment: {
+      body: "Someone asks a question in the channel. The person who knows the answer is away from their desk. The thread sits unanswered for two hours. A text closes that loop in minutes — regardless of whether they have the app open.",
+      exampleSms: "Teamflow: Dana mentioned you in #ops-critical. Take a look: teamflow.app/t/4821",
+      exampleReply: "On it",
+    },
+
+    qa: [
+      {
+        q: "Should mention notifications go out the second someone is mentioned, or is there a delay?",
+        lead: "A short delay is better — give people a chance to see it in the app first.",
+        body: "If someone gets a text the instant they're mentioned, before they've had a chance to check the app, it feels like noise. Most apps wait 5–15 minutes: if the message hasn't been read by then, send the text. For urgent broadcasts where the sender marked something high-priority, immediate makes more sense. Build the delay as a setting users can adjust rather than a fixed value.",
+      },
+      {
+        q: "What if someone gets both a mention and a DM while they're away — do they get two texts?",
+        lead: "Better to send one and hold the second.",
+        body: "Two texts in quick succession for the same away session is the fastest way to get someone to opt out. The simpler approach: once you've texted someone, don't text them again for the next 30–60 minutes unless something is marked urgent. One interruption that brings them back is the goal — not a thread of alerts waiting when they unlock their phone.",
+      },
+      {
+        q: "Can I send texts to workspace members without asking them first?",
+        lead: "No — you need their consent before sending.",
+        body: "Being a member of a workspace doesn't automatically mean someone agreed to receive texts. The right place to capture that is during account creation or in notification preferences — a clear opt-in, not an assumption. This applies to everyone, including employees. Your AI tool can help you add a simple consent step if you don't have one yet.",
+      },
+      {
+        q: "What name shows up as the sender in the text?",
+        lead: "Your app's name — whatever your users would recognize.",
+        body: "If you're building a team chat app called Teamflow, the text should say \"Teamflow\" — not \"RelayKit\" or anything else. Members recognize their product, not the infrastructure behind it. You pass your app's name in when you send the message. It's one field, and your AI tool will know where it goes.",
+      },
+    ],
+
+    defaultCategory: "team-alerts",
+
+    workflows: [
+      {
+        id: "mention-dm-catchup",
+        displayName: "Mention & DM catch-up",
+        description: "Pulls an away member back when someone needs them.",
+        steps: [
+          {
+            corpusId: "team-alerts:task-assigned",
+            displayName: "You were mentioned",
+            variableAliases: {
+              item_name: "#ops-critical",
+              action_link: "teamflow.app/t/4821",
+            },
+          },
+          {
+            corpusId: "team-alerts:task-assigned",
+            displayName: "Unread direct message",
+            variableAliases: {
+              item_name: "a direct message from Jordan",
+              action_link: "teamflow.app/dm/Jordan",
+            },
+          },
+        ],
+      },
+      {
+        id: "workspace-invite",
+        displayName: "Workspace invite",
+        description: "Gets a new member from invite to verified.",
+        steps: [
+          {
+            corpusId: "team-alerts:task-assigned",
+            displayName: "You're invited",
+            variableAliases: {
+              item_name: "an invitation to join Teamflow",
+              action_link: "teamflow.app/join/abc123",
+            },
+          },
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verify your phone",
+          },
+        ],
+      },
+      {
+        id: "urgent-broadcast",
+        displayName: "Urgent channel broadcast",
+        description: "Reaches all members including deskless ones when a message can't wait.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Channel broadcast",
+            variableAliases: {
+              severity: "Urgent",
+              alert_type: "Company-wide notice",
+              system_name: "#ops-critical",
+              action_link: "teamflow.app/c/ops-critical",
+            },
+          },
+          {
+            corpusId: "team-alerts:escalation-ping",
+            displayName: "Needs acknowledgement",
+            variableAliases: {
+              system_name: "#ops-critical",
+            },
+          },
+        ],
+      },
+      {
+        id: "seat-billing-lifecycle",
+        displayName: "Seat & billing lifecycle",
+        description: "Keeps the workspace admin ahead of access-affecting changes.",
+        steps: [
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Payment failed",
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Plan updated",
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Workspace suspended",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "analytics-bi-saas",
+    dataSlug: "analytics-business-intelligence-saas",
+    name: "Analytics & BI SaaS",
+
+    metaTitle: "SMS for analytics & business intelligence SaaS — RelayKit",
+    metaDescription:
+      "Add threshold alerts, anomaly pings, and scheduled digests to your analytics product. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Analytics & BI SaaS",
+    h1: "Text messaging for analytics apps.",
+    heroBody:
+      "Threshold alerts, anomaly pings, scheduled digests — the texts that tell you a number moved before you find out the hard way.",
+    heroExamples: [
+      "Acme Analytics Warning: Signup conversion below threshold: 2.1% vs 4.0% floor. acme.app/dash/signups",
+      "Acme Analytics Warning: checkout_completed event volume down 92% in 1h. acme.app/dash/events",
+      "Acme Analytics: your Weekly metrics digest is ready. Take a look: acme.app/reports/weekly",
+      "Acme Analytics: card ending 4242 was declined. Update payment to stay active: acme.app/billing",
+    ],
+
+    moment: {
+      body: "Your signup conversion rate drops from 4% to 2% at 11pm on a Tuesday. Nobody's watching the dashboard. The drop compounds for eight hours before someone opens a browser tab. A text at 11pm changes that.",
+      exampleSms: "Acme Analytics Warning: Signup conversion below threshold: 2.1% vs 4.0% floor. acme.app/dash/signups",
+      exampleReply: "On it",
+    },
+
+    qa: [
+      {
+        q: "What should I put in the alert text — the metric value, or just a link to the dashboard?",
+        lead: "Both — the value in the message, the details behind the link.",
+        body: "A text that just says \"metric alert\" and links somewhere isn't much use. Include the metric name and what happened: \"Signup conversion below 2.1% vs 4.0% floor.\" That's enough context to know whether to drop everything or wait until morning. Save the breakdown, the time series, and the comparison for the dashboard.",
+      },
+      {
+        q: "How do I handle the difference between a real drop and just a slow hour?",
+        lead: "Set the threshold against a rolling baseline, not a fixed number.",
+        body: "A fixed floor fires all night on weekends. A rolling baseline — \"alert if 30% below the same hour last week\" — only fires when something is actually wrong. Most analytics tools that trigger events let you configure which kind of threshold fires the alert. Use that, and your texts will mean something when they arrive.",
+      },
+      {
+        q: "Should a scheduled digest go out even if there's nothing unusual to report?",
+        lead: "Yes — the cadence is part of the value.",
+        body: "A weekly digest that only arrives when something's wrong isn't a digest, it's an alert. The value of a scheduled report is the habit: your users open it every Monday and know where they stand. Send it on schedule regardless of whether the numbers moved. If everything's flat and healthy, that's worth knowing too.",
+      },
+      {
+        q: "When do I ask users if it's okay to text them?",
+        lead: "Right when they give you their phone number for the first time.",
+        body: "For an analytics app, that's usually when they create their account. That's when texting makes sense to them and the ask feels natural. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+    ],
+
+    defaultCategory: "team-alerts",
+
+    workflows: [
+      {
+        id: "threshold-anomaly-alerting",
+        displayName: "Threshold & anomaly alerting",
+        description: "Notifies the operator the instant a metric crosses a threshold or deviates from its baseline.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Metric alert",
+            variableAliases: {
+              severity: "Warning",
+              system_name: "Signup conversion funnel",
+              alert_type: "Below threshold: 2.1% vs 4.0% floor",
+              action_link: "acme.app/dash/signups",
+            },
+          },
+          {
+            corpusId: "team-alerts:on-call-page",
+            displayName: "Critical metric drop",
+            variableAliases: {
+              severity: "Critical",
+              system_name: "Signup conversion funnel",
+              action_link: "acme.app/dash/signups",
+            },
+          },
+          {
+            corpusId: "team-alerts:escalation-ping",
+            displayName: "Unacknowledged alert",
+            variableAliases: {
+              severity: "Critical",
+              system_name: "Signup conversion funnel",
+              escalation_to: "your backup",
+              action_link: "acme.app/dash/signups",
+            },
+          },
+        ],
+      },
+      {
+        id: "instrumentation-health",
+        displayName: "Instrumentation health",
+        description: "Warns when event volume drops abnormally — broken tracking, not a real business change.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Tracking health alert",
+            variableAliases: {
+              severity: "Warning",
+              alert_type: "Event volume down 92% in 1h",
+              system_name: "checkout_completed event",
+              action_link: "acme.app/dash/events",
+            },
+          },
+          {
+            corpusId: "team-alerts:service-level-alert",
+            displayName: "Data pipeline notice",
+            variableAliases: {
+              system_name: "Data ingestion pipeline",
+              incident_id: "LAG-001",
+              action_link: "acme.app/dash/pipeline",
+            },
+          },
+        ],
+      },
+      {
+        id: "scheduled-digest",
+        displayName: "Scheduled metric digest",
+        description: "Delivers a recurring summary of headline numbers on a daily, weekly, or monthly cadence.",
+        steps: [
+          {
+            corpusId: "team-alerts:task-assigned",
+            displayName: "Your report is ready",
+            variableAliases: {
+              item_name: "Weekly metrics digest",
+              action_link: "acme.app/reports/weekly",
+            },
+          },
+        ],
+      },
+      {
+        id: "account-lifecycle",
+        displayName: "Account lifecycle",
+        description: "Keeps the operator ahead of billing and access events on the analytics subscription.",
+        steps: [
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Payment failed",
+          },
+          {
+            corpusId: "account-events:new-device-signin",
+            displayName: "New sign-in",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "crm-saas",
+    dataSlug: "crm-sales-saas",
+    name: "CRM & sales SaaS",
+
+    metaTitle: "SMS for CRM & sales SaaS — RelayKit",
+    metaDescription:
+      "Add speed-to-lead rep alerts, deal updates, and demo reminders to your CRM. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "CRM & sales SaaS",
+    h1: "Text messaging for CRM and sales apps.",
+    heroBody:
+      "Lead alerts, deal updates, demo reminders — the texts that keep reps moving and prospects showing up.",
+    heroExamples: [
+      "Acme CRM Hot lead: Globex Corp — inbound demo request. Claim it: acme.app/leads/4821",
+      "Acme CRM Deal update: Globex Corp — $40k renewal moved to Negotiation. acme.app/deals/4821",
+      "Acme CRM: your demo with Jordan is confirmed for tomorrow at 2pm. acme.app/cal/4821",
+      "Acme CRM: card ending 4242 was declined. Update payment to keep your account active: acme.app/billing",
+    ],
+
+    moment: {
+      body: "A hot lead submits a demo request at 2pm. The assigned rep is in back-to-back calls. The lead goes cold by 2:07. A text to the rep at 2:00 changes that.",
+      exampleSms: "Acme CRM Hot lead: Globex Corp — inbound demo request. Claim it: acme.app/leads/4821",
+      exampleReply: "On my way",
+    },
+
+    qa: [
+      {
+        q: "What's the most useful thing to text a sales rep when a new lead comes in?",
+        lead: "The company name, what they asked about, and a link to the record — nothing else.",
+        body: "A rep getting a lead ping while in a meeting needs to know in three seconds whether this is worth stepping out for. \"Globex Corp — inbound demo request\" plus a link does that. Don't include the lead's personal contact details in the text — that belongs in the CRM, behind the link, where it's logged.",
+      },
+      {
+        q: "What happens if a rep doesn't respond to the lead alert?",
+        lead: "You set up an escalation — the alert re-fires to a backup rep or manager after a time window.",
+        body: "The rep replies to claim the lead; if nobody does within your configured window, the next ping goes to whoever you've set as the escalation contact. Your app handles the timer and the routing logic — RelayKit handles the sending. The escalation ping fires automatically once the window lapses.",
+      },
+      {
+        q: "Should demo reminders go to the prospect or to the rep?",
+        lead: "To the prospect — the rep already has it in their calendar.",
+        body: "Demo reminders work because the prospect forgot, not the rep. Send the day-before and hour-before reminders to the prospect's number. The rep gets the new-lead alert and the no-show follow-up; the prospect gets the confirmation and reminders. Keep the two flows separate.",
+      },
+      {
+        q: "Do I need to ask reps before texting them?",
+        lead: "Yes — being part of your team doesn't automatically mean they agreed to receive texts.",
+        body: "The right place to capture it is during account creation or their first login. RelayKit hosts an opt-in page for your app — your AI tool will know how to wire it in once you tell it where new reps set up their profile.",
+      },
+    ],
+
+    defaultCategory: "team-alerts",
+
+    workflows: [
+      {
+        id: "speed-to-lead",
+        displayName: "Speed-to-lead rep alert",
+        description: "Notifies the assigned rep the instant a lead lands and escalates if unworked.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "New lead assigned",
+            variableAliases: {
+              severity: "Hot lead",
+              system_name: "Globex Corp — inbound demo request",
+              alert_type: "New lead assigned",
+              action_link: "acme.app/leads/4821",
+            },
+          },
+          {
+            corpusId: "team-alerts:escalation-ping",
+            displayName: "Lead unworked",
+            variableAliases: {
+              severity: "Hot lead",
+              system_name: "Globex Corp — inbound demo request",
+              escalation_to: "your sales manager",
+              action_link: "acme.app/leads/4821",
+            },
+          },
+          {
+            corpusId: "team-alerts:on-call-page",
+            displayName: "Manager escalation",
+            variableAliases: {
+              severity: "Hot lead",
+              system_name: "Globex Corp — inbound demo request",
+              action_link: "acme.app/leads/4821",
+            },
+          },
+        ],
+      },
+      {
+        id: "deal-pipeline-alert",
+        displayName: "Deal pipeline alert",
+        description: "Keeps the deal owner informed when a deal moves or needs approval.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Deal moved",
+            variableAliases: {
+              severity: "Deal update",
+              system_name: "Globex — $40k renewal",
+              alert_type: "Moved to Negotiation",
+              action_link: "acme.app/deals/4821",
+            },
+          },
+          {
+            corpusId: "team-alerts:escalation-ping",
+            displayName: "Approval needed",
+            variableAliases: {
+              severity: "Deal update",
+              system_name: "Globex — $40k renewal",
+              escalation_to: "your sales manager",
+              action_link: "acme.app/deals/4821",
+            },
+          },
+        ],
+      },
+      {
+        id: "demo-scheduling",
+        displayName: "Demo scheduling",
+        description: "Confirms and reminds on calls the rep books with a consenting prospect.",
+        steps: [
+          {
+            corpusId: "appointments:confirmation",
+            displayName: "Demo confirmed",
+            variableAliases: {
+              provider_name: "your account exec",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-distant",
+            displayName: "Demo tomorrow",
+            variableAliases: {
+              provider_name: "your account exec",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-proximate",
+            displayName: "Demo in 1 hour",
+            variableAliases: {
+              provider_name: "your account exec",
+            },
+          },
+          {
+            corpusId: "appointments:no-show-follow-up",
+            displayName: "Missed demo",
+            variableAliases: {
+              provider_name: "your account exec",
+            },
+          },
+        ],
+      },
+      {
+        id: "crm-account-lifecycle",
+        displayName: "CRM account lifecycle",
+        description: "Keeps the builder's paying customers ahead of billing and access events.",
+        steps: [
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Card declined",
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Plan updated",
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Account suspended",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "hr-hris-saas",
+    dataSlug: "hr-hris-payroll-saas",
+    name: "HR & HRIS SaaS",
+
+    metaTitle: "SMS for HR, HRIS & workforce SaaS — RelayKit",
+    metaDescription:
+      "Add shift scheduling, timesheet reminders, and payday confirmations to your HR or workforce app. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "HR & HRIS SaaS",
+    h1: "Text messaging for HR and workforce apps.",
+    heroBody:
+      "Shift assignments, timesheet reminders, payday confirmations — the texts that reach deskless employees who never see the email.",
+    heroExamples: [
+      "Acme HR: your timesheet is due by Thursday noon. Submit here to be paid on time: acme.app/timesheets",
+      "Acme HR: You're scheduled Sat 3/15 9am-2pm at Downtown HQ as Shift lead. Reply STOP to opt out.",
+      "Acme HR: your March 15 pay has been processed. View your pay stub: acme.app/paystubs",
+      "Acme HR: your account was just accessed from Chrome on Windows. Not you? acme.app/security",
+    ],
+
+    moment: {
+      body: "Payroll runs Friday. The cutoff for timesheets is Thursday noon. An employee on the floor hasn't submitted theirs. The email went unread. A text Wednesday afternoon closes that gap.",
+      exampleSms: "Acme HR: your timesheet is due by Thursday noon. Submit here to be paid on time: acme.app/timesheets",
+      exampleReply: "Just submitted it",
+    },
+
+    qa: [
+      {
+        q: "Do I need to ask employees before texting them?",
+        lead: "Yes — being part of your team doesn't automatically mean they agreed to receive texts.",
+        body: "The right place to capture it is during onboarding. RelayKit hosts an opt-in page for your app — your AI tool will know how to wire it in once you tell it where new employees set up their profile.",
+      },
+      {
+        q: "Can I include an employee's pay amount in a payday text?",
+        lead: "No — confirm the payment happened and link to the stub, but leave the number out.",
+        body: "Pay amounts in a text create privacy exposure if the message is seen by someone other than the recipient. The right pattern is: \"Your March 15 pay has been processed — view your stub here.\" The amount lives behind the authenticated link, not in the message itself.",
+      },
+      {
+        q: "What HR events should I text about, and which should stay in email?",
+        lead: "Time-sensitive logistics belong in SMS; sensitive or formal communications belong in email.",
+        body: "Shift assignments, timesheet reminders, payday confirmations, and check-in prompts are good SMS territory — they're time-sensitive, actionable, and low-stakes if seen by the wrong eyes. Terminations, disciplinary notices, and anything requiring a documented paper trail should stay in email or formal written channels.",
+      },
+      {
+        q: "Should timesheet reminder texts go to all employees or only the ones who haven't submitted yet?",
+        lead: "Only the ones who haven't submitted.",
+        body: "Texting everyone when half the team already filed is the fastest way to train people to ignore HR texts. Filter on submission status before sending — only people with an open timesheet get the reminder. Your AI tool can add that filter once you tell it which field in your data tracks submission state.",
+      },
+    ],
+
+    defaultCategory: "team-alerts",
+
+    workflows: [
+      {
+        id: "shift-lifecycle",
+        displayName: "Scheduling & shift lifecycle",
+        description: "Assigns, reminds, updates, and starts shifts for an hourly workforce.",
+        steps: [
+          {
+            corpusId: "team-alerts:shift-scheduled",
+            displayName: "Shift assigned",
+          },
+          {
+            corpusId: "team-alerts:shift-reminder",
+            displayName: "Shift reminder",
+          },
+          {
+            corpusId: "team-alerts:shift-change",
+            displayName: "Shift changed",
+          },
+          {
+            corpusId: "team-alerts:shift-start",
+            displayName: "Shift starting",
+          },
+        ],
+      },
+      {
+        id: "payroll-timesheet",
+        displayName: "Payroll & timesheet",
+        description: "Keeps the pay cycle on time by chasing submission and confirming pay events.",
+        steps: [
+          {
+            corpusId: "team-alerts:task-reminder",
+            displayName: "Timesheet due",
+            variableAliases: {
+              item_name: "your timesheet",
+              due_time: "Thursday noon",
+              action_link: "acme.app/timesheets",
+            },
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Payday confirmed",
+          },
+        ],
+      },
+      {
+        id: "sensitive-change-confirmation",
+        displayName: "Sensitive-change confirmation",
+        description: "Confirms a high-risk account change before it takes effect.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verify your number",
+          },
+          {
+            corpusId: "verification:confirmation-code",
+            displayName: "Confirm this change",
+          },
+        ],
+      },
+      {
+        id: "account-security",
+        displayName: "Account & security alerts",
+        description: "Keeps employees informed on account access and lifecycle events.",
+        steps: [
+          {
+            corpusId: "account-events:new-device-signin",
+            displayName: "New sign-in",
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Account access change",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(SUB_VERTICAL_LANDINGS.map((e) => [e.urlSlug, e]));
