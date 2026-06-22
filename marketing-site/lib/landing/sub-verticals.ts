@@ -2668,6 +2668,353 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
       },
     ],
   },
+  {
+    urlSlug: "survey-feedback-saas",
+    dataSlug: "survey-feedback-collection-saas",
+    name: "Survey & feedback SaaS",
+    metaTitle: "SMS for survey & feedback SaaS — RelayKit",
+    metaDescription:
+      "Add survey invitations, non-responder nudges, and CSAT follow-ups to your feedback platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Survey & feedback SaaS",
+    h1: "Text messaging for survey and feedback apps.",
+    heroBody:
+      "Survey invitations, non-responder nudges, CSAT follow-ups — the texts that improve response rates.",
+    heroExamples: [
+      "Acme: thanks for your visit today. One quick question: survey.acme.co/r/8fa2 Reply STOP to opt out.",
+      "Acme: we'd still love your feedback on your recent visit. It takes a minute: survey.acme.co/r/8fa2 Reply STOP to opt out.",
+      "Acme support: how did we do on ticket #4821? Rate here: survey.acme.co/csat Reply STOP to opt out.",
+      "Acme: your trial ends in 3 days. Choose a plan to keep your account: acme.co/billing Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "The survey goes out by email. Response rates stall in the low teens. A text right after the ticket closes gets results.",
+      exampleSms: "Acme: thanks for your visit today. One quick question: survey.acme.co/r/8fa2 Reply STOP to opt out.",
+      exampleReply: "Done!",
+    },
+
+    qa: [
+      {
+        q: "How soon after the experience should the survey go out?",
+        lead: "As soon as it ends.",
+        body: "The response window closes fast — the feeling that makes someone want to give feedback fades within hours. Fire the survey the moment the ticket closes, the order delivers, or the appointment ends. Sending the same day almost always outperforms sending the next morning.",
+      },
+      {
+        q: "How many reminder texts before I'm annoying them?",
+        lead: "One.",
+        body: "A single follow-up 24 to 48 hours after the initial invite recovers most of the non-responders worth recovering. A second reminder to people who've already ignored two messages will mostly generate opt-outs, not responses. One and done is the norm across the feedback platforms that have tested this at scale.",
+      },
+      {
+        q: "Should the text carry the rating prompt, or just a link?",
+        lead: "Just the link.",
+        body: "A rating question in the body sounds appealing but produces less useful data than a survey that can ask follow-ups. The text's job is to get the person to the form. Keep the body short, make the link obvious, and let the form do the work.",
+      },
+      {
+        q: "When do I ask respondents if it's okay to text them?",
+        lead: "When they give you their phone number for the first time.",
+        body: "For a survey platform, that's usually when they give you their phone number — at account creation or during onboarding. That's when the ask is natural. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+    ],
+
+    defaultCategory: "customer-support",
+
+    workflows: [
+      {
+        id: "survey-invitation",
+        displayName: "Survey invitation",
+        description: "Sends a feedback request at the moment of fresh experience, then nudges non-responders once.",
+        steps: [
+          {
+            corpusId: "appointments:post-appointment",
+            displayName: "Feedback invite",
+            variableAliases: {
+              provider_name: "our team",
+              feedback_link: "survey.acme.co/r/8fa2",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Survey reminder",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: a quick reminder — we'd still love your feedback. It takes a minute: {{survey_link}} Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: still hoping to hear from you. Your feedback only takes a minute: {{survey_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: your feedback, 1 min: {{survey_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              survey_link: "survey.acme.co/r/8fa2",
+            },
+          },
+        ],
+      },
+      {
+        id: "csat-workflow",
+        displayName: "CSAT workflow",
+        description: "Closes a support ticket and collects a satisfaction rating, with a follow-up nudge for non-responders.",
+        steps: [
+          {
+            corpusId: "customer-support:resolution-notification",
+            displayName: "Ticket resolved",
+          },
+          {
+            corpusId: "customer-support:csat-follow-up",
+            displayName: "CSAT request",
+          },
+          {
+            corpusId: null,
+            displayName: "Survey reminder",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: a quick reminder — we'd still love your feedback. It takes a minute: {{survey_link}} Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: still hoping to hear from you. Your feedback only takes a minute: {{survey_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: your feedback, 1 min: {{survey_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              survey_link: "survey.acme.co/csat",
+            },
+          },
+        ],
+      },
+      {
+        id: "platform-account-lifecycle",
+        displayName: "Platform account lifecycle",
+        description: "Keeps the survey platform's own subscribers informed and active across billing events.",
+        steps: [
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Payment failed",
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Subscription confirmed",
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Account suspended",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "childcare-saas",
+    dataSlug: "childcare-preschool-afterschool-saas",
+    name: "Childcare SaaS",
+    metaTitle: "SMS for childcare and preschool apps — RelayKit",
+    metaDescription:
+      "Add check-in alerts, tuition notices, enrollment updates, and center closures to your childcare platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Childcare & preschool SaaS",
+    h1: "Text messaging for childcare and preschool apps.",
+    heroBody:
+      "Check-in alerts, tuition notices, enrollment updates, center closures — the texts that keep parents informed and enrollment moving.",
+    heroExamples: [
+      "Sunny Days: Liam is signed in for the day. Reply STOP to opt out.",
+      "Sunny Days: Liam hasn't signed in yet (by 9:00 AM). Please confirm with us. Reply STOP to opt out.",
+      "Sunny Days: A spot just opened. Confirm enrollment: sunnydayspreschool.com/enroll Reply STOP to opt out.",
+      "Sunny Days: Autopay for tuition was declined. Update your payment: sunnydayspreschool.com/billing Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A child doesn't arrive by 9 AM and the front desk has no fast way to reach the family. A text fires the moment the sign-in window closes — the parent responds in minutes, not after a missed call and two voicemails.",
+      exampleSms: "Sunny Days: Liam hasn't signed in yet (by 9:00 AM). Please confirm with us. Reply STOP to opt out.",
+      exampleReply: "He's home sick today, thank you!",
+    },
+
+    qa: [
+      {
+        q: "What goes in the non-arrival text — the child's name, or just the time?",
+        lead: "First name only, and keep it brief.",
+        body: "Parents recognize the situation immediately from the center name plus their child's first name. Don't include the classroom, room location, or any detail about where the child should be — first name and the missed window is enough. The goal is a fast reply, not a status report.",
+      },
+      {
+        q: "How many attendance texts should a parent get in a day?",
+        lead: "Two at most — one check-in, one checkout.",
+        body: "The non-arrival alert is the exception that adds a third, and only when the child actually hasn't shown up. Beyond that, more texts from the center start to feel like surveillance rather than reassurance. Keep it to the events that actually change something a parent needs to act on.",
+      },
+      {
+        q: "How do I handle enrollment waitlist texts without over-promising a spot?",
+        lead: "Match the message to exactly what's true at that moment.",
+        body: "'A spot is open' only goes out when a real slot is available. 'Moved up the list' only goes out when the position actually changed. Don't send optimistic estimates — families make childcare decisions based on what you tell them, and a premature 'almost there' creates real problems when it doesn't pan out.",
+      },
+      {
+        q: "When do I ask parents if it's okay to text them?",
+        lead: "When they register their phone number on the family account.",
+        body: "For a childcare platform, that's usually when a guardian completes enrollment or adds their number in the family portal. That's the natural moment — they're setting up how the center will reach them. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+    ],
+
+    defaultCategory: "appointments",
+
+    workflows: [
+      {
+        id: "daily-attendance",
+        displayName: "Daily attendance",
+        description: "Confirms a child's arrival, alerts the parent if they're late, and confirms authorized pickup.",
+        steps: [
+          {
+            corpusId: "appointments:confirmation",
+            displayName: "Checked in",
+            variableAliases: {
+              provider_name: "Sunny Days Preschool",
+              appointment_time: "today",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Hasn't arrived yet",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: {{child_first_name}} hasn't signed in yet (by {{appointment_time}}). Please confirm with us. Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: we don't have {{child_first_name}} signed in yet ({{appointment_time}}). Let us know? Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{child_first_name}} not signed in, {{appointment_time}}. Confirm? STOP to opt out.",
+            },
+            variableAliases: {
+              child_first_name: "Liam",
+              appointment_time: "by 9:00 AM",
+            },
+          },
+          {
+            corpusId: "appointments:confirmation",
+            displayName: "Checked out",
+            variableAliases: {
+              provider_name: "Sunny Days Preschool",
+              appointment_time: "today at 3:15 PM",
+            },
+          },
+        ],
+      },
+      {
+        id: "tuition-billing",
+        displayName: "Tuition & billing",
+        description: "Keeps tuition collected and the family account active without the center chasing invoices.",
+        steps: [
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Autopay declined",
+            variableAliases: {
+              account_link: "sunnydayspreschool.com/billing",
+            },
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Payment received",
+            variableAliases: {
+              account_link: "sunnydayspreschool.com/billing",
+            },
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Enrollment on hold",
+            variableAliases: {
+              account_link: "sunnydayspreschool.com/billing",
+            },
+          },
+        ],
+      },
+      {
+        id: "enrollment-waitlist",
+        displayName: "Enrollment waitlist",
+        description: "Moves a prospective family from the waitlist into an open spot before it lapses.",
+        steps: [
+          {
+            corpusId: "waitlist:joined",
+            displayName: "On the waitlist",
+          },
+          {
+            corpusId: "waitlist:position-update",
+            displayName: "Moved up the list",
+          },
+          {
+            corpusId: "waitlist:almost-up",
+            displayName: "A spot's opening soon",
+          },
+          {
+            corpusId: "waitlist:your-turn",
+            displayName: "Spot is open",
+            variableAliases: {
+              claim_link: "sunnydayspreschool.com/enroll",
+            },
+          },
+          {
+            corpusId: "waitlist:grace-expiring",
+            displayName: "Spot still held",
+            variableAliases: {
+              claim_link: "sunnydayspreschool.com/enroll",
+            },
+          },
+          {
+            corpusId: "waitlist:missed",
+            displayName: "Spot released",
+            variableAliases: {
+              rejoin_link: "sunnydayspreschool.com/waitlist",
+            },
+          },
+        ],
+      },
+      {
+        id: "center-broadcasts",
+        displayName: "Center broadcasts",
+        description: "Reaches every enrolled family for a closure, emergency notice, or upcoming event.",
+        steps: [
+          {
+            corpusId: "community:moderation-update",
+            displayName: "Closure or urgent notice",
+            variableAliases: {
+              update_link: "sunnydayspreschool.com/updates",
+            },
+          },
+          {
+            corpusId: "community:event-invitation",
+            displayName: "Conference or event invite",
+            variableAliases: {
+              event_name: "parent-teacher conferences",
+              rsvp_link: "sunnydayspreschool.com/rsvp",
+            },
+          },
+          {
+            corpusId: "community:live-event-reminder",
+            displayName: "Event starting soon",
+            variableAliases: {
+              event_name: "parent-teacher conferences",
+              join_link: "sunnydayspreschool.com/rsvp",
+            },
+          },
+        ],
+      },
+      {
+        id: "family-onboarding",
+        displayName: "Family onboarding",
+        description: "Verifies a new guardian's phone number and welcomes the family to the center.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verify your number",
+            variableAliases: {
+              business_name: "Sunny Days Preschool",
+            },
+          },
+          {
+            corpusId: "community:welcome",
+            displayName: "Welcome to the center",
+            variableAliases: {
+              community_name: "Sunny Days Preschool",
+            },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(SUB_VERTICAL_LANDINGS.map((e) => [e.urlSlug, e]));
