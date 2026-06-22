@@ -96,6 +96,8 @@ PM authors from research library. CC writes to repo registry. This is a PM-led a
 **A4 — Configurator evolution (design solved, build when B2B SaaS registry is complete)**
 Design is resolved (Session 145, 2026-06-21). Spec below. Build trigger: B2B SaaS family workflow definitions authored into `sub-verticals.ts`.
 
+**Home page evolution (ideated Session 145, 2026-06-21; refined Session 147, 2026-06-22):** Hero visual replaces the phone/configurator widget with an animated workflow sequence. Animation may show step names only or full message bodies; layout may be non-linear (zigzag, angled) rather than straight vertical — exact treatment is a design decision at build time, not a fixed spec. Sub-vertical selector lives in the hero as step 1 of the configurator; selecting a sub-vertical pre-loads that vertical's workflows in the Messages section immediately below. Messages section moves to second position on the page (right after hero); the paperwork/infrastructure section drops one slot. Messages section on home: no sub-vertical selected → categories view (existing behavior). Workflows tab is present but clicking it without an active sub-vertical shows an inline empty state that re-presents the sub-vertical selector inputs rather than scrolling the user back up to the hero. Build trigger: after A4 ships.
+
 The home configurator (`/messages` and home hero) gets progressive disclosure and a workflows layer. Conservative build — most of the existing configurator stays untouched.
 
 **Progressive disclosure (new):**
@@ -116,6 +118,9 @@ The home configurator (`/messages` and home hero) gets progressive disclosure an
 **What does not change:**
 - Existing category checkbox interaction, card rendering, tone switcher, business name input, copy/send CTAs — all unchanged.
 - The configurator component structure stays conservative — progressive disclosure wraps the existing component, it does not replace it.
+
+**A4b — Reference App Program (identified Session 145, 2026-06-21; refined Session 147, 2026-06-22)**
+Build 3–4 minimal real apps using MakerKit or ShipFast starter kits, one per priority sub-vertical (developer tools, appointments, restaurants, waitlist SaaS). Analyze the conventions of apps coming out of those ecosystems and emulate rather than design from scratch. We don't distribute starter kits — what we share is our integration layer on top of them, plus guides, reference code we can legally publish, and community presence. Three purposes: dogfooding every message type on real devices before customers do; producing integration guides and reference code for those ecosystems ("add SMS to your MakerKit app in an afternoon"); authentic community distribution in MakerKit/ShipFast Discords. Apps don't need to be full products — real test triggers (buttons or cron jobs firing the actual RelayKit API with real variable substitution) are the primary target. Build trigger: after A4 ships and the registry has meaningful sub-vertical coverage.
 
 **A5 — Workspace integration (post-launch)**
 - Workspace configurator inherits sub-vertical context from onboarding

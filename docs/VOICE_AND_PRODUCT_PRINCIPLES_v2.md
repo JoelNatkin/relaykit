@@ -207,5 +207,113 @@ When building any screen or writing any user-facing text:
 
 ---
 
+## 7. Q&A Authoring Rules
+
+This section governs Q&A cards on sub-vertical and category landing pages. These cards are the developer's first encounter with the specific questions their vertical raises — they should read like answers from a knowledgeable peer, not a compliance officer.
+
+### The job of a Q&A card
+
+Answer the real question a developer in this vertical would actually search for. Make the lead the direct answer. Put the useful fact in the body. Stop.
+
+Q&A cards are not a place to explain RelayKit's infrastructure, reassure the developer that we handle the hard parts, or surface compliance mechanics they'll never need to think about. That content lives in Tier 3 documentation.
+
+### What belongs in Q&A
+
+Questions a developer in this specific vertical would genuinely search for or run into:
+- Timing and sequencing decisions ("how many reminders should I send?")
+- Recipient targeting decisions ("who gets the alert — the account owner or every team member?")
+- Vertical-specific edge cases ("what do I send when a patient no-shows vs. cancels?")
+- Practical content decisions ("should this text include the amount or just a link?")
+- One opt-in placement card per page — see boilerplates below
+
+### What does NOT belong in Q&A
+
+These topics are either handled entirely by RelayKit or belong in dedicated documentation elsewhere. Do not surface them in Q&A.
+
+**Compliance and registration mechanics:**
+- Which TCR campaign type a message registers under
+- What an EIN is or that one is required
+- How opt-in or consent works mechanically
+- SHAFT-C restrictions
+- Carrier filtering rules
+- 10DLC, A2P, or any carrier jargon
+- What happens if you mix transactional and promotional content in the same send
+- Registration timelines or approval processes
+
+**Multi-tenant questions — never in Q&A:**
+- "Should the message come from my app's name or my customer's business name?"
+- Any question about sending on behalf of another business
+- Any question that implies the recipient might recognize a different brand than the one registered
+
+These questions belong in the multi-tenant awareness widget elsewhere on the page. The rule is simple: if a different business name appears in the sender frame, that business needs its own registration. Q&A cards are not the place to surface this — the widget handles it.
+
+**RelayKit capability reassurances:**
+- "RelayKit handles X for you"
+- "We manage Y so you don't have to"
+- Questions whose answer is just "yes, we do that"
+- Anything that exists to reassure rather than inform
+
+**Generic questions that don't belong to this vertical:**
+- "What's the difference between transactional and marketing SMS?" (universal, belongs in docs)
+- "Can I send to international numbers?" (universal, belongs in docs)
+- Any question that could appear unchanged on every vertical's page
+
+### The test
+
+Before writing a Q&A card, ask: would a developer building in this specific vertical actually search for this? If the question could appear unchanged on any other vertical's page, it's too generic. If the answer is primarily "RelayKit handles that," it's a capability reassurance, not a Q&A card. Cut it.
+
+### Dos and don'ts — examples
+
+| Do | Don't |
+|---|---|
+| "Who gets the deploy alert — the account owner or every engineer on the team?" | "Do deploy alerts require prior SMS consent from each recipient?" |
+| "What's the difference between a system alert and an on-call page?" | "Which TCR campaign type do team alerts register under?" |
+| "How many appointment reminders is too many?" | "Can I send status alerts to users who haven't opted in to SMS?" |
+| "What do I send when a patient no-shows vs. cancels?" | "What's the right way to separate transactional and marketing consent?" |
+| "Should the post-appointment text go before or after the CSAT follow-up?" | "Should the text come from my app's name or my customer's name?" |
+| "Can I include the pay amount in a payday text?" | "RelayKit handles opt-outs — do I need to build anything on my side?" |
+
+### Card budget
+
+Each page has a fixed number of Q&A cards. Every card must earn its place. A useful distribution:
+- 1–2 cards on the primary workflow decisions specific to this vertical
+- 1 card on a content or targeting decision the developer genuinely has to make
+- 1 opt-in placement card using the appropriate boilerplate below
+
+Never use a card to tell the developer that RelayKit handles something. If RelayKit handles it, the developer doesn't need to know about it until they're reading Tier 3 docs.
+
+### Opt-in placement — boilerplate cards
+
+Every sub-vertical page includes exactly one opt-in placement card. Use the boilerplate that fits the vertical's audience. The only adaptation is the bracketed text — do not rewrite the structure or add compliance explanation.
+
+**Boilerplate A — consumer-facing verticals** (appointments, orders, waitlist, community, customer support, etc.):
+
+> **Q: When do I ask users if it's okay to text them?**
+> Lead: Right when they give you their phone number for the first time.
+> Body: For [this vertical], that's usually [specific moment — e.g. "when they book" / "at checkout" / "when they create an account"]. That's when texting makes sense to them and the ask feels natural. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.
+
+**Boilerplate B — internal/team-facing verticals** (HR, CRM internal alerts, team chat, team alerts, etc.):
+
+> **Q: Do I need to ask [employees / reps / team members] before texting them?**
+> Lead: Yes — being part of your team doesn't automatically mean they agreed to receive texts.
+> Body: The right place to capture it is during [onboarding / account creation / their first login]. RelayKit hosts an opt-in page for your app — your AI tool will know how to wire it in once you tell it where new [employees / users / reps] set up their profile.
+
+Note: CRM has both an internal lane (rep alerts — Boilerplate B) and a consumer-facing lane (prospect demo reminders — Boilerplate A). Use whichever fits the primary workflow the page leads with.
+
+### Register: write for a builder, not an engineer
+
+Q&A cards are read by people building apps — often with an AI coding tool, not from a background in backend systems. Write as if you're answering a reasonable question from someone who understands their product but isn't steeped in SMS infrastructure, webhook patterns, or carrier mechanics.
+
+The practical test: would this question and answer make sense to someone building their first app? If the question assumes knowledge of data models, event systems, or API integration patterns, reframe it around what the builder is trying to accomplish. If the answer walks through a technical implementation, cut the implementation and give the principle — their AI tool handles the code.
+
+Avoid: questions that assume the reader knows what a webhook is, how MO messages work, or how to route API calls. Avoid answers that describe what to build rather than what to decide.
+
+Aim for: a knowledgeable friend who knows how SMS works and can tell you what to do, without assuming you already know the vocabulary.
+
+
+
+
+---
+
 *RelayKit LLC — v2.1*
 *Supersedes: V4_EXPERIENCE_PRINCIPLES_v1.1.md*
