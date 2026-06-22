@@ -1315,6 +1315,212 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
       },
     ],
   },
+  {
+    urlSlug: "applicant-tracking-saas",
+    dataSlug: "applicant-tracking-recruiting-saas",
+    name: "Applicant tracking SaaS",
+
+    metaTitle: "SMS for applicant tracking & recruiting SaaS — RelayKit",
+    metaDescription:
+      "Add interview confirmations, stage updates, and offer notifications to your ATS. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Applicant tracking SaaS",
+    h1: "Text messaging for applicant tracking apps.",
+    heroBody:
+      "Interview confirmations, stage updates, offer notifications — the texts that keep candidates engaged and interviews from going empty.",
+    heroExamples: [
+      "Acme Careers: We received your application for Senior Engineer. We'll be in touch with next steps. Reply STOP to opt out.",
+      "Acme Careers: Good news on your Senior Engineer application — you're moving to Final Interview. Details: acme.app/apply/4821 Reply STOP to opt out.",
+      "Acme Careers: your interview with Maria Chen (Hiring Manager) is confirmed for Thu Jun 25, 2:00pm (video). Reply STOP to opt out.",
+      "Acme Careers: Your offer for Senior Engineer is ready to review. See it here: acme.app/offer/4821 Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A top candidate gets an offer Friday afternoon. The email sits unread all weekend. The team that texted gets the yes.",
+      exampleSms: "Acme Careers: Your offer for Senior Engineer is ready to review. See it here: acme.app/offer/4821 Reply STOP to opt out.",
+      exampleReply: "Just signed it",
+    },
+
+    qa: [
+      {
+        q: "How many interview reminder texts is too many?",
+        lead: "Two is the right number — day-before and an hour out.",
+        body: "The day-before reminder gives the candidate time to reschedule if something came up. The hour-out reminder is the no-show guard. A third reminder, on the morning of, starts to feel like pressure rather than service — candidates who got two reminders and still no-showed probably aren't coming. Save the third touchpoint for the rebook flow, not another pre-interview ping.",
+      },
+      {
+        q: "What do I text when a candidate doesn't move forward?",
+        lead: "A short, neutral notice — and nothing else in that same message.",
+        body: "Say that you won't be moving forward, thank them for their time, and stop. No explanation of the decision, no encouragement to check back for future roles — that slides toward language with legal exposure. Keep it factual and brief. If your platform re-engages declined candidates for future openings, that flow starts separately with its own consent.",
+      },
+      {
+        q: "When do I ask candidates if it's okay to text them?",
+        lead: "Right when they give you their phone number for the first time.",
+        body: "For an ATS, that's usually during the application — when they fill out their contact info or create a candidate account. That's when texting makes sense to them and the ask feels natural. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+    ],
+
+    defaultCategory: "appointments",
+
+    workflows: [
+      {
+        id: "interview-scheduling",
+        displayName: "Interview scheduling",
+        description: "Books, reminds, and follows up on a scheduled interview.",
+        steps: [
+          {
+            corpusId: "appointments:confirmation",
+            displayName: "Interview confirmed",
+            variableAliases: {
+              provider_name: "Maria Chen (Hiring Manager)",
+              appointment_time: "Thu Jun 25, 2:00pm (video)",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-distant",
+            displayName: "Interview tomorrow",
+            variableAliases: {
+              provider_name: "Maria Chen (Hiring Manager)",
+              appointment_time: "Thu Jun 25, 2:00pm (video)",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-proximate",
+            displayName: "Interview in 1 hour",
+            variableAliases: {
+              provider_name: "Maria Chen (Hiring Manager)",
+              appointment_time: "Thu Jun 25, 2:00pm (video)",
+            },
+          },
+          {
+            corpusId: "appointments:reschedule-confirmation",
+            displayName: "Interview moved",
+            variableAliases: {
+              provider_name: "Maria Chen (Hiring Manager)",
+            },
+          },
+          {
+            corpusId: "appointments:cancellation-confirmation",
+            displayName: "Interview cancelled",
+            variableAliases: {
+              provider_name: "Maria Chen (Hiring Manager)",
+            },
+          },
+          {
+            corpusId: "appointments:no-show-follow-up",
+            displayName: "We missed you",
+            variableAliases: {
+              provider_name: "Maria Chen (Hiring Manager)",
+            },
+          },
+        ],
+      },
+      {
+        id: "application-status",
+        displayName: "Application status updates",
+        description: "Keeps the candidate informed at every stage from application to offer.",
+        steps: [
+          {
+            corpusId: null,
+            displayName: "Application received",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: We received your application for {{job_title}}. We'll be in touch with next steps. Reply STOP to opt out.",
+              friendly:
+                "Thanks for applying to {{job_title}} at {{workspace_name}} — we've got your application and will be in touch. Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: Application received for {{job_title}}. STOP to opt out.",
+            },
+            variableAliases: {
+              job_title: "Senior Engineer",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "You're moving forward",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: Good news on your {{job_title}} application — you're moving to {{next_stage}}. Details: {{status_link}} Reply STOP to opt out.",
+              friendly:
+                "Update from {{workspace_name}}: your {{job_title}} application is moving forward to {{next_stage}}. More here: {{status_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{job_title}} advanced to {{next_stage}}. {{status_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              job_title: "Senior Engineer",
+              next_stage: "Final Interview",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Next step needed",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: One step left on your {{job_title}} application — {{action_needed}}. Complete it: {{status_link}} Reply STOP to opt out.",
+              friendly:
+                "Quick step on your {{job_title}} application at {{workspace_name}}: {{action_needed}}. Here: {{status_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{job_title}} needs {{action_needed}}. {{status_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              job_title: "Senior Engineer",
+              action_needed: "complete the skills assessment",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Offer ready",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: Your offer for {{job_title}} is ready to review. See it here: {{status_link}} Reply STOP to opt out.",
+              friendly:
+                "Great news from {{workspace_name}} — your {{job_title}} offer is ready. Review it here: {{status_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{job_title}} offer ready. {{status_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              job_title: "Senior Engineer",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Application update",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: An update on your {{job_title}} application — we won't be moving forward this time. Thank you for applying. Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: Thank you for your interest in {{job_title}}. We won't be moving forward, but we appreciate your time. Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{job_title}} — not moving forward. Thank you. STOP to opt out.",
+            },
+            variableAliases: {
+              job_title: "Senior Engineer",
+            },
+          },
+        ],
+      },
+      {
+        id: "candidate-portal-account",
+        displayName: "Candidate portal account",
+        description: "Verifies a new candidate's phone and alerts on new device access.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verification code",
+            variableAliases: {
+              business_name: "Acme Careers",
+            },
+          },
+          {
+            corpusId: "account-events:new-device-signin",
+            displayName: "New sign-in",
+            variableAliases: {
+              workspace_name: "Acme Careers",
+            },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(SUB_VERTICAL_LANDINGS.map((e) => [e.urlSlug, e]));

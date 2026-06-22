@@ -315,5 +315,35 @@ Aim for: a knowledgeable friend who knows how SMS works and can tell you what to
 
 ---
 
+---
+
+## 8. Copy Authoring — heroBody and moment
+
+These two fields appear on every sub-vertical landing page. Both are written for a builder who already knows their product — the page confirms they're in the right place and shows them the specific texts their app will send.
+
+### heroBody
+
+One sentence. Names the 2–4 most representative message types for this vertical and ends with what they do — the job they accomplish.
+
+Pattern: `[Message type], [message type], [message type] — the texts that [do the job].`
+
+The job clause is functional, not inspiring. "Keep a support conversation moving." "Reach deskless employees who never see the email." Say what the messages do, not why that matters or how much better it is than email.
+
+Test: read it aloud. If it sounds like a product tagline, cut words. If a first-time builder would need to Google any term in it, replace that term with plain English. If it could appear unchanged on a different vertical's page, it's too generic.
+
+### moment.body
+
+Two to three sentences. Structure: problem → resolution. The problem opens with a specific, concrete thing going wrong in this vertical. The resolution is the text message changing the outcome.
+
+The problem is one sentence. Specific enough to recognize, not so specific it reads like a case study.
+
+The resolution is one sentence. It does not extend the problem — it shows what happens when the text lands. The example SMS is already in the UI; moment.body does not describe it.
+
+The result should feel earned, not triumphant. "The team that texted gets the yes" is right. "Preventing costly downtime and protecting the customer experience" is wrong.
+
+Test: does the second sentence begin the resolution, or does it extend the problem? If it's still describing failure, cut it or fold it into sentence one. The moment must complete — a text changes something, and that thing is named.
+
+---
+
 *RelayKit LLC — v2.1*
 *Supersedes: V4_EXPERIENCE_PRINCIPLES_v1.1.md*
