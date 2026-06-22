@@ -2515,6 +2515,159 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
       },
     ],
   },
+  {
+    urlSlug: "marketing-automation-saas",
+    dataSlug: "marketing-automation-email-saas",
+    name: "Marketing automation SaaS",
+
+    metaTitle: "SMS for marketing automation & email SaaS — RelayKit",
+    metaDescription:
+      "Add deliverability alerts, billing saves, and account security texts to your marketing automation platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Marketing automation SaaS",
+    h1: "Text messaging for marketing automation apps.",
+    heroBody:
+      "Trial alerts, deliverability warnings, billing texts — the messages that keep a sending platform’s customers unblocked and paying.",
+    heroExamples: [
+      "Acme: Sending on your account is paused after a deliverability flag. Review and restore: acme.co/account/health Reply STOP to opt out.",
+      "Acme: You’ve reached your 10,000/mo send limit. Upgrade to keep sending: acme.co/billing Reply STOP to opt out.",
+      "Acme: Card ending 4242 was declined. Update payment to keep your account active: acme.co/billing Reply STOP to opt out.",
+      "Acme: New sign-in from Chrome on a new Mac. Not you? Secure your account: acme.co/security Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A customer’s broadcast goes out, bounce rates spike, and the platform suspends their sending — but the alert lands in the same inbox that’s now degraded. A text cuts through when email can’t.",
+      exampleSms: "Acme: Sending on your account is paused after a deliverability flag. Review and restore: acme.co/account/health Reply STOP to opt out.",
+      exampleReply: "On it",
+    },
+
+    qa: [
+      {
+        q: "Should the deliverability alert explain why, or just link to the dashboard?",
+        lead: "Tell them why — one short clause is enough.",
+        body: "“Sending paused after a deliverability flag” gives the customer enough context to know this isn’t a billing issue before they tap the link. A text that just says “your account needs attention” sends them to the dashboard confused — and confused customers open support tickets. One clause of cause, then the link.",
+      },
+      {
+        q: "Who gets the deliverability alert — the account owner or every admin?",
+        lead: "The account owner first.",
+        body: "Deliverability alerts affect the whole account, but texting every team member creates noise and diffuses accountability. Send to the account owner. If your platform has notification settings that let admins opt into operational alerts, that’s the right place to expand coverage — not a default blast to all.",
+      },
+      {
+        q: "How many billing texts before renewal is too many?",
+        lead: "One reminder, then a payment-failed text if the card declines.",
+        body: "Send a reminder close enough to renewal that the customer has time to act — a few days out is typical. More than one pre-renewal text starts to feel like pressure. If the card declines, that’s when the payment-failed text earns its place. The sequence stays short because each message has a clear trigger.",
+      },
+      {
+        q: "When do I ask customers if it’s okay to text them?",
+        lead: "When they give you their phone number for the first time.",
+        body: "For a marketing automation platform, that’s usually when they create their account or complete onboarding. That’s when the ask is natural and they understand why operational alerts are coming. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+    ],
+
+    defaultCategory: "account-events",
+
+    workflows: [
+      {
+        id: "subscription-lifecycle",
+        displayName: "Subscription lifecycle",
+        description: "Keeps the paying customer’s account active across billing and plan events.",
+        steps: [
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Payment failed",
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Subscription confirmed",
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Account suspended",
+          },
+        ],
+      },
+      {
+        id: "account-security",
+        displayName: "Account security",
+        description: "Protects the customer’s sending account, which controls their entire audience list.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verification code",
+          },
+          {
+            corpusId: "account-events:new-device-signin",
+            displayName: "New sign-in",
+          },
+          {
+            corpusId: "verification:confirmation-code",
+            displayName: "Confirmation code",
+          },
+        ],
+      },
+      {
+        id: "sending-health-alerts",
+        displayName: "Sending health alerts",
+        description: "Warns the customer the moment their sending is degrading or blocked.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Sending alert",
+            variableAliases: {
+              severity: "Warning",
+              system_name: "your account",
+              alert_type: "bounce rate threshold crossed",
+            },
+          },
+          {
+            corpusId: "team-alerts:service-level-alert",
+            displayName: "Sending paused",
+            variableAliases: {
+              system_name: "your account",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Send limit reached",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: You’ve reached your {{plan_limit}} send limit. Upgrade to keep sending: {{account_link}} Reply STOP to opt out.",
+              friendly:
+                "Heads up — your {{workspace_name}} account hit its {{plan_limit}} send limit. Upgrade to keep going: {{account_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{plan_limit}} send limit reached. Upgrade: {{account_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              plan_limit: "10,000/mo",
+            },
+          },
+        ],
+      },
+      {
+        id: "support-escalation",
+        displayName: "Support escalation",
+        description: "Moves a blocked customer through a support case when sending is held.",
+        steps: [
+          {
+            corpusId: "customer-support:ticket-received",
+            displayName: "Ticket received",
+          },
+          {
+            corpusId: "customer-support:agent-response",
+            displayName: "Reply ready",
+          },
+          {
+            corpusId: "customer-support:resolution-notification",
+            displayName: "Resolved",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(SUB_VERTICAL_LANDINGS.map((e) => [e.urlSlug, e]));
