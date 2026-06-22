@@ -343,6 +343,14 @@ The result should feel earned, not triumphant. "The team that texted gets the ye
 
 Test: does the second sentence begin the resolution, or does it extend the problem? If it's still describing failure, cut it or fold it into sentence one. The moment must complete — a text changes something, and that thing is named.
 
+### What goes wrong
+
+*Staccato sentences.* The moment reads like a list of events, not a story. If every sentence is the same length and the same grammatical shape, the rhythm is wrong. Vary it — one longer setup, one short resolution.
+
+*Overfitted scenarios.* The moment names a detail so specific it only fits one customer's situation. Specific enough to recognize, not so specific it reads like a case study. The right test: would a builder in this vertical read it and think "that's my situation," or "that's someone else's situation"?
+
+*Long leads.* The lead is the direct answer — one clause, not a sentence that explains itself. "When their phone number is collected." not "Right when their phone number is first collected during the signing flow." If the lead needs a qualifier to be accurate, the qualifier belongs in the body.
+
 ---
 
 *RelayKit LLC — v2.1*

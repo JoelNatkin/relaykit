@@ -328,6 +328,12 @@ Sent when a document is ready for the recipient's e-signature.
 - **Friendly:** `{{workspace_name}}: you have a document ready to sign - it only takes a minute: {{account_link}} Reply STOP to opt out.`
 - **Brief:** `{{workspace_name}}: Document ready to sign: {{account_link}} STOP to opt out.`
 
+### Signature reminder
+Sent when a document is still unsigned after the initial request.
+- **Standard:** `{{workspace_name}}: A document is still waiting for your signature. Sign here: {{account_link}} Reply STOP to opt out.`
+- **Friendly:** `{{workspace_name}}: just a reminder, a document still needs your signature. It only takes a minute: {{account_link}} Reply STOP to opt out.`
+- **Brief:** `{{workspace_name}}: Document still needs signing: {{account_link}} STOP to opt out.`
+
 ### Signature received
 Sent when all required signatures are in and the document is executed.
 - **Standard:** `{{workspace_name}}: We received your signed document. Nothing more needed for now. Reply STOP to opt out.`

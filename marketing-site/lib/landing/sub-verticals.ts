@@ -1809,19 +1809,432 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
             },
           },
           {
-            corpusId: null,
+            corpusId: "team-alerts:incident-resolved",
             displayName: "All clear",
-            customVariants: {
-              standard:
-                "{{workspace_name}}: {{system_name}} incident {{incident_id}} resolved. {{action_link}} Reply STOP to opt out.",
-              friendly:
-                "{{workspace_name}}: all clear - {{system_name}} incident {{incident_id}} is resolved. {{action_link}} Reply STOP to opt out.",
-              brief:
-                "{{workspace_name}}: {{system_name}} {{incident_id}} resolved. {{action_link}} STOP to opt out.",
-            },
             variableAliases: {
               system_name: "edge-waf cluster",
               incident_id: "INC-4471",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "edtech-saas",
+    dataSlug: "edtech-school-administration-saas",
+    name: "EdTech & school admin SaaS",
+
+    metaTitle: "SMS for EdTech & school administration SaaS — RelayKit",
+    metaDescription:
+      "Add absence alerts, conference reminders, and enrollment waitlist texts to your school admin platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "EdTech & school admin SaaS",
+    h1: "Text messaging for EdTech and school administration apps.",
+    heroBody:
+      "Absence alerts, conference reminders, enrollment waitlists — the texts that keep parents in the loop and seats from going unclaimed.",
+    heroExamples: [
+      "Lincoln Elementary: Maya was marked absent today. If that's wrong, let us know here: school.app/attendance/4821 Reply STOP to opt out.",
+      "Lincoln Elementary: reminder — your conference with Ms. Rivera (Grade 4) is tomorrow, Thu Mar 12, 4:30pm. Cancel: school.app/conf/4821 Reply STOP to opt out.",
+      "Registrar's Office: A seat opened in ECON 201. Claim it here: school.app/enroll/4821 Reply STOP to opt out.",
+      "Lincoln Elementary: Card ending 4242 was declined. Update payment to keep your account active: school.app/billing Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A student is marked absent at 9am. The parent is already at work — the email arrives at lunch. A text arrives at 9:01.",
+      exampleSms: "Lincoln Elementary: Maya was marked absent today. If that's wrong, let us know here: school.app/attendance/4821 Reply STOP to opt out.",
+      exampleReply: "She's home sick today",
+    },
+
+    qa: [
+      {
+        q: "Should absence alerts go to both parents or just the primary contact?",
+        lead: "Whichever guardian the school has on file as the primary SMS contact — not both by default.",
+        body: "Sending to both parents doubles the volume and can create confusion when one already responded. Default to the primary contact on the enrollment record. If your platform supports a secondary contact, make that an opt-in preference the family configures — not a default. The goal is one clear response, not two simultaneous ones.",
+      },
+      {
+        q: "How many conference reminders is too many?",
+        lead: "Two. The day-before and an hour out.",
+        body: "The day-before reminder gives the parent time to reschedule if something came up. The hour-out reminder is the no-show guard. A third reminder on the morning of starts to feel like pressure. If a parent no-shows, the rebook flow handles the follow-up — that's a separate message, not a third reminder.",
+      },
+      {
+        q: "When do I ask parents if it's okay to text them?",
+        lead: "Right when they create their account or fill in their contact info.",
+        body: "For a school admin app, that's usually during enrollment or parent-portal setup — when they're already entering their phone number. That's when the ask feels natural. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+      {
+        q: "Should enrollment waitlist texts go to the student or the parent?",
+        lead: "To whoever submitted the application — for K-12 that's always the parent.",
+        body: "For K-12, the guardian handles enrollment, so all waitlist communications go to them. For higher ed, the student submitted the application and holds the consent, so texts go to the student directly. If your platform serves both, use the submitting contact's number rather than building two separate flows.",
+      },
+    ],
+
+    defaultCategory: "appointments",
+
+    workflows: [
+      {
+        id: "conference-scheduling",
+        displayName: "Parent-teacher conference scheduling",
+        description: "Books, reminds, and follows up on a parent-teacher conference or advising meeting.",
+        steps: [
+          {
+            corpusId: "appointments:confirmation",
+            displayName: "Conference booked",
+            variableAliases: {
+              provider_name: "Ms. Rivera (Grade 4)",
+              appointment_time: "Thu Mar 12, 4:30pm",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-distant",
+            displayName: "Conference tomorrow",
+            variableAliases: {
+              provider_name: "Ms. Rivera (Grade 4)",
+              appointment_time: "Thu Mar 12, 4:30pm",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-proximate",
+            displayName: "Conference in 1 hour",
+            variableAliases: {
+              provider_name: "Ms. Rivera (Grade 4)",
+              appointment_time: "Thu Mar 12, 4:30pm",
+            },
+          },
+          {
+            corpusId: "appointments:reschedule-confirmation",
+            displayName: "Conference moved",
+            variableAliases: {
+              provider_name: "Ms. Rivera (Grade 4)",
+            },
+          },
+          {
+            corpusId: "appointments:cancellation-confirmation",
+            displayName: "Conference cancelled",
+            variableAliases: {
+              provider_name: "Ms. Rivera (Grade 4)",
+            },
+          },
+          {
+            corpusId: "appointments:no-show-follow-up",
+            displayName: "Missed your conference",
+            variableAliases: {
+              provider_name: "Ms. Rivera (Grade 4)",
+            },
+          },
+          {
+            corpusId: "appointments:post-appointment",
+            displayName: "Conference feedback",
+            variableAliases: {
+              provider_name: "Ms. Rivera (Grade 4)",
+            },
+          },
+        ],
+      },
+      {
+        id: "absence-alert",
+        displayName: "Attendance / absence alert",
+        description: "Notifies a parent the moment a student is marked absent or tardy.",
+        steps: [
+          {
+            corpusId: null,
+            displayName: "Absence alert",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: {{student_name}} was marked absent today. Confirm or report an error here: {{account_link}} Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: we marked {{student_name}} absent today. If that's wrong, let us know here: {{account_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{student_name}} marked absent today. {{account_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              student_name: "Maya",
+              workspace_name: "Lincoln Elementary",
+            },
+          },
+        ],
+      },
+      {
+        id: "enrollment-waitlist",
+        displayName: "Course enrollment & waitlist",
+        description: "Moves a student from a waitlisted course to a claimed seat.",
+        steps: [
+          {
+            corpusId: "waitlist:joined",
+            displayName: "On the waitlist",
+            variableAliases: {
+              workspace_name: "Registrar's Office",
+            },
+          },
+          {
+            corpusId: "waitlist:position-update",
+            displayName: "Moved up",
+            variableAliases: {
+              workspace_name: "Registrar's Office",
+            },
+          },
+          {
+            corpusId: "waitlist:almost-up",
+            displayName: "Seat opening soon",
+            variableAliases: {
+              workspace_name: "Registrar's Office",
+            },
+          },
+          {
+            corpusId: "waitlist:your-turn",
+            displayName: "Seat available",
+            variableAliases: {
+              workspace_name: "Registrar's Office",
+            },
+          },
+          {
+            corpusId: "waitlist:grace-expiring",
+            displayName: "Claim your seat",
+            variableAliases: {
+              workspace_name: "Registrar's Office",
+            },
+          },
+          {
+            corpusId: "waitlist:missed",
+            displayName: "Seat released",
+            variableAliases: {
+              workspace_name: "Registrar's Office",
+            },
+          },
+        ],
+      },
+      {
+        id: "tuition-billing",
+        displayName: "Lunch-account & tuition billing",
+        description: "Keeps tuition collected and the family account active.",
+        steps: [
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Payment declined",
+            variableAliases: {
+              workspace_name: "Lincoln Elementary",
+            },
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Payment confirmed",
+            variableAliases: {
+              workspace_name: "Lincoln Elementary",
+            },
+          },
+          {
+            corpusId: "account-events:account-suspended",
+            displayName: "Registration hold",
+            variableAliases: {
+              workspace_name: "Lincoln Elementary",
+            },
+          },
+        ],
+      },
+      {
+        id: "staff-scheduling",
+        displayName: "Staff scheduling",
+        description: "Assigns and reminds staff of shifts, duty rosters, and substitutions.",
+        steps: [
+          {
+            corpusId: "team-alerts:shift-scheduled",
+            displayName: "Shift assigned",
+            variableAliases: {
+              role: "Lunch duty",
+              location: "Cafeteria",
+            },
+          },
+          {
+            corpusId: "team-alerts:shift-reminder",
+            displayName: "Shift reminder",
+            variableAliases: {
+              location: "Cafeteria",
+            },
+          },
+          {
+            corpusId: "team-alerts:shift-change",
+            displayName: "Shift changed",
+            variableAliases: {
+              location: "Cafeteria",
+            },
+          },
+          {
+            corpusId: "team-alerts:shift-cancellation",
+            displayName: "Shift cancelled",
+            variableAliases: {
+              location: "Cafeteria",
+            },
+          },
+          {
+            corpusId: "team-alerts:shift-start",
+            displayName: "Shift starting",
+            variableAliases: {
+              location: "Cafeteria",
+            },
+          },
+        ],
+      },
+      {
+        id: "portal-account-access",
+        displayName: "Portal account access",
+        description: "Proves phone ownership and protects parent and student portal accounts.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verification code",
+            variableAliases: {
+              business_name: "ParentPortal",
+            },
+          },
+          {
+            corpusId: "verification:login-code",
+            displayName: "Sign-in code",
+            variableAliases: {
+              business_name: "ParentPortal",
+            },
+          },
+          {
+            corpusId: "verification:recovery-code",
+            displayName: "Recovery code",
+            variableAliases: {
+              business_name: "ParentPortal",
+            },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    urlSlug: "esignature-saas",
+    dataSlug: "esignature-document-workflow-saas",
+    name: "E-signature SaaS",
+
+    metaTitle: "SMS for e-signature & document workflow SaaS — RelayKit",
+    metaDescription:
+      "Add signature requests, signing reminders, and completion notices to your e-signature platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "E-signature SaaS",
+    h1: "Text messaging for e-signature apps.",
+    heroBody:
+      "Signature requests, signing reminders, completion notices — the texts that get documents signed before the moment passes.",
+    heroExamples: [
+      "Acme Legal: A document is ready for your signature. Review and sign: acme.app/sign/4821 Reply STOP to opt out.",
+      "Acme Legal: A document is still waiting for your signature. Sign here: acme.app/sign/4821 Reply STOP to opt out.",
+      "Acme Legal: Your document is fully signed. View the final copy here: acme.app/docs/4821 Reply STOP to opt out.",
+      "Acme Legal: Your signing code is 847291, good for 10 minutes.",
+    ],
+
+    moment: {
+      body: "A contract goes out Friday afternoon with a link in the email — unopened all weekend. A text Monday morning gets it signed.",
+      exampleSms: "Acme Legal: A document is ready for your signature. Review and sign: acme.app/sign/4821 Reply STOP to opt out.",
+      exampleReply: "Just signed it",
+    },
+
+    qa: [
+      {
+        q: "Should the signing reminder go out the same day or wait a day or two?",
+        lead: "Wait a day or two.",
+        body: "Same-day feels like pressure, not service. Most signers who are going to act quickly do it within hours of the first text. The reminder is for people who genuinely forgot or got busy — giving it a day lets that group self-select before you follow up. One reminder is the norm; a second rarely recovers anyone and starts to feel like harassment.",
+      },
+      {
+        q: "Does the signer need a code to open the document, or is the link enough?",
+        lead: "A link is fine for most; add a code for anything with legal or financial stakes.",
+        body: "For routine documents — NDAs, onboarding agreements, consent forms — a direct signing link is standard and expected. For anything that transfers rights, money, or liability, an SMS access code before the document opens adds a layer of identity assurance that holds up if the signature is ever challenged. Your platform probably already supports both modes; pick the one that fits the document's risk level.",
+      },
+      {
+        q: "When do I ask signers if it's okay to text them?",
+        lead: "When their phone number is collected.",
+        body: "That's usually when the sender enters their details before routing the document — when the ask is natural and the signer understands why they might hear from you. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+      {
+        q: "Do I need to text the sender when their document is fully signed?",
+        lead: "Yes — they're waiting on it.",
+        body: "Email is where good news goes to be missed. A sender-side completion notice — short, factual, with a link to the executed copy — closes the loop immediately. It's a different recipient and a different flow from the signer-facing messages, but it's often the most valued text in the sequence.",
+      },
+    ],
+
+    defaultCategory: "documents",
+
+    workflows: [
+      {
+        id: "signature-request-completion",
+        displayName: "Signature request and completion",
+        description: "Moves a document from sent to signed, with one reminder for non-responders.",
+        steps: [
+          {
+            corpusId: "documents:signature-requested",
+            displayName: "Ready to sign",
+            variableAliases: {
+              workspace_name: "Acme Legal",
+              account_link: "acme.app/sign/4821",
+            },
+          },
+          {
+            corpusId: "documents:signature-reminder",
+            displayName: "Still needs your signature",
+            variableAliases: {
+              workspace_name: "Acme Legal",
+              account_link: "acme.app/sign/4821",
+            },
+          },
+          {
+            corpusId: "documents:signature-received",
+            displayName: "All signed",
+            variableAliases: {
+              workspace_name: "Acme Legal",
+            },
+          },
+        ],
+      },
+      {
+        id: "signer-authentication",
+        displayName: "Signer authentication (SMS OTP)",
+        description: "Proves the signer's phone ownership before a legally-binding signature is applied.",
+        steps: [
+          {
+            corpusId: "verification:confirmation-code",
+            displayName: "Access code to sign",
+            variableAliases: {
+              business_name: "Acme Legal",
+            },
+          },
+        ],
+      },
+      {
+        id: "document-expiration",
+        displayName: "Document expiration",
+        description: "Warns the signer before an unsigned request lapses.",
+        steps: [
+          {
+            corpusId: "account-events:deadline-reminder",
+            displayName: "Document expiring",
+            variableAliases: {
+              deadline_item: "NDA — Globex Corp",
+              due_date: "Fri Jun 27",
+              account_link: "acme.app/sign/4821",
+            },
+          },
+        ],
+      },
+      {
+        id: "sender-signing-notifications",
+        displayName: "Sender-side signing notifications",
+        description: "Tells the document owner as each party signs and when execution completes.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Signer completed",
+            variableAliases: {
+              severity: "Update",
+              alert_type: "Jordan just signed",
+              system_name: "NDA — Globex Corp",
+            },
+          },
+          {
+            corpusId: "documents:signature-received",
+            displayName: "All parties signed",
+            variableAliases: {
+              workspace_name: "Acme Legal",
             },
           },
         ],

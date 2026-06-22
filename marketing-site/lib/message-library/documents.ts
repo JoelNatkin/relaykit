@@ -116,6 +116,31 @@ export const DOCUMENTS: Category = {
       ],
     },
     {
+      id: "signature-reminder",
+      name: "Signature reminder",
+      tooltip: "Sent when a document is still unsigned after the initial request.",
+      description:
+        "A single follow-up to a recipient who received a signature request but hasn't signed yet — the non-responder nudge that recovers most stalled documents.",
+      variables: ["workspace_name", "account_link"],
+      variants: [
+        {
+          tone: "Standard",
+          body: "{{workspace_name}}: A document is still waiting for your signature. Sign here: {{account_link}} Reply STOP to opt out.",
+          charCount: 114,
+        },
+        {
+          tone: "Friendly",
+          body: "{{workspace_name}}: just a reminder, a document still needs your signature. It only takes a minute: {{account_link}} Reply STOP to opt out.",
+          charCount: 135,
+        },
+        {
+          tone: "Brief",
+          body: "{{workspace_name}}: Document still needs signing: {{account_link}} STOP to opt out.",
+          charCount: 76,
+        },
+      ],
+    },
+    {
       id: "signature-received",
       name: "Signature received",
       tooltip: "Sent when all required signatures are in and the document is executed.",
