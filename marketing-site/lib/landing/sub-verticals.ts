@@ -1703,6 +1703,131 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
       },
     ],
   },
+  {
+    urlSlug: "cybersecurity-saas",
+    dataSlug: "cybersecurity-threat-detection-siem-saas",
+    name: "Cybersecurity SaaS",
+
+    metaTitle: "SMS for cybersecurity & threat detection SaaS — RelayKit",
+    metaDescription:
+      "Add detection alerts, escalation pings, and incident resolution texts to your security platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Cybersecurity SaaS",
+    h1: "Text messaging for cybersecurity and threat detection apps.",
+    heroBody:
+      "Detection alerts, escalation pings, incident resolution — the texts that reach an on-call engineer at 3am before dwell time compounds.",
+    heroExamples: [
+      "Acme Security P1: Brute-force, 40 failed logins from 203.0.113.9 on prod-auth-gateway. acme.app/incidents/4821 Reply STOP to opt out.",
+      "Acme Security P1: ransomware signature on fileserver-02 needs attention. Reply ACK to claim or it goes to secondary on-call. Reply STOP to opt out.",
+      "Acme Security: edge-waf cluster incident INC-4471 resolved. acme.app/incidents/4471 Reply STOP to opt out.",
+      "Acme Security: prod-auth-gateway SLA breach, incident INC-4471. acme.app/incidents/4471 Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A brute-force burst hits the auth gateway at 2:47am. The on-call engineer gets a text and locks the account before the attacker moves laterally.",
+      exampleSms: "Acme Security P1: Brute-force, 40 failed logins from 203.0.113.9 on prod-auth-gateway. acme.app/incidents/4821 Reply STOP to opt out.",
+      exampleReply: "ACK",
+    },
+
+    qa: [
+      {
+        q: "What's the right message when a detection fires — system alert or on-call text?",
+        lead: "On-call text for anything that needs a human right now; system alert for everything else.",
+        body: "An on-call text is the shortest, most urgent message in the set — it fires when a system is confirmed down or compromised and someone needs to act immediately. A system alert is for informational or mid-severity detections: a threshold crossed, an anomaly logged, a finding that needs review but isn't actively burning. Build your severity-to-message-type mapping before you wire up the notifications — P1/P2 and critical get the on-call text; everything else gets the system alert.",
+      },
+      {
+        q: "How does the ACK escalation work — does the engineer reply to the text?",
+        lead: "Yes — they reply ACK to claim the incident, and your backend handles the rest.",
+        body: "When an escalation ping fires, the engineer replies ACK from their phone. Your backend receives that inbound reply and marks the incident claimed. If no ACK arrives within your configured window, your app fires the next alert to the secondary on-call. RelayKit delivers the inbound reply to your webhook — your app logic handles the claim and escalation timer.",
+      },
+      {
+        q: "Should I include the raw detection details in the SMS body?",
+        lead: "Include enough to act on, but link to the console for the rest.",
+        body: "\u201940 failed logins from 203.0.113.9\u2019 in the body tells the engineer what they're looking at. A token, a raw log line, or a full payload in the body is wrong — both for message length and for credential exposure. The rule of thumb: enough context to make the first triage decision from a locked phone, then a link to the full incident record for everything else.",
+      },
+      {
+        q: "Do I need to text an all-clear when an incident is resolved?",
+        lead: "Yes — responders need to know when to stand down.",
+        body: "Every alert that pulls someone into an incident needs a matching resolution notice. Without it, the responder doesn't know if they're still on watch or can go back to sleep. The resolution text is short: system name, incident ID, and a link to the post-mortem or closure record. It also creates a natural audit trail of when the incident was officially closed.",
+      },
+    ],
+
+    defaultCategory: "team-alerts",
+
+    workflows: [
+      {
+        id: "detection-triage",
+        displayName: "Detection → triage",
+        description: "Notifies the on-call analyst the instant a detection crosses threshold, with enough context to start investigating from the phone.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Detection fired",
+            variableAliases: {
+              severity: "P1",
+              alert_type: "Brute-force, 40 failed logins from 203.0.113.9",
+              system_name: "prod-auth-gateway",
+            },
+          },
+          {
+            corpusId: "team-alerts:on-call-page",
+            displayName: "Critical detection",
+            variableAliases: {
+              severity: "P1",
+              system_name: "prod-auth-gateway",
+            },
+          },
+        ],
+      },
+      {
+        id: "escalate-or-acknowledge",
+        displayName: "Escalate or acknowledge",
+        description: "Requires an explicit ACK from the primary responder or auto-escalates to the next person in the rotation.",
+        steps: [
+          {
+            corpusId: "team-alerts:escalation-ping",
+            displayName: "Needs ACK",
+            variableAliases: {
+              severity: "P1",
+              system_name: "ransomware signature on fileserver-02",
+              escalation_to: "secondary on-call",
+            },
+          },
+        ],
+      },
+      {
+        id: "incident-lifecycle",
+        displayName: "SLA / incident lifecycle",
+        description: "Tracks a formal incident against its service-level commitment and closes the loop when resolved.",
+        steps: [
+          {
+            corpusId: "team-alerts:service-level-alert",
+            displayName: "SLA breach",
+            variableAliases: {
+              system_name: "edge-waf cluster",
+              incident_id: "INC-4471",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "All clear",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: {{system_name}} incident {{incident_id}} resolved. {{action_link}} Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: all clear - {{system_name}} incident {{incident_id}} is resolved. {{action_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{system_name}} {{incident_id}} resolved. {{action_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              system_name: "edge-waf cluster",
+              incident_id: "INC-4471",
+            },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(SUB_VERTICAL_LANDINGS.map((e) => [e.urlSlug, e]));
