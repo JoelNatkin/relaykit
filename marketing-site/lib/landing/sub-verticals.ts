@@ -2241,6 +2241,280 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
       },
     ],
   },
+  {
+    urlSlug: "logistics-fleet-saas",
+    dataSlug: "logistics-supply-chain-fleet-management-saas",
+    name: "Logistics & fleet SaaS",
+
+    metaTitle: "SMS for logistics & fleet management SaaS — RelayKit",
+    metaDescription:
+      "Add delivery status updates, driver dispatch alerts, and fleet maintenance texts to your logistics platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Logistics & fleet SaaS",
+    h1: "Text messaging for logistics and fleet management apps.",
+    heroBody:
+      "Delivery status updates, driver dispatch, fleet alerts — the texts that keep shipments moving and deliveries landing on the first attempt.",
+    heroExamples: [
+      "Acme Logistics: Delivery #4471 is arriving soon, about 20 min away. Track it: acme.app/track/4471 Reply STOP to opt out.",
+      "Acme Logistics: Delivery #4471 was delivered. Issue? acme.app/orders/4471 Reply STOP to opt out.",
+      "Acme Dispatch: New load #4471, pickup 6am at Dock 3. Reply ACK to accept. Reply STOP to opt out.",
+      "Acme Fleet Maintenance: Service due on Truck 12. Details: acme.app/fleet/4471 Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A delivery is 20 minutes out. The recipient misses app notifications. A text gets them to the door in time.",
+      exampleSms: "Acme Logistics: Delivery #4471 is arriving soon, about 20 min away. Track it: acme.app/track/4471 Reply STOP to opt out.",
+      exampleReply: "On my way down",
+    },
+
+    qa: [
+      {
+        q: "What triggers the \"arriving soon\" text — how does the app know when to send it?",
+        lead: "Your platform fires it when the driver crosses a distance or stop-count threshold.",
+        body: "Most logistics platforms expose either a geofence event (driver enters a radius around the destination) or a stops-remaining count (two stops away). Either gives you a reliable 15\u201330 minute heads-up window. Pick whichever your platform surfaces and wire the text to that event — your AI tool will know how to connect it.",
+      },
+      {
+        q: "Should failed-delivery texts go to the recipient or to the dispatcher?",
+        lead: "To the recipient — they're the one who needs to reschedule.",
+        body: "When a delivery attempt fails, the recipient gets the text with a reschedule link. The dispatcher already knows from the driver's app. Keeping the two flows separate means the recipient gets actionable information and the dispatcher isn't bottlenecked on relaying it.",
+      },
+      {
+        q: "When do I ask recipients if it's okay to text them?",
+        lead: "When they provide their phone number at checkout or booking.",
+        body: "That's the natural moment — they're already entering their contact details and a delivery text makes obvious sense to them. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+      {
+        q: "How many delivery status texts is too many?",
+        lead: "Four is the natural ceiling for most deliveries.",
+        body: "Confirmed, shipped, out for delivery, and delivered covers the lifecycle without noise. The arriving-soon text is worth adding for time-sensitive or attended deliveries — that makes five. Beyond that, recipients start ignoring the thread. Failed delivery and reschedule are a separate branch, not additional steps in the main flow.",
+      },
+    ],
+
+    defaultCategory: "order-updates",
+
+    workflows: [
+      {
+        id: "last-mile-delivery-status",
+        displayName: "Last-mile delivery status",
+        description: "Keeps the recipient informed from dispatch through delivery so they're present at arrival.",
+        steps: [
+          {
+            corpusId: "order-updates:order-confirmed",
+            displayName: "Delivery scheduled",
+            variableAliases: {
+              order_number: "Delivery #4471",
+              estimated_delivery: "today, 2-4pm",
+            },
+          },
+          {
+            corpusId: "order-updates:order-shipped",
+            displayName: "On the way",
+            variableAliases: {
+              order_number: "Delivery #4471",
+              estimated_delivery: "today, 2-4pm",
+            },
+          },
+          {
+            corpusId: "order-updates:out-for-delivery",
+            displayName: "Out for delivery",
+            variableAliases: {
+              order_number: "Delivery #4471",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Arriving soon",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: Order {{order_number}} is arriving soon, about {{wait_estimate}} away. Track it: {{tracking_link}} Reply STOP to opt out.",
+              friendly:
+                "Your {{workspace_name}} order {{order_number}} is almost there, about {{wait_estimate}} out. Track: {{tracking_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: Order {{order_number}} arriving in {{wait_estimate}}. {{tracking_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              order_number: "Delivery #4471",
+              wait_estimate: "20 min",
+            },
+          },
+          {
+            corpusId: "order-updates:order-delivered",
+            displayName: "Delivered",
+            variableAliases: {
+              order_number: "Delivery #4471",
+            },
+          },
+        ],
+      },
+      {
+        id: "delivery-window-scheduling",
+        displayName: "Delivery-window scheduling",
+        description: "Lets the recipient lock and be reminded of a delivery appointment slot.",
+        steps: [
+          {
+            corpusId: "appointments:confirmation",
+            displayName: "Delivery window confirmed",
+            variableAliases: {
+              provider_name: "your courier",
+              appointment_time: "Tue 2-4pm window",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-distant",
+            displayName: "Delivery tomorrow",
+            variableAliases: {
+              provider_name: "your courier",
+              appointment_time: "Tue 2-4pm window",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-proximate",
+            displayName: "Delivery in 1 hour",
+            variableAliases: {
+              provider_name: "your courier",
+              appointment_time: "Tue 2-4pm window",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Missed you — reschedule",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: We missed you on order {{order_number}}. Reschedule delivery here: {{reschedule_link}} Reply STOP to opt out.",
+              friendly:
+                "We tried to deliver your {{workspace_name}} order {{order_number}} but missed you. Pick a new time: {{reschedule_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: Order {{order_number}} delivery missed. Reschedule: {{reschedule_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              order_number: "Delivery #4471",
+            },
+          },
+        ],
+      },
+      {
+        id: "dispatch-coordination",
+        displayName: "Dispatch coordination",
+        description: "Assigns work and confirms route or exception changes with drivers.",
+        steps: [
+          {
+            corpusId: null,
+            displayName: "New load assigned",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: New assignment {{system_name}}, pickup {{shift_time}} at {{location}}. Reply ACK to accept. Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: You've got a new load, {{system_name}}, pickup {{shift_time}} at {{location}}. Reply ACK to take it. Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: New load {{system_name}}, {{shift_time}}, {{location}}. Reply ACK. STOP to opt out.",
+            },
+            variableAliases: {
+              system_name: "Load #4471",
+              shift_time: "6am",
+              location: "Dock 3",
+            },
+          },
+          {
+            corpusId: "team-alerts:shift-scheduled",
+            displayName: "Route scheduled",
+            variableAliases: {
+              system_name: "Load #4471",
+              shift_time: "Mon, 6am",
+              location: "Dock 3",
+            },
+          },
+          {
+            corpusId: "team-alerts:escalation-ping",
+            displayName: "Delay — reply ACK",
+            variableAliases: {
+              severity: "Delay",
+              system_name: "Load #4471",
+              escalation_to: "dispatch",
+            },
+          },
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Route change",
+            variableAliases: {
+              severity: "Update",
+              alert_type: "Route disruption",
+              system_name: "Load #4471",
+            },
+          },
+        ],
+      },
+      {
+        id: "fleet-maintenance-diagnostics",
+        displayName: "Fleet maintenance & diagnostics",
+        description: "Surfaces service-due and fault-code events to whoever keeps the vehicles running.",
+        steps: [
+          {
+            corpusId: null,
+            displayName: "Service due",
+            customVariants: {
+              standard:
+                "{{workspace_name}} Maintenance: Service due on {{system_name}}, {{alert_type}}. Details: {{action_link}} Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}} heads up: {{system_name}} is due for service, {{alert_type}}. Details: {{action_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{system_name}} service due, {{alert_type}}. {{action_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              system_name: "Truck 12",
+              alert_type: "oil change due",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Fault code",
+            customVariants: {
+              standard:
+                "{{workspace_name}} {{severity}}: Fault code on {{system_name}}, {{alert_type}}. Details: {{action_link}} Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}} {{severity}}: {{system_name}} reported a fault, {{alert_type}}. Details: {{action_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}} {{severity}}: {{system_name}} fault, {{alert_type}}. {{action_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              severity: "Alert",
+              system_name: "Truck 12",
+              alert_type: "check engine",
+            },
+          },
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Inspection defect",
+            variableAliases: {
+              severity: "Defect",
+              alert_type: "DVIR defect logged",
+              system_name: "Truck 12",
+            },
+          },
+        ],
+      },
+      {
+        id: "driver-onboarding",
+        displayName: "Driver onboarding",
+        description: "Verifies a new driver's phone and gets them into the dispatch app.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verify your phone",
+            variableAliases: {
+              business_name: "the dispatch app",
+            },
+          },
+          {
+            corpusId: "verification:login-code",
+            displayName: "Login code",
+            variableAliases: {
+              business_name: "the dispatch app",
+            },
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(SUB_VERTICAL_LANDINGS.map((e) => [e.urlSlug, e]));
