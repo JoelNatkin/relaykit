@@ -1521,6 +1521,188 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
       },
     ],
   },
+  {
+    urlSlug: "compliance-grc-saas",
+    dataSlug: "compliance-grc-legal-ops-saas",
+    name: "Compliance & GRC SaaS",
+
+    metaTitle: "SMS for compliance & GRC SaaS — RelayKit",
+    metaDescription:
+      "Add failing-control alerts, reviewer deadline pings, and employee task reminders to your GRC platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Compliance & GRC SaaS",
+    h1: "Text messaging for compliance and GRC apps.",
+    heroBody:
+      "Failing controls, overdue reviews, security tasks — the texts that reach the right person before a compliance gap becomes an audit finding.",
+    heroExamples: [
+      "Acme GRC Critical: Control failing — MFA enforcement on prod-auth. Details: acme.app/controls/4821 Reply STOP to opt out.",
+      "Acme GRC Action needed: Q3 access review approval is due in 3 days. Sign off: acme.app/reviews/4821 Reply STOP to opt out.",
+      "Acme GRC: You have a security task due Fri Jun 27: Complete security awareness training. Complete it: acme.app/tasks/4821 Reply STOP to opt out.",
+      "Acme GRC Critical: Control failing — MFA enforcement on prod-auth. Reply ACK to claim or it goes to security lead. Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A control drifts out of compliance at 2am. The on-call security lead gets a text and remediates before the audit window closes.",
+      exampleSms: "Acme GRC Critical: Control failing — MFA enforcement on prod-auth. Details: acme.app/controls/4821 Reply STOP to opt out.",
+      exampleReply: "Fixed",
+    },
+
+    qa: [
+      {
+        q: "Who gets the alert when a control falls out of compliance — the control owner or the whole security team?",
+        lead: "The control owner first, then escalate if they don't acknowledge.",
+        body: "Most GRC platforms assign each control to a named owner — that person is responsible for remediating it. The first text goes to them. If they don't reply ACK within your configured window, the escalation ping fires to a security lead or manager. Broadcasting to the whole team before the owner has a chance to respond creates noise and diffuses accountability.",
+      },
+      {
+        q: "What's the difference between an access review deadline text and a failing-control alert?",
+        lead: "One is time-bound and scheduled; the other fires when continuous monitoring detects drift.",
+        body: "An access review deadline has a known date — it's a calendar event with a text reminder. A failing-control alert fires the moment an automated check detects a control is out of compliance, which can happen any time. The remediation urgency is similar, but the trigger logic in your system is different. Build them as separate notification flows even if they go through the same channel.",
+      },
+      {
+        q: "Do I need to ask employees before texting them security tasks?",
+        lead: "Yes — being part of your organization doesn't automatically mean they agreed to receive texts.",
+        body: "The right place to capture it is during onboarding or their first login to the compliance tool. RelayKit hosts an opt-in page for your app — your AI tool will know how to wire it in once you tell it where new employees set up their profile.",
+      },
+      {
+        q: "How many reminders should I send for an overdue employee task before stopping?",
+        lead: "Weekly nudges until complete, with a cap of three or four before escalating to a manager.",
+        body: "Security tasks have a completion deadline that matters — policy acceptance, device enrollment, training — so you can't just stop after one miss. Weekly reminders work for most cadences. After three or four with no action, the right move is a manager escalation rather than another employee text. At that point the person knows about the task; the problem is motivation, not awareness.",
+      },
+    ],
+
+    defaultCategory: "team-alerts",
+
+    workflows: [
+      {
+        id: "failing-control-alert",
+        displayName: "Failing control alert",
+        description: "Notifies the control owner the moment a continuous test detects drift, then escalates if unacknowledged.",
+        steps: [
+          {
+            corpusId: "team-alerts:system-alert",
+            displayName: "Control failing",
+            variableAliases: {
+              severity: "Critical",
+              alert_type: "Control failing",
+              system_name: "MFA enforcement",
+            },
+          },
+          {
+            corpusId: "team-alerts:escalation-ping",
+            displayName: "Owner ACK needed",
+            variableAliases: {
+              severity: "Critical",
+              system_name: "MFA enforcement",
+              escalation_to: "security lead",
+            },
+          },
+          {
+            corpusId: "team-alerts:on-call-page",
+            displayName: "Critical control down",
+            variableAliases: {
+              severity: "Critical",
+              system_name: "MFA enforcement",
+            },
+          },
+        ],
+      },
+      {
+        id: "reviewer-approval-deadline",
+        displayName: "Reviewer / approval deadline",
+        description: "Pushes approvers toward an access review or control-approval deadline before it lapses.",
+        steps: [
+          {
+            corpusId: "team-alerts:service-level-alert",
+            displayName: "Review due",
+            variableAliases: {
+              severity: "Action needed",
+              system_name: "Q3 access review",
+            },
+          },
+          {
+            corpusId: "team-alerts:escalation-ping",
+            displayName: "Approval needed",
+            variableAliases: {
+              severity: "Action needed",
+              system_name: "Q3 access review",
+            },
+          },
+          {
+            corpusId: "team-alerts:on-call-page",
+            displayName: "Deadline today",
+            variableAliases: {
+              severity: "Action needed",
+              system_name: "Q3 access review",
+            },
+          },
+        ],
+      },
+      {
+        id: "employee-compliance-task",
+        displayName: "Employee compliance task",
+        description: "Assigns a security task to an individual and nudges until complete.",
+        steps: [
+          {
+            corpusId: null,
+            displayName: "Task assigned",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: You have a security task due {{due_date}}: {{task_name}}. Complete it: {{action_link}} Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: a quick security task for you - {{task_name}}, due {{due_date}}: {{action_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{task_name}} due {{due_date}}. {{action_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              task_name: "Complete security awareness training",
+              due_date: "Fri Jun 27",
+            },
+          },
+          {
+            corpusId: null,
+            displayName: "Task overdue",
+            customVariants: {
+              standard:
+                "{{workspace_name}}: Your security task {{task_name}} is still open. Finish it here: {{action_link}} Reply STOP to opt out.",
+              friendly:
+                "{{workspace_name}}: still need a minute for {{task_name}}? Wrap it up here: {{action_link}} Reply STOP to opt out.",
+              brief:
+                "{{workspace_name}}: {{task_name}} still open. {{action_link}} STOP to opt out.",
+            },
+            variableAliases: {
+              task_name: "Complete security awareness training",
+            },
+          },
+        ],
+      },
+      {
+        id: "platform-account-lifecycle",
+        displayName: "Platform account lifecycle",
+        description: "Keeps the customer's own GRC-platform account secure and active.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verify phone",
+          },
+          {
+            corpusId: "account-events:new-device-signin",
+            displayName: "New sign-in",
+            variableAliases: {
+              device_context: "Chrome on a new Mac",
+            },
+          },
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "verification:confirmation-code",
+            displayName: "Confirm change",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(SUB_VERTICAL_LANDINGS.map((e) => [e.urlSlug, e]));
