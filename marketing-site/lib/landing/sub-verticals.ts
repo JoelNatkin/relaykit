@@ -3015,6 +3015,211 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
       },
     ],
   },
+  {
+    urlSlug: "wellness-fitness",
+    dataSlug: "wellness-fitness-habit-tracking",
+    name: "Wellness & fitness apps",
+
+    metaTitle: "SMS for wellness and fitness apps — RelayKit",
+    metaDescription:
+      "Add habit reminders, streak saves, and session nudges to your wellness or fitness app. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Wellness & fitness",
+    h1: "Text messaging for wellness and fitness apps.",
+    heroBody:
+      "Habit reminders, streak saves, session nudges — the texts that keep users showing up when push notifications stop working.",
+    heroExamples: [
+      "Stride: time for your morning run. Mark it done: stride.app/log Reply STOP to opt out.",
+      "Stride: don't lose your 30-day streak. One quick check-in keeps it alive: stride.app/log Reply STOP to opt out.",
+      "Stride: your session with your coach is tomorrow at 6:00 AM. Cancel: stride.app/sessions Reply STOP to opt out.",
+      "Stride 30-Day Strength Challenge: you've hit the halfway mark. Keep going. Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A user hits a 30-day streak. Push notifications have been muted for weeks. A text at 9pm keeps the chain alive.",
+      exampleSms: "Stride: don't lose your 30-day streak. One quick check-in keeps it alive: stride.app/log Reply STOP to opt out.",
+      exampleReply: "Done, logged it",
+    },
+
+    qa: [
+      {
+        q: "How do I avoid habit reminder texts feeling like spam?",
+        lead: "Keep them to one per day, at the time the user chose.",
+        body: "The moment someone set up their habit reminder, they told you when they want to be nudged. Send it then and not again that day — even if they haven't logged yet. A second text \"just checking in\" is the one that gets the STOP. One text per habit per day at the right moment feels like a useful nudge; anything more feels like pressure.",
+      },
+      {
+        q: "Should the streak-save text go out at the start of the day or closer to midnight?",
+        lead: "Closer to the end of the day's window — when there's still time but not much.",
+        body: "A streak-save text at 9am just gets ignored alongside everything else. The same text at 8pm, when the window closes at midnight, carries real urgency because the loss is actually imminent. Most apps set the habit window to end of day — fire the streak nudge 3–4 hours before that. Early enough to act, late enough to feel real.",
+      },
+      {
+        q: "What's the difference between a habit reminder and a streak-save text?",
+        lead: "The habit reminder fires every day; the streak-save only fires when there's something to lose.",
+        body: "A habit reminder is the daily nudge — \"time for your run.\" It goes out regardless of streak status. The streak-save is the loss-aversion message — \"your 30-day streak ends tonight\" — and only fires when the user has an active streak and hasn't logged yet. They're different triggers, different copy, and often different times of day. Build them as two separate flows.",
+      },
+      {
+        q: "When do I ask users if it's okay to text them?",
+        lead: "When they set up their first habit or notification preference.",
+        body: "That's the natural moment — they're already telling you what they want to be reminded about and when. The opt-in ask fits right there. RelayKit hosts an opt-in page for your app — your AI tool will know how to link to it from the right spot in your flow.",
+      },
+    ],
+
+    defaultCategory: "account-events",
+
+    workflows: [
+      {
+        id: "daily-habit-nudge",
+        displayName: "Daily habit nudge",
+        description: "Reminds a user to complete their tracked habit, then fires a streak-save if they haven't logged by end of day.",
+        steps: [
+          {
+            corpusId: "account-events:recurring-reminder",
+            displayName: "Habit reminder",
+            variableAliases: {
+              habit_name: "your morning run",
+              action_link: "stride.app/log",
+            },
+          },
+          {
+            corpusId: "account-events:streak-ending",
+            displayName: "Streak ending",
+            variableAliases: {
+              streak_count: "30-day",
+              action_link: "stride.app/log",
+            },
+          },
+        ],
+      },
+      {
+        id: "scheduled-session",
+        displayName: "Scheduled session",
+        description: "Reminds a user of a planned workout, class, or coached session, then follows up after.",
+        steps: [
+          {
+            corpusId: "appointments:reminder-distant",
+            displayName: "Tomorrow's session",
+            variableAliases: {
+              provider_name: "your coach",
+              appointment_time: "6:00 AM",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-proximate",
+            displayName: "Starting soon",
+            variableAliases: {
+              provider_name: "your coach",
+              appointment_time: "6:00 AM",
+            },
+          },
+          {
+            corpusId: "appointments:no-show-follow-up",
+            displayName: "Missed your session",
+            variableAliases: {
+              provider_name: "your coach",
+            },
+          },
+          {
+            corpusId: "appointments:post-appointment",
+            displayName: "How'd it go?",
+            variableAliases: {
+              provider_name: "your coach",
+            },
+          },
+        ],
+      },
+      {
+        id: "challenge-group",
+        displayName: "Challenge group",
+        description: "Runs a time-boxed challenge with a group of members and keeps them moving through it.",
+        steps: [
+          {
+            corpusId: "community:welcome",
+            displayName: "You're in the challenge",
+            variableAliases: {
+              community_name: "Stride 30-Day Strength Challenge",
+            },
+          },
+          {
+            corpusId: "community:live-event-reminder",
+            displayName: "Challenge starts",
+            variableAliases: {
+              community_name: "Stride 30-Day Strength Challenge",
+              event_name: "the 30-Day Challenge",
+            },
+          },
+          {
+            corpusId: "community:member-milestone",
+            displayName: "Milestone hit",
+            variableAliases: {
+              community_name: "Stride 30-Day Strength Challenge",
+              milestone: "the halfway mark",
+            },
+          },
+          {
+            corpusId: "community:community-announcement",
+            displayName: "Challenge update",
+            variableAliases: {
+              community_name: "Stride 30-Day Strength Challenge",
+            },
+          },
+        ],
+      },
+      {
+        id: "member-onboarding",
+        displayName: "Member onboarding",
+        description: "Walks a new member into the habit of using the app's social and accountability layer.",
+        steps: [
+          {
+            corpusId: "community:welcome",
+            displayName: "Welcome",
+            variableAliases: {
+              community_name: "Stride",
+            },
+          },
+          {
+            corpusId: "community:first-action",
+            displayName: "Log your first day",
+            variableAliases: {
+              community_name: "Stride",
+            },
+          },
+          {
+            corpusId: "community:resource-pointer",
+            displayName: "Getting-started guide",
+            variableAliases: {
+              community_name: "Stride",
+            },
+          },
+          {
+            corpusId: "community:week-1-checkin",
+            displayName: "One week in",
+            variableAliases: {
+              community_name: "Stride",
+            },
+          },
+        ],
+      },
+      {
+        id: "plan-churn",
+        displayName: "Plan churn",
+        description: "Keeps paying subscribers from lapsing on freemium-to-paid apps.",
+        steps: [
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Payment failed",
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Subscription confirmed",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 const BY_SLUG = new Map(SUB_VERTICAL_LANDINGS.map((e) => [e.urlSlug, e]));
