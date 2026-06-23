@@ -10,8 +10,10 @@ import { Pricing } from "@/components/home/pricing";
 import { FinalCta } from "@/components/home/final-cta";
 // Same component, sub-specific data (bucket 2b).
 import { NumbersSection } from "@/components/home/numbers-section";
+// Shared landing fork — the single PaperworkFork (also used by /messages/[category]).
+import { PaperworkFork } from "@/components/landing/paperwork-fork";
 // Authored, per-sub sections (bucket 2a).
-import { DevToolsHero, Moment, Details, PaperworkFork, Farm } from "./sections";
+import { DevToolsHero, Moment, Details, Farm } from "./sections";
 // Messages + Workflows toggle (Phase 1C) — owns the heading + shared controls
 // and swaps the curated workflows view with the full chromeless category browser.
 import { MessagesWorkflowsSection } from "./messages-workflows-section";
