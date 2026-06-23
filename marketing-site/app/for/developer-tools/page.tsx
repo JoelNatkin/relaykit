@@ -10,8 +10,10 @@ import { Pricing } from "@/components/home/pricing";
 import { FinalCta } from "@/components/home/final-cta";
 // Same component, sub-specific data (bucket 2b).
 import { NumbersSection } from "@/components/home/numbers-section";
+// Shared landing fork — the single PaperworkFork (also used by /messages/[category]).
+import { PaperworkFork } from "@/components/landing/paperwork-fork";
 // Authored, per-sub sections (bucket 2a).
-import { DevToolsHero, Moment, Details, PaperworkFork, Farm } from "./sections";
+import { DevToolsHero, Moment, Details, Farm } from "./sections";
 // Messages + Workflows toggle (Phase 1C) — owns the heading + shared controls
 // and swaps the curated workflows view with the full chromeless category browser.
 import { MessagesWorkflowsSection } from "./messages-workflows-section";
@@ -26,9 +28,9 @@ export const metadata: Metadata = {
     "Add account-event text messages — payment failures, security alerts, trial endings — to your developer tool or API platform. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
   // Self-canonical (D-436) — points to this page's own path, never to `/`.
   alternates: { canonical: `/for/${URL_SLUG}` },
-  // Deferred near-twin of /messages/account-events — reachable, but kept out of
-  // search and the sitemap (noindex) until the /for/{slug} program ships.
-  robots: { index: false, follow: true },
+  // Indexable as of Phase 1C A2 — the /for/{slug} program is live (all entries
+  // render and are in the sitemap).
+  robots: { index: true, follow: true },
 };
 
 export default function DeveloperToolsLanding() {
