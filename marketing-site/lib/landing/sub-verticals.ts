@@ -3016,6 +3016,152 @@ export const SUB_VERTICAL_LANDINGS: SubVerticalLanding[] = [
     ],
   },
   {
+    urlSlug: "nutrition-meal-planning",
+    dataSlug: "nutrition-meal-planning",
+    name: "Nutrition & meal planning apps",
+
+    metaTitle: "SMS for nutrition and meal planning apps — RelayKit",
+    metaDescription:
+      "Add meal-log reminders, streak saves, and weekly plan alerts to your nutrition app. Free to author and test; RelayKit handles registration, opt-outs, and carrier rules.",
+
+    heroEyebrow: "Nutrition & meal planning",
+    h1: "Text messaging for nutrition and meal planning apps.",
+    heroBody:
+      "Meal-log reminders, streak saves, weekly plan alerts — the texts that keep users logging before the habit breaks.",
+    heroExamples: [
+      "Grove: time to log lunch. Keep your 12-day streak alive: grove.app/log Reply STOP to opt out.",
+      "Grove: your 12-day streak is about to break. Log today to keep it going: grove.app/log Reply STOP to opt out.",
+      "Grove: your weekly meal plan is ready. View it here: grove.app/plan Reply STOP to opt out.",
+      "Grove: Coach Maya is checking in — how's the week going? grove.app/chat Reply STOP to opt out.",
+    ],
+
+    moment: {
+      body: "A user skips logging lunch. Then dinner. By tomorrow the streak is gone. A text at 12:30 catches the skip before it compounds.",
+      exampleSms: "Grove: time to log lunch. Keep your 12-day streak alive: grove.app/log Reply STOP to opt out.",
+      exampleReply: "Logged!",
+    },
+
+    qa: [
+      {
+        q: "How many meal-log reminder texts a day is too many?",
+        lead: "One per meal at most — and only for meals the user opted into reminders for.",
+        body: "If a user set up a lunch reminder at 12:30, that's the one that goes. Don't fire a dinner reminder just because they didn't log lunch — at that point you're piling on a user who's already disengaged, and the most likely outcome is an opt-out. One nudge per configured meal, sent once, at the time they chose.",
+      },
+      {
+        q: "Should I send the streak-save text for every missed meal or only at end of day?",
+        lead: "At the missed meal window — not end of day.",
+        body: "A nutrition streak is usually about logging a specific meal. If the lunch window closes at 1pm and the user hasn't logged, that's when the streak-save fires — not 8pm, when there's nothing they can do about it. End-of-day streak saves make sense for activity apps where any action counts. For meal logging, tie the save text to the meal window it belongs to.",
+      },
+      {
+        q: "Should coach check-in texts come from the app or from the coach's name?",
+        lead: "From the coach's name — that's who the client has a relationship with.",
+        body: "A text that says \"Coach Maya is checking in\" lands differently than one that says \"Grove is checking in.\" The coaching relationship is personal; the app is the tool that delivers it. Use the coach's name in the message when your platform supports named coaches. For AI-coached or unassigned flows, the app name is fine — but wherever there's a real human, name them.",
+      },
+      {
+        q: "When should the weekly plan notification go out?",
+        lead: "At a set time — when the user is likely to act on it.",
+        body: "A plan that generates at 3am and texts immediately wakes nobody up in a useful way. Most apps send the weekly plan notification Sunday evening or Monday morning — when the user is actually planning their week. Generate whenever your system needs to, but schedule the notification for the moment the user is most likely to open it and start cooking.",
+      },
+    ],
+
+    defaultCategory: "account-events",
+
+    workflows: [
+      {
+        id: "subscription-billing-lifecycle",
+        displayName: "Subscription & billing lifecycle",
+        description: "Keeps a paid subscriber active through trial, renewal, and payment failure.",
+        steps: [
+          {
+            corpusId: "account-events:trial-ending",
+            displayName: "Trial ending",
+          },
+          {
+            corpusId: "account-events:payment-failed",
+            displayName: "Payment failed",
+          },
+          {
+            corpusId: "account-events:subscription-confirmed",
+            displayName: "Subscription confirmed",
+          },
+        ],
+      },
+      {
+        id: "meal-log-reminder",
+        displayName: "Meal & plan reminders",
+        description: "Nudges the user to log a meal at their configured time, fires a streak-save if they miss the window, and tells them when their weekly plan is ready.",
+        steps: [
+          {
+            corpusId: "appointments:reminder-proximate",
+            displayName: "Time to log",
+            variableAliases: {
+              provider_name: "your meal log",
+              appointment_time: "12:30 PM",
+            },
+          },
+          {
+            corpusId: "account-events:streak-ending",
+            displayName: "Streak about to break",
+            variableAliases: {
+              streak_count: "12-day",
+              action_link: "grove.app/log",
+            },
+          },
+          {
+            corpusId: "account-events:new-message-waiting",
+            displayName: "Your plan is ready",
+            variableAliases: {
+              account_link: "grove.app/plan",
+            },
+          },
+        ],
+      },
+      {
+        id: "coach-check-in",
+        displayName: "Coach check-in",
+        description: "Runs a coach's periodic accountability touch with the client.",
+        steps: [
+          {
+            corpusId: "appointments:confirmation",
+            displayName: "Session confirmed",
+            variableAliases: {
+              provider_name: "Coach Maya",
+            },
+          },
+          {
+            corpusId: "appointments:reminder-distant",
+            displayName: "Check-in tomorrow",
+            variableAliases: {
+              provider_name: "Coach Maya",
+            },
+          },
+          {
+            corpusId: "customer-support:proactive-outreach",
+            displayName: "Coach checking in",
+          },
+        ],
+      },
+      {
+        id: "signup-account-security",
+        displayName: "Signup & account security",
+        description: "Verifies the phone at signup and protects the account.",
+        steps: [
+          {
+            corpusId: "verification:verification-code",
+            displayName: "Verification code",
+            variableAliases: {
+              business_name: "Grove",
+            },
+          },
+          {
+            corpusId: "account-events:new-device-signin",
+            displayName: "New sign-in alert",
+          },
+        ],
+      },
+    ],
+  },
+  {
     urlSlug: "wellness-fitness",
     dataSlug: "wellness-fitness-habit-tracking",
     name: "Wellness & fitness apps",
